@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.act6243.clang-resource-bound-validation-proposal.v1",
+  "status": "NOT_DISPATCHED_REQUIRES_ROOT_REVIEW",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "owner_decision": null,
+  "original_native_methods": 6,
+  "retries": 0,
+  "root_system_install_or_source_changes": false,
+  "prior_driver_git_blob": "247f17bb782d2140d41133eeea17bbf8f7eb2973",
+  "prior_driver_bytes": 12121,
+  "prior_driver_sha256": "31e884b3a76ebb0fa6fca8450ee59cd58dbff0be6ad933f39c717bebbebecf71",
+  "driver_removing_declared_resource_integration_equals_v3_exact": true,
+  "unchanged_native_pipeline": {
+    "caller_timeout_seconds": 4800,
+    "build_timeout_seconds": 3000,
+    "test_timeout_seconds_each": 1800,
+    "tests_minimum": [
+      1,
+      5
+    ],
+    "two_binary_build": true,
+    "named_case_receipt_and_format": true,
+    "source_inventory_before_after": true,
+    "v8_resolver": true,
+    "source_locked": true
+  },
+  "resource_preparation": {
+    "job_id": "1a1cfde1d88-2564-1ad1",
+    "result_blob": "ac4539714f95897fb03b741331e211ebe39555b3",
+    "result_sha256": "ac0719292405bf2548fcccb0aee050c1b5fea0bc0eb2da047b9bb11cae140b4c",
+    "download_blob": "56d48f4d5c949a4b63f122b6d5b1b391224ba1bd",
+    "c_api_blob": "85434c659ca170f30d9003bcede09dbb288adc40",
+    "resource_entries": 288,
+    "same_library_baseline_missing_stddef": true,
+    "same_library_with_explicit_resource_diagnostics": [],
+    "native_or_aws_lc_build_success_claim": false
+  },
+  "selection": {
+    "actual_host_clang_sys_common_matches_official_1_9_1": true,
+    "actual_common_sha256": "0f2b27eb4891c3ec693e20af7efcac63ec66315ba476ec8af8be552264123e7f",
+    "libclang_path": "exact registered library file, accepted by original clang-sys common.rs",
+    "process_only_target_specific_removal": true,
+    "inherited_values_only_hashed": true,
+    "unregistered_clang_path_include_or_llvm_overrides": "fail closed",
+    "historical_v3_inherited_selection_vars": "not separately recorded; present probe does not backfill history"
+  },
+  "native_execution": "NOT_RUN",
+  "python_compile_for_new_driver": "NOT_RUN",
+  "files": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/DRIVER.py",
+      "bytes": 19238,
+      "sha256": "5ff03f570545133c967254e6aebc216494a4aa392045ebde3333bc3849212e04",
+      "blob": "de7a6944df620e1e65010b2eb0669b6ecdeb3f43"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/PLAN.json",
+      "bytes": 12318,
+      "sha256": "ba1a004eff97980404b6cb5d54349aabaff50e99b722b8f4374eca64f9823092",
+      "blob": "ea295a0bec8ef2cc1a66b144ab2b5d76825751d6"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/REQUEST.json",
+      "bytes": 32211,
+      "sha256": "8d40794bc17a541e8e41cc50c69154bbc0f688e2700cfd534e9d9c211fb1a741",
+      "blob": "90fd33ad91d3f97729a003d77e4b34439e9d9f2a"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-preparation-20261112/evidence/RESOURCE_MANIFEST.json",
+      "bytes": 83900,
+      "sha256": "f09262fe0207c56977993927e64e52a39c548385c92de79e086f6d029f2b3957",
+      "blob": "da9cd28806dc45c715db19cb63bdbf8a16dc4271"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-preparation-20261112/evidence/RESOURCE_MANIFEST_READ0_ORIGINAL_SDK.json",
+      "bytes": 87728,
+      "sha256": "1a02a4480cd0d45102f53fcd85cfce208582764ae5191c7eca97fd9f49214136",
+      "blob": "c6bb0e4bf25ef7526887fd1485b39cd5957de868"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-preparation-20261112/evidence/RESOURCE_MANIFEST_READ1_ORIGINAL_SDK.json",
+      "bytes": 24835,
+      "sha256": "5f68fad9540b24c74364f42ed25ee0cd5e86c4af636763914529981c2fb44907",
+      "blob": "ebae01d55aec1c411339217b09bbcf9ee7d2122b"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-preparation-20261112/evidence/CLANG_SYS_COMMON_ORIGINAL.rs",
+      "bytes": 13907,
+      "sha256": "0f2b27eb4891c3ec693e20af7efcac63ec66315ba476ec8af8be552264123e7f",
+      "blob": "0554b3c6e4e7a9deaaf5b480352f93f48e9866a1"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-preparation-20261112/evidence/CLANG_SYS_COMMON_READBACK_ORIGINAL_SDK.json",
+      "bytes": 18875,
+      "sha256": "7e89af61b65440341c9afbe7e7b133df826c4b543d2ac7695df4d84272c4a03d",
+      "blob": "64afd6b7bf11a16b3067a160a37bfac1b8b70973"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/DRIVER_FROM_V3.diff",
+      "bytes": 19660,
+      "sha256": "009e7007100980c312702eaa72e07b013f52ea831767e50f51733e38448e729f",
+      "blob": "0f37a25c4dacd01adaf6ab8a21bee4a6bd3dafa3"
+    }
+  ]
+}

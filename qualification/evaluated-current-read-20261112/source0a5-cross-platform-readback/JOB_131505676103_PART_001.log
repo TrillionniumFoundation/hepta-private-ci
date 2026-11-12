@@ -1,0 +1,2126 @@
+ts configured, 542 aspect applications)
+2026-11-12T21:32:53.3340132Z [2,938 / 4,242] Compiling Rust bin //codex-rs/execpolicy:codex-execpolicy (12 files); Downloading external/rules_rs++crate+crates__starlark-0.14.2/libstarlark-501255659.rlib, 8.3 MiB / 94.6 MiB; 1s remote-cache ... (30 actions, 0 running)
+2026-11-12T21:32:53.3341683Z INFO: From Compiling crypto/asn1/a_mbstr.c:
+2026-11-12T21:32:53.3344659Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3345218Z INFO: From Compiling crypto/x509/x_exten.c:
+2026-11-12T21:32:53.3345721Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3348746Z INFO: From Compiling crypto/x509/v3_ia5.c [for tool]:
+2026-11-12T21:32:53.3349300Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3352128Z INFO: From Compiling ssl/ssl_decrepit.c [for tool]:
+2026-11-12T21:32:53.3352774Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3353314Z INFO: From Compiling ssl/ssl_c_test.c [for tool]:
+2026-11-12T21:32:53.3356431Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3356979Z INFO: From Compiling crypto/x509/v3_genn.c [for tool]:
+2026-11-12T21:32:53.3359963Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.3360538Z INFO: From Compiling crypto/x509/v3_extku.c [for tool]:
+2026-11-12T21:32:53.3361063Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.4168832Z INFO: From Compiling crypto/asn1/asn1_lib.c [for tool]:
+2026-11-12T21:32:53.4169823Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.4371470Z INFO: From Compiling crypto/x509/x_crl.c:
+2026-11-12T21:32:53.4372182Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.4671984Z INFO: From Compiling crypto/asn1/a_object.c:
+2026-11-12T21:32:53.4673128Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.6067028Z INFO: From Compiling crypto/x509/v3_cpols.c [for tool]:
+2026-11-12T21:32:53.6070584Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.6071213Z INFO: From Compiling crypto/x509/v3_enum.c [for tool]:
+2026-11-12T21:32:53.6074625Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.6075263Z INFO: From Compiling crypto/x509/x_attrib.c:
+2026-11-12T21:32:53.6075801Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7954344Z INFO: From Compiling crypto/x509/x_all.c:
+2026-11-12T21:32:53.7954957Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7959255Z INFO: From Compiling crypto/asn1/asn1_par.c [for tool]:
+2026-11-12T21:32:53.7959822Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7966785Z INFO: From Compiling crypto/asn1/a_octet.c:
+2026-11-12T21:32:53.7970270Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7973589Z INFO: From Compiling crypto/x509/x509spki.c:
+2026-11-12T21:32:53.7974158Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7974718Z INFO: From Compiling crypto/x509/x_algor.c:
+2026-11-12T21:32:53.7978197Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7978751Z INFO: From Compiling crypto/x509/v3_bitst.c [for tool]:
+2026-11-12T21:32:53.7982194Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.7982830Z INFO: From Compiling crypto/asn1/asn_pack.c [for tool]:
+2026-11-12T21:32:53.7983383Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.8330386Z INFO: From Compiling crypto/asn1/a_strex.c:
+2026-11-12T21:32:53.8331587Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:53.9012487Z INFO: From Compiling crypto/x509/x509name.c:
+2026-11-12T21:32:54.0265555Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0266676Z INFO: From Compiling crypto/x509/x509rset.c:
+2026-11-12T21:32:54.0267776Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0271737Z INFO: From Compiling crypto/x509/v3_alt.c [for tool]:
+2026-11-12T21:32:54.0272318Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0272880Z INFO: From Compiling crypto/asn1/a_strnid.c:
+2026-11-12T21:32:54.0273372Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0273843Z INFO: From Compiling crypto/x509/x509_vpm.c:
+2026-11-12T21:32:54.0274313Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0274781Z INFO: From Compiling crypto/x509/x509cset.c:
+2026-11-12T21:32:54.0275220Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.0654102Z INFO: From Compiling crypto/x509/v3_crld.c [for tool]:
+2026-11-12T21:32:54.0850109Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3108508Z INFO: From Compiling crypto/x509/v3_conf.c [for tool]:
+2026-11-12T21:32:54.3125068Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3126632Z INFO: From Compiling crypto/asn1/a_time.c:
+2026-11-12T21:32:54.3127786Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3128461Z INFO: From Compiling crypto/x509/v3_bcons.c [for tool]:
+2026-11-12T21:32:54.3129135Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3129724Z INFO: From Compiling crypto/x509/x509_v3.c:
+2026-11-12T21:32:54.3130149Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3130561Z INFO: From Compiling crypto/x509/x509_vfy.c:
+2026-11-12T21:32:54.3130966Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3131599Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:54.3132542Z [3,076 / 4,263] Compiling Rust bin //codex-rs/execpolicy:codex-execpolicy (12 files); 0s remote-cache, local ... (30 actions, 2 running)
+2026-11-12T21:32:54.3133263Z INFO: From Compiling crypto/x509/x509_txt.c:
+2026-11-12T21:32:54.3133678Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3134093Z INFO: From Compiling ssl/ssl_decrepit.c:
+2026-11-12T21:32:54.3134486Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3134915Z INFO: From Compiling crypto/asn1/a_type.c:
+2026-11-12T21:32:54.3135317Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3135702Z INFO: From Compiling crypto/x509/v3_akey.c [for tool]:
+2026-11-12T21:32:54.3136088Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3136511Z INFO: From Compiling crypto/x509/x509_trs.c:
+2026-11-12T21:32:54.3137154Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3137531Z INFO: From Compiling crypto/x509/x509_set.c:
+2026-11-12T21:32:54.3137928Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3338603Z INFO: From Compiling crypto/x509/t_x509a.c [for tool]:
+2026-11-12T21:32:54.3566743Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3574675Z INFO: From Compiling crypto/x509/t_x509.c [for tool]:
+2026-11-12T21:32:54.3582524Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.3587509Z INFO: From Compiling crypto/x509/x509_req.c:
+2026-11-12T21:32:54.3588155Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5716499Z INFO: From Compiling crypto/asn1/a_utctm.c:
+2026-11-12T21:32:54.5717939Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5809955Z INFO: From Compiling crypto/x509/x509_ext.c:
+2026-11-12T21:32:54.5811114Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5811657Z INFO: From Compiling crypto/x509/x509_lu.c:
+2026-11-12T21:32:54.5859122Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5859707Z INFO: From Compiling crypto/x509/t_crl.c [for tool]:
+2026-11-12T21:32:54.5862802Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5863362Z INFO: From Compiling crypto/x509/t_req.c [for tool]:
+2026-11-12T21:32:54.5863910Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5912595Z INFO: From Compiling crypto/x509/policy.c [for tool]:
+2026-11-12T21:32:54.5913227Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.5913766Z INFO: From Compiling crypto/x509/x509_obj.c:
+2026-11-12T21:32:54.8389516Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8390185Z INFO: From Compiling crypto/x509/rsa_pss.c [for tool]:
+2026-11-12T21:32:54.8482486Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8483819Z INFO: From Compiling crypto/asn1/f_int.c [for tool]:
+2026-11-12T21:32:54.8484367Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8572741Z INFO: From Compiling crypto/x509/x509_cmp.c:
+2026-11-12T21:32:54.8601168Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8601691Z INFO: From Compiling crypto/asn1/a_utf8.c:
+2026-11-12T21:32:54.8624358Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8625048Z INFO: From Compiling crypto/x509/x509_d2.c:
+2026-11-12T21:32:54.8625533Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8666147Z INFO: From Compiling crypto/x509/name_print.c [for tool]:
+2026-11-12T21:32:54.8703845Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8890101Z INFO: From Compiling crypto/x509/by_file.c [for tool]:
+2026-11-12T21:32:54.8890718Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8937957Z INFO: From Compiling crypto/x509/i2d_pr.c [for tool]:
+2026-11-12T21:32:54.8939478Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8940076Z INFO: From Compiling crypto/x509/by_dir.c [for tool]:
+2026-11-12T21:32:54.8947268Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8948127Z INFO: From Compiling crypto/asn1/f_string.c [for tool]:
+2026-11-12T21:32:54.8952219Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8952858Z INFO: From Compiling crypto/asn1/asn1_lib.c:
+2026-11-12T21:32:54.8953490Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8964451Z INFO: From Compiling crypto/x509/x509_att.c:
+2026-11-12T21:32:54.8965020Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.8972034Z INFO: From Compiling crypto/x509/x509.c:
+2026-11-12T21:32:54.8972657Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.9287755Z INFO: From Compiling crypto/x509/asn1_gen.c [for tool]:
+2026-11-12T21:32:54.9527650Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.9778882Z INFO: From Compiling crypto/x509/algorithm.c [for tool]:
+2026-11-12T21:32:54.9853897Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:54.9881208Z INFO: From Compiling crypto/x509/a_verify.c [for tool]:
+2026-11-12T21:32:55.0279876Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.0483178Z INFO: From Compiling crypto/x509/v3_utl.c:
+2026-11-12T21:32:55.0523303Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.0645607Z INFO: From Compiling crypto/asn1/asn1_par.c:
+2026-11-12T21:32:55.0971157Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.1087916Z INFO: From Compiling crypto/x509/v3_skey.c:
+2026-11-12T21:32:55.1088608Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.1604368Z INFO: From Compiling crypto/ube/vm_ube_detect.c [for tool]:
+2026-11-12T21:32:55.2098102Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.2204919Z INFO: From Compiling crypto/x509/x509_def.c:
+2026-11-12T21:32:55.2564203Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.2930162Z INFO: From Compiling crypto/ui/ui.c [for tool]:
+2026-11-12T21:32:55.3067318Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.3632785Z INFO: From Compiling crypto/x509/v3_purp.c:
+2026-11-12T21:32:55.3900153Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.4337262Z INFO: From Compiling crypto/asn1/asn_pack.c:
+2026-11-12T21:32:55.4856073Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.5259441Z INFO: From Compiling crypto/x509/v3_prn.c:
+2026-11-12T21:32:55.5326172Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.5472622Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:55.5974025Z [3,184 / 4,277] Compiling Rust bin //codex-rs/execpolicy:codex-execpolicy (12 files); 1s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:32:55.6386137Z INFO: From Compiling crypto/x509/v3_akeya.c [for tool]:
+2026-11-12T21:32:55.6716211Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.6895786Z INFO: From Compiling crypto/ube/ube.c [for tool]:
+2026-11-12T21:32:55.6977218Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7025599Z INFO: From Compiling crypto/x509/v3_pmaps.c:
+2026-11-12T21:32:55.7233856Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7269617Z INFO: From Compiling crypto/x509/v3_pcons.c:
+2026-11-12T21:32:55.7275770Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7276814Z INFO: From Compiling crypto/ube/fork_ube_detect.c [for tool]:
+2026-11-12T21:32:55.7281287Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7282064Z INFO: From Compiling crypto/trust_token/voprf.c [for tool]:
+2026-11-12T21:32:55.7285285Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7285796Z INFO: From Compiling crypto/asn1/f_int.c:
+2026-11-12T21:32:55.7288786Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7289392Z INFO: From Compiling crypto/x509/a_digest.c [for tool]:
+2026-11-12T21:32:55.7292747Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7293344Z INFO: From Compiling crypto/x509/v3_ocsp.c:
+2026-11-12T21:32:55.7293869Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7297065Z INFO: From Compiling crypto/x509/v3_ncons.c:
+2026-11-12T21:32:55.7297556Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7301183Z INFO: From Compiling crypto/trust_token/pmbtoken.c [for tool]:
+2026-11-12T21:32:55.7302067Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7302679Z INFO: From Compiling crypto/trust_token/trust_token.c [for tool]:
+2026-11-12T21:32:55.7305914Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7306423Z INFO: From Compiling crypto/x509/v3_lib.c:
+2026-11-12T21:32:55.7314755Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7315542Z INFO: From Compiling crypto/asn1/f_string.c:
+2026-11-12T21:32:55.7316040Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7319002Z INFO: From Compiling crypto/x509/v3_int.c:
+2026-11-12T21:32:55.7319490Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7322919Z INFO: From Compiling crypto/thread_pthread.c [for tool]:
+2026-11-12T21:32:55.7323500Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7324050Z INFO: From Compiling crypto/thread_win.c [for tool]:
+2026-11-12T21:32:55.7327153Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.7327647Z INFO: From Compiling crypto/x509/v3_info.c:
+2026-11-12T21:32:55.8287896Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8288983Z INFO: From Compiling crypto/x509/v3_ia5.c:
+2026-11-12T21:32:55.8289555Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8293546Z INFO: From Compiling crypto/x509/v3_genn.c:
+2026-11-12T21:32:55.8294092Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8297674Z INFO: From Compiling crypto/asn1/posix_time.c:
+2026-11-12T21:32:55.8298314Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8298866Z INFO: From Compiling crypto/x509/v3_extku.c:
+2026-11-12T21:32:55.8302011Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8302606Z INFO: From Compiling crypto/thread.c [for tool]:
+2026-11-12T21:32:55.8303167Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8306402Z INFO: From Compiling crypto/thread_none.c [for tool]:
+2026-11-12T21:32:55.8306976Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8310402Z INFO: From Compiling crypto/x509/a_sign.c [for tool]:
+2026-11-12T21:32:55.8310969Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8311516Z INFO: From Compiling crypto/asn1/posix_time.c [for tool]:
+2026-11-12T21:32:55.8311956Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8312379Z INFO: From Compiling crypto/x509/v3_enum.c:
+2026-11-12T21:32:55.8312806Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8313324Z INFO: From Compiling crypto/spake25519/spake25519.c [for tool]:
+2026-11-12T21:32:55.8313865Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8314354Z INFO: From Compiling crypto/siphash/siphash.c [for tool]:
+2026-11-12T21:32:55.8314838Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8315424Z INFO: From Compiling crypto/x509/v3_crld.c:
+2026-11-12T21:32:55.8315857Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8316322Z INFO: From Compiling crypto/x509/v3_cpols.c:
+2026-11-12T21:32:55.8316750Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8317182Z INFO: From Compiling crypto/x509/v3_conf.c:
+2026-11-12T21:32:55.8317591Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8318033Z INFO: From Compiling crypto/asn1/tasn_dec.c:
+2026-11-12T21:32:55.8318458Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8816181Z INFO: From Compiling crypto/x509/v3_alt.c:
+2026-11-12T21:32:55.8964234Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.8965639Z INFO: From Compiling crypto/asn1/tasn_enc.c:
+2026-11-12T21:32:55.8996992Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.9006115Z INFO: From Compiling crypto/x509/v3_akeya.c:
+2026-11-12T21:32:55.9022306Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.9165847Z INFO: From Compiling crypto/x509/v3_bcons.c:
+2026-11-12T21:32:55.9308653Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.9515696Z INFO: From Compiling crypto/rsa_extra/rsa_asn1.c [for tool]:
+2026-11-12T21:32:55.9763780Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.9820373Z INFO: From Compiling crypto/refcount_win.c [for tool]:
+2026-11-12T21:32:55.9832863Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:55.9929926Z INFO: From Compiling crypto/rsa_extra/rsassa_pss_asn1.c [for tool]:
+2026-11-12T21:32:56.0055857Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.0375423Z INFO: From Compiling crypto/rsa_extra/rsa_print.c [for tool]:
+2026-11-12T21:32:56.0525241Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.0582505Z INFO: From Compiling crypto/x509/v3_bitst.c:
+2026-11-12T21:32:56.0777135Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.0902835Z INFO: From Compiling crypto/asn1/tasn_dec.c [for tool]:
+2026-11-12T21:32:56.0974656Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.1360239Z INFO: From Compiling crypto/rsa_extra/rsa_crypt.c [for tool]:
+2026-11-12T21:32:56.1766851Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.2515942Z INFO: From Compiling crypto/x509/v3_akey.c:
+2026-11-12T21:32:56.2891749Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.3287954Z INFO: From Compiling crypto/x509/t_x509.c:
+2026-11-12T21:32:56.3573286Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.3763918Z INFO: From Compiling crypto/x509/t_req.c:
+2026-11-12T21:32:56.4125860Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.4126470Z INFO: From Compiling crypto/asn1/tasn_fre.c:
+2026-11-12T21:32:56.4237568Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.4595742Z INFO: From Compiling crypto/refcount_lock.c [for tool]:
+2026-11-12T21:32:56.4613962Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.4939928Z INFO: From Compiling crypto/rand_extra/windows.c [for tool]:
+2026-11-12T21:32:56.5232480Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.5592646Z INFO: From Compiling crypto/rc4/rc4.c [for tool]:
+2026-11-12T21:32:56.5937264Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.6156813Z INFO: From Compiling crypto/rand_extra/vm_ube_fallback.c [for tool]:
+2026-11-12T21:32:56.6818527Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.7627095Z INFO: From Compiling crypto/x509/policy.c:
+2026-11-12T21:32:56.8052399Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.8205257Z INFO: From Compiling crypto/x509/t_crl.c:
+2026-11-12T21:32:56.8621296Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.8971300Z INFO: From Compiling crypto/x509/rsa_pss.c:
+2026-11-12T21:32:56.9151613Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:56.9611182Z INFO: From Compiling crypto/asn1/tasn_new.c:
+2026-11-12T21:32:57.0262505Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.0706378Z INFO: From Compiling crypto/rand_extra/urandom.c [for tool]:
+2026-11-12T21:32:57.0833116Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.0876441Z INFO: From Compiling crypto/rand_extra/rand_extra.c [for tool]:
+2026-11-12T21:32:57.1472961Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.1673151Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:57.1738528Z [3,333 / 4,325] Compiling Rust bin //codex-rs/execpolicy:codex-execpolicy (12 files); 2s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:32:57.1936879Z INFO: From Compiling crypto/rand_extra/getentropy.c [for tool]:
+2026-11-12T21:32:57.2423250Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.2915714Z INFO: From Compiling crypto/rand_extra/deterministic.c [for tool]:
+2026-11-12T21:32:57.2957953Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3034147Z INFO: From Compiling crypto/x509/by_file.c:
+2026-11-12T21:32:57.3267668Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3283251Z INFO: From Compiling crypto/asn1/tasn_enc.c [for tool]:
+2026-11-12T21:32:57.3284067Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3285262Z INFO: From Compiling crypto/x509/name_print.c:
+2026-11-12T21:32:57.3285861Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3286434Z INFO: From Compiling crypto/asn1/tasn_typ.c:
+2026-11-12T21:32:57.3286970Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3287637Z INFO: From Compiling crypto/rand_extra/ccrandomgeneratebytes.c [for tool]:
+2026-11-12T21:32:57.3290785Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3291513Z INFO: From Compiling crypto/poly1305/poly1305_arm.c [for tool]:
+2026-11-12T21:32:57.3292170Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3292704Z INFO: From Compiling crypto/x509/by_dir.c:
+2026-11-12T21:32:57.3293200Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3293781Z INFO: From Compiling crypto/pool/pool.c [for tool]:
+2026-11-12T21:32:57.3294477Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3295452Z INFO: From Compiling crypto/x509/asn1_gen.c:
+2026-11-12T21:32:57.3295852Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3296331Z INFO: From Compiling crypto/asn1/tasn_fre.c [for tool]:
+2026-11-12T21:32:57.3296752Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3297395Z INFO: From Running Cargo build script @@rules_rs++crate+crates__tree-sitter-powershell-0.26.4//:_bs:
+2026-11-12T21:32:57.3298139Z Build Script Warning: cl : Command line warning D9025 : overriding '/std:c11' with '/std:c17'
+2026-11-12T21:32:57.3298801Z Build Script Warning: cl : Command line warning D9025 : overriding '/std:c11' with '/std:c17'
+2026-11-12T21:32:57.3299332Z INFO: From Compiling crypto/x509/algorithm.c:
+2026-11-12T21:32:57.3299776Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3300210Z INFO: From Compiling crypto/asn1/tasn_utl.c:
+2026-11-12T21:32:57.3300646Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3301130Z INFO: From Compiling crypto/pkcs8/pkcs8_x509.c [for tool]:
+2026-11-12T21:32:57.3301610Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3302082Z INFO: From Compiling crypto/poly1305/poly1305.c [for tool]:
+2026-11-12T21:32:57.3302902Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3303373Z INFO: From Compiling crypto/pkcs8/pkcs8.c [for tool]:
+2026-11-12T21:32:57.3303843Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3304420Z INFO: From Compiling crypto/x509/a_verify.c:
+2026-11-12T21:32:57.3304824Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3305523Z INFO: From Compiling crypto/stack/stack.c [for tool]:
+2026-11-12T21:32:57.3305967Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3306432Z INFO: From Compiling crypto/asn1/tasn_new.c [for tool]:
+2026-11-12T21:32:57.3306894Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3307317Z INFO: From Compiling crypto/x509/a_sign.c:
+2026-11-12T21:32:57.3307720Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3308139Z INFO: From Compiling crypto/base64/base64.c:
+2026-11-12T21:32:57.3308563Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3309035Z INFO: From Compiling crypto/pkcs8/p5_pbev2.c [for tool]:
+2026-11-12T21:32:57.3309487Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3309938Z INFO: From Compiling crypto/pkcs7/pkcs7_x509.c [for tool]:
+2026-11-12T21:32:57.3310381Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3310810Z INFO: From Compiling crypto/refcount_c11.c [for tool]:
+2026-11-12T21:32:57.3311242Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3311715Z INFO: From Compiling crypto/pkcs7/pkcs7_asn1.c [for tool]:
+2026-11-12T21:32:57.3312302Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3312914Z INFO: From Compiling crypto/ui/ui.c:
+2026-11-12T21:32:57.3313425Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3313974Z INFO: From Compiling crypto/x509/a_digest.c:
+2026-11-12T21:32:57.3314656Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3315211Z INFO: From Compiling crypto/pkcs7/pkcs7.c [for tool]:
+2026-11-12T21:32:57.3315777Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3316342Z INFO: From Compiling crypto/asn1/tasn_typ.c [for tool]:
+2026-11-12T21:32:57.3316918Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3317447Z INFO: From Compiling crypto/bio/bio.c:
+2026-11-12T21:32:57.3317964Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3318582Z INFO: From Compiling crypto/pkcs7/bio/cipher.c [for tool]:
+2026-11-12T21:32:57.3319163Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3319751Z INFO: From Compiling crypto/pem/pem_x509.c [for tool]:
+2026-11-12T21:32:57.3320309Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3320892Z INFO: From Compiling crypto/pem/pem_pkey.c [for tool]:
+2026-11-12T21:32:57.3321438Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3321973Z INFO: From Compiling crypto/ube/vm_ube_detect.c:
+2026-11-12T21:32:57.3322511Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3323032Z INFO: From Compiling crypto/ube/ube.c:
+2026-11-12T21:32:57.3323515Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3324167Z INFO: From Compiling crypto/x509/i2d_pr.c:
+2026-11-12T21:32:57.3324663Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3325171Z INFO: From Compiling crypto/pem/pem_pk8.c [for tool]:
+2026-11-12T21:32:57.3325678Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3326476Z INFO: From Compiling crypto/bio/bio_addr.c:
+2026-11-12T21:32:57.3326965Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3327485Z INFO: From Compiling crypto/asn1/tasn_utl.c [for tool]:
+2026-11-12T21:32:57.3328024Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3328548Z INFO: From Compiling crypto/x509/t_x509a.c:
+2026-11-12T21:32:57.3329307Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3329863Z INFO: From Compiling crypto/pem/pem_oth.c [for tool]:
+2026-11-12T21:32:57.3330562Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3331221Z INFO: From Compiling crypto/poly1305/poly1305_vec.c [for tool]:
+2026-11-12T21:32:57.3331897Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3332538Z INFO: From Compiling crypto/ube/fork_ube_detect.c:
+2026-11-12T21:32:57.3333204Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3333840Z INFO: From Compiling crypto/trust_token/voprf.c:
+2026-11-12T21:32:57.3334614Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3335264Z INFO: From Compiling crypto/pem/pem_info.c [for tool]:
+2026-11-12T21:32:57.3335875Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3336562Z INFO: From Compiling crypto/pem/pem_lib.c [for tool]:
+2026-11-12T21:32:57.3337184Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3337833Z INFO: From Compiling crypto/trust_token/trust_token.c:
+2026-11-12T21:32:57.3338472Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3339130Z INFO: From Compiling crypto/bio/bio_mem.c:
+2026-11-12T21:32:57.3339711Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3340348Z INFO: From Compiling crypto/pem/pem_all.c [for tool]:
+2026-11-12T21:32:57.3347044Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3347748Z INFO: From Compiling crypto/trust_token/pmbtoken.c:
+2026-11-12T21:32:57.3348446Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3349247Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:57.3350314Z [3,465 / 4,378] Compiling Rust bin //codex-rs/execpolicy:codex-execpolicy (12 files); 3s remote-cache, local ... (30 actions, 3 running)
+2026-11-12T21:32:57.3351370Z INFO: From Running Cargo build script @@rules_rs++crate+crates__tree-sitter-bash-0.25.1//:_bs:
+2026-11-12T21:32:57.3352771Z Build Script Warning: cl : Command line warning D9025 : overriding '/std:c11' with '/std:c17'
+2026-11-12T21:32:57.3354335Z Build Script Warning: cl : Command line warning D9025 : overriding '/std:c11' with '/std:c17'
+2026-11-12T21:32:57.3355485Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T21:32:57.3380140Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3381065Z INFO: From Compiling crypto/thread_pthread.c:
+2026-11-12T21:32:57.3381639Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3382238Z INFO: From Compiling crypto/base64/base64.c [for tool]:
+2026-11-12T21:32:57.3382815Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3383380Z INFO: From Compiling crypto/thread_none.c:
+2026-11-12T21:32:57.3384598Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3385504Z INFO: From Compiling crypto/thread.c:
+2026-11-12T21:32:57.3386042Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.3928298Z INFO: From Compiling crypto/ocsp/ocsp_verify.c [for tool]:
+2026-11-12T21:32:57.4386909Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.4495942Z INFO: From Compiling crypto/stack/stack.c:
+2026-11-12T21:32:57.4758587Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.4791201Z INFO: From Compiling crypto/ocsp/ocsp_http.c [for tool]:
+2026-11-12T21:32:57.4829389Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.4871033Z INFO: From Compiling crypto/ocsp/ocsp_server.c [for tool]:
+2026-11-12T21:32:57.4877283Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.4945245Z INFO: From Compiling crypto/spake25519/spake25519.c:
+2026-11-12T21:32:57.4962383Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.4988884Z INFO: From Compiling crypto/ocsp/ocsp_lib.c [for tool]:
+2026-11-12T21:32:57.4994582Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5030804Z INFO: From Compiling crypto/ocsp/ocsp_print.c [for tool]:
+2026-11-12T21:32:57.5048730Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5057882Z INFO: From Compiling crypto/bio/connect.c:
+2026-11-12T21:32:57.5074966Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5456336Z INFO: From Compiling crypto/siphash/siphash.c:
+2026-11-12T21:32:57.5581796Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5685112Z INFO: From Compiling crypto/bio/bio.c [for tool]:
+2026-11-12T21:32:57.5843032Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5845426Z INFO: From Compiling crypto/rsa_extra/rsassa_pss_asn1.c:
+2026-11-12T21:32:57.5910979Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5912652Z INFO: From Compiling crypto/obj/obj.c [for tool]:
+2026-11-12T21:32:57.5917953Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5918598Z INFO: From Compiling crypto/ocsp/ocsp_asn.c [for tool]:
+2026-11-12T21:32:57.5919161Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5919737Z INFO: From Compiling crypto/ocsp/ocsp_extension.c [for tool]:
+2026-11-12T21:32:57.5920295Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5920833Z INFO: From Compiling crypto/rsa_extra/rsa_print.c:
+2026-11-12T21:32:57.5921372Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5921864Z INFO: From Compiling crypto/bio/dgram.c:
+2026-11-12T21:32:57.5922337Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5922913Z INFO: From Compiling crypto/ocsp/ocsp_client.c [for tool]:
+2026-11-12T21:32:57.5923473Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5924137Z INFO: From Compiling crypto/rsa_extra/rsa_crypt.c:
+2026-11-12T21:32:57.5924687Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5925220Z INFO: From Compiling crypto/rsa_extra/rsa_asn1.c:
+2026-11-12T21:32:57.5925722Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.5926261Z INFO: From Compiling crypto/obj/obj_xref.c [for tool]:
+2026-11-12T21:32:57.5926788Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.6055929Z INFO: From Compiling crypto/bio/bio_addr.c [for tool]:
+2026-11-12T21:32:57.6056664Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.6880912Z INFO: From Compiling crypto/refcount_lock.c:
+2026-11-12T21:32:57.7049372Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.7286872Z INFO: From Compiling crypto/refcount_c11.c:
+2026-11-12T21:32:57.7373939Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.7799005Z INFO: From Compiling crypto/bio/errno.c:
+2026-11-12T21:32:57.8172984Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.8610996Z INFO: From Compiling crypto/md4/md4.c [for tool]:
+2026-11-12T21:32:57.8822984Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:57.9242369Z INFO: From Compiling crypto/rc4/rc4.c:
+2026-11-12T21:32:57.9797941Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.0100136Z INFO: From Compiling crypto/hpke/hpke.c [for tool]:
+2026-11-12T21:32:58.0460629Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.0896120Z INFO: From Compiling crypto/rand_extra/windows.c:
+2026-11-12T21:32:58.1368753Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.1635005Z INFO: From Compiling crypto/lhash/lhash.c [for tool]:
+2026-11-12T21:32:58.2079661Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.2207611Z INFO: From Compiling crypto/hrss/hrss.c [for tool]:
+2026-11-12T21:32:58.2453989Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.2696024Z INFO: From Compiling crypto/rand_extra/vm_ube_fallback.c:
+2026-11-12T21:32:58.3266067Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.3845475Z INFO: From Compiling crypto/rand_extra/urandom.c:
+2026-11-12T21:32:58.4840097Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.5223245Z INFO: From Compiling crypto/bio/bio_mem.c [for tool]:
+2026-11-12T21:32:58.5679949Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.5956386Z INFO: From Compiling crypto/fipsmodule/fips_shared_support.c [for tool]:
+2026-11-12T21:32:58.6250038Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.6572749Z INFO: From Compiling crypto/bio/fd.c:
+2026-11-12T21:32:58.6577439Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.7229371Z INFO: From Compiling crypto/rand_extra/deterministic.c:
+2026-11-12T21:32:58.7650237Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.7853962Z INFO: From Compiling crypto/rand_extra/getentropy.c:
+2026-11-12T21:32:58.8060128Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8064791Z INFO: From Compiling crypto/pem/pem_xaux.c [for tool]:
+2026-11-12T21:32:58.8075934Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8076650Z INFO: From Compiling crypto/rand_extra/rand_extra.c:
+2026-11-12T21:32:58.8077266Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8077895Z INFO: From Compiling crypto/fipsmodule/bcm.c [for tool]:
+2026-11-12T21:32:58.8078571Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8079820Z INFO: From Compiling crypto/rand_extra/ccrandomgeneratebytes.c:
+2026-11-12T21:32:58.8080507Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8169331Z INFO: From Compiling crypto/pool/pool.c:
+2026-11-12T21:32:58.8255662Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8274194Z INFO: From Compiling crypto/bio/connect.c [for tool]:
+2026-11-12T21:32:58.8274970Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8275599Z INFO: From Compiling crypto/ex_data.c [for tool]:
+2026-11-12T21:32:58.8276267Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8276884Z INFO: From Compiling crypto/poly1305/poly1305_arm.c:
+2026-11-12T21:32:58.8277439Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8277976Z INFO: From Compiling crypto/bio/file.c:
+2026-11-12T21:32:58.8279315Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8279991Z INFO: From Compiling crypto/poly1305/poly1305_vec.c:
+2026-11-12T21:32:58.8280707Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8281335Z INFO: From Compiling crypto/evp_extra/sign.c [for tool]:
+2026-11-12T21:32:58.8281937Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8282728Z INFO: From Compiling crypto/poly1305/poly1305.c:
+2026-11-12T21:32:58.8283290Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8283904Z INFO: From Compiling crypto/evp_extra/scrypt.c [for tool]:
+2026-11-12T21:32:58.8284514Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8285060Z INFO: From Compiling crypto/pkcs8/pkcs8.c:
+2026-11-12T21:32:58.8285672Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8286219Z INFO: From Compiling crypto/bio/dgram.c [for tool]:
+2026-11-12T21:32:58.8286803Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8287372Z INFO: From Compiling crypto/bio/hexdump.c:
+2026-11-12T21:32:58.8287889Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8288464Z INFO: From Compiling crypto/evp_extra/print.c [for tool]:
+2026-11-12T21:32:58.8289429Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8291682Z INFO: From Compiling crypto/pkcs8/p5_pbev2.c:
+2026-11-12T21:32:58.8292342Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8292929Z INFO: From Compiling crypto/pkcs7/pkcs7_x509.c:
+2026-11-12T21:32:58.8293531Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8294160Z INFO: From Compiling crypto/pkcs7/pkcs7_asn1.c:
+2026-11-12T21:32:58.8294735Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8295393Z INFO: From Compiling crypto/evp_extra/p_x25519_asn1.c [for tool]:
+2026-11-12T21:32:58.8296021Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8296761Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:58.8297781Z [3,596 / 4,378] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 3s remote-cache, local ... (30 actions, 2 running)
+2026-11-12T21:32:58.8299175Z INFO: From Compiling crypto/evp_extra/p_x25519.c [for tool]:
+2026-11-12T21:32:58.8299836Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8300427Z INFO: From Compiling crypto/pkcs7/pkcs7.c:
+2026-11-12T21:32:58.8300996Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8301535Z INFO: From Compiling crypto/bio/md.c:
+2026-11-12T21:32:58.8302037Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8302678Z INFO: From Compiling crypto/bio/errno.c [for tool]:
+2026-11-12T21:32:58.8303238Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8303727Z INFO: From Compiling crypto/pkcs7/bio/cipher.c:
+2026-11-12T21:32:58.8304264Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8304861Z INFO: From Compiling crypto/evp_extra/p_rsa_asn1.c [for tool]:
+2026-11-12T21:32:58.8305436Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8305975Z INFO: From Compiling crypto/pem/pem_xaux.c:
+2026-11-12T21:32:58.8306499Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8307038Z INFO: From Compiling crypto/pem/pem_x509.c:
+2026-11-12T21:32:58.8307543Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8308370Z INFO: From Compiling crypto/evp_extra/p_pqdsa_asn1.c [for tool]:
+2026-11-12T21:32:58.8309487Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8310046Z INFO: From Compiling crypto/bio/pair.c:
+2026-11-12T21:32:58.8310521Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8311109Z INFO: From Compiling crypto/evp_extra/p_methods.c [for tool]:
+2026-11-12T21:32:58.8312035Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8312568Z INFO: From Compiling crypto/pem/pem_pk8.c:
+2026-11-12T21:32:58.8313090Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8313637Z INFO: From Compiling crypto/bio/fd.c [for tool]:
+2026-11-12T21:32:58.8314186Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8314739Z INFO: From Compiling crypto/pem/pem_oth.c:
+2026-11-12T21:32:58.8315255Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8315868Z INFO: From Compiling crypto/evp_extra/p_kem_asn1.c [for tool]:
+2026-11-12T21:32:58.8316488Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8317020Z INFO: From Compiling crypto/pem/pem_lib.c:
+2026-11-12T21:32:58.8317503Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8325376Z INFO: From Compiling crypto/evp_extra/p_hmac_asn1.c [for tool]:
+2026-11-12T21:32:58.8326176Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8326817Z INFO: From Compiling crypto/evp_extra/p_ec_asn1.c [for tool]:
+2026-11-12T21:32:58.8327427Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8327984Z INFO: From Compiling crypto/bio/file.c [for tool]:
+2026-11-12T21:32:58.8328583Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8329624Z INFO: From Compiling crypto/bio/printf.c:
+2026-11-12T21:32:58.8330178Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8330747Z INFO: From Compiling crypto/ocsp/ocsp_verify.c:
+2026-11-12T21:32:58.8331287Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8331839Z INFO: From Compiling crypto/pem/pem_all.c:
+2026-11-12T21:32:58.8332360Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8332892Z INFO: From Compiling crypto/pem/pem_info.c:
+2026-11-12T21:32:58.8335077Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8339123Z INFO: From Compiling crypto/evp_extra/p_dsa_asn1.c [for tool]:
+2026-11-12T21:32:58.8339839Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8340509Z INFO: From Compiling crypto/evp_extra/p_ed25519_asn1.c [for tool]:
+2026-11-12T21:32:58.8341139Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8341714Z INFO: From Compiling crypto/mem.c [for tool]:
+2026-11-12T21:32:58.8403550Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8404676Z INFO: From Compiling crypto/evp_extra/p_dsa.c [for tool]:
+2026-11-12T21:32:58.8405424Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8406007Z INFO: From Compiling crypto/bio/hexdump.c [for tool]:
+2026-11-12T21:32:58.8406620Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8407147Z INFO: From Compiling crypto/refcount_win.c:
+2026-11-12T21:32:58.8407670Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.8783285Z INFO: From Compiling crypto/bio/socket.c:
+2026-11-12T21:32:58.8784055Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9178717Z INFO: From Compiling crypto/ocsp/ocsp_print.c:
+2026-11-12T21:32:58.9182083Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9182842Z INFO: From Compiling crypto/ocsp/ocsp_server.c:
+2026-11-12T21:32:58.9183397Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9183950Z INFO: From Compiling crypto/ocsp/ocsp_lib.c:
+2026-11-12T21:32:58.9184478Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9488185Z INFO: From Compiling crypto/evp_extra/p_dh_asn1.c [for tool]:
+2026-11-12T21:32:58.9500659Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9791170Z INFO: From Compiling crypto/evp_extra/p_dh.c [for tool]:
+2026-11-12T21:32:58.9800874Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9803731Z INFO: From Compiling crypto/evp_extra/evp_asn1.c [for tool]:
+2026-11-12T21:32:58.9804447Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9805080Z INFO: From Compiling crypto/err/err.c [for tool]:
+2026-11-12T21:32:58.9805639Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:58.9890385Z INFO: From Compiling crypto/bio/md.c [for tool]:
+2026-11-12T21:32:58.9891135Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.0155952Z INFO: From Compiling crypto/ocsp/ocsp_http.c:
+2026-11-12T21:32:59.0197675Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.0677288Z INFO: From Compiling crypto/engine/engine.c [for tool]:
+2026-11-12T21:32:59.0696425Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.0914848Z INFO: From Compiling crypto/bio/socket_helper.c:
+2026-11-12T21:32:59.1006532Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.1046243Z INFO: From Compiling crypto/ocsp/ocsp_extension.c:
+2026-11-12T21:32:59.1319290Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.1437623Z INFO: From Compiling crypto/ocsp/ocsp_asn.c:
+2026-11-12T21:32:59.1624827Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.1859823Z INFO: From Compiling crypto/ocsp/ocsp_client.c:
+2026-11-12T21:32:59.1926181Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2084243Z INFO: From Compiling crypto/obj/obj_xref.c:
+2026-11-12T21:32:59.2215938Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2227702Z INFO: From Compiling crypto/obj/obj.c:
+2026-11-12T21:32:59.2421404Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2680224Z INFO: From Compiling crypto/ecdh_extra/ecdh_extra.c [for tool]:
+2026-11-12T21:32:59.2787947Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2796433Z INFO: From Compiling crypto/ec_extra/hash_to_curve.c [for tool]:
+2026-11-12T21:32:59.2802844Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2803657Z INFO: From Compiling crypto/bio/pair.c [for tool]:
+2026-11-12T21:32:59.2805156Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2805854Z INFO: From Compiling crypto/md4/md4.c:
+2026-11-12T21:32:59.2806601Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2808031Z INFO: From Compiling crypto/ec_extra/ec_derive.c [for tool]:
+2026-11-12T21:32:59.2808745Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2809405Z INFO: From Compiling crypto/blake2/blake2.c:
+2026-11-12T21:32:59.2810453Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2811060Z INFO: From Compiling crypto/mem.c:
+2026-11-12T21:32:59.2811619Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2818933Z INFO: From Compiling crypto/lhash/lhash.c:
+2026-11-12T21:32:59.2819745Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2820583Z Analyzing: 1047 targets (1438 packages loaded, 79283 targets configured, 542 aspect applications)
+2026-11-12T21:32:59.2831923Z [3,713 / 4,378] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 4s remote-cache, local ... (29 actions, 2 running)
+2026-11-12T21:32:59.2833978Z INFO: From Compiling crypto/pkcs8/pkcs8_x509.c:
+2026-11-12T21:32:59.2834692Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2836107Z INFO: From Compiling crypto/ec_extra/ec_asn1.c [for tool]:
+2026-11-12T21:32:59.2836850Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.2837464Z INFO: From Compiling crypto/hpke/hpke.c:
+2026-11-12T21:32:59.2838050Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.3067597Z INFO: From Compiling crypto/dsa/dsa.c [for tool]:
+2026-11-12T21:32:59.3260210Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.3507318Z INFO: From Compiling crypto/hrss/hrss.c:
+2026-11-12T21:32:59.3522049Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.3656823Z INFO: From Compiling crypto/dsa/dsa_asn1.c [for tool]:
+2026-11-12T21:32:59.3752832Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.5272689Z INFO: From Compiling crypto/fipsmodule/fips_shared_support.c:
+2026-11-12T21:32:59.5558248Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.5919691Z INFO: From Compiling crypto/bio/printf.c [for tool]:
+2026-11-12T21:32:59.6023958Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.6377333Z INFO: From Compiling crypto/digest_extra/digest_extra.c [for tool]:
+2026-11-12T21:32:59.6847772Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:32:59.7802646Z INFO: From Compiling crypto/bn_extra/bn_asn1.c:
+2026-11-12T21:32:59.9023650Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.0275303Z INFO: From Compiling crypto/dh_extra/params.c [for tool]:
+2026-11-12T21:33:00.0999994Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.1860453Z INFO: From Compiling crypto/fipsmodule/cpucap/cpucap.c:
+2026-11-12T21:33:00.2645019Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.3409766Z INFO: From Compiling crypto/ex_data.c:
+2026-11-12T21:33:00.4330713Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.5356128Z INFO: From Compiling crypto/dh_extra/dh_asn1.c [for tool]:
+2026-11-12T21:33:00.5953720Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.6057337Z INFO: From Compiling crypto/des/des.c [for tool]:
+2026-11-12T21:33:00.6059782Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.6064482Z INFO: From Compiling crypto/bio/socket.c [for tool]:
+2026-11-12T21:33:00.6662467Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.6666414Z INFO: From Compiling crypto/evp_extra/sign.c:
+2026-11-12T21:33:00.6670283Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.6673582Z INFO: From Compiling crypto/evp_extra/scrypt.c:
+2026-11-12T21:33:00.6674339Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.6674972Z INFO: From Compiling crypto/decrepit/x509/x509_decrepit.c [for tool]:
+2026-11-12T21:33:00.7877793Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:00.9060490Z INFO: From Compiling crypto/bn_extra/convert.c:
+2026-11-12T21:33:01.2473778Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.5329642Z INFO: From Compiling crypto/fipsmodule/bcm.c:
+2026-11-12T21:33:01.6942173Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.8302323Z INFO: From Compiling crypto/decrepit/rsa/rsa_decrepit.c [for tool]:
+2026-11-12T21:33:01.9297346Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9307193Z INFO: From Compiling crypto/decrepit/obj/obj_decrepit.c [for tool]:
+2026-11-12T21:33:01.9307976Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9416087Z INFO: From Compiling crypto/buf/buf.c:
+2026-11-12T21:33:01.9416710Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9417318Z INFO: From Compiling crypto/evp_extra/p_x25519.c:
+2026-11-12T21:33:01.9417893Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9418543Z INFO: From Compiling crypto/bio/socket_helper.c [for tool]:
+2026-11-12T21:33:01.9419133Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9419736Z INFO: From Compiling crypto/decrepit/dh/dh_decrepit.c [for tool]:
+2026-11-12T21:33:01.9420348Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9420901Z INFO: From Compiling crypto/evp_extra/p_rsa_asn1.c:
+2026-11-12T21:33:01.9421443Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9422209Z INFO: From Compiling crypto/evp_extra/p_x25519_asn1.c:
+2026-11-12T21:33:01.9422771Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9423385Z INFO: From Compiling crypto/decrepit/ripemd/ripemd.c [for tool]:
+2026-11-12T21:33:01.9424027Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9428666Z INFO: From Compiling crypto/decrepit/evp/evp_do_all.c [for tool]:
+2026-11-12T21:33:01.9429439Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9430114Z INFO: From Compiling crypto/evp_extra/p_pqdsa_asn1.c:
+2026-11-12T21:33:01.9430780Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9431537Z INFO: From Compiling crypto/decrepit/cast/cast_tables.c [for tool]:
+2026-11-12T21:33:01.9432176Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9432800Z INFO: From Compiling crypto/decrepit/cfb/cfb.c [for tool]:
+2026-11-12T21:33:01.9433429Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9434318Z INFO: From Compiling crypto/decrepit/cast/cast.c [for tool]:
+2026-11-12T21:33:01.9435018Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9435684Z INFO: From Compiling crypto/bytestring/asn1_compat.c:
+2026-11-12T21:33:01.9436329Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9437033Z INFO: From Compiling crypto/evp_extra/p_methods.c:
+2026-11-12T21:33:01.9438405Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:01.9439201Z INFO: From Compiling crypto/blake2/blake2.c [for tool]:
+2026-11-12T21:33:01.9439894Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.1049611Z INFO: From Compiling crypto/evp_extra/p_hmac_asn1.c:
+2026-11-12T21:33:02.2810256Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.3709462Z INFO: From Compiling crypto/evp_extra/p_kem_asn1.c:
+2026-11-12T21:33:02.4426454Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.5530187Z INFO: From Compiling crypto/evp_extra/p_ed25519_asn1.c:
+2026-11-12T21:33:02.6100254Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.6450653Z INFO: From Compiling crypto/decrepit/blowfish/blowfish.c [for tool]:
+2026-11-12T21:33:02.7030644Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.7031897Z INFO: From Compiling crypto/decrepit/bio/base64_bio.c [for tool]:
+2026-11-12T21:33:02.7400345Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.8165603Z INFO: From Compiling crypto/crypto.c [for tool]:
+2026-11-12T21:33:02.9033301Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:02.9940034Z INFO: From Compiling crypto/evp_extra/p_ec_asn1.c:
+2026-11-12T21:33:03.0933909Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.0934568Z INFO: From Compiling crypto/console/console.c [for tool]:
+2026-11-12T21:33:03.1370862Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.1606782Z INFO: From Compiling crypto/conf/conf.c [for tool]:
+2026-11-12T21:33:03.1608899Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.1609755Z INFO: From Compiling crypto/evp_extra/p_dsa.c:
+2026-11-12T21:33:03.1644514Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.2096060Z INFO: From Compiling crypto/evp_extra/p_dh_asn1.c:
+2026-11-12T21:33:03.2096846Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.2097395Z INFO: From Compiling crypto/cipher_extra/e_tls.c [for tool]:
+2026-11-12T21:33:03.2097858Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.2098352Z INFO: From Compiling crypto/bn_extra/bn_asn1.c [for tool]:
+2026-11-12T21:33:03.2105079Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.2108168Z INFO: From Compiling crypto/evp_extra/p_dh.c:
+2026-11-12T21:33:03.2108755Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.2109626Z Analyzing: 1047 targets (1439 packages loaded, 79389 targets configured, 544 aspect applications)
+2026-11-12T21:33:03.4830685Z [3,866 / 4,604] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 5s remote-cache, local ... (29 actions, 2 running)
+2026-11-12T21:33:03.5385617Z INFO: From Compiling crypto/cipher_extra/e_rc2.c [for tool]:
+2026-11-12T21:33:03.5810770Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.6523247Z INFO: From Compiling crypto/bytestring/ber.c:
+2026-11-12T21:33:03.6793360Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.7213244Z INFO: From Compiling crypto/cipher_extra/tls_cbc.c [for tool]:
+2026-11-12T21:33:03.7527143Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.7982245Z INFO: From Compiling crypto/evp_extra/evp_asn1.c:
+2026-11-12T21:33:03.8793721Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:03.9164602Z INFO: From Compiling crypto/cipher_extra/e_null.c [for tool]:
+2026-11-12T21:33:03.9475132Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.0114032Z INFO: From Compiling crypto/cipher_extra/e_rc4.c [for tool]:
+2026-11-12T21:33:04.0456659Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.0934316Z INFO: From Compiling crypto/bn_extra/convert.c [for tool]:
+2026-11-12T21:33:04.1372939Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.1830125Z INFO: From Compiling crypto/evp_extra/print.c:
+2026-11-12T21:33:04.2690166Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.5672519Z INFO: From Compiling crypto/err/err.c:
+2026-11-12T21:33:04.6146564Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.6703524Z INFO: From Compiling crypto/engine/engine.c:
+2026-11-12T21:33:04.7105238Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7105868Z INFO: From Compiling crypto/bytestring/cbb.c:
+2026-11-12T21:33:04.7131710Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7133170Z INFO: From Compiling crypto/cipher_extra/e_des.c [for tool]:
+2026-11-12T21:33:04.7133767Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7134734Z INFO: From Compiling crypto/cipher_extra/e_chacha20poly1305.c [for tool]:
+2026-11-12T21:33:04.7135874Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7136442Z INFO: From Compiling crypto/cipher_extra/e_aesctrhmac.c [for tool]:
+2026-11-12T21:33:04.7136958Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7137385Z INFO: From Compiling crypto/buf/buf.c [for tool]:
+2026-11-12T21:33:04.7137782Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7138504Z INFO: From Compiling crypto/ecdsa_extra/ecdsa_asn1.c:
+2026-11-12T21:33:04.7138914Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7140683Z INFO: From Compiling crypto/cipher_extra/e_aesgcmsiv.c [for tool]:
+2026-11-12T21:33:04.7141155Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7767257Z INFO: From Compiling crypto/ecdh_extra/ecdh_extra.c:
+2026-11-12T21:33:04.7769718Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7776929Z INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha256.c [for tool]:
+2026-11-12T21:33:04.7777670Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.7778210Z INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha1.c [for tool]:
+2026-11-12T21:33:04.8182515Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8188728Z INFO: From Compiling crypto/cipher_extra/derive_key.c [for tool]:
+2026-11-12T21:33:04.8189285Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8189770Z INFO: From Compiling crypto/ec_extra/ec_derive.c:
+2026-11-12T21:33:04.8190238Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8190722Z INFO: From Compiling crypto/ec_extra/hash_to_curve.c:
+2026-11-12T21:33:04.8191229Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8191690Z INFO: From Compiling crypto/bytestring/cbs.c:
+2026-11-12T21:33:04.8192084Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8192706Z INFO: From Compiling crypto/ec_extra/ec_asn1.c:
+2026-11-12T21:33:04.8193138Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8193530Z INFO: From Compiling crypto/dsa/dsa_asn1.c:
+2026-11-12T21:33:04.8193934Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8194401Z INFO: From Compiling crypto/chacha/chacha.c [for tool]:
+2026-11-12T21:33:04.8194863Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8195568Z INFO: From Compiling crypto/bytestring/cbs.c [for tool]:
+2026-11-12T21:33:04.8196039Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8196585Z INFO: From Compiling crypto/fipsmodule/cpucap/cpucap.c [for tool]:
+2026-11-12T21:33:04.8197126Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8197622Z INFO: From Compiling crypto/digest_extra/digest_extra.c:
+2026-11-12T21:33:04.8198082Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8198524Z INFO: From Compiling crypto/dsa/dsa.c:
+2026-11-12T21:33:04.8198938Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8199406Z INFO: From Compiling crypto/bytestring/unicode.c:
+2026-11-12T21:33:04.8201877Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8202443Z INFO: From Compiling crypto/bytestring/unicode.c [for tool]:
+2026-11-12T21:33:04.8204255Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:04.8602050Z INFO: From Compiling crypto/dh_extra/params.c:
+2026-11-12T21:33:04.9980253Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.0628501Z INFO: From Compiling crypto/evp_extra/p_dsa_asn1.c:
+2026-11-12T21:33:05.1338839Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.1806960Z INFO: From Compiling crypto/pem/pem_pkey.c:
+2026-11-12T21:33:05.2515013Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.3033989Z INFO: From Compiling crypto/bytestring/asn1_compat.c [for tool]:
+2026-11-12T21:33:05.3367095Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.3712591Z INFO: From Compiling crypto/des/des.c:
+2026-11-12T21:33:05.4052865Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.4621584Z INFO: From Compiling crypto/chacha/chacha.c:
+2026-11-12T21:33:05.6518535Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:05.8932676Z INFO: From Compiling crypto/decrepit/rsa/rsa_decrepit.c:
+2026-11-12T21:33:06.0549442Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:06.2932893Z INFO: From Compiling crypto/dh_extra/dh_asn1.c:
+2026-11-12T21:33:06.5854591Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:06.7402939Z INFO: From Compiling crypto/bytestring/cbb.c [for tool]:
+2026-11-12T21:33:06.8170934Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:06.8754276Z INFO: From Compiling crypto/decrepit/x509/x509_decrepit.c:
+2026-11-12T21:33:06.9116581Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:06.9766520Z INFO: From Compiling crypto/bytestring/ber.c [for tool]:
+2026-11-12T21:33:07.0144495Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:07.7414796Z INFO: From Compiling crypto/decrepit/obj/obj_decrepit.c:
+2026-11-12T21:33:08.0323197Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.2305740Z INFO: From Compiling crypto/decrepit/ripemd/ripemd.c:
+2026-11-12T21:33:08.3028641Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.3034302Z INFO: From Compiling crypto/decrepit/evp/evp_do_all.c:
+2026-11-12T21:33:08.4689899Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.5388615Z INFO: From Compiling crypto/decrepit/cast/cast_tables.c:
+2026-11-12T21:33:08.5454856Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.5672671Z Analyzing: 1047 targets (1439 packages loaded, 79447 targets configured, 544 aspect applications)
+2026-11-12T21:33:08.5785342Z [3,980 / 4,691] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 6s remote-cache, local ... (24 actions, 2 running)
+2026-11-12T21:33:08.5950639Z INFO: From Compiling crypto/decrepit/cast/cast.c:
+2026-11-12T21:33:08.5964736Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.5991077Z INFO: From Compiling crypto/decrepit/cfb/cfb.c:
+2026-11-12T21:33:08.7284216Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:08.9460212Z INFO: From Compiling crypto/decrepit/bio/base64_bio.c:
+2026-11-12T21:33:09.1070537Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.2469465Z INFO: From Compiling crypto/decrepit/blowfish/blowfish.c:
+2026-11-12T21:33:09.2756516Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.2916165Z INFO: From Compiling crypto/crypto.c:
+2026-11-12T21:33:09.3396485Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.3700849Z INFO: From Compiling crypto/decrepit/dh/dh_decrepit.c:
+2026-11-12T21:33:09.3777982Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.3986275Z INFO: From Compiling crypto/console/console.c:
+2026-11-12T21:33:09.4054554Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.4416757Z INFO: From Compiling crypto/conf/conf.c:
+2026-11-12T21:33:09.4954283Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.5654164Z INFO: From Compiling crypto/cipher_extra/e_tls.c:
+2026-11-12T21:33:09.6224224Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.6814389Z INFO: From Compiling crypto/cipher_extra/tls_cbc.c:
+2026-11-12T21:33:09.8080773Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.8962897Z INFO: From Compiling crypto/cipher_extra/e_null.c:
+2026-11-12T21:33:09.9590453Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:09.9920328Z INFO: From Compiling crypto/cipher_extra/e_rc2.c:
+2026-11-12T21:33:10.0520406Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:10.0907554Z INFO: From Compiling crypto/cipher_extra/e_rc4.c:
+2026-11-12T21:33:10.1543203Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:10.3674592Z INFO: From Compiling crypto/cipher_extra/e_des.c:
+2026-11-12T21:33:11.0903619Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:11.2218812Z INFO: From Compiling crypto/cipher_extra/e_chacha20poly1305.c:
+2026-11-12T21:33:11.3405178Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:11.5042111Z INFO: From Compiling crypto/cipher_extra/e_aesgcmsiv.c:
+2026-11-12T21:33:11.6191987Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:11.6261389Z INFO: From Compiling crypto/cipher_extra/e_aesctrhmac.c:
+2026-11-12T21:33:11.7213229Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:11.8219438Z INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha256.c:
+2026-11-12T21:33:12.0055519Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.1267543Z INFO: From Compiling crypto/cipher_extra/derive_key.c:
+2026-11-12T21:33:12.4400269Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.5009741Z INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha1.c:
+2026-11-12T21:33:12.6212293Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.7277698Z Analyzing: 1047 targets (1439 packages loaded, 79478 targets configured, 544 aspect applications)
+2026-11-12T21:33:12.7487486Z [4,080 / 4,752] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 7s remote-cache, local ... (17 actions, 2 running)
+2026-11-12T21:33:12.7548372Z Analyzing: 1047 targets (1439 packages loaded, 79517 targets configured, 544 aspect applications)
+2026-11-12T21:33:12.7677961Z [4,220 / 4,915] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 8s remote-cache, local ... (25 actions, 2 running)
+2026-11-12T21:33:12.7815800Z INFO: From Compiling crypto/cipher_extra/cipher_extra.c:
+2026-11-12T21:33:12.7828645Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.7894434Z INFO: From Compiling crypto/cipher_extra/cipher_extra.c [for tool]:
+2026-11-12T21:33:12.7936027Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.8001370Z INFO: From Compiling crypto/ecdsa_extra/ecdsa_asn1.c [for tool]:
+2026-11-12T21:33:12.8034069Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:12.8167345Z Analyzing: 1047 targets (1439 packages loaded, 79582 targets configured, 544 aspect applications)
+2026-11-12T21:33:12.8247825Z [4,418 / 5,200] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 9s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:12.8266941Z Analyzing: 1047 targets (1439 packages loaded, 79614 targets configured, 544 aspect applications)
+2026-11-12T21:33:12.8489613Z [4,489 / 5,264] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 11s remote-cache, local ... (30 actions, 3 running)
+2026-11-12T21:33:12.9101338Z Analyzing: 1047 targets (1439 packages loaded, 79639 targets configured, 544 aspect applications)
+2026-11-12T21:33:12.9764361Z [4,609 / 5,385] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 12s remote-cache, local ... (29 actions, 6 running)
+2026-11-12T21:33:13.0275067Z Analyzing: 1047 targets (1439 packages loaded, 79659 targets configured, 544 aspect applications)
+2026-11-12T21:33:13.0532009Z [4,668 / 5,413] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 13s remote-cache, local ... (28 actions, 5 running)
+2026-11-12T21:33:13.0841436Z INFO: From Compiling Rust bin //codex-rs/hepta-native-gateway:hepta-native-gateway-unit-tests-bin (10 files):
+2026-11-12T21:33:13.1263031Z warning: unused import: `std::path::Path`
+2026-11-12T21:33:13.1441815Z  --> hepta-native-gateway/src\ui_bundle_tests.rs:3:5
+2026-11-12T21:33:13.1696511Z   |
+2026-11-12T21:33:13.2180333Z 3 | use std::path::Path;
+2026-11-12T21:33:13.2687308Z   |     ^^^^^^^^^^^^^^^
+2026-11-12T21:33:13.3240585Z   |
+2026-11-12T21:33:13.3832905Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:13.4967059Z 
+2026-11-12T21:33:13.5317593Z warning: static `NEXT` is never used
+2026-11-12T21:33:13.5937654Z  --> hepta-native-gateway/src\ui_bundle_tests.rs:7:8
+2026-11-12T21:33:13.6597359Z   |
+2026-11-12T21:33:13.7227398Z 7 | static NEXT: AtomicU64 = AtomicU64::new(0);
+2026-11-12T21:33:13.7753030Z   |        ^^^^
+2026-11-12T21:33:13.8542717Z   |
+2026-11-12T21:33:13.9540972Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:14.0420848Z 
+2026-11-12T21:33:14.1895396Z warning: struct `Fixture` is never constructed
+2026-11-12T21:33:14.3035605Z  --> hepta-native-gateway/src\ui_bundle_tests.rs:9:8
+2026-11-12T21:33:14.3705334Z   |
+2026-11-12T21:33:14.4169261Z 9 | struct Fixture(PathBuf);
+2026-11-12T21:33:14.4958672Z   |        ^^^^^^^
+2026-11-12T21:33:14.7376211Z 
+2026-11-12T21:33:14.9271046Z warning: associated items `new`, `bundle`, and `manifest` are never used
+2026-11-12T21:33:14.9948359Z   --> hepta-native-gateway/src\ui_bundle_tests.rs:11:8
+2026-11-12T21:33:15.0490819Z    |
+2026-11-12T21:33:15.0747890Z 10 | impl Fixture {
+2026-11-12T21:33:15.0882953Z    | ------------ associated items in this implementation
+2026-11-12T21:33:15.1026265Z 11 |     fn new() -> Result<Self> {
+2026-11-12T21:33:15.1086357Z    |        ^^^
+2026-11-12T21:33:15.1421416Z ...
+2026-11-12T21:33:15.1531006Z 28 |     fn bundle(&self) -> Result<UiBundleOptions> {
+2026-11-12T21:33:15.1604273Z    |        ^^^^^^
+2026-11-12T21:33:15.1683092Z ...
+2026-11-12T21:33:15.1769437Z 49 |     fn manifest(&self, value: &serde_json::Value) -> Result<UiBundleOptions> {
+2026-11-12T21:33:15.1839418Z    |        ^^^^^^^^
+2026-11-12T21:33:15.1905704Z 
+2026-11-12T21:33:15.1984280Z warning: 4 warnings emitted
+2026-11-12T21:33:15.2100154Z 
+2026-11-12T21:33:15.2105478Z INFO: From Compiling Rust bin //codex-rs/hepta-operations:hepta-operations-unit-tests-bin (20 files):
+2026-11-12T21:33:15.2108113Z warning: unused import: `std::collections::BTreeSet`
+2026-11-12T21:33:15.2111573Z  --> hepta-operations/src\durable_store_tests.rs:3:5
+2026-11-12T21:33:15.2163720Z   |
+2026-11-12T21:33:15.2170581Z 3 | use std::collections::BTreeSet;
+2026-11-12T21:33:15.2201294Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.2240793Z   |
+2026-11-12T21:33:15.2278064Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.2289316Z 
+2026-11-12T21:33:15.2327148Z warning: unused import: `crate::DispatchEffect`
+2026-11-12T21:33:15.2687529Z  --> hepta-operations/src\durable_store_tests.rs:6:5
+2026-11-12T21:33:15.2873734Z   |
+2026-11-12T21:33:15.2942295Z 6 | use crate::DispatchEffect;
+2026-11-12T21:33:15.3033950Z   |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.3062317Z 
+2026-11-12T21:33:15.3143169Z warning: unused import: `codex_hepta_contracts::FinalUseGrant`
+2026-11-12T21:33:15.3145841Z  --> hepta-operations/src\durable_store_tests.rs:7:5
+2026-11-12T21:33:15.3160978Z   |
+2026-11-12T21:33:15.3365266Z 7 | use codex_hepta_contracts::FinalUseGrant;
+2026-11-12T21:33:15.3432783Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.3474055Z 
+2026-11-12T21:33:15.3479065Z warning: unused import: `codex_hepta_contracts::FinalUseRevocations`
+2026-11-12T21:33:15.3483309Z  --> hepta-operations/src\durable_store_tests.rs:8:5
+2026-11-12T21:33:15.3485768Z   |
+2026-11-12T21:33:15.3488829Z 8 | use codex_hepta_contracts::FinalUseRevocations;
+2026-11-12T21:33:15.3524189Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.3555839Z 
+2026-11-12T21:33:15.3580989Z warning: unused import: `codex_hepta_contracts::SignedFinalUseGrant`
+2026-11-12T21:33:15.3596252Z  --> hepta-operations/src\durable_store_tests.rs:9:5
+2026-11-12T21:33:15.3597445Z   |
+2026-11-12T21:33:15.3601164Z 9 | use codex_hepta_contracts::SignedFinalUseGrant;
+2026-11-12T21:33:15.3690677Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.3696274Z 
+2026-11-12T21:33:15.3722497Z warning: unused import: `crate::DispatchEffect`
+2026-11-12T21:33:15.3741048Z  --> hepta-operations/src\fault_tests.rs:5:5
+2026-11-12T21:33:15.3754461Z   |
+2026-11-12T21:33:15.3772678Z 5 | use crate::DispatchEffect;
+2026-11-12T21:33:15.3968471Z   |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4102559Z 
+2026-11-12T21:33:15.4290018Z warning: unused import: `crate::DurableOperationState`
+2026-11-12T21:33:15.4323770Z  --> hepta-operations/src\fault_tests.rs:8:5
+2026-11-12T21:33:15.4324138Z   |
+2026-11-12T21:33:15.4324391Z 8 | use crate::DurableOperationState;
+2026-11-12T21:33:15.4324704Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4324942Z 
+2026-11-12T21:33:15.4325100Z warning: unused import: `crate::DurableOutboxState`
+2026-11-12T21:33:15.4325518Z   --> hepta-operations/src\fault_tests.rs:10:5
+2026-11-12T21:33:15.4325841Z    |
+2026-11-12T21:33:15.4326067Z 10 | use crate::DurableOutboxState;
+2026-11-12T21:33:15.4326361Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4326549Z 
+2026-11-12T21:33:15.4326647Z warning: 8 warnings emitted
+2026-11-12T21:33:15.4326830Z 
+2026-11-12T21:33:15.4327161Z Analyzing: 1047 targets (1439 packages loaded, 79668 targets configured, 544 aspect applications)
+2026-11-12T21:33:15.4328157Z [4,759 / 5,476] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 14s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:15.4329044Z INFO: From Compiling Rust rlib //codex-rs/hepta-supervisor:hepta-supervisor (44 files):
+2026-11-12T21:33:15.4329569Z warning: unused variable: `metadata`
+2026-11-12T21:33:15.4330564Z    --> codex-rs/hepta-supervisor/src\restart_journal.rs:225:34
+2026-11-12T21:33:15.4330963Z     |
+2026-11-12T21:33:15.4339810Z 225 | fn open_record_file(path: &Path, metadata: &std::fs::Metadata) -> Result<File, SupervisorError> {
+2026-11-12T21:33:15.4340648Z     |                                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_metadata`
+2026-11-12T21:33:15.4341139Z     |
+2026-11-12T21:33:15.4341479Z     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4342003Z 
+2026-11-12T21:33:15.4342150Z warning: function `restart_available` is never used
+2026-11-12T21:33:15.4342894Z    --> codex-rs/hepta-supervisor/src\restart_budget.rs:114:8
+2026-11-12T21:33:15.4343282Z     |
+2026-11-12T21:33:15.4343499Z 114 | pub fn restart_available(
+2026-11-12T21:33:15.4343780Z     |        ^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4344024Z     |
+2026-11-12T21:33:15.4344324Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4356876Z 
+2026-11-12T21:33:15.4643219Z warning: methods `next_control_revision` and `set_control_revision` are never used
+2026-11-12T21:33:15.4692820Z    --> codex-rs/hepta-supervisor/src\supervisor.rs:221:19
+2026-11-12T21:33:15.4706098Z     |
+2026-11-12T21:33:15.4713006Z  58 | impl<D: ProcessDriver> Supervisor<D> {
+2026-11-12T21:33:15.4731737Z     | ------------------------------------ methods in this implementation
+2026-11-12T21:33:15.4738868Z ...
+2026-11-12T21:33:15.4780918Z 221 |     pub(crate) fn next_control_revision(&self, agent_id: &AgentId) -> Result<u64, SupervisorError> {
+2026-11-12T21:33:15.4814867Z     |                   ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4838919Z ...
+2026-11-12T21:33:15.4892737Z 230 |     pub(crate) fn set_control_revision(
+2026-11-12T21:33:15.4893953Z     |                   ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4894511Z 
+2026-11-12T21:33:15.4894742Z warning: 3 warnings emitted
+2026-11-12T21:33:15.4894913Z 
+2026-11-12T21:33:15.4895236Z INFO: Analyzed 1047 targets (1439 packages loaded, 79670 targets configured, 544 aspect applications).
+2026-11-12T21:33:15.4896790Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin (44 files):
+2026-11-12T21:33:15.4897403Z warning: unused variable: `metadata`
+2026-11-12T21:33:15.4897788Z    --> hepta-supervisor/src\restart_journal.rs:225:34
+2026-11-12T21:33:15.4898135Z     |
+2026-11-12T21:33:15.4898604Z 225 | fn open_record_file(path: &Path, metadata: &std::fs::Metadata) -> Result<File, SupervisorError> {
+2026-11-12T21:33:15.4899362Z     |                                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_metadata`
+2026-11-12T21:33:15.4899842Z     |
+2026-11-12T21:33:15.4900174Z     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4900543Z 
+2026-11-12T21:33:15.4900687Z warning: function `restart_available` is never used
+2026-11-12T21:33:15.4901073Z    --> hepta-supervisor/src\restart_budget.rs:114:8
+2026-11-12T21:33:15.4901397Z     |
+2026-11-12T21:33:15.4901605Z 114 | pub fn restart_available(
+2026-11-12T21:33:15.4902011Z     |        ^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4902250Z     |
+2026-11-12T21:33:15.4902530Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4902844Z 
+2026-11-12T21:33:15.4903090Z warning: methods `next_control_revision` and `set_control_revision` are never used
+2026-11-12T21:33:15.4903611Z    --> hepta-supervisor/src\supervisor.rs:221:19
+2026-11-12T21:33:15.4903965Z     |
+2026-11-12T21:33:15.4904217Z  58 | impl<D: ProcessDriver> Supervisor<D> {
+2026-11-12T21:33:15.4904725Z     | ------------------------------------ methods in this implementation
+2026-11-12T21:33:15.4905104Z ...
+2026-11-12T21:33:15.4905548Z 221 |     pub(crate) fn next_control_revision(&self, agent_id: &AgentId) -> Result<u64, SupervisorError> {
+2026-11-12T21:33:15.4906117Z     |                   ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4906404Z ...
+2026-11-12T21:33:15.4906634Z 230 |     pub(crate) fn set_control_revision(
+2026-11-12T21:33:15.4906963Z     |                   ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4907163Z 
+2026-11-12T21:33:15.4907261Z warning: 3 warnings emitted
+2026-11-12T21:33:15.4907430Z 
+2026-11-12T21:33:15.4907950Z [4,816 / 5,496] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 15s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T21:33:15.4909003Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-approver-bin-unit-tests-bin (50 files):
+2026-11-12T21:33:15.4909971Z warning: unused import: `zeroize::Zeroizing`
+2026-11-12T21:33:15.4910415Z   --> hepta-supervisor/src/bin/hepta-final-use-approver.rs:15:5
+2026-11-12T21:33:15.4910801Z    |
+2026-11-12T21:33:15.4911015Z 15 | use zeroize::Zeroizing;
+2026-11-12T21:33:15.4911267Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4911510Z    |
+2026-11-12T21:33:15.4911985Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4912546Z 
+2026-11-12T21:33:15.4912995Z warning: 1 warning emitted
+2026-11-12T21:33:15.4913200Z 
+2026-11-12T21:33:15.4913535Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp-client-unit-tests-bin (44 files):
+2026-11-12T21:33:15.4914233Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4914816Z  --> rmcp-client/src\elicitation_client_service.rs:4:18
+2026-11-12T21:33:15.4915166Z   |
+2026-11-12T21:33:15.4915386Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:33:15.4915682Z   |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4915933Z   |
+2026-11-12T21:33:15.4916156Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.4916379Z 
+2026-11-12T21:33:15.4916675Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4917225Z   --> rmcp-client/src\elicitation_client_service.rs:55:22
+2026-11-12T21:33:15.4917561Z    |
+2026-11-12T21:33:15.4917792Z 55 |         client_info: ClientInfo,
+2026-11-12T21:33:15.4918068Z    |                      ^^^^^^^^^^
+2026-11-12T21:33:15.4918252Z 
+2026-11-12T21:33:15.4918535Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4919087Z    --> rmcp-client/src\elicitation_client_service.rs:191:27
+2026-11-12T21:33:15.4919437Z     |
+2026-11-12T21:33:15.4919665Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:33:15.4919975Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4920158Z 
+2026-11-12T21:33:15.4920464Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4921016Z  --> rmcp-client/src\logging_client_handler.rs:6:18
+2026-11-12T21:33:15.4921339Z   |
+2026-11-12T21:33:15.4921542Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:33:15.4921822Z   |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4921995Z 
+2026-11-12T21:33:15.4922560Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4923109Z   --> rmcp-client/src\logging_client_handler.rs:27:18
+2026-11-12T21:33:15.4923452Z    |
+2026-11-12T21:33:15.4923661Z 27 |     client_info: ClientInfo,
+2026-11-12T21:33:15.4923926Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4924113Z 
+2026-11-12T21:33:15.4924589Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4925113Z   --> rmcp-client/src\logging_client_handler.rs:32:36
+2026-11-12T21:33:15.4925429Z    |
+2026-11-12T21:33:15.4925843Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:33:15.4926336Z    |                                    ^^^^^^^^^^
+2026-11-12T21:33:15.4926567Z 
+2026-11-12T21:33:15.4926825Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4927345Z   --> rmcp-client/src\logging_client_handler.rs:94:27
+2026-11-12T21:33:15.4927661Z    |
+2026-11-12T21:33:15.4927882Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:33:15.4928180Z    |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4928381Z 
+2026-11-12T21:33:15.4928646Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4929156Z    --> rmcp-client/src\mrtr_tests.rs:149:9
+2026-11-12T21:33:15.4929463Z     |
+2026-11-12T21:33:15.4929666Z 149 |         ClientInfo::new(
+2026-11-12T21:33:15.4929921Z     |         ^^^^^^^^^^
+2026-11-12T21:33:15.4930073Z 
+2026-11-12T21:33:15.4930570Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4931104Z    --> rmcp-client/src\mrtr_tests.rs:171:13
+2026-11-12T21:33:15.4931390Z     |
+2026-11-12T21:33:15.4931677Z 171 |             ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:33:15.4932200Z     |             ^^^^^^^^^^
+2026-11-12T21:33:15.4932368Z 
+2026-11-12T21:33:15.4932849Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4933390Z    --> rmcp-client/src\mrtr_tests.rs:228:9
+2026-11-12T21:33:15.4933685Z     |
+2026-11-12T21:33:15.4933946Z 228 |         ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:33:15.4934292Z     |         ^^^^^^^^^^
+2026-11-12T21:33:15.4934432Z 
+2026-11-12T21:33:15.4934715Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4935218Z    --> rmcp-client/src\mrtr_tests.rs:139:22
+2026-11-12T21:33:15.4935515Z     |
+2026-11-12T21:33:15.4936020Z 139 |     use rmcp::model::ClientInfo;
+2026-11-12T21:33:15.4936270Z     |                      ^^^^^^^^^^
+2026-11-12T21:33:15.4936426Z 
+2026-11-12T21:33:15.4936808Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4937487Z    --> rmcp-client/src\mrtr_tests.rs:144:22
+2026-11-12T21:33:15.4937869Z     |
+2026-11-12T21:33:15.4938056Z 144 |     use rmcp::model::ServerInfo;
+2026-11-12T21:33:15.4938309Z     |                      ^^^^^^^^^^
+2026-11-12T21:33:15.4938592Z 
+2026-11-12T21:33:15.4938682Z warning: 12 warnings emitted
+2026-11-12T21:33:15.4938838Z 
+2026-11-12T21:33:15.4939114Z INFO: From Compiling Rust bin //codex-rs/hepta-memory:hepta-memory-unit-tests-bin (153 files):
+2026-11-12T21:33:15.4939474Z warning: function `recorded_request` is never used
+2026-11-12T21:33:15.4939750Z    --> hepta-memory/src\objective_sender_test_support.rs:203:15
+2026-11-12T21:33:15.4939993Z     |
+2026-11-12T21:33:15.4940204Z 203 | pub(super) fn recorded_request() -> ObjectiveSenderRequest {
+2026-11-12T21:33:15.4940462Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4940631Z     |
+2026-11-12T21:33:15.4940824Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4941020Z 
+2026-11-12T21:33:15.4941085Z warning: 1 warning emitted
+2026-11-12T21:33:15.4941202Z 
+2026-11-12T21:33:15.4941517Z [4,864 / 5,496] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 16s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:15.4942527Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer-bin-unit-tests-bin (50 files):
+2026-11-12T21:33:15.4942989Z warning: unused import: `zeroize::Zeroizing`
+2026-11-12T21:33:15.4943290Z   --> hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs:15:5
+2026-11-12T21:33:15.4943575Z    |
+2026-11-12T21:33:15.4943719Z 15 | use zeroize::Zeroizing;
+2026-11-12T21:33:15.4943895Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4944045Z    |
+2026-11-12T21:33:15.4944244Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4944458Z 
+2026-11-12T21:33:15.4944520Z warning: 1 warning emitted
+2026-11-12T21:33:15.4944629Z 
+2026-11-12T21:33:15.4944781Z INFO: From Compiling Rust rlib //codex-rs/rmcp-client:rmcp-client (44 files):
+2026-11-12T21:33:15.4945184Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4945562Z  --> codex-rs/rmcp-client/src\elicitation_client_service.rs:4:18
+2026-11-12T21:33:15.4945802Z   |
+2026-11-12T21:33:15.4945936Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:33:15.4946104Z   |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4946264Z   |
+2026-11-12T21:33:15.4946407Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.4946542Z 
+2026-11-12T21:33:15.4946960Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4947347Z   --> codex-rs/rmcp-client/src\elicitation_client_service.rs:55:22
+2026-11-12T21:33:15.4947598Z    |
+2026-11-12T21:33:15.4947753Z 55 |         client_info: ClientInfo,
+2026-11-12T21:33:15.4947945Z    |                      ^^^^^^^^^^
+2026-11-12T21:33:15.4948058Z 
+2026-11-12T21:33:15.4948236Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4948699Z    --> codex-rs/rmcp-client/src\elicitation_client_service.rs:191:27
+2026-11-12T21:33:15.4948947Z     |
+2026-11-12T21:33:15.4949098Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:33:15.4949298Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4949430Z 
+2026-11-12T21:33:15.4949603Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4949955Z  --> codex-rs/rmcp-client/src\logging_client_handler.rs:6:18
+2026-11-12T21:33:15.4950182Z   |
+2026-11-12T21:33:15.4950325Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:33:15.4950509Z   |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4950617Z 
+2026-11-12T21:33:15.4950784Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4951138Z   --> codex-rs/rmcp-client/src\logging_client_handler.rs:27:18
+2026-11-12T21:33:15.4951404Z    |
+2026-11-12T21:33:15.4951546Z 27 |     client_info: ClientInfo,
+2026-11-12T21:33:15.4951802Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4951927Z 
+2026-11-12T21:33:15.4952184Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4952546Z   --> codex-rs/rmcp-client/src\logging_client_handler.rs:32:36
+2026-11-12T21:33:15.4952770Z    |
+2026-11-12T21:33:15.4953031Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:33:15.4953354Z    |                                    ^^^^^^^^^^
+2026-11-12T21:33:15.4953499Z 
+2026-11-12T21:33:15.4953672Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:33:15.4954023Z   --> codex-rs/rmcp-client/src\logging_client_handler.rs:94:27
+2026-11-12T21:33:15.4954257Z    |
+2026-11-12T21:33:15.4954402Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:33:15.4954601Z    |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4954727Z 
+2026-11-12T21:33:15.4954796Z warning: 7 warnings emitted
+2026-11-12T21:33:15.4954901Z 
+2026-11-12T21:33:15.4955214Z [4,898 / 5,500] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 17s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:33:15.4955748Z INFO: From Compiling Rust bin //codex-rs/analytics:analytics-unit-tests-bin (9 files):
+2026-11-12T21:33:15.4956109Z warning: unused import: `crate::client::AnalyticsEventsClient`
+2026-11-12T21:33:15.4956386Z  --> analytics/src\analytics_client_tests.rs:1:5
+2026-11-12T21:33:15.4956588Z   |
+2026-11-12T21:33:15.4956755Z 1 | use crate::client::AnalyticsEventsClient;
+2026-11-12T21:33:15.4956964Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4957142Z   |
+2026-11-12T21:33:15.4957344Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:15.4957551Z 
+2026-11-12T21:33:15.4957637Z warning: unused import: `std::time::SystemTime`
+2026-11-12T21:33:15.4957882Z    --> analytics/src\analytics_client_tests.rs:196:5
+2026-11-12T21:33:15.4958102Z     |
+2026-11-12T21:33:15.4958253Z 196 | use std::time::SystemTime;
+2026-11-12T21:33:15.4958468Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:15.4958586Z 
+2026-11-12T21:33:15.4958654Z warning: 2 warnings emitted
+2026-11-12T21:33:15.4958768Z 
+2026-11-12T21:33:15.4959064Z [4,911 / 5,500] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron-test-lib (95 files); 18s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:15.4959795Z [4,930 / 5,500] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron (95 files); 17s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:15.4960396Z [4,961 / 5,500] Compiling Rust rlib //codex-rs/hepta-neuron:hepta-neuron (95 files); 18s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:33:15.4960936Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:33:15.4961475Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4961953Z   --> rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:33:15.4962262Z    |
+2026-11-12T21:33:15.4962412Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:15.4962598Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.4962757Z    |
+2026-11-12T21:33:15.4962940Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.4963091Z 
+2026-11-12T21:33:15.4963265Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4963621Z    --> rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:33:15.4963833Z     |
+2026-11-12T21:33:15.4963985Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.4964186Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4964314Z 
+2026-11-12T21:33:15.4964480Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.4964816Z    --> rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:33:15.4965020Z     |
+2026-11-12T21:33:15.4965370Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:33:15.4965711Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.4965899Z 
+2026-11-12T21:33:15.4965989Z warning: 3 warnings emitted
+2026-11-12T21:33:15.4966149Z 
+2026-11-12T21:33:15.6418930Z [4,981 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 11s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:15.6679788Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:33:15.6688808Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.6692740Z   --> rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:33:15.6710344Z    |
+2026-11-12T21:33:15.6719057Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:15.6719884Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.6731638Z    |
+2026-11-12T21:33:15.6760598Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.6926901Z 
+2026-11-12T21:33:15.6964140Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.6983062Z   --> rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:33:15.7002662Z    |
+2026-11-12T21:33:15.7011045Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.7011467Z    |                           ^^^^^^^^^^
+2026-11-12T21:33:15.7011805Z 
+2026-11-12T21:33:15.7012454Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.7012974Z   --> rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:33:15.7013262Z    |
+2026-11-12T21:33:15.7013441Z 82 |         ServerInfo::new(
+2026-11-12T21:33:15.7013659Z    |         ^^^^^^^^^^
+2026-11-12T21:33:15.7013791Z 
+2026-11-12T21:33:15.7013891Z warning: 3 warnings emitted
+2026-11-12T21:33:15.7014043Z 
+2026-11-12T21:33:15.8380020Z INFO: From Compiling Rust bin //codex-rs/codex-mcp:codex-mcp-unit-tests-bin (44 files):
+2026-11-12T21:33:15.8381005Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8381717Z   --> codex-mcp/src\connection_manager_tests.rs:76:18
+2026-11-12T21:33:15.8382155Z    |
+2026-11-12T21:33:15.8382470Z 76 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:15.8383333Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.8383693Z    |
+2026-11-12T21:33:15.8384379Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.8384698Z 
+2026-11-12T21:33:15.8385073Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8385699Z    --> codex-mcp/src\connection_manager_tests.rs:254:27
+2026-11-12T21:33:15.8386117Z     |
+2026-11-12T21:33:15.8386427Z 254 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.8387041Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.8387326Z 
+2026-11-12T21:33:15.8387715Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8388335Z    --> codex-mcp/src\connection_manager_tests.rs:255:9
+2026-11-12T21:33:15.8388744Z     |
+2026-11-12T21:33:15.8389181Z 255 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:15.8389693Z     |         ^^^^^^^^^^
+2026-11-12T21:33:15.8389926Z 
+2026-11-12T21:33:15.8390292Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8390908Z    --> codex-mcp/src\connection_manager_tests.rs:302:27
+2026-11-12T21:33:15.8391328Z     |
+2026-11-12T21:33:15.8391705Z 302 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.8392099Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.8392405Z 
+2026-11-12T21:33:15.8392766Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8393923Z    --> codex-mcp/src\connection_manager_tests.rs:303:9
+2026-11-12T21:33:15.8394356Z     |
+2026-11-12T21:33:15.8394781Z 303 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:15.8395302Z     |         ^^^^^^^^^^
+2026-11-12T21:33:15.8395589Z 
+2026-11-12T21:33:15.8395949Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8396550Z   --> codex-mcp/src\binding_retained_tests.rs:21:27
+2026-11-12T21:33:15.8396952Z    |
+2026-11-12T21:33:15.8397254Z 21 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.8397778Z    |                           ^^^^^^^^^^
+2026-11-12T21:33:15.8398052Z 
+2026-11-12T21:33:15.8398407Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8399000Z   --> codex-mcp/src\binding_retained_tests.rs:22:9
+2026-11-12T21:33:15.8399417Z    |
+2026-11-12T21:33:15.8399829Z 22 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:15.8400348Z    |         ^^^^^^^^^^
+2026-11-12T21:33:15.8400575Z 
+2026-11-12T21:33:15.8400773Z warning: 7 warnings emitted
+2026-11-12T21:33:15.8401035Z 
+2026-11-12T21:33:15.8748868Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:33:15.8749946Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8751125Z   --> rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:33:15.8751986Z    |
+2026-11-12T21:33:15.8752266Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:15.8752703Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:15.8753095Z    |
+2026-11-12T21:33:15.8753665Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:15.8754058Z 
+2026-11-12T21:33:15.8754483Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8755228Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:33:15.8755722Z     |
+2026-11-12T21:33:15.8756085Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:15.8756505Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:15.8756831Z 
+2026-11-12T21:33:15.8757234Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:15.8759008Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:33:15.9236521Z     |
+2026-11-12T21:33:15.9239665Z 241 |         ServerInfo::new(
+2026-11-12T21:33:15.9240425Z     |         ^^^^^^^^^^
+2026-11-12T21:33:15.9242259Z 
+2026-11-12T21:33:15.9242681Z warning: 3 warnings emitted
+2026-11-12T21:33:15.9243525Z 
+2026-11-12T21:33:16.6713894Z [5,002 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 12s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:33:17.7743048Z [5,031 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 13s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:18.8817787Z [5,066 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 14s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:20.4173492Z [5,084 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 16s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:21.4158495Z INFO: From Compiling Rust rlib //codex-rs/app-server:app-server (120 files):
+2026-11-12T21:33:21.4244397Z warning: variable does not need to be mutable
+2026-11-12T21:33:21.4549846Z     --> codex-rs/app-server/src/lib.rs:1677:5
+2026-11-12T21:33:21.4783100Z      |
+2026-11-12T21:33:21.5079711Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-12T21:33:21.5427266Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-12T21:33:21.5646853Z      |     |
+2026-11-12T21:33:21.5805299Z      |     help: remove this `mut`
+2026-11-12T21:33:21.6098630Z      |
+2026-11-12T21:33:21.6162475Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:21.6216113Z 
+2026-11-12T21:33:21.6217162Z warning: 1 warning emitted
+2026-11-12T21:33:21.6261578Z 
+2026-11-12T21:33:21.6438664Z [5,101 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 17s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:33:22.4255041Z [5,108 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 18s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:23.4779768Z [5,108 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 19s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:24.4386655Z [5,108 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 20s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:28.6098618Z [5,109 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 24s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:29.5834229Z [5,124 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 25s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:30.6279494Z [5,137 / 5,500] Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files); 26s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:31.0120969Z INFO: From Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files):
+2026-11-12T21:33:31.0127864Z warning: variable does not need to be mutable
+2026-11-12T21:33:31.0181170Z    --> hepta-neuron/src\cell_generation_observation_tests.rs:310:9
+2026-11-12T21:33:31.0336119Z     |
+2026-11-12T21:33:31.0473213Z 310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+2026-11-12T21:33:31.0866647Z     |         ----^^^^^^^^
+2026-11-12T21:33:31.0910871Z     |         |
+2026-11-12T21:33:31.0912063Z     |         help: remove this `mut`
+2026-11-12T21:33:31.0922260Z     |
+2026-11-12T21:33:31.0928957Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:31.0932746Z 
+2026-11-12T21:33:31.0934746Z warning: 1 warning emitted
+2026-11-12T21:33:31.0939801Z 
+2026-11-12T21:33:31.6946636Z [5,189 / 5,500] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer (50 files); 1s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:32.1762471Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer (50 files):
+2026-11-12T21:33:32.2554185Z warning: unused import: `zeroize::Zeroizing`
+2026-11-12T21:33:32.2896961Z   --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs:15:5
+2026-11-12T21:33:32.3485502Z    |
+2026-11-12T21:33:32.3962347Z 15 | use zeroize::Zeroizing;
+2026-11-12T21:33:32.4479009Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:32.4479466Z    |
+2026-11-12T21:33:32.5051833Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:32.5427062Z 
+2026-11-12T21:33:32.5842136Z warning: 1 warning emitted
+2026-11-12T21:33:32.6253305Z 
+2026-11-12T21:33:32.6916123Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server-bin-unit-tests-bin (124 files):
+2026-11-12T21:33:32.7121358Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-12T21:33:32.7919835Z  --> app-server/src/main.rs:6:5
+2026-11-12T21:33:32.8693927Z   |
+2026-11-12T21:33:32.8990474Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-12T21:33:32.9373724Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:32.9944912Z   |
+2026-11-12T21:33:33.0282695Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:33.1002192Z 
+2026-11-12T21:33:33.1913106Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-12T21:33:33.3899249Z   --> app-server/src/main.rs:17:7
+2026-11-12T21:33:33.4066435Z    |
+2026-11-12T21:33:33.4150372Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-12T21:33:33.4151188Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:33.4151525Z    |
+2026-11-12T21:33:33.4151881Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:33.4152272Z 
+2026-11-12T21:33:33.4152533Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-12T21:33:33.4153065Z   --> app-server/src/main.rs:18:7
+2026-11-12T21:33:33.4153408Z    |
+2026-11-12T21:33:33.4153857Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-12T21:33:33.4399228Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:33.4499167Z 
+2026-11-12T21:33:33.4725641Z warning: 3 warnings emitted
+2026-11-12T21:33:33.4745546Z 
+2026-11-12T21:33:33.4860691Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-unit-tests-bin (120 files):
+2026-11-12T21:33:33.4895119Z warning: variable does not need to be mutable
+2026-11-12T21:33:33.5065341Z     --> app-server/src/lib.rs:1677:5
+2026-11-12T21:33:33.5117122Z      |
+2026-11-12T21:33:33.5165879Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-12T21:33:33.5180134Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-12T21:33:33.5215685Z      |     |
+2026-11-12T21:33:33.5320339Z      |     help: remove this `mut`
+2026-11-12T21:33:33.5393453Z      |
+2026-11-12T21:33:33.5413846Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:33.5534952Z 
+2026-11-12T21:33:33.5545174Z warning: 1 warning emitted
+2026-11-12T21:33:33.5557077Z 
+2026-11-12T21:33:33.5585324Z [5,203 / 5,500] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 2s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:33.6452299Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-approver (50 files):
+2026-11-12T21:33:33.6781106Z warning: unused import: `zeroize::Zeroizing`
+2026-11-12T21:33:33.6895498Z   --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-approver.rs:15:5
+2026-11-12T21:33:33.7095215Z    |
+2026-11-12T21:33:33.7101719Z 15 | use zeroize::Zeroizing;
+2026-11-12T21:33:33.7190864Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:33:33.7216572Z    |
+2026-11-12T21:33:33.7420744Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:33:33.7424584Z 
+2026-11-12T21:33:33.7425356Z warning: 1 warning emitted
+2026-11-12T21:33:33.7459552Z 
+2026-11-12T21:33:33.7535337Z [5,212 / 5,500] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 3s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:34.8382503Z [5,213 / 5,500] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 4s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:33:36.1332781Z [5,215 / 5,500] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 5s remote-cache, local ... (29 actions, 5 running)
+2026-11-12T21:33:37.7812440Z [5,233 / 5,500] Compiling Rust bin //codex-rs/code-mode-host:codex-code-mode-host (20 files); 5s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:33:38.7748891Z [5,237 / 5,500] Compiling Rust bin //codex-rs/code-mode-host:codex-code-mode-host (20 files); 6s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:33:39.4012089Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-12T21:33:39.4090915Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.4241936Z   --> app-server/tests\suite\v2\app_installed.rs:30:18
+2026-11-12T21:33:39.4340964Z    |
+2026-11-12T21:33:39.4535301Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:39.4573005Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:39.5001508Z    |
+2026-11-12T21:33:39.5342705Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:39.5621898Z 
+2026-11-12T21:33:39.5758741Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.5861537Z    --> app-server/tests\suite\v2\app_installed.rs:250:27
+2026-11-12T21:33:39.6077213Z     |
+2026-11-12T21:33:39.6111879Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:39.6189799Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:39.6397116Z 
+2026-11-12T21:33:39.6518090Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.6610134Z    --> app-server/tests\suite\v2\app_installed.rs:251:9
+2026-11-12T21:33:39.6675234Z     |
+2026-11-12T21:33:39.6750536Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:39.6890107Z     |         ^^^^^^^^^^
+2026-11-12T21:33:39.7038049Z 
+2026-11-12T21:33:39.7142352Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.7435516Z   --> app-server/tests\suite\v2\app_list.rs:46:18
+2026-11-12T21:33:39.7474053Z    |
+2026-11-12T21:33:39.7489119Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:39.7697510Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:39.7709343Z 
+2026-11-12T21:33:39.7711293Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.7747501Z     --> app-server/tests\suite\v2\app_list.rs:1500:27
+2026-11-12T21:33:39.7764703Z      |
+2026-11-12T21:33:39.7786363Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:39.7897611Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:39.7897963Z 
+2026-11-12T21:33:39.7949557Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.7963798Z     --> app-server/tests\suite\v2\app_list.rs:1501:9
+2026-11-12T21:33:39.7964805Z      |
+2026-11-12T21:33:39.7966464Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:39.7968688Z      |         ^^^^^^^^^^
+2026-11-12T21:33:39.7969091Z 
+2026-11-12T21:33:39.7969628Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.7970657Z   --> app-server/tests\suite\v2\mcp_resource.rs:57:18
+2026-11-12T21:33:39.7979655Z    |
+2026-11-12T21:33:39.7991605Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:39.8006379Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:39.8398058Z 
+2026-11-12T21:33:39.8508341Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.8757016Z    --> app-server/tests\suite\v2\mcp_resource.rs:833:27
+2026-11-12T21:33:39.8919947Z     |
+2026-11-12T21:33:39.9243609Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:39.9361994Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:39.9681267Z 
+2026-11-12T21:33:39.9692625Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:39.9726839Z    --> app-server/tests\suite\v2\mcp_resource.rs:834:24
+2026-11-12T21:33:40.0020403Z     |
+2026-11-12T21:33:40.0061785Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:33:40.0510364Z     |                        ^^^^^^^^^^
+2026-11-12T21:33:40.0632610Z 
+2026-11-12T21:33:40.0687977Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:40.0846665Z   --> app-server/tests\suite\v2\mcp_server_elicitation.rs:67:18
+2026-11-12T21:33:40.1026312Z    |
+2026-11-12T21:33:40.1129449Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:40.1222653Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:40.1482499Z 
+2026-11-12T21:33:40.1529319Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:40.1607824Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:989:27
+2026-11-12T21:33:40.1883014Z     |
+2026-11-12T21:33:40.1996753Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:40.2129796Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:40.2234039Z 
+2026-11-12T21:33:40.2442318Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:40.2509561Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:990:9
+2026-11-12T21:33:40.2730374Z     |
+2026-11-12T21:33:40.2801072Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:40.3085783Z     |         ^^^^^^^^^^
+2026-11-12T21:33:40.3195644Z 
+2026-11-12T21:33:40.3523248Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:40.4054410Z   --> app-server/tests\suite\v2\mcp_server_status.rs:45:18
+2026-11-12T21:33:40.4961742Z    |
+2026-11-12T21:33:40.5813522Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:40.6583239Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:40.7320536Z 
+2026-11-12T21:33:40.8002638Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:40.8680501Z    --> app-server/tests\suite\v2\mcp_server_status.rs:823:27
+2026-11-12T21:33:40.9405491Z     |
+2026-11-12T21:33:41.0126238Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:41.0975126Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:41.1530893Z 
+2026-11-12T21:33:41.2145373Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:41.2408111Z    --> app-server/tests\suite\v2\mcp_server_status.rs:824:9
+2026-11-12T21:33:41.3050904Z     |
+2026-11-12T21:33:41.3177125Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:33:41.3876933Z     |         ^^^^^^^^^^
+2026-11-12T21:33:41.4354204Z 
+2026-11-12T21:33:41.4911888Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:41.5351157Z    --> app-server/tests\suite\v2\mcp_server_status.rs:857:27
+2026-11-12T21:33:41.5771416Z     |
+2026-11-12T21:33:41.6091579Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:41.6361052Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:41.6682631Z 
+2026-11-12T21:33:41.6829271Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:41.7086882Z    --> app-server/tests\suite\v2\mcp_server_status.rs:858:9
+2026-11-12T21:33:41.7183559Z     |
+2026-11-12T21:33:41.7514559Z 858 |         ServerInfo::new(
+2026-11-12T21:33:41.7701274Z     |         ^^^^^^^^^^
+2026-11-12T21:33:41.7972661Z 
+2026-11-12T21:33:41.8284352Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:41.8584150Z   --> app-server/tests\suite\v2\mcp_tool.rs:69:18
+2026-11-12T21:33:41.8715232Z    |
+2026-11-12T21:33:41.8993243Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:41.9238843Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:41.9492432Z 
+2026-11-12T21:33:41.9703473Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:41.9993462Z     --> app-server/tests\suite\v2\mcp_tool.rs:1265:27
+2026-11-12T21:33:42.0244830Z      |
+2026-11-12T21:33:42.0445072Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:42.0705030Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:42.1037120Z 
+2026-11-12T21:33:42.1355670Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:42.1575448Z     --> app-server/tests\suite\v2\mcp_tool.rs:1266:9
+2026-11-12T21:33:42.1764802Z      |
+2026-11-12T21:33:42.2315970Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:42.2375118Z      |         ^^^^^^^^^^
+2026-11-12T21:33:42.2712602Z 
+2026-11-12T21:33:42.2853472Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:42.3061651Z   --> app-server/tests\suite\v2\plugin_install.rs:46:18
+2026-11-12T21:33:42.3352791Z    |
+2026-11-12T21:33:42.3521284Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:42.3724971Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:42.4017522Z 
+2026-11-12T21:33:42.4184174Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:42.4346813Z     --> app-server/tests\suite\v2\plugin_install.rs:2330:27
+2026-11-12T21:33:42.4534573Z      |
+2026-11-12T21:33:42.4844862Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:42.5154903Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:42.5394576Z 
+2026-11-12T21:33:42.5685366Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:42.5754800Z     --> app-server/tests\suite\v2\plugin_install.rs:2331:9
+2026-11-12T21:33:42.6025607Z      |
+2026-11-12T21:33:42.6074815Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:42.6514743Z      |         ^^^^^^^^^^
+2026-11-12T21:33:42.6800035Z 
+2026-11-12T21:33:42.7116031Z warning: 23 warnings emitted
+2026-11-12T21:33:42.7362394Z 
+2026-11-12T21:33:42.7539358Z [5,238 / 5,500] Compiling Rust bin //codex-rs/code-mode-host:codex-code-mode-host (20 files); 7s remote-cache, local ... (23 actions, 4 running)
+2026-11-12T21:33:42.7811208Z [5,249 / 5,500] Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests-bin (37 files); 4s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:33:42.7865712Z [5,251 / 5,500] Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests-bin (37 files); 5s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:33:42.9299018Z [5,251 / 5,500] Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests-bin (37 files); 6s remote-cache, local ... (20 actions, 5 running)
+2026-11-12T21:33:44.2159874Z [5,256 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 4s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:33:45.4568919Z [5,256 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 5s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:33:46.8651993Z [5,256 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 7s remote-cache, local ... (18 actions, 5 running)
+2026-11-12T21:33:47.9893353Z [5,260 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 8s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:33:48.0271239Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files):
+2026-11-12T21:33:48.0483476Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.0494202Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:33:48.0510745Z    |
+2026-11-12T21:33:48.0511601Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:48.0564232Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:48.0628829Z    |
+2026-11-12T21:33:48.0631339Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:48.0632510Z 
+2026-11-12T21:33:48.0641755Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.0648678Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:33:48.0651167Z    |
+2026-11-12T21:33:48.0654390Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:48.0658468Z    |                           ^^^^^^^^^^
+2026-11-12T21:33:48.0666087Z 
+2026-11-12T21:33:48.0668972Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.0670727Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:33:48.0671638Z    |
+2026-11-12T21:33:48.0678245Z 82 |         ServerInfo::new(
+2026-11-12T21:33:48.0679945Z    |         ^^^^^^^^^^
+2026-11-12T21:33:48.0680890Z 
+2026-11-12T21:33:48.0683181Z warning: 3 warnings emitted
+2026-11-12T21:33:48.0693022Z 
+2026-11-12T21:33:48.3873536Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-12T21:33:48.4144770Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.4211229Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:33:48.4471033Z    |
+2026-11-12T21:33:48.4541917Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:48.4580924Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:48.4952444Z    |
+2026-11-12T21:33:48.5043766Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:48.5219798Z 
+2026-11-12T21:33:48.5365566Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.5502637Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:33:48.5590734Z     |
+2026-11-12T21:33:48.5626802Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:48.5853447Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:48.5930412Z 
+2026-11-12T21:33:48.5940400Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:48.6105906Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:33:48.6323611Z     |
+2026-11-12T21:33:48.6437163Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:33:48.6826407Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:48.7063740Z 
+2026-11-12T21:33:48.7344061Z warning: 3 warnings emitted
+2026-11-12T21:33:48.7619614Z 
+2026-11-12T21:33:49.3287226Z [5,266 / 5,500] Compiling Rust rlib //codex-rs/hepta-intelligence:hepta-intelligence (37 files); 2s remote-cache, local ... (16 actions, 4 running)
+2026-11-12T21:33:50.3420626Z [5,267 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 2s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:33:51.4462645Z [5,267 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 3s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:33:52.6387090Z [5,267 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 4s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:33:53.5985885Z [5,267 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 5s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:33:54.6427327Z [5,267 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 6s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:33:55.5476560Z [5,269 / 5,500] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 7s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:33:55.9174391Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files):
+2026-11-12T21:33:55.9234643Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:55.9284812Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:33:55.9374356Z    |
+2026-11-12T21:33:55.9394107Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:55.9418939Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:55.9442059Z    |
+2026-11-12T21:33:55.9513711Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:55.9540034Z 
+2026-11-12T21:33:55.9542986Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:55.9544291Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:33:55.9563938Z     |
+2026-11-12T21:33:55.9584743Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:55.9593049Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:55.9593772Z 
+2026-11-12T21:33:55.9633790Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:55.9665392Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:33:55.9674200Z     |
+2026-11-12T21:33:55.9684209Z 241 |         ServerInfo::new(
+2026-11-12T21:33:55.9700133Z     |         ^^^^^^^^^^
+2026-11-12T21:33:55.9700536Z 
+2026-11-12T21:33:55.9715198Z warning: 3 warnings emitted
+2026-11-12T21:33:55.9723800Z 
+2026-11-12T21:33:56.6444352Z [5,272 / 5,500] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 8s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:33:57.5879447Z [5,272 / 5,500] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 9s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:33:59.6195168Z [5,272 / 5,500] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 11s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:34:00.6474484Z [5,272 / 5,500] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 12s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:34:02.6482091Z [5,272 / 5,500] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 14s remote-cache, local ... (17 actions, 5 running)
+2026-11-12T21:34:03.6805733Z [5,273 / 5,500] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 14s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:34:05.3105475Z [5,276 / 5,500] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 15s remote-cache, local ... (16 actions, 5 running)
+2026-11-12T21:34:06.3957991Z [5,276 / 5,500] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 16s remote-cache, local ... (16 actions, 7 running)
+2026-11-12T21:34:07.5905317Z [5,282 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 12s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:34:08.9070678Z [5,286 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 13s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T21:34:09.8691136Z [5,286 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 14s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T21:34:11.8337216Z [5,286 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 16s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T21:34:12.9092856Z [5,286 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 17s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T21:34:14.9514237Z [5,286 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 19s remote-cache, local ... (12 actions, 5 running)
+2026-11-12T21:34:15.9752342Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 20s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:34:16.9999022Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 21s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:34:18.9824682Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 23s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:34:24.0452115Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 28s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:34:25.9623685Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 30s remote-cache, local ... (11 actions, 5 running)
+2026-11-12T21:34:27.0691601Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files):
+2026-11-12T21:34:27.0786274Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-12T21:34:27.0966280Z  --> codex-rs/app-server/src/main.rs:6:5
+2026-11-12T21:34:27.1094567Z   |
+2026-11-12T21:34:27.1359244Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-12T21:34:27.1435511Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:34:27.1724566Z   |
+2026-11-12T21:34:27.1810010Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:34:27.1978482Z 
+2026-11-12T21:34:27.2194697Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-12T21:34:27.2296848Z   --> codex-rs/app-server/src/main.rs:17:7
+2026-11-12T21:34:27.2538954Z    |
+2026-11-12T21:34:27.2630505Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-12T21:34:27.2818648Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:34:27.2938063Z    |
+2026-11-12T21:34:27.2938758Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:34:27.2985944Z 
+2026-11-12T21:34:27.3238960Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-12T21:34:27.3358966Z   --> codex-rs/app-server/src/main.rs:18:7
+2026-11-12T21:34:27.3558438Z    |
+2026-11-12T21:34:27.3679114Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-12T21:34:27.3878747Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:34:27.3998262Z 
+2026-11-12T21:34:27.4198838Z warning: 3 warnings emitted
+2026-11-12T21:34:27.4318403Z 
+2026-11-12T21:34:27.4519213Z [5,288 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 31s remote-cache, local ... (11 actions, 6 running)
+2026-11-12T21:34:28.2214211Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 32s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T21:34:39.4661431Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 44s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T21:34:40.4681863Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 45s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T21:34:41.4627593Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 46s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T21:34:42.4798360Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 47s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T21:34:44.3599661Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 49s remote-cache, local ... (9 actions, 5 running)
+2026-11-12T21:34:45.5743856Z [5,292 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 50s remote-cache, local ... (9 actions, 5 running)
+2026-11-12T21:34:46.5818496Z [5,299 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 51s remote-cache, local ... (7 actions, 4 running)
+2026-11-12T21:34:47.5800705Z [5,299 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 52s remote-cache, local ... (7 actions, 4 running)
+2026-11-12T21:34:48.5983595Z [5,299 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 53s remote-cache, local ... (7 actions, 4 running)
+2026-11-12T21:34:49.8324263Z [5,299 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 54s remote-cache, local ... (7 actions, 4 running)
+2026-11-12T21:34:51.5100062Z [5,299 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 56s remote-cache, local ... (7 actions, 5 running)
+2026-11-12T21:34:52.7592279Z [5,301 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 57s remote-cache, local ... (6 actions, 4 running)
+2026-11-12T21:34:53.8525070Z [5,303 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 58s remote-cache, local ... (5 actions, 4 running)
+2026-11-12T21:34:58.0849367Z [5,303 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 62s remote-cache, local ... (5 actions, 4 running)
+2026-11-12T21:35:00.1160929Z [5,303 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 64s remote-cache, local ... (5 actions, 4 running)
+2026-11-12T21:35:05.3045941Z [5,303 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 70s remote-cache, local ... (5 actions running)
+2026-11-12T21:35:05.8960871Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files):
+2026-11-12T21:35:05.9607043Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:35:06.0150566Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:35:06.0610470Z    |
+2026-11-12T21:35:06.1106920Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:35:06.1566810Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:06.2110558Z    |
+2026-11-12T21:35:06.2530729Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:06.3011135Z 
+2026-11-12T21:35:06.3513406Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:35:06.3850526Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:35:06.4220383Z   |
+2026-11-12T21:35:06.4600209Z 4 | impl AgentdConfig {
+2026-11-12T21:35:06.5137543Z   | ----------------- method in this implementation
+2026-11-12T21:35:06.5516751Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:35:06.6090411Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:06.6580389Z   |
+2026-11-12T21:35:06.6983366Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:06.7562344Z 
+2026-11-12T21:35:06.7942759Z warning: method `require_decision` is never used
+2026-11-12T21:35:06.8388484Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:35:06.8943048Z     |
+2026-11-12T21:35:06.9300111Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:35:06.9876295Z     | ----------------------------------- method in this implementation
+2026-11-12T21:35:07.0216043Z ...
+2026-11-12T21:35:07.0606437Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:35:07.0996147Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:07.1423396Z 
+2026-11-12T21:35:07.1896098Z warning: function `require_decision` is never used
+2026-11-12T21:35:07.2326161Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:35:07.2715557Z     |
+2026-11-12T21:35:07.3156773Z 443 | pub(super) fn require_decision(
+2026-11-12T21:35:07.3535661Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:07.4008834Z 
+2026-11-12T21:35:07.4767209Z warning: method `require_original_input` is never used
+2026-11-12T21:35:07.5177012Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:35:07.5736872Z    |
+2026-11-12T21:35:07.6156094Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:35:07.6697809Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:35:07.7187443Z ...
+2026-11-12T21:35:07.7692517Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:35:07.8277981Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:07.8887444Z 
+2026-11-12T21:35:07.9489719Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:35:07.9995567Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:35:08.0613828Z    |
+2026-11-12T21:35:08.1189460Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:35:08.2074363Z    |                 ----------------------- variant in this enum
+2026-11-12T21:35:08.2833830Z 11 |     HostStageOwners,
+2026-11-12T21:35:08.3493817Z 12 |     OriginalObjective,
+2026-11-12T21:35:08.4389390Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:08.5250706Z    |
+2026-11-12T21:35:08.6014357Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:35:08.6962441Z 
+2026-11-12T21:35:08.7641648Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:35:08.8253943Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:35:08.8893781Z    |
+2026-11-12T21:35:08.9463864Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:35:09.0103674Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:35:09.0827016Z ...
+2026-11-12T21:35:09.1386776Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:35:09.1896991Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.2476584Z 
+2026-11-12T21:35:09.3089457Z warning: method `original_model_commitments` is never used
+2026-11-12T21:35:09.3665224Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:35:09.4141640Z   |
+2026-11-12T21:35:09.4760200Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:35:09.5301927Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:35:09.5947235Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:35:09.6634979Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.7286665Z 
+2026-11-12T21:35:09.7930560Z warning: variant `Notes` is never constructed
+2026-11-12T21:35:09.8545666Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:35:09.8546113Z     |
+2026-11-12T21:35:09.8546327Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:35:09.8546676Z     |      ------------------------- variant in this enum
+2026-11-12T21:35:09.8546974Z 632 |     Full,
+2026-11-12T21:35:09.8547233Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:35:09.8547525Z     |     ^^^^^
+2026-11-12T21:35:09.8547644Z 
+2026-11-12T21:35:09.8547819Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:35:09.8548213Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:35:09.8548533Z     |
+2026-11-12T21:35:09.8548773Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:35:09.8549120Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.8549329Z 
+2026-11-12T21:35:09.8549466Z warning: method `close_expired_original` is never used
+2026-11-12T21:35:09.8549859Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:35:09.8550217Z     |
+2026-11-12T21:35:09.8550411Z   3 | impl AgentdTextRequests {
+2026-11-12T21:35:09.8550699Z     | ----------------------- method in this implementation
+2026-11-12T21:35:09.8551022Z ...
+2026-11-12T21:35:09.8551567Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:35:09.8592231Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.8592453Z 
+2026-11-12T21:35:09.8592558Z warning: 11 warnings emitted
+2026-11-12T21:35:09.8592712Z 
+2026-11-12T21:35:09.8593515Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 71s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:09.8594204Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 73s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:09.8594906Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 74s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:15.9211280Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 80s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:17.9704653Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 82s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:18.9741999Z [5,304 / 5,500] Compiling Rust rlib //codex-rs/tui:tui (490 files); 83s remote-cache, local ... (4 actions running)
+2026-11-12T21:35:23.3282425Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T21:35:23.3308184Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:23.3342028Z   --> codex-rs/tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-12T21:35:23.3472075Z    |
+2026-11-12T21:35:23.3602395Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:35:23.3628470Z    |                  ^^^^^^^^^^
+2026-11-12T21:35:23.3661722Z    |
+2026-11-12T21:35:23.3792229Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:35:23.3921978Z 
+2026-11-12T21:35:23.3949050Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:23.3981881Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-12T21:35:23.4112231Z     |
+2026-11-12T21:35:23.4242634Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:35:23.4268645Z     |                           ^^^^^^^^^^
+2026-11-12T21:35:23.4301601Z 
+2026-11-12T21:35:23.4432564Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:23.4562282Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-12T21:35:23.4588721Z     |
+2026-11-12T21:35:23.4621996Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:35:23.4752250Z     |         ^^^^^^^^^^
+2026-11-12T21:35:23.5176988Z 
+2026-11-12T21:35:23.5237697Z warning: 3 warnings emitted
+2026-11-12T21:35:23.5239746Z 
+2026-11-12T21:35:23.5240457Z [5,305 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 68s remote-cache, local ... (4 actions, 3 running)
+2026-11-12T21:35:25.0469450Z [5,305 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 70s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T21:35:26.0974231Z [5,306 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 71s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:35:27.0829014Z [5,306 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 72s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T21:35:28.0927773Z [5,308 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 73s remote-cache, local ... (10 actions, 4 running)
+2026-11-12T21:35:29.1928619Z [5,308 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 74s remote-cache, local ... (10 actions, 4 running)
+2026-11-12T21:35:34.4925923Z [5,308 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 79s remote-cache, local ... (10 actions, 4 running)
+2026-11-12T21:35:37.6406018Z [5,308 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 82s remote-cache, local ... (10 actions, 5 running)
+2026-11-12T21:35:37.9709959Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (966 files):
+2026-11-12T21:35:37.9819977Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:35:37.9977802Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:35:37.9981382Z    |
+2026-11-12T21:35:38.0337216Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:35:38.0739764Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:38.1159668Z    |
+2026-11-12T21:35:38.1480041Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:38.1807074Z 
+2026-11-12T21:35:38.2339880Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:35:38.2483705Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:35:38.2790318Z   |
+2026-11-12T21:35:38.3049189Z 4 | impl AgentdConfig {
+2026-11-12T21:35:38.3462385Z   | ----------------- method in this implementation
+2026-11-12T21:35:38.4041407Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:35:38.6221467Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:38.8635104Z   |
+2026-11-12T21:35:39.1533114Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:39.1902846Z 
+2026-11-12T21:35:39.2364733Z warning: method `require_decision` is never used
+2026-11-12T21:35:39.2687490Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:35:39.3032379Z     |
+2026-11-12T21:35:39.3472486Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:35:39.3892854Z     | ----------------------------------- method in this implementation
+2026-11-12T21:35:39.4332465Z ...
+2026-11-12T21:35:39.4662407Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:35:39.5176229Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:39.5562552Z 
+2026-11-12T21:35:39.6092342Z warning: function `require_decision` is never used
+2026-11-12T21:35:39.6552335Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:35:39.7210321Z     |
+2026-11-12T21:35:39.7592547Z 443 | pub(super) fn require_decision(
+2026-11-12T21:35:39.7939159Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:39.8557722Z 
+2026-11-12T21:35:39.8958295Z warning: method `require_original_input` is never used
+2026-11-12T21:35:39.9540333Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:35:39.9890636Z    |
+2026-11-12T21:35:40.0530516Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:35:40.1304622Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:35:40.2201228Z ...
+2026-11-12T21:35:40.3055998Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:35:40.3827139Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:40.4397623Z 
+2026-11-12T21:35:40.4997475Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:35:40.5391765Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:35:40.5957632Z    |
+2026-11-12T21:35:40.6407723Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:35:40.6947747Z    |                 ----------------------- variant in this enum
+2026-11-12T21:35:40.7534984Z 11 |     HostStageOwners,
+2026-11-12T21:35:40.8213891Z 12 |     OriginalObjective,
+2026-11-12T21:35:40.8713655Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:40.9353726Z    |
+2026-11-12T21:35:40.9998364Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:35:41.0638841Z 
+2026-11-12T21:35:41.1302748Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:35:41.1946154Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:35:41.2592014Z    |
+2026-11-12T21:35:41.3227484Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:35:41.4002579Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:35:41.4662181Z ...
+2026-11-12T21:35:41.5174860Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:35:41.5792437Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:41.6481574Z 
+2026-11-12T21:35:41.6724975Z warning: method `original_model_commitments` is never used
+2026-11-12T21:35:41.7372542Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:35:41.8027188Z   |
+2026-11-12T21:35:41.8687970Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:35:41.9373974Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:35:42.0085349Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:35:42.0726732Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:42.6521595Z 
+2026-11-12T21:35:42.7192284Z warning: variant `Notes` is never constructed
+2026-11-12T21:35:42.7882191Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:35:42.8462904Z     |
+2026-11-12T21:35:42.9021723Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:35:42.9589926Z     |      ------------------------- variant in this enum
+2026-11-12T21:35:43.0163033Z 632 |     Full,
+2026-11-12T21:35:43.0747233Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:35:43.1337775Z     |     ^^^^^
+2026-11-12T21:35:43.1672832Z 
+2026-11-12T21:35:43.2137841Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:35:43.2617741Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:35:43.2979311Z     |
+2026-11-12T21:35:43.3309692Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:35:43.3685075Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:43.4089106Z 
+2026-11-12T21:35:43.4509446Z warning: method `close_expired_original` is never used
+2026-11-12T21:35:43.4979506Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:35:43.5566064Z     |
+2026-11-12T21:35:43.6079685Z   3 | impl AgentdTextRequests {
+2026-11-12T21:35:43.6658973Z     | ----------------------- method in this implementation
+2026-11-12T21:35:43.7039254Z ...
+2026-11-12T21:35:43.7512405Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:35:43.7989268Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:43.8468718Z 
+2026-11-12T21:35:43.8946041Z warning: 11 warnings emitted
+2026-11-12T21:35:43.9428858Z 
+2026-11-12T21:35:43.9859790Z [5,309 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 83s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:44.0389611Z [5,309 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 84s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:44.0716061Z [5,309 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 87s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:46.0582632Z [5,309 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 91s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:50.2631420Z [5,309 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 95s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:50.6199539Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files):
+2026-11-12T21:35:50.6778662Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:35:50.7011837Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:35:50.7523833Z    |
+2026-11-12T21:35:50.7623253Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:35:50.7913445Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:50.8134160Z    |
+2026-11-12T21:35:50.8303619Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:50.8482986Z 
+2026-11-12T21:35:50.8673446Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:35:50.8843523Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:35:50.9004711Z   |
+2026-11-12T21:35:50.9103890Z 4 | impl AgentdConfig {
+2026-11-12T21:35:50.9203465Z   | ----------------- method in this implementation
+2026-11-12T21:35:50.9243436Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:35:50.9331152Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:50.9340771Z   |
+2026-11-12T21:35:50.9423739Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:50.9521502Z 
+2026-11-12T21:35:50.9563468Z warning: method `require_decision` is never used
+2026-11-12T21:35:50.9653638Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:35:50.9743307Z     |
+2026-11-12T21:35:50.9841674Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:35:50.9883058Z     | ----------------------------------- method in this implementation
+2026-11-12T21:35:50.9973079Z ...
+2026-11-12T21:35:51.0063115Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:35:51.0161856Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:51.0202622Z 
+2026-11-12T21:35:51.0293436Z warning: function `require_decision` is never used
+2026-11-12T21:35:51.0392965Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:35:51.0478978Z     |
+2026-11-12T21:35:51.0479995Z 443 | pub(super) fn require_decision(
+2026-11-12T21:35:51.0551278Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:51.0582936Z 
+2026-11-12T21:35:51.0612953Z warning: method `require_original_input` is never used
+2026-11-12T21:35:51.0713115Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:35:51.0801031Z    |
+2026-11-12T21:35:51.0816228Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:35:51.0902397Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:35:51.0969013Z ...
+2026-11-12T21:35:51.1028960Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:35:51.1042839Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:51.1106837Z 
+2026-11-12T21:35:51.1224374Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:35:51.1293844Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:35:51.1351480Z    |
+2026-11-12T21:35:51.1422929Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:35:51.1613778Z    |                 ----------------------- variant in this enum
+2026-11-12T21:35:51.1727174Z 11 |     HostStageOwners,
+2026-11-12T21:35:51.2094198Z 12 |     OriginalObjective,
+2026-11-12T21:35:51.2526876Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:51.2608440Z    |
+2026-11-12T21:35:51.2698481Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:35:51.3124054Z 
+2026-11-12T21:35:51.3555054Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:35:51.3623602Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:35:51.3667752Z    |
+2026-11-12T21:35:51.3848801Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:35:51.3984592Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:35:51.4134229Z ...
+2026-11-12T21:35:51.5395860Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:35:51.6093670Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:51.6701153Z 
+2026-11-12T21:35:51.7201844Z warning: method `original_model_commitments` is never used
+2026-11-12T21:35:51.7923398Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:35:51.8306535Z   |
+2026-11-12T21:35:51.8971904Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:35:51.9531756Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:35:51.9955579Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:35:52.0355536Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:52.0577992Z 
+2026-11-12T21:35:52.1023341Z warning: variant `Notes` is never constructed
+2026-11-12T21:35:52.1415479Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:35:52.1415979Z     |
+2026-11-12T21:35:52.2375527Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:35:52.2496235Z     |      ------------------------- variant in this enum
+2026-11-12T21:35:52.2961336Z 632 |     Full,
+2026-11-12T21:35:52.3131734Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:35:52.3316047Z     |     ^^^^^
+2026-11-12T21:35:52.3469728Z 
+2026-11-12T21:35:52.3653049Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:35:52.3803077Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:35:52.3980335Z     |
+2026-11-12T21:35:52.4133080Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:35:52.4320191Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:52.4452598Z 
+2026-11-12T21:35:52.4652960Z warning: method `close_expired_original` is never used
+2026-11-12T21:35:52.4803236Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:35:52.4990036Z     |
+2026-11-12T21:35:52.5172146Z   3 | impl AgentdTextRequests {
+2026-11-12T21:35:52.5413018Z     | ----------------------- method in this implementation
+2026-11-12T21:35:52.5660706Z ...
+2026-11-12T21:35:52.5834962Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:35:52.5996016Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:52.6163315Z 
+2026-11-12T21:35:52.6325826Z warning: 11 warnings emitted
+2026-11-12T21:35:52.6498162Z 
+2026-11-12T21:35:52.6726493Z [5,310 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 97s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:35:55.0115234Z [5,310 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 100s remote-cache, local ... (17 actions, 5 running)
+2026-11-12T21:35:57.1506072Z [5,311 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 102s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:35:58.6688036Z [5,313 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 103s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:35:59.4601157Z [5,313 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 104s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:35:59.6106322Z INFO: From Compiling Rust rlib //codex-rs/cloud-tasks:cloud-tasks (10 files):
+2026-11-12T21:35:59.6428229Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-12T21:35:59.6835947Z   --> codex-rs/cloud-tasks/src/lib.rs:16:5
+2026-11-12T21:35:59.7074099Z    |
+2026-11-12T21:35:59.7709941Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-12T21:35:59.8016202Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:59.8394136Z    |
+2026-11-12T21:35:59.9003842Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:59.9676600Z 
+2026-11-12T21:36:00.0373481Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-12T21:36:00.0864858Z   --> codex-rs/cloud-tasks/src/lib.rs:17:5
+2026-11-12T21:36:00.1344730Z    |
+2026-11-12T21:36:00.1969868Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-12T21:36:00.2345004Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:00.2944465Z 
+2026-11-12T21:36:00.3304124Z warning: 2 warnings emitted
+2026-11-12T21:36:00.3659188Z 
+2026-11-12T21:36:00.5138572Z [5,314 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 105s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:36:01.5481603Z [5,314 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 106s remote-cache, local ... (18 actions, 5 running)
+2026-11-12T21:36:01.6618223Z INFO: From Compiling Rust bin //codex-rs/cloud-tasks:cloud-tasks-unit-tests-bin (10 files):
+2026-11-12T21:36:01.6956129Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-12T21:36:01.7286236Z   --> cloud-tasks/src/lib.rs:16:5
+2026-11-12T21:36:01.7471017Z    |
+2026-11-12T21:36:01.7615733Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-12T21:36:01.7698867Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:01.8050920Z    |
+2026-11-12T21:36:01.8221724Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:01.8305138Z 
+2026-11-12T21:36:01.8562120Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-12T21:36:01.8694670Z   --> cloud-tasks/src/lib.rs:17:5
+2026-11-12T21:36:01.8951817Z    |
+2026-11-12T21:36:01.9269022Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-12T21:36:01.9591829Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:01.9911347Z 
+2026-11-12T21:36:02.0161816Z warning: 2 warnings emitted
+2026-11-12T21:36:02.0471261Z 
+2026-11-12T21:36:02.5429285Z [5,316 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 107s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:36:03.6271866Z [5,316 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 108s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T21:36:04.6155165Z [5,317 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 109s remote-cache, local ... (16 actions, 4 running)
+2026-11-12T21:36:05.7298015Z [5,317 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 110s remote-cache, local ... (16 actions, 4 running)
+2026-11-12T21:36:06.6207948Z [5,317 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 111s remote-cache, local ... (16 actions, 4 running)
+2026-11-12T21:36:07.6719410Z [5,319 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 112s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:36:08.6424027Z [5,319 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 113s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:36:09.6345373Z [5,319 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 114s remote-cache, local ... (15 actions, 5 running)
+2026-11-12T21:36:10.6405274Z [5,320 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 115s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:36:13.6803914Z [5,320 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 118s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:36:14.7714065Z [5,320 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 119s remote-cache, local ... (14 actions, 5 running)
+2026-11-12T21:36:15.7679065Z [5,321 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 120s remote-cache, local ... (13 actions, 4 running)
+2026-11-12T21:36:16.8015813Z [5,321 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 121s remote-cache, local ... (13 actions, 4 running)
+2026-11-12T21:36:17.7556276Z [5,321 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 122s remote-cache, local ... (13 actions, 4 running)
+2026-11-12T21:36:18.7708020Z [5,321 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 123s remote-cache, local ... (13 actions, 4 running)
+2026-11-12T21:36:20.6039852Z [5,321 / 5,500] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 125s remote-cache, local ... (13 actions, 5 running)
+2026-11-12T21:36:20.6040850Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host (37 files):
+2026-11-12T21:36:20.6121541Z warning: unused import: `std::io::Read`
+2026-11-12T21:36:20.6150714Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:36:20.6210675Z    |
+2026-11-12T21:36:20.6303494Z 10 | use std::io::Read;
+2026-11-12T21:36:20.6309181Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:36:20.6318582Z    |

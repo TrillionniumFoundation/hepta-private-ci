@@ -1,0 +1,300 @@
+﻿2026-11-12T07:20:36.3120022Z Current runner version: '2.338.2'
+2026-11-12T07:20:36.3139045Z ##[group]Runner Image Provisioner
+2026-11-12T07:20:36.3139589Z Hosted Compute Agent
+2026-11-12T07:20:36.3140079Z Version: 20261028.624
+2026-11-12T07:20:36.3140502Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T07:20:36.3140975Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T07:20:36.3141396Z Worker ID: {ae4297c0-60ca-4b9c-8bf5-da087f38f6af}
+2026-11-12T07:20:36.3141817Z Region: centralus
+2026-11-12T07:20:36.3142241Z Cloud: Azure
+2026-11-12T07:20:36.3142583Z ##[endgroup]
+2026-11-12T07:20:36.3143659Z ##[group]Operating System
+2026-11-12T07:20:36.3144049Z Ubuntu
+2026-11-12T07:20:36.3144382Z 24.04.5
+2026-11-12T07:20:36.3144773Z LTS
+2026-11-12T07:20:36.3145101Z ##[endgroup]
+2026-11-12T07:20:36.3145498Z ##[group]Runner Image
+2026-11-12T07:20:36.3145892Z Image: ubuntu-24.04
+2026-11-12T07:20:36.3146251Z Version: 20261101.360.1
+2026-11-12T07:20:36.3147236Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T07:20:36.3148155Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T07:20:36.3148739Z ##[endgroup]
+2026-11-12T07:20:36.3149397Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T07:20:36.3150750Z Contents: read
+2026-11-12T07:20:36.3151111Z Metadata: read
+2026-11-12T07:20:36.3151512Z ##[endgroup]
+2026-11-12T07:20:36.3152883Z Secret source: Actions
+2026-11-12T07:20:36.3153554Z Cache mode: write
+2026-11-12T07:20:36.3153984Z Prepare workflow directory
+2026-11-12T07:20:36.3401034Z Prepare all required actions
+2026-11-12T07:20:36.3446639Z Getting action download info
+2026-11-12T07:20:36.5898489Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-12T07:20:36.7300697Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-12T07:20:36.9140096Z Complete job name: shadow-mechanisms
+2026-11-12T07:20:36.9651132Z ##[group]Run actions/checkout@v4
+2026-11-12T07:20:36.9651566Z with:
+2026-11-12T07:20:36.9651846Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:20:36.9653910Z   token: ***
+2026-11-12T07:20:36.9654138Z   ssh-strict: true
+2026-11-12T07:20:36.9654376Z   ssh-user: git
+2026-11-12T07:20:36.9654617Z   persist-credentials: true
+2026-11-12T07:20:36.9654880Z   clean: true
+2026-11-12T07:20:36.9655126Z   sparse-checkout-cone-mode: true
+2026-11-12T07:20:36.9655403Z   fetch-depth: 1
+2026-11-12T07:20:36.9655635Z   fetch-tags: false
+2026-11-12T07:20:36.9655873Z   show-progress: true
+2026-11-12T07:20:36.9656113Z   lfs: false
+2026-11-12T07:20:36.9656340Z   submodules: false
+2026-11-12T07:20:36.9656582Z   set-safe-directory: true
+2026-11-12T07:20:36.9656855Z   allow-unsafe-pr-checkout: false
+2026-11-12T07:20:36.9657619Z ##[endgroup]
+2026-11-12T07:20:37.1860008Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:20:37.1861651Z ##[group]Getting Git version info
+2026-11-12T07:20:37.1862257Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:20:37.1863128Z [command]/usr/bin/git version
+2026-11-12T07:20:37.1948456Z git version 2.56.0
+2026-11-12T07:20:37.1962185Z ##[endgroup]
+2026-11-12T07:20:37.1972607Z Temporarily overriding HOME='/home/runner/work/_temp/7c22b406-89dd-435c-8115-64c64c8de28a' before making global git config changes
+2026-11-12T07:20:37.1973823Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:20:37.1976729Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:20:37.2032852Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:20:37.2037320Z ##[group]Initializing the repository
+2026-11-12T07:20:37.2042247Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:20:37.2217719Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T07:20:37.2219013Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T07:20:37.2220052Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T07:20:37.2220789Z hint: call:
+2026-11-12T07:20:37.2221186Z hint:
+2026-11-12T07:20:37.2221658Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T07:20:37.2222157Z hint:
+2026-11-12T07:20:37.2222672Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T07:20:37.2223524Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T07:20:37.2224141Z hint:
+2026-11-12T07:20:37.2224486Z hint: 	git branch -m <name>
+2026-11-12T07:20:37.2224922Z hint:
+2026-11-12T07:20:37.2225495Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T07:20:37.2226864Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T07:20:37.2237803Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:20:37.2294089Z ##[endgroup]
+2026-11-12T07:20:37.2294839Z ##[group]Disabling automatic garbage collection
+2026-11-12T07:20:37.2297332Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T07:20:37.2338373Z ##[endgroup]
+2026-11-12T07:20:37.2339059Z ##[group]Setting up auth
+2026-11-12T07:20:37.2344336Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:20:37.2382997Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:20:37.2714659Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:20:37.2751695Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:20:37.2946556Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:20:37.2986768Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:20:37.3182998Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T07:20:37.3226364Z ##[endgroup]
+2026-11-12T07:20:37.3226968Z ##[group]Fetching the repository
+2026-11-12T07:20:37.3235352Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a2efb7bc7b01c4d979001f008e2c1fd6e7c9c086:refs/remotes/pull/6198/merge
+2026-11-12T07:20:41.8562938Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:20:41.8564181Z  * [new ref]         a2efb7bc7b01c4d979001f008e2c1fd6e7c9c086 -> pull/6198/merge
+2026-11-12T07:20:41.8566560Z ##[endgroup]
+2026-11-12T07:20:41.8567553Z ##[group]Determining the checkout info
+2026-11-12T07:20:41.8568497Z ##[endgroup]
+2026-11-12T07:20:41.8573271Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T07:20:41.9253006Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T07:20:41.9451885Z ##[group]Checking out the ref
+2026-11-12T07:20:41.9454534Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6198/merge
+2026-11-12T07:20:42.4574267Z Note: switching to 'refs/remotes/pull/6198/merge'.
+2026-11-12T07:20:42.4574800Z 
+2026-11-12T07:20:42.4575200Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T07:20:42.4575624Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T07:20:42.4576071Z state without impacting any branches by switching back to a branch.
+2026-11-12T07:20:42.4576372Z 
+2026-11-12T07:20:42.4576651Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T07:20:42.4577296Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T07:20:42.4578038Z 
+2026-11-12T07:20:42.4578170Z   git switch -c <new-branch-name>
+2026-11-12T07:20:42.4578330Z 
+2026-11-12T07:20:42.4578437Z Or undo this operation with:
+2026-11-12T07:20:42.4578598Z 
+2026-11-12T07:20:42.4578695Z   git switch -
+2026-11-12T07:20:42.4578841Z 
+2026-11-12T07:20:42.4579064Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T07:20:42.4579339Z 
+2026-11-12T07:20:42.4579557Z HEAD is now at a2efb7b Merge 52f936df6e7d3f55e65c133dd7d9c9d16ca699a2 into 1ac802f4b1196fe15c5d3ae730207ff585d41250
+2026-11-12T07:20:42.4600828Z ##[endgroup]
+2026-11-12T07:20:42.4647443Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T07:20:42.4678433Z a2efb7bc7b01c4d979001f008e2c1fd6e7c9c086
+2026-11-12T07:20:42.5176442Z ##[group]Run actions/setup-python@v5
+2026-11-12T07:20:42.5176664Z with:
+2026-11-12T07:20:42.5176811Z   python-version: 3.11
+2026-11-12T07:20:42.5176979Z   check-latest: false
+2026-11-12T07:20:42.5178351Z   token: ***
+2026-11-12T07:20:42.5178494Z   update-environment: true
+2026-11-12T07:20:42.5178655Z   allow-prereleases: false
+2026-11-12T07:20:42.5178827Z   freethreaded: false
+2026-11-12T07:20:42.5178977Z ##[endgroup]
+2026-11-12T07:20:42.6116437Z ##[group]Installed versions
+2026-11-12T07:20:42.6587706Z (node:2121) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T07:20:42.6588387Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T07:20:42.6607751Z Successfully set up CPython (3.11.18)
+2026-11-12T07:20:42.6608236Z ##[endgroup]
+2026-11-12T07:20:42.7183334Z ##[group]Run python3 -m unittest discover -v -s qualification/neuroscience-20261110 -p 'test_*.py'
+2026-11-12T07:20:42.7183856Z [36;1mpython3 -m unittest discover -v -s qualification/neuroscience-20261110 -p 'test_*.py'[0m
+2026-11-12T07:20:42.7220426Z shell: /usr/bin/bash -e {0}
+2026-11-12T07:20:42.7220625Z env:
+2026-11-12T07:20:42.7220808Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-12T07:20:42.7221093Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-12T07:20:42.7221346Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-12T07:20:42.7221573Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-12T07:20:42.7221805Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-12T07:20:42.7222034Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-12T07:20:42.7222235Z ##[endgroup]
+2026-11-12T07:20:43.0151617Z test_forensic_actions_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_actions_bound_before_materialization) ... ok
+2026-11-12T07:20:43.0163919Z test_forensic_feedback_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_feedback_bound_before_materialization) ... ok
+2026-11-12T07:20:43.0176586Z test_forensic_memory_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_memory_bound_before_materialization) ... ok
+2026-11-12T07:20:43.0265260Z test_paired_trial_raw_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_paired_trial_raw_bound_before_materialization) ... ok
+2026-11-12T07:20:43.0266221Z test_cross_lineage_generations_are_independent (test_cadence_generation.GenerationClockTests.test_cross_lineage_generations_are_independent) ... ok
+2026-11-12T07:20:43.0267021Z test_equal_generation_retry_is_not_auto_promoted (test_cadence_generation.GenerationClockTests.test_equal_generation_retry_is_not_auto_promoted) ... ok
+2026-11-12T07:20:43.0268085Z test_rollback_after_denied_opportunity_cannot_be_replayed (test_cadence_generation.GenerationClockTests.test_rollback_after_denied_opportunity_cannot_be_replayed) ... ok
+2026-11-12T07:20:43.0268989Z test_rollback_after_review_cannot_be_reviewed (test_cadence_generation.GenerationClockTests.test_rollback_after_review_cannot_be_reviewed) ... ok
+2026-11-12T07:20:43.0270357Z test_rollback_on_clock_denied_intermediate_is_still_rejected (test_cadence_generation.GenerationClockTests.test_rollback_on_clock_denied_intermediate_is_still_rejected) ... ok
+2026-11-12T07:20:43.1007806Z test_exact_limit_accepted_without_adoption (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_exact_limit_accepted_without_adoption) ... ok
+2026-11-12T07:20:43.1300447Z test_raw_event_limit_one_shot_iterator (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_raw_event_limit_one_shot_iterator) ... ok
+2026-11-12T07:20:43.1301530Z test_untrusted_event_object_rejected_as_contract_error (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_untrusted_event_object_rejected_as_contract_error) ... ok
+2026-11-12T07:20:43.1302583Z test_clock_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_clock_denied_event_still_advances_observed_sequence) ... ok
+2026-11-12T07:20:43.1303687Z test_evidence_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_evidence_denied_event_still_advances_observed_sequence) ... ok
+2026-11-12T07:20:43.1304585Z test_lineage_interleaving_and_equal_sequence_remain_valid (test_cadence_sequence_frontier.SequenceFrontierTests.test_lineage_interleaving_and_equal_sequence_remain_valid) ... ok
+2026-11-12T07:20:43.1308949Z test_balanced_family_roster_keeps_seed_randomization_unit (test_cohort_retention.CohortRetentionTests.test_balanced_family_roster_keeps_seed_randomization_unit) ... ok
+2026-11-12T07:20:43.1311084Z test_complete_four_arm_retention_unmodified (test_cohort_retention.CohortRetentionTests.test_complete_four_arm_retention_unmodified) ... ok
+2026-11-12T07:20:43.1312292Z test_mismatched_family_population_rejected (test_cohort_retention.CohortRetentionTests.test_mismatched_family_population_rejected) ... ok
+2026-11-12T07:20:43.1313969Z test_missing_no_eligibility_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_no_eligibility_retention_is_incomplete) ... ok
+2026-11-12T07:20:43.1315371Z test_missing_scalar_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_scalar_retention_is_incomplete) ... ok
+2026-11-12T07:20:43.1317312Z test_unequal_episode_counts_rejected (test_cohort_retention.CohortRetentionTests.test_unequal_episode_counts_rejected) ... ok
+2026-11-12T07:20:43.1318750Z test_evidence_denial_then_first_review_with_frozen_feedback (test_converged_prefix_clock.ConvergedPrefixClockTests.test_evidence_denial_then_first_review_with_frozen_feedback) ... ok
+2026-11-12T07:20:43.1320534Z test_future_bad_feedback_does_not_reopen_same_generation (test_converged_prefix_clock.ConvergedPrefixClockTests.test_future_bad_feedback_does_not_reopen_same_generation) ... ok
+2026-11-12T07:20:43.1321484Z test_bad_receipt_still_rejected (test_credit_order_invariance.CanonicalFeedbackOrderTests.test_bad_receipt_still_rejected) ... ok
+2026-11-12T07:20:43.1326393Z test_frozen_prefix_order_invariant (test_credit_order_invariance.CanonicalFeedbackOrderTests.test_frozen_prefix_order_invariant) ... ok
+2026-11-12T07:20:43.1331461Z test_same_digest_must_imply_same_numerical_delta (test_credit_order_invariance.CanonicalFeedbackOrderTests.test_same_digest_must_imply_same_numerical_delta) ... ok
+2026-11-12T07:20:43.1358551Z test_just_over_budget_after_valid_prefix_fails_closed (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_just_over_budget_after_valid_prefix_fails_closed) ... ok
+2026-11-12T07:20:43.1385044Z test_maximum_raw_future_suffix_is_bounded_and_causally_ignored (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_maximum_raw_future_suffix_is_bounded_and_causally_ignored) ... ok
+2026-11-12T07:20:43.1412476Z test_observed_feedback_remains_credited_with_maximum_future_suffix (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_observed_feedback_remains_credited_with_maximum_future_suffix) ... ok
+2026-11-12T07:20:43.1455529Z test_one_over_raw_limit_is_a_resource_refusal_not_an_adoption (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_one_over_raw_limit_is_a_resource_refusal_not_an_adoption) ... ok
+2026-11-12T07:20:43.1474174Z test_32_future_suffix_mutations_are_prefix_invariant (test_frozen_credit_view.FrozenCreditViewTests.test_32_future_suffix_mutations_are_prefix_invariant) ... ok
+2026-11-12T07:20:43.1476360Z test_all_ablation_arms_keep_frozen_authority (test_frozen_credit_view.FrozenCreditViewTests.test_all_ablation_arms_keep_frozen_authority) ... ok
+2026-11-12T07:20:43.1477762Z test_future_audit_counters_cannot_enter_frozen_selection_view (test_frozen_credit_view.FrozenCreditViewTests.test_future_audit_counters_cannot_enter_frozen_selection_view) ... ok
+2026-11-12T07:20:43.1480130Z test_future_content_mutation_does_not_change_frozen_view (test_frozen_credit_view.FrozenCreditViewTests.test_future_content_mutation_does_not_change_frozen_view) ... ok
+2026-11-12T07:20:43.1481141Z test_observed_zero_and_absent_remain_distinct (test_frozen_credit_view.FrozenCreditViewTests.test_observed_zero_and_absent_remain_distinct) ... ok
+2026-11-12T07:20:43.1481985Z test_projection_is_frozen_and_type_checked (test_frozen_credit_view.FrozenCreditViewTests.test_projection_is_frozen_and_type_checked) ... ok
+2026-11-12T07:20:43.1484431Z test_cross_seed_budget_opportunity_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_cross_seed_budget_opportunity_drift_is_rejected) ... ok
+2026-11-12T07:20:43.1486432Z test_cross_seed_evaluator_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_cross_seed_evaluator_drift_is_rejected) ... ok
+2026-11-12T07:20:43.1492979Z test_distinct_task_families_can_have_distinct_prelocked_evaluators (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_distinct_task_families_can_have_distinct_prelocked_evaluators) ... ok
+2026-11-12T07:20:43.1495491Z test_independent_training_seed_ability_digests_may_differ (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_independent_training_seed_ability_digests_may_differ) ... ok
+2026-11-12T07:20:43.1496829Z test_within_seed_evaluator_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_within_seed_evaluator_drift_is_rejected) ... ok
+2026-11-12T07:20:43.1498010Z test_before_after_time_no_implicit_same_key_revocation (test_frozen_replay_prefix.FrozenReplayPrefixTests.test_before_after_time_no_implicit_same_key_revocation) ... ok
+2026-11-12T07:20:43.1500357Z test_future_invalid_duplicate_and_revision_do_not_affect_frozen_roster (test_frozen_replay_prefix.FrozenReplayPrefixTests.test_future_invalid_duplicate_and_revision_do_not_affect_frozen_roster) ... ok
+2026-11-12T07:20:43.1501411Z test_future_valid_tombstone_only_affects_later_cutoff_and_never_revives (test_frozen_replay_prefix.FrozenReplayPrefixTests.test_future_valid_tombstone_only_affects_later_cutoff_and_never_revives) ... ok
+2026-11-12T07:20:43.1502456Z test_observed_future_sequence_must_be_well_typed (test_frozen_replay_prefix.FrozenReplayPrefixTests.test_observed_future_sequence_must_be_well_typed) ... ok
+2026-11-12T07:20:43.1503029Z test_present_invalid_fails_closed_even_if_future_ok (test_frozen_replay_prefix.FrozenReplayPrefixTests.test_present_invalid_fails_closed_even_if_future_ok) ... ok
+2026-11-12T07:20:43.1529636Z test_all_four_kinds_reachable_without_fact_first_starvation (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_all_four_kinds_reachable_without_fact_first_starvation) ... ok
+2026-11-12T07:20:43.1530651Z test_full_budget_and_exact_control_do_not_change (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_full_budget_and_exact_control_do_not_change) ... ok
+2026-11-12T07:20:43.1558164Z test_future_bad_event_cannot_change_frozen_seeded_choice (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_future_bad_event_cannot_change_frozen_seeded_choice) ... ok
+2026-11-12T07:20:43.1641264Z test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix) ... ok
+2026-11-12T07:20:43.1717636Z test_both_raw_future_iterators_fail_at_first_over_budget_item (test_joint_credit_mem_prefix_budget.JointCreditMemoryPrefixTests.test_both_raw_future_iterators_fail_at_first_over_budget_item) ... ok
+2026-11-12T07:20:43.1773313Z test_matching_credit_and_rotated_replay_share_a_causal_cutoff (test_joint_credit_mem_prefix_budget.JointCreditMemoryPrefixTests.test_matching_credit_and_rotated_replay_share_a_causal_cutoff) ... ok
+2026-11-12T07:20:43.1826156Z test_shared_input_budget_edge_is_admitted_without_future_leak (test_joint_credit_mem_prefix_budget.JointCreditMemoryPrefixTests.test_shared_input_budget_edge_is_admitted_without_future_leak) ... ok
+2026-11-12T07:20:43.1854845Z test_visible_deletion_is_sticky_without_changing_past_credit (test_joint_credit_mem_prefix_budget.JointCreditMemoryPrefixTests.test_visible_deletion_is_sticky_without_changing_past_credit) ... ok
+2026-11-12T07:20:43.2088370Z test_empty_line_flood_cannot_skip_input_budget (test_jsonl_admission.JsonlAdmissionTests.test_empty_line_flood_cannot_skip_input_budget) ... ok
+2026-11-12T07:20:43.2098922Z test_non_object_row_returns_contract_error (test_jsonl_admission.JsonlAdmissionTests.test_non_object_row_returns_contract_error) ... ok
+2026-11-12T07:20:43.2104542Z test_one_oversized_line_rejected_before_parse (test_jsonl_admission.JsonlAdmissionTests.test_one_oversized_line_rejected_before_parse) ... ok
+2026-11-12T07:20:43.2112533Z test_small_valid_four_arm_file_keeps_existing_report (test_jsonl_admission.JsonlAdmissionTests.test_small_valid_four_arm_file_keeps_existing_report) ... ok
+2026-11-12T07:20:43.2113844Z test_frozen_fields_exclude_future_forensic_metadata (test_prefix_prevalidation.PrefixPrevalidationTests.test_frozen_fields_exclude_future_forensic_metadata) ... ok
+2026-11-12T07:20:43.2115713Z test_future_duplicate_or_malformed_modulator_cannot_gate_selection (test_prefix_prevalidation.PrefixPrevalidationTests.test_future_duplicate_or_malformed_modulator_cannot_gate_selection) ... ok
+2026-11-12T07:20:43.2117017Z test_future_unknown_action_cannot_gate_frozen_selection (test_prefix_prevalidation.PrefixPrevalidationTests.test_future_unknown_action_cannot_gate_frozen_selection) ... ok
+2026-11-12T07:20:43.2118144Z test_non_integer_availability_cannot_be_misclassified_future (test_prefix_prevalidation.PrefixPrevalidationTests.test_non_integer_availability_cannot_be_misclassified_future) ... ok
+2026-11-12T07:20:43.2118792Z test_unobserved_bad_feedback_still_fails_closed (test_prefix_prevalidation.PrefixPrevalidationTests.test_unobserved_bad_feedback_still_fails_closed) ... ok
+2026-11-12T07:20:43.2119445Z test_valid_prefix_matches_full_forensic_audit (test_prefix_prevalidation.PrefixPrevalidationTests.test_valid_prefix_matches_full_forensic_audit) ... ok
+2026-11-12T07:20:43.2122349Z test_bindings_and_chronology_rejected (test_real_time.RealTimeTests.test_bindings_and_chronology_rejected) ... ok
+2026-11-12T07:20:43.2127372Z test_clocks_are_independent (test_real_time.RealTimeTests.test_clocks_are_independent) ... ok
+2026-11-12T07:20:43.2128853Z test_endpoint_reward_and_waiting (test_real_time.RealTimeTests.test_endpoint_reward_and_waiting) ... ok
+2026-11-12T07:20:43.2130467Z test_future_payload_does_not_affect_frozen_prefix (test_real_time.RealTimeTests.test_future_payload_does_not_affect_frozen_prefix) ... ok
+2026-11-12T07:20:43.2134003Z test_routing_clipping_expiration_and_scalar (test_real_time.RealTimeTests.test_routing_clipping_expiration_and_scalar) ... ok
+2026-11-12T07:20:43.2135373Z test_unit_scaling_preserves_math (test_real_time.RealTimeTests.test_unit_scaling_preserves_math) ... ok
+2026-11-12T07:20:43.2137502Z test_cross_phase_same_source_or_physical_alias_rejected (test_replay_perception_native.PhaseContractTests.test_cross_phase_same_source_or_physical_alias_rejected) ... ok
+2026-11-12T07:20:43.2158402Z test_external_pin_duplicate_json_and_nonfinite_rejected (test_replay_perception_native.PhaseContractTests.test_external_pin_duplicate_json_and_nonfinite_rejected) ... ok
+2026-11-12T07:20:43.2159666Z test_fixture_and_duplicate_arm_cannot_be_admitted (test_replay_perception_native.PhaseContractTests.test_fixture_and_duplicate_arm_cannot_be_admitted) ... ok
+2026-11-12T07:20:43.2163869Z test_missing_outcome_preserves_plan_and_blocks_effect_estimate (test_replay_perception_native.PhaseContractTests.test_missing_outcome_preserves_plan_and_blocks_effect_estimate) ... ok
+2026-11-12T07:20:43.2603023Z test_native_dependencies_are_checked_before_unchanged_driver_import (test_replay_perception_native.PhaseContractTests.test_native_dependencies_are_checked_before_unchanged_driver_import) ... ok
+2026-11-12T07:20:43.3643727Z test_process_death_retains_unknown_and_never_redispatches (test_replay_perception_native.PhaseContractTests.test_process_death_retains_unknown_and_never_redispatches) ... ok
+2026-11-12T07:20:43.3644901Z test_quality_and_cost_domains_and_missing_owner_decision (test_replay_perception_native.PhaseContractTests.test_quality_and_cost_domains_and_missing_owner_decision) ... ok
+2026-11-12T07:20:43.3645938Z test_sealed_case_and_training_source_mismatch_rejected (test_replay_perception_native.PhaseContractTests.test_sealed_case_and_training_source_mismatch_rejected) ... ok
+2026-11-12T07:20:43.3647009Z test_self_consistent_replaced_context_cannot_replace_frozen_roster (test_replay_perception_native.PhaseContractTests.test_self_consistent_replaced_context_cannot_replace_frozen_roster) ... ok
+2026-11-12T07:20:43.3648618Z test_source_split_does_not_open_reference_or_count_seed_as_source (test_replay_perception_native.PhaseContractTests.test_source_split_does_not_open_reference_or_count_seed_as_source) ... ok
+2026-11-12T07:20:43.3649747Z test_duplicate_attempt_consumes_its_allowed_clock_slot (test_review_generation_fence.DuplicateReviewedGenerationTests.test_duplicate_attempt_consumes_its_allowed_clock_slot) ... ok
+2026-11-12T07:20:43.3650901Z test_evidence_denied_can_receive_first_review_when_new_evidence_arrives (test_review_generation_fence.DuplicateReviewedGenerationTests.test_evidence_denied_can_receive_first_review_when_new_evidence_arrives) ... ok
+2026-11-12T07:20:43.3652142Z test_same_generation_across_separate_lineages_remains_independent (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_across_separate_lineages_remains_independent) ... ok
+2026-11-12T07:20:43.3653292Z test_same_generation_cannot_be_reviewed_twice_after_clock_gap (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_cannot_be_reviewed_twice_after_clock_gap) ... ok
+2026-11-12T07:20:43.3654310Z test_full_budget_and_exact_key_unchanged (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_full_budget_and_exact_key_unchanged) ... ok
+2026-11-12T07:20:43.3667171Z test_narrow_budget_seed_changes_the_starting_kind (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_narrow_budget_seed_changes_the_starting_kind) ... ok
+2026-11-12T07:20:43.3670101Z test_stable_under_input_reordering_and_repeat_reads (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_stable_under_input_reordering_and_repeat_reads) ... ok
+2026-11-12T07:20:43.3674179Z test_tombstoned_kind_does_not_reappear_through_rotation (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_tombstoned_kind_does_not_reappear_through_rotation) ... ok
+2026-11-12T07:20:43.3678967Z test_all_arms_cannot_drift_from_frozen_design (test_source_contrast.SourceContrastTests.test_all_arms_cannot_drift_from_frozen_design) ... ok
+2026-11-12T07:20:43.3690657Z test_canonical_order_and_future_suffix_preserve_digest (test_source_contrast.SourceContrastTests.test_canonical_order_and_future_suffix_preserve_digest) ... ok
+2026-11-12T07:20:43.3692655Z test_clock_boot_and_availability_cannot_change_under_same_bytes (test_source_contrast.SourceContrastTests.test_clock_boot_and_availability_cannot_change_under_same_bytes) ... ok
+2026-11-12T07:20:43.3713163Z test_eight_seeds_remain_one_declared_source (test_source_contrast.SourceContrastTests.test_eight_seeds_remain_one_declared_source) ... ok
+2026-11-12T07:20:43.3714498Z test_equal_bits_and_ids_do_not_substitute_payload (test_source_contrast.SourceContrastTests.test_equal_bits_and_ids_do_not_substitute_payload) ... ok
+2026-11-12T07:20:43.3718110Z test_learning_first_crossing_is_interval_censored (test_source_contrast.SourceContrastTests.test_learning_first_crossing_is_interval_censored) ... ok
+2026-11-12T07:20:43.3719239Z test_learning_nonattainment_remains_right_censored (test_source_contrast.SourceContrastTests.test_learning_nonattainment_remains_right_censored) ... ok
+2026-11-12T07:20:43.3720398Z test_missing_scalar_retention_withholds_full_retention_panel (test_source_contrast.SourceContrastTests.test_missing_scalar_retention_withholds_full_retention_panel) ... ok
+2026-11-12T07:20:43.3721492Z test_route_must_match_preregistered_permutation (test_source_contrast.SourceContrastTests.test_route_must_match_preregistered_permutation) ... ok
+2026-11-12T07:20:43.3723277Z test_unknown_and_missing_preserve_denominator_without_mean (test_source_contrast.SourceContrastTests.test_unknown_and_missing_preserve_denominator_without_mean) ... ok
+2026-11-12T07:20:43.3724370Z test_workload_cannot_be_relabelled_as_another_source (test_source_contrast.SourceContrastTests.test_workload_cannot_be_relabelled_as_another_source) ... ok
+2026-11-12T07:20:43.3725310Z test_empty_feedback_cannot_bypass_invalid_actions (test_sparse_no_feedback.SparseNoFeedbackTests.test_empty_feedback_cannot_bypass_invalid_actions) ... ok
+2026-11-12T07:20:43.3726908Z test_future_receipt_is_forensic_only_not_frozen_causal_feature (test_sparse_no_feedback.SparseNoFeedbackTests.test_future_receipt_is_forensic_only_not_frozen_causal_feature) ... ok
+2026-11-12T07:20:43.3728837Z test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) ... ok
+2026-11-12T07:20:43.3729928Z test_observed_zero_is_not_absent_feedback (test_sparse_no_feedback.SparseNoFeedbackTests.test_observed_zero_is_not_absent_feedback) ... ok
+2026-11-12T07:20:43.3730895Z test_receipt_without_matching_action_is_not_absence (test_sparse_no_feedback.SparseNoFeedbackTests.test_receipt_without_matching_action_is_not_absence) ... ok
+2026-11-12T07:20:43.3731826Z test_clock_and_independent_eval_both_gate_approval (test_study.CadenceTests.test_clock_and_independent_eval_both_gate_approval) ... ok
+2026-11-12T07:20:43.3732636Z test_must_declare_all_clocks_and_reject_time_regression (test_study.CadenceTests.test_must_declare_all_clocks_and_reject_time_regression) ... ok
+2026-11-12T07:20:43.3733461Z test_action_order_does_not_change_identity_or_result (test_study.CreditTests.test_action_order_does_not_change_identity_or_result) ... ok
+2026-11-12T07:20:43.3734094Z test_all_arms_present (test_study.CreditTests.test_all_arms_present) ... ok
+2026-11-12T07:20:43.3734656Z test_delayed_evidence_decays_and_expires (test_study.CreditTests.test_delayed_evidence_decays_and_expires) ... ok
+2026-11-12T07:20:43.3735487Z test_duplicate_or_forged_feedback_is_rejected (test_study.CreditTests.test_duplicate_or_forged_feedback_is_rejected) ... ok
+2026-11-12T07:20:43.3736266Z test_eval_split_and_overweight_eligibility_rejected (test_study.CreditTests.test_eval_split_and_overweight_eligibility_rejected) ... ok
+2026-11-12T07:20:43.3738749Z test_frozen_prefix_changes_only_when_feedback_becomes_available (test_study.CreditTests.test_frozen_prefix_changes_only_when_feedback_becomes_available) ... ok
+2026-11-12T07:20:43.3741145Z test_frozen_prefix_ignores_future_receipt_count_and_labels (test_study.CreditTests.test_frozen_prefix_ignores_future_receipt_count_and_labels) ... ok
+2026-11-12T07:20:43.3742367Z test_future_feedback_must_not_train_the_past (test_study.CreditTests.test_future_feedback_must_not_train_the_past) ... ok
+2026-11-12T07:20:43.3745492Z test_information_matched_routing_ablation_separates_on_known_fixture (test_study.CreditTests.test_information_matched_routing_ablation_separates_on_known_fixture) ... ok
+2026-11-12T07:20:43.3746637Z test_projected_updates_honor_both_trust_bounds (test_study.CreditTests.test_projected_updates_honor_both_trust_bounds) ... ok
+2026-11-12T07:20:43.3758087Z test_capability_feedback_and_budget_mismatch_fail_closed (test_study.PairedEvidenceTests.test_capability_feedback_and_budget_mismatch_fail_closed) ... ok
+2026-11-12T07:20:43.3768111Z test_claims_cannot_be_certified_by_a_flag (test_study.PairedEvidenceTests.test_claims_cannot_be_certified_by_a_flag) ... ok
+2026-11-12T07:20:43.3768930Z test_missing_arm_is_not_zero_or_success (test_study.PairedEvidenceTests.test_missing_arm_is_not_zero_or_success) ... ok
+2026-11-12T07:20:43.3769549Z test_negative_cost_rejected (test_study.PairedEvidenceTests.test_negative_cost_rejected) ... ok
+2026-11-12T07:20:43.3770222Z test_paired_net_calculation_and_no_production_claim (test_study.PairedEvidenceTests.test_paired_net_calculation_and_no_production_claim) ... ok
+2026-11-12T07:20:43.3770947Z test_reused_outcome_receipt_is_rejected (test_study.PairedEvidenceTests.test_reused_outcome_receipt_is_rejected) ... ok
+2026-11-12T07:20:43.3771622Z test_reused_seed_is_one_independent_cluster (test_study.PairedEvidenceTests.test_reused_seed_is_one_independent_cluster) ... ok
+2026-11-12T07:20:43.3772401Z test_corrected_logical_revision_never_replays_prior_version (test_study.ReplayTests.test_corrected_logical_revision_never_replays_prior_version) ... ok
+2026-11-12T07:20:43.3773203Z test_deletion_and_future_cutoff_cover_all_replay_policies (test_study.ReplayTests.test_deletion_and_future_cutoff_cover_all_replay_policies) ... ok
+2026-11-12T07:20:43.3774314Z test_explicit_identity_cannot_tombstone_unrelated_implicit_event (test_study.ReplayTests.test_explicit_identity_cannot_tombstone_unrelated_implicit_event) ... ok
+2026-11-12T07:20:43.3775189Z test_revocation_is_sticky_and_ambiguous_revision_is_rejected (test_study.ReplayTests.test_revocation_is_sticky_and_ambiguous_revision_is_rejected) ... ok
+2026-11-12T07:20:43.3775964Z test_stratified_replay_gives_old_episode_coverage (test_study.ReplayTests.test_stratified_replay_gives_old_episode_coverage) ... ok
+2026-11-12T07:20:43.3776782Z test_tombstone_blocks_old_and_later_versions_without_owner_regrant (test_study.ReplayTests.test_tombstone_blocks_old_and_later_versions_without_owner_regrant) ... ok
+2026-11-12T07:20:43.3777436Z 
+2026-11-12T07:20:43.3777583Z ----------------------------------------------------------------------
+2026-11-12T07:20:43.3777878Z Ran 129 tests in 0.364s
+2026-11-12T07:20:43.3777998Z 
+2026-11-12T07:20:43.3778069Z OK
+2026-11-12T07:20:43.3989240Z Post job cleanup.
+2026-11-12T07:20:43.4809030Z (node:2137) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T07:20:43.4809519Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T07:20:43.5014155Z Post job cleanup.
+2026-11-12T07:20:43.6218445Z [command]/usr/bin/git version
+2026-11-12T07:20:43.6238359Z git version 2.56.0
+2026-11-12T07:20:43.6272338Z Temporarily overriding HOME='/home/runner/work/_temp/9ae1678a-da7b-427e-9abf-3e01dcbe0b63' before making global git config changes
+2026-11-12T07:20:43.6273143Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:20:43.6275436Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:20:43.6335917Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:20:43.6374112Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:20:43.6620032Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:20:43.6650165Z http.https://github.com/.extraheader
+2026-11-12T07:20:43.6669258Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-12T07:20:43.6704928Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:20:43.6949157Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:20:43.6993908Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:20:43.7373115Z Cleaning up orphan processes
+2026-11-12T07:20:43.7651430Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

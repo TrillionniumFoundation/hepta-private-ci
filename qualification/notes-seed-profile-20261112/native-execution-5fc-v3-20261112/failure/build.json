@@ -1,0 +1,58 @@
+{
+  "after": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "command": [
+    "env",
+    "--chdir=codex-rs",
+    "/home/qq/.cargo/bin/rustup",
+    "run",
+    "1.96.0",
+    "cargo",
+    "build",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--bin",
+    "codex-hepta-agentd",
+    "--bin",
+    "hepta-notes-thread-seed"
+  ],
+  "command_exit_code": 101,
+  "elapsed_seconds": 22.12454494088888,
+  "exit_code": 101,
+  "finished_at": "2026-11-12T12:35:02.422981+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 23843,
+  "log_file": "build.json.1b3f5701cd794a82911df6e7445845af.log",
+  "log_sha256": "3794841c799304fbff428ae9be1de6f7ddc953d39a40e353137c0cff04514bee",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 101,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "started_at": "2026-11-12T12:34:40.297012+00:00",
+  "status": "failed",
+  "tested_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "timed_out": false,
+  "working_directory": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/source"
+}

@@ -1,0 +1,396 @@
+{
+  "source_sha": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "job_id": 131459875770,
+  "failed": [
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 2372,
+          "printed_status": "ABRT",
+          "attempt": 1,
+          "elapsed": "3.961s"
+        },
+        {
+          "line": 2384,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "3.842s"
+        },
+        {
+          "line": 3408,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "3.842s"
+        }
+      ],
+      "status": "SIGABRT",
+      "elapsed": "3.842s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal",
+      "occurrences": [
+        {
+          "line": 2396,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "24.693s"
+        },
+        {
+          "line": 2449,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "23.845s"
+        },
+        {
+          "line": 3409,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "23.845s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "23.845s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+      "occurrences": [
+        {
+          "line": 2423,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "24.254s"
+        },
+        {
+          "line": 2475,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "23.141s"
+        },
+        {
+          "line": 3410,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "23.141s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "23.141s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 2501,
+          "printed_status": "ABRT",
+          "attempt": 1,
+          "elapsed": "0.773s"
+        },
+        {
+          "line": 2513,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.953s"
+        },
+        {
+          "line": 3412,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.953s"
+        }
+      ],
+      "status": "SIGABRT",
+      "elapsed": "0.953s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_once_reads_originals_and_readonly_evidence",
+      "occurrences": [
+        {
+          "line": 2524,
+          "printed_status": "ABRT",
+          "attempt": 1,
+          "elapsed": "0.434s"
+        },
+        {
+          "line": 2536,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.462s"
+        },
+        {
+          "line": 3413,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.462s"
+        }
+      ],
+      "status": "SIGABRT",
+      "elapsed": "0.462s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+      "occurrences": [
+        {
+          "line": 2548,
+          "printed_status": "ABRT",
+          "attempt": 1,
+          "elapsed": "0.405s"
+        },
+        {
+          "line": 2560,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.621s"
+        },
+        {
+          "line": 3414,
+          "printed_status": "ABRT",
+          "attempt": 2,
+          "elapsed": "0.621s"
+        }
+      ],
+      "status": "SIGABRT",
+      "elapsed": "0.621s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+      "occurrences": [
+        {
+          "line": 2571,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "31.268s"
+        },
+        {
+          "line": 2591,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "32.293s"
+        },
+        {
+          "line": 3411,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "32.293s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "32.293s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "occurrences": [
+        {
+          "line": 2612,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "29.061s"
+        },
+        {
+          "line": 2653,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.377s"
+        },
+        {
+          "line": 3415,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.377s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "28.377s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "occurrences": [
+        {
+          "line": 2631,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "28.659s"
+        },
+        {
+          "line": 2671,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.480s"
+        },
+        {
+          "line": 3416,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.480s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "28.480s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "occurrences": [
+        {
+          "line": 2697,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "30.270s"
+        },
+        {
+          "line": 2742,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "26.659s"
+        },
+        {
+          "line": 3417,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "26.659s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "26.659s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+      "occurrences": [
+        {
+          "line": 2719,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "27.099s"
+        },
+        {
+          "line": 2763,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.700s"
+        },
+        {
+          "line": 3418,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "28.700s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "28.700s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source",
+      "occurrences": [
+        {
+          "line": 2785,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "29.273s"
+        },
+        {
+          "line": 2829,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "27.512s"
+        },
+        {
+          "line": 3419,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "27.512s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "27.512s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+      "occurrences": [
+        {
+          "line": 2808,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "27.167s"
+        },
+        {
+          "line": 2852,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "26.897s"
+        },
+        {
+          "line": 3420,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "26.897s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "26.897s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+      "occurrences": [
+        {
+          "line": 2885,
+          "printed_status": "FAIL",
+          "attempt": 1,
+          "elapsed": "44.534s"
+        },
+        {
+          "line": 2910,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "45.782s"
+        },
+        {
+          "line": 3421,
+          "printed_status": "FAIL",
+          "attempt": 2,
+          "elapsed": "45.782s"
+        }
+      ],
+      "status": "FAIL",
+      "elapsed": "45.782s"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "occurrences": [
+        {
+          "line": 2937,
+          "printed_status": "TMT",
+          "attempt": 1,
+          "elapsed": "60.010s"
+        },
+        {
+          "line": 2952,
+          "printed_status": "TMT",
+          "attempt": 2,
+          "elapsed": "60.012s"
+        },
+        {
+          "line": 3422,
+          "printed_status": "TMT",
+          "attempt": 2,
+          "elapsed": "60.012s"
+        }
+      ],
+      "status": "TIMEOUT",
+      "elapsed": "60.012s"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.clang-resource-readonly.evidence.v1",
+  "job_id": "1a1cfc87ac7-2564-1ab4",
+  "idempotency_key": "neuro4-act-owner-clang-resource-readonly-862531d-v1",
+  "request_blob": "429f0a994ba801d1b75d880735a3055add56f09d",
+  "source_blob": "91e7fbe2b0396b84d2380399e6fe5f7163fdea2f",
+  "complete_output_observed": true,
+  "supervisor_exit_code": "NOT_READ",
+  "observations": {
+    "uid": 1000,
+    "euid": 1000,
+    "clang_executables_on_original_PATH": "clang,clang-21,clang-20,clang-19 not found",
+    "libclang_realpath": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+    "libclang_bytes": 32691984,
+    "libclang_sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+    "direct_C_API_version": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+    "installed_package": "libclang1-21 1:21.1.8-6ubuntu1",
+    "matching_development_package_query": "dpkg-query reports no package matching clang-21 or libclang-common-21-dev",
+    "GCC_stddef": "Exists and owned by libgcc-15-dev; not treated as Clang built-in resource"
+  },
+  "limitations": [
+    "PATH lookup and package status do not prove no resource or executable exists elsewhere. The original Clang::find llvm-config branch requires the bounded follow-up.",
+    "bindgen source matching context was truncated119→100 selected lines; complete relevant branch is requested in follow-up.",
+    "No source/system package/include path changed. No build/link/actor execution. No compiler success inferred from metadata."
+  ],
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-diagnostic-20261112/ADMISSION_ORIGINAL.json",
+      "representation": "Original first-start SDK text; stable key and original request digest preserved.",
+      "bytes": 8680,
+      "sha256": "d439e36cf87a9eb01f7fc808e616addc7e64011ddb2e2b5a0c8873bcf2568494",
+      "blob": "162095a8bc6c5b6840fba3c7bd2d53cdddd30ec6"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-diagnostic-20261112/READ_0_ORIGINAL_SDK.json",
+      "representation": "Original process-read SDK text; bytes0..16384.",
+      "bytes": 51107,
+      "sha256": "ac62189a540af0d047049bccd4552e5a976dff2956dd410bbc6fec008ecd5ae5",
+      "blob": "ceeae0a876a1e8fdd00ed84a5672cf0ba900c301"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-diagnostic-20261112/READ_1_ORIGINAL_SDK.json",
+      "representation": "Original process-read SDK text; bytes16384..30316.",
+      "bytes": 43458,
+      "sha256": "5d8a799d45d9e85a79a1abc810c16b53b48bf21dda028f0642cc32a7a3ed3276",
+      "blob": "73df1cca6634ee72498b796006ef546a857db516"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/clang-resource-diagnostic-20261112/OUTPUT.json",
+      "representation": "Complete original stdout bytes reconstructed losslessly from independent byte cursors and bytes_hex. Both returned stderr streams were empty.",
+      "bytes": 30316,
+      "sha256": "1579507ce351f1f0a6b9a8fe7711f0db5247ba52bdf9dc294a1fa94f4d157ff6",
+      "blob": "4e3ce252d1368a46f31021c469f32ab7b0300091"
+    }
+  ]
+}

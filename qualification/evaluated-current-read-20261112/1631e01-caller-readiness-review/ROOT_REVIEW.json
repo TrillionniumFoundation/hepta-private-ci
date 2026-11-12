@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "review_kind": "independent static exact-byte source correction review",
+  "base_sha": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+  "base_tree": "b3be3ac47b29385ffbb402e42b24a7e0aa3bdd29",
+  "candidate_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "reviewed_paths": [
+    {
+      "path": "CALLERS.toml",
+      "base_bytes": 1126283,
+      "post_bytes": 1126347,
+      "post_sha256": "d42625c55da0982b86c8870887e9300835958afa9e2b35723f9399058ae3879d",
+      "diff": {
+        "offset": 187747,
+        "old": "",
+        "new": ", \"codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs\"",
+        "oldline": 3230
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base_bytes": 11699,
+      "post_bytes": 11699,
+      "post_sha256": "261d5ea4dc1e51b2a4a17e3bf21e9bca3cec5912e4ac5a70d7d4e11883b79d61",
+      "diff": {
+        "offset": 11461,
+        "old": "07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf",
+        "new": "d42625c55da0982b86c8870887e9300835958afa9e2b35723f9399058ae3879d",
+        "oldline": 95
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base_bytes": 25677,
+      "post_bytes": 25741,
+      "post_sha256": "71d68ac965c9cb7af73ceeb9245ad0989c1945a8e7162d5828aeae1f2a21bd46",
+      "diff": {
+        "offset": 9263,
+        "old": "",
+        "new": " \"codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs\",",
+        "oldline": 70
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base_bytes": 17401,
+      "post_bytes": 17465,
+      "post_sha256": "6bde92cfa1677e7f18c868ab193d03e6efb89a67da34a5406edad8cb27ef507e",
+      "diff": {
+        "offset": 5398,
+        "old": "",
+        "new": " \"codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs\",",
+        "oldline": 41
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base_bytes": 16402,
+      "post_bytes": 16466,
+      "post_sha256": "2f341a160225413d09823b7d4b4ad8e4e70c7669f1824dc7fe51b538a7b20e43",
+      "diff": {
+        "offset": 5619,
+        "old": "",
+        "new": " \"codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs\",",
+        "oldline": 42
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "base_bytes": 14911,
+      "post_bytes": 14975,
+      "post_sha256": "d3224f59f3c9e25d6de15daa6f9c016c6a5c5fb4ec027631d5688af0cc087a5b",
+      "diff": {
+        "offset": 5532,
+        "old": "",
+        "new": " \"codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs\",",
+        "oldline": 41
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "base_bytes": 4535,
+      "post_bytes": 4562,
+      "post_sha256": "f07aa067607edbbe18b68b8a02f0ed647ccb74b59208497e59dde0166a787c64",
+      "diff": {
+        "offset": 1078,
+        "old": "",
+        "new": ": context.legacy()?.clone()",
+        "oldline": 33
+      }
+    }
+  ],
+  "read_profile_blob": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+  "readiness_blob": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+  "readcap_blob": "7659699dbf3517e232bdab92449d4c86846fbece",
+  "actual_encoder_call_blob": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+  "boundaries_unchanged": 541,
+  "protected_records_unchanged": 389,
+  "active_allowlist_paths": 61,
+  "unique_callers_pin": true,
+  "reason": "Register existing evaluated-read encoder call; extract the original legacy DTO for the test-only completion-readiness fixture.",
+  "type_review": "legacy() is pub(super) within read-capability and visible to its readiness test descendant; it returns a borrowed Clone DTO only for TrainingNoUpdate and rejects Evaluated. The original binding, channel and retained state move unchanged.",
+  "production_or_checker_changed": false,
+  "assertions_removed": false,
+  "actual_new_compile_or_test_result": null,
+  "published_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "published_ref_readback": true,
+  "compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+    "head": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    },
+    "merge_base_commit": {
+      "sha": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    },
+    "files": [
+      {
+        "filename": ".github/blob-size-allowlist.txt",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "CALLERS.toml",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      }
+    ]
+  },
+  "prior_root_review_parser_error": "An initial root allowlist review assumed every line had a sha256 prefix; seven valid path-only entries were then handled per original parser. No source or policy was changed by that review."
+}

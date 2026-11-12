@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "source_sha": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579399,
+  "job_id": 131459875770,
+  "conclusion": "failure",
+  "completed_at": "2026-11-12T20:44:16Z",
+  "execution_gate_unit_tests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "scoped_owner_libraries": {
+    "testcases": 1447,
+    "passed": 1432,
+    "ordinary_fail": 10,
+    "sigabrt": 4,
+    "timed_out": 1,
+    "excluded_tests": 98,
+    "test_elapsed_seconds": 1224.028,
+    "wrapper_elapsed_seconds": 1512.831266916,
+    "command_exit_code": 100,
+    "observed_attempts_for_failing_methods": 2,
+    "retry_note": "Original shared workflow command did not supply --retries 0; the original log records TRY 1 and TRY 2. Do not reuse the daemon lane's retries=0 or count attempts as independent methods."
+  },
+  "same_failure_identity_set_as_daemon_native": true,
+  "junit_collector": {
+    "testcases": 1447,
+    "failures": 15,
+    "errors": 0,
+    "skipped_in_xml": 0,
+    "xml_independently_downloaded": false
+  },
+  "source_identity": {
+    "same_source_and_tree_before_after": true,
+    "git_dirty_false": true,
+    "source_unchanged_step": "success",
+    "full_file_inventory_payload_downloaded": false
+  },
+  "helper": {
+    "same_source_build": "success",
+    "verify_then_junit_step": "failure due retained failed JUnit",
+    "claim_scope": "Helper after-verification precedes the printed JUnit collector in the original bash -e step; no separate successful suite is inferred."
+  },
+  "original_log": {
+    "job_id": 131459875770,
+    "bytes": 487357,
+    "sha256": "bfc700d24ab03a6013958e45c6d569cef9f68e3b2cab371400e4e2fc1a58f2ff",
+    "git_blob_sha": "bd0c7d1a519ef832991cf1719379252bc465b417",
+    "concat_order": [
+      "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part001.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part002.log.txt"
+    ]
+  },
+  "artifact_as_reported": {
+    "id": 13981898530,
+    "bytes": 200178,
+    "sha256": "cd3321964f6f5fa32c0d5771ade8338ec919cc987e54ea857bae07c5d9625820",
+    "members": 14,
+    "downloaded": false
+  },
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part001.log.txt",
+      "bytes": 250026,
+      "sha256": "b853346c5c9f67b35e7309bb206d2db048383240b320652420d9d457850e0378",
+      "git_blob_sha": "109f716096da3e5320bfca4d1629ff617d486b0e",
+      "origin": "original decoded GitHub job log prefix"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part002.log.txt",
+      "bytes": 237331,
+      "sha256": "7466053f64c657359faa4c65bcecfa96ad56ae1ae1ad6c1d56d64ca9a6e82c79",
+      "git_blob_sha": "c00a3a41429588075d27596d9797803dac1c679d",
+      "origin": "contiguous original decoded GitHub job log suffix"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOBS.json",
+      "bytes": 3795,
+      "sha256": "722b381e872de2b566106c419b6c58f8c70899b88cf86d25e94f5ea0069322cb",
+      "git_blob_sha": "8281914ed5438be5918ea3443595a81d2f141870",
+      "origin": "original Jobs API response observed 2026-11-12T20:47:32.875Z"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/METHOD_RESULTS.jsonl",
+      "bytes": 410275,
+      "sha256": "55855ec5e41c592cd8eadc7f22d59cc7d019599ce758b3ef4f7e3557940f2791",
+      "git_blob_sha": "747b5804ffd1fcbe6e9a4a607bce0255e14d602f",
+      "origin": "derived per-method statuses retaining all printed attempt and final-replay line positions"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/FAILURE_INDEX.json",
+      "bytes": 12711,
+      "sha256": "349966159bc9d7ffec2c14e535184aa11b5933e3c5596f9473d104b8753a5388",
+      "git_blob_sha": "22591be9cd5cc55efe23cf140c9abee40ec1b5a5",
+      "origin": "derived exact fully qualified failure identities"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/EXECUTION_GATE_FROM_JOBLOG.json",
+      "bytes": 1335,
+      "sha256": "fe0e1e9ab5f6677f9464dcbf00054cc1924624db2ab59b5d5c07e5c2605a424f",
+      "git_blob_sha": "7f2694be695072ca98d04b9e4f48cd083177677b",
+      "origin": "exact original JSON payload line from timestamped job log; not independently downloaded artifact member",
+      "original_job_log_line": 241
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/HELPER_BUILD_FROM_JOBLOG.json",
+      "bytes": 113,
+      "sha256": "a5fd66fdf312b15177190402aceb7db771fcd3e6e82744e170e533e8a7a19e04",
+      "git_blob_sha": "6c45514370cf179d51b9eb0b80e9a4471decda96",
+      "origin": "exact original JSON payload line from timestamped job log; not independently downloaded artifact member",
+      "original_job_log_line": 675
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/EXECUTION_FROM_JOBLOG.json",
+      "bytes": 1404,
+      "sha256": "88865d0eb850b2069626c24ad77f713345289c9d7e999d1780c0e15287422570",
+      "git_blob_sha": "1490cc5b052f5be061827792bb8d6e7ced9eebe9",
+      "origin": "exact original JSON payload line from timestamped job log; not independently downloaded artifact member",
+      "original_job_log_line": 3425
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JUNIT_FROM_JOBLOG.json",
+      "bytes": 802,
+      "sha256": "5e48f3ad5e8fe43f0c46ced36ad69a2f133f0d6c231fd176e0701f92765bd434",
+      "git_blob_sha": "1be4966479bfbb60babd87528d96ee57ca7da229",
+      "origin": "exact original JSON payload line from timestamped job log; not independently downloaded artifact member",
+      "original_job_log_line": 3454
+    }
+  ],
+  "readback": {
+    "all_payloads_exact": true,
+    "whole_log_equal": true
+  },
+  "limits": [
+    "This is the original separate three-package shared-owner gate; its passing methods are not added to the five-package daemon gate as a disjoint denominator.",
+    "No Root or scientific adoption qualification follows from this failure record.",
+    "Original nanosecond JSON bytes are retained without reserialization."
+  ]
+}

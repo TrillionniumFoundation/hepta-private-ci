@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "import hashlib,json,os,shutil,signal,stat,subprocess,sys,time\nfrom pathlib import Path\nsignal.signal(signal.SIGALRM,lambda *_: (_ for _ in ()).throw(TimeoutError(\"Native readiness read exceeded 35 seconds\")))\nsignal.setitimer(signal.ITIMER_REAL,35)\nbegan=time.monotonic()\ntools={\n \"just\":(\"/home/qq/neuro-owner-tools-862531d11598/v1/bin/just\",\"4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7\"),\n \"nextest\":(\"/home/qq/neuro-owner-tools-862531d11598/v1/bin/cargo-nextest\",\"e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1\"),\n \"dotslash\":(\"/home/qq/neuro-owner-tools-862531d11598/dotslash-0.5.9-v1/bin/dotslash\",\"54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936\"),\n \"protoc\":(\"/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/bin/protoc\",\"e8d496f7dacade5bf42a11f4fbeb61e9bdfddd494fd292f5f1881ddc169e69cf\"),\n}\nrust=Path(\"/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin\")\nfor name in (\"rustc\",\"cargo\",\"rustfmt\"):\n tools[name]=(str(rust/name),None)\nfor name in (\"rustup\",\"git\",\"cc\",\"gcc\",\"g++\",\"pkg-config\",\"bwrap\"):\n path=shutil.which(name)\n if not path and name==\"rustup\" and Path(\"/home/qq/.cargo/bin/rustup\").is_file():\n  path=\"/home/qq/.cargo/bin/rustup\"\n if not path and name==\"dotslash\":\n  for candidate in (\"/usr/local/bin/dotslash\",\"/usr/bin/dotslash\",\"/home/qq/.cargo/bin/dotslash\",\"/home/qq/neuro-owner-tools-862531d11598/v1/bin/dotslash\"):\n   if Path(candidate).is_file():\n    path=candidate\n    break\n tools[name]=(path,None)\nenv=dict(os.environ)\nenv[\"PATH\"]=str(rust)+\":/home/qq/neuro-owner-tools-862531d11598/v1/bin:/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/bin:\"+env.get(\"PATH\",\"/usr/bin:/bin\")\ndef run(argv):\n p=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=12,env=env)\n return {\"argv\":argv,\"exit_code\":p.returncode,\"stdout\":p.stdout[:3000],\"stderr\":p.stderr[:1000]}\ndef hash_file(path):\n h=hashlib.sha256()\n with open(path,\"rb\") as stream:\n  for part in iter(lambda:stream.read(1048576),b\"\"):h.update(part)\n return h.hexdigest()\nout={\"schema\":\"hepta.act6243.native-readiness-readonly.v1\",\"uid\":os.getuid(),\"euid\":os.geteuid(),\n \"cwd\":os.getcwd(),\"sampled_unix_ns\":time.time_ns(),\"tool_metadata\":{},\"disk\":{},\n \"actors\":0,\"builds\":0,\"installs\":0,\"source_or_worktree_writes\":0,\"readiness_revision\":2}\nfor name,(path,expected) in tools.items():\n if path is None:\n  out[\"tool_metadata\"][name]={\"available\":False}\n  continue\n p=Path(path);actual=hash_file(p)\n out[\"tool_metadata\"][name]={\"available\":True,\"path\":path,\"resolved\":str(p.resolve()),\n   \"bytes\":p.stat().st_size,\"sha256\":actual,\"expected_sha256\":expected,\n   \"pin_matches\":actual==expected if expected is not None else None,\n   \"version\":run([path,\"--version\"])}\nfor path in (\"/home/qq\",\"/tmp\"):\n v=os.statvfs(path)\n out[\"disk\"][path]={\"available_bytes\":v.f_bavail*v.f_frsize,\"total_bytes\":v.f_blocks*v.f_frsize,\"available_inodes\":v.f_favail}\nfor name,path in ((\"loadavg\",\"/proc/loadavg\"),(\"pressure_cpu\",\"/proc/pressure/cpu\"),\n                 (\"pressure_memory\",\"/proc/pressure/memory\"),(\"pressure_io\",\"/proc/pressure/io\"),\n                 (\"apparmor_restrict_unprivileged_userns\",\"/proc/sys/kernel/apparmor_restrict_unprivileged_userns\")):\n try:out[name]=Path(path).read_text()[:4096]\n except OSError as error:out[name]={\"error\":type(error).__name__}\nmem={}\nfor line in Path(\"/proc/meminfo\").read_text().splitlines():\n key,value=line.split(\":\",1)\n if key in (\"MemTotal\",\"MemAvailable\",\"SwapTotal\",\"SwapFree\"):mem[key]=value.strip()\nout[\"memory\"]=mem\nstatus=Path(\"/proc/self/status\").read_text().splitlines()\nout[\"process_privilege_metadata\"]={line.split(\":\",1)[0]:line.split(\":\",1)[1].strip() for line in status if line.startswith((\"CapEff:\",\"NoNewPrivs:\"))}\nrepo=\"/home/qq/ctrl-macro-20261112-736c\"\nout[\"source_repository\"]={\"path\":repo,\"exists\":Path(repo).is_dir(),\"git_queries_performed\":False}\nout[\"source_objects\"]={\"status\":\"NOT_QUERIED\",\"reason\":\"prior cat-file timed out; exact source fetch belongs only in the new isolated clone\"}\nout[\"isolated_output\"]={\"path\":\"/home/qq/neuro-act6243-native-862531d11598/7d31bf967774-v1\",\"exists\":Path(\"/home/qq/neuro-act6243-native-862531d11598/7d31bf967774-v1\").exists()}\nout[\"known_readonly_directories\"]={path:{\"exists\":Path(path).is_dir()} for path in (\"/home/qq/.cargo/registry\",\"/home/qq/.cargo/git\",\"/usr/lib/x86_64-linux-gnu\",\"/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/include\")}\nout[\"pkg_config\"]=run([\"pkg-config\",\"--modversion\",\"openssl\",\"libcap\"])\nproposal=json.loads(sys.stdin.buffer.read(1048577))\ncode=proposal[\"driver\"].encode()\nactual=hashlib.sha256(code).hexdigest()\nif actual!=proposal[\"driver_sha256\"]:raise RuntimeError(\"Proposed driver pin mismatch\")\ncompile(code,\"proposed-act-native-driver\",\"exec\")\nout[\"proposal_syntax\"]={\"parsed\":True,\"executed\":False,\"sha256\":actual,\"bytes\":len(code)}\nout[\"elapsed_seconds\"]=time.monotonic()-began\nsignal.setitimer(signal.ITIMER_REAL,0)\nprint(json.dumps(out,sort_keys=True,separators=(\",\",\":\")),flush=True)\n"
+    ],
+    "created_unix_ms": 1794482924962,
+    "cwd": "/home/qq",
+    "env_keys": [],
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1cf846da2-2564-1a49",
+    "idempotency_key": "neuro4-act6243-native-readiness-862531d-v2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1cf846da2-2564-1a49",
+    "request_digest": "2f87430eef7a40408e0b751e79ff9d84745dbcbbc79ce9a2e232c6092046ef87",
+    "request_fingerprint": 3424779773064921152,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1cf846da2-2564-1a49"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1cf846da2-2564-1a49"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

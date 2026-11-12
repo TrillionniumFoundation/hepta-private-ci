@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.act6243.native-v3-build-failure.evidence.v1",
+  "job_id": "1a1cfbdbae4-2564-1a9a",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "terminal": "FAILED",
+  "caller": {
+    "receipt_status": "passed",
+    "exit_code": 0,
+    "timed_out": false,
+    "receipt_elapsed_seconds": 154.42577228997834,
+    "stage_elapsed_seconds": 154.49632344697602,
+    "raw_inner_log_bytes": 75335,
+    "raw_inner_log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
+    "raw_inner_log_archival_state": "Not yet downloaded in this snapshot; receipt and source identity preserved."
+  },
+  "build": {
+    "exit_code": 101,
+    "timed_out": false,
+    "receipt_elapsed_seconds": 22.12454494088888,
+    "stage_elapsed_seconds": 22.19536772184074,
+    "raw_inner_log_bytes": 23843,
+    "raw_inner_log_sha256": "3794841c799304fbff428ae9be1de6f7ddc953d39a40e353137c0cff04514bee",
+    "actual_error": "aws-lc-sys0.46.0 internal bindgen with Clang21.1.8 cannot find stddef.h; sys_bindgen.rs:191 panics generating bindings. Cargo dependency compilation had started."
+  },
+  "not_run": [
+    "original positive",
+    "five regressions",
+    "named-case receipt",
+    "format"
+  ],
+  "source_identity": "Original caller and build before/after are equal and clean; original total terminal reports all13722 tracked byte inventory unchanged. Full inventory files remain on host and are not included in this snapshot.",
+  "qualification": "HOLD",
+  "owner_decision": null,
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/TERMINAL.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/TERMINAL.json",
+      "version": "66306:77118713:2010:1794486902852547485:1794486902852547485",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 2010,
+      "sha256": "4eef8d0607b486a39c98e6c59c5ff5e66ffd1ac102cdc6445be1f73fcd3fbd03",
+      "blob": "f9862b8f5378d5c1ecda83e7350e5f989985a3f9"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/caller-proof.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/caller-proof.json",
+      "version": "66306:77118706:1554:1794486880225612857:1794486880225612857",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 1554,
+      "sha256": "12ed12370a25cd34797626e1265ae32f87c046f7b6556a127b2756bd4d7354f2",
+      "blob": "4ccde021fe25d86a42ac590c5948026824edfed5"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/caller-proof-TERMINAL.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/caller-proof-TERMINAL.json",
+      "version": "66306:77118704:173:1794486880272960618:1794486880272960618",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 173,
+      "sha256": "4ae313a6a29ed3c1f235c74ba1722d6601e8ff190e56612c8322046eb6ee7b7a",
+      "blob": "7a027f13f8f59e19b1e4d546c4c60c3d7c6717f6"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/build.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/build.json",
+      "version": "66306:77118711:1605:1794486902422468456:1794486902423468420",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 1605,
+      "sha256": "dd09cdd3b0a1debc772f9d3c341dca243e3981a568c39e20ed527e973a85ddf7",
+      "blob": "01af45182e9dad25c1e39a5f022bd0379298df00"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/build-TERMINAL.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/build-TERMINAL.json",
+      "version": "66306:77118709:167:1794486902470466743:1794486902470466743",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 167,
+      "sha256": "430b8babfce9d099b61395faa2f79382259034e0f155972891f7b20f007dbfa0",
+      "blob": "dc8b43696d0a44b2059d4cd810b3ffc1284e8b2a"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/build-stdout-stderr.log",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/build-stdout-stderr.log",
+      "version": "66306:77118708:25268:1794486902423468420:1794486902423468420",
+      "representation": "Complete original small file, independently size/SHA256 verified.",
+      "bytes": 25268,
+      "sha256": "1bbc81aae6e61b58510065d2aa7136ba8a8ba073855fba280fa5ffda6df91a86",
+      "blob": "d0b98585f2d18a8119f2e0698fffe530636e3546"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/build.json.1b3f5701cd794a82911df6e7445845af.log",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/build.json.1b3f5701cd794a82911df6e7445845af.log",
+      "version": "66306:77118710:23843:1794486901815490117:1794486901815490117",
+      "representation": "Complete original cargo build inner log from one version-pinned binary read; exact receipt SHA.",
+      "bytes": 23843,
+      "sha256": "3794841c799304fbff428ae9be1de6f7ddc953d39a40e353137c0cff04514bee",
+      "blob": "aea57a06e17b419a092d56ea084fe486e710c3b0"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/TERMINAL_READBACK_ORIGINAL_SDK.json",
+      "representation": "Original h multi-file SDK text; no JSON reserialization.",
+      "bytes": 33844,
+      "sha256": "9b30ebbfe56680ec8cdfc085a0c23a5fe83b6df967c16f536cb15e31c4e50c28",
+      "blob": "0beb6ac0074a9adc7af988aa763d7af2dd64c9af"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/BUILD_LOG_READBACK_ORIGINAL_SDK.json",
+      "representation": "Original h binary-read SDK text with base64, chunk SHA and version.",
+      "bytes": 32161,
+      "sha256": "ecef1bdf84cd6ce376894971189fe3b0b00ec39ca78744f3682dc4dd121c0e82",
+      "blob": "01efe77909b24a8a0eea19cb220e0c6ba92c7240"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/PROCESS_READ_1_ORIGINAL_SDK.json",
+      "representation": "Original process stdout/stderr page SDK text.",
+      "bytes": 7151,
+      "sha256": "05f61e4aec4894bae95f3fa3f1fecf68a51969fdca832b6bba9bff3ca877eee1",
+      "blob": "38e4f4eb9c4b8aa2c4e2d34effb0a30f7e9901c8"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/PROCESS_STDOUT.jsonl",
+      "representation": "Complete observed stdout from original byte offsets0..2861, includes final terminal line.",
+      "bytes": 2861,
+      "sha256": "c060cd48dbfe356d260bf6ff5b9d408d50a52574289d85447d62f8479b9a8bea",
+      "blob": "0f0023805db8db7d6086817d20597327e3d7052f"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/failure/PROCESS_STDERR.log",
+      "representation": "Original observed stderr bytes0..174, verified against bytes_hex.",
+      "bytes": 174,
+      "sha256": "fca9f4dd364346552ea0fb517114869ab2168a6d0d6afe8d16de92146005ad31",
+      "blob": "2184304dcb8e1f9a95abde2c1ffb6546061e4bb9"
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "build_target": "x86_64-pc-windows-msvc",
+  "cargo_build_target": "x86_64-pc-windows-msvc",
+  "execution_sha256": "a874f76419bbb5753e35c050d98aa374ed5d93d38bade6156031b89004772ecc",
+  "exit_code": 0,
+  "expected_cases": {
+    "dataset_materialization": {
+      "codex-hepta-agentd": [
+        "cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims",
+        "cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound",
+        "cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled",
+        "cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads"
+      ]
+    },
+    "ledger_current_7": {
+      "codex-hepta-learning-ledger": [
+        "durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor",
+        "durable::current_tests::current_rejects_a_different_valid_same_length_ledger",
+        "durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair",
+        "witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner",
+        "witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm",
+        "witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier",
+        "witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution"
+      ]
+    },
+    "original_owner_current_4": {
+      "codex-hepta-intelligence-eval": [
+        "product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner",
+        "product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed",
+        "product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement",
+        "product_execution_file::tests::current::current_refuses_length_changes_without_repair"
+      ]
+    },
+    "original_windows_21": {
+      "codex-hepta-agentd": [
+        "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+        "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs",
+        "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history",
+        "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen",
+        "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only",
+        "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference",
+        "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison",
+        "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison",
+        "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed",
+        "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown",
+        "neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes",
+        "neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original",
+        "neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution",
+        "neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact",
+        "neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator",
+        "neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases",
+        "neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work",
+        "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider",
+        "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout"
+      ],
+      "codex-hepta-intelligence-eval": [
+        "qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor",
+        "qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error"
+      ]
+    }
+  },
+  "expected_test_count": 36,
+  "job": "windows-secure-private-state",
+  "junit_collection_exit_code": 0,
+  "junit_coverage": {
+    "exact_pass_coverage": true,
+    "groups": {
+      "dataset_materialization": {
+        "exact_pass_coverage": true,
+        "expected_count": 4,
+        "observed_testcases": 4
+      },
+      "ledger_current_7": {
+        "exact_pass_coverage": true,
+        "expected_count": 7,
+        "observed_testcases": 7
+      },
+      "original_owner_current_4": {
+        "exact_pass_coverage": true,
+        "expected_count": 4,
+        "observed_testcases": 4
+      },
+      "original_windows_21": {
+        "exact_pass_coverage": true,
+        "expected_count": 21,
+        "observed_testcases": 21
+      }
+    },
+    "native_suite_identity": true,
+    "total_testcases": 36
+  },
+  "log_coverage": {
+    "exact_pass_coverage": true,
+    "groups": {
+      "dataset_materialization": {
+        "exact_pass_coverage": true,
+        "expected_count": 4,
+        "observed_pass_rows": 4
+      },
+      "ledger_current_7": {
+        "exact_pass_coverage": true,
+        "expected_count": 7,
+        "observed_pass_rows": 7
+      },
+      "original_owner_current_4": {
+        "exact_pass_coverage": true,
+        "expected_count": 4,
+        "observed_pass_rows": 4
+      },
+      "original_windows_21": {
+        "exact_pass_coverage": true,
+        "expected_count": 21,
+        "observed_pass_rows": 21
+      }
+    },
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 36,
+    "selected_count": 36,
+    "terminal_rows": [
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "product_execution_file::tests::current::current_refuses_length_changes_without_repair"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error"
+      ],
+      [
+        "PASS",
+        "codex-hepta-intelligence-eval",
+        "qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "durable::current_tests::current_rejects_a_different_valid_same_length_ledger"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner"
+      ],
+      [
+        "PASS",
+        "codex-hepta-learning-ledger",
+        "witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution"
+      ]
+    ]
+  },
+  "native_platform": "Windows-2025Server-10.0.26100-SP0",
+  "run_attempt": "1",
+  "run_id": "43213822708",
+  "schema": "hepta.windows-learn-native-regressions.v1",
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "status": "passed",
+  "test_retries": 0
+}

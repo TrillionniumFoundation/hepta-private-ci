@@ -1,0 +1,1348 @@
+at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5845198Z   233 |     }
+2026-11-12T15:50:00.5845245Z       |     ^
+2026-11-12T15:50:00.5845374Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5845422Z   232 |         m->lock();
+2026-11-12T15:50:00.5845468Z       |            ^
+2026-11-12T15:50:00.5845726Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5845958Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5846024Z       |                                                             ^
+2026-11-12T15:50:00.5846073Z 2 warnings generated.
+2026-11-12T15:50:00.5846158Z INFO: From Compiling source/i18n/usearch.cpp [for tool]:
+2026-11-12T15:50:00.5846274Z In file included from external/v8++git_repository+icu/source/i18n/usearch.cpp:20:
+2026-11-12T15:50:00.5846405Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T15:50:00.5846516Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T15:50:00.5846728Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5846774Z   233 |     }
+2026-11-12T15:50:00.5846821Z       |     ^
+2026-11-12T15:50:00.5846948Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5846999Z   232 |         m->lock();
+2026-11-12T15:50:00.5847043Z       |            ^
+2026-11-12T15:50:00.5847301Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5847404Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5847466Z       |                                                             ^
+2026-11-12T15:50:00.5847516Z 2 warnings generated.
+2026-11-12T15:50:00.5847617Z INFO: From Compiling source/common/normalizer2impl.cpp [for tool]:
+2026-11-12T15:50:00.5847840Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.cpp:37:
+2026-11-12T15:50:00.5848017Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T15:50:00.5848365Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5848433Z   233 |     }
+2026-11-12T15:50:00.5848498Z       |     ^
+2026-11-12T15:50:00.5848701Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5848776Z   232 |         m->lock();
+2026-11-12T15:50:00.5848841Z       |            ^
+2026-11-12T15:50:00.5849272Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5849432Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5849528Z       |                                                             ^
+2026-11-12T15:50:00.5849606Z 2 warnings generated.
+2026-11-12T15:50:00.5849741Z INFO: From Compiling source/common/servnotf.cpp [for tool]:
+2026-11-12T15:50:00.5850018Z In file included from external/v8++git_repository+icu/source/common/servnotf.cpp:14:
+2026-11-12T15:50:00.5850209Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T15:50:00.5850385Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T15:50:00.5850742Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5850809Z   233 |     }
+2026-11-12T15:50:00.5850876Z       |     ^
+2026-11-12T15:50:00.5851079Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5851151Z   232 |         m->lock();
+2026-11-12T15:50:00.5851220Z       |            ^
+2026-11-12T15:50:00.5851649Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5851879Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5851982Z       |                                                             ^
+2026-11-12T15:50:00.5852057Z 2 warnings generated.
+2026-11-12T15:50:00.5852183Z INFO: From Compiling source/common/rbbi.cpp [for tool]:
+2026-11-12T15:50:00.5852367Z In file included from external/v8++git_repository+icu/source/common/rbbi.cpp:34:
+2026-11-12T15:50:00.5852555Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T15:50:00.5852909Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5852975Z   233 |     }
+2026-11-12T15:50:00.5853043Z       |     ^
+2026-11-12T15:50:00.5853251Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5853323Z   232 |         m->lock();
+2026-11-12T15:50:00.5853397Z       |            ^
+2026-11-12T15:50:00.5853936Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5854098Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5854196Z       |                                                             ^
+2026-11-12T15:50:00.5854272Z 2 warnings generated.
+2026-11-12T15:50:00.5854402Z INFO: From Compiling source/common/usprep.cpp [for tool]:
+2026-11-12T15:50:00.5854590Z In file included from external/v8++git_repository+icu/source/common/usprep.cpp:29:
+2026-11-12T15:50:00.5854949Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5855018Z   233 |     }
+2026-11-12T15:50:00.5855084Z       |     ^
+2026-11-12T15:50:00.5855287Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.5855363Z   232 |         m->lock();
+2026-11-12T15:50:00.5855437Z       |            ^
+2026-11-12T15:50:00.5855863Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.5856022Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.5856119Z       |                                                             ^
+2026-11-12T15:50:00.5856197Z 2 warnings generated.
+2026-11-12T15:50:00.6155074Z INFO: From Compiling source/common/uinit.cpp [for tool]:
+2026-11-12T15:50:00.6200386Z In file included from external/v8++git_repository+icu/source/common/uinit.cpp:24:
+2026-11-12T15:50:00.6224525Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6224652Z   233 |     }
+2026-11-12T15:50:00.6224767Z       |     ^
+2026-11-12T15:50:00.6225275Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6225363Z   232 |         m->lock();
+2026-11-12T15:50:00.6225436Z       |            ^
+2026-11-12T15:50:00.6225859Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6226049Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6226149Z       |                                                             ^
+2026-11-12T15:50:00.6226228Z 2 warnings generated.
+2026-11-12T15:50:00.6226374Z INFO: From Compiling source/common/uloc_keytype.cpp [for tool]:
+2026-11-12T15:50:00.6226591Z In file included from external/v8++git_repository+icu/source/common/uloc_keytype.cpp:24:
+2026-11-12T15:50:00.6226956Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6227190Z   233 |     }
+2026-11-12T15:50:00.6227259Z       |     ^
+2026-11-12T15:50:00.6227453Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6227531Z   232 |         m->lock();
+2026-11-12T15:50:00.6227597Z       |            ^
+2026-11-12T15:50:00.6228028Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6228204Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6228300Z       |                                                             ^
+2026-11-12T15:50:00.6228374Z 2 warnings generated.
+2026-11-12T15:50:00.6228500Z INFO: From Compiling source/common/uprops.cpp [for tool]:
+2026-11-12T15:50:00.6228685Z In file included from external/v8++git_repository+icu/source/common/uprops.cpp:36:
+2026-11-12T15:50:00.6228863Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T15:50:00.6229210Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6229280Z   233 |     }
+2026-11-12T15:50:00.6229348Z       |     ^
+2026-11-12T15:50:00.6229540Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6229616Z   232 |         m->lock();
+2026-11-12T15:50:00.6229683Z       |            ^
+2026-11-12T15:50:00.6230087Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6230244Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6230350Z       |                                                             ^
+2026-11-12T15:50:00.6230427Z 2 warnings generated.
+2026-11-12T15:50:00.6230554Z INFO: From Compiling source/common/putil.cpp [for tool]:
+2026-11-12T15:50:00.6230734Z In file included from external/v8++git_repository+icu/source/common/putil.cpp:63:
+2026-11-12T15:50:00.6231065Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6231128Z   233 |     }
+2026-11-12T15:50:00.6231193Z       |     ^
+2026-11-12T15:50:00.6231386Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6231467Z   232 |         m->lock();
+2026-11-12T15:50:00.6231540Z       |            ^
+2026-11-12T15:50:00.6231934Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6232087Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6232186Z       |                                                             ^
+2026-11-12T15:50:00.6232369Z 2 warnings generated.
+2026-11-12T15:50:00.6232499Z INFO: From Compiling source/common/brkiter.cpp [for tool]:
+2026-11-12T15:50:00.6232700Z In file included from external/v8++git_repository+icu/source/common/brkiter.cpp:37:
+2026-11-12T15:50:00.6233029Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6233095Z   233 |     }
+2026-11-12T15:50:00.6233157Z       |     ^
+2026-11-12T15:50:00.6233349Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6233419Z   232 |         m->lock();
+2026-11-12T15:50:00.6233486Z       |            ^
+2026-11-12T15:50:00.6234032Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6234349Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6234450Z       |                                                             ^
+2026-11-12T15:50:00.6234522Z 2 warnings generated.
+2026-11-12T15:50:00.6234653Z INFO: From Compiling source/common/unormcmp.cpp [for tool]:
+2026-11-12T15:50:00.6234839Z In file included from external/v8++git_repository+icu/source/common/unormcmp.cpp:30:
+2026-11-12T15:50:00.6235035Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T15:50:00.6235204Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T15:50:00.6235560Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6235628Z   233 |     }
+2026-11-12T15:50:00.6235698Z       |     ^
+2026-11-12T15:50:00.6235908Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6235994Z   232 |         m->lock();
+2026-11-12T15:50:00.6236068Z       |            ^
+2026-11-12T15:50:00.6236520Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6236694Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6236796Z       |                                                             ^
+2026-11-12T15:50:00.6236877Z 2 warnings generated.
+2026-11-12T15:50:00.6237036Z INFO: From Compiling source/common/sharedobject.cpp [for tool]:
+2026-11-12T15:50:00.6237256Z In file included from external/v8++git_repository+icu/source/common/sharedobject.cpp:10:
+2026-11-12T15:50:00.6237467Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T15:50:00.6237841Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6237921Z   233 |     }
+2026-11-12T15:50:00.6237991Z       |     ^
+2026-11-12T15:50:00.6238205Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T15:50:00.6238284Z   232 |         m->lock();
+2026-11-12T15:50:00.6238356Z       |            ^
+2026-11-12T15:50:00.6238827Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:00.6238998Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T15:50:00.6239098Z       |                                                             ^
+2026-11-12T15:50:00.6239180Z 2 warnings generated.
+2026-11-12T15:50:01.2156261Z [28,647 / 37,479] Copying files to directory external/llvm+/runtimes/glibc/glibc_library_search_directory [for tool]; 0s remote, remote-cache ... (505 actions, 0 running)
+2026-11-12T15:50:03.0112403Z [28,667 / 37,479] Generating Torque files [for tool]; 2s remote, remote-cache ... (791 actions, 0 running)
+2026-11-12T15:50:04.0285501Z [29,198 / 37,479] [Prepa] Compiling src/builtins/builtins-async-module.cc ... (800 actions, 0 running)
+2026-11-12T15:50:05.0227771Z [29,569 / 37,479] [Prepa] Compiling src/builtins/builtins-shadow-realm.cc; 4s ... (798 actions, 0 running)
+2026-11-12T15:50:06.0211254Z [29,693 / 37,479] [Prepa] Compiling src/builtins/builtins-shadow-realm.cc; 5s ... (794 actions, 0 running)
+2026-11-12T15:50:07.0446458Z [29,816 / 37,479] [Prepa] Compiling src/codegen/jump-table-info.cc; 5s ... (794 actions, 0 running)
+2026-11-12T15:50:07.3405392Z INFO: From Compiling external/+new_local_repository+v8_targets/binding_150_4_0.cc:
+2026-11-12T15:50:07.3517398Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T15:50:07.3626160Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T15:50:07.3769102Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T15:50:07.3904760Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T15:50:07.4025604Z external/v8+/include/v8-template.h:800:16: warning: 'ConvertSetter' is deprecated: Use NamedPropertySetterCallbackV2 setter instead [-Wdeprecated-declarations]
+2026-11-12T15:50:07.4134733Z   800 |         setter(ConvertSetter(setter)),
+2026-11-12T15:50:07.4154782Z       |                ^
+2026-11-12T15:50:07.4246213Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1489:35: note: in instantiation of function template specialization 'v8::NamedPropertyHandlerConfiguration::NamedPropertyHandlerConfiguration<v8::Intercepted (*)(v8::Local<v8::Name>, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(v8::Local<v8::Name>, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T15:50:07.4361570Z  1489 |   ptr_to_local(&self)->SetHandler(v8::NamedPropertyHandlerConfiguration(
+2026-11-12T15:50:07.4588428Z       |                                   ^
+2026-11-12T15:50:07.4644649Z external/v8+/include/v8-template.h:759:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T15:50:07.4754948Z   759 |   V8_DEPRECATE_SOON("Use NamedPropertySetterCallbackV2 setter instead")
+2026-11-12T15:50:07.4774373Z       |   ^
+2026-11-12T15:50:07.4864563Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T15:50:07.4964497Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T15:50:07.5070545Z       |                                       ^
+2026-11-12T15:50:07.5184817Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T15:50:07.5215319Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T15:50:07.5334703Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T15:50:07.5425534Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T15:50:07.5594988Z external/v8+/include/v8-template.h:804:17: warning: 'ConvertDefiner' is deprecated: Use NamedPropertyDefinerCallbackV2 definer instead [-Wdeprecated-declarations]
+2026-11-12T15:50:07.5674504Z   804 |         definer(ConvertDefiner(definer)),
+2026-11-12T15:50:07.5825306Z       |                 ^
+2026-11-12T15:50:07.5964770Z external/v8+/include/v8-template.h:772:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T15:50:07.6025128Z   772 |   V8_DEPRECATE_SOON("Use NamedPropertyDefinerCallbackV2 definer instead")
+2026-11-12T15:50:07.6184342Z       |   ^
+2026-11-12T15:50:07.6224246Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T15:50:07.6254108Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T15:50:07.6277214Z       |                                       ^
+2026-11-12T15:50:07.6334407Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T15:50:07.6394494Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T15:50:07.6424186Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T15:50:07.6506916Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T15:50:07.6587603Z external/v8+/include/v8-template.h:931:16: warning: 'ConvertSetter' is deprecated: Use IndexedPropertySetterCallback setter instead [-Wdeprecated-declarations]
+2026-11-12T15:50:07.6784896Z   931 |         setter(ConvertSetter(setter)),
+2026-11-12T15:50:07.6874624Z       |                ^
+2026-11-12T15:50:07.6966892Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1503:35: note: in instantiation of function template specialization 'v8::IndexedPropertyHandlerConfiguration::IndexedPropertyHandlerConfiguration<v8::Intercepted (*)(unsigned int, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(unsigned int, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T15:50:07.7024317Z  1503 |   ptr_to_local(&self)->SetHandler(v8::IndexedPropertyHandlerConfiguration(
+2026-11-12T15:50:07.7119086Z       |                                   ^
+2026-11-12T15:50:07.7203118Z external/v8+/include/v8-template.h:890:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T15:50:07.7264436Z   890 |   V8_DEPRECATE_SOON("Use IndexedPropertySetterCallback setter instead")
+2026-11-12T15:50:07.7324584Z       |   ^
+2026-11-12T15:50:07.7384376Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T15:50:07.7494408Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T15:50:07.7554258Z       |                                       ^
+2026-11-12T15:50:07.7584608Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T15:50:07.7585490Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T15:50:07.7586154Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T15:50:07.7586580Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T15:50:07.7587426Z external/v8+/include/v8-template.h:935:17: warning: 'ConvertDefiner' is deprecated: Use IndexedPropertyDefinerCallback definer instead [-Wdeprecated-declarations]
+2026-11-12T15:50:07.7588206Z   935 |         definer(ConvertDefiner(definer)),
+2026-11-12T15:50:07.7588590Z       |                 ^
+2026-11-12T15:50:07.7589051Z external/v8+/include/v8-template.h:903:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T15:50:07.7589764Z   903 |   V8_DEPRECATE_SOON("Use IndexedPropertyDefinerCallback definer instead")
+2026-11-12T15:50:07.7590228Z       |   ^
+2026-11-12T15:50:07.7590588Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T15:50:07.7591050Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T15:50:07.7591337Z       |                                       ^
+2026-11-12T15:50:07.7591574Z 4 warnings generated.
+2026-11-12T15:50:08.0174785Z [29,956 / 37,479] [Prepa] Compiling src/codegen/safepoint-table.cc; 6s ... (798 actions, 0 running)
+2026-11-12T15:50:09.0294775Z [30,081 / 37,479] [Prepa] Compiling src/wasm/wasm-tracing.cc; 7s ... (800 actions, 0 running)
+2026-11-12T15:50:10.0215201Z [30,197 / 37,479] [Prepa] Compiling src/compiler/js-typed-lowering.cc; 8s ... (796 actions, 0 running)
+2026-11-12T15:50:11.0257699Z [30,322 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 9s ... (794 actions, 0 running)
+2026-11-12T15:50:12.0315794Z [30,446 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 10s ... (794 actions, 0 running)
+2026-11-12T15:50:13.0981135Z [30,565 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 11s ... (800 actions, 0 running)
+2026-11-12T15:50:14.1021843Z [30,688 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 12s ... (798 actions, 0 running)
+2026-11-12T15:50:15.1050821Z [30,813 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 13s ... (792 actions, 0 running)
+2026-11-12T15:50:16.1144996Z [30,930 / 37,479] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 14s ... (797 actions, 0 running)
+2026-11-12T15:50:17.1285054Z [31,060 / 37,479] [Prepa] Linking external/llvm+/tools/internal/header-parser_/header-parser [for tool]; 15s ... (793 actions, 0 running)
+2026-11-12T15:50:18.1262092Z [31,184 / 37,479] [Prepa] Compiling src/parsing/preparse-data.cc [for tool]; 6s ... (793 actions, 0 running)
+2026-11-12T15:50:19.1275035Z [31,306 / 37,479] [Prepa] Compiling src/utils/utils.cc [for tool]; 6s ... (795 actions, 0 running)
+2026-11-12T15:50:20.1448465Z [31,458 / 37,479] [Prepa] Compiling src/wasm/wasm-module-sourcemap.cc [for tool]; 6s ... (798 actions, 0 running)
+2026-11-12T15:50:21.1354813Z [31,636 / 37,479] [Prepa] Compiling src/compiler/type-cache.cc [for tool]; 5s ... (796 actions, 0 running)
+2026-11-12T15:50:22.1404853Z [31,837 / 37,479] [Prepa] Linking external/rules_rs++rules_rust+rules_rust/util/process_wrapper/private/bootstrap_process_wrapper [for tool]; 5s ... (677 actions, 0 running)
+2026-11-12T15:50:23.1627925Z [32,339 / 37,479] [Prepa] Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-base.c; 5s ... (184 actions, 0 running)
+2026-11-12T15:50:23.5717452Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T15:50:23.5718370Z external/aws-lc+/crypto/thread_win.c:186:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T15:50:23.5731130Z   186 | #pragma const_seg(".CRT$XLC")
+2026-11-12T15:50:23.5731534Z       |         ^
+2026-11-12T15:50:23.5732022Z external/aws-lc+/crypto/thread_win.c:192:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T15:50:23.5732553Z   192 | #pragma const_seg()
+2026-11-12T15:50:23.5732881Z       |         ^
+2026-11-12T15:50:23.5733188Z 2 warnings generated.
+2026-11-12T15:50:23.5832085Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h:
+2026-11-12T15:50:23.5835394Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T15:50:23.5835973Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T15:50:23.5836532Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T15:50:23.6234873Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T15:50:23.6243766Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T15:50:23.6254233Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T15:50:23.6255779Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:23.6256648Z   147 |   }
+2026-11-12T15:50:23.6256976Z       |   ^
+2026-11-12T15:50:23.6257986Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T15:50:23.6259302Z    32 |     __m_.lock();
+2026-11-12T15:50:23.6259820Z       |          ^
+2026-11-12T15:50:23.6260585Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T15:50:23.6261775Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T15:50:23.6262218Z       |                           ^
+2026-11-12T15:50:23.6264249Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T15:50:23.6264871Z   138 |       impl.lock();
+2026-11-12T15:50:23.6265233Z       |            ^
+2026-11-12T15:50:23.6265921Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:23.6266657Z   151 |       impl.unlock();
+2026-11-12T15:50:23.6267013Z       |            ^
+2026-11-12T15:50:23.6267997Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T15:50:23.6269351Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T15:50:23.6269906Z       |                                                                         ^
+2026-11-12T15:50:23.6270748Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T15:50:23.6271596Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T15:50:23.6272034Z       |                           ^
+2026-11-12T15:50:23.6272556Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T15:50:23.6273264Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T15:50:23.6274303Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:23.6275149Z   119 |   }
+2026-11-12T15:50:23.6275565Z       |   ^
+2026-11-12T15:50:23.6276552Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T15:50:23.6277697Z   310 |     __m_->lock_shared();
+2026-11-12T15:50:23.6278157Z       |           ^
+2026-11-12T15:50:23.6280286Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T15:50:23.6282572Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T15:50:23.6283025Z       |                           ^
+2026-11-12T15:50:23.6283719Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T15:50:23.6284354Z   111 |       impl.lock_shared();
+2026-11-12T15:50:23.6285968Z       |            ^
+2026-11-12T15:50:23.6286672Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:23.6287526Z   123 |       impl.unlock_shared();
+2026-11-12T15:50:23.6287954Z       |            ^
+2026-11-12T15:50:23.6289112Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T15:50:23.6333294Z   332 |       __m_->unlock_shared();
+2026-11-12T15:50:23.6333994Z       |             ^
+2026-11-12T15:50:23.6337862Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T15:50:23.6339139Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T15:50:23.6339548Z       |                           ^
+2026-11-12T15:50:23.6339877Z 4 warnings generated.
+2026-11-12T15:50:23.9487114Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T15:50:23.9538830Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T15:50:23.9584549Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T15:50:23.9585752Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:23.9586597Z   147 |   }
+2026-11-12T15:50:23.9586947Z       |   ^
+2026-11-12T15:50:23.9588211Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T15:50:23.9589807Z    32 |     __m_.lock();
+2026-11-12T15:50:23.9590172Z       |          ^
+2026-11-12T15:50:23.9590991Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T15:50:23.9592040Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T15:50:23.9592635Z       |                           ^
+2026-11-12T15:50:23.9593263Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T15:50:23.9594048Z   138 |       impl.lock();
+2026-11-12T15:50:23.9594489Z       |            ^
+2026-11-12T15:50:23.9595231Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:23.9596255Z   151 |       impl.unlock();
+2026-11-12T15:50:23.9596626Z       |            ^
+2026-11-12T15:50:23.9597690Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T15:50:23.9598975Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T15:50:23.9599593Z       |                                                                         ^
+2026-11-12T15:50:23.9600510Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T15:50:23.9601446Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T15:50:23.9601911Z       |                           ^
+2026-11-12T15:50:23.9602468Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T15:50:23.9603239Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T15:50:23.9604428Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:23.9605262Z   119 |   }
+2026-11-12T15:50:23.9605582Z       |   ^
+2026-11-12T15:50:23.9606628Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T15:50:23.9607979Z   310 |     __m_->lock_shared();
+2026-11-12T15:50:23.9608349Z       |           ^
+2026-11-12T15:50:23.9609392Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T15:50:23.9610350Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T15:50:23.9610766Z       |                           ^
+2026-11-12T15:50:23.9611338Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T15:50:23.9611979Z   111 |       impl.lock_shared();
+2026-11-12T15:50:23.9612461Z       |            ^
+2026-11-12T15:50:23.9613197Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:23.9614156Z   123 |       impl.unlock_shared();
+2026-11-12T15:50:23.9614535Z       |            ^
+2026-11-12T15:50:23.9615607Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T15:50:23.9616897Z   332 |       __m_->unlock_shared();
+2026-11-12T15:50:23.9617281Z       |             ^
+2026-11-12T15:50:23.9618106Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T15:50:23.9619060Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T15:50:23.9619511Z       |                           ^
+2026-11-12T15:50:23.9619974Z 4 warnings generated.
+2026-11-12T15:50:24.1765179Z [33,337 / 37,479] Running Cargo build script @@rules_rs++crate+crates__crc32fast-1.5.2//:_bs; 0s remote, remote-cache ... (174 actions, 0 running)
+2026-11-12T15:50:25.1941250Z INFO: From Compiling Rust rlib //codex-rs/app-server:app-server (120 files):
+2026-11-12T15:50:25.2255472Z warning: variable does not need to be mutable
+2026-11-12T15:50:25.2325392Z     --> codex-rs/app-server/src/lib.rs:1677:5
+2026-11-12T15:50:25.2364258Z      |
+2026-11-12T15:50:25.2415668Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-12T15:50:25.2469405Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-12T15:50:25.2951276Z      |     |
+2026-11-12T15:50:25.3387034Z      |     help: remove this `mut`
+2026-11-12T15:50:25.3497565Z      |
+2026-11-12T15:50:25.3554452Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:25.3617872Z 
+2026-11-12T15:50:25.3665135Z warning: 1 warning emitted
+2026-11-12T15:50:25.3749492Z 
+2026-11-12T15:50:25.3898851Z [34,209 / 37,479] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 0s remote, remote-cache ... (489 actions, 0 running)
+2026-11-12T15:50:25.4776108Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-unit-tests-bin (120 files):
+2026-11-12T15:50:25.4897070Z warning: variable does not need to be mutable
+2026-11-12T15:50:25.5119193Z     --> app-server/src/lib.rs:1677:5
+2026-11-12T15:50:25.5324705Z      |
+2026-11-12T15:50:25.5474212Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-12T15:50:25.5507298Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-12T15:50:25.5596748Z      |     |
+2026-11-12T15:50:25.5599678Z      |     help: remove this `mut`
+2026-11-12T15:50:25.5599920Z      |
+2026-11-12T15:50:25.5600175Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:25.5600420Z 
+2026-11-12T15:50:25.5600503Z warning: 1 warning emitted
+2026-11-12T15:50:25.5600958Z 
+2026-11-12T15:50:26.1661212Z [34,697 / 37,479] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 0s remote, remote-cache ... (788 actions, 4 running)
+2026-11-12T15:50:26.9613856Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T15:50:26.9825327Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T15:50:27.0345283Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T15:50:27.0405873Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:27.0464633Z   119 |   }
+2026-11-12T15:50:27.0643224Z       |   ^
+2026-11-12T15:50:27.0677618Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T15:50:27.0748610Z   310 |     __m_->lock_shared();
+2026-11-12T15:50:27.0806690Z       |           ^
+2026-11-12T15:50:27.0887347Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T15:50:27.0933362Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T15:50:27.0964359Z       |                                ^
+2026-11-12T15:50:27.1028180Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T15:50:27.1056502Z   111 |       impl.lock_shared();
+2026-11-12T15:50:27.1385622Z       |            ^
+2026-11-12T15:50:27.1660079Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:27.1776290Z   123 |       impl.unlock_shared();
+2026-11-12T15:50:27.2003061Z       |            ^
+2026-11-12T15:50:27.2198964Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T15:50:27.2305476Z   332 |       __m_->unlock_shared();
+2026-11-12T15:50:27.2333420Z       |             ^
+2026-11-12T15:50:27.2334529Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T15:50:27.2335380Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T15:50:27.2335771Z       |                                ^
+2026-11-12T15:50:27.2336272Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T15:50:27.2336945Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T15:50:27.2337874Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T15:50:27.2338599Z   147 |   }
+2026-11-12T15:50:27.2338883Z       |   ^
+2026-11-12T15:50:27.2339873Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T15:50:27.2340938Z    32 |     __m_.lock();
+2026-11-12T15:50:27.2341250Z       |          ^
+2026-11-12T15:50:27.2341975Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T15:50:27.2342814Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T15:50:27.2343192Z       |                                ^
+2026-11-12T15:50:27.2343857Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T15:50:27.2344427Z   138 |       impl.lock();
+2026-11-12T15:50:27.2344737Z       |            ^
+2026-11-12T15:50:27.2345410Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T15:50:27.2346586Z   151 |       impl.unlock();
+2026-11-12T15:50:27.2346902Z       |            ^
+2026-11-12T15:50:27.2347898Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T15:50:27.2349103Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T15:50:27.2349644Z       |                                                                         ^
+2026-11-12T15:50:27.2350485Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T15:50:27.2351321Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T15:50:27.2351870Z       |                                ^
+2026-11-12T15:50:27.2352217Z 4 warnings generated.
+2026-11-12T15:50:27.2352746Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-12T15:50:27.2353389Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2354025Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T15:50:27.2354375Z    |
+2026-11-12T15:50:27.2354653Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2354971Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2355261Z    |
+2026-11-12T15:50:27.2355554Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T15:50:27.2355828Z 
+2026-11-12T15:50:27.2356146Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2357400Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T15:50:27.2357760Z     |
+2026-11-12T15:50:27.2358039Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2358378Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2358623Z 
+2026-11-12T15:50:27.2358950Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2359426Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T15:50:27.2359771Z     |
+2026-11-12T15:50:27.2361091Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2361529Z     |         ^^^^^^^^^^
+2026-11-12T15:50:27.2361757Z 
+2026-11-12T15:50:27.2362068Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2362564Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T15:50:27.2362916Z    |
+2026-11-12T15:50:27.2363198Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2363511Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2363877Z 
+2026-11-12T15:50:27.2364181Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2364679Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T15:50:27.2365031Z      |
+2026-11-12T15:50:27.2365306Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2365656Z      |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2365909Z 
+2026-11-12T15:50:27.2366215Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2366701Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T15:50:27.2367102Z      |
+2026-11-12T15:50:27.2367457Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2367877Z      |         ^^^^^^^^^^
+2026-11-12T15:50:27.2368094Z 
+2026-11-12T15:50:27.2368395Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2368861Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T15:50:27.2369273Z    |
+2026-11-12T15:50:27.2369433Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2369594Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2369870Z 
+2026-11-12T15:50:27.2370027Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2370440Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T15:50:27.2370689Z      |
+2026-11-12T15:50:27.2370866Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2371097Z      |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2371235Z 
+2026-11-12T15:50:27.2371432Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2371799Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T15:50:27.2372028Z      |
+2026-11-12T15:50:27.2372276Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2372580Z      |         ^^^^^^^^^^
+2026-11-12T15:50:27.2372692Z 
+2026-11-12T15:50:27.2373021Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2373392Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T15:50:27.2383150Z    |
+2026-11-12T15:50:27.2383333Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2383544Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2383784Z 
+2026-11-12T15:50:27.2383996Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2384385Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T15:50:27.2384625Z     |
+2026-11-12T15:50:27.2384799Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2385027Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2385160Z 
+2026-11-12T15:50:27.2385354Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2385739Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T15:50:27.2385979Z     |
+2026-11-12T15:50:27.2386283Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T15:50:27.2386641Z     |                        ^^^^^^^^^^
+2026-11-12T15:50:27.2386784Z 
+2026-11-12T15:50:27.2386990Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2387403Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T15:50:27.2387672Z    |
+2026-11-12T15:50:27.2387848Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2388075Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2388207Z 
+2026-11-12T15:50:27.2388429Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2388878Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T15:50:27.2389173Z     |
+2026-11-12T15:50:27.2389362Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2389607Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2389765Z 
+2026-11-12T15:50:27.2389986Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2390459Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T15:50:27.2390756Z     |
+2026-11-12T15:50:27.2391038Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2391382Z     |         ^^^^^^^^^^
+2026-11-12T15:50:27.2391504Z 
+2026-11-12T15:50:27.2391729Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2392159Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T15:50:27.2392428Z    |
+2026-11-12T15:50:27.2392604Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2392821Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2392963Z 
+2026-11-12T15:50:27.2393179Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2393817Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T15:50:27.2394090Z     |
+2026-11-12T15:50:27.2394453Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2394704Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2394861Z 
+2026-11-12T15:50:27.2395078Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2395495Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T15:50:27.2395765Z     |
+2026-11-12T15:50:27.2396094Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T15:50:27.2396502Z     |         ^^^^^^^^^^
+2026-11-12T15:50:27.2396626Z 
+2026-11-12T15:50:27.2396849Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2397290Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T15:50:27.2397565Z     |
+2026-11-12T15:50:27.2397754Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2398122Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2398282Z 
+2026-11-12T15:50:27.2398497Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2398929Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T15:50:27.2399203Z     |
+2026-11-12T15:50:27.2399372Z 858 |         ServerInfo::new(
+2026-11-12T15:50:27.2399586Z     |         ^^^^^^^^^^
+2026-11-12T15:50:27.2399707Z 
+2026-11-12T15:50:27.2399915Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2400321Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T15:50:27.2400567Z    |
+2026-11-12T15:50:27.2400743Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2400964Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2401100Z 
+2026-11-12T15:50:27.2401321Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2401739Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T15:50:27.2402002Z      |
+2026-11-12T15:50:27.2402190Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2402439Z      |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2402599Z 
+2026-11-12T15:50:27.2402818Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2403227Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T15:50:27.2403511Z      |
+2026-11-12T15:50:27.2403864Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2404194Z      |         ^^^^^^^^^^
+2026-11-12T15:50:27.2404315Z 
+2026-11-12T15:50:27.2404544Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2404961Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T15:50:27.2405232Z    |
+2026-11-12T15:50:27.2405414Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:27.2405642Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:27.2405779Z 
+2026-11-12T15:50:27.2406002Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2406433Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T15:50:27.2406707Z      |
+2026-11-12T15:50:27.2406897Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:27.2407159Z      |                           ^^^^^^^^^^
+2026-11-12T15:50:27.2407307Z 
+2026-11-12T15:50:27.2407516Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:27.2407904Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T15:50:27.2408163Z      |
+2026-11-12T15:50:27.2408450Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:27.2408799Z      |         ^^^^^^^^^^
+2026-11-12T15:50:27.2408924Z 
+2026-11-12T15:50:27.2409010Z warning: 26 warnings emitted
+2026-11-12T15:50:27.2409148Z 
+2026-11-12T15:50:27.2409635Z [35,142 / 37,479] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 1s remote, remote-cache ... (760 actions, 4 running)
+2026-11-12T15:50:28.1345948Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server-bin-unit-tests-bin (124 files):
+2026-11-12T15:50:28.1460905Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-12T15:50:28.1566821Z  --> app-server/src/main.rs:6:5
+2026-11-12T15:50:28.1744518Z   |
+2026-11-12T15:50:28.2046737Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-12T15:50:28.2081787Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:28.2082784Z   |
+2026-11-12T15:50:28.2083049Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:28.2083905Z 
+2026-11-12T15:50:28.2084055Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-12T15:50:28.2084474Z   --> app-server/src/main.rs:17:7
+2026-11-12T15:50:28.2085093Z    |
+2026-11-12T15:50:28.2085385Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-12T15:50:28.2085751Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:28.2085955Z    |
+2026-11-12T15:50:28.2086176Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:28.2086387Z 
+2026-11-12T15:50:28.2086521Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-12T15:50:28.2086761Z   --> app-server/src/main.rs:18:7
+2026-11-12T15:50:28.2086948Z    |
+2026-11-12T15:50:28.2087217Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-12T15:50:28.2087564Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:28.2087696Z 
+2026-11-12T15:50:28.2087777Z warning: 3 warnings emitted
+2026-11-12T15:50:28.2087929Z 
+2026-11-12T15:50:28.2088288Z [35,516 / 37,479] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 2s remote, remote-cache ... (782 actions, 3 running)
+2026-11-12T15:50:29.1833100Z [35,838 / 37,479] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 3s remote, remote-cache ... (785 actions, 3 running)
+2026-11-12T15:50:29.7145399Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-12T15:50:29.7230516Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7394744Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T15:50:29.7609009Z    |
+2026-11-12T15:50:29.7665596Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:29.7817622Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:29.7844678Z    |
+2026-11-12T15:50:29.7844958Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T15:50:29.7845286Z 
+2026-11-12T15:50:29.7845624Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7846034Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T15:50:29.7846295Z     |
+2026-11-12T15:50:29.7846537Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:29.7846798Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:29.7846945Z 
+2026-11-12T15:50:29.7847149Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7847517Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T15:50:29.7847731Z     |
+2026-11-12T15:50:29.7847996Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:29.7848328Z     |         ^^^^^^^^^^
+2026-11-12T15:50:29.7848447Z 
+2026-11-12T15:50:29.7848532Z warning: 3 warnings emitted
+2026-11-12T15:50:29.7848658Z 
+2026-11-12T15:50:29.7848804Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T15:50:29.7849220Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7849620Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T15:50:29.7849872Z    |
+2026-11-12T15:50:29.7850061Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T15:50:29.7850282Z    |                  ^^^^^^^^^^
+2026-11-12T15:50:29.7850829Z    |
+2026-11-12T15:50:29.7851018Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T15:50:29.7851192Z 
+2026-11-12T15:50:29.7851398Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7851798Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T15:50:29.7852047Z     |
+2026-11-12T15:50:29.7852231Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T15:50:29.7852471Z     |                           ^^^^^^^^^^
+2026-11-12T15:50:29.7852612Z 
+2026-11-12T15:50:29.7852855Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T15:50:29.7853385Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T15:50:29.7853801Z     |
+2026-11-12T15:50:29.7854154Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T15:50:29.7854723Z     |         ^^^^^^^^^^
+2026-11-12T15:50:29.7854858Z 
+2026-11-12T15:50:29.7854964Z warning: 3 warnings emitted
+2026-11-12T15:50:29.7855111Z 
+2026-11-12T15:50:30.1926254Z [36,110 / 37,479] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 4s remote, remote-cache ... (798 actions, 1 running)
+2026-11-12T15:50:31.2195686Z [36,498 / 37,479] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__v8-150.4.0//:v8 v150.4.0 (191 files); 4s ... (649 actions, 0 running)
+2026-11-12T15:50:32.1155811Z INFO: From Compiling Rust bin //codex-rs/cloud-tasks:cloud-tasks-unit-tests-bin (10 files):
+2026-11-12T15:50:32.1156831Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-12T15:50:32.1175707Z   --> cloud-tasks/src/lib.rs:16:5
+2026-11-12T15:50:32.1226352Z    |
+2026-11-12T15:50:32.1258267Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-12T15:50:32.1320798Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:32.1408813Z    |
+2026-11-12T15:50:32.1558061Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:32.1704678Z 
+2026-11-12T15:50:32.1734470Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-12T15:50:32.1873433Z   --> cloud-tasks/src/lib.rs:17:5
+2026-11-12T15:50:32.1947065Z    |
+2026-11-12T15:50:32.1957678Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-12T15:50:32.2016554Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:32.2067598Z 
+2026-11-12T15:50:32.2088569Z warning: 2 warnings emitted
+2026-11-12T15:50:32.2144149Z 
+2026-11-12T15:50:32.2224776Z INFO: From Compiling Rust rlib //codex-rs/cloud-tasks:cloud-tasks (10 files):
+2026-11-12T15:50:32.2239823Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-12T15:50:32.2300047Z   --> codex-rs/cloud-tasks/src/lib.rs:16:5
+2026-11-12T15:50:32.2354394Z    |
+2026-11-12T15:50:32.2368359Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-12T15:50:32.2433942Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:32.2478993Z    |
+2026-11-12T15:50:32.2524857Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:32.2545706Z 
+2026-11-12T15:50:32.2594849Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-12T15:50:32.2630775Z   --> codex-rs/cloud-tasks/src/lib.rs:17:5
+2026-11-12T15:50:32.2631041Z    |
+2026-11-12T15:50:32.2631257Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-12T15:50:32.2631517Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:32.2631669Z 
+2026-11-12T15:50:32.2631755Z warning: 2 warnings emitted
+2026-11-12T15:50:32.2631885Z 
+2026-11-12T15:50:32.2632199Z [36,882 / 37,479] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__v8-150.4.0//:v8 v150.4.0 (191 files); 5s ... (279 actions, 0 running)
+2026-11-12T15:50:33.1357870Z INFO: From Compiling Rust bin //codex-rs/cli:cli-update-test (1 file):
+2026-11-12T15:50:33.1405713Z warning: unused import: `predicates::str::contains`
+2026-11-12T15:50:33.1414132Z  --> cli/tests/update.rs:2:5
+2026-11-12T15:50:33.1456919Z   |
+2026-11-12T15:50:33.1484532Z 2 | use predicates::str::contains;
+2026-11-12T15:50:33.1491224Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:33.1524343Z   |
+2026-11-12T15:50:33.1524923Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:33.1525339Z 
+2026-11-12T15:50:33.1525603Z warning: unused import: `tempfile::TempDir`
+2026-11-12T15:50:33.1526027Z  --> cli/tests/update.rs:4:5
+2026-11-12T15:50:33.1526374Z   |
+2026-11-12T15:50:33.1526683Z 4 | use tempfile::TempDir;
+2026-11-12T15:50:33.1527033Z   |     ^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:33.1527292Z 
+2026-11-12T15:50:33.1527538Z warning: function `codex_command` is never used
+2026-11-12T15:50:33.1527962Z  --> cli/tests/update.rs:6:4
+2026-11-12T15:50:33.1528309Z   |
+2026-11-12T15:50:33.1528707Z 6 | fn codex_command(codex_home: &Path) -> Result<assert_cmd::Command> {
+2026-11-12T15:50:33.1529191Z   |    ^^^^^^^^^^^^^
+2026-11-12T15:50:33.1529505Z   |
+2026-11-12T15:50:33.1530213Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:33.1530600Z 
+2026-11-12T15:50:33.1530812Z warning: 3 warnings emitted
+2026-11-12T15:50:33.1531076Z 
+2026-11-12T15:50:33.2157861Z [37,261 / 37,479] Compiling Rust bin //codex-rs/app-server:test_notify_capture (124 files); 0s remote, remote-cache ... (21 actions, 3 running)
+2026-11-12T15:50:35.1398179Z [37,300 / 37,479] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 1s remote, remote-cache ... (11 actions running)
+2026-11-12T15:50:36.6840369Z [37,307 / 37,479] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 3s remote, remote-cache ... (11 actions, 10 running)
+2026-11-12T15:50:37.8025859Z [37,311 / 37,479] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 4s remote, remote-cache ... (11 actions, 8 running)
+2026-11-12T15:50:39.1404121Z [37,318 / 37,479] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 5s remote, remote-cache ... (7 actions running)
+2026-11-12T15:50:40.1407340Z [37,320 / 37,479] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 6s remote, remote-cache ... (6 actions running)
+2026-11-12T15:50:40.6502181Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files):
+2026-11-12T15:50:40.6502738Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-12T15:50:40.6503070Z  --> codex-rs/app-server/src/main.rs:6:5
+2026-11-12T15:50:40.6503305Z   |
+2026-11-12T15:50:40.6503506Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-12T15:50:40.6503904Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:40.6504123Z   |
+2026-11-12T15:50:40.6504378Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:40.6504631Z 
+2026-11-12T15:50:40.6504776Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-12T15:50:40.6505094Z   --> codex-rs/app-server/src/main.rs:17:7
+2026-11-12T15:50:40.6505327Z    |
+2026-11-12T15:50:40.6505658Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-12T15:50:40.6506027Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:40.6506234Z    |
+2026-11-12T15:50:40.6506464Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:40.6506699Z 
+2026-11-12T15:50:40.6506841Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-12T15:50:40.6507133Z   --> codex-rs/app-server/src/main.rs:18:7
+2026-11-12T15:50:40.6507338Z    |
+2026-11-12T15:50:40.6507622Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-12T15:50:40.6508009Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:40.6508165Z 
+2026-11-12T15:50:40.6508252Z warning: 3 warnings emitted
+2026-11-12T15:50:40.6508393Z 
+2026-11-12T15:50:42.1410992Z [37,322 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 8s remote, remote-cache ... (5 actions running)
+2026-11-12T15:50:50.4345468Z [37,323 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 17s remote, remote-cache ... (6 actions, 4 running)
+2026-11-12T15:50:52.1425629Z [37,391 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 18s remote, remote-cache ... (3 actions running)
+2026-11-12T15:50:57.2387795Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (902 files):
+2026-11-12T15:50:57.2388266Z warning: variant `Unavailable` is never constructed
+2026-11-12T15:50:57.2388653Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T15:50:57.2388963Z    |
+2026-11-12T15:50:57.2389147Z 22 | pub(super) enum Status {
+2026-11-12T15:50:57.2389399Z    |                 ------ variant in this enum
+2026-11-12T15:50:57.2389634Z ...
+2026-11-12T15:50:57.2389824Z 26 |     Unavailable = 4,
+2026-11-12T15:50:57.2390047Z    |     ^^^^^^^^^^^
+2026-11-12T15:50:57.2390242Z    |
+2026-11-12T15:50:57.2391035Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T15:50:57.2391743Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:57.2392038Z 
+2026-11-12T15:50:57.2392155Z warning: field `selection` is never read
+2026-11-12T15:50:57.2392571Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:32:5
+2026-11-12T15:50:57.2392899Z    |
+2026-11-12T15:50:57.2393147Z 31 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:50:57.2393531Z    |            ---------------------------------------- field in this struct
+2026-11-12T15:50:57.2394232Z 32 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+2026-11-12T15:50:57.2394557Z    |     ^^^^^^^^^
+2026-11-12T15:50:57.2394667Z 
+2026-11-12T15:50:57.2394807Z warning: method `original_selection` is never used
+2026-11-12T15:50:57.2395198Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:51:19
+2026-11-12T15:50:57.2400946Z    |
+2026-11-12T15:50:57.2401182Z 38 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:50:57.2401567Z    | --------------------------------------------- method in this implementation
+2026-11-12T15:50:57.2401883Z ...
+2026-11-12T15:50:57.2402224Z 51 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+2026-11-12T15:50:57.2402602Z    |                   ^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:57.2402759Z 
+2026-11-12T15:50:57.2402848Z warning: field `estimand` is never read
+2026-11-12T15:50:57.2403194Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T15:50:57.2403541Z    |
+2026-11-12T15:50:57.2403847Z 19 | pub(super) struct Checked {
+2026-11-12T15:50:57.2404089Z    |                   ------- field in this struct
+2026-11-12T15:50:57.2404324Z ...
+2026-11-12T15:50:57.2404488Z 23 |     pub estimand: Digest32,
+2026-11-12T15:50:57.2404698Z    |         ^^^^^^^^
+2026-11-12T15:50:57.2404812Z 
+2026-11-12T15:50:57.2404903Z warning: method `context` is never used
+2026-11-12T15:50:57.2405261Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T15:50:57.2405597Z    |
+2026-11-12T15:50:57.2405756Z 30 | impl Request {
+2026-11-12T15:50:57.2405962Z    | ------------ method in this implementation
+2026-11-12T15:50:57.2406200Z ...
+2026-11-12T15:50:57.2406417Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T15:50:57.2406705Z    |                   ^^^^^^^
+2026-11-12T15:50:57.2406833Z 
+2026-11-12T15:50:57.2406923Z warning: 5 warnings emitted
+2026-11-12T15:50:57.2407055Z 
+2026-11-12T15:50:57.2572233Z [37,392 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 23s remote, remote-cache ... (5 actions, 2 running)
+2026-11-12T15:50:58.6614464Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (907 files):
+2026-11-12T15:50:58.6615054Z warning: variant `Unavailable` is never constructed
+2026-11-12T15:50:58.6615726Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T15:50:58.6616038Z    |
+2026-11-12T15:50:58.6616219Z 22 | pub(super) enum Status {
+2026-11-12T15:50:58.6616458Z    |                 ------ variant in this enum
+2026-11-12T15:50:58.6616722Z ...
+2026-11-12T15:50:58.6616911Z 26 |     Unavailable = 4,
+2026-11-12T15:50:58.6617128Z    |     ^^^^^^^^^^^
+2026-11-12T15:50:58.6617320Z    |
+2026-11-12T15:50:58.6617782Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T15:50:58.6618471Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:50:58.6618766Z 
+2026-11-12T15:50:58.6618869Z warning: field `selection` is never read
+2026-11-12T15:50:58.6619221Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:32:5
+2026-11-12T15:50:58.6619567Z    |
+2026-11-12T15:50:58.6619814Z 31 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:50:58.6620365Z    |            ---------------------------------------- field in this struct
+2026-11-12T15:50:58.6620778Z 32 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+2026-11-12T15:50:58.6621098Z    |     ^^^^^^^^^
+2026-11-12T15:50:58.6621209Z 
+2026-11-12T15:50:58.6621323Z warning: method `original_selection` is never used
+2026-11-12T15:50:58.6621712Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:51:19
+2026-11-12T15:50:58.6622054Z    |
+2026-11-12T15:50:58.6622276Z 38 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:50:58.6622659Z    | --------------------------------------------- method in this implementation
+2026-11-12T15:50:58.6622977Z ...
+2026-11-12T15:50:58.6623328Z 51 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+2026-11-12T15:50:58.6623874Z    |                   ^^^^^^^^^^^^^^^^^^
+2026-11-12T15:50:58.6624018Z 
+2026-11-12T15:50:58.6624105Z warning: field `estimand` is never read
+2026-11-12T15:50:58.6624438Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T15:50:58.6624746Z    |
+2026-11-12T15:50:58.6624910Z 19 | pub(super) struct Checked {
+2026-11-12T15:50:58.6625154Z    |                   ------- field in this struct
+2026-11-12T15:50:58.6625402Z ...
+2026-11-12T15:50:58.6625574Z 23 |     pub estimand: Digest32,
+2026-11-12T15:50:58.6625786Z    |         ^^^^^^^^
+2026-11-12T15:50:58.6625886Z 
+2026-11-12T15:50:58.6625972Z warning: method `context` is never used
+2026-11-12T15:50:58.6626294Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T15:50:58.6626629Z    |
+2026-11-12T15:50:58.6626796Z 30 | impl Request {
+2026-11-12T15:50:58.6627011Z    | ------------ method in this implementation
+2026-11-12T15:50:58.6627256Z ...
+2026-11-12T15:50:58.6627482Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T15:50:58.6627771Z    |                   ^^^^^^^
+2026-11-12T15:50:58.6627916Z 
+2026-11-12T15:50:58.6628001Z warning: 5 warnings emitted
+2026-11-12T15:50:58.6628139Z 
+2026-11-12T15:50:58.6667361Z [37,393 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 25s remote, remote-cache ... (11 actions, 10 running)
+2026-11-12T15:51:00.1437950Z [37,393 / 37,479] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files); 26s remote, remote-cache ... (11 actions running)
+2026-11-12T15:51:00.2092547Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (903 files):
+2026-11-12T15:51:00.2092870Z warning: variant `Unavailable` is never constructed
+2026-11-12T15:51:00.2093110Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T15:51:00.2093304Z    |
+2026-11-12T15:51:00.2093427Z 22 | pub(super) enum Status {
+2026-11-12T15:51:00.2093713Z    |                 ------ variant in this enum
+2026-11-12T15:51:00.2093907Z ...
+2026-11-12T15:51:00.2094019Z 26 |     Unavailable = 4,
+2026-11-12T15:51:00.2094194Z    |     ^^^^^^^^^^^
+2026-11-12T15:51:00.2094306Z    |
+2026-11-12T15:51:00.2094759Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T15:51:00.2095115Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:51:00.2095260Z 
+2026-11-12T15:51:00.2095324Z warning: field `selection` is never read
+2026-11-12T15:51:00.2095536Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:32:5
+2026-11-12T15:51:00.2095733Z    |
+2026-11-12T15:51:00.2095886Z 31 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:51:00.2096118Z    |            ---------------------------------------- field in this struct
+2026-11-12T15:51:00.2096356Z 32 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+2026-11-12T15:51:00.2096545Z    |     ^^^^^^^^^
+2026-11-12T15:51:00.2096614Z 
+2026-11-12T15:51:00.2096684Z warning: method `original_selection` is never used
+2026-11-12T15:51:00.2097037Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:51:19
+2026-11-12T15:51:00.2097233Z    |
+2026-11-12T15:51:00.2097375Z 38 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+2026-11-12T15:51:00.2097603Z    | --------------------------------------------- method in this implementation
+2026-11-12T15:51:00.2097794Z ...
+2026-11-12T15:51:00.2098003Z 51 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+2026-11-12T15:51:00.2098254Z    |                   ^^^^^^^^^^^^^^^^^^
+2026-11-12T15:51:00.2098349Z 
+2026-11-12T15:51:00.2098412Z warning: field `estimand` is never read
+2026-11-12T15:51:00.2098637Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T15:51:00.2098853Z    |
+2026-11-12T15:51:00.2098964Z 19 | pub(super) struct Checked {
+2026-11-12T15:51:00.2099117Z    |                   ------- field in this struct
+2026-11-12T15:51:00.2099265Z ...
+2026-11-12T15:51:00.2099378Z 23 |     pub estimand: Digest32,
+2026-11-12T15:51:00.2099516Z    |         ^^^^^^^^
+2026-11-12T15:51:00.2099592Z 
+2026-11-12T15:51:00.2099652Z warning: method `context` is never used
+2026-11-12T15:51:00.2099868Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T15:51:00.2100081Z    |
+2026-11-12T15:51:00.2100183Z 30 | impl Request {
+2026-11-12T15:51:00.2100340Z    | ------------ method in this implementation
+2026-11-12T15:51:00.2100604Z ...
+2026-11-12T15:51:00.2100771Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T15:51:00.2100954Z    |                   ^^^^^^^
+2026-11-12T15:51:00.2101038Z 
+2026-11-12T15:51:00.2101092Z warning: 5 warnings emitted
+2026-11-12T15:51:00.2101179Z 
+2026-11-12T15:51:02.0426926Z [37,396 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-g2-native-owner (906 files); 4s remote, remote-cache ... (9 actions, 8 running)
+2026-11-12T15:51:03.1442931Z [37,401 / 37,479] Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host (37 files); 5s remote, remote-cache ... (6 actions running)
+2026-11-12T15:51:04.2835461Z [37,402 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:codex-hepta-agentd (906 files); 6s remote, remote-cache ... (9 actions, 5 running)
+2026-11-12T15:51:05.8097866Z [37,406 / 37,479] Compiling Rust bin //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin (37 files); 7s remote, remote-cache ... (37 actions, 36 running)
+2026-11-12T15:51:06.9742525Z [37,414 / 37,479] Compiling Rust bin //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin (37 files); 9s remote, remote-cache ... (33 actions, 32 running)
+2026-11-12T15:51:08.1449080Z [37,417 / 37,479] Compiling Rust bin //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin (37 files); 10s remote, remote-cache ... (31 actions running)
+2026-11-12T15:51:09.2415673Z [37,422 / 37,479] Compiling Rust bin //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests-bin (11 files); 11s remote, remote-cache ... (29 actions, 28 running)
+2026-11-12T15:51:10.4365611Z [37,431 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-fleet_harness_diagnostics-test (1 file); 5s remote, remote-cache ... (24 actions, 23 running)
+2026-11-12T15:51:11.6710956Z [37,442 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-fleet_harness_diagnostics-test (1 file); 6s remote, remote-cache ... (19 actions, 18 running)
+2026-11-12T15:51:12.8292105Z [37,458 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test (1 file); 7s remote, remote-cache ... (11 actions, 10 running)
+2026-11-12T15:51:14.1459658Z [37,469 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test (1 file); 9s remote, remote-cache ... (5 actions running)
+2026-11-12T15:51:16.1464024Z [37,473 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test (1 file); 11s remote, remote-cache ... (3 actions running)
+2026-11-12T15:51:17.3486943Z [37,474 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files); 12s remote, remote-cache ... (3 actions, 2 running)
+2026-11-12T15:51:19.1469370Z [37,475 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files); 14s remote, remote-cache ... (2 actions running)
+2026-11-12T15:51:29.1648976Z [37,475 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files); 24s remote, remote-cache ... (2 actions running)
+2026-11-12T15:51:58.8316506Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (907 files):
+2026-11-12T15:51:58.8317295Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T15:51:58.8317796Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T15:51:58.8318162Z     |
+2026-11-12T15:51:58.8318388Z  84 | impl LedgerFixture {
+2026-11-12T15:51:58.8318659Z     | ------------------ associated items in this implementation
+2026-11-12T15:51:58.8318999Z ...
+2026-11-12T15:51:58.8319268Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T15:51:58.8319562Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:51:58.8319775Z ...
+2026-11-12T15:51:58.8319962Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T15:51:58.8320220Z     |                   ^^^^^
+2026-11-12T15:51:58.8320405Z     |
+2026-11-12T15:51:58.8320623Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:51:58.8320843Z 
+2026-11-12T15:51:58.8320959Z warning: function `append_decision` is never used
+2026-11-12T15:51:58.8321299Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T15:51:58.8321608Z     |
+2026-11-12T15:51:58.8321943Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T15:51:58.8322355Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T15:51:58.8322499Z 
+2026-11-12T15:51:58.8322598Z warning: function `closure` is never used
+2026-11-12T15:51:58.8322936Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T15:51:58.8323218Z     |
+2026-11-12T15:51:58.8323379Z 212 | pub(super) fn closure(
+2026-11-12T15:51:58.8323718Z     |               ^^^^^^^
+2026-11-12T15:51:58.8323843Z 
+2026-11-12T15:51:58.8324005Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T15:51:58.8324394Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T15:51:58.8324696Z    |
+2026-11-12T15:51:58.8324868Z 84 | impl LedgerFixture {
+2026-11-12T15:51:58.8325122Z    | ------------------ associated function in this implementation
+2026-11-12T15:51:58.8325392Z ...
+2026-11-12T15:51:58.8325625Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T15:51:58.8325937Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:51:58.8326091Z 
+2026-11-12T15:51:58.8326209Z warning: variant `Unavailable` is never constructed
+2026-11-12T15:51:58.8326797Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T15:51:58.8327060Z    |
+2026-11-12T15:51:58.8327226Z 22 | pub(super) enum Status {
+2026-11-12T15:51:58.8327453Z    |                 ------ variant in this enum
+2026-11-12T15:51:58.8327677Z ...
+2026-11-12T15:51:58.8327841Z 26 |     Unavailable = 4,
+2026-11-12T15:51:58.8328042Z    |     ^^^^^^^^^^^
+2026-11-12T15:51:58.8328219Z    |
+2026-11-12T15:51:58.8328648Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T15:51:58.8329093Z 
+2026-11-12T15:51:58.8329293Z warning: field `at` is never read
+2026-11-12T15:51:58.8329652Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T15:51:58.8330015Z    |
+2026-11-12T15:51:58.8330200Z 91 | pub(super) struct Fixture {
+2026-11-12T15:51:58.8330484Z    |                   ------- field in this struct
+2026-11-12T15:51:58.8330962Z 92 |     root: PathBuf,
+2026-11-12T15:51:58.8331207Z 93 |     pub(super) at: u64,
+2026-11-12T15:51:58.8331453Z    |                ^^
+2026-11-12T15:51:58.8331608Z 
+2026-11-12T15:51:58.8331879Z warning: associated function `from_research_store` is never used
+2026-11-12T15:51:58.8333747Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T15:51:58.8334390Z     |
+2026-11-12T15:51:58.8334634Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T15:51:58.8334991Z     | --------------------------------------- associated function in this implementation
+2026-11-12T15:51:58.8335299Z ...
+2026-11-12T15:51:58.8335439Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T15:51:58.8335598Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:51:58.8335697Z 
+2026-11-12T15:51:58.8335759Z warning: field `estimand` is never read
+2026-11-12T15:51:58.8335971Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T15:51:58.8336184Z    |
+2026-11-12T15:51:58.8336302Z 19 | pub(super) struct Checked {
+2026-11-12T15:51:58.8336461Z    |                   ------- field in this struct
+2026-11-12T15:51:58.8336613Z ...
+2026-11-12T15:51:58.8336722Z 23 |     pub estimand: Digest32,
+2026-11-12T15:51:58.8336858Z    |         ^^^^^^^^
+2026-11-12T15:51:58.8336934Z 
+2026-11-12T15:51:58.8336994Z warning: method `context` is never used
+2026-11-12T15:51:58.8337199Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T15:51:58.8337396Z    |
+2026-11-12T15:51:58.8337500Z 30 | impl Request {
+2026-11-12T15:51:58.8337638Z    | ------------ method in this implementation
+2026-11-12T15:51:58.8337787Z ...
+2026-11-12T15:51:58.8337933Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T15:51:58.8338118Z    |                   ^^^^^^^
+2026-11-12T15:51:58.8338199Z 
+2026-11-12T15:51:58.8338262Z warning: function `ledger` is never used
+2026-11-12T15:51:58.8338476Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T15:51:58.8338683Z    |
+2026-11-12T15:51:58.8338793Z 80 | pub(super) fn ledger(
+2026-11-12T15:51:58.8338926Z    |               ^^^^^^
+2026-11-12T15:51:58.8339001Z 
+2026-11-12T15:51:58.8339064Z warning: function `material` is never used
+2026-11-12T15:51:58.8339283Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T15:51:58.8339488Z     |
+2026-11-12T15:51:58.8339599Z 302 | pub(super) fn material(
+2026-11-12T15:51:58.8339733Z     |               ^^^^^^^^
+2026-11-12T15:51:58.8339815Z 
+2026-11-12T15:51:58.8339896Z warning: function `material_with_profile` is never used
+2026-11-12T15:51:58.8340233Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T15:51:58.8340542Z     |
+2026-11-12T15:51:58.8340709Z 437 | pub(super) fn material_with_profile(
+2026-11-12T15:51:58.8340924Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:51:58.8341059Z 
+2026-11-12T15:51:58.8341150Z warning: type alias `Selector` is never used
+2026-11-12T15:51:58.8341645Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T15:51:58.8341949Z    |
+2026-11-12T15:51:58.8342274Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T15:51:58.8342667Z    |                 ^^^^^^^^
+2026-11-12T15:51:58.8342804Z 
+2026-11-12T15:51:58.8342886Z warning: 13 warnings emitted
+2026-11-12T15:51:58.8343012Z 
+2026-11-12T15:51:58.8345903Z [37,476 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files); 53s remote, remote-cache ... (2 actions, 1 running)
+2026-11-12T15:52:00.1513142Z [37,477 / 37,479] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files); 55s remote, remote-cache
+2026-11-12T15:52:06.5481386Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files):
+2026-11-12T15:52:06.5481933Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T15:52:06.5482672Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T15:52:06.5482973Z     |
+2026-11-12T15:52:06.5483148Z  84 | impl LedgerFixture {
+2026-11-12T15:52:06.5483409Z     | ------------------ associated items in this implementation
+2026-11-12T15:52:06.5483805Z ...
+2026-11-12T15:52:06.5484051Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T15:52:06.5484366Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:52:06.5484588Z ...
+2026-11-12T15:52:06.5484789Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T15:52:06.5485055Z     |                   ^^^^^
+2026-11-12T15:52:06.5485248Z     |
+2026-11-12T15:52:06.5485483Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T15:52:06.5485710Z 
+2026-11-12T15:52:06.5485823Z warning: function `append_decision` is never used
+2026-11-12T15:52:06.5486148Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T15:52:06.5486341Z     |
+2026-11-12T15:52:06.5486547Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T15:52:06.5486794Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T15:52:06.5486884Z 
+2026-11-12T15:52:06.5486948Z warning: function `closure` is never used
+2026-11-12T15:52:06.5487146Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T15:52:06.5487449Z     |
+2026-11-12T15:52:06.5487567Z 212 | pub(super) fn closure(
+2026-11-12T15:52:06.5487703Z     |               ^^^^^^^
+2026-11-12T15:52:06.5487788Z 
+2026-11-12T15:52:06.5487895Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T15:52:06.5488142Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T15:52:06.5488328Z    |
+2026-11-12T15:52:06.5488440Z 84 | impl LedgerFixture {
+2026-11-12T15:52:06.5488609Z    | ------------------ associated function in this implementation
+2026-11-12T15:52:06.5488786Z ...
+2026-11-12T15:52:06.5488943Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T15:52:06.5489143Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:52:06.5489244Z 
+2026-11-12T15:52:06.5489319Z warning: variant `Unavailable` is never constructed
+2026-11-12T15:52:06.5489523Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T15:52:06.5489692Z    |
+2026-11-12T15:52:06.5489802Z 22 | pub(super) enum Status {
+2026-11-12T15:52:06.5489951Z    |                 ------ variant in this enum
+2026-11-12T15:52:06.5490097Z ...
+2026-11-12T15:52:06.5490203Z 26 |     Unavailable = 4,
+2026-11-12T15:52:06.5490327Z    |     ^^^^^^^^^^^
+2026-11-12T15:52:06.5490439Z    |
+2026-11-12T15:52:06.5490697Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T15:52:06.5490946Z 
+2026-11-12T15:52:06.5491004Z warning: field `at` is never read
+2026-11-12T15:52:06.5491205Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T15:52:06.5491399Z    |
+2026-11-12T15:52:06.5491663Z 91 | pub(super) struct Fixture {
+2026-11-12T15:52:06.5491817Z    |                   ------- field in this struct
+2026-11-12T15:52:06.5491975Z 92 |     root: PathBuf,
+2026-11-12T15:52:06.5492106Z 93 |     pub(super) at: u64,
+2026-11-12T15:52:06.5492236Z    |                ^^
+2026-11-12T15:52:06.5492308Z 
+2026-11-12T15:52:06.5492405Z warning: associated function `from_research_store` is never used
+2026-11-12T15:52:06.5492634Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T15:52:06.5492810Z     |
+2026-11-12T15:52:06.5492943Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T15:52:06.5493173Z     | --------------------------------------- associated function in this implementation
+2026-11-12T15:52:06.5493374Z ...
+2026-11-12T15:52:06.5493491Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T15:52:06.5493793Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:52:06.5493980Z 
+2026-11-12T15:52:06.5494039Z warning: field `estimand` is never read
+2026-11-12T15:52:06.5494253Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T15:52:06.5494455Z    |
+2026-11-12T15:52:06.5494565Z 19 | pub(super) struct Checked {
+2026-11-12T15:52:06.5494714Z    |                   ------- field in this struct
+2026-11-12T15:52:06.5494861Z ...
+2026-11-12T15:52:06.5494969Z 23 |     pub estimand: Digest32,
+2026-11-12T15:52:06.5495102Z    |         ^^^^^^^^
+2026-11-12T15:52:06.5495177Z 
+2026-11-12T15:52:06.5495236Z warning: method `context` is never used
+2026-11-12T15:52:06.5495442Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T15:52:06.5495639Z    |
+2026-11-12T15:52:06.5495743Z 30 | impl Request {
+2026-11-12T15:52:06.5495881Z    | ------------ method in this implementation
+2026-11-12T15:52:06.5496031Z ...
+2026-11-12T15:52:06.5496174Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T15:52:06.5496368Z    |                   ^^^^^^^
+2026-11-12T15:52:06.5496450Z 
+2026-11-12T15:52:06.5496515Z warning: function `ledger` is never used
+2026-11-12T15:52:06.5496730Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T15:52:06.5496934Z    |
+2026-11-12T15:52:06.5497040Z 80 | pub(super) fn ledger(
+2026-11-12T15:52:06.5497169Z    |               ^^^^^^
+2026-11-12T15:52:06.5497247Z 
+2026-11-12T15:52:06.5497312Z warning: function `material` is never used
+2026-11-12T15:52:06.5497531Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T15:52:06.5497739Z     |
+2026-11-12T15:52:06.5497850Z 302 | pub(super) fn material(
+2026-11-12T15:52:06.5497984Z     |               ^^^^^^^^
+2026-11-12T15:52:06.5498066Z 
+2026-11-12T15:52:06.5498148Z warning: function `material_with_profile` is never used
+2026-11-12T15:52:06.5498392Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T15:52:06.5498602Z     |
+2026-11-12T15:52:06.5498721Z 437 | pub(super) fn material_with_profile(
+2026-11-12T15:52:06.5498873Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T15:52:06.5498966Z 
+2026-11-12T15:52:06.5499030Z warning: type alias `Selector` is never used
+2026-11-12T15:52:06.5499248Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T15:52:06.5499451Z    |
+2026-11-12T15:52:06.5499671Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T15:52:06.5499933Z    |                 ^^^^^^^^
+2026-11-12T15:52:06.5500018Z 
+2026-11-12T15:52:06.5500071Z warning: 13 warnings emitted
+2026-11-12T15:52:06.5500158Z 
+2026-11-12T15:52:06.5514725Z [37,478 / 37,479] [Prepa] runfiles for //codex-rs/hepta-agentd:hepta-agentd-unit-tests
+2026-11-12T15:52:06.5747315Z INFO: Found 1046 targets...
+2026-11-12T15:52:06.7973522Z INFO: Elapsed time: 271.343s, Critical Path: 138.42s
+2026-11-12T15:52:06.7974499Z INFO: 37479 processes: 25308 remote cache hit, 12081 internal, 90 remote.
+2026-11-12T15:52:06.7984085Z INFO: Build completed successfully, 37479 total actions
+2026-11-12T15:52:06.7984385Z INFO: 
+2026-11-12T15:52:08.1521639Z INFO: 
+2026-11-12T15:52:11.6732700Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/a0fc1175-04df-41fd-ac01-f76a6fc6784d
+2026-11-12T15:52:11.7420494Z ##[group]Run ./.github/scripts/run-bazel-ci.sh \
+2026-11-12T15:52:11.7420865Z [36;1m./.github/scripts/run-bazel-ci.sh \[0m
+2026-11-12T15:52:11.7421135Z [36;1m  --remote-download-toplevel \[0m
+2026-11-12T15:52:11.7421423Z [36;1m  --print-failed-action-summary \[0m
+2026-11-12T15:52:11.7421667Z [36;1m  -- \[0m
+2026-11-12T15:52:11.7421839Z [36;1m  build \[0m
+2026-11-12T15:52:11.7422066Z [36;1m  --build_metadata=COMMIT_SHA=${GITHUB_SHA} \[0m
+2026-11-12T15:52:11.7422373Z [36;1m  --build_metadata=TAG_job=verify-bwrap \[0m
+2026-11-12T15:52:11.7422618Z [36;1m  -- \[0m
+2026-11-12T15:52:11.7422795Z [36;1m  //codex-rs/bwrap:bwrap[0m
+2026-11-12T15:52:11.7461500Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T15:52:11.7461684Z env:
+2026-11-12T15:52:11.7461819Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T15:52:11.7462033Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:11.7462285Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T15:52:11.7462474Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T15:52:11.7462701Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:11.7463048Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43251474257-verify-release-build
+2026-11-12T15:52:11.7463365Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T15:52:11.7463552Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:11.7464261Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:11.7464523Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T15:52:11.7467262Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T15:52:11.7467529Z   HEPTA_LOCKDOWN_ROOT: /home/runner/work/_temp/hepta-lockdown-root
+2026-11-12T15:52:11.7467897Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:11.7468139Z   BUILDBUDDY_API_KEY: ***
+2026-11-12T15:52:11.7468283Z ##[endgroup]
+2026-11-12T15:52:11.7543422Z BuildBuddy API key is available; using remote Bazel configuration.
+2026-11-12T15:52:11.7783555Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.
+2026-11-12T15:52:12.0144748Z INFO: Invocation ID: ffb98d72-7494-4f72-be8e-5a324a64ee91
+2026-11-12T15:52:12.0174521Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/ffb98d72-7494-4f72-be8e-5a324a64ee91
+2026-11-12T15:52:13.0427816Z Computing main repo mapping: 
+2026-11-12T15:52:16.6757369Z Loading: 
+2026-11-12T15:52:16.6775641Z Loading: 0 packages loaded
+2026-11-12T15:52:16.7992575Z WARNING: Build options --@@rules_rs++rules_rust+rules_rust//rust/settings:extra_exec_rustc_flag and --@@rules_rs++rules_rust+rules_rust//rust/settings:extra_rustc_flag have changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed).
+2026-11-12T15:52:18.1714818Z Analyzing: target //codex-rs/bwrap:bwrap (0 packages loaded)
+2026-11-12T15:52:24.8510148Z Analyzing: target //codex-rs/bwrap:bwrap (0 packages loaded, 0 targets configured)
+2026-11-12T15:52:24.8544453Z Analyzing: target //codex-rs/bwrap:bwrap (0 packages loaded, 0 targets configured)
+2026-11-12T15:52:24.8550693Z 
+2026-11-12T15:52:25.8594282Z Analyzing: target //codex-rs/bwrap:bwrap (94 packages loaded, 1407 targets configured)
+2026-11-12T15:52:25.8612952Z 
+2026-11-12T15:52:26.9858020Z Analyzing: target //codex-rs/bwrap:bwrap (142 packages loaded, 15984 targets configured)
+2026-11-12T15:52:26.9858468Z 
+2026-11-12T15:52:28.1054898Z Analyzing: target //codex-rs/bwrap:bwrap (145 packages loaded, 26327 targets configured, 85 aspect applications)
+2026-11-12T15:52:28.1143970Z 
+2026-11-12T15:52:30.3808526Z INFO: Analyzed target //codex-rs/bwrap:bwrap (146 packages loaded, 44084 targets configured, 200 aspect applications).
+2026-11-12T15:52:30.3976002Z [1 / 1] no actions running
+2026-11-12T15:52:32.5005066Z [1,995 / 2,119] [Prepa] Compiling Rust (without process_wrapper) rlib @@rules_rs++http_archive+rules_rust_tinyjson//:tinyjson (4 files) [for tool]
+2026-11-12T15:52:33.6891872Z [2,117 / 2,119] [Sched] Compiling Rust bin //codex-rs/bwrap:bwrap (1 file)
+2026-11-12T15:52:34.5648756Z INFO: Found 1 target...
+2026-11-12T15:52:34.6228484Z Target //codex-rs/bwrap:bwrap up-to-date:
+2026-11-12T15:52:34.6233093Z   bazel-bin/codex-rs/bwrap/bwrap
+2026-11-12T15:52:34.6287007Z INFO: Elapsed time: 22.836s, Critical Path: 2.96s
+2026-11-12T15:52:34.6288720Z INFO: 11 processes: 2108 action cache hit, 7 remote cache hit, 3 internal, 1 remote.
+2026-11-12T15:52:34.6289776Z INFO: Build completed successfully, 11 total actions
+2026-11-12T15:52:34.6290158Z INFO: 
+2026-11-12T15:52:35.5427720Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/ffb98d72-7494-4f72-be8e-5a324a64ee91
+2026-11-12T15:52:35.5570929Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T15:52:35.5571314Z with:
+2026-11-12T15:52:35.5571601Z   name: bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu
+2026-11-12T15:52:35.5572000Z   path: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:35.5572280Z   if-no-files-found: ignore
+2026-11-12T15:52:35.5572483Z   compression-level: 6
+2026-11-12T15:52:35.5572687Z   overwrite: false
+2026-11-12T15:52:35.5572869Z   include-hidden-files: false
+2026-11-12T15:52:35.5573064Z   archive: true
+2026-11-12T15:52:35.5573226Z env:
+2026-11-12T15:52:35.5573404Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T15:52:35.5574201Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:35.5574525Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T15:52:35.5574815Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T15:52:35.5575223Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:35.5575888Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43251474257-verify-release-build
+2026-11-12T15:52:35.5576399Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T15:52:35.5576701Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:35.5576956Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:35.5577203Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T15:52:35.5579884Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T15:52:35.5580180Z   HEPTA_LOCKDOWN_ROOT: /home/runner/work/_temp/hepta-lockdown-root
+2026-11-12T15:52:35.5580613Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:35.5580967Z ##[endgroup]
+2026-11-12T15:52:35.7084320Z With the provided path, there will be 2 files uploaded
+2026-11-12T15:52:35.7114644Z Artifact name is valid!
+2026-11-12T15:52:35.7149995Z Root directory input is valid!
+2026-11-12T15:52:35.9687195Z Uploading artifact: bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu.zip
+2026-11-12T15:52:35.9720702Z Beginning upload of artifact content to blob storage
+2026-11-12T15:52:36.7688744Z Uploaded bytes 8388608
+2026-11-12T15:52:37.0679871Z Uploaded bytes 15276018
+2026-11-12T15:52:37.1014166Z Finished uploading artifact content to blob storage!
+2026-11-12T15:52:37.1014734Z SHA256 digest of uploaded artifact is 261160ee3994488929e67bb5e17066adcf7300f730ddc0dbe84ea147775597fa
+2026-11-12T15:52:37.1015133Z Finalizing artifact upload
+2026-11-12T15:52:37.5600586Z Artifact bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu successfully finalized. Artifact ID 13961205256
+2026-11-12T15:52:37.5601170Z Artifact bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu has been successfully uploaded! Final size is 15276018 bytes. Artifact ID is 13961205256
+2026-11-12T15:52:37.5604505Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43251474257/artifacts/13961205256
+2026-11-12T15:52:37.5751262Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T15:52:37.5751475Z with:
+2026-11-12T15:52:37.5751635Z   path: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:37.5752030Z   key: bazel-cache-bazel-verify-release-build-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T15:52:37.5752392Z   enableCrossOsArchive: false
+2026-11-12T15:52:37.5752530Z env:
+2026-11-12T15:52:37.5752656Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T15:52:37.5752871Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:37.5753099Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T15:52:37.5753296Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T15:52:37.5753534Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:37.5754380Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43251474257-verify-release-build
+2026-11-12T15:52:37.5754714Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T15:52:37.5754908Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:37.5755066Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:37.5755226Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T15:52:37.5756805Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T15:52:37.5757001Z   HEPTA_LOCKDOWN_ROOT: /home/runner/work/_temp/hepta-lockdown-root
+2026-11-12T15:52:37.5757271Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:37.5757498Z ##[endgroup]
+2026-11-12T15:52:37.6699084Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/hepta-private-ci/hepta-private-ci --files-from manifest.txt --use-compress-program zstdmt
+2026-11-12T15:52:40.8962482Z Sent 0 of 1176925320 (0.0%), 0.0 MBs/sec
+2026-11-12T15:52:41.8986718Z Sent 402653184 of 1176925320 (34.2%), 191.9 MBs/sec
+2026-11-12T15:52:42.8974161Z Sent 975598728 of 1176925320 (82.9%), 309.9 MBs/sec
+2026-11-12T15:52:43.8967934Z Sent 1109816456 of 1176925320 (94.3%), 264.5 MBs/sec
+2026-11-12T15:52:44.8976445Z Sent 1109816456 of 1176925320 (94.3%), 211.6 MBs/sec
+2026-11-12T15:52:45.8995002Z Sent 1109816456 of 1176925320 (94.3%), 176.3 MBs/sec
+2026-11-12T15:52:46.6000867Z Sent 1176925320 of 1176925320 (100.0%), 167.4 MBs/sec
+2026-11-12T15:52:46.8486370Z Cache saved with key: bazel-cache-bazel-verify-release-build-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T15:52:46.8601660Z Prepare all required actions
+2026-11-12T15:52:46.8620265Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T15:52:46.8620449Z env:
+2026-11-12T15:52:46.8620592Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T15:52:46.8620821Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:46.8621073Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T15:52:46.8621279Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T15:52:46.8621531Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:46.8621908Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43251474257-verify-release-build
+2026-11-12T15:52:46.8622253Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T15:52:46.8622457Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:46.8622630Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:46.8622818Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T15:52:46.8625022Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T15:52:46.8625313Z   HEPTA_LOCKDOWN_ROOT: /home/runner/work/_temp/hepta-lockdown-root
+2026-11-12T15:52:46.8625742Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:46.8626103Z ##[endgroup]
+2026-11-12T15:52:46.8639908Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T15:52:46.8651938Z ##[group]Run set -euo pipefail
+2026-11-12T15:52:46.8652134Z [36;1mset -euo pipefail[0m
+2026-11-12T15:52:46.8652270Z [36;1m[0m
+2026-11-12T15:52:46.8652536Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T15:52:46.8652836Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T15:52:46.8652992Z [36;1m  exit 0[0m
+2026-11-12T15:52:46.8653110Z [36;1mfi[0m
+2026-11-12T15:52:46.8653224Z [36;1m[0m
+2026-11-12T15:52:46.8653441Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T15:52:46.8653921Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T15:52:46.8654073Z [36;1mexit 1[0m
+2026-11-12T15:52:46.8671928Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T15:52:46.8672118Z env:
+2026-11-12T15:52:46.8672394Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T15:52:46.8672621Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:46.8672853Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T15:52:46.8673066Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T15:52:46.8673313Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T15:52:46.8673828Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43251474257-verify-release-build
+2026-11-12T15:52:46.8674166Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T15:52:46.8674371Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:46.8674536Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T15:52:46.8674699Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T15:52:46.8676225Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T15:52:46.8676427Z   HEPTA_LOCKDOWN_ROOT: /home/runner/work/_temp/hepta-lockdown-root
+2026-11-12T15:52:46.8676712Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T15:52:46.8676951Z ##[endgroup]
+2026-11-12T15:52:49.3619983Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=2497]
+2026-11-12T15:52:49.3686547Z Post job cleanup.
+2026-11-12T15:52:49.3688995Z ##[start-action display=Set up Bazel;id=__ad2e35b3-c799-4660-b0b8-bcdb2fc170ab.__bazel-contrib_setup-bazel]
+2026-11-12T15:52:49.3715655Z Post job cleanup.
+2026-11-12T15:52:49.4799428Z ##[end-action id=__ad2e35b3-c799-4660-b0b8-bcdb2fc170ab.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=110]
+2026-11-12T15:52:49.4842027Z Post job cleanup.
+2026-11-12T15:52:49.5392934Z [command]/usr/bin/git version
+2026-11-12T15:52:49.5427630Z git version 2.56.0
+2026-11-12T15:52:49.5451599Z Temporarily overriding HOME='/home/runner/work/_temp/a56d54a7-16ec-485b-9ce8-d714a503d95a' before making global git config changes
+2026-11-12T15:52:49.5452610Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T15:52:49.5455315Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T15:52:49.5485565Z Removing SSH command configuration
+2026-11-12T15:52:49.5490299Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T15:52:49.5532907Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T15:52:49.5760098Z Removing HTTP extra header
+2026-11-12T15:52:49.5760696Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T15:52:49.5796468Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T15:52:49.6026279Z Removing includeIf entries pointing to credentials config files
+2026-11-12T15:52:49.6033315Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T15:52:49.6109374Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T15:52:49.6474699Z Cleaning up orphan processes
+2026-11-12T15:52:49.6833526Z Terminate orphan process: pid (2420) (java.lang=ALL-UNNAMED)

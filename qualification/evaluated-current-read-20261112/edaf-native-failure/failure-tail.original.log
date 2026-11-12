@@ -1,0 +1,140 @@
+2026-11-12T17:51:51.4001282Z         FAIL [  29.466s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
+2026-11-12T17:51:51.4001465Z   stdout ───
+2026-11-12T17:51:51.4001490Z 
+2026-11-12T17:51:51.4001641Z     running 1 test
+2026-11-12T17:51:51.4002629Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion ... FAILED
+2026-11-12T17:51:51.4002803Z 
+2026-11-12T17:51:51.4002953Z     failures:
+2026-11-12T17:51:51.4002961Z 
+2026-11-12T17:51:51.4003049Z     failures:
+2026-11-12T17:51:51.4004039Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
+2026-11-12T17:51:51.4004052Z 
+2026-11-12T17:51:51.4004367Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 29.44s
+2026-11-12T17:51:51.4004373Z 
+2026-11-12T17:51:51.4004507Z   stderr ───
+2026-11-12T17:51:51.4004857Z     Error: first original completed C attestation: Connection(OwnerUnavailable("original learning evidence owner"))
+2026-11-12T17:51:51.4005934Z     ORIGINAL_EVALUATED_S_EXCHANGE_END request_id=1 callback_entered=true wait=Some(3.191467345s) callback_elapsed=Some(600.407218ms) callback_result=Some(Err(Receipt(Evaluated(Evaluation(PredecessorUnavailable))))) elapsed=3.791886505s result=Err(InvalidRequest)
+2026-11-12T17:51:51.4005943Z 
+2026-11-12T17:51:51.4007070Z         FAIL [  29.324s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs
+2026-11-12T17:51:51.4007205Z   stdout ───
+2026-11-12T17:51:51.4007211Z 
+2026-11-12T17:51:51.4007293Z     running 1 test
+2026-11-12T17:51:51.4008483Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs ... FAILED
+2026-11-12T17:51:51.4008498Z 
+2026-11-12T17:51:51.4008669Z     failures:
+2026-11-12T17:51:51.4008678Z 
+2026-11-12T17:51:51.4008812Z     failures:
+2026-11-12T17:51:51.4009724Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs
+2026-11-12T17:51:51.4009731Z 
+2026-11-12T17:51:51.4010158Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 29.30s
+2026-11-12T17:51:51.4010165Z 
+2026-11-12T17:51:51.4010285Z   stderr ───
+2026-11-12T17:51:51.4010291Z 
+2026-11-12T17:51:51.4011618Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (31145) panicked at hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs:502:5:
+2026-11-12T17:51:51.4011932Z     original recovered missing C: Some(Connection(OwnerUnavailable("original learning evidence owner")))
+2026-11-12T17:51:51.4012134Z     note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T17:51:51.4013302Z     ORIGINAL_EVALUATED_S_EXCHANGE_END request_id=1 callback_entered=true wait=Some(3.339199024s) callback_elapsed=Some(601.860501ms) callback_result=Some(Err(Receipt(Evaluated(Evaluation(PredecessorUnavailable))))) elapsed=3.941073531s result=Err(InvalidRequest)
+2026-11-12T17:51:51.4013311Z 
+2026-11-12T17:51:51.4014499Z      TIMEOUT [  60.012s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim
+2026-11-12T17:51:51.4014841Z   stdout ───
+2026-11-12T17:51:51.4014852Z 
+2026-11-12T17:51:51.4014953Z     running 1 test
+2026-11-12T17:51:51.4015061Z   stderr ───
+2026-11-12T17:51:51.4015548Z     ORIGINAL_EVALUATED_S_EXCHANGE_END request_id=1 callback_entered=false wait=None callback_elapsed=None callback_result=None elapsed=526.734196ms result=Ok(false)
+2026-11-12T17:51:51.4016182Z     ORIGINAL_EVALUATED_S_EXCHANGE_END request_id=1 callback_entered=false wait=None callback_elapsed=None callback_result=None elapsed=962.42642ms result=Ok(false)
+2026-11-12T17:51:51.4016189Z 
+2026-11-12T17:51:51.4016283Z     (test timed out)
+2026-11-12T17:51:51.4016289Z 
+2026-11-12T17:51:51.4017508Z         FAIL [  30.523s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response
+2026-11-12T17:51:51.4017920Z   stdout ───
+2026-11-12T17:51:51.4017927Z 
+2026-11-12T17:51:51.4018010Z     running 1 test
+2026-11-12T17:51:51.4019447Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response ... FAILED
+2026-11-12T17:51:51.4019487Z 
+2026-11-12T17:51:51.4019645Z     failures:
+2026-11-12T17:51:51.4019658Z 
+2026-11-12T17:51:51.4019787Z     failures:
+2026-11-12T17:51:51.4020711Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response
+2026-11-12T17:51:51.4020727Z 
+2026-11-12T17:51:51.4021118Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 30.50s
+2026-11-12T17:51:51.4021125Z 
+2026-11-12T17:51:51.4021258Z   stderr ───
+2026-11-12T17:51:51.4021263Z 
+2026-11-12T17:51:51.4022632Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (31272) panicked at hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs:426:5:
+2026-11-12T17:51:51.4022955Z     after the final actual S response: Some(Connection(OwnerUnavailable("original learning evidence owner")))
+2026-11-12T17:51:51.4023284Z     note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T17:51:51.4024136Z     ORIGINAL_EVALUATED_S_EXCHANGE_END request_id=1 callback_entered=true wait=Some(3.215604655s) callback_elapsed=Some(603.923026ms) callback_result=Some(Err(Receipt(Evaluated(Evaluation(PredecessorUnavailable))))) elapsed=3.819540305s result=Err(InvalidRequest)
+2026-11-12T17:51:51.4024149Z 
+2026-11-12T17:51:51.4025141Z         FAIL [  30.246s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+2026-11-12T17:51:51.4025261Z   stdout ───
+2026-11-12T17:51:51.4025275Z 
+2026-11-12T17:51:51.4025355Z     running 1 test
+2026-11-12T17:51:51.4026438Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute ... FAILED
+2026-11-12T17:51:51.4026449Z 
+2026-11-12T17:51:51.4026533Z     failures:
+2026-11-12T17:51:51.4026540Z 
+2026-11-12T17:51:51.4026698Z     failures:
+2026-11-12T17:51:51.4027591Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+2026-11-12T17:51:51.4027597Z 
+2026-11-12T17:51:51.4028189Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 30.23s
+2026-11-12T17:51:51.4028197Z 
+2026-11-12T17:51:51.4028338Z   stderr ───
+2026-11-12T17:51:51.4028478Z     Error: channel is empty and sending half is closed
+2026-11-12T17:51:51.4028483Z 
+2026-11-12T17:51:51.4029495Z         FAIL [  13.752s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+2026-11-12T17:51:51.4029607Z   stdout ───
+2026-11-12T17:51:51.4029613Z 
+2026-11-12T17:51:51.4029804Z     running 1 test
+2026-11-12T17:51:51.4030749Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest ... FAILED
+2026-11-12T17:51:51.4030756Z 
+2026-11-12T17:51:51.4030836Z     failures:
+2026-11-12T17:51:51.4030840Z 
+2026-11-12T17:51:51.4030921Z     failures:
+2026-11-12T17:51:51.4031796Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+2026-11-12T17:51:51.4031803Z 
+2026-11-12T17:51:51.4032072Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 13.74s
+2026-11-12T17:51:51.4032077Z 
+2026-11-12T17:51:51.4032197Z   stderr ───
+2026-11-12T17:51:51.4032407Z     Error: original Evaluation effect is uncertain; read the original operation
+2026-11-12T17:51:51.4032425Z 
+2026-11-12T17:51:51.4033421Z         FAIL [  42.711s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+2026-11-12T17:51:51.4033535Z   stdout ───
+2026-11-12T17:51:51.4033540Z 
+2026-11-12T17:51:51.4033616Z     running 1 test
+2026-11-12T17:51:51.4034553Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression ... FAILED
+2026-11-12T17:51:51.4034560Z 
+2026-11-12T17:51:51.4034643Z     failures:
+2026-11-12T17:51:51.4034648Z 
+2026-11-12T17:51:51.4034719Z     failures:
+2026-11-12T17:51:51.4035617Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+2026-11-12T17:51:51.4035632Z 
+2026-11-12T17:51:51.4035910Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 42.70s
+2026-11-12T17:51:51.4035915Z 
+2026-11-12T17:51:51.4036025Z   stderr ───
+2026-11-12T17:51:51.4036319Z     Error: original Evaluation effect is uncertain; read the original operation
+2026-11-12T17:51:51.4036329Z 
+2026-11-12T17:51:51.4037340Z         FAIL [   4.073s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+2026-11-12T17:51:51.4037585Z   stdout ───
+2026-11-12T17:51:51.4037597Z 
+2026-11-12T17:51:51.4037844Z     running 1 test
+2026-11-12T17:51:51.4038715Z     test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED
+2026-11-12T17:51:51.4038871Z 
+2026-11-12T17:51:51.4038972Z     failures:
+2026-11-12T17:51:51.4038977Z 
+2026-11-12T17:51:51.4039057Z     failures:
+2026-11-12T17:51:51.4039732Z         runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+2026-11-12T17:51:51.4039743Z 
+2026-11-12T17:51:51.4040183Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 4.06s
+2026-11-12T17:51:51.4040189Z 
+2026-11-12T17:51:51.4040324Z   stderr ───
+2026-11-12T17:51:51.4044881Z     ORIGINAL_C_EVIDENCE_EXCHANGE request_id=1 callback_started_after=Some(339.662µs) callback_elapsed=Some(707.475092ms) response_bytes=Some(1007) callback_error=None exchange_elapsed=707.83391ms result=Err(DeadlineElapsed)
+2026-11-12T17:51:51.4045603Z     Error: before actual publication withdrawal: evidence=OwnerUnavailable("original learning evidence owner"); elapsed=501.558426ms; original_server=Err(Transport(DeadlineElapsed))
+2026-11-12T17:51:51.4045611Z 
+2026-11-12T17:51:51.4045715Z error: test run failed
+2026-11-12T17:51:51.4045864Z error: recipe `test` failed on line 89 with exit code 100
+2026-11-12T17:51:51.4051215Z {"after": {"commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "dirty": false, "parents": ["286c567593ca6bb5e8cf4ee03602155526bf47ec"], "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52"}, "base_sha": "", "before": {"commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "dirty": false, "parents": ["286c567593ca6bb5e8cf4ee03602155526bf47ec"], "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52"}, "command": ["just", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger", "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-neuron", "--lib", "--test-threads", "2", "--retries", "0", "--status-level", "pass", "--success-output", "final", "--failure-output", "final"], "command_exit_code": 100, "elapsed_seconds": 1167.095117452, "error": "required tests were not observed passing", "exit_code": 100, "finished_at": "2026-11-12T17:51:51.195206+00:00", "job": "native", "lane": "source-head", "log_bytes": 1200771, "log_file": "ordinary.json.1a793a4ffad7413f9ffc404872706324.log", "log_sha256": "67e2202f5b6b32a2673096d3648b3f3340d508268c739b066ee03f54ff23c366", "minimum_tests": 1, "observed_failed_tests": 8, "observed_passed_tests": 1730, "output_limit_exceeded": false, "returncode": 100, "run_attempt": "1", "run_id": "43267838695", "schema_version": 1, "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "started_at": "2026-11-12T17:32:24.099523+00:00", "status": "failed", "tested_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"}
+2026-11-12T17:51:51.4054710Z {"command": ["just", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger", "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-neuron", "--lib", "--test-threads", "2", "--retries", "0", "--status-level", "pass", "--success-output", "final", "--failure-output", "final"], "errors": 0, "execution_file": "ordinary.json", "execution_sha256": "73b85b8cb292432644a390f670bcd41ec89ff98208c9e6f80d9f840912ad8752", "failures": 8, "job": "native", "junit_bytes": 433525, "junit_mtime_ns": 1794505911114690415, "junit_sha256": "c1f14d92dab835a9cf7f1ad9415b7b39d7122046501a834a8c41a04cd41b1154", "kind": "native-junit-collection", "native_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml", "run_attempt": "1", "run_id": "43267838695", "schema_version": 1, "skipped_in_xml": 0, "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52", "status": "retained-failed", "total_testcases": 1738}
+2026-11-12T17:51:51.4055050Z Native qualification failed: ordinary failed; retained execution and fresh JUnit observations
+2026-11-12T17:51:52.4880931Z {"source_snapshot": "final", "commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da", "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52", "status": "", "files": 15220, "inventory_sha256": "5d4d76b72b7896c9e81119db1ee5aaa7db4a086961c157f9c6949e520e4a721e"}
+2026-11-12T17:51:52.5017565Z ##[error]Process completed with exit code 1.
+2026-11-12T17:51:52.5083849Z 

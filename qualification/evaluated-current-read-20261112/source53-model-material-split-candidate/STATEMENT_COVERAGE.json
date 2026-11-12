@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+  "original_blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+  "candidate_blob": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+  "groups": [
+    {
+      "method": "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "original_group": "original first fixture with all five page/final-ACK faults",
+      "faults": [
+        "wrong-order",
+        "wrong-total",
+        "wrong-offset",
+        "wrong-last",
+        "lose-finish"
+      ],
+      "assert_macros_in_source_group": 6,
+      "original_segment_sha256": "8748b048c466aaab5318e4c35115132534f381a1397e069562eebb43e1ee7f01",
+      "post_segment_sha256": "8748b048c466aaab5318e4c35115132534f381a1397e069562eebb43e1ee7f01",
+      "byte_equivalence": "unchanged exact segment"
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+      "original_group": "first original independent regression-loop iteration",
+      "faults": [
+        "after-missing",
+        "cold-missing"
+      ],
+      "assert_macros_in_source_group": 10,
+      "original_segment_sha256": "3676dbdabf26d75980e15772a4daab7eab44caba66bd6aa855b4e1b3c4608b8c",
+      "post_segment_sha256": "ede507f43f106ea96b25a8096387cd64d48534177e71e5df51267b76e9399094",
+      "byte_equivalence": "removing exactly four leading spaces on each original loop-body line yields the new method's complete operation sequence"
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+      "original_group": "second original independent regression-loop iteration",
+      "faults": [
+        "after-pending",
+        "cold-pending"
+      ],
+      "assert_macros_in_source_group": 10,
+      "original_segment_sha256": "3676dbdabf26d75980e15772a4daab7eab44caba66bd6aa855b4e1b3c4608b8c",
+      "post_segment_sha256": "ede507f43f106ea96b25a8096387cd64d48534177e71e5df51267b76e9399094",
+      "byte_equivalence": "removing exactly four leading spaces on each original loop-body line yields the new method's complete operation sequence"
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window",
+      "original_group": "original final independent renewal/expiry fixture",
+      "faults": [
+        "renewed-signature",
+        "original-expiry"
+      ],
+      "assert_macros_in_source_group": 9,
+      "original_segment_sha256": "bf8c67f9ff702ca27ca746bd2b1af86cef7668f6bd8cecba24ab754d575d1420",
+      "post_segment_sha256": "bf8c67f9ff702ca27ca746bd2b1af86cef7668f6bd8cecba24ab754d575d1420",
+      "byte_equivalence": "unchanged exact segment"
+    }
+  ],
+  "original_method_count_in_this_group": 1,
+  "new_method_count_in_this_group": 4,
+  "new_method_names": [
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+    "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+    "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window"
+  ],
+  "original_static_assert_macros_in_method": 25,
+  "candidate_static_assert_macros_in_four_methods": 35,
+  "fully_reached_method_body_assert_invocations_both_versions": 47,
+  "assert_count_scope": "Only assert/assert_eq/assert_ne invocations written directly in these method bodies, accounting for the original two-iteration regression loop and unchanged five-fault loop; fixture/helper assertions are unchanged but not added to this count.",
+  "statement_equivalence": {
+    "first_group": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;\n    let evaluation = complete(&fixture).await?;\n    let original_files = fixture.original_files()?;\n    let upstream = fixture.upstream_files()?;\n    for fault in [\n        \"wrong-order\",\n        \"wrong-total\",\n        \"wrong-offset\",\n        \"wrong-last\",\n        \"lose-finish\",\n    ] {\n        let (client, peer) = fixture\n            .host\n            .as_ref()\n            .unwrap()\n            .fixture_model_material_commands(\n                Some(evaluation.clone()),\n                fault,\n                /*pause*/ None,\n            )?;\n        assert!(\n            client.fixture_read_current_at(fixture.at).await.is_err(),\n            \"wire fault {fault}\"\n        );\n        assert!(matches!(\n            client.read_current().await,\n            Err(CommandError::Unavailable)\n        ));\n        assert!(close(client, peer)? > 0);\n    }\n    assert_eq!(fixture.original_files()?, original_files);\n    assert_eq!(fixture.upstream_files()?, upstream);\n    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));\n",
+    "regression_loop_body_original_indentation": "        let fixture = HostFixture::new(/*pending_claim*/ false).await?;\n        let evaluation = complete(&fixture).await?;\n        let original_files = fixture.original_files()?;\n        let upstream = fixture.upstream_files()?;\n        let (client, peer) = fixture\n            .host\n            .as_ref()\n            .unwrap()\n            .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;\n        let material = client.fixture_read_current_at(fixture.at).await?;\n        assert_eq!(material.original_evaluation(), &evaluation);\n        assert!(matches!(\n            client.fixture_read_current_at(fixture.at).await,\n            Err(CommandError::CommitUncertain)\n        ));\n        assert!(matches!(\n            client.read_current().await,\n            Err(CommandError::Unavailable)\n        ));\n        assert_eq!(\n            close(client, peer)?,\n            material.fixture_original_material_pages() as u64 + 2\n        );\n        let (client, peer) = fixture\n            .host\n            .as_ref()\n            .unwrap()\n            .fixture_model_material_commands(\n                Some(evaluation.clone()),\n                cold_fault,\n                /*pause*/ None,\n            )?;\n        assert!(matches!(\n            client.fixture_read_current_at(fixture.at).await,\n            Err(CommandError::CommitUncertain)\n        ));\n        assert!(matches!(\n            client.read_current().await,\n            Err(CommandError::Unavailable)\n        ));\n        assert_eq!(close(client, peer)?, 1);\n        assert_eq!(fixture.original_files()?, original_files);\n        assert_eq!(fixture.upstream_files()?, upstream);\n        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));",
+    "regression_pair_bindings": [
+      [
+        "after-missing",
+        "cold-missing"
+      ],
+      [
+        "after-pending",
+        "cold-pending"
+      ]
+    ],
+    "renewal_group": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;\n    let evaluation = complete(&fixture).await?;\n    let original_files = fixture.original_files()?;\n    let upstream = fixture.upstream_files()?;\n    let renewed = fixture\n        .host\n        .as_ref()\n        .unwrap()\n        .fixture_model_material_renewed_evaluation(&evaluation, fixture.at)?;\n    let (client, peer) = fixture\n        .host\n        .as_ref()\n        .unwrap()\n        .fixture_model_material_commands(Some(renewed), \"original\", /*pause*/ None)?;\n    assert!(matches!(\n        client.fixture_read_current_at(fixture.at).await,\n        Err(CommandError::Binding(\n            \"unchanged full original Evaluation in material\"\n        ))\n    ));\n    assert!(matches!(\n        client.read_current().await,\n        Err(CommandError::Unavailable)\n    ));\n    assert!(close(client, peer)? > 1);\n    let (client, peer) = fixture\n        .host\n        .as_ref()\n        .unwrap()\n        .fixture_model_material_commands(\n            Some(evaluation.clone()),\n            \"original\",\n            /*pause*/ None,\n        )?;\n    assert!(\n        client\n            .fixture_read_current_at(evaluation.attestation().expires_at)\n            .await\n            .is_err()\n    );\n    assert!(matches!(\n        client.read_current().await,\n        Err(CommandError::Unavailable)\n    ));\n    assert_eq!(close(client, peer)?, 0);\n    assert_eq!(fixture.original_files()?, original_files);\n    assert_eq!(fixture.upstream_files()?, upstream);\n    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));\n    Ok(())\n}\n"
+  },
+  "dependency_analysis": [
+    "The first group consumes its own HostFixture through finish before the original regression loop; none of its locals are used by a later group.",
+    "Each regression iteration already constructed and completed its own HostFixture. The new methods bind exactly the original (fault, cold_fault) constants before the same operation sequence.",
+    "The renewal/expiry group starts a new shadowing HostFixture and creates its own evaluation, byte snapshots, renewed signature and two material transports. It reads no previous-group local.",
+    "close and complete helpers, HostFixture constructors, original owner clients, all file paths derived from each real fixture, and cleanup implementations are unchanged.",
+    "The former sequential order is not retained across independent methods. All four methods must pass; success of the old-name page group alone no longer represents all original cases."
+  ]
+}

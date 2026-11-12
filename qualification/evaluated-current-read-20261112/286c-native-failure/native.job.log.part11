@@ -1,0 +1,57 @@
+ner/work/_temp/daemon-learning-records
+!/home/runner/work/_temp/daemon-learning-records/helpers/bin/**
+
+2026-11-12T17:47:14.7064797Z   if-no-files-found: error
+2026-11-12T17:47:14.7065046Z   retention-days: 14
+2026-11-12T17:47:14.7065267Z   compression-level: 6
+2026-11-12T17:47:14.7065624Z   overwrite: false
+2026-11-12T17:47:14.7065840Z   include-hidden-files: false
+2026-11-12T17:47:14.7066071Z env:
+2026-11-12T17:47:14.7066297Z   SOURCE_SHA: 286c567593ca6bb5e8cf4ee03602155526bf47ec
+2026-11-12T17:47:14.7066633Z   TESTED_SHA: 286c567593ca6bb5e8cf4ee03602155526bf47ec
+2026-11-12T17:47:14.7066935Z   HEPTA_CI_LANE: source-head
+2026-11-12T17:47:14.7067526Z   FORMAT_BASE_SHA: b8e8c6e82abc1479c573f61a5e17d28d581e6cad
+2026-11-12T17:47:14.7067902Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T17:47:14.7068145Z   CARGO_INCREMENTAL: 0
+2026-11-12T17:47:14.7068354Z   CARGO_BUILD_JOBS: 2
+2026-11-12T17:47:14.7068573Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T17:47:14.7068808Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T17:47:14.7069145Z   CARGO_TARGET_DIR: /home/runner/work/_temp/hepta-daemon-learning-target
+2026-11-12T17:47:14.7069584Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-11-12T17:47:14.7069961Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-11-12T17:47:14.7070739Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T17:47:14.7071730Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T17:47:14.7072642Z   CARGO_BIN_EXE_hepta-joint-propose: /home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose
+2026-11-12T17:47:14.7073410Z   CARGO_BIN_EXE_hepta_joint_propose: /home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose
+2026-11-12T17:47:14.7073932Z ##[endgroup]
+2026-11-12T17:47:14.8901042Z (node:36457) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T17:47:14.8902042Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T17:47:14.9046885Z With the provided path, there will be 22 files uploaded
+2026-11-12T17:47:14.9050790Z Artifact name is valid!
+2026-11-12T17:47:14.9051622Z Root directory input is valid!
+2026-11-12T17:47:15.1338789Z Beginning upload of artifact content to blob storage
+2026-11-12T17:47:15.3404822Z (node:36457) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T17:47:15.4483515Z Uploaded bytes 3820564
+2026-11-12T17:47:15.4627925Z Finished uploading artifact content to blob storage!
+2026-11-12T17:47:15.4629422Z SHA256 digest of uploaded artifact zip is 5195a8f8316a60bd5654c69fb848311a9b3d7ad76ccd60a13c81e8380651b7a7
+2026-11-12T17:47:15.4638175Z Finalizing artifact upload
+2026-11-12T17:47:15.8459484Z Artifact daemon-learning-native-286c567593ca6bb5e8cf4ee03602155526bf47ec-1.zip successfully finalized. Artifact ID 13969032633
+2026-11-12T17:47:15.8461270Z Artifact daemon-learning-native-286c567593ca6bb5e8cf4ee03602155526bf47ec-1 has been successfully uploaded! Final size is 3820564 bytes. Artifact ID is 13969032633
+2026-11-12T17:47:15.8467596Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43266970494/artifacts/13969032633
+2026-11-12T17:47:15.8713884Z Post job cleanup.
+2026-11-12T17:47:15.9644878Z [command]/usr/bin/git version
+2026-11-12T17:47:15.9695032Z git version 2.56.1
+2026-11-12T17:47:15.9769718Z Temporarily overriding HOME='/home/runner/work/_temp/746198b7-32bc-41ee-a1c3-eac6f2b5865b' before making global git config changes
+2026-11-12T17:47:15.9771057Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T17:47:15.9775534Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T17:47:15.9817883Z Removing SSH command configuration
+2026-11-12T17:47:15.9826144Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T17:47:15.9868620Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T17:47:16.0193245Z Removing HTTP extra header
+2026-11-12T17:47:16.0208149Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T17:47:16.0244941Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T17:47:16.0560314Z Removing includeIf entries pointing to credentials config files
+2026-11-12T17:47:16.0569966Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T17:47:16.0619745Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T17:47:16.1088864Z Cleaning up orphan processes
+2026-11-12T17:47:16.1572291Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

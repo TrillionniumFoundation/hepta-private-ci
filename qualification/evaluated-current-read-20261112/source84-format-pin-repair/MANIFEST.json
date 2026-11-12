@@ -1,0 +1,225 @@
+{
+  "schema": "hepta.source84-format-and-diagnostic-pin-repair.v1",
+  "source_commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "candidate_tree": "af4235b61a175aea2d67d58f6b498c78c0c2440b",
+  "actual_format_checkout_commit": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+  "actual_format_checkout_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "actual_failed_format_job": 131446629264,
+  "actual_failed_source_job": 131446134948,
+  "format_hunks": 11,
+  "format_paths": 8,
+  "qa_pin_paths": 1,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "base_blob_sha": "17879d20c89446d538c2166f6f61d9fa602a692e",
+      "post_blob_sha": "fbf2f32797c8b64d1cec28112b085a39c4a524f1",
+      "bytes": 18244,
+      "sha256": "01eae2faaac2a92d8f9b436ef3dbf7712c4dc33f61d55726027c42ebfa9f5ee3",
+      "exact_edits": [
+        {
+          "before": "                            heads,\n                        } => (offset, total, heads),\n                        candidate_wire::MaterialResult::Current { .. } => {\n                            return Err(Error::Binding(\"Page response cannot be Candidate Current\"));\n                        }\n                        candidate_wire::MaterialResult::NoCandidate => {\n                            return Err(Error::NoCandidate);\n",
+          "after": "                            heads,\n                        } => (offset, total, heads),\n                        candidate_wire::MaterialResult::Current { .. } => {\n                            return Err(Error::Binding(\n                                \"Page response cannot be Candidate Current\",\n                            ));\n                        }\n                        candidate_wire::MaterialResult::NoCandidate => {\n                            return Err(Error::NoCandidate);\n",
+          "original_log_start_line": 998,
+          "original_log_end_line": 1008
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "base_blob_sha": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+      "post_blob_sha": "c2c36fd72e09a6d3278c170f1e97049a3702e41f",
+      "bytes": 20350,
+      "sha256": "d71d1d744a1c977c2533581cb038186ab73369c0ffef8e6cdc040748a068afad",
+      "exact_edits": [
+        {
+          "before": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() -> anyhow::Result<()>\n{\n    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Trainer)).await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+          "after": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() -> anyhow::Result<()>\n{\n    Box::pin(refuses_original_predecessor(\n        OriginalPredecessorFault::Trainer,\n    ))\n    .await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+          "original_log_start_line": 1009,
+          "original_log_end_line": 1020
+        },
+        {
+          "before": "async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {\n    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Evaluator)).await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+          "after": "async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {\n    Box::pin(refuses_original_predecessor(\n        OriginalPredecessorFault::Evaluator,\n    ))\n    .await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+          "original_log_start_line": 1021,
+          "original_log_end_line": 1030
+        },
+        {
+          "before": "async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {\n    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Selector)).await\n}\n\n#[derive(Clone, Copy, Eq, PartialEq)]\n",
+          "after": "async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {\n    Box::pin(refuses_original_predecessor(\n        OriginalPredecessorFault::Selector,\n    ))\n    .await\n}\n\n#[derive(Clone, Copy, Eq, PartialEq)]\n",
+          "original_log_start_line": 1031,
+          "original_log_end_line": 1040
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "base_blob_sha": "6c075688f8eb85ef77bd9495fcb85810acfe658e",
+      "post_blob_sha": "410a333606d1c6bb9218f1d8925c8989173bc237",
+      "bytes": 4281,
+      "sha256": "63176c118eba216ea07dc37a6923aea5dbfd5e5cf5f85292860bf672e94e74f4",
+      "exact_edits": [
+        {
+          "before": "    REQUEST_ID.set(request_id);\n}\n\npub(super) fn capture(\n    action: wire::Action,\n    binding: Digest32,\n    elapsed: Duration,\n    error: &Error,\n) {\n    let error = match error {\n        Error::Panel(error) => match error {\n            PanelError::Binding(reason) => format!(\"Panel::Binding({reason})\"),\n",
+          "after": "    REQUEST_ID.set(request_id);\n}\n\npub(super) fn capture(action: wire::Action, binding: Digest32, elapsed: Duration, error: &Error) {\n    let error = match error {\n        Error::Panel(error) => match error {\n            PanelError::Binding(reason) => format!(\"Panel::Binding({reason})\"),\n",
+          "original_log_start_line": 1041,
+          "original_log_end_line": 1054
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base_blob_sha": "7180072fe87063749d5526588bb52389b6e798e6",
+      "post_blob_sha": "76fd69c02f190299d51baf2424337c19563707ca",
+      "bytes": 25299,
+      "sha256": "7c15f157e9c84340bb6a7304955f7e960c73186ba3573b393273605647314a08",
+      "exact_edits": [
+        {
+          "before": "            }\n            // All original bytes remain, but a u32 prefix must not be accepted.\n            let mut changed = Body::decode(&self.bytes)?;\n            drop(changed.members[0].execution_record.splice(start..start, [0, 0]));\n            assert!(\n                verify::material(&self.context, &self.evaluation, &changed.encode()?, current)\n                    .is_err()\n",
+          "after": "            }\n            // All original bytes remain, but a u32 prefix must not be accepted.\n            let mut changed = Body::decode(&self.bytes)?;\n            drop(\n                changed.members[0]\n                    .execution_record\n                    .splice(start..start, [0, 0]),\n            );\n            assert!(\n                verify::material(&self.context, &self.evaluation, &changed.encode()?, current)\n                    .is_err()\n",
+          "original_log_start_line": 1055,
+          "original_log_end_line": 1067
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "base_blob_sha": "9172c02b394661d77375cce81b13003040409be1",
+      "post_blob_sha": "28f2512535eb4a61987868bdcaf1ccec787c350d",
+      "bytes": 15274,
+      "sha256": "0736f7dcfba87c365237bca8b243f90cca4484878d8bae9f3013b6928f8d49bd",
+      "exact_edits": [
+        {
+          "before": "    assert_eq!(checked(handle.task_cost().await), receipt.cost);\n    assert_eq!(checked(handle.snapshot().await), expected);\n    assert!(checked(handle.drain().await));\n    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);\n    assert_eq!(contacts.load(Ordering::SeqCst), 0);\n    assert_eq!(worker.calls.load(Ordering::SeqCst), 0);\n    tasks.shutdown().await;\n",
+          "after": "    assert_eq!(checked(handle.task_cost().await), receipt.cost);\n    assert_eq!(checked(handle.snapshot().await), expected);\n    assert!(checked(handle.drain().await));\n    assert_eq!(\n        checked(GenerationFiles::new(&handle).read().await),\n        drained_bytes\n    );\n    assert_eq!(contacts.load(Ordering::SeqCst), 0);\n    assert_eq!(worker.calls.load(Ordering::SeqCst), 0);\n    tasks.shutdown().await;\n",
+          "original_log_start_line": 1068,
+          "original_log_end_line": 1079
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "base_blob_sha": "95126f5c455c9674b8aefb6e51d63f57276bdddd",
+      "post_blob_sha": "092b415541f980a29987c7b8416f03f63c0f673d",
+      "bytes": 1662,
+      "sha256": "12f207448d5e85d13a0a69102dce2be5b368ee37476ea424b725fab56931b8aa",
+      "exact_edits": [
+        {
+          "before": "    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {\n        self.require_healthy()?;\n        let result = (|| {\n            let journal = file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {\n                FileBytesError::Capacity => CellGenerationErrorV2::Capacity,\n                FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,\n            })?;\n            let witness = self\n                .witness\n                .qualification_file_bytes(maximum_bytes)\n",
+          "after": "    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {\n        self.require_healthy()?;\n        let result = (|| {\n            let journal =\n                file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {\n                    FileBytesError::Capacity => CellGenerationErrorV2::Capacity,\n                    FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,\n                })?;\n            let witness = self\n                .witness\n                .qualification_file_bytes(maximum_bytes)\n",
+          "original_log_start_line": 1177,
+          "original_log_end_line": 1192
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "base_blob_sha": "d7d42e80feae8069ab09a7107d1800dc12ce7a4f",
+      "post_blob_sha": "0494c0de5f1fb65c8756c065c26279e2eff9f624",
+      "bytes": 4424,
+      "sha256": "54c6e5d756ba027efaca1ac8d3ec687001445dd29619d46d894247c01f24a0ce",
+      "exact_edits": [
+        {
+          "before": "    checked(owner.file.seek(SeekFrom::Start(7)));\n    let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));\n    assert_eq!(checked(owner.file.stream_position()), 7);\n    assert_eq!(owner.qualification_file_bytes(MAXIMUM_BYTES), Ok(bytes.clone()));\n    assert!(matches!(\n        LockedFile::acquire(fixture.file(\"journal\")),\n        Err(JournalError::Busy)\n",
+          "after": "    checked(owner.file.seek(SeekFrom::Start(7)));\n    let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));\n    assert_eq!(checked(owner.file.stream_position()), 7);\n    assert_eq!(\n        owner.qualification_file_bytes(MAXIMUM_BYTES),\n        Ok(bytes.clone())\n    );\n    assert!(matches!(\n        LockedFile::acquire(fixture.file(\"journal\")),\n        Err(JournalError::Busy)\n",
+          "original_log_start_line": 1193,
+          "original_log_end_line": 1204
+        },
+        {
+          "before": "    let mut created = fixture.file(\"read-error\");\n    checked(created.write_all(b\"original locked file\"));\n    drop(created);\n    let file = checked(OpenOptions::new().write(true).open(fixture.0.join(\"read-error\")));\n    let mut locked = checked(LockedFile::acquire(file));\n    checked(locked.seek(SeekFrom::Start(4)));\n    assert!(matches!(\n",
+          "after": "    let mut created = fixture.file(\"read-error\");\n    checked(created.write_all(b\"original locked file\"));\n    drop(created);\n    let file = checked(\n        OpenOptions::new()\n            .write(true)\n            .open(fixture.0.join(\"read-error\")),\n    );\n    let mut locked = checked(LockedFile::acquire(file));\n    checked(locked.seek(SeekFrom::Start(4)));\n    assert!(matches!(\n",
+          "original_log_start_line": 1205,
+          "original_log_end_line": 1217
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "base_blob_sha": "c86ef5b2b5824f5d643dd8c0f1724ae1b01f8f65",
+      "post_blob_sha": "be3e4bdea43060702308d877ea5607ef0738afef",
+      "bytes": 1684,
+      "sha256": "5839667880e3526819e85c30b3ed5cba97122f010cbecb79c4b74ca0361fcb9e",
+      "exact_edits": [
+        {
+          "before": "    }\n}\n\npub(crate) fn file_bytes(\n    file: &mut File,\n    maximum_bytes: u64,\n) -> Result<Vec<u8>, FileBytesError> {\n    if maximum_bytes == 0 || maximum_bytes > MAXIMUM_BYTES {\n        return Err(FileBytesError::Capacity);\n    }\n",
+          "after": "    }\n}\n\npub(crate) fn file_bytes(file: &mut File, maximum_bytes: u64) -> Result<Vec<u8>, FileBytesError> {\n    if maximum_bytes == 0 || maximum_bytes > MAXIMUM_BYTES {\n        return Err(FileBytesError::Capacity);\n    }\n",
+          "original_log_start_line": 1218,
+          "original_log_end_line": 1229
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "base_blob_sha": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b",
+      "post_blob_sha": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "bytes": 10749,
+      "sha256": "e182bb321b1ac9a31ea9567f3139e0212ee03b9d7be1218fdfc7c6d8ba3ada81",
+      "old_pin": "806f44f2e3da47d09a307893b1daca5c0fa5c24217b6a5bb3a62adeb1a575c29",
+      "new_pin": "d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640",
+      "service_blob": "c1a56101fc6db3ea93155784c2776dfff3f44973",
+      "exact_edits": [
+        {
+          "before": "806f44f2e3da47d09a307893b1daca5c0fa5c24217b6a5bb3a62adeb1a575c29",
+          "after": "d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640"
+        }
+      ],
+      "inverse_restore_equal": true,
+      "post_blob_readback_equal": true
+    }
+  ],
+  "service_identity": {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+    "git_blob_sha": "c1a56101fc6db3ea93155784c2776dfff3f44973",
+    "bytes": 6107,
+    "sha256": "d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640",
+    "format_changed": false
+  },
+  "unchanged_scope": {
+    "caller_manifest": true,
+    "sole_allowlist_pin": true,
+    "all_original_test_method_names": true,
+    "source_guard_refusal_intent": true,
+    "deadlines_caps_and_budgets": true,
+    "no_guard_removed": true
+  },
+  "scoped_static_scan": {
+    "source_closure_files": 61,
+    "runtime_accessor_needles": [
+      "neuron_generation_runtime.rs",
+      "neuron_generation_runtime_test_support.rs",
+      "qualification_file_sender",
+      "handle.sender",
+      "NeuronGenerationRuntimeHandleV2"
+    ],
+    "runtime_accessor_matches": 0,
+    "caller_manifest_matches": 0,
+    "not_a_gate_execution": true
+  },
+  "observed_source_gate": {
+    "ran_methods": 506,
+    "explicit_ok_methods": 505,
+    "failures": 1,
+    "errors": 0,
+    "failed_method": "test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_original_effect_owner_and_transport_budgets_are_unchanged",
+    "native_stage_skipped": true
+  },
+  "execution": "CANDIDATE_NOT_FORMATTED_NOT_COMPILED_NOT_TESTED; exact original formatter edits replayed and byte-reversed; original failures retained",
+  "reference_mutation": false
+}

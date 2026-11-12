@@ -1,0 +1,191 @@
+{
+  "source_sha": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+  "source_tree": "b3be3ac47b29385ffbb402e42b24a7e0aa3bdd29",
+  "candidate_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "boundary": "learning_original_owner_snapshot_encode",
+  "actual_failure_head": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+  "actual_failure_job": 131247514828,
+  "actual_current_caller_blob": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+  "upstream_original_caller_blob": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+  "all_qa_directory_python_blobs_scanned": 56,
+  "patches": [
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base_blob": "d9708db7a15860ef6e38a2b9c87eaab80d83856d",
+      "post_blob": "6da010360537b297cb9e351fa27cb25a93780e26",
+      "post_bytes": 25741,
+      "post_sha256": "71d68ac965c9cb7af73ceeb9245ad0989c1945a8e7162d5828aeae1f2a21bd46",
+      "before_count": 16,
+      "after_count": 17,
+      "only_new_caller": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "other_source_bytes_unchanged": true,
+      "methods_and_refusal_assertions_unchanged": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base_blob": "8bc29f5a12ab987532c74104c1a86f54043c967c",
+      "post_blob": "3a86576797b1fe036e8178c57526ddf471797a4d",
+      "post_bytes": 17465,
+      "post_sha256": "6bde92cfa1677e7f18c868ab193d03e6efb89a67da34a5406edad8cb27ef507e",
+      "before_count": 16,
+      "after_count": 17,
+      "only_new_caller": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "other_source_bytes_unchanged": true,
+      "methods_and_refusal_assertions_unchanged": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base_blob": "4cbcaa9eb129280009bc3b19e357fcd515861f84",
+      "post_blob": "b7a29f83a4d8f7b3ec30d43ea46edef8fd25af88",
+      "post_bytes": 16466,
+      "post_sha256": "2f341a160225413d09823b7d4b4ad8e4e70c7669f1824dc7fe51b538a7b20e43",
+      "before_count": 16,
+      "after_count": 17,
+      "only_new_caller": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "other_source_bytes_unchanged": true,
+      "methods_and_refusal_assertions_unchanged": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "base_blob": "fae54de0a847b39ca44df7348819056c0ace592c",
+      "post_blob": "bef990d4bc018f2c5a1707fc297ba4be6699c9e3",
+      "post_bytes": 14975,
+      "post_sha256": "d3224f59f3c9e25d6de15daa6f9c016c6a5c5fb4ec027631d5688af0cc087a5b",
+      "before_count": 16,
+      "after_count": 17,
+      "only_new_caller": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "other_source_bytes_unchanged": true,
+      "methods_and_refusal_assertions_unchanged": true
+    }
+  ],
+  "gate_rerun": false,
+  "callers_manifest_edited": true,
+  "callers": {
+    "base_blob": "222d9867d37bf8883e0a86f224f3d9a79f6e372a",
+    "post_blob": "9304bc0d4e5f5d13f0d0c251a47a9cf7de2e1de5",
+    "bytes": 1126347,
+    "sha256": "d42625c55da0982b86c8870887e9300835958afa9e2b35723f9399058ae3879d",
+    "boundary_ids_unchanged": 541,
+    "protected_records_unchanged": 389,
+    "one_product_callers_row_only": true,
+    "before_count": 16,
+    "after_count": 17
+  },
+  "allowlist": {
+    "base_blob": "a3e3d33e61eef032c35e61298493caae05cd64c5",
+    "post_blob": "6d356c37701af3a8b1553e62ff2150626d330723",
+    "bytes": 11699,
+    "sha256": "261d5ea4dc1e51b2a4a17e3bf21e9bca3cec5912e4ac5a70d7d4e11883b79d61",
+    "unique_callers_pin": true,
+    "sole_change": "replace current CALLERS SHA256 with exact new CALLERS postimage SHA256"
+  },
+  "canonical_evaluated_read_review": {
+    "source_blob": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+    "registered_symbol_occurrences": [
+      {
+        "id": "learning_original_owner_snapshot_encode",
+        "symbol": "encode_original_owner_snapshot_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 140,
+            "text": "            &encode_original_owner_snapshot_v1(prefix)?,"
+          }
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_read_selection_context",
+        "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 57,
+            "text": "    pub fn for_original_selection("
+          }
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_read_next_use_context",
+        "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 70,
+            "text": "    pub fn for_original_next_use("
+          }
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_read_client_create",
+        "symbol": "OriginalCircuitLearningReadClientV1::from_original_evaluated_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 175,
+            "text": "    pub fn from_original_evaluated_stream("
+          }
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_read_owner_create",
+        "symbol": "OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 209,
+            "text": "    pub fn from_original_evaluated_owners("
+          }
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_read_selection_binding",
+        "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_selection",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "declared_product_caller": false,
+        "occurrences": [
+          {
+            "line": 195,
+            "text": "    pub(crate) fn require_original_evaluated_selection("
+          }
+        ]
+      }
+    ],
+    "finding": "Only the snapshot encoder is a registered call outside this file's own five boundary definitions. No alias import or additional registered callable invocation occurs in this file.",
+    "scope": "Static source review, not a substitute for full verify."
+  },
+  "production_or_checker_changed": false,
+  "previous_unexecuted_six_path_candidate": "ce49c61bbbf0c4525e350d091929f1c2b38aa7b3",
+  "fixture_fix": {
+    "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+    "base_blob": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+    "post_blob": "0c3f8a1c20a739f5e32bd17f6cd494b5a357a2e8",
+    "bytes": 4562,
+    "sha256": "f07aa067607edbbe18b68b8a02f0ed647ccb74b59208497e59dde0166a787c64",
+    "old_line": "            context,",
+    "new_line": "            context: context.legacy()?.clone(),",
+    "test_only": true,
+    "production_readiness_legacy_only": true,
+    "original_channel_and_retained_moved_unchanged": true,
+    "actual_compiler_failure": {
+      "source_sha": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "source_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+      "run_id": 43237175984,
+      "job_id": 131247515370,
+      "error": "E0308",
+      "location": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs:33",
+      "message": "expected OriginalCircuitLearningReadContextV1, found ReadProfile",
+      "ordinary_returncode": 101,
+      "ordinary_observed_passed_tests": 0,
+      "ordinary_observed_failed_tests": 0,
+      "junit_status": "rejected: original file absent",
+      "job_log_bytes": 2018235,
+      "job_log_sha256": "521d4b9779e1ac6fc23e3f65ea049b7793345d2465c8f6cff789a338adeda526"
+    },
+    "compile_or_formatter_rerun": false
+  }
+}

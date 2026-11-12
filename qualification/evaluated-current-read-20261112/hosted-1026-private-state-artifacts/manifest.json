@@ -1,0 +1,79 @@
+{
+  "source_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "source_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+  "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-utils-path",
+    "--lib",
+    "-E",
+    "test(private_state_windows::directory::tests::)",
+    "--test-threads",
+    "1",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0",
+    "--success-output",
+    "immediate",
+    "--failure-output",
+    "immediate",
+    "--status-level",
+    "all",
+    "--final-status-level",
+    "all"
+  ],
+  "lanes": [
+    {
+      "lane": "positive",
+      "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+      "exit_code": 0,
+      "log_sha256": "c48b6cd9d4d8031ecec2e59ca79030fe17fd648b53f2dd2050fc72bcd9700201",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=true redirected=false",
+        "creation": "denied=true created=false"
+      }
+    },
+    {
+      "lane": "unchecked-create",
+      "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+      "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+      "exit_code": 1,
+      "log_sha256": "85a840c6bf9fdd53102ab9c65bb60dd6e67ea5b46ddea560445b62d927f2bcce",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=true redirected=false",
+        "creation": "denied=true created=true"
+      }
+    },
+    {
+      "lane": "path-check-open",
+      "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+      "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+      "exit_code": 1,
+      "log_sha256": "e42f50753a5278e50eb08bb23c7c313c9abfeb32bebe3c7f5c2511cdd666ad49",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=false redirected=true",
+        "creation": "denied=true created=false"
+      }
+    }
+  ],
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "qualified": true,
+  "restored": true
+}

@@ -1,0 +1,372 @@
+{
+  "actor_calls_this_request": null,
+  "blocked_events": [],
+  "driver_sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb",
+  "effect_roster": {
+    "effects": [
+      {
+        "arm_id": "tuned-fixed",
+        "context": {
+          "case_id": "case-6132a3f806804b12f08cb095",
+          "seed": 130363,
+          "source_id": "merchant-8be0cc526665e1b3713e88d9"
+        },
+        "operation_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+        "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+        "phase": "B",
+        "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+      },
+      {
+        "arm_id": "conditional",
+        "context": {
+          "case_id": "case-6132a3f806804b12f08cb095",
+          "seed": 130363,
+          "source_id": "merchant-8be0cc526665e1b3713e88d9"
+        },
+        "operation_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+        "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+        "phase": "B",
+        "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+      },
+      {
+        "arm_id": "tuned-fixed",
+        "context": {
+          "case_id": "case-fdc68cd739dea87c3c21bb51",
+          "seed": 130366,
+          "source_id": "merchant-ac7dff025170a6ee898d500b"
+        },
+        "operation_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+        "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C/macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+        "phase": "C",
+        "plan_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a"
+      },
+      {
+        "arm_id": "conditional",
+        "context": {
+          "case_id": "case-fdc68cd739dea87c3c21bb51",
+          "seed": 130366,
+          "source_id": "merchant-ac7dff025170a6ee898d500b"
+        },
+        "operation_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+        "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C/macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+        "phase": "C",
+        "plan_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a"
+      }
+    ],
+    "existing_development_sources": 2,
+    "freeze_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+    "independent_new_sources": 0,
+    "intersection": [],
+    "old_effect_count": 576,
+    "old_effect_ids_sha256": "8ff28fd3c2ee71ff0d38824f6f94c1dc29cd1a2b583ea1b1eb769db4f618cd4c",
+    "old_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "plans": {
+      "B": {
+        "bytes": 26280,
+        "canonical_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5",
+        "raw_sha256": "c36ecc23d73bba15695266e68b9181d40e3771a6a34c910402bf91204761138c"
+      },
+      "C": {
+        "bytes": 26280,
+        "canonical_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a",
+        "raw_sha256": "a7b05980e90456a9226a06cf14b62e1eb0dc24de75844f0c8db3ffcae78d83ac"
+      }
+    },
+    "schema": "hepta.rv.actual-frozen-effect-roster.v1"
+  },
+  "freeze_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "full_cost_observed": false,
+  "independent_new_sources": 0,
+  "native_source_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "original_inputs_unchanged": true,
+  "owner_decision": null,
+  "production_admission": false,
+  "python": {
+    "binary_expected_sha256": null,
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "uid": 1000,
+    "version": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]"
+  },
+  "qualification_status": "HOLD_NOT_EVALUATED",
+  "reconciled": {
+    "native_report": {
+      "cohort": {
+        "adoption_authorized": false,
+        "arms": {
+          "conditional": {
+            "admitted_completed": 1,
+            "fully_costed": 0,
+            "missing_records": 0,
+            "observed_subset": {
+              "contexts": 1,
+              "full_cost_net": null,
+              "observed_task_cost_net": {
+                "contexts": 1,
+                "source_equal_mean": -0.013473927038721741,
+                "sources": 1
+              },
+              "quality": 0.0,
+              "sources": 1
+            },
+            "observed_task_cost_net_items": 1,
+            "observed_task_cost_total": 0.013473927038721741,
+            "one_off_cost_total": null,
+            "planned": 1,
+            "planned_sources": 1,
+            "primary_full_cost_net": null,
+            "primary_observed_task_cost_net": -0.013473927038721741,
+            "primary_quality": 0.0,
+            "statuses": {
+              "CANCELLED": 0,
+              "COMPLETED": 1,
+              "FAILED": 0,
+              "NOT_STARTED": 0,
+              "RUNNING": 0,
+              "UNKNOWN": 0
+            },
+            "unknown_task_cost_items": 0
+          },
+          "tuned-fixed": {
+            "admitted_completed": 1,
+            "fully_costed": 0,
+            "missing_records": 0,
+            "observed_subset": {
+              "contexts": 1,
+              "full_cost_net": null,
+              "observed_task_cost_net": {
+                "contexts": 1,
+                "source_equal_mean": -0.014269793331623077,
+                "sources": 1
+              },
+              "quality": 0.0,
+              "sources": 1
+            },
+            "observed_task_cost_net_items": 1,
+            "observed_task_cost_total": 0.014269793331623077,
+            "one_off_cost_total": null,
+            "planned": 1,
+            "planned_sources": 1,
+            "primary_full_cost_net": null,
+            "primary_observed_task_cost_net": -0.014269793331623077,
+            "primary_quality": 0.0,
+            "statuses": {
+              "CANCELLED": 0,
+              "COMPLETED": 1,
+              "FAILED": 0,
+              "NOT_STARTED": 0,
+              "RUNNING": 0,
+              "UNKNOWN": 0
+            },
+            "unknown_task_cost_items": 0
+          }
+        },
+        "decision": "NoUpdate",
+        "factorial": null,
+        "fixture_records": 0,
+        "measured_metric_scope": {
+          "excluded_costs": [
+            "provider",
+            "energy",
+            "fit",
+            "calibration",
+            "tuning"
+          ],
+          "full_cost_metric": false,
+          "observed_task_cost_net": "quality minus observed task_cost",
+          "quality": "independently admitted terminal quality",
+          "task_cost": "macro executor elapsed seconds times frozen latency tariff",
+          "weighting": "context mean within each source, then equal source mean"
+        },
+        "new_source_confidence_bound_proved": false,
+        "observer_authenticated": false,
+        "paired_contrasts": [
+          {
+            "baseline": "conditional",
+            "candidate": "tuned-fixed",
+            "observed_task_cost_net": {
+              "observed_subset": {
+                "contexts": 1,
+                "source_equal_difference": -0.0007958662929013361,
+                "sources": 1
+              },
+              "paired_contexts": 1,
+              "paired_sources": 1,
+              "planned_contexts": 1,
+              "planned_sources": 1,
+              "source_equal_difference": -0.0007958662929013361
+            },
+            "paired_contexts": 0,
+            "paired_sources": 0,
+            "planned_contexts": 1,
+            "planned_sources": 1,
+            "quality": {
+              "observed_subset": {
+                "contexts": 1,
+                "source_equal_difference": 0.0,
+                "sources": 1
+              },
+              "paired_contexts": 1,
+              "paired_sources": 1,
+              "planned_contexts": 1,
+              "planned_sources": 1,
+              "source_equal_difference": 0.0
+            },
+            "source_equal_full_cost_difference": null
+          }
+        ],
+        "plan_sha256": "96d170840eb9951c2b034a3d2ebd75f9037fc4749b54cf59d155b7a488d9917e",
+        "planned_executions": 2,
+        "registered_full_cost_comparison_complete": false,
+        "schema": "ndu.real.macro-cohort-report.v1"
+      },
+      "cost_scope": "elapsed initialization, selection, action, scoring, admission; provider/energy/oneoff unknown",
+      "evidence_kind": "native_macro",
+      "full_cost_observed": false,
+      "native_owner_authenticated": false,
+      "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5",
+      "policy_efficacy_proved": false,
+      "production_admission": false,
+      "rows": [
+        {
+          "arm_id": "tuned-fixed",
+          "case_id": "case-6132a3f806804b12f08cb095",
+          "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+          "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+          "evidence_kind": "native_macro",
+          "evidence_sha256": "49457414d277d6f030a9683f0c47dd3ae35f016ea4fac63c1c0228736b98b82f",
+          "execution_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+          "full_cost_observed": false,
+          "quality": 0.0,
+          "seed": 130363,
+          "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+          "source_id": "merchant-8be0cc526665e1b3713e88d9",
+          "status": "COMPLETED",
+          "task_cost": 0.014269793331623077
+        },
+        {
+          "arm_id": "conditional",
+          "case_id": "case-6132a3f806804b12f08cb095",
+          "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+          "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+          "evidence_kind": "native_macro",
+          "evidence_sha256": "9c467d228e4d32e4ab71572053805d9281186544fcec3196a898341b745981f8",
+          "execution_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+          "full_cost_observed": false,
+          "quality": 0.0,
+          "seed": 130363,
+          "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+          "source_id": "merchant-8be0cc526665e1b3713e88d9",
+          "status": "COMPLETED",
+          "task_cost": 0.013473927038721741
+        }
+      ],
+      "schema": "ndu.real.macro-execution-report.v1",
+      "seed_scope": "registered READ intervention; model/control RNG frozen separately",
+      "terminals": [
+        {
+          "elapsed_seconds": 1.4269793331623077,
+          "full_cost_observed": false,
+          "native_error": null,
+          "native_terminal_status": "Completed",
+          "row": {
+            "arm_id": "tuned-fixed",
+            "case_id": "case-6132a3f806804b12f08cb095",
+            "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+            "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+            "evidence_kind": "native_macro",
+            "evidence_sha256": "49457414d277d6f030a9683f0c47dd3ae35f016ea4fac63c1c0228736b98b82f",
+            "execution_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+            "full_cost_observed": false,
+            "quality": 0.0,
+            "seed": 130363,
+            "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+            "source_id": "merchant-8be0cc526665e1b3713e88d9",
+            "status": "COMPLETED",
+            "task_cost": 0.014269793331623077
+          },
+          "runner_error": null,
+          "schema": "ndu.real.macro-terminal.v1",
+          "source_sha256": "a752e3036ab6d810457cf751e67cdad75163b449bd735261adb32592add55332",
+          "start_sha256": "d762f749339049ef44829ce9cef3629b62af460b70183ea536097dfc431418f8"
+        },
+        {
+          "elapsed_seconds": 1.347392703872174,
+          "full_cost_observed": false,
+          "native_error": null,
+          "native_terminal_status": "Completed",
+          "row": {
+            "arm_id": "conditional",
+            "case_id": "case-6132a3f806804b12f08cb095",
+            "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+            "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+            "evidence_kind": "native_macro",
+            "evidence_sha256": "9c467d228e4d32e4ab71572053805d9281186544fcec3196a898341b745981f8",
+            "execution_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+            "full_cost_observed": false,
+            "quality": 0.0,
+            "seed": 130363,
+            "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+            "source_id": "merchant-8be0cc526665e1b3713e88d9",
+            "status": "COMPLETED",
+            "task_cost": 0.013473927038721741
+          },
+          "runner_error": null,
+          "schema": "ndu.real.macro-terminal.v1",
+          "source_sha256": "a752e3036ab6d810457cf751e67cdad75163b449bd735261adb32592add55332",
+          "start_sha256": "ddcaf8d4de461eaadd63c27e40b239026742de6db3c7f30f278ae3fed0a3a666"
+        }
+      ]
+    },
+    "native_report_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+    "wrapper_summary": {
+      "adoption": "NOT_REQUESTED",
+      "efficacy_qualified": false,
+      "full_cost_observed": false,
+      "incomplete": 0,
+      "observed_latency_net_difference": 0.0007958662929013361,
+      "owner_decision": null,
+      "planned": 2,
+      "planned_source_clusters": 1,
+      "qualification_status": "HOLD_NOT_EVALUATED",
+      "source_mean_observed_latency_net_differences": {
+        "merchant-8be0cc526665e1b3713e88d9": 0.0007958662929013361
+      },
+      "statuses": {
+        "COMPLETED": 2
+      }
+    }
+  },
+  "request_sha256": "baeafb061f0a8dccdd98cb347263160011e6515b483cea9feaffca8d465b42cd",
+  "stage": "B",
+  "status": "RECORDED",
+  "wrapper_terminal": {
+    "descriptive_reference_policy": "conditional",
+    "energy_joules": null,
+    "full_cost_observed": false,
+    "native_report_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+    "parent_cpu_ns": 167373061,
+    "parent_cpu_scope": "controller only; original actor costs remain in native terminals",
+    "phase": "B",
+    "production_admission": false,
+    "provider_cost": null,
+    "status": "RECORDED",
+    "summary": {
+      "adoption": "NOT_REQUESTED",
+      "efficacy_qualified": false,
+      "full_cost_observed": false,
+      "incomplete": 0,
+      "observed_latency_net_difference": 0.0007958662929013361,
+      "owner_decision": null,
+      "planned": 2,
+      "planned_source_clusters": 1,
+      "qualification_status": "HOLD_NOT_EVALUATED",
+      "source_mean_observed_latency_net_differences": {
+        "merchant-8be0cc526665e1b3713e88d9": 0.0007958662929013361
+      },
+      "statuses": {
+        "COMPLETED": 2
+      }
+    },
+    "wall_ns": 2816402288
+  }
+}

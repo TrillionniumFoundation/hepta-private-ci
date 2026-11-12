@@ -1,0 +1,137 @@
+{
+  "driver_sha256": "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a",
+  "execution_plan_sha256s": {
+    "B": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5",
+    "C": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a"
+  },
+  "fresh_source_confirmation": false,
+  "frozen_at_ns": 1794484596355166639,
+  "full_cost_observed": false,
+  "methods": [
+    "tuned-fixed",
+    "conditional"
+  ],
+  "native_owner_authenticated": false,
+  "planned": {
+    "B": 2,
+    "C": 2
+  },
+  "production_admission": false,
+  "registration": {
+    "checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096",
+    "minimum_observed_gain": 0,
+    "phases": {
+      "B": [
+        {
+          "case": {
+            "episode_group": "X51005719863",
+            "id": "case-6132a3f806804b12f08cb095",
+            "packet": {
+              "bytes": 1240,
+              "path": "public/development/case-6132a3f806804b12f08cb095/case.json",
+              "sha256": "514a3605bf2254d8fc6730b9afa8ef1bd39d08f3375be8d10474653ae153b512"
+            },
+            "reference": {
+              "bytes": 787,
+              "path": "private/references/case-6132a3f806804b12f08cb095.json",
+              "sha256": "81da2eac17cb5da462814a1364a14db8992876d800a2133c4bea454a44f006bd"
+            },
+            "role": "development",
+            "source_id": "merchant-8be0cc526665e1b3713e88d9",
+            "source_sha256": "a752e3036ab6d810457cf751e67cdad75163b449bd735261adb32592add55332",
+            "task_family": "text_sufficient"
+          },
+          "case_id": "case-6132a3f806804b12f08cb095",
+          "read_condition": "original",
+          "seed": 130363,
+          "source_id": "merchant-8be0cc526665e1b3713e88d9"
+        }
+      ],
+      "C": [
+        {
+          "case": {
+            "episode_group": "X51005268472",
+            "id": "case-fdc68cd739dea87c3c21bb51",
+            "packet": {
+              "bytes": 1865,
+              "path": "public/development/case-fdc68cd739dea87c3c21bb51/case.json",
+              "sha256": "553cd932149eaf8a1f22b7c2c11b4a75a8ccd731ca3ed291935f25827e307afe"
+            },
+            "reference": {
+              "bytes": 786,
+              "path": "private/references/case-fdc68cd739dea87c3c21bb51.json",
+              "sha256": "c7bd4cb54d04c85471e3bfe2748329d8bdd51473620305c102529d4937a0ee44"
+            },
+            "role": "development",
+            "source_id": "merchant-ac7dff025170a6ee898d500b",
+            "source_sha256": "96208c83578187ccb2af64b5746598a263139eeab3f486492f83653048bb3c72",
+            "task_family": "text_sufficient"
+          },
+          "case_id": "case-fdc68cd739dea87c3c21bb51",
+          "read_condition": "original",
+          "seed": 130366,
+          "source_id": "merchant-ac7dff025170a6ee898d500b"
+        }
+      ]
+    },
+    "repository": "/home/qq/ctrl-real-policy-20261112-1333-v3",
+    "training_freeze_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+    "training_run": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen"
+  },
+  "request_sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4",
+  "scope": "source-disjoint unsealed development_B/C; historical exposure not authenticated",
+  "source_partitions": {
+    "B": [
+      "merchant-8be0cc526665e1b3713e88d9"
+    ],
+    "C": [
+      "merchant-ac7dff025170a6ee898d500b"
+    ],
+    "calibration": [
+      "merchant-03aae37ad4f4ad8c8ad0944e",
+      "merchant-0c33b8cb557a1c71e01357da",
+      "merchant-1201a5bb478c190e196c6fea",
+      "merchant-16ac5095cbab37d6a4beeecd",
+      "merchant-1c5081feae9b550140ec86cb",
+      "merchant-203f77bf803003c33121fe35",
+      "merchant-2d4f59a602bd0c185e8606af",
+      "merchant-69c63e3abd97234884c69dad",
+      "merchant-6d5a1b2fed9d08df4291eb49",
+      "merchant-6dd6bc1cee9282a3df96c05e",
+      "merchant-75b47ee8168019293e1cf32b",
+      "merchant-7b3647263d44c496a5e484a2",
+      "merchant-9fa2f6563cdeebc029a0c464",
+      "merchant-9ff2a942290576d7554881f5",
+      "merchant-aed2f9f0bb5b67ff098bf209",
+      "merchant-d5edfe942c45361da38fc849",
+      "merchant-dcf206507ae7c5dde2cd1010",
+      "merchant-ecae8cf994fefe3ad1e69322"
+    ],
+    "train": [
+      "merchant-311891ad56272ccc25cbb13d",
+      "merchant-50f46908878b39ed0bd3853f",
+      "merchant-53d609f32d26c4af265269fe",
+      "merchant-58be5300ebeed60df7b53412",
+      "merchant-5c0e813f616a4362d46f91a9",
+      "merchant-5d4b99c3062c5faa80efd221",
+      "merchant-68a3ce1760cdbfc23690d940",
+      "merchant-7027cec87ad982afb10a81b6",
+      "merchant-77373c612cf6f484499c237d",
+      "merchant-81a74a14a3243f4a7caceaf0",
+      "merchant-8b02fd486d08f02ccd063336",
+      "merchant-8e162dc70b702e24dacc7db4",
+      "merchant-97640bd2b749bf214e2685b3",
+      "merchant-a00334471fe4253ed529ff1e",
+      "merchant-aad9008f95d8de8b69949ee5",
+      "merchant-bd1804bb290a96349b65a9ab",
+      "merchant-be4b468c89b8dbbe18c10a39",
+      "merchant-bf774f31334b830df22ec52d",
+      "merchant-d23242452060c104ee056a58",
+      "merchant-e7e178522dc7bb97834dd1ea",
+      "merchant-e92afbe9a45feef1da5bd489",
+      "merchant-ea9b41f5d08e33143d643448",
+      "merchant-eab91830c3a77d7309c019dd",
+      "merchant-f76aded3d78a0e21cf2d3f40"
+    ]
+  }
+}

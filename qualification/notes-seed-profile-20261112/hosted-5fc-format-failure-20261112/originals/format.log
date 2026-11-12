@@ -1,0 +1,17 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true --check -- /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs:175:
+         .arg(&agent.workspace)
+         .output()
+         .context("run original Notes seed against Standard")?;
+-    ensure!(!output.status.success(), "Standard admitted a finite Notes seed");
++    ensure!(
++        !output.status.success(),
++        "Standard admitted a finite Notes seed"
++    );
+     ensure!(
+         String::from_utf8_lossy(&output.stderr)
+             .contains("original Notes effective Core execution profile differs"),
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1

@@ -1,0 +1,324 @@
+{
+  "cache_path_candidates": 41,
+  "existing_cached_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_support_tests.rs",
+      "sha": "0319485df9967976fbd129f39f6a8098aea28437",
+      "hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs",
+      "sha": "bb93de64ccb9467b2e7c3f31bf3c13cc309ed9fb",
+      "hits": [
+        {
+          "line": 99,
+          "text": "        assert_eq!(peers.finish()?, counts);"
+        },
+        {
+          "line": 103,
+          "text": "        f.finish().await"
+        },
+        {
+          "line": 248,
+          "text": "    actual.finish([11, 11], 8).await"
+        },
+        {
+          "line": 356,
+          "text": "    actual.finish([10, 10], 7).await"
+        },
+        {
+          "line": 389,
+          "text": "    actual.finish([5, 5], 1).await"
+        },
+        {
+          "line": 423,
+          "text": "        .finish("
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "hits": [
+        {
+          "line": 21,
+          "text": "pub(super) struct HostFixture {"
+        },
+        {
+          "line": 43,
+          "text": "impl HostFixture {"
+        },
+        {
+          "line": 206,
+          "text": "        let counts = [self.primary.finish()?, self.retention.finish()?];"
+        },
+        {
+          "line": 209,
+          "text": "        Box::pin(self.original.finish()).await?;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "sha": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "hits": [
+        {
+          "line": 14,
+          "text": "use fixture::HostFixture;"
+        },
+        {
+          "line": 26,
+          "text": "    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 84,
+          "text": "    assert_eq!(fixture.finish().await?, [34, 30]);"
+        },
+        {
+          "line": 91,
+          "text": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 136,
+          "text": "    let counts = fixture.finish().await?;"
+        },
+        {
+          "line": 144,
+          "text": "    let mut pending = HostFixture::new(/*pending_claim*/ true).await?;"
+        },
+        {
+          "line": 168,
+          "text": "    let counts = pending.finish().await?;"
+        },
+        {
+          "line": 171,
+          "text": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 232,
+          "text": "    let counts = fixture.finish().await?;"
+        },
+        {
+          "line": 240,
+          "text": "        let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 278,
+          "text": "        let counts = fixture.finish().await?;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "sha": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "hits": [
+        {
+          "line": 20,
+          "text": "    fixture: &HostFixture,"
+        },
+        {
+          "line": 33,
+          "text": "    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 67,
+          "text": "    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        },
+        {
+          "line": 74,
+          "text": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 106,
+          "text": "    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        },
+        {
+          "line": 114,
+          "text": "        let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 157,
+          "text": "        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        },
+        {
+          "line": 159,
+          "text": "    let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 206,
+          "text": "    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        },
+        {
+          "line": 214,
+          "text": "        let mut fixture = HostFixture::new(pending_claim).await?;"
+        },
+        {
+          "line": 260,
+          "text": "        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        },
+        {
+          "line": 263,
+          "text": "        let fixture = HostFixture::new(/*pending_claim*/ false).await?;"
+        },
+        {
+          "line": 318,
+          "text": "        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));"
+        }
+      ]
+    }
+  ],
+  "additional_exact_source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "sha": "b696b8b740c09705e37872c6a723d8fd3d5779b3",
+      "hits": [
+        {
+          "line": 9,
+          "context": "use pretty_assertions::assert_eq;\n\nuse super::HostFixture;\nuse super::finish;\nuse crate::OriginalCircuitEvaluatedRetentionContextV1;\nuse crate::OriginalCircuitRetainedPublicationContextV1;"
+        },
+        {
+          "line": 21,
+          "context": "async fn evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut()\n-> anyhow::Result<()> {\n    let fixture = HostFixture::new(/*pending_claim*/ false).await?;\n    let (client, peer) = fixture.commands(\n        /*readback_only*/ false, /*expected*/ None, \"original\",\n    )?;"
+        },
+        {
+          "line": 92,
+          "context": "    assert_eq!(fixture.upstream_files()?, upstream_bytes);\n    assert_eq!(finish(client, peer)?, 1);\n    fixture.finish().await?;\n    Ok(())\n}\n"
+        },
+        {
+          "line": 98,
+          "context": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn evaluated_retention_refuses_validly_renewed_training_signature() -> anyhow::Result<()> {\n    let fixture = HostFixture::new(/*pending_claim*/ false).await?;\n    let (client, peer) = fixture.commands(\n        /*readback_only*/ false, /*expected*/ None, \"original\",\n    )?;"
+        },
+        {
+          "line": 129,
+          "context": "    assert_eq!(fixture.original_files()?, before);\n    assert_eq!(finish(client, peer)?, 1);\n    fixture.finish().await?;\n    Ok(())\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "sha": "a23be4dfcfcc739bb8417d7c32c6b71efd45e62f",
+      "hits": [
+        {
+          "line": 47,
+          "context": "    drop(trainer);\n    drop(evaluator);\n    assert_eq!(peers.finish()?, [5, 5]);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,\n        nonces + 1"
+        },
+        {
+          "line": 79,
+          "context": "    c.stop().await?;\n    drop(c);\n    f.finish().await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 121,
+          "context": "        drop(evaluator);\n        assert_eq!(\n            peers.finish()?,\n            if owner == \"trainer\" { [5, 4] } else { [4, 5] }\n        );\n        assert_eq!(f.publication_bytes()?, published);"
+        },
+        {
+          "line": 130,
+          "context": "        );\n        drop(task);\n        f.finish().await?;\n    }\n    Ok(())\n}"
+        },
+        {
+          "line": 157,
+          "context": "        Err(PublicationError::CommitUncertain(_))\n    ));\n    assert_eq!(peers.finish()?, [3, 3]);\n    assert_eq!(f.publication_bytes()?, prepared_bytes);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,"
+        },
+        {
+          "line": 172,
+          "context": "        if message.contains(\"remains pending; no redispatch\")\n    ));\n    assert_eq!(peers.finish()?, [1, 1]);\n    assert_eq!(f.publication_bytes()?, prepared_bytes);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,"
+        },
+        {
+          "line": 178,
+          "context": "        nonces\n    );\n    f.finish().await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 212,
+          "context": "            \"{owner}\"\n        );\n        let counts = peers.finish()?;\n        assert_eq!(counts[0], 3);\n        assert_eq!(counts[1], if owner == \"trainer\" { 2 } else { 3 });\n        assert_eq!(f.publication_bytes()?, prepared_bytes);"
+        },
+        {
+          "line": 213,
+          "context": "        );\n        let counts = peers.finish()?;\n        assert_eq!(counts[0], 3);\n        assert_eq!(counts[1], if owner == \"trainer\" { 2 } else { 3 });\n        assert_eq!(f.publication_bytes()?, prepared_bytes);\n        assert_eq!("
+        },
+        {
+          "line": 214,
+          "context": "        let counts = peers.finish()?;\n        assert_eq!(counts[0], 3);\n        assert_eq!(counts[1], if owner == \"trainer\" { 2 } else { 3 });\n        assert_eq!(f.publication_bytes()?, prepared_bytes);\n        assert_eq!(\n            f.host.original.version.authority.capacity()?.used_nonces,"
+        },
+        {
+          "line": 245,
+          "context": "        }\n        assert_eq!(\n            peers.finish()?,\n            if owner == \"trainer\" { [1, 0] } else { [1, 1] }\n        );\n        assert_eq!(f.publication_bytes()?, prepared_bytes);"
+        },
+        {
+          "line": 253,
+          "context": "            nonces\n        );\n        f.finish().await?;\n    }\n    Ok(())\n}"
+        },
+        {
+          "line": 278,
+          "context": "        ))\n    ));\n    assert_eq!(peers.finish()?, [0, 0]);\n    assert_eq!(f.publication_bytes()?, before);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,"
+        },
+        {
+          "line": 284,
+          "context": "        nonces\n    );\n    f.finish().await\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 312,
+          "context": "        Err(PublicationError::CommitUncertain(_))\n    ));\n    assert_eq!(peers.finish()?, [3, 3]);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,\n        nonces + 1"
+        },
+        {
+          "line": 323,
+          "context": "        recover_original_circuit_evaluated_retention_v1(trainer, evaluator, f.recovery(intent)?)\n            .await?;\n    assert_eq!(peers.finish()?, [2, 2]);\n    assert_eq!(f.publication_bytes()?, committed);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,"
+        },
+        {
+          "line": 342,
+          "context": "    c.stop().await?;\n    drop(c);\n    f.finish().await\n}\n\n#[path = \"circuit_evaluated_current_positive_tests.rs\"]"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "sha": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+      "hits": [
+        {
+          "line": 53,
+          "context": "\npub(super) struct PublicationFixture {\n    pub(super) host: Box<HostFixture>,\n    trainer: Arc<Trainer>,\n    trainer_context: OriginalCellQ24TrainingCommandContextV1,\n    pub(super) training: OriginalCellQ24TrainingCommandReceiptV1,"
+        },
+        {
+          "line": 87,
+          "context": "    async fn ready_for_publication(publication: PublicationMode) -> anyhow::Result<Self> {\n        let mut host = match publication {\n            PublicationMode::RetainOriginalA => Box::pin(HostFixture::before_adoption()).await?,\n            _ => Box::pin(HostFixture::before_publication(publication)).await?,\n        };\n        let mut dataset = host.config.training.clone();"
+        },
+        {
+          "line": 88,
+          "context": "        let mut host = match publication {\n            PublicationMode::RetainOriginalA => Box::pin(HostFixture::before_adoption()).await?,\n            _ => Box::pin(HostFixture::before_publication(publication)).await?,\n        };\n        let mut dataset = host.config.training.clone();\n        let completed_training = dataset.receipts.pop().context(\"original native Training\")?;"
+        },
+        {
+          "line": 348,
+          "context": "    pub(super) async fn finish(self) -> anyhow::Result<()> {\n        drop(self.trainer);\n        self.host.finish().await?;\n        Ok(())\n    }\n}"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "sha": "1177429c6cff407e9220929f79dce4805ed03bb6",
+      "hits": [
+        {
+          "line": 35,
+          "context": "\nstruct TrainingFixture {\n    host: Box<HostFixture>,\n    peer: std::thread::JoinHandle<anyhow::Result<u64>>,\n    trace: commands::PanelReadTrace,\n}"
+        },
+        {
+          "line": 97,
+          "context": "        };\n        let (peer, trace) = commands::panel_readonly(trainer, channel, control);\n        let host = HostFixture::from_panel_with_training(\n            panel,\n            false,\n            TrainingComposition::Original {"
+        },
+        {
+          "line": 122,
+          "context": "        drop(self.host.host.take());\n        let frames = self.peer.join().expect(\"actual panel Trainer readonly\")?;\n        let members = Box::pin(self.host.finish()).await?;\n        Ok((frames, members))\n    }\n}"
+        }
+      ]
+    }
+  ],
+  "scope_limit": "Limited actual HostFixture consumers and its PublicationFixture/Bound TrainingFixture wrappers; not an exhaustive repository search.",
+  "findings": [
+    "The direct HostFixture::finish returns the two original panel Trainer-peer counts. In the original host_tests file, only two such results have exact array equality: [34,30] and Pending [10,10]. Other direct consumers there assert only >2 or >=2.",
+    "Original model-material consumers all retain >2 checks; the four-way candidate preserves these checks.",
+    "The two evaluated_retention_context tests discard the returned HostFixture count array after awaiting it.",
+    "PublicationFixture::finish awaits and discards HostFixture::finish's array. Its child tests' peers.finish arrays are separate Trainer/Evaluator command RPC counts, not this panel-member counter.",
+    "TrainingFixture stores a Bound host, and returns its panel counts alongside its separate actual Trainer-readonly frame count. This candidate keeps the Bound path on the original call constructor; no counter change was identified there."
+  ],
+  "not_claimed": [
+    "No actual native result or new counter value is established by this scan.",
+    "Files outside this finite source set were not searched for arbitrary aliases."
+  ]
+}

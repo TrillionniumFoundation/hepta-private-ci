@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "old_job_id": "1a1cfa1d75d-2564-1a75",
+  "append_only": true,
+  "earlier_unknown_and_timeout_records_unchanged": true,
+  "new_observation": {
+    "operation_id": "c68c9d8746518598cb51e63100f4c939b42bd0f664905ba4ca9e5278c58381d7",
+    "native_sdk_bytes": 905,
+    "native_sdk_sha256": "c11ec1afd4e5afe4b087ce9443136edaf3566297690058e94d3a8dc4843c6f3a",
+    "actual_state": "failed",
+    "actual_exit_code": 2,
+    "actual_terminal_publication_confirmed": true
+  },
+  "recovery_authorization_basis": {
+    "authorization": "Root approved exact a2b068 request; complete original terminal driver and no successor actions independently reviewed. Subsequent actual terminal payload also received before dispatch.",
+    "previous_evidence_unchanged": true,
+    "old_job": "1a1cfa1d75d-2564-1a75",
+    "new_key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v2"
+  },
+  "new_independent_attempt": {
+    "job_id": "1a1cfb4675b-2564-1a8e",
+    "request_key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v2",
+    "request_digest": "3fa029c9aff14aa3aca420ef415fe8ae6f644c48561801ffef9972904965d6bb",
+    "ack_only": true,
+    "no_stage_pass_claim": true
+  },
+  "artifacts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/process-status.terminal.native-sdk.json",
+      "bytes": 905,
+      "sha256": "c11ec1afd4e5afe4b087ce9443136edaf3566297690058e94d3a8dc4843c6f3a",
+      "git_blob_sha": "df13a58b7bd6a3f1ae1713d321f107eb8bea9db2",
+      "kind": "original-native-sdk-payload"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/process-status.terminal.original-text.json",
+      "bytes": 726,
+      "sha256": "1642fd8a9cf498787dad71d2fdcdc385f6d3080baac7f841541c90952c57f46e",
+      "git_blob_sha": "0bd47a6657a79b4c5d7ffd123f257e137eb983e1",
+      "kind": "original-native-sdk-text"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/terminal-read-operation-initial-timeout.observed.json",
+      "bytes": 221,
+      "sha256": "c2030734632595f795f35df1b30f4fea77d169febe7fa734ff36df51b0020ea6",
+      "git_blob_sha": "1b58c59edd8ea4b292f04cdf0bbb5eff2e0c8b03",
+      "kind": "observed-tool-error"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/terminal-read-operation-reconcile.observed.json",
+      "bytes": 606,
+      "sha256": "98087f76717ec00c5be1951e58b77ca652b0a85cb5966a8b1a9d251cdc11b575",
+      "git_blob_sha": "d462524db0f826b65ce262a54594b7a938680396",
+      "kind": "observed-tool-response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/terminal-read-operation-status.observed.json",
+      "bytes": 887,
+      "sha256": "fa19edb2ca1f7048fa1a1a51bf9a19b0f48f692d01208e113cd90a8d918fd013",
+      "git_blob_sha": "8cc2fea06d333a3e2a483d8fcaf214b40b6a9a92",
+      "kind": "observed-tool-response"
+    }
+  ]
+}

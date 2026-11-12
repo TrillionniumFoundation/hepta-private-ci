@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.rv.completed-development-lifecycle-readback.v1",
+  "status": "COMPLETE_RECORDED_DEVELOPMENT_LIFECYCLE",
+  "native_execution_source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "frozen_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "driver": {
+    "blob_sha": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+    "sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb"
+  },
+  "B": {
+    "native_report_raw_sha256": "d8a2edc6f99abb2ffb895246344f404f946aeb41a7a358080d8bb324160af146",
+    "native_report_canonical_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+    "numeric_lexemes_preserved": true,
+    "stdout_equals_control_terminal_ignoring_only_json_whitespace": true,
+    "planned": 2,
+    "completed": 2,
+    "incomplete": 0,
+    "planned_source_clusters": 1,
+    "rows": [
+      {
+        "arm_id": "tuned-fixed",
+        "execution_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "evidence_sha256": "49457414d277d6f030a9683f0c47dd3ae35f016ea4fac63c1c0228736b98b82f",
+        "terminal_blob": "561a36c2fa30cbdffae8851a80097832b47d4511",
+        "realization_blob": "4248a8a157eaa41e7af8afbef3460e52351a076e"
+      },
+      {
+        "arm_id": "conditional",
+        "execution_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "evidence_sha256": "9c467d228e4d32e4ab71572053805d9281186544fcec3196a898341b745981f8",
+        "terminal_blob": "43dfab8903a6bae21f31e16b97168d3988de9a36",
+        "realization_blob": "260a5beb3c332622cefa0e8733dd9ef97512b0ad"
+      }
+    ],
+    "source_file_info": "before original file_info and after bounded read-only stat/SHA now independently delivered",
+    "owner_decision": null,
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "full_cost_observed": false,
+    "native_owner_authenticated": false,
+    "independent_new_sources": 0
+  },
+  "C": {
+    "native_report_raw_sha256": "6b4f2a96c867448c847de5b3f3a8341b075d785e7cfcef1ef43c18a331e26905",
+    "native_report_canonical_sha256": "e4c769b8134d0594ecf3ccbd70ba84b2fa2e937f605e0cca75f085f506090464",
+    "numeric_lexemes_preserved": true,
+    "stdout_equals_control_terminal_ignoring_only_json_whitespace": true,
+    "planned": 2,
+    "completed": 2,
+    "incomplete": 0,
+    "rows": [
+      {
+        "arm": "tuned-fixed",
+        "execution_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "evidence_sha256": "a5079dbd06fa538d6993cb9ded190a3c5ca84c2d364ec9387c953c6977e10fa4"
+      },
+      {
+        "arm": "conditional",
+        "execution_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "evidence_sha256": "c92cc4c794272c2fc065c4147a870e690c46d45aa9295f2947258060c2a413f2"
+      }
+    ],
+    "owner_decision": null,
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "full_cost_observed": false,
+    "native_owner_authenticated": false,
+    "independent_new_sources": 0
+  },
+  "total": {
+    "registered_macro_executions": 4,
+    "completed": 4,
+    "incomplete": 0,
+    "STOP": 4,
+    "READ": 0,
+    "quality_values": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "distinct_previously_exposed_source_ids": 2,
+    "independent_new_sources": 0
+  },
+  "identity_scope": {
+    "all_four_execution_ids_unique": true,
+    "intersection_with_old_576_execution_ids": [],
+    "old_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "old_report_preserved": true,
+    "original_training_metadata_lineage_preserved": true
+  },
+  "source_snapshots": {
+    "bytes_each": 40017,
+    "sha256_each": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+    "raw_content_blob": "df266a985b186083129d42629a9c6828b5c121c7",
+    "source_records_per_snapshot": 96,
+    "all_six_recorded_snapshots_equal": true,
+    "scope": "Recorded freeze/B/C before-and-after snapshot files are content-identical. Host readback verifies those recorded files; it is not a new independent recrawl of all 96 live input paths at archive time.",
+    "newly_observed_files": [
+      {
+        "path": "control/B-source-after.json",
+        "remote_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/B-source-after.json",
+        "version": "66306:77118034:40017:1794486250653835224:1794486250653835224",
+        "bytes": 40017,
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "blob_sha": "df266a985b186083129d42629a9c6828b5c121c7",
+        "mapping_kind": "content-addressed reuse of previously verified full original snapshot bytes; current exact path/version/size/SHA verified by archived read-only reader output",
+        "stat_before_after_equal": true
+      },
+      {
+        "path": "control/C-source-before.json",
+        "remote_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-before.json",
+        "version": "66306:77084106:40017:1794488417565938467:1794488417565938467",
+        "bytes": 40017,
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "blob_sha": "df266a985b186083129d42629a9c6828b5c121c7",
+        "mapping_kind": "content-addressed reuse of previously verified full original snapshot bytes; current exact path/version/size/SHA verified by archived read-only reader output",
+        "stat_before_after_equal": true
+      },
+      {
+        "path": "control/C-source-after.json",
+        "remote_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-after.json",
+        "version": "66306:77099892:40017:1794488421514423853:1794488421514423853",
+        "bytes": 40017,
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "blob_sha": "df266a985b186083129d42629a9c6828b5c121c7",
+        "mapping_kind": "content-addressed reuse of previously verified full original snapshot bytes; current exact path/version/size/SHA verified by archived read-only reader output",
+        "stat_before_after_equal": true
+      }
+    ]
+  },
+  "read_only_final_reader": {
+    "job_id": "1a1cfecfddc-2564-1ae8",
+    "request_blob": "93353b5e339409804880063e7b6383abc0ecaf5a",
+    "request_sha256": "4326680383a92a9f3107c17fbf00ba2f5b0278cd704da44141816ce4ea6098bf",
+    "request_key": "neuro4-rv-final-source-stat-862531d-v1",
+    "exit_code": 0,
+    "actor_calls": 0,
+    "application_files_written": 0,
+    "ordinary_uid": 1000,
+    "stat_changed_or_hash_mismatched": 0
+  },
+  "authority": {
+    "owner_decision": null,
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "production_admission": false,
+    "native_owner_authenticated": false,
+    "raw_legacy_cohort_NoUpdate_preserved_but_not_owner_authority": true
+  },
+  "boundaries": {
+    "calibration_complete": false,
+    "full_cost_observed": false,
+    "policy_efficacy_proved": false,
+    "READ_information_value_proved": false,
+    "independent_confirmation_sources_proved": false,
+    "native_owner_bridge_proved_by_this_evidence": false,
+    "durable_cadence_CAS_proved_by_this_evidence": false,
+    "power_loss_or_cold_recovery_proved_by_this_evidence": false,
+    "additional_actor_dispatch_after_registered_C": false
+  },
+  "preserved_unknown": {
+    "idempotency_key": "neuro4-next-assets-862531d11598-v1",
+    "status": "UNRESOLVED_UNRELATED_PRIOR_PROBE",
+    "retried_or_reclassified_by_this_readback": false
+  },
+  "transport_history": [
+    {
+      "path": "provenance/transport-errors/C_FILES_ADMISSION_1.txt",
+      "context": "read_multiple_files admission",
+      "identity": "neuro4-rv-c-files-priority-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/C_FILES_ADMISSION_2.txt",
+      "context": "same read_multiple_files admission reconciliation",
+      "identity": "neuro4-rv-c-files-priority-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/C_FILES_PAGE_24576.txt",
+      "context": "immutable SDK page offset 24576",
+      "identity": "c7ac1979ac7b686c92a6b8dcf30a677834fe597967aeaa2574e2c4658c383bf2",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/C_LOGS_ADMISSION.txt",
+      "context": "process_read admission",
+      "identity": "neuro4-rv-c-logs-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/SOURCE_READER_ACK.txt",
+      "context": "read-only process start ACK",
+      "identity": "neuro4-rv-final-source-stat-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/B_FILES_ADMISSION.txt",
+      "context": "read_multiple_files admission",
+      "identity": "neuro4-rv-b-files-priority-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    },
+    {
+      "path": "provenance/transport-errors/B_SOURCE_BEFORE_INFO_ADMISSION.txt",
+      "context": "file_info admission",
+      "identity": "neuro4-rv-b-source-before-info-862531d-v1",
+      "original_error_text_preserved": true,
+      "meaning": "transport delivery/admission ACK failure; not evidence an experiment failed; retained alongside subsequent same-identity successful readback"
+    }
+  ]
+}

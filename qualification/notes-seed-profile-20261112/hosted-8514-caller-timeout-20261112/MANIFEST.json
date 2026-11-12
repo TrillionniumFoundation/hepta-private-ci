@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.act6243.hosted-caller-timeout.evidence.v1",
+  "source_sha": "8514d4754790e642f5f083d56696921b0628a313",
+  "source_tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
+  "run_id": 43200801767,
+  "job_id": 131123414182,
+  "attempt": 1,
+  "status": "completed",
+  "conclusion": "failure",
+  "observation": "Original source-head caller wrapper timed out at 120.105523659 seconds, exit 124, returncode -9, reported inner log_bytes=0. V8 step succeeded; both executable builds, original positive and five regression methods, and named-case receipt were skipped.",
+  "source_identity": "Original receipt before/after match exact source/tree and dirty=false.",
+  "claim_boundary": "This is a pre-build timeout, not a Rust compile/test result or checker logical result. No rerun or cancellation was requested. An empty inner log is reported by the original receipt; that artifact was not separately downloaded.",
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-8514-caller-timeout-20261112/JOB_131123414182.log",
+      "representation": "Original decoded UTF-8 job log returned by GitHub job-logs connector.",
+      "bytes": 82203,
+      "sha256": "7c0b21d5b743864021c8d7c80985564d0b5bea257c0403f0d0b2e2ba24f46c18",
+      "blob": "c2e544a48bc82dceefc1d9ab391dc50a50be8f2d"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-8514-caller-timeout-20261112/JOBS_ORIGINAL.json",
+      "representation": "Original GitHub jobs endpoint response content.",
+      "bytes": 4131,
+      "sha256": "ac427930d56e8916e51dfe1aed0cd4181c1c200d2db9947a524ff14511abca4f",
+      "blob": "844dae1783cd80a1502ca68451141c134c0adf27"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-8514-caller-timeout-20261112/CALLER_RECEIPT_EXTRACT.json",
+      "representation": "Exact JSON substring extracted from full original job log line 936, with one trailing newline added; not a separately downloaded artifact.",
+      "bytes": 1283,
+      "sha256": "766a4db03ebce91a8df7869186921af99d3dc6d1965cc5cc2d5f10c6824f72da",
+      "blob": "d1c0fd4016c9b28653fde64c870c96c72a53c4b8"
+    }
+  ],
+  "qualification": "HOLD",
+  "owner_decision": null
+}

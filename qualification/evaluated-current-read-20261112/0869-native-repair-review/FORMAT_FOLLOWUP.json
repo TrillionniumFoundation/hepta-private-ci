@@ -1,0 +1,50 @@
+{
+  "source": "0869be2655922d9d71ba83bafdaccd85f99f6a77",
+  "source_tree": "040bc4af554e4ffb659bf49eb062b94c3f1898f6",
+  "formatter_job": 131298536550,
+  "formatter_log_sha256": "c6b9fbe71af0840c044e2b7c4b549d4d09f3b60a3df700a8c67dff50560a1f2b",
+  "precise_observed_hunks": 5,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "base": "261f400a6a1dadbd79dffb58005851553ab5b294",
+      "edits": [
+        [
+          "async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt()\n-> anyhow::Result<()> {",
+          "async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt() -> anyhow::Result<()>\n{"
+        ],
+        [
+          "        owner.readback(fixture.receipt_owner_sources(&trainer)).await,",
+          "        owner\n            .readback(fixture.receipt_owner_sources(&trainer))\n            .await,"
+        ],
+        [
+          "        recovered.readback(fixture.receipt_owner_sources(&trainer)).await,",
+          "        recovered\n            .readback(fixture.receipt_owner_sources(&trainer))\n            .await,"
+        ]
+      ],
+      "post_blob": "afe877be224778bf73d97d35fc553f3189910dde",
+      "bytes": 5145,
+      "sha256": "6be0bbba6b953198786a414cd2612354645905b19475b3e62751c04153dc3ba1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "base": "467bba30b2cd77a322b714b9c0655a5823336214",
+      "edits": [
+        [
+          "            let observed_at = SystemTime::now()\n                .duration_since(UNIX_EPOCH)\n                .unwrap_or_else(|error| {\n                    panic!(\"{}: {error:?}\", expiry_stage(\"observe seeded lease expiry\"))\n                });",
+          "            let observed_at =\n                SystemTime::now()\n                    .duration_since(UNIX_EPOCH)\n                    .unwrap_or_else(|error| {\n                        panic!(\"{}: {error:?}\", expiry_stage(\"observe seeded lease expiry\"))\n                    });"
+        ],
+        [
+          "        panic!(\"{}: {error:?}\", expiry_stage(\"wait for seeded lease expiry\"))",
+          "        panic!(\n            \"{}: {error:?}\",\n            expiry_stage(\"wait for seeded lease expiry\")\n        )"
+        ]
+      ],
+      "post_blob": "ac225abdf5676ece3413ce3754af5a85c1896c8a",
+      "bytes": 39176,
+      "sha256": "75c7d13ff2ce28cf169daa7853f4ca63e2f5f0c7cfbad2fb7629856208f366bb"
+    }
+  ],
+  "candidate_tree": "f3ca7a586cde4188be0433665f36619fb75da9f3",
+  "pushed": false,
+  "executed": false
+}

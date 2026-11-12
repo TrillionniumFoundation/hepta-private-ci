@@ -1,0 +1,375 @@
+{
+  "schema": "hepta.d397-production-merge.v1",
+  "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+  "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "status": "STATIC_NOT_RUN_NOT_FMT",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "base": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae",
+      "post": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+      "bytes": 12381,
+      "sha256": "a2702c756212445a29776cc10fd214ae9096f095d74d9a4fb6dc5bbafe1762e6",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 967,
+          "from": "use tokio::sync::Mutex;\n",
+          "to": ""
+        },
+        {
+          "index": 1102,
+          "from": "use super::OriginalCellQ24NoUpdateStageStreamsV1;\n",
+          "to": "use super::OriginalCellQ24NoUpdateStageStreamsV1;\nuse super::lane::ResidentLane;\n"
+        },
+        {
+          "index": 2774,
+          "from": "Mutex<CandidateLane>",
+          "to": "ResidentLane<CandidateLane>"
+        },
+        {
+          "index": 2819,
+          "from": "Mutex<EvaluationLane>",
+          "to": "ResidentLane<EvaluationLane>"
+        },
+        {
+          "index": 2860,
+          "from": "Mutex<ModelLane>",
+          "to": "ResidentLane<ModelLane>"
+        },
+        {
+          "index": 2900,
+          "from": "Mutex<EvaluatedLane>",
+          "to": "ResidentLane<EvaluatedLane>"
+        },
+        {
+          "index": 12124,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 12059,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 11993,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 11932,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "base": "05359fcfecf67f7695a99aa666f761db169aa5ed",
+      "post": "551a281e0df6b0abb0033cd8b4840eeb48882d2e",
+      "bytes": 6640,
+      "sha256": "f71a15f6ea0b8735188487ca67cf471826d95f7bb4358530ad85de4efaca5078",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 153,
+          "from": "use tokio::sync::Mutex;\n\n",
+          "to": ""
+        },
+        {
+          "index": 153,
+          "from": "use super::super::auth;\n",
+          "to": "use super::super::auth;\nuse super::super::lane::ResidentLane;\n"
+        },
+        {
+          "index": 6556,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 6502,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 6443,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        },
+        {
+          "index": 6380,
+          "from": "Mutex::new(",
+          "to": "ResidentLane::new("
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "05359fcfecf67f7695a99aa666f761db169aa5ed"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "base": "7213c87054bf7335622eda758659baf2f1a41e8e",
+      "post": "2d1813e4f5a8c4b0f0d852d3c51b817d25f93c90",
+      "bytes": 15775,
+      "sha256": "2bbb8b979707da80b850c90342f94e3862b56cb4d08ba5d5ebe5f28762643727",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 5809,
+          "from": "let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;",
+          "to": "let mut lane_lease = self.evaluation.try_take()?;\n        let lane = lane_lease.state_mut()?;"
+        },
+        {
+          "index": 6542,
+          "from": "let mut common = self\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = self.common.continuation.try_take()?;\n            let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 9552,
+          "from": "let mut common = self\n            .common\n            .continuation\n            .try_lock()\n            .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = self.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 10461,
+          "from": "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;",
+          "to": "auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "7213c87054bf7335622eda758659baf2f1a41e8e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "base": "5520712840c75b8e8a0831628f2c8715315aad36",
+      "post": "7232ad40b7bdbc69d9813e40c056766dc3344bff",
+      "bytes": 11035,
+      "sha256": "d197a9d98286b3b37bd7ac46aabadaa6ab1a2513c92c4ee3fafc86d84ccdaae8",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 7189,
+          "from": "let common = self\n            .common\n            .continuation\n            .try_lock()\n            .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = self.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 8114,
+          "from": "common_auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;",
+          "to": "common_auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "5520712840c75b8e8a0831628f2c8715315aad36"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "base": "e884bb91508d86382e7189edaab8fe403581be6b",
+      "post": "2154edd35a20d36064fd5dedefb71e73966bdc99",
+      "bytes": 6997,
+      "sha256": "eff941b87b4da222d6f8e6af13b571326a823b281bd1ed3bf36ba54a28206465",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 1163,
+          "from": "let common = self\n                            .common\n                            .continuation\n                            .try_lock()\n                            .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = self.common.continuation.try_take()?;\n                        let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 3750,
+          "from": "let lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;",
+          "to": "let mut lane_lease = self.retention.try_take()?;\n                    let lane = lane_lease.state_mut()?;"
+        },
+        {
+          "index": 2585,
+          "from": "let lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;",
+          "to": "let mut lane_lease = self.retention.try_take()?;\n                    let lane = lane_lease.state_mut()?;"
+        },
+        {
+          "index": 5662,
+          "from": "let common = self\n            .common\n            .continuation\n            .try_lock()\n            .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = self.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 6202,
+          "from": "common_auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;",
+          "to": "common_auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "e884bb91508d86382e7189edaab8fe403581be6b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "base": "a53143e30fd9a1b7ee5c0c3bafc6ca083acb163d",
+      "post": "7a624fbb69c9b557a9496ddb3f484916d2608beb",
+      "bytes": 5223,
+      "sha256": "484f1414ca4c60fc4e0071de16c6ab305274e992f88f581f844a06cd40e5bba3",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 1055,
+          "from": "let mut common = owners\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;",
+          "to": "let mut common_lease = owners.common.continuation.try_take()?;\n            let common = common_lease.state_mut()?;"
+        },
+        {
+          "index": 1230,
+          "from": "                &mut common,\n",
+          "to": "                common,\n"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "a53143e30fd9a1b7ee5c0c3bafc6ca083acb163d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "base": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+      "post": "1ee4e558ae60296f47a0049eb08654c726e0c2e4",
+      "bytes": 10772,
+      "sha256": "f55ebb81067da6fbb079efec95a33a0a05c10ca65aacd22729ec5bc860899303",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 1595,
+          "from": "let mut lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;",
+          "to": "let mut lane_lease = self.retention.try_take()?;\n        let lane = lane_lease.state_mut()?;"
+        },
+        {
+          "index": 2331,
+          "from": "&mut lane",
+          "to": "lane"
+        },
+        {
+          "index": 2255,
+          "from": "&mut lane",
+          "to": "lane"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "02bc38551e1ccb6e574567277f902c05ca83dd86"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "base": "bd28119fd00c39ecb246bad3bf500aece080160f",
+      "post": "53c87af635fd882bc509fa6ef37f679be2b90b15",
+      "bytes": 9491,
+      "sha256": "b6e60af75d7e7b5d0e7d8a1436d89d3a93e88ce55c71ed5efb7c720fb676c86e",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 1583,
+          "from": "let mut lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;",
+          "to": "let mut lane_lease = self.retention.try_take()?;\n        let lane = lane_lease.state_mut()?;"
+        },
+        {
+          "index": 3087,
+          "from": "&mut lane",
+          "to": "lane"
+        },
+        {
+          "index": 1994,
+          "from": "&mut lane",
+          "to": "lane"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "bd28119fd00c39ecb246bad3bf500aece080160f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "base": "382844a32227c48a752ecf053d0cf9d293f1b3f4",
+      "post": "968f2d6f4affcb1396a9e751bfdb2c42a5ba235a",
+      "bytes": 9267,
+      "sha256": "0048dc29c359a2ebec309d7848d8cde0e42788e313acc1cc76d6a7e7270a42ee",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 9177,
+          "from": "",
+          "to": "\n#[cfg(test)]\n#[path = \"circuit_evaluated_current_read_tests.rs\"]\npub(crate) mod fixture;\n"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "382844a32227c48a752ecf053d0cf9d293f1b3f4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "base": "0b79409538da4f7ed92c9123ab0efd97615aa085",
+      "post": "8bd47c76fc82365daac44acf5061861e0c552011",
+      "bytes": 16679,
+      "sha256": "ae77ec5eb1b8d77d7179fd21b0939124cee210866140313c850e91d51b73c94c",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 2553,
+          "from": "#[cfg(test)]\npub(crate) use learning_read::evaluated_readiness_fixture;",
+          "to": "#[cfg(test)]\npub(crate) use learning_read::check_evaluated_profiles;\n#[cfg(test)]\npub(crate) use learning_read::evaluated_readiness_fixture;"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "0b79409538da4f7ed92c9123ab0efd97615aa085"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "base": "5ee70d671dea96349eb69434146bf59ae1e05ed6",
+      "post": "4a593c5805f3ba23e287c130ea40b03cbe801d7a",
+      "bytes": 10184,
+      "sha256": "deb6012e680fcf6daab3fd847e1124998673093775d5a5f6b895222cb4e713e6",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 10040,
+          "from": "#[cfg(test)]\npub(crate) use readiness::fixture as readiness_fixture;\n",
+          "to": "#[cfg(test)]\npub(crate) use readiness::fixture as readiness_fixture;\n\n#[cfg(test)]\npub(crate) use evaluated::fixture::check_evaluated_profiles;\n"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "5ee70d671dea96349eb69434146bf59ae1e05ed6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "base": "2820145d2546e42b7d697a2f64eca855b1132584",
+      "post": "366400a019bcaf29016d74c9540823be8da7969b",
+      "bytes": 12237,
+      "sha256": "836277fd5d7b6a18979baabeda0f0c4c4c48b7ad355f33c363ef7cb9932f8d93",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 1051,
+          "from": "#[path = \"circuit_learning_completion_readiness_service.rs\"]",
+          "to": "#[path = \"circuit_evaluated_completion_readiness_service.rs\"]\nmod evaluated_readiness;\n#[path = \"circuit_learning_completion_readiness_service.rs\"]"
+        },
+        {
+          "index": 4694,
+          "from": "    pub(super) fn serve_channel(",
+          "to": "    /// Same original channel, with an explicitly evaluated four-cut purpose.\n    /// It does not admit five-cut completion or the legacy three-cut profile.\n    pub(crate) fn serve_original_evaluated_retained_channel(\n        &self,\n        channel: &mut HostAuthorityPeerChannel,\n    ) -> Result<u64, Error> {\n        let ReadProfile::Evaluated(context) = &self.context else {\n            return Err(Error::Binding(\n                \"evaluated Version Selection-only read profile\",\n            ));\n        };\n        if context.mode() != wire::Mode::Selection {\n            return Err(Error::Binding(\n                \"evaluated Version Selection-only read purpose\",\n            ));\n        }\n        self.serve_channel(channel)\n    }\n\n    pub(super) fn serve_channel("
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "32ca73705cb3ccb07938cd930095d3a3dbf3bf17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "base": "7bcb86349f3626a08bba85e10b86ac0200026a91",
+      "post": "7b64a69e5e0ad9c3dbb7c6a8180f9ecabb843d99",
+      "bytes": 5281,
+      "sha256": "0ab1eac9c7b7be91042d97d8df35f4119112c6093f50f8478cd8a75e4c4bd254",
+      "readback_equal": true,
+      "edits": [
+        {
+          "index": 828,
+          "from": "        for request_id in 1..=128_u64 {\n",
+          "to": "        for request_id in 1..=128_u64 {\n            #[cfg(test)]\n            let _diagnostics = super::command_test_support::EvidenceDiagnosticsFlush;\n"
+        },
+        {
+          "index": 4809,
+          "from": "",
+          "to": "\n#[cfg(test)]\nimpl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {\n    /// Expose only this unchanged original callback to the same-process fixture.\n    /// No alternate response, transport policy, owner or signature is supplied.\n    pub(super) fn fixture_original_evidence_response(\n        &self,\n        bytes: &[u8],\n        request_id: u64,\n    ) -> Result<Vec<u8>, Error> {\n        self.evidence_response(bytes, request_id)\n    }\n}\n"
+        }
+      ],
+      "inverse_exact": true,
+      "edit_base": "7bcb86349f3626a08bba85e10b86ac0200026a91"
+    }
+  ]
+}

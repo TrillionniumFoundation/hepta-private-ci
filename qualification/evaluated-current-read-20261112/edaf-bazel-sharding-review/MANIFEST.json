@@ -1,0 +1,287 @@
+{
+  "schema": "hepta.agentd-bazel-sharding-candidate-audit.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "diagnosis_source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "diagnosis_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "compatibility_read": {
+    "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "files": [
+      "defs.bzl",
+      "codex-rs/hepta-agentd/BUILD.bazel"
+    ],
+    "result": "Both complete base files were fetched at this source and are byte-identical to the diagnosis base."
+  },
+  "code_bare_tree": "cd0df1226c65cd92e826aa44006000bbae76fc41",
+  "code_changes": [
+    {
+      "path": "defs.bzl",
+      "base_blob": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "base_sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09",
+      "post_blob": "6e1c3955b8dc345bd0cc5a4f1659e1e56f285cc8",
+      "post_sha256": "72baafaecb8ff10cb5a70e84903a813ea9744046020a2082a835cbed3e16b53a",
+      "post_bytes": 35601
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "base_blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "base_sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67",
+      "post_blob": "eb09a036e49d1c85cd247f05b9b4b2c17b5dd022",
+      "post_sha256": "ed21637560b45953b7a41c319c2feeb47dd905720aacbe028a64bd2628f8db8f",
+      "post_bytes": 8215
+    }
+  ],
+  "code_delta": {
+    "files": 2,
+    "added_lines": 17,
+    "removed_lines": 1
+  },
+  "configuration": {
+    "only_target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+    "shards": 8,
+    "libtest_test_bodies_per_process": 2,
+    "flaky": false,
+    "timeout_seconds": 300,
+    "timeout_changed": false,
+    "extra_libtest_args": false,
+    "default_other_target_behavior": "preserved"
+  },
+  "unchanged_source_pins": [
+    {
+      "path": "defs.bzl",
+      "blob": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "bytes": 35087,
+      "sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "bytes": 7929,
+      "sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67"
+    },
+    {
+      "path": "workspace_root_test_launcher.sh.tpl",
+      "blob": "4606fd8b15274f3e52aca493a34f32264d124c06",
+      "bytes": 4713,
+      "sha256": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5"
+    },
+    {
+      "path": "workspace_root_test_launcher.bat.tpl",
+      "blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "path": ".bazelrc",
+      "blob": "59c6850487b948779389a481de5161c64fd21ff5",
+      "bytes": 14000,
+      "sha256": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4"
+    },
+    {
+      "path": ".bazelversion",
+      "blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "bytes": 6,
+      "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "blob": "73e70ae2300bf6013d69914662d546d8e1b83569",
+      "bytes": 21878,
+      "sha256": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "blob": "07553d8511524588369458ba52bf0ff5a6186208",
+      "bytes": 14095,
+      "sha256": "babcfa6dce1c4684f4e96e7ddae6eee8f4fdbcc088fa0360bfa00ccfaf65d104"
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "blob": "953ef39b2194e69531308d098857f439719d5d7e",
+      "bytes": 15346,
+      "sha256": "384e69963a09d8bebe108f58b293e0fd5431eb11e16efb544544714c541a177e"
+    },
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b"
+    },
+    {
+      "path": "codex-rs/core/BUILD.bazel",
+      "blob": "30555d4bb95f0e6082b897ff711ad4699cf07549",
+      "bytes": 2828,
+      "sha256": "a4899fd63b037be198daf0d4ca59e58ade98b6382c63f351d4dedbfb8bd8e823"
+    },
+    {
+      "path": "codex-rs/tui/BUILD.bazel",
+      "blob": "b6e67fcf5634805ca21371c652f5464da546094d",
+      "bytes": 874,
+      "sha256": "8c8633c5c673984544211981b21c04c3d1411b15cdf4cd29a3925e1ffa3df195"
+    },
+    {
+      "path": "MODULE.bazel",
+      "blob": "f3e7c21d9e7d54c0ac371caf17fe170c356bdf34",
+      "bytes": 24766,
+      "sha256": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e"
+    }
+  ],
+  "original_native": {
+    "manifest_blob": "b81b0f3318f970567e70738e75cc45f9d77cc100",
+    "run": 43254705812,
+    "job": 131309678676,
+    "complete_log_bytes": 3745971,
+    "complete_log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+    "full_reassembly_sha256_verified": true,
+    "unique_methods": 1738,
+    "agentd_methods": 1094,
+    "passed": 1726,
+    "failed": 11,
+    "timed_out": 1,
+    "test_wall_seconds": 845.718
+  },
+  "original_bazel": {
+    "manifest_blob": "2ffdb720c28de123dbea2b22fdded792db18bfb6",
+    "partial_observations_blob": "4910a412e2f553ed9956448d1bb4a8eef2b7c698",
+    "run": 43254706563,
+    "checkout_merge": "6344842074357063c00dce9f2b67d789b2988c6f",
+    "checkout_tree_equals_diagnosis_tree": true,
+    "jobs": [
+      {
+        "platform": "gnu",
+        "job": 131310622854,
+        "complete_log_bytes": 1199859,
+        "complete_log_sha256": "3ea31954ec5bdd264a286413135650db7f1571329703f96147c5fc1a9771febe",
+        "full_reassembly_sha256_verified": true
+      },
+      {
+        "platform": "musl",
+        "job": 131310622804,
+        "complete_log_bytes": 1184809,
+        "complete_log_sha256": "8844c93d9e587c8b12558a4e14ec8b38d896b4c95d308c0727255f8c3ff4e76d",
+        "full_reassembly_sha256_verified": true
+      }
+    ],
+    "each": {
+      "announced": 1190,
+      "explicit_ok": 917,
+      "explicit_failed": 15,
+      "explicit_ignored": 87,
+      "terminal_unknown": 171,
+      "observed_unique_names": 1022,
+      "names_not_observed": 168
+    },
+    "full_same_binary_list_available": false,
+    "independence": "Two archived job observations with identical normalized target output are not two independent method samples."
+  },
+  "derived_method_records": {
+    "raw_original": false,
+    "bytes": 472743,
+    "sha256": "dfbbd9faa8ea48c0db600ce7dfd3cea987f1716de39cd3f5f325da21be89edc0",
+    "rows": 1738,
+    "parts": [
+      {
+        "path": "NATIVE_METHODS.part00.jsonl",
+        "offset": 0,
+        "bytes": 219697,
+        "rows": 794,
+        "sha256": "657440829d13152776474ab2c4a193a4f98ad52a90377531e61370ac39181cdb"
+      },
+      {
+        "path": "NATIVE_METHODS.part01.jsonl",
+        "offset": 219697,
+        "bytes": 219934,
+        "rows": 808,
+        "sha256": "18faf28ddb56a4cbec9e8c50733a1482410e80f25c626c7f021f7e998b3c9301"
+      },
+      {
+        "path": "NATIVE_METHODS.part02.jsonl",
+        "offset": 439631,
+        "bytes": 33112,
+        "rows": 136,
+        "sha256": "4e98a025532612cf99166ce9b5d76fc7868103fbf972269a9a871e3ce66f86e9"
+      }
+    ],
+    "identity": "crate + exact method name; duplicate streaming/final terminal observations must agree",
+    "mapping": "Only native agentd rows receive exact UTF-8 FNV-1a32 modulo-8 assignment; other crates have null shard.",
+    "coverage_limit": "1094 native agentd methods, not the unobserved complete 1190-method Bazel roster."
+  },
+  "static_reviews": [
+    {
+      "agent": "/root/replay_perception_research",
+      "scope": "Two full code postimages, unchanged launcher semantics and retry/thread/default behavior",
+      "result": "No specific static blocker; NOT_RUN"
+    },
+    {
+      "agent": "/root/repository_research_audit",
+      "scope": "Two full code postimages and ten original macro/launcher/workflow blobs",
+      "result": "No specific static blocker; no original CI test_arg/filter override; NOT_RUN"
+    }
+  ],
+  "validation": {
+    "postimage_readback": "complete bytes and SHA256 verified",
+    "formatter": "NOT_RUN",
+    "starlark_analysis": "NOT_RUN",
+    "new_native": "NOT_RUN",
+    "new_bazel": "NOT_RUN",
+    "manual_bazel_dispatch": false,
+    "actor_dispatch": false,
+    "ref_changed": false,
+    "permitted_next_validation": "Parent-controlled existing same-source just test and observation of existing automatic Bazel workflow."
+  },
+  "limitations": [
+    "Static old native timings are not a bound, especially the censored 60.007-second timeout and previously failing paths.",
+    "Complete new same-binary roster plus all eight first-attempt shard identities/results are still required to establish exact union/no-overlap and preserve ignored identities.",
+    "No increased target or method timeout, method filtering, ignore change, retry acceptance, owner authority, or scientific result is introduced."
+  ],
+  "files": [
+    {
+      "path": "PATCH.diff",
+      "blob": "7dbf95fafad14a7478a8ff1699703daedd3117d4",
+      "bytes": 2915,
+      "sha256": "ea875ed6f5556327cff6bada0b0d610c9ad755d2971f50c04b0dab57ceca74d0",
+      "kind": "source_delta"
+    },
+    {
+      "path": "AUDIT.md",
+      "blob": "9b8550efedb3e85542132cccce32a1a62e887835",
+      "bytes": 6635,
+      "sha256": "303f26a98c93b224ff77ffe1cb86921509a7f4ccd4e562866b2229a76257df93",
+      "kind": "static_review"
+    },
+    {
+      "path": "STATIC_NATIVE_SHARDS.json",
+      "blob": "19f204ad118d38cb56ab0ce25e0f5c6f0849a846",
+      "bytes": 5002,
+      "sha256": "1a1570174cbf0a9ceeb87f4573c66ae72d68e4fbcdc1d09a8040981322f710aa",
+      "kind": "derived_summary"
+    },
+    {
+      "path": "DERIVE.js.txt",
+      "blob": "8347d0204fb30b2dd393f50d1c4585b20932e4f2",
+      "bytes": 3508,
+      "sha256": "561828f8ed5cc3e06a8abd069ddfea087cf9b4c18ead57f01ff5ff6c2cb5edf5",
+      "kind": "offline_derivation_reference"
+    },
+    {
+      "path": "NATIVE_METHODS.part00.jsonl",
+      "blob": "3d9db1b87561c66815c962d642c34a5cd959bb48",
+      "bytes": 219697,
+      "sha256": "657440829d13152776474ab2c4a193a4f98ad52a90377531e61370ac39181cdb",
+      "kind": "derived_method_inventory"
+    },
+    {
+      "path": "NATIVE_METHODS.part01.jsonl",
+      "blob": "f70756bd0a1919fd44061de240ee025437403fe7",
+      "bytes": 219934,
+      "sha256": "18faf28ddb56a4cbec9e8c50733a1482410e80f25c626c7f021f7e998b3c9301",
+      "kind": "derived_method_inventory"
+    },
+    {
+      "path": "NATIVE_METHODS.part02.jsonl",
+      "blob": "af5944a47f4ef794b434ae4a2387e77ef8573955",
+      "bytes": 33112,
+      "sha256": "4e98a025532612cf99166ce9b5d76fc7868103fbf972269a9a871e3ce66f86e9",
+      "kind": "derived_method_inventory"
+    }
+  ]
+}

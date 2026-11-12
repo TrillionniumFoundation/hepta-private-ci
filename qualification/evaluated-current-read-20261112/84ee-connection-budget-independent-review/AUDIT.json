@@ -1,0 +1,407 @@
+{
+  "schema": "hepta.static-connection-budget-independent-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+    "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+    "src_tree": "53388adfbfa9f1ec4ce297d9337d0654f0484e56",
+    "pins_file": "SOURCE_PINS.json",
+    "blob_count": 43
+  },
+  "review_status": "STATIC_ONLY",
+  "execution": {
+    "new_tests": 0,
+    "new_actor_calls": 0,
+    "new_native_runs": 0,
+    "changed_source_paths": [],
+    "changed_refs": [],
+    "owner_decision": null
+  },
+  "not_observed": [
+    "actual full Root-to-Bound-host endpoint assembly",
+    "actual full-chain command counters",
+    "successful completion at or before original deadlines",
+    "scientific benefit",
+    "cause of prior S 600ms PredecessorUnavailable"
+  ],
+  "definitions": {
+    "R": "Number of complete six-cut Root readbacks after completion; not retries or seeds.",
+    "b": "Root direct Evaluation command count.",
+    "Q": "Each of the retained Version/S/C shared Trainer and Evaluator command clients.",
+    "nested_trainer": "The one purpose-fixed Trainer readback client consumed into a Bound Evaluator host.",
+    "count_kind": "Successful-path request demand; refusals may terminate the actual run before this many requests."
+  },
+  "assumptions": [
+    "Fresh genuine Evaluation::NoUpdate retained path, required Root checkpoints, normal successful one-shot Prepare/FinalUse/publish/runtime admission.",
+    "Version uses from_original_evaluated_owners and the original ordinary host; S/C use its actual owner-binding factories.",
+    "Version/S/C use retained original T/B Arc clients; no reconnection, quota pool, or new endpoint.",
+    "The counted Evaluator host uses into_host_from_original_training_readback (Bound), not Individual.",
+    "The formula 244+36R additionally assumes Root direct B and Version B are served by that same Bound host. Equal signed cut bytes do not establish this cross-stream host alias.",
+    "No errors, cancellations, extra reads, or artificial retries are included."
+  ],
+  "formulas": {
+    "root_b": {
+      "constant": 11,
+      "per_R": 2,
+      "execute_count": 1,
+      "rows": [
+        {
+          "id": "B_execute",
+          "constant": 1,
+          "per_R": 0,
+          "action": "Execute",
+          "file": "cell_q24_candidate_stage_evaluation.rs",
+          "function": "original_evaluation"
+        },
+        {
+          "id": "Root_checkpoint_4",
+          "constant": 1,
+          "per_R": 0,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_attestations.rs",
+          "function": "read_original_evaluated_attestations"
+        },
+        {
+          "id": "S_execute_before_after",
+          "constant": 2,
+          "per_R": 0,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_selection.rs",
+          "function": "original_evaluated_selection"
+        },
+        {
+          "id": "Root_checkpoint_5",
+          "constant": 2,
+          "per_R": 0,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_attestations.rs",
+          "function": "read_original_evaluated_attestations"
+        },
+        {
+          "id": "C_execute_before_ready_after",
+          "constant": 3,
+          "per_R": 0,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_next_use.rs",
+          "function": "original_evaluated_next_use"
+        },
+        {
+          "id": "Root_checkpoint_6",
+          "constant": 2,
+          "per_R": 0,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_attestations.rs",
+          "function": "read_original_evaluated_attestations"
+        },
+        {
+          "id": "completed_Root_readbacks",
+          "constant": 0,
+          "per_R": 2,
+          "action": "Readback",
+          "file": "cell_q24_candidate_stage_retention_attestations.rs",
+          "function": "read_original_evaluated_attestations"
+        }
+      ]
+    },
+    "shared_Q_SC": {
+      "constant": 30,
+      "per_R": 8,
+      "rows": [
+        {
+          "id": "Root_S_execute_and_tail_readback",
+          "constant": 4,
+          "per_R": 0
+        },
+        {
+          "id": "Root_checkpoint_5_S_readback",
+          "constant": 2,
+          "per_R": 0
+        },
+        {
+          "id": "Root_C_execute",
+          "constant": 16,
+          "per_R": 0
+        },
+        {
+          "id": "Root_checkpoint_6",
+          "constant": 8,
+          "per_R": 0
+        },
+        {
+          "id": "completed_Root_readbacks",
+          "constant": 0,
+          "per_R": 8
+        }
+      ]
+    },
+    "shared_Q_V": {
+      "constant": 40,
+      "per_R": 2,
+      "rows": [
+        {
+          "id": "bind_original_predecessor",
+          "constant": 1,
+          "per_R": 0,
+          "file": "circuit_retained_version_state.rs"
+        },
+        {
+          "id": "Prepare_outer_prepare_tail",
+          "constant": 5,
+          "per_R": 0,
+          "file": "circuit_retained_version_effect.rs"
+        },
+        {
+          "id": "original_FinalUse_issuer",
+          "constant": 4,
+          "per_R": 0,
+          "file": "circuit_retained_version_issuer.rs"
+        },
+        {
+          "id": "publish_pre_actual_post",
+          "constant": 6,
+          "per_R": 0,
+          "file": "circuit_retained_version_effect.rs"
+        },
+        {
+          "id": "Root_complete_Version_read_after_publication",
+          "constant": 2,
+          "per_R": 0,
+          "file": "cell_q24_candidate_stage_retention_selection.rs"
+        },
+        {
+          "id": "run_original_c_before_config_consumption",
+          "constant": 2,
+          "per_R": 0,
+          "file": "circuit_retained_version_effect.rs"
+        },
+        {
+          "id": "S_factory",
+          "constant": 4,
+          "per_R": 0,
+          "file": "circuit_evaluated_version_commands.rs"
+        },
+        {
+          "id": "C_factory_including_S_evidence",
+          "constant": 6,
+          "per_R": 0,
+          "file": "circuit_evaluated_version_commands.rs"
+        },
+        {
+          "id": "readiness_factory",
+          "constant": 4,
+          "per_R": 0,
+          "file": "circuit_evaluated_version_readiness.rs"
+        },
+        {
+          "id": "Version_reads_at_S_checkpoint_C_execute_C_checkpoint",
+          "constant": 6,
+          "per_R": 0,
+          "file": "cell_q24_candidate_stage_retention_selection.rs"
+        },
+        {
+          "id": "completed_Root_readbacks_Version_read",
+          "constant": 0,
+          "per_R": 2,
+          "file": "cell_q24_candidate_stage_retention_selection.rs"
+        }
+      ]
+    },
+    "shared_Q": {
+      "constant": 70,
+      "per_R": 10
+    },
+    "bound_host_cost": {
+      "B_Readback": 3,
+      "B_Execute": 4,
+      "construction_handshake_frames": 0,
+      "execute_extra": 1
+    },
+    "same_host_b_plus_Q": {
+      "expression": "3*(b+Q)+1",
+      "constant": 244,
+      "per_R": 36,
+      "requires_Root_B_same_host": true
+    },
+    "weaker_alias_Q_only": {
+      "expression": "3*Q",
+      "constant": 210,
+      "per_R": 30,
+      "requires_Root_B_same_host": false
+    },
+    "conservative_same_host_subset": {
+      "expression": "3*(b+Q_SC+4)+1",
+      "constant": 136,
+      "per_R": 30,
+      "requires_Root_B_same_host": true
+    },
+    "table_R0_R1": [
+      {
+        "scope": "same_host_b_plus_Q",
+        "R0": 244,
+        "R1": 280
+      },
+      {
+        "scope": "Version_Q_only_Bound",
+        "R0": 210,
+        "R1": 240
+      },
+      {
+        "scope": "conservative_same_host_subset",
+        "R0": 136,
+        "R1": 166
+      }
+    ]
+  },
+  "primitive_reads": [
+    {
+      "operation": "context.require_current",
+      "Trainer": 1,
+      "Evaluator": 1,
+      "file": "circuit_evaluated_retention_context.rs"
+    },
+    {
+      "operation": "Version.read_original",
+      "Trainer": 2,
+      "Evaluator": 2,
+      "file": "circuit_retained_version_state.rs"
+    },
+    {
+      "operation": "S remote Execute or Readback",
+      "Trainer": 2,
+      "Evaluator": 2,
+      "file": "circuit_evaluated_selection_remote.rs"
+    },
+    {
+      "operation": "S Evidence",
+      "Trainer": 2,
+      "Evaluator": 2,
+      "file": "circuit_evaluated_selection_command_evidence.rs"
+    },
+    {
+      "operation": "C remote Execute or Readback",
+      "Trainer": 6,
+      "Evaluator": 6,
+      "expansion": "2 * (direct_TB_1 + S_Evidence_TB_2)",
+      "file": "circuit_evaluated_next_use_remote.rs"
+    }
+  ],
+  "alias_evidence": [
+    {
+      "files": [
+        "circuit_evaluated_retention_publication.rs",
+        "circuit_retained_version_effect.rs"
+      ],
+      "mechanism": "Prepare consumes original T/B; publish_and_retain_original_evidence returns those clients; publish_original_final_use puts them in SharedEvaluatedReadbacks."
+    },
+    {
+      "files": [
+        "circuit_evaluated_version_commands.rs"
+      ],
+      "mechanism": "S/C factories clone those same Trainer/Evaluator Arcs without resetting client request counters."
+    },
+    {
+      "files": [
+        "neuron_cell_evaluation_host_training_readback.rs",
+        "neuron_cell_evaluation_training_read_proof.rs"
+      ],
+      "mechanism": "Bound factory consumes one original Trainer readback connection; all panel members use the same client Arc; call proof checks pointer identity and full Training/signature binding."
+    },
+    {
+      "files": [
+        "neuron_cell_evaluation_host.rs",
+        "neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "mechanism": "One Host completion spans two panel reads sharing the same proof. Two physical boundary Trainer reads plus one receipt Readback read, or two Execute receipt reads."
+    }
+  ],
+  "caps": [
+    {
+      "file": "cell_q24_training_command_readback.rs",
+      "function": "OriginalTrainingReadbackV1::readback",
+      "production": true,
+      "initial_request_id": 1,
+      "maximum_request_id": 128,
+      "monotone": true,
+      "consumes_before_io": true
+    },
+    {
+      "file": "cell_q24_training_command_readback_service.rs",
+      "function": "serve_original_training_readback_channel",
+      "production": true,
+      "loop": "for request_id in 1..=128_u64"
+    },
+    {
+      "file": "learning_owner_command_channel.rs",
+      "production": true,
+      "maximum_request_seconds": 30,
+      "maximum_session_seconds": 300,
+      "note": "These purpose-fixed command bounds are distinct from the separate S Evidence 500ms bound."
+    }
+  ],
+  "fixture_boundary": {
+    "default_files": [
+      "circuit_evaluated_retention_publication_support_tests.rs",
+      "circuit_original_evaluation_host_support_tests.rs"
+    ],
+    "default_route": "ready_for_publication -> HostFixture::from_panel -> TrainingComposition::Fixture -> into_original_evaluation_host -> Individual",
+    "Bound_route": "TrainingComposition::Original -> into_host_from_original_training_readback",
+    "effect": "Do not add default independent member Trainer peers to the canonical Bound shared-client formula; no attribution of old S failure."
+  },
+  "same_call_candidates": [
+    {
+      "id": "Bound_B_Readback_middle_Trainer_read",
+      "status": "DESIGN_CANDIDATE_NOT_IMPLEMENTED",
+      "files": [
+        "neuron_cell_evaluation_host.rs",
+        "neuron_cell_evaluation_training_read_proof.rs",
+        "neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "restriction": "Only one held Bound Host Readback call. Preserve original first and last physical Trainer reads around all work; share private borrowed proof into the receipt read without exporting a signature/DTO or persisting CURRENT.",
+      "unchanged": [
+        "Execute effect gates",
+        "Standalone and Individual paths",
+        "actual panel/receipt journal/CURRENT I/O",
+        "final actual receipt journal read",
+        "role/full Training/Arc/nonce/time/expiry checks"
+      ],
+      "reject_cases": [
+        "different Arc",
+        "missing or extra slot",
+        "missing tail",
+        "late Source/Trainer withdrawal",
+        "partial result",
+        "cancelled proof"
+      ],
+      "hypothetical_cost": {
+        "B_Readback": 2,
+        "B_Execute": 4,
+        "same_host_formula": "164+24R",
+        "Q_only_formula": "140+20R"
+      },
+      "closes_128": false
+    },
+    {
+      "id": "Version_readonly_factory_outer_window",
+      "status": "DESIGN_CANDIDATE_NOT_IMPLEMENTED",
+      "files": [
+        "circuit_evaluated_version_commands.rs",
+        "circuit_evaluated_version_readiness.rs",
+        "circuit_retained_version_state.rs"
+      ],
+      "restriction": "Only same-call no-effect S/C/readiness construction windows; preserve all physical CURRENT/artifact work and full immutable bindings. No proof survives a separate command.",
+      "potential_Q_saved": 6,
+      "combined_with_prior_same_host_formula": "152+24R",
+      "closes_128": false
+    }
+  ],
+  "forbidden_shortcuts": [
+    "increase 128",
+    "increase 500ms or 300s",
+    "replace/rotate endpoints",
+    "reuse current proof across requests",
+    "treat same receipt bytes as same host",
+    "invoke recursive callbacks while retaining a Trainer lane in a way that deadlocks",
+    "treat upper-layer counts as measured bottom-layer material traffic"
+  ],
+  "remaining": "An explicit owner-scoped same-call protocol plus actual endpoint counters is still required to demonstrate full-chain feasibility. This review does not assert that such an implementation exists or has passed."
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "scope": "Test-only admission granularity: four already independent original HostFixture scenarios become four test methods",
+  "source_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+  "base_blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+  "post_blob": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+  "original_observation": {
+    "native": {
+      "archive": "81647037cb29f032f6cb0a15a2783b620d922904",
+      "job_id": 131459876749,
+      "elapsed_seconds": 60.012,
+      "status": "TIMEOUT"
+    },
+    "shared": {
+      "archive": "87005df575b7cc04fbb35018d99dde9e51993620",
+      "job_id": 131459875770,
+      "attempts": 2,
+      "last_attempt_seconds": 60.012,
+      "status": "TIMEOUT"
+    },
+    "phase": "UNKNOWN: original output does not identify which of the four fixture groups was executing"
+  },
+  "changes": {
+    "new_methods": 3,
+    "removed_methods": 0,
+    "production_changes": 0,
+    "timeout_or_transport_changes": 0,
+    "assertion_removal": 0,
+    "original_other_two_test_methods": "byte-identical via unchanged source prefix/suffix",
+    "original_name_preserved_for": "all five page/final-ACK fault cases in their one original fixture",
+    "required_coverage": [
+      "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+      "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+      "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window"
+    ]
+  },
+  "runtime_budgets": {
+    "original_method_limit_seconds": 60,
+    "new_methods": "Each receives the existing unchanged runner's per-method limit; no new timeout is specified.",
+    "aggregate_admission": "The harness now admits four separate methods in place of one. This is not an equal aggregate wall-time budget or a measured speedup; all four methods are required for the original coverage.",
+    "material_peer_frame_cap": 128,
+    "material_request_timeout_seconds": 30,
+    "material_connection_lifetime_seconds": 300,
+    "original_fixture_and_connection_counts_preserved": true
+  },
+  "guard_scan": {
+    "qa_files": 61,
+    "exact_path_or_old_method_hits": [],
+    "full_callers_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "callers_hits": 0
+  },
+  "source_dependency_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "git_blob_sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "sha256": "2b401c2ea7c861c27d72d684eda7d9481dfa7500ea7648a302cf88ac3753ac4e",
+      "bytes": 8026
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "git_blob_sha": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+      "bytes": 6497
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "git_blob_sha": "76fd69c02f190299d51baf2424337c19563707ca",
+      "sha256": "7c15f157e9c84340bb6a7304955f7e960c73186ba3573b393273605647314a08",
+      "bytes": 25299
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "git_blob_sha": "25be7a897554634a3b3ec19fafc59e049af7b4e9",
+      "sha256": "39081cce64d5911af8f9c6a189f9348dcffbb0469d2a0bd3f6b8e5d6d1879690",
+      "bytes": 8630
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+      "git_blob_sha": "0021b10ea95b2a33960d6d967c3dc61f99834e13",
+      "sha256": "2b616294f151bc3fe23e4c4a2891ade8b0b6465b04dade6772f388a9e28f8ab4",
+      "bytes": 14937
+    }
+  ],
+  "verification": {
+    "whole_file_inverse": true,
+    "all_original_operations_kept": true,
+    "first_and_renewal_sequences_byte_equal": true,
+    "two_regression_sequences_equal_after_exact_four_space_dedent": true,
+    "whole_original_prefix_and_suffix_byte_equal": true
+  },
+  "assessment": "No cross-group local-data or owner dependency was found. The change exposes separate original mechanisms to the existing harness; it does not prove which phase caused the old timeout or establish that the new methods pass. A failure in any one group keeps the original Model material qualification open.",
+  "execution": {
+    "formatter": "NOT_RUN",
+    "rust": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "ref_changed": false
+  }
+}

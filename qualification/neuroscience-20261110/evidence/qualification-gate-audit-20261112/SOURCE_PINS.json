@@ -1,0 +1,332 @@
+{
+  "schema": "neuroscience.qualification-gate-source-audit.v1",
+  "status": "READ_ONLY_SOURCE_AUDIT",
+  "owner_decision": null,
+  "authority": "DENY_ALL",
+  "actor_or_training_runs_started": 0,
+  "native_tests_run": 0,
+  "h_requests": 0,
+  "current_engineering_results": "Not asserted; exact EBE/bb8 original execution receipts remain separate",
+  "fixed_sources": {
+    "native_ebe": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+    "native_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+    "notes_bb8": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+    "published_qualification_snapshot": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+    "ctrl_execution": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "ctrl_runtime_archive": "928a2603a7911cb5e8db439b7b814b9e033b6007"
+  },
+  "read_scope": "Exact explicitly related sources, not an exhaustive repository or credentials search",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "bytes": 2102,
+      "sha256": "09356c0edad6cd17a37b61a12233948e976fbd5a4900bbfca7aa69564071c2a8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "799af3b9beb9cd12abdad82e7bd7f8aea6cab93c",
+      "bytes": 6291,
+      "sha256": "23ead3cd7fa13525de50eaa7a859c35295f14f6b80f878cbf3177dc9825c0c01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "dbbfcd225adfb0ef8c3f3fa451bca2f0b0a06680",
+      "bytes": 11418,
+      "sha256": "c8b0a571dd06eb133e7889938444bfe16152d19ca08614b54d6480ccfb08d26d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_journal.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "6aaf0487c7fcf1384e966ef2df0fa1d1fb33d065",
+      "bytes": 7128,
+      "sha256": "193652cc370b2a523abc2e156de9a9df83fa0b80a39b498c91286c14492ce4c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "c9313c239c6cc5dc30b793a4c05f839b54ee1bd8",
+      "bytes": 12368,
+      "sha256": "e5e3d33bacfba458842efe994fd48ee9c1bd7013e33f77dcf777cd583b18d984"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "afe96b905ff5aa02486a46288f456c2d2e352d2b",
+      "bytes": 8577,
+      "sha256": "2d8e5ff0f9e402a6b3e0a4a96808b97ad70e4f7d750c31b9ddc0e98e2a487071"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "a64c659ff63cf38d6704050e633fa65a30848d62",
+      "bytes": 11370,
+      "sha256": "bf8776bf03a15f084437e286feb9bcf11b26702dd2be4cc41ef1faf16d8aaa97"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "ad931c4e8245dd2526a15407d20a319d8119ddb6",
+      "bytes": 6520,
+      "sha256": "c2fd875b0e0ab7ebd56e14dc6cfaa5feeda4d5fae8048594ac2f3ccf4a3e5e7c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "a4b9f14a366d72f47e0086f8d41fb2573bba2b0a",
+      "bytes": 11023,
+      "sha256": "d1ce53ce7a3b75fd08340fb0ddcf87bae9d9ca1b93e9aeaa3b00d2f7d9e6faf1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "5940a804ed01c3e8ee3e0cd857a8a060397d9446",
+      "bytes": 8737,
+      "sha256": "2beec9b1a416481f8d64ef173dccde17a4877125d71f6defb15aef392a98d9e1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "bytes": 7489,
+      "sha256": "03bafcdcecb5d3ac6938bdc9810f25f482829dd5e5f1336e7a5206d947578ca8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "6d18771fc69caf7c32117c5d9e7f5013beb6e08e",
+      "bytes": 9058,
+      "sha256": "01e69671881865f42a3ddca260e57367ca51e47c5f34a095fae9de5ac740efa7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "bytes": 8471,
+      "sha256": "baa469c2e6fb690ddf7a0dd1d19b6443b309f7090d48ccbb2df0d293e794d13d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "e64619d52662cb1a2b7f66fa08f371e07d64cb92",
+      "bytes": 12489,
+      "sha256": "3f6ffc9d84932e1d14f624821e7d77ed1a019dd52790bc76482b3fd097ecf462"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "2bda6cb47bd4777636373e36a7faf9124b433d49",
+      "bytes": 12127,
+      "sha256": "067c949a6735d5a05f9e87fdd01b0fb575deb47a69f4cc22720d4833d30358cd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "a88c6f4254a660d94f5f3bef55011101d38e7221",
+      "bytes": 15510,
+      "sha256": "3987c195204a4bf1884e81bb62976febd75972e85d6919fe80c76921944b5b6c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+      "bytes": 2870,
+      "sha256": "9487d5e9fa45f3b1d37ae0470990152741e427a812697afc08718cae9af41e33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "51bdd87145c538078ad8f343ad455bb370fa4f32",
+      "bytes": 14757,
+      "sha256": "3edb04bb1b083c5c2ce66e25c198fbf6d28ffd81538132b40832b513a0e74a38"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "e0d369c95b4d80ce494d1c2654cb946fb2d9b5d9",
+      "bytes": 52281,
+      "sha256": "acf1e9329219b9e777b70de212d4bc1078ce8d5d692233d10acd9c88b4a661ff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+      "bytes": 18555,
+      "sha256": "4777b2a81fa7630afaed0aec07dc11f4038ee6b2b62c18d9ea5ca952178a7877"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "b31049c9f9eea5cdd6242c765aedf4db85b253ac",
+      "bytes": 9892,
+      "sha256": "b0784a1710bd99984ca827e9cbaf792cba6eed8e7e034774da957cef99008635"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "f3e2359b83e9b88d8a4cd2751629bda29d7ca7fa",
+      "bytes": 19782,
+      "sha256": "2e1dd5cef58853c7beebd2c047d8479512e312f97f08d585551c62ccaf87e76b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+      "bytes": 10673,
+      "sha256": "6e647333a42e14fc5b5be36ae3ae414574ffd64d2774371901af2068fbc17413"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "c1e11662921a5b869d060dad3a9a2d53a53668fb",
+      "bytes": 9657,
+      "sha256": "f08441a13b03acee186667402ef389ae776dec783f2cd00f370a8dc300986dc0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "bytes": 11108,
+      "sha256": "4599dc6bb032af5a74cdd896d846375db95cebd22ddcc71e76385c1a05dabedb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+      "bytes": 8307,
+      "sha256": "3a85ebdef45f5de3b408f2fcdcfd3715047fd6f828b71a67690a6f343a433712"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "3e4b82d31a39681d85df560004e2d1d704953cd3",
+      "bytes": 9036,
+      "sha256": "b2b1bb76baaea11e6e872699187099a10b10f0a7cb8b86b4428fc99c5702c2b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "a0afe798571bd01683785236201ea2dca52fedca",
+      "bytes": 6715,
+      "sha256": "4c4c9f560c44b95d6977d451ea8ca16a21a0dc6ab30a6823c204854a22587b20"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+      "bytes": 12501,
+      "sha256": "39f34e333e232813a78adde76c5eafe102b0b3053f19453077f2816507c4b5ae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "10e7f4e97a954901bd565c48a41bf1b959a0de6e",
+      "bytes": 11920,
+      "sha256": "1cb66ff7d4200b77e3bc34e85cd1a7aa56afcf5b23e011e6d395828e7ce00a93"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "39b1c57ccfcddc4ad41fe1246d24b90b2b65b4b5",
+      "bytes": 2952,
+      "sha256": "be31869f6de4b895abea2fbf77c36e2ca269d77d9b942a31aa4cb2e7c9a3092c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+      "bytes": 7104,
+      "sha256": "29adce0d7ef3f8bfb8a603d29c2e0eb25184924c80e46b06460aa30bf9607569"
+    },
+    {
+      "path": "CALLERS.toml",
+      "commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+      "blob_sha": "222d9867d37bf8883e0a86f224f3d9a79f6e372a",
+      "bytes": 1126283,
+      "sha256": "07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity/real_time_credit.rs",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "abbf880eb7723428dc83deac9907837d9434c928",
+      "bytes": 10672,
+      "sha256": "0a4fb85b22c97b3c247c8e96d28193666a9bdad64155a0d73e913ce231f1d864"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "5be198b61f3bbe1fe7b69d2b869d500dcc5c04a2",
+      "bytes": 17499,
+      "sha256": "f32482192de51c0e7ec567871bdeab53fccf2de85dcbc700296852056a112ff3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/FOUR_TRACK_PROTOCOL.md",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "5dcd53a17323e64d649446430dda07ca59b452dc",
+      "bytes": 12989,
+      "sha256": "5cdab8828d7ddc4c977e74537a6aad36b24c6d6d3602001314645279afaccbbe"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/REAL_TIME_SOURCE_VALIDATION.md",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "6bf95d6a02e94c7220f12c8002847fe33ddbdfe0",
+      "bytes": 3249,
+      "sha256": "cd02d2958b224c36dc4989140c510ac3a33ee4750acbb1acc6af723a1d0012bc"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "19044066e256df9874871c08d82080df3045d003",
+      "bytes": 33197,
+      "sha256": "832202d04a0836a45039779bd7348fcaa8ca3848b27c490d68b3c22a6e5d5b6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_notes_seed.rs",
+      "commit": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+      "blob_sha": "3ab21aa78ca1945ff05558d5adb116ec01fa6b9c",
+      "bytes": 2832,
+      "sha256": "a2f99e211a36c6ef7a46a7600e79b40611fb108ae3e143260a55727137af0bff"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/V_CALIBRATION_DOMAIN_AUDIT.md",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "6fce18bc10ef47601702fda159d2d7caf49bd0b0",
+      "bytes": 5667,
+      "sha256": "63c7126f9c0eddc31f7330713bc939b2cec48169a5782d1bf7746132caa83983"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/v_calibration_preconditions.json",
+      "commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+      "blob_sha": "ae275a984fe0892f4cd59aace05eb35d76a9e78a",
+      "bytes": 5393,
+      "sha256": "412e6fac262b342179d07500c82ef1756e749f50eef19be089fbc30b3c0ddb12"
+    },
+    {
+      "path": null,
+      "commit": null,
+      "blob_sha": "94e819d579232597de08a5c239a78e9d40768416",
+      "bytes": 16850,
+      "sha256": "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a",
+      "note": "Original immutable wrapper source; path mapping is in existing rv wrapper evidence."
+    }
+  ],
+  "completed_later_readbacks": {
+    "wrapper_b_c": {
+      "bare_tree": "08968e23529b098967faa4cba3188df524ce3d88",
+      "manifest_blob": "397cf4fd7ee23fb48b94bf16a7859b46d7afe3c9",
+      "completed": 4,
+      "actions": "STOP",
+      "independent_new_sources": 0,
+      "native_owner_authenticated": false,
+      "full_cost_observed": false
+    },
+    "source1026inventory": {
+      "bare_tree": "033dcd4efbf20bbe05b6268f26f5e948a11b3843",
+      "manifest_blob": "af9103230d1444fc4ef771a9f91fba6dc103ef0f",
+      "scope": "Original 1026 archive transfer only, not EBE test result"
+    }
+  }
+}

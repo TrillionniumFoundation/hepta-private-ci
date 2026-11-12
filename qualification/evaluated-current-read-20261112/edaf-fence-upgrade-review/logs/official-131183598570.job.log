@@ -1,0 +1,222 @@
+﻿2026-11-12T12:30:12.8582306Z Current runner version: '2.338.2'
+2026-11-12T12:30:12.8603289Z ##[group]Runner Image Provisioner
+2026-11-12T12:30:12.8604109Z Hosted Compute Agent
+2026-11-12T12:30:12.8604635Z Version: 20261028.624
+2026-11-12T12:30:12.8605477Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T12:30:12.8606161Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T12:30:12.8606748Z Worker ID: {777abfeb-8cd9-43dc-b0bc-3098538e7a58}
+2026-11-12T12:30:12.8607362Z Region: southcentralus
+2026-11-12T12:30:12.8607917Z Cloud: Azure
+2026-11-12T12:30:12.8608421Z ##[endgroup]
+2026-11-12T12:30:12.8609632Z ##[group]Operating System
+2026-11-12T12:30:12.8610166Z Ubuntu
+2026-11-12T12:30:12.8610629Z 24.04.5
+2026-11-12T12:30:12.8611132Z LTS
+2026-11-12T12:30:12.8611584Z ##[endgroup]
+2026-11-12T12:30:12.8612073Z ##[group]Runner Image
+2026-11-12T12:30:12.8612606Z Image: ubuntu-24.04
+2026-11-12T12:30:12.8613130Z Version: 20261101.360.1
+2026-11-12T12:30:12.8614260Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T12:30:12.8616403Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T12:30:12.8617729Z ##[endgroup]
+2026-11-12T12:30:12.8619211Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T12:30:12.8621197Z Contents: read
+2026-11-12T12:30:12.8622636Z Metadata: read
+2026-11-12T12:30:12.8623444Z ##[endgroup]
+2026-11-12T12:30:12.8625890Z Secret source: Actions
+2026-11-12T12:30:12.8626905Z Cache mode: write
+2026-11-12T12:30:12.8627680Z Prepare workflow directory
+2026-11-12T12:30:12.8949870Z Prepare all required actions
+2026-11-12T12:30:12.8987963Z Getting action download info
+2026-11-12T12:30:13.2168472Z Download action repository 'openai/fence@c7675fea986c29f1d655753a7a61fd6b4141be8f' (SHA:c7675fea986c29f1d655753a7a61fd6b4141be8f)
+2026-11-12T12:30:26.2021884Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-12T12:30:26.3091048Z Complete job name: ubuntu-24.04 first-step audit canary
+2026-11-12T12:30:26.3710138Z ##[group]Run openai/fence@c7675fea986c29f1d655753a7a61fd6b4141be8f
+2026-11-12T12:30:26.3710872Z with:
+2026-11-12T12:30:26.3711188Z   mode: audit
+2026-11-12T12:30:26.3711760Z ##[endgroup]
+2026-11-12T12:30:26.6963571Z 🛡️ Fence v0.13.0
+2026-11-12T12:30:26.6964664Z 👀 Mode: audit
+2026-11-12T12:30:26.6965400Z 🌐 Policy: observing GitHub workflow traffic + 0 allowlist entries
+2026-11-12T12:30:26.9042681Z 🚀 Starting resident service
+2026-11-12T12:30:32.3405441Z [32m✅ Fence ready: audit mode is observing traffic, not blocking it[0m
+2026-11-12T12:30:32.3649853Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-12T12:30:32.3650231Z with:
+2026-11-12T12:30:32.3650452Z   persist-credentials: false
+2026-11-12T12:30:32.3650711Z   sparse-checkout: README.md
+2026-11-12T12:30:32.3650977Z   sparse-checkout-cone-mode: false
+2026-11-12T12:30:32.3651240Z   repository: openai/fence
+2026-11-12T12:30:32.3653178Z   token: ***
+2026-11-12T12:30:32.3653419Z   ssh-strict: true
+2026-11-12T12:30:32.3653632Z   ssh-user: git
+2026-11-12T12:30:32.3653837Z   clean: true
+2026-11-12T12:30:32.3654042Z   fetch-depth: 1
+2026-11-12T12:30:32.3654254Z   fetch-tags: false
+2026-11-12T12:30:32.3654469Z   show-progress: true
+2026-11-12T12:30:32.3654688Z   lfs: false
+2026-11-12T12:30:32.3654897Z   submodules: false
+2026-11-12T12:30:32.3655241Z   set-safe-directory: true
+2026-11-12T12:30:32.3655491Z   allow-unsafe-pr-checkout: false
+2026-11-12T12:30:32.3655747Z ##[endgroup]
+2026-11-12T12:30:32.4552031Z Syncing repository: openai/fence
+2026-11-12T12:30:32.4553871Z ##[group]Getting Git version info
+2026-11-12T12:30:32.4554323Z Working directory is '/home/runner/work/fence/fence'
+2026-11-12T12:30:32.4554951Z [command]/usr/bin/git version
+2026-11-12T12:30:32.4633088Z git version 2.56.0
+2026-11-12T12:30:32.4648016Z ##[endgroup]
+2026-11-12T12:30:32.4657066Z Temporarily overriding HOME='/home/runner/work/_temp/1f825d3c-b673-4c2b-a176-d75da21d9341' before making global git config changes
+2026-11-12T12:30:32.4658470Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T12:30:32.4661986Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fence/fence
+2026-11-12T12:30:32.4701550Z Deleting the contents of '/home/runner/work/fence/fence'
+2026-11-12T12:30:32.4704209Z ##[group]Determining repository object format
+2026-11-12T12:30:32.4705607Z ##[endgroup]
+2026-11-12T12:30:32.4706007Z ##[group]Initializing the repository
+2026-11-12T12:30:32.4708701Z [command]/usr/bin/git init /home/runner/work/fence/fence
+2026-11-12T12:30:32.4817361Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T12:30:32.4818318Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T12:30:32.4818969Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T12:30:32.4819432Z hint: call:
+2026-11-12T12:30:32.4819718Z hint:
+2026-11-12T12:30:32.4820123Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T12:30:32.4820551Z hint:
+2026-11-12T12:30:32.4820846Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T12:30:32.4821334Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T12:30:32.4821672Z hint:
+2026-11-12T12:30:32.4821891Z hint: 	git branch -m <name>
+2026-11-12T12:30:32.4822127Z hint:
+2026-11-12T12:30:32.4822440Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T12:30:32.4831929Z Initialized empty Git repository in /home/runner/work/fence/fence/.git/
+2026-11-12T12:30:32.4839928Z [command]/usr/bin/git remote add origin https://github.com/openai/fence
+2026-11-12T12:30:32.4887987Z ##[endgroup]
+2026-11-12T12:30:32.4888408Z ##[group]Disabling automatic garbage collection
+2026-11-12T12:30:32.4891059Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T12:30:32.4949691Z ##[endgroup]
+2026-11-12T12:30:32.4950257Z ##[group]Setting up auth
+2026-11-12T12:30:32.4950694Z Removing SSH command configuration
+2026-11-12T12:30:32.4954357Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T12:30:32.4982850Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T12:30:32.5301859Z Removing HTTP extra header
+2026-11-12T12:30:32.5306258Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T12:30:32.5333765Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T12:30:32.5523864Z Removing includeIf entries pointing to credentials config files
+2026-11-12T12:30:32.5524403Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T12:30:32.5551859Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T12:30:32.5742630Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T12:30:32.5774992Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/fence/fence/.git.path /home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:32.5801678Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/fence/fence/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:32.5828904Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:32.5855648Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:32.5880344Z ##[endgroup]
+2026-11-12T12:30:32.5880837Z ##[group]Fetching the repository
+2026-11-12T12:30:32.5885787Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +e150b7ff6db3152b55bd7a313fc326f2cc747ce8:refs/remotes/origin/main
+2026-11-12T12:30:32.9466750Z From https://github.com/openai/fence
+2026-11-12T12:30:32.9467469Z  * [new ref]         e150b7ff6db3152b55bd7a313fc326f2cc747ce8 -> origin/main
+2026-11-12T12:30:32.9472269Z [command]/usr/bin/git branch --list --remote origin/main
+2026-11-12T12:30:32.9497778Z   origin/main
+2026-11-12T12:30:32.9505313Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-11-12T12:30:32.9525193Z e150b7ff6db3152b55bd7a313fc326f2cc747ce8
+2026-11-12T12:30:32.9528444Z ##[endgroup]
+2026-11-12T12:30:32.9528825Z ##[group]Determining the checkout info
+2026-11-12T12:30:32.9529298Z ##[endgroup]
+2026-11-12T12:30:32.9529820Z ##[group]Setting up sparse checkout
+2026-11-12T12:30:32.9532519Z [command]/usr/bin/git config core.sparseCheckout true
+2026-11-12T12:30:32.9560624Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-11-12T12:30:32.9580918Z .git/info/sparse-checkout
+2026-11-12T12:30:32.9586933Z ##[endgroup]
+2026-11-12T12:30:32.9587447Z ##[group]Checking out the ref
+2026-11-12T12:30:32.9590933Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-12T12:30:33.6458600Z Switched to a new branch 'main'
+2026-11-12T12:30:33.6463088Z branch 'main' set up to track 'origin/main'.
+2026-11-12T12:30:33.6470103Z ##[endgroup]
+2026-11-12T12:30:33.6516620Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T12:30:33.6541574Z e150b7ff6db3152b55bd7a313fc326f2cc747ce8
+2026-11-12T12:30:33.6552713Z ##[group]Removing auth
+2026-11-12T12:30:33.6553077Z Removing SSH command configuration
+2026-11-12T12:30:33.6554671Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T12:30:33.6585625Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T12:30:33.6792586Z Removing HTTP extra header
+2026-11-12T12:30:33.6796379Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T12:30:33.6826647Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T12:30:33.7020180Z Removing includeIf entries pointing to credentials config files
+2026-11-12T12:30:33.7025831Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T12:30:33.7053498Z includeif.gitdir:/home/runner/work/fence/fence/.git.path
+2026-11-12T12:30:33.7054082Z includeif.gitdir:/home/runner/work/fence/fence/.git/worktrees/*.path
+2026-11-12T12:30:33.7054596Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T12:30:33.7054936Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T12:30:33.7062004Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/fence/fence/.git.path
+2026-11-12T12:30:33.7083608Z /home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:33.7092667Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/fence/fence/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-867bb198\-83ed\-447d\-b71b\-d1fa21e7dc40\.config
+2026-11-12T12:30:33.7123173Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/fence/fence/.git/worktrees/*.path
+2026-11-12T12:30:33.7143426Z /home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:33.7151205Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/fence/fence/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-867bb198\-83ed\-447d\-b71b\-d1fa21e7dc40\.config
+2026-11-12T12:30:33.7184181Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T12:30:33.7208388Z /github/runner_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:33.7214663Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-867bb198\-83ed\-447d\-b71b\-d1fa21e7dc40\.config
+2026-11-12T12:30:33.7245718Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T12:30:33.7266514Z /github/runner_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config
+2026-11-12T12:30:33.7273837Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-867bb198\-83ed\-447d\-b71b\-d1fa21e7dc40\.config
+2026-11-12T12:30:33.7303548Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T12:30:33.7499218Z Removing credentials config '/home/runner/work/_temp/git-credentials-867bb198-83ed-447d-b71b-d1fa21e7dc40.config'
+2026-11-12T12:30:33.7507900Z ##[endgroup]
+2026-11-12T12:30:33.7639291Z ##[group]Run test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+2026-11-12T12:30:33.7639670Z [36;1mtest "$(git rev-parse HEAD)" = "$GITHUB_SHA"[0m
+2026-11-12T12:30:33.7639929Z [36;1mtest -s README.md[0m
+2026-11-12T12:30:33.7640155Z [36;1msudo --non-interactive /usr/bin/true[0m
+2026-11-12T12:30:33.7640640Z [36;1mcurl --disable --noproxy '*' --head --fail --silent --show-error --max-time 10 --output /dev/null https://github.com[0m
+2026-11-12T12:30:33.7641079Z [36;1m[0m
+2026-11-12T12:30:33.7641343Z [36;1mdirectory="/run/fence/fence-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"[0m
+2026-11-12T12:30:33.7641756Z [36;1mcase "$(jq -er .docker_dns_routing "$directory/dns-report.json")" in[0m
+2026-11-12T12:30:33.7642132Z [36;1m  local_root_resident_mediator) docker ps --quiet >/dev/null ;;[0m
+2026-11-12T12:30:33.7642450Z [36;1m  not_present) ;;[0m
+2026-11-12T12:30:33.7642647Z [36;1m  *) exit 1 ;;[0m
+2026-11-12T12:30:33.7642826Z [36;1mesac[0m
+2026-11-12T12:30:33.7643050Z [36;1mprintf audit >/dev/udp/192.0.2.10/443[0m
+2026-11-12T12:30:33.7643288Z [36;1mfor ((i = 0; i < 20; i++)); do[0m
+2026-11-12T12:30:33.7644147Z [36;1m  if jq -e '.resident_health.verification_sequence >= 2 and any(.findings[]; [.remote_address, .protocol, .remote_port, .rule_class, .classification] == ["192.0.2.10", "udp", 443, "undeclared_new_egress", "would_block"])' "$directory/report.json" >/dev/null; then[0m
+2026-11-12T12:30:33.7644862Z [36;1m    exit 0[0m
+2026-11-12T12:30:33.7645222Z [36;1m  fi[0m
+2026-11-12T12:30:33.7645461Z [36;1m  sleep 1[0m
+2026-11-12T12:30:33.7645715Z [36;1mdone[0m
+2026-11-12T12:30:33.7646100Z [36;1mecho "::error::Fence did not report observing the outside-policy connection"[0m
+2026-11-12T12:30:33.7646415Z [36;1mexit 1[0m
+2026-11-12T12:30:33.7666964Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T12:30:33.7667260Z ##[endgroup]
+2026-11-12T12:30:38.9698183Z Post job cleanup.
+2026-11-12T12:30:39.0371110Z [command]/usr/bin/git version
+2026-11-12T12:30:39.0410433Z git version 2.56.0
+2026-11-12T12:30:39.0436270Z Temporarily overriding HOME='/home/runner/work/_temp/70d1b237-01c9-4a71-ae43-16432215d285' before making global git config changes
+2026-11-12T12:30:39.0437011Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T12:30:39.0439619Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fence/fence
+2026-11-12T12:30:39.0467267Z Removing SSH command configuration
+2026-11-12T12:30:39.0471783Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T12:30:39.0502785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T12:30:39.0697647Z Removing HTTP extra header
+2026-11-12T12:30:39.0700931Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T12:30:39.0729221Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T12:30:39.0918698Z Removing includeIf entries pointing to credentials config files
+2026-11-12T12:30:39.0923140Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T12:30:39.0981978Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T12:30:39.1362865Z Post job cleanup.
+2026-11-12T12:30:39.2126214Z 📋 Validating Fence evidence
+2026-11-12T12:30:39.4173337Z Fence network report: healthy
+2026-11-12T12:30:39.4173739Z Mode: audit
+2026-11-12T12:30:39.4174214Z Controls: network=verified; sudo=preserved_verified; containers=preserved_verified
+2026-11-12T12:30:39.4174712Z Network activity:
+2026-11-12T12:30:39.4174912Z Decision | Destination | Activity | Actor
+2026-11-12T12:30:39.4175416Z -------- | ----------- | -------- | -----
+2026-11-12T12:30:39.4175750Z would_block | 185.125.188.54 | 4 TCP/443 attempts | root: snapd (PID 858) (4)
+2026-11-12T12:30:39.4176207Z would_block | 140.82.114.4 | 2 TCP/443 attempts | runner: curl (PID 3331), runner: git-remote-http (PID 3215)
+2026-11-12T12:30:39.4176810Z would_block | 185.125.188.59 | 2 TCP/443 attempts | root: snapd (PID 858) (2)
+2026-11-12T12:30:39.4177352Z would_block | api.snapcraft.io | 1 A query, 1 AAAA query | -
+2026-11-12T12:30:39.4177883Z would_block | 140.82.112.4 | 1 TCP/443 attempt | runner: git-remote-http (PID 3228)
+2026-11-12T12:30:39.4178320Z would_block | 140.82.113.23 | 1 TCP/443 attempt | root: provjobd1148924545__deleted_ (PID 1903)
+2026-11-12T12:30:39.4178722Z would_block | 140.82.113.3 | 1 TCP/443 attempt | runner: git-remote-http (PID 3200)
+2026-11-12T12:30:39.4179085Z would_block | 185.125.188.55 | 1 TCP/443 attempt | root: snapd (PID 858)
+2026-11-12T12:30:39.4179424Z would_block | 192.0.2.10 | 1 UDP/443 attempt | Owner not found
+2026-11-12T12:30:39.4179720Z allowed | github.com | 4 A queries, 4 AAAA queries | -
+2026-11-12T12:30:39.4180114Z allowed | hosted-compute-watchdog-gccus02-02.githubapp.com | 1 A query, 1 AAAA query | -
+2026-11-12T12:30:39.4190531Z FENCE_REPORT_JSON={"schema_version":1,"mode":"audit","result":"healthy","controls":{"network":"verified","sudo":"preserved_verified","containers":"preserved_verified","protection_available":false,"readiness":"ready_observation_only","resident_health":"healthy"},"network":[{"destination_kind":"ip","destination":"185.125.188.54","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":4}],"actors":[{"label":"root: snapd (PID 858)","count":4}],"count":4},{"destination_kind":"ip","destination":"140.82.114.4","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":2}],"actors":[{"label":"runner: curl (PID 3331)","count":1},{"label":"runner: git-remote-http (PID 3215)","count":1}],"count":2},{"destination_kind":"ip","destination":"185.125.188.59","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":2}],"actors":[{"label":"root: snapd (PID 858)","count":2}],"count":2},{"destination_kind":"hostname","destination":"api.snapcraft.io","decision":"would_block","activities":[{"kind":"dns_query","query_type":"a","count":1},{"kind":"dns_query","query_type":"aaaa","count":1}],"actors":[],"count":2},{"destination_kind":"ip","destination":"140.82.112.4","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":1}],"actors":[{"label":"runner: git-remote-http (PID 3228)","count":1}],"count":1},{"destination_kind":"ip","destination":"140.82.113.23","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":1}],"actors":[{"label":"root: provjobd1148924545__deleted_ (PID 1903)","count":1}],"count":1},{"destination_kind":"ip","destination":"140.82.113.3","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":1}],"actors":[{"label":"runner: git-remote-http (PID 3200)","count":1}],"count":1},{"destination_kind":"ip","destination":"185.125.188.55","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"tcp","port":443,"count":1}],"actors":[{"label":"root: snapd (PID 858)","count":1}],"count":1},{"destination_kind":"ip","destination":"192.0.2.10","decision":"would_block","activities":[{"kind":"connection_attempt","protocol":"udp","port":443,"count":1}],"actors":[{"label":"Owner not found","count":1}],"count":1},{"destination_kind":"hostname","destination":"github.com","decision":"allowed","activities":[{"kind":"dns_query","query_type":"a","count":4},{"kind":"dns_query","query_type":"aaaa","count":4}],"actors":[],"count":8},{"destination_kind":"hostname","destination":"hosted-compute-watchdog-gccus02-02.githubapp.com","decision":"allowed","activities":[{"kind":"dns_query","query_type":"a","count":1},{"kind":"dns_query","query_type":"aaaa","count":1}],"actors":[],"count":2}],"warnings":{"critical_findings":0,"critical_codes":[],"materialization_rejections":0,"materialization_rejection_reasons":{"invalid_response":0,"authorization_changed":0,"capacity":0,"queue_unavailable":0,"firewall_update_failed":0},"wildcard_rejections":0,"wildcard_authorizations_truncated":false,"results_storage_attribution_failures":0,"results_storage_rejections":0,"results_storage_authorizations_truncated":false,"github_artifact_uploads_enabled":false,"github_artifact_authorizations":0},"omissions":{"network_rows":0,"hostname_recommendations":0,"ip_recommendations":0,"actor_entries":0,"activity_entries":0,"critical_codes":0,"unparsed_findings":0,"unparsed_finding_reasons":{"short_header":0,"invalid_ipv4_header":0,"ipv4_fragment":0,"unsupported_ipv4_protocol":0,"unsupported_ipv6_header":0,"unknown_ip_version":0,"invalid_port":0,"unrecognized":0},"dns_evidence_missing":false,"source_truncated":false,"byte_budget_exceeded":false},"suggested_allowlist":["api.snapcraft.io","ip 192.0.2.10 udp 443"]}
+2026-11-12T12:30:39.4200210Z 👀 Audit complete; see the Fence report for network activity and allowlist suggestions
+2026-11-12T12:30:39.4200675Z [32m✅ Fence evidence verified[0m
+2026-11-12T12:30:39.4201010Z 🧷 Fence remains active until the runner is torn down
+2026-11-12T12:30:39.4314664Z Cleaning up orphan processes

@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.review-manifest.v1",
+  "source": {
+    "commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+    "actual_bazel_checkout_commit": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+    "actual_bazel_checkout_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52"
+  },
+  "classification": "STATIC_ONLY_NOT_COMPILED_NOT_FORMATTED_NOT_RUN",
+  "code_tree": "85ae884dc35c674307c9c15967f4d67804214cdc",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "base_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+      "post_blob": "ebcc914b779fc9418314a6bfc44df4ed48d60c79",
+      "base_bytes": 24067,
+      "post_bytes": 24131,
+      "base_sha256": "328455e9cfe08fca6a2e1e1fe05d6a36246b66f456c76d4371ee455b5cbaca68",
+      "post_sha256": "5aa496f11d66e331ca832548e8ed88cbb2dd45621e948c2d6d3cbbe2865d2e33",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "base_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "post_blob": "2ff51712f5bc973519c4bf3a9abcfb91c21f64c4",
+      "base_bytes": 21368,
+      "post_bytes": 21432,
+      "base_sha256": "eeba761266a1b733f7ad2182c5b237a95f03f1abaa88b0912045b2ffc22fcd19",
+      "post_sha256": "753f1a3e81893c2746ac52236d1036a8a896d4fd90773f8e7b97cc989b8f0bf2",
+      "additions": 2,
+      "deletions": 0
+    }
+  ],
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/STATIC_REVIEW.json",
+      "blob_sha": "992e2b46f99e8bf825e5d0d246f03e9bf34225de",
+      "bytes": 3784,
+      "sha256": "a48d38f67ed007a668ac6d5eb7c6ab6459bd313d5dc44905ade77a46217b3078"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/minimal.patch",
+      "blob_sha": "81c43eca83d5a5e08a2d70f41e7e55a16b2755fe",
+      "bytes": 1481,
+      "sha256": "46ef4c656ffb5f90ddb7c7b938d9a2dc8b3d5bdbfa86c821e0865f884e01fa59"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/compiler-errors.original.log",
+      "blob_sha": "ceaf1a5279d147b64e7715ac9a5703fa68108dd8",
+      "bytes": 6904,
+      "sha256": "04225f998bdd2885c6154e14f2dd81f84762ba0c31f25fa4373c1dd321912271"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/QA_LITERAL_SCAN.json",
+      "blob_sha": "9c133311525bf3662e9ca71890ab6c6285c800c3",
+      "bytes": 18505,
+      "sha256": "52849ec124cde5a55fc42ff0c5bd29e2258e7245e5ada5fd477f4a7ba1491953"
+    }
+  ]
+}

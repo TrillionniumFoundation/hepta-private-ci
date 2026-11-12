@@ -1,0 +1,61 @@
+{
+  "repository": "/home/qq/ctrl-real-policy-20261112-1333-v3",
+  "training_run": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen",
+  "training_freeze_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+  "checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096",
+  "phases": {
+    "B": [
+      {
+        "case": {
+          "episode_group": "X51005719863",
+          "id": "case-6132a3f806804b12f08cb095",
+          "packet": {
+            "bytes": 1240,
+            "path": "public/development/case-6132a3f806804b12f08cb095/case.json",
+            "sha256": "514a3605bf2254d8fc6730b9afa8ef1bd39d08f3375be8d10474653ae153b512"
+          },
+          "reference": {
+            "bytes": 787,
+            "path": "private/references/case-6132a3f806804b12f08cb095.json",
+            "sha256": "81da2eac17cb5da462814a1364a14db8992876d800a2133c4bea454a44f006bd"
+          },
+          "role": "development",
+          "source_id": "merchant-8be0cc526665e1b3713e88d9",
+          "source_sha256": "a752e3036ab6d810457cf751e67cdad75163b449bd735261adb32592add55332",
+          "task_family": "text_sufficient"
+        },
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "read_condition": "original",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      }
+    ],
+    "C": [
+      {
+        "case": {
+          "episode_group": "X51005268472",
+          "id": "case-fdc68cd739dea87c3c21bb51",
+          "packet": {
+            "bytes": 1865,
+            "path": "public/development/case-fdc68cd739dea87c3c21bb51/case.json",
+            "sha256": "553cd932149eaf8a1f22b7c2c11b4a75a8ccd731ca3ed291935f25827e307afe"
+          },
+          "reference": {
+            "bytes": 786,
+            "path": "private/references/case-fdc68cd739dea87c3c21bb51.json",
+            "sha256": "c7bd4cb54d04c85471e3bfe2748329d8bdd51473620305c102529d4937a0ee44"
+          },
+          "role": "development",
+          "source_id": "merchant-ac7dff025170a6ee898d500b",
+          "source_sha256": "96208c83578187ccb2af64b5746598a263139eeab3f486492f83653048bb3c72",
+          "task_family": "text_sufficient"
+        },
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "read_condition": "original",
+        "seed": 130366,
+        "source_id": "merchant-ac7dff025170a6ee898d500b"
+      }
+    ]
+  },
+  "minimum_observed_gain": 0
+}

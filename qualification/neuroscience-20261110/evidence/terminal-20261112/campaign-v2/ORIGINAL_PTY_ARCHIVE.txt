@@ -1,0 +1,44 @@
+{"stage": "source-fetch", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "source-fetch", "exit_code": 0, "elapsed_seconds": 3.640027699060738, "log_sha256": "be911c27744ce0eb90ca4f66fd86553331a732adf6b20f7389b8f9ebc70f1c0f", "time_ns": 1794470559460513131}
+{"stage": "source-checkout", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "source-checkout", "exit_code": 0, "elapsed_seconds": 4.652526006102562, "log_sha256": "392c356ee9781f65c5875aaf68e53b9654aa512833c36c417c9ea26a765165e9", "time_ns": 1794470564113401773}
+{"stage": "native-acceptance", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "native-acceptance", "exit_code": 0, "elapsed_seconds": 5.5536840099375695, "log_sha256": "c3f411bcc03305052728f85b245271e121f330433e1b7a958e9c7095e778b114", "time_ns": 1794470569744617054}
+{
+  "elapsed_seconds": 5.234102261019871,
+  "errors": [],
+  "failures": [],
+  "method_ids": [
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_actual_ocr_wire_delivery_and_independent_score_bind",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_observed_wire_change_is_rejected",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_wrong_model_pin_fails_before_any_action",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"
+  ],
+  "module_counts": {
+    "ndu_real_runtime.test_content_identity_native": 3,
+    "ndu_real_runtime.test_macro_native": 2
+  },
+  "policy_benefit_qualified": false,
+  "skipped": [],
+  "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "tests_run": 5,
+  "unique_methods": 5
+}
+{"stage": "campaign", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "campaign", "exit_code": 0, "elapsed_seconds": 2038.5219799471088, "log_sha256": "29d996c5cb082375d0eb970c30626ef01a6379b2a3ec81c1ccadb57cfa071901", "time_ns": 1794472608267105513}
+{"status": "FAILED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd", "stages": [{"stage": "source-fetch", "exit_code": 0, "elapsed_seconds": 3.640027699060738, "log_sha256": "be911c27744ce0eb90ca4f66fd86553331a732adf6b20f7389b8f9ebc70f1c0f", "time_ns": 1794470559460513131}, {"stage": "source-checkout", "exit_code": 0, "elapsed_seconds": 4.652526006102562, "log_sha256": "392c356ee9781f65c5875aaf68e53b9654aa512833c36c417c9ea26a765165e9", "time_ns": 1794470564113401773}, {"stage": "native-acceptance", "exit_code": 0, "elapsed_seconds": 5.5536840099375695, "log_sha256": "c3f411bcc03305052728f85b245271e121f330433e1b7a958e9c7095e778b114", "time_ns": 1794470569744617054}, {"stage": "campaign", "exit_code": 0, "elapsed_seconds": 2038.5219799471088, "log_sha256": "29d996c5cb082375d0eb970c30626ef01a6379b2a3ec81c1ccadb57cfa071901", "time_ns": 1794472608267105513}], "error_type": "FileNotFoundError", "error": "[Errno 2] No such file or directory: '/home/qq/ctrl-real-study-20261112-1333/run-v1/COMPLETED.json'", "time_ns": 1794472608267403602}
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m50[0m, in [35m<module>[0m
+    final={'status':'COMPLETED','source_sha':source,'stages':stages,'campaign_completion_sha256':[31mpin[0m[1;31m(output/'run-v1/COMPLETED.json')[0m}
+                                                                                                 [31m~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"<string>"[0m, line [35m14[0m, in [35mpin[0m
+    def pin(path): return hashlib.sha256([31mPath(path).read_bytes[0m[1;31m()[0m).hexdigest()
+                                         [31m~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/usr/lib/python3.14/pathlib/__init__.py"[0m, line [35m778[0m, in [35mread_bytes[0m
+    with [31mself.open[0m[1;31m(mode='rb', buffering=0)[0m as f:
+         [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/usr/lib/python3.14/pathlib/__init__.py"[0m, line [35m772[0m, in [35mopen[0m
+    return [31mio.open[0m[1;31m(self, mode, buffering, encoding, errors, newline)[0m
+           [31m~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mFileNotFoundError[0m: [35m[Errno 2] No such file or directory: '/home/qq/ctrl-real-study-20261112-1333/run-v1/COMPLETED.json'[0m

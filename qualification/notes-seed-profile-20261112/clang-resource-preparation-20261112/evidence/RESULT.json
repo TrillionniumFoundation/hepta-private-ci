@@ -1,0 +1,151 @@
+{
+  "actor_calls": 0,
+  "baseline": {
+    "args": [
+      "-x",
+      "c",
+      "-std=c11",
+      "--target=x86_64-unknown-linux-gnu"
+    ],
+    "diagnostics": [
+      {
+        "severity": 4,
+        "text": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/header_probe.c:1:10: fatal error: 'stddef.h' file not found"
+      }
+    ],
+    "included_files": [
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/header_probe.c",
+      "/usr/include/stdint.h",
+      "/usr/include/x86_64-linux-gnu/bits/libc-header-start.h",
+      "/usr/include/features.h",
+      "/usr/include/features-time64.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/timesize.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/stdc-predef.h",
+      "/usr/include/x86_64-linux-gnu/sys/cdefs.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/long-double.h",
+      "/usr/include/x86_64-linux-gnu/gnu/stubs.h",
+      "/usr/include/x86_64-linux-gnu/gnu/stubs-64.h",
+      "/usr/include/x86_64-linux-gnu/bits/types.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/timesize.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/typesizes.h",
+      "/usr/include/x86_64-linux-gnu/bits/time64.h",
+      "/usr/include/x86_64-linux-gnu/bits/wchar.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-intn.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-least.h"
+    ],
+    "parse_result": 0
+  },
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21",
+    "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu"
+  },
+  "euid": 1000,
+  "header_pins": [
+    {
+      "bytes": 5053,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stddef.h",
+      "sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+      "version": "66306:76987796:5053:1732612390000000000:1794488808511870094"
+    },
+    {
+      "bytes": 2497,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdarg.h",
+      "sha256": "ce6e43d79dc89b50208ecf259b1ffd519f5a78cd3a2c7fcaac6386f376b89fef",
+      "version": "66306:76987791:2497:1732612390000000000:1794488808511870094"
+    },
+    {
+      "bytes": 27519,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdint.h",
+      "sha256": "f43783466c93f77a6464274ebf18f9e4cc46f0d90770ddee2993c6cf39f7514f",
+      "version": "66306:76987797:27519:1751269732000000000:1794488808511870094"
+    }
+  ],
+  "library": {
+    "bytes": 32691984,
+    "clang_getClangVersion": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+    "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+    "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+    "version": "66306:82190690:32691984:1773841930000000000:1791032247408329160"
+  },
+  "native_build_started": false,
+  "owner_decision": null,
+  "package": {
+    "bytes": 769884,
+    "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/libclang-common-21-dev_21.1.8-6ubuntu1_amd64.deb",
+    "sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+    "version": "66306:76984705:769884:1794488808435652542:1794488808436872993"
+  },
+  "resource_dir": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21",
+  "resource_manifest": {
+    "bytes": 83900,
+    "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/RESOURCE_MANIFEST.json",
+    "sha256": "f09262fe0207c56977993927e64e52a39c548385c92de79e086f6d029f2b3957",
+    "version": "66306:76987834:83900:1794488808533034314:1794488808533034314"
+  },
+  "schema": "hepta.clang21-resource-preparation.v1",
+  "source_or_lock_modified": false,
+  "status": "MATCHED_CLANG21_RESOURCE_PREPARED",
+  "system_install": false,
+  "uid": 1000,
+  "with_resource": {
+    "args": [
+      "-x",
+      "c",
+      "-std=c11",
+      "--target=x86_64-unknown-linux-gnu",
+      "-resource-dir=/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21"
+    ],
+    "diagnostics": [],
+    "included_files": [
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/header_probe.c",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stddef.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_header_macro.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_ptrdiff_t.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_size_t.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_wchar_t.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_null.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_max_align_t.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stddef_offsetof.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdarg.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg_header_macro.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg___gnuc_va_list.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg_va_list.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg_va_arg.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg___va_copy.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/__stdarg_va_copy.h",
+      "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdint.h",
+      "/usr/include/stdint.h",
+      "/usr/include/x86_64-linux-gnu/bits/libc-header-start.h",
+      "/usr/include/features.h",
+      "/usr/include/features-time64.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/timesize.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/stdc-predef.h",
+      "/usr/include/x86_64-linux-gnu/sys/cdefs.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/long-double.h",
+      "/usr/include/x86_64-linux-gnu/gnu/stubs.h",
+      "/usr/include/x86_64-linux-gnu/gnu/stubs-64.h",
+      "/usr/include/x86_64-linux-gnu/bits/types.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/timesize.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/typesizes.h",
+      "/usr/include/x86_64-linux-gnu/bits/time64.h",
+      "/usr/include/x86_64-linux-gnu/bits/wchar.h",
+      "/usr/include/x86_64-linux-gnu/bits/wordsize.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-intn.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h",
+      "/usr/include/x86_64-linux-gnu/bits/stdint-least.h"
+    ],
+    "parse_result": 0
+  }
+}

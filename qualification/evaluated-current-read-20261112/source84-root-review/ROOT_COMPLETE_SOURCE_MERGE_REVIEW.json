@@ -1,0 +1,1143 @@
+{
+  "schema": "hepta.root-complete-source-integration-review.v1",
+  "observed_at_utc": "2026-11-12 19:11:26 UTC",
+  "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "parents": [
+    "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "d3977d9a1bed3e89952c576c45660b04ea674faf"
+  ],
+  "tree": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+  "overlay": 159,
+  "actual_changes_against_d397": 158,
+  "compared_changed_tree_pairs": 24,
+  "unique_git_tree_nodes_read": 46,
+  "ours_only_120_verified_from_actual_ours_tree": true,
+  "original_overlap_paths": 31,
+  "extra_interface_adaptations": 8,
+  "all_changes_exact_listed_paths_and_modes": true,
+  "no_deleted_leaves": true,
+  "unchanged_resolution": {
+    "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+    "sha": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+    "origin": "fixture_merge",
+    "base": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+    "mode": "100644"
+  },
+  "changes": [
+    {
+      "path": ".gitattributes",
+      "before": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "after": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e",
+      "after": "f6efa0852dd91312b3571332bea862908eb8997c",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "defs.bzl",
+      "before": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "after": "6e1c3955b8dc345bd0cc5a4f1659e1e56f285cc8",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "before": "49a99d7093dbabe467b2dc5053a597f4df320078",
+      "after": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": "d8e4f723209da9a0b6cfcf72612fcd2a495ec427",
+      "after": "3c3a465aa84669eaefb90e1e299f5d2de4695f85",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "before": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "after": "1414fac58d773955a020462b10baf3911ddc19c9",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "before": "935a1addd32da00f7ace31107885954f479532c3",
+      "after": "d94191cacd31772a435d52cce0c2a3bd545ae865",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "before": "bfed7a0d6697e1a5c9cb3ca417ac7efe45f16cb9",
+      "after": "2c21b406d557e136eee87fcb88450654325a91b7",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "before": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "after": "a4b0e50fd6f5433ae2f9572f243f1b02d59fb108",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.json",
+      "before": null,
+      "after": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+      "before": null,
+      "after": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "before": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+      "after": "fb50b3579ad793aae702528c0e7bc5976e182151",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py",
+      "before": "b1610eb0463cfaeb964d26386030824d50ebf5ad",
+      "after": "139974a2cd533785a23b827406b9985528f0da55",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "before": "12cd06b62484817187858fe80b0ae37252303d76",
+      "after": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "before": "29802bd0262d3d49493889d462b5fac821e0951c",
+      "after": "f574a6e2b6f47e40beb187214190b215f44f2a2b",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_retention_command_source_closure.py",
+      "before": "c1dda8fd156ab59abcde7e65bad39e54b3cf0447",
+      "after": "45176b3224db1757ad8af035f0c5c84bfed869af",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_version_source_closure.py",
+      "before": "aad4206cab6a83dbc98e562106dc8be1fac6ebae",
+      "after": "6bde735c14e734dc33dd543c64f73502d9a22aea",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "before": "f57a5ec7d5fedd79317e26fdcbf4ed722cb17e6a",
+      "after": "029c8ed412928dccf2bcc966101515006be0aefb",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "before": "8ed82c4dc2debf7dac0884d5a6703d05bf7b4c6f",
+      "after": "fce2754635d6fb2eb0d8391bca3a353c8bcf2901",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "before": "5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f",
+      "after": "700cfedc590cf3e2f7b2d6bcf64680d763e4c1ea",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "before": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+      "after": "0c21eebe62b86c858453f69b2ed10c535161e400",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "before": "177b9b28471afc8d5af5235c373dfdde8490b435",
+      "after": "33194ba0b2f55af2f752459a310bcced5ef36b69",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "before": "59e7be329a50c98191fc0cad12b078118902fab0",
+      "after": "a699b19a0d7d9853092198dbd85ddfe0f6963472",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "before": "5d4fcb1bfa815d1bc6566f6295d85c8fb92d7e27",
+      "after": "20f37f0fd4c790979c113c278fb77063c98494d8",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "before": "c4a736598c743e7a565e5962801a956621e1fb6b",
+      "after": "1acd8e8845e5b276481eab2d73251e0e2605580a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "before": "ba9addbae286ee3ed550b393df8bf5ab0d9e30e1",
+      "after": "81f5b68a501483c2eeed2a51f543aa5163fa345a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "before": "351292a0a09f300021eae59d8ffb8ff0d4166b9a",
+      "after": "a8a3c85aeb3b047479d62df2fcb12faf4b2947b2",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "before": "c222fc532a8455a775f262c6c8579e9c5a4effde",
+      "after": "37e9a7d54339bcafa95eff5e286332ea1af4b512",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "before": "ad6131d0d61e6697995125fa6d1ea4187b18d6ae",
+      "after": "1db613c79125b78d98fd5428b2969490ad6fb533",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/BUILD.bazel",
+      "before": "e1dd35a3698a0dd9d25e08cccf99cd462e04e850",
+      "after": "2e171e637eecb1ce168036ce870f1586a1669ad8",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "before": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "after": "0d3b2432f617a9c546f7d9b655aeb2707a4b20f5",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/DIAGNOSTIC.original.json",
+      "before": null,
+      "after": "675aa78e24d8976594277b9702362cd9304ee7c6",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_EVALUATOR_THREE.original.json",
+      "before": null,
+      "after": "6a31405533f930a645f42db8556a4d520b2fe5fd",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_FIRST_NINE.original.json",
+      "before": null,
+      "after": "b6da05ded4e7e0f5f918cfee2eebe66ebb01e28b",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/QA_EXPECTED_CHANGE_MANIFEST.json",
+      "before": null,
+      "after": "6ba684022b27dd225a01cd8941e1a8206b0418d3",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/REVIEW.md",
+      "before": null,
+      "after": "468ea93d809e1144e74b1b6b57430cc069532cfc",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json",
+      "before": null,
+      "after": "5ef2059b1ed64d9fe5e8b145e20f5ab1f9e4feb7",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/source-contract-620.original.log",
+      "before": null,
+      "after": "15331b3b4446b0b312aa01d0e8378e05516ded7c",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/RESULT.json",
+      "before": null,
+      "after": "3d58b69cde15b68323338308a35bb12b6deb6c60",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-process-status.json",
+      "before": null,
+      "after": "2e005918c5e5e17bc27798788b4e69e28ee6814d",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stderr.log",
+      "before": null,
+      "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stdout.log",
+      "before": null,
+      "after": "8b592dcc2387e6de10b66d249bf9fe8749646cb1",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/request.json",
+      "before": null,
+      "after": "c5ff4ab3636fdfeb1ffa269b200afd823656965a",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/runner-source.py.txt",
+      "before": null,
+      "after": "6edce2921a94f368a693f0b59be35986d0a6c9c1",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-a96-review/MANIFEST.json",
+      "before": null,
+      "after": "c05d5efed22159fe2eb45cf4b9cffcc47cdd05b6",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-a96-review/MERGE_DELTAS.json",
+      "before": null,
+      "after": "9d55e187a334e525c29e187d13efadbc0c125dd2",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-a96-review/OVERLAY_LEAVES.json",
+      "before": null,
+      "after": "db66fd3fd420fdf1d65baa92475132f45975f5d3",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-a96-review/REVIEW.md",
+      "before": null,
+      "after": "7b464e31fc01a9a71fa189d3acf7264a04e839b0",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-a96-review/STATIC_MARKER_CHECKS.json",
+      "before": null,
+      "after": "f9ec68e6ae52746e2022858aa210f322c14e13ea",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_094958b.patch",
+      "before": null,
+      "after": "78bc416f407685b4c3f7837055f246bd0dabd35a",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_MANIFEST.json",
+      "before": null,
+      "after": "ee97a90a3d578cb35fdfa002d97b43d93750adf7",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/REVIEW.json",
+      "before": null,
+      "after": "513faf278cd46bee7ffbaa36598ea9c3cf021a15",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/RUST_QA_MANIFEST.json",
+      "before": null,
+      "after": "3e331137fe79ee69bd6fa8c9275127dad1c48343",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/failure-and-fix.json",
+      "before": null,
+      "after": "8d2257609d5db03e27e103d6b4a15ea06e2faf01",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/source-closure.log",
+      "before": null,
+      "after": "1af98380c333490ff1f619844fbd74c0ae523893",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ARCHIVE_PATH_MAPPING.json",
+      "before": null,
+      "after": "610e12362f2b80a5ce84155e5d59432415561532",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/REVIEW.md",
+      "before": null,
+      "after": "86cc5b8798c25b5f3fd50be0df6520bcb05c2a91",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_FAILURE_ARTIFACT_VERIFICATION.json",
+      "before": null,
+      "after": "df2bd5ed5037c329e19dbe721161471c1d796987",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_MERGE_REVIEW.json",
+      "before": null,
+      "after": "232acd56250f3ad31d589f15f7e78ee151d4bb59",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "before": "819731fe4771dc56d2241f33a31cd8cb14a75e6c",
+      "after": "c3866666a169c9286a4211646d64aa31b347c476",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "before": "710afcbeeb7bb05d2ab2cff1ad0e51c990bd6473",
+      "after": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": "2b353726ad4b53277bf51c50b2d1a51d714c5a3a",
+      "after": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "before": "8e2da640dd33e8a480413878dc8d929e30663d1b",
+      "after": "7698284e6f92a5045b0341113f13ceea22622691",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "before": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+      "after": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "before": "462ea23f7f3e01be9b04cf90f8431b561fb7cd83",
+      "after": "91907700270d60c1e33191887705608fcc76de13",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "before": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4",
+      "after": "62d66127ef1d5bdcbdfdbabc0e05df54e7a0d1cf",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "before": "180ddadf5bcc463513305f252358ab3b032b0c75",
+      "after": "099141dafd5877c8687d764c3bbe1ef5ae75922c",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "before": null,
+      "after": "95126f5c455c9674b8aefb6e51d63f57276bdddd",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "before": null,
+      "after": "d7d42e80feae8069ab09a7107d1800dc12ce7a4f",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "before": null,
+      "after": "c86ef5b2b5824f5d643dd8c0f1724ae1b01f8f65",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness_qualification.rs",
+      "before": null,
+      "after": "9fe02f88aaa7b6a778e04456ec098dd3c2b6c848",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS.patch",
+      "before": null,
+      "after": "f4d9f4265473564e98471c01b8e0b4efaef4a403",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS_MANIFEST.json",
+      "before": null,
+      "after": "59beb037035ec65306d9d4cebc0aba195b867226",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/MERGE_REVIEW.json",
+      "before": null,
+      "after": "4b082366c3448328cb38f3d8e39a487becfa6e3e",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/QA_SEMANTIC_FIX.patch",
+      "before": null,
+      "after": "b9b18bd5a1938f14fb8b3408cc07eb9c523ad6f5",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/README.md",
+      "before": null,
+      "after": "ef7098f483f89ef7bd9e21c8682f1c13c0f6249d",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/ROOT_REVIEW.json",
+      "before": null,
+      "after": "e263b507dff75ad92f0b632e591b550946475fa1",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "before": "d4d777123a8010b0d8295b7b92f0a66194303ab2",
+      "after": "ec295b7aa459e14fbe5109354ab888b7f9239e85",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "before": "7213c87054bf7335622eda758659baf2f1a41e8e",
+      "after": "2d1813e4f5a8c4b0f0d852d3c51b817d25f93c90",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "before": "05359fcfecf67f7695a99aa666f761db169aa5ed",
+      "after": "551a281e0df6b0abb0033cd8b4840eeb48882d2e",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "before": "a4b9f14a366d72f47e0086f8d41fb2573bba2b0a",
+      "after": "4b1144c449ab7d681c01877f8ee19095c062618d",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "before": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae",
+      "after": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "before": "5940a804ed01c3e8ee3e0cd857a8a060397d9446",
+      "after": "bbe2ccdd2e42b4fe362720205121dab5650c6797",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "before": "5520712840c75b8e8a0831628f2c8715315aad36",
+      "after": "7232ad40b7bdbc69d9813e40c056766dc3344bff",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "before": "e884bb91508d86382e7189edaab8fe403581be6b",
+      "after": "2154edd35a20d36064fd5dedefb71e73966bdc99",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "before": "a53143e30fd9a1b7ee5c0c3bafc6ca083acb163d",
+      "after": "7a624fbb69c9b557a9496ddb3f484916d2608beb",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "before": "bd28119fd00c39ecb246bad3bf500aece080160f",
+      "after": "53c87af635fd882bc509fa6ef37f679be2b90b15",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "before": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+      "after": "1ee4e558ae60296f47a0049eb08654c726e0c2e4",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "before": "6f607bebab6a930d9d0007ef7a438e51dd7ee5fb",
+      "after": "6d5a4cb47e52784d34576be53868281b5104be90",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "before": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "after": "830c044c079478e1f61751446dd63be0f851586c",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "before": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "after": "af53a40c1b0cc3d0b5671a0a1fbbfa65b368d64c",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "before": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "after": "00fb66e36c64b52ddb40b1250a5375e7437629ec",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "before": "f46ca31538e114546c64aa283ac5b9c430020a15",
+      "after": "04547bcd2fa758239b71298a87a10a5acf96e30a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "before": "bc1fb375181db5ea9d2965e53f38a1d0ef1eff8c",
+      "after": "d4d927027d1a23d8a2b61ab6c9470773fcfecb92",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "before": "382844a32227c48a752ecf053d0cf9d293f1b3f4",
+      "after": "968f2d6f4affcb1396a9e751bfdb2c42a5ba235a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "before": "843407d83bfeb48dfc7db01a7d574a5a02740373",
+      "after": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "before": "31839e7d688471e97945493bf77f08c0b1fc3ce8",
+      "after": "b696b8b740c09705e37872c6a723d8fd3d5779b3",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "before": "f9b33de904789c2af255afcbd3473c751d134997",
+      "after": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "before": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19",
+      "after": "a23be4dfcfcc739bb8417d7c32c6b71efd45e62f",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "before": "a4b4fd8169407c81360b279f6796b366240de9ca",
+      "after": "bd394bc80915f0cedd71792ee04e90df5d45a8f1",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "before": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "after": "76e472fcb2237c719d3ee6455a9ac821036e8dfd",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs",
+      "before": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "after": "17bb2b51ccaab08a36c6876b217748fae7012450",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "before": "0b79409538da4f7ed92c9123ab0efd97615aa085",
+      "after": "8bd47c76fc82365daac44acf5061861e0c552011",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "before": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "after": "849cdf6406fb746be80c6fb93ce3ee8e4d0f4112",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "before": "5ee70d671dea96349eb69434146bf59ae1e05ed6",
+      "after": "4a593c5805f3ba23e287c130ea40b03cbe801d7a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "before": "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "after": "752bee454a024280be6d5033b826abff398d2edf",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "before": "2820145d2546e42b7d697a2f64eca855b1132584",
+      "after": "366400a019bcaf29016d74c9540823be8da7969b",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "before": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "after": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "before": "7bcb86349f3626a08bba85e10b86ac0200026a91",
+      "after": "7b64a69e5e0ad9c3dbb7c6a8180f9ecabb843d99",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "before": "233e8d41360320695aa6a152c9c78212800843f3",
+      "after": "86b78a362f7244c06393e8b013750cc824c4e3cf",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "before": "7f2fd5d54dfb0a391a260db864d4d989c87cac8e",
+      "after": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "before": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "after": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "before": "b10204ed4683a6afd83585c81ef7e05268284cca",
+      "after": "94f7031daabce5873329350758545227235c5656",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "before": "5a462fab5c7b93038596953957434c52e62a00ee",
+      "after": "6bf99819add8f14b1cbfe50d7f1e87c0bef8fb63",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "before": "7dc9c197f009b90fde594f05523b6e7f9820a162",
+      "after": "968a47ad243f98a6b1a516153009ed325550ff23",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs",
+      "before": "9b098811990e34d61c0d515cc2de731090a2b33a",
+      "after": "a69bfe96936d66872316958bd098a02b3323e3bd",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "before": "9759e7a8af9abf9b02812958ad10d4cbf0303aaf",
+      "after": "bc03999e1646d4cb6e396e57bcdc11ff4c10f353",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "before": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "after": "687cbbd159614b19a55eaac864902f7c89bccec0",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "before": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "after": "7180072fe87063749d5526588bb52389b6e798e6",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "before": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "after": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "before": "9992b28138dd4e3f57debd9852f7d2ac4a255b51",
+      "after": "10555aff14e92067dc746247de068dac6658499a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "before": "8e93d95c099a6cd433dfe0277bb86663400e8163",
+      "after": "25be7a897554634a3b3ec19fafc59e049af7b4e9",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "before": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "after": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "before": "3539e427ed1228ef45de299a98a476d62c3fd192",
+      "after": "7448eda3aa00aef148b2f0b43acd1523f686e043",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "before": "e311709460ab84d929213ed5532ba9d471edd04f",
+      "after": "ec89e501a471bfb5c42640e026c3feb7b01c00d4",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_test_support.rs",
+      "before": "4fbae00ccbfe232df2672a3b00bc04beca677cba",
+      "after": "110912f493316afe4c3f5836358b707152ae7cbd",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "before": "d31d0788b1aeb84171cec763693b972cd360ae8c",
+      "after": "0897fd2d97c8ede8fdad9705bfc17aa2e0c10871",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "before": "c768097933877b664ca3c2a149b828a0264f7ab4",
+      "after": "9172c02b394661d77375cce81b13003040409be1",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "before": "aee1f3d06c1e92ebcf08baefc6377a56bc36b5aa",
+      "after": "edaca64612927bfd04a41faac7331f4965acc623",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "before": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "after": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "before": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "after": "ab02a9b94418d1a8b15b0f41827d2907a8bbffbe",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "before": "b3bda78690f39b40bcb943bf304199c691734787",
+      "after": "ce209f98537b2d29d85ac458acfcc6defa14049a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "before": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+      "after": "ebcc914b779fc9418314a6bfc44df4ed48d60c79",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "before": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "after": "2ff51712f5bc973519c4bf3a9abcfb91c21f64c4",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "before": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+      "after": "ac225abdf5676ece3413ce3754af5a85c1896c8a",
+      "before_mode": "100644",
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane.rs",
+      "before": null,
+      "after": "e1d4a1b8249a3107389447ed8dcac33117b679f2",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane_tests.rs",
+      "before": null,
+      "after": "743543bfd006063e385de0c0aaf478617bf73700",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "before": null,
+      "after": "a2fc0b0e84880b318b75346debb38385d184dffb",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "before": null,
+      "after": "7581f85b1b9971908922a125dc4fdacc314e40f8",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "before": null,
+      "after": "afe877be224778bf73d97d35fc553f3189910dde",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/MANIFEST.json",
+      "before": null,
+      "after": "5b012219aa8500cd51938d5d2ca4913acd02a372",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/QA_CALLER_TUPLE_PATCH.json",
+      "before": null,
+      "after": "2ddf878ad9847b0caa503219422ecf2af09e5051",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/RESULT.json",
+      "before": null,
+      "after": "70e4ef5969d6976ef25d9ea9c6891064338376af",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/checkout.log",
+      "before": null,
+      "after": "8cd3238636feaa959d451a39c02a55c6aaedef7f",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/clone.log",
+      "before": null,
+      "after": "428c747c1ea7dce76557f490f16cc02724a37f89",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/fetch.log",
+      "before": null,
+      "after": "c2a242ce5f0759c8c6665c919de832c2688fadb9",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-process-status.json",
+      "before": null,
+      "after": "d8ab60d2ab4ee7f69a8654899c5e08bfaa04f153",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stderr.log",
+      "before": null,
+      "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stdout.log",
+      "before": null,
+      "after": "cbe1c239856b619e32391efeedcd271e795c43e6",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json",
+      "before": null,
+      "after": "fdf49c589f04e150918907cccdea83ea04a72c5e",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json.17980b1ecead46888a444bdefe7461de.log",
+      "before": null,
+      "after": "0fccacdbd2607ee95827fde5a265c7b14ad75a99",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.runner.log",
+      "before": null,
+      "after": "f690904e880369d2723f7768eccea3e4c18cc960",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/request.json",
+      "before": null,
+      "after": "0657236a7b85596dbe98c6053c4fa1bd1d4e5ea1",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/runner-source.py.txt",
+      "before": null,
+      "after": "03ccc0db8e8876380195b632ca6fb2f089932981",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-after.json",
+      "before": null,
+      "after": "84233191d6a9a4399f29c7363b7ac40ba749ef8f",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-before.json",
+      "before": null,
+      "after": "84233191d6a9a4399f29c7363b7ac40ba749ef8f",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json",
+      "before": null,
+      "after": "2c55c638584e35d30bf717e668b6bb76ee0b52e9",
+      "before_mode": null,
+      "after_mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json.56308c689d864f00bdf925b09746249b.log",
+      "before": null,
+      "after": "eb56c3f7fa7d9d51cf6b757c3d9ff3d59bf3a228",
+      "before_mode": null,
+      "after_mode": "100644"
+    }
+  ],
+  "static_reviews": [
+    "ROOT_PRODUCTION_REVIEW.json",
+    "ROOT_FIXTURE_MERGE_REVIEW.json",
+    "ROOT_QA_MERGE_REVIEW.json",
+    "ROOT_CALLER_MERGE_REVIEW.json"
+  ],
+  "source_validation": "NOT_RUN",
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

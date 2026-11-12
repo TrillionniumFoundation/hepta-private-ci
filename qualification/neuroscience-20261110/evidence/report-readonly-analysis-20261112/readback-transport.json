@@ -1,0 +1,179 @@
+{
+  "direct_read_16384_timeout": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "direct_read_32768_attempt": "The read was awaited in the same settled batch, but its result was not retained after the first-page error. No data from that unretained response was used.",
+  "recovery": "Two asynchronous read-only process_read operations on the same completed job; no new process_start",
+  "pages": [
+    {
+      "request": {
+        "idempotency_key": "ctrl-report-logpage-862531d11598-16384-v1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "ai395",
+            "job_id": "1a1cf1c9b7e-2564-1997",
+            "stdout_offset": 16384,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "status": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "payload_metadata": [
+        {
+          "authenticated_chatgpt_caller_isolation": false,
+          "automatic_retry": false,
+          "credential_metadata_resume": true,
+          "cross_session_resume": true,
+          "delivery_proven": false,
+          "eof": false,
+          "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+          "immutable_snapshot": true,
+          "next_offset": 16384,
+          "offset": 0,
+          "operation_id": "a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6",
+          "ownership_scope": "authenticated_private_operator_credential",
+          "payload_kind": "native_result",
+          "result_sha256": "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905",
+          "session_scope": "authenticated_private_operator_credential",
+          "total_bytes": 54017
+        },
+        {
+          "authenticated_chatgpt_caller_isolation": false,
+          "automatic_retry": false,
+          "credential_metadata_resume": true,
+          "cross_session_resume": true,
+          "delivery_proven": false,
+          "eof": false,
+          "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+          "immutable_snapshot": true,
+          "next_offset": 32768,
+          "offset": 16384,
+          "operation_id": "a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6",
+          "ownership_scope": "authenticated_private_operator_credential",
+          "payload_kind": "native_result",
+          "result_sha256": "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905",
+          "session_scope": "authenticated_private_operator_credential",
+          "total_bytes": 54017
+        },
+        {
+          "authenticated_chatgpt_caller_isolation": false,
+          "automatic_retry": false,
+          "credential_metadata_resume": true,
+          "cross_session_resume": true,
+          "delivery_proven": false,
+          "eof": false,
+          "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+          "immutable_snapshot": true,
+          "next_offset": 49152,
+          "offset": 32768,
+          "operation_id": "a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6",
+          "ownership_scope": "authenticated_private_operator_credential",
+          "payload_kind": "native_result",
+          "result_sha256": "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905",
+          "session_scope": "authenticated_private_operator_credential",
+          "total_bytes": 54017
+        },
+        {
+          "authenticated_chatgpt_caller_isolation": false,
+          "automatic_retry": false,
+          "credential_metadata_resume": true,
+          "cross_session_resume": true,
+          "delivery_proven": false,
+          "eof": true,
+          "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+          "immutable_snapshot": true,
+          "next_offset": 54017,
+          "offset": 49152,
+          "operation_id": "a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6",
+          "ownership_scope": "authenticated_private_operator_credential",
+          "payload_kind": "native_result",
+          "result_sha256": "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905",
+          "session_scope": "authenticated_private_operator_credential",
+          "total_bytes": 54017
+        }
+      ]
+    },
+    {
+      "request": {
+        "idempotency_key": "ctrl-report-logpage-862531d11598-32768-v1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "ai395",
+            "job_id": "1a1cf1c9b7e-2564-1997",
+            "stdout_offset": 32768,
+            "stderr_offset": 0,
+            "limit": 1530
+          }
+        }
+      },
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"69a1ff4024777cfb8bfb1ea52334820cd8010ff875b7a9966202903052146a5b\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "status": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"69a1ff4024777cfb8bfb1ea52334820cd8010ff875b7a9966202903052146a5b\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "payload_metadata": [
+        {
+          "authenticated_chatgpt_caller_isolation": false,
+          "automatic_retry": false,
+          "credential_metadata_resume": true,
+          "cross_session_resume": true,
+          "delivery_proven": false,
+          "eof": true,
+          "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+          "immutable_snapshot": true,
+          "next_offset": 5364,
+          "offset": 0,
+          "operation_id": "69a1ff4024777cfb8bfb1ea52334820cd8010ff875b7a9966202903052146a5b",
+          "ownership_scope": "authenticated_private_operator_credential",
+          "payload_kind": "native_result",
+          "result_sha256": "942a70b42b324ac28b9c6d25b8898b44c553bf3035bc68820d656967067865bf",
+          "session_scope": "authenticated_private_operator_credential",
+          "total_bytes": 5364
+        }
+      ]
+    }
+  ]
+}

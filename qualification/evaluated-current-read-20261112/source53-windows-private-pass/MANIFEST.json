@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.source53-windows-private-original-pass.v1",
+  "source_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579365,
+  "job_id": 131459875789,
+  "job_conclusion": "success",
+  "completed_at": "2026-11-12T20:32:28Z",
+  "whole_log": {
+    "job_id": 131459875789,
+    "bytes": 376162,
+    "sha256": "611c3e57b4ea32fd4674e5be6e9860743c24131a4bf9744b03e7308752b4199e",
+    "git_blob_sha": "305f726b8147021acaafe3add3962c117890555a"
+  },
+  "log_parts": [
+    "JOB.part001.log.txt",
+    "JOB.part002.log.txt"
+  ],
+  "entries": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOB.part001.log.txt",
+      "sha": "698489155becf1b826af9116363571bb5b666cbe",
+      "bytes": 300242,
+      "sha256": "6da1e7aef6067825dbee6a81b765f5e8e0a98c4f01da054a2806b131cef2f43e",
+      "kind": "original_decoded_full_job_log_part"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOB.part002.log.txt",
+      "sha": "8285671257d7dd95f1709caca1a8f35f416790d4",
+      "bytes": 75920,
+      "sha256": "39038632376eb450fb1cf1cb425861a45c9ff3c9a920e0599d5401993d4a5982",
+      "kind": "original_decoded_full_job_log_part"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOBS.json",
+      "sha": "9fdde005cb3077b655645022907002f04c4d3fe0",
+      "bytes": 4222,
+      "sha256": "8fc2a79a073c55e286772176b5cfc8bc4638b8d6656a2c6577dae1e15937796f",
+      "kind": "original_actions_api_response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JUNIT_RECORD_FROM_JOBLOG.json",
+      "sha": "1f36301a27859987d040d9690605030097eba5fc",
+      "bytes": 5045,
+      "sha256": "67b92a260ff2616f6d62b8c3ca7419116bc71b4932a4bdfef53a0ae17259390b",
+      "kind": "exact_payload_line_copied_from_original_job_log_not_original_artifact_member"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/REGRESSION_RECORD_FROM_JOBLOG.json",
+      "sha": "26d8f7263de8c9dafb927dc8bee574db124105fa",
+      "bytes": 10630,
+      "sha256": "fc9a805d5fc5aa42b78de7836745cbe914dbad65f38ee03fca74ac7adc9d2b05",
+      "kind": "exact_payload_line_copied_from_original_job_log_not_original_artifact_member"
+    }
+  ],
+  "dedicated_regression": {
+    "selected": 36,
+    "passed": 36,
+    "failed": 0,
+    "filter_excluded": 597,
+    "retries": 0,
+    "original_log_receipt_exact_log_and_junit_coverage": true,
+    "junit_payload_reports": {
+      "total_testcases": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped_in_xml": 0
+    },
+    "actual_xml_artifact_not_downloaded_by_this_archive": true
+  },
+  "other_independent_step_summaries": [
+    {
+      "run": 15,
+      "passed": 15,
+      "filter_excluded": 5
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filter_excluded": 26
+    },
+    {
+      "run": 3,
+      "passed": 3,
+      "filter_excluded": 147
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filter_excluded": 148
+    },
+    {
+      "run": 12,
+      "passed": 12,
+      "filter_excluded": 340
+    }
+  ],
+  "artifacts_reported_in_original_log": [
+    {
+      "id": 13981891886,
+      "bytes": 13525,
+      "zip_sha256": "c5053452e412287c3eda9b88ff287e0607355aa257392d16facd78f6e3d23360",
+      "scope": "windows-private-state-acquisition"
+    },
+    {
+      "id": 13980164518,
+      "bytes": 16567,
+      "zip_sha256": "5e56deb8e6d4a7009cabc311ff78c214bcb9b57a79a1adbc96aa5a6e18ef9d56",
+      "scope": "windows-learn-regressions"
+    }
+  ],
+  "format_step": "success",
+  "scope": "Original Windows private-state security qualification and its exact selected regressions only; not full Linux/Root/scientific recovery qualification.",
+  "old_source84_failure_retained": true,
+  "no_dispatch": true
+}

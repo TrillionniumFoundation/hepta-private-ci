@@ -1,0 +1,1653 @@
+l/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:41.4397245Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:41.4447186Z       |                                       ^
+2026-11-12T21:49:41.4507634Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:41.4547643Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:41.4555605Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:41.4627255Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:41.4680591Z external/v8+/include/v8-template.h:804:17: warning: 'ConvertDefiner' is deprecated: Use NamedPropertyDefinerCallbackV2 definer instead [-Wdeprecated-declarations]
+2026-11-12T21:49:41.4717093Z   804 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:49:41.4737669Z       |                 ^
+2026-11-12T21:49:41.4807481Z external/v8+/include/v8-template.h:772:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:49:41.4849154Z   772 |   V8_DEPRECATE_SOON("Use NamedPropertyDefinerCallbackV2 definer instead")
+2026-11-12T21:49:41.4907017Z       |   ^
+2026-11-12T21:49:41.4937491Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:41.4977317Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:41.5047074Z       |                                       ^
+2026-11-12T21:49:41.5087652Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:41.5134267Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:41.5177151Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:41.5217505Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:41.5247978Z external/v8+/include/v8-template.h:931:16: warning: 'ConvertSetter' is deprecated: Use IndexedPropertySetterCallback setter instead [-Wdeprecated-declarations]
+2026-11-12T21:49:41.5277084Z   931 |         setter(ConvertSetter(setter)),
+2026-11-12T21:49:41.5277609Z       |                ^
+2026-11-12T21:49:41.5280714Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1503:35: note: in instantiation of function template specialization 'v8::IndexedPropertyHandlerConfiguration::IndexedPropertyHandlerConfiguration<v8::Intercepted (*)(unsigned int, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(unsigned int, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T21:49:41.5284093Z  1503 |   ptr_to_local(&self)->SetHandler(v8::IndexedPropertyHandlerConfiguration(
+2026-11-12T21:49:41.5284862Z       |                                   ^
+2026-11-12T21:49:41.5285744Z external/v8+/include/v8-template.h:890:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T21:49:41.5287103Z   890 |   V8_DEPRECATE_SOON("Use IndexedPropertySetterCallback setter instead")
+2026-11-12T21:49:41.5347572Z       |   ^
+2026-11-12T21:49:41.5407347Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:41.5457237Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:41.5487037Z       |                                       ^
+2026-11-12T21:49:41.5548855Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:41.5567621Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:41.5787519Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:41.5833705Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:41.5835285Z external/v8+/include/v8-template.h:935:17: warning: 'ConvertDefiner' is deprecated: Use IndexedPropertyDefinerCallback definer instead [-Wdeprecated-declarations]
+2026-11-12T21:49:41.5836881Z   935 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:49:41.5837556Z       |                 ^
+2026-11-12T21:49:41.5838462Z external/v8+/include/v8-template.h:903:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:49:41.5839663Z   903 |   V8_DEPRECATE_SOON("Use IndexedPropertyDefinerCallback definer instead")
+2026-11-12T21:49:41.5840571Z       |   ^
+2026-11-12T21:49:41.5841544Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:41.5842546Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:41.5843313Z       |                                       ^
+2026-11-12T21:49:41.5844326Z 4 warnings generated.
+2026-11-12T21:49:41.9902584Z Analyzing: 1058 targets (1604 packages loaded, 213776 targets configured, 1008 aspect applications)
+2026-11-12T21:49:42.0008137Z [26,583 / 30,234] 97 / 471 tests; Writing repo mapping manifest for //codex-rs/lmstudio:lmstudio-unit-tests; 0s local ... (797 actions, 3 running)
+2026-11-12T21:49:43.0733832Z Analyzing: 1058 targets (1604 packages loaded, 213797 targets configured, 1008 aspect applications)
+2026-11-12T21:49:43.0928099Z [26,762 / 30,405] 97 / 477 tests; Writing repo mapping manifest for //codex-rs/mcp-server:mcp-server-all-test; 0s local ... (796 actions, 3 running)
+2026-11-12T21:49:44.0758542Z Analyzing: 1058 targets (1604 packages loaded, 213813 targets configured, 1008 aspect applications)
+2026-11-12T21:49:44.0878551Z [27,368 / 35,429] 97 / 480 tests; Writing repo mapping manifest for @@rules_rs++crate+crates__rama-dns-0.3.0//:_bs_ [for tool]; 0s local ... (797 actions, 1 running)
+2026-11-12T21:49:45.0868063Z Analyzing: 1058 targets (1604 packages loaded, 213842 targets configured, 1008 aspect applications)
+2026-11-12T21:49:45.0988334Z [27,997 / 36,700] 97 / 487 tests; Writing repo mapping manifest for @@rules_rs++crate+crates__icu_segmenter_data-2.3.0//:_bs_ [for tool]; 0s local ... (795 actions, 1 running)
+2026-11-12T21:49:46.1418735Z Analyzing: 1058 targets (1604 packages loaded, 213875 targets configured, 1008 aspect applications)
+2026-11-12T21:49:46.1547932Z [28,122 / 36,998] 97 / 500 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 14s ... (794 actions, 0 running)
+2026-11-12T21:49:47.1077896Z Analyzing: 1058 targets (1604 packages loaded, 213903 targets configured, 1008 aspect applications)
+2026-11-12T21:49:47.1137690Z [28,217 / 37,160] 97 / 511 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 15s ... (797 actions, 0 running)
+2026-11-12T21:49:48.1047922Z Analyzing: 1058 targets (1604 packages loaded, 213925 targets configured, 1008 aspect applications)
+2026-11-12T21:49:48.1172795Z [28,329 / 37,284] 97 / 531 tests; Writing repo mapping manifest for //codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test; 0s local ... (798 actions, 3 running)
+2026-11-12T21:49:49.1012119Z Analyzing: 1058 targets (1604 packages loaded, 213946 targets configured, 1008 aspect applications)
+2026-11-12T21:49:49.1028460Z [28,426 / 37,343] 97 / 544 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 17s ... (795 actions, 0 running)
+2026-11-12T21:49:50.1057499Z Analyzing: 1058 targets (1604 packages loaded, 213959 targets configured, 1008 aspect applications)
+2026-11-12T21:49:50.1138064Z [28,566 / 37,484] 97 / 553 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 18s ... (798 actions, 0 running)
+2026-11-12T21:49:51.1238075Z Analyzing: 1058 targets (1604 packages loaded, 213975 targets configured, 1008 aspect applications)
+2026-11-12T21:49:51.1248038Z [28,655 / 37,540] 97 / 566 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 19s ... (799 actions, 0 running)
+2026-11-12T21:49:52.1468627Z Analyzing: 1058 targets (1604 packages loaded, 213991 targets configured, 1008 aspect applications)
+2026-11-12T21:49:52.1547782Z [28,750 / 37,595] 97 / 579 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 20s ... (799 actions, 0 running)
+2026-11-12T21:49:53.1428156Z Analyzing: 1058 targets (1604 packages loaded, 213995 targets configured, 1008 aspect applications)
+2026-11-12T21:49:53.1537942Z [28,828 / 37,607] 97 / 582 tests; [Prepa] Testing //codex-rs/protocol:protocol-unit-tests; 21s ... (763 actions, 0 running)
+2026-11-12T21:49:53.2003580Z INFO: Analyzed 1058 targets (1604 packages loaded, 213995 targets configured, 1008 aspect applications).
+2026-11-12T21:49:54.1432045Z [28,945 / 37,611] 98 / 583 tests; [Prepa] Testing //codex-rs/utils/output-truncation:output-truncation-unit-tests; 20s ... (662 actions, 0 running)
+2026-11-12T21:49:54.7193047Z INFO: From Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files):
+2026-11-12T21:49:54.7287531Z warning: variable does not need to be mutable
+2026-11-12T21:49:54.7449361Z    --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+2026-11-12T21:49:54.7599282Z     |
+2026-11-12T21:49:54.7650521Z 310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+2026-11-12T21:49:54.7651492Z     |         ----^^^^^^^^
+2026-11-12T21:49:54.7652167Z     |         |
+2026-11-12T21:49:54.7652825Z     |         help: remove this `mut`
+2026-11-12T21:49:54.7653468Z     |
+2026-11-12T21:49:54.7654135Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:49:54.7654827Z 
+2026-11-12T21:49:54.7655177Z warning: 1 warning emitted
+2026-11-12T21:49:54.7655632Z 
+2026-11-12T21:49:55.1487910Z [29,156 / 37,618] 98 / 583 tests; [Prepa] Testing //codex-rs/utils/output-truncation:output-truncation-unit-tests; 21s ... (781 actions, 0 running)
+2026-11-12T21:49:56.1468828Z [29,656 / 37,628] 109 / 583 tests; [Prepa] Compiling Rust bin //bazel/rules/testing/wine:windows-smoke (1 file); 14s ... (705 actions, 0 running)
+2026-11-12T21:49:56.1621291Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:49:56.1622302Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:49:56.1623583Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:49:56.1625430Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:56.1626470Z   147 |   }
+2026-11-12T21:49:56.1626824Z       |   ^
+2026-11-12T21:49:56.1628037Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:49:56.1629381Z    32 |     __m_.lock();
+2026-11-12T21:49:56.1629611Z       |          ^
+2026-11-12T21:49:56.1630750Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:49:56.1631783Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:49:56.1632456Z       |                           ^
+2026-11-12T21:49:56.1633196Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:49:56.1634148Z   138 |       impl.lock();
+2026-11-12T21:49:56.1634406Z       |            ^
+2026-11-12T21:49:56.1635316Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:56.1636458Z   151 |       impl.unlock();
+2026-11-12T21:49:56.1637013Z       |            ^
+2026-11-12T21:49:56.1638554Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:49:56.1640358Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:49:56.1641120Z       |                                                                         ^
+2026-11-12T21:49:56.1642442Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:49:56.1644394Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:49:56.1644940Z       |                           ^
+2026-11-12T21:49:56.1645674Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:49:56.1648392Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:49:56.1678468Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:56.1679719Z   119 |   }
+2026-11-12T21:49:56.1680056Z       |   ^
+2026-11-12T21:49:56.1681864Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:49:56.1683826Z   310 |     __m_->lock_shared();
+2026-11-12T21:49:56.1684250Z       |           ^
+2026-11-12T21:49:56.1685562Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:49:56.1687275Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:56.1687860Z       |                           ^
+2026-11-12T21:49:56.1688739Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:49:56.1689690Z   111 |       impl.lock_shared();
+2026-11-12T21:49:56.1690130Z       |            ^
+2026-11-12T21:49:56.1691274Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:56.1692532Z   123 |       impl.unlock_shared();
+2026-11-12T21:49:56.1692973Z       |            ^
+2026-11-12T21:49:56.1694803Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:49:56.1696924Z   332 |       __m_->unlock_shared();
+2026-11-12T21:49:56.1697390Z       |             ^
+2026-11-12T21:49:56.1698723Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:49:56.1700254Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:56.1701062Z       |                           ^
+2026-11-12T21:49:56.1701535Z 4 warnings generated.
+2026-11-12T21:49:57.1482145Z [30,121 / 37,634] 117 / 583 tests; [Prepa] Compiling Rust bin //bazel/rules/testing/wine:windows-smoke (1 file); 15s ... (270 actions, 0 running)
+2026-11-12T21:49:57.2751101Z INFO: From Compiling Rust rlib //codex-rs/rmcp-client:rmcp-client (44 files):
+2026-11-12T21:49:57.2791288Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.2839732Z  --> codex-rs/rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:57.3239185Z   |
+2026-11-12T21:49:57.3438280Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:57.3458330Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3489879Z   |
+2026-11-12T21:49:57.3490438Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:57.3490918Z 
+2026-11-12T21:49:57.3491467Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3492485Z   --> codex-rs/rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:57.3493162Z    |
+2026-11-12T21:49:57.3493586Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:57.3494116Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:57.3494484Z 
+2026-11-12T21:49:57.3495047Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3496126Z    --> codex-rs/rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:57.3497133Z     |
+2026-11-12T21:49:57.3497634Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:57.3498225Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:57.3498625Z 
+2026-11-12T21:49:57.3499502Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3500598Z  --> codex-rs/rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:57.3501312Z   |
+2026-11-12T21:49:57.3501778Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:57.3502335Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3502724Z 
+2026-11-12T21:49:57.3503303Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3504359Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:57.3505009Z    |
+2026-11-12T21:49:57.3505412Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:57.3505978Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3506191Z 
+2026-11-12T21:49:57.3506498Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3507525Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:57.3507900Z    |
+2026-11-12T21:49:57.3508272Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:57.3508747Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:57.3508948Z 
+2026-11-12T21:49:57.3509219Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3509742Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:57.3510073Z    |
+2026-11-12T21:49:57.3510295Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:57.3510592Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:57.3510781Z 
+2026-11-12T21:49:57.3510879Z warning: 7 warnings emitted
+2026-11-12T21:49:57.3511040Z 
+2026-11-12T21:49:57.3511447Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp-client-unit-tests-bin (44 files):
+2026-11-12T21:49:57.3512383Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3513170Z  --> rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:57.3513562Z   |
+2026-11-12T21:49:57.3513823Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:57.3514231Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3514594Z   |
+2026-11-12T21:49:57.3514925Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:57.3515529Z 
+2026-11-12T21:49:57.3515947Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3516900Z   --> rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:57.3517238Z    |
+2026-11-12T21:49:57.3517443Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:57.3517883Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:57.3518167Z 
+2026-11-12T21:49:57.3518570Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3519425Z    --> rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:57.3519970Z     |
+2026-11-12T21:49:57.3520332Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:57.3520802Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:57.3521116Z 
+2026-11-12T21:49:57.3521537Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3522383Z  --> rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:57.3522893Z   |
+2026-11-12T21:49:57.3523223Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:57.3523638Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3523887Z 
+2026-11-12T21:49:57.3524328Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3525168Z   --> rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:57.3525690Z    |
+2026-11-12T21:49:57.3526015Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:57.3526442Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:57.3526935Z 
+2026-11-12T21:49:57.3527372Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3528432Z   --> rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:57.3528941Z    |
+2026-11-12T21:49:57.3529526Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:57.3530313Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:57.3530632Z 
+2026-11-12T21:49:57.3531022Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3531805Z   --> rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:57.3532293Z    |
+2026-11-12T21:49:57.3532618Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:57.3533083Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:57.3533367Z 
+2026-11-12T21:49:57.3533787Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3534570Z    --> rmcp-client/src/mrtr_tests.rs:149:9
+2026-11-12T21:49:57.3535052Z     |
+2026-11-12T21:49:57.3535365Z 149 |         ClientInfo::new(
+2026-11-12T21:49:57.3535759Z     |         ^^^^^^^^^^
+2026-11-12T21:49:57.3535994Z 
+2026-11-12T21:49:57.3536419Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:57.3537443Z    --> rmcp-client/src/mrtr_tests.rs:171:13
+2026-11-12T21:49:57.3537906Z     |
+2026-11-12T21:49:57.3538328Z 171 |             ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:57.3538865Z     |             ^^^^^^^^^^
+2026-11-12T21:49:57.3539107Z 
+2026-11-12T21:49:57.3539529Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:57.3540286Z    --> rmcp-client/src/mrtr_tests.rs:228:9
+2026-11-12T21:49:57.3540736Z     |
+2026-11-12T21:49:57.3541159Z 228 |         ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:57.3551736Z     |         ^^^^^^^^^^
+2026-11-12T21:49:57.3551995Z 
+2026-11-12T21:49:57.3552448Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:57.3553277Z    --> rmcp-client/src/mrtr_tests.rs:139:22
+2026-11-12T21:49:57.3553760Z     |
+2026-11-12T21:49:57.3554103Z 139 |     use rmcp::model::ClientInfo;
+2026-11-12T21:49:57.3554538Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:57.3555063Z 
+2026-11-12T21:49:57.3555512Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:57.3556330Z    --> rmcp-client/src/mrtr_tests.rs:144:22
+2026-11-12T21:49:57.3557114Z     |
+2026-11-12T21:49:57.3557450Z 144 |     use rmcp::model::ServerInfo;
+2026-11-12T21:49:57.3557890Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:57.3558156Z 
+2026-11-12T21:49:57.3558311Z warning: 12 warnings emitted
+2026-11-12T21:49:57.3558586Z 
+2026-11-12T21:49:58.0582212Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:49:58.0598467Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:49:58.0763086Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:49:58.0784331Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:58.0885628Z   147 |   }
+2026-11-12T21:49:58.1015133Z       |   ^
+2026-11-12T21:49:58.1025464Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:49:58.1027924Z    32 |     __m_.lock();
+2026-11-12T21:49:58.1028930Z       |          ^
+2026-11-12T21:49:58.1030807Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:49:58.1033312Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:49:58.1034089Z       |                           ^
+2026-11-12T21:49:58.1035444Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:49:58.1036962Z   138 |       impl.lock();
+2026-11-12T21:49:58.1037657Z       |            ^
+2026-11-12T21:49:58.1039055Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:58.1040790Z   151 |       impl.unlock();
+2026-11-12T21:49:58.1041348Z       |            ^
+2026-11-12T21:49:58.1043179Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:49:58.1045622Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:49:58.1046912Z       |                                                                         ^
+2026-11-12T21:49:58.1048596Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:49:58.1050271Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:49:58.1050970Z       |                           ^
+2026-11-12T21:49:58.1051857Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:49:58.1053148Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:49:58.1054936Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:58.1056358Z   119 |   }
+2026-11-12T21:49:58.1057082Z       |   ^
+2026-11-12T21:49:58.1059283Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:49:58.1061448Z   310 |     __m_->lock_shared();
+2026-11-12T21:49:58.1062104Z       |           ^
+2026-11-12T21:49:58.1063681Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:49:58.1065420Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:58.1066178Z       |                           ^
+2026-11-12T21:49:58.1067531Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:49:58.1068688Z   111 |       impl.lock_shared();
+2026-11-12T21:49:58.1069322Z       |            ^
+2026-11-12T21:49:58.1070648Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:58.1072129Z   123 |       impl.unlock_shared();
+2026-11-12T21:49:58.1072761Z       |            ^
+2026-11-12T21:49:58.1074717Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:49:58.1077078Z   332 |       __m_->unlock_shared();
+2026-11-12T21:49:58.1077654Z       |             ^
+2026-11-12T21:49:58.1079035Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:49:58.1080892Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:58.1081540Z       |                           ^
+2026-11-12T21:49:58.1082144Z 4 warnings generated.
+2026-11-12T21:49:58.1553955Z [30,390 / 37,657] 134 / 583 tests; Compiling Rust bin //codex-rs/shell-escalation:codex-execve-wrapper (10 files); 15s remote, remote-cache ... (169 actions, 0 running)
+2026-11-12T21:49:58.3885354Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:58.4113969Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.4623378Z   --> rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:49:58.4882063Z    |
+2026-11-12T21:49:58.5137946Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:58.5147207Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:58.5148207Z    |
+2026-11-12T21:49:58.5148581Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:58.5148956Z 
+2026-11-12T21:49:58.5149483Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.5150404Z    --> rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:49:58.5150942Z     |
+2026-11-12T21:49:58.5151325Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:58.5151850Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:58.5152170Z 
+2026-11-12T21:49:58.5152626Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.5153477Z    --> rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:49:58.5153846Z     |
+2026-11-12T21:49:58.5154106Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:49:58.5154445Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:58.5154631Z 
+2026-11-12T21:49:58.5154733Z warning: 3 warnings emitted
+2026-11-12T21:49:58.5154899Z 
+2026-11-12T21:49:58.5155266Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:58.5155983Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.5156516Z   --> rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:49:58.5157327Z    |
+2026-11-12T21:49:58.5157973Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:58.5158371Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:58.5158611Z    |
+2026-11-12T21:49:58.5158835Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:58.5159048Z 
+2026-11-12T21:49:58.5159312Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.5159974Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:49:58.5160495Z     |
+2026-11-12T21:49:58.5160814Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:58.5161216Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:58.5161404Z 
+2026-11-12T21:49:58.5161653Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:58.5162180Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:49:58.5162516Z     |
+2026-11-12T21:49:58.5162714Z 241 |         ServerInfo::new(
+2026-11-12T21:49:58.5162961Z     |         ^^^^^^^^^^
+2026-11-12T21:49:58.5163102Z 
+2026-11-12T21:49:58.5163201Z warning: 3 warnings emitted
+2026-11-12T21:49:58.5163358Z 
+2026-11-12T21:49:58.7560800Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h:
+2026-11-12T21:49:58.7628025Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:58.7677002Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:58.7757384Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:58.9153001Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:58.9390915Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:59.0020134Z   --> rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:49:59.0136776Z    |
+2026-11-12T21:49:59.0257482Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:59.0287350Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:59.0410767Z    |
+2026-11-12T21:49:59.0449288Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:59.0517789Z 
+2026-11-12T21:49:59.0618514Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:59.0641180Z   --> rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:49:59.0740077Z    |
+2026-11-12T21:49:59.0828910Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:59.0905224Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:59.0983047Z 
+2026-11-12T21:49:59.1109401Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:59.1297888Z   --> rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:49:59.1363467Z    |
+2026-11-12T21:49:59.1597720Z 82 |         ServerInfo::new(
+2026-11-12T21:49:59.1598479Z    |         ^^^^^^^^^^
+2026-11-12T21:49:59.1603978Z 
+2026-11-12T21:49:59.1604407Z warning: 3 warnings emitted
+2026-11-12T21:49:59.1604965Z 
+2026-11-12T21:49:59.1605398Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T21:49:59.1606427Z external/aws-lc+/crypto/thread_win.c:186:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:49:59.1607660Z   186 | #pragma const_seg(".CRT$XLC")
+2026-11-12T21:49:59.1608272Z       |         ^
+2026-11-12T21:49:59.1609115Z external/aws-lc+/crypto/thread_win.c:192:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:49:59.1610084Z   192 | #pragma const_seg()
+2026-11-12T21:49:59.1611058Z       |         ^
+2026-11-12T21:49:59.1611584Z 2 warnings generated.
+2026-11-12T21:49:59.1612853Z [30,865 / 37,665] 148 / 583 tests; Compiling Rust bin //codex-rs/shell-escalation:codex-execve-wrapper (10 files); 0s remote, remote-cache ... (321 actions, 7 running)
+2026-11-12T21:50:00.1651031Z [31,815 / 37,683] 163 / 583 tests; Compiling Rust bin //codex-rs/linux-sandbox:codex-linux-sandbox (17 files); 1s remote, remote-cache ... (332 actions, 6 running)
+2026-11-12T21:50:02.4716154Z [32,039 / 37,684] 179 / 583 tests; Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (81 files); 3s remote, remote-cache ... (721 actions, 6 running)
+2026-11-12T21:50:03.1717860Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-12T21:50:03.1919376Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.2181185Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:50:03.2368226Z    |
+2026-11-12T21:50:03.2560346Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:03.2901450Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:03.3188092Z    |
+2026-11-12T21:50:03.3309775Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:03.3447300Z 
+2026-11-12T21:50:03.3617862Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.3837746Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:50:03.3947809Z     |
+2026-11-12T21:50:03.4280629Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:03.4377441Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:03.4547082Z 
+2026-11-12T21:50:03.4613855Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.4622345Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:50:03.4667232Z     |
+2026-11-12T21:50:03.4709077Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:50:03.4737131Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:03.4763080Z 
+2026-11-12T21:50:03.4787151Z warning: 3 warnings emitted
+2026-11-12T21:50:03.4788301Z 
+2026-11-12T21:50:03.4837685Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files):
+2026-11-12T21:50:03.5011248Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.5267760Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:50:03.5388282Z    |
+2026-11-12T21:50:03.5580363Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:03.5697414Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:03.5797334Z    |
+2026-11-12T21:50:03.5837327Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:03.5937024Z 
+2026-11-12T21:50:03.6017764Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.6288236Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:50:03.6417421Z    |
+2026-11-12T21:50:03.6537666Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:03.6627367Z    |                           ^^^^^^^^^^
+2026-11-12T21:50:03.6747164Z 
+2026-11-12T21:50:03.6838308Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.6937579Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:50:03.7057420Z    |
+2026-11-12T21:50:03.7107733Z 82 |         ServerInfo::new(
+2026-11-12T21:50:03.7198144Z    |         ^^^^^^^^^^
+2026-11-12T21:50:03.7257253Z 
+2026-11-12T21:50:03.7345695Z warning: 3 warnings emitted
+2026-11-12T21:50:03.7417001Z 
+2026-11-12T21:50:03.7478376Z [32,117 / 37,689] 180 / 583 tests; Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (81 files); 4s remote, remote-cache ... (799 actions, 8 running)
+2026-11-12T21:50:03.7537620Z INFO: From Compiling Rust bin //codex-rs/codex-mcp:codex-mcp-unit-tests-bin (44 files):
+2026-11-12T21:50:03.7597649Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.7598632Z   --> codex-mcp/src/connection_manager_tests.rs:76:18
+2026-11-12T21:50:03.7657693Z    |
+2026-11-12T21:50:03.7827843Z 76 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:03.7907587Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:03.8041325Z    |
+2026-11-12T21:50:03.8217623Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:03.8487332Z 
+2026-11-12T21:50:03.8627271Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.8750937Z    --> codex-mcp/src/connection_manager_tests.rs:254:27
+2026-11-12T21:50:03.8857693Z     |
+2026-11-12T21:50:03.9117582Z 254 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:03.9279830Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:03.9417165Z 
+2026-11-12T21:50:03.9527803Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:03.9687749Z    --> codex-mcp/src/connection_manager_tests.rs:255:9
+2026-11-12T21:50:03.9777402Z     |
+2026-11-12T21:50:03.9867730Z 255 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:03.9927276Z     |         ^^^^^^^^^^
+2026-11-12T21:50:03.9986952Z 
+2026-11-12T21:50:04.0108142Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.0177443Z    --> codex-mcp/src/connection_manager_tests.rs:302:27
+2026-11-12T21:50:04.0237218Z     |
+2026-11-12T21:50:04.0337636Z 302 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:04.0457671Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:04.0516919Z 
+2026-11-12T21:50:04.0597590Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.0687475Z    --> codex-mcp/src/connection_manager_tests.rs:303:9
+2026-11-12T21:50:04.0688058Z     |
+2026-11-12T21:50:04.0688642Z 303 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:04.0689334Z     |         ^^^^^^^^^^
+2026-11-12T21:50:04.0689581Z 
+2026-11-12T21:50:04.0690567Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.0691454Z   --> codex-mcp/src/binding_retained_tests.rs:21:27
+2026-11-12T21:50:04.0691969Z    |
+2026-11-12T21:50:04.0692312Z 21 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:04.0692821Z    |                           ^^^^^^^^^^
+2026-11-12T21:50:04.0693127Z 
+2026-11-12T21:50:04.0693572Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.0694416Z   --> codex-mcp/src/binding_retained_tests.rs:22:9
+2026-11-12T21:50:04.0694949Z    |
+2026-11-12T21:50:04.0695497Z 22 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:04.0696185Z    |         ^^^^^^^^^^
+2026-11-12T21:50:04.0696433Z 
+2026-11-12T21:50:04.0696831Z warning: 7 warnings emitted
+2026-11-12T21:50:04.0697108Z 
+2026-11-12T21:50:04.0697674Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files):
+2026-11-12T21:50:04.0787573Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.0847521Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:50:04.0907179Z    |
+2026-11-12T21:50:04.0997277Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:04.1072101Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:04.1137409Z    |
+2026-11-12T21:50:04.1175358Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:04.1259483Z 
+2026-11-12T21:50:04.1347904Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.1377316Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:50:04.1396992Z     |
+2026-11-12T21:50:04.1447252Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:04.1477160Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:04.1567064Z 
+2026-11-12T21:50:04.1619580Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:04.1667459Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:50:04.1737264Z     |
+2026-11-12T21:50:04.1863146Z 241 |         ServerInfo::new(
+2026-11-12T21:50:04.1997430Z     |         ^^^^^^^^^^
+2026-11-12T21:50:04.2057360Z 
+2026-11-12T21:50:04.2227532Z warning: 3 warnings emitted
+2026-11-12T21:50:04.2317043Z 
+2026-11-12T21:50:04.4728562Z [32,304 / 37,716] 180 / 583 tests; Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 1s remote, remote-cache ... (800 actions, 4 running)
+2026-11-12T21:50:05.4669882Z [32,368 / 37,716] 180 / 583 tests; Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 2s remote, remote-cache ... (800 actions, 4 running)
+2026-11-12T21:50:06.4778451Z [32,446 / 37,718] 180 / 583 tests; Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 3s remote, remote-cache ... (796 actions, 2 running)
+2026-11-12T21:50:07.4708383Z [32,539 / 37,719] 180 / 583 tests; Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer (50 files); 4s remote, remote-cache ... (797 actions, 1 running)
+2026-11-12T21:50:08.4720941Z [32,632 / 37,729] 180 / 583 tests; Testing //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test; 8s remote, remote-cache ... (797 actions, 0 running)
+2026-11-12T21:50:09.4769508Z [32,709 / 37,729] 180 / 583 tests; Testing //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test; 9s remote, remote-cache ... (800 actions, 0 running)
+2026-11-12T21:50:10.4878306Z [32,802 / 37,730] 186 / 583 tests; Testing //codex-rs/hepta-automation:hepta-automation-durable_causal_chain-test; 10s remote, remote-cache ... (797 actions, 0 running)
+2026-11-12T21:50:11.4895277Z [32,868 / 37,730] 191 / 583 tests; Testing //codex-rs/analytics:analytics-unit-tests; 11s remote, remote-cache ... (799 actions, 0 running)
+2026-11-12T21:50:12.4928440Z [32,968 / 37,730] 194 / 583 tests; Testing //codex-rs/shell-escalation:codex-execve-wrapper-bin-unit-tests; 12s remote, remote-cache ... (795 actions, 0 running)
+2026-11-12T21:50:13.4925077Z [33,064 / 37,730] 195 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__icu_normalizer_data-2.3.0//:icu_normalizer_data v2.3.0 (3 files); 13s ... (798 actions, 0 running)
+2026-11-12T21:50:14.6138602Z [33,186 / 37,730] 195 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__icu_normalizer_data-2.3.0//:icu_normalizer_data v2.3.0 (3 files); 14s ... (747 actions, 0 running)
+2026-11-12T21:50:15.6063328Z [33,305 / 37,730] 195 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__icu_normalizer_data-2.3.0//:icu_normalizer_data v2.3.0 (3 files); 15s ... (628 actions, 0 running)
+2026-11-12T21:50:16.6048474Z [33,413 / 37,730] 195 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__icu_normalizer_data-2.3.0//:icu_normalizer_data v2.3.0 (3 files); 16s ... (520 actions, 0 running)
+2026-11-12T21:50:17.6038509Z [33,528 / 37,730] 195 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__icu_normalizer_data-2.3.0//:icu_normalizer_data v2.3.0 (3 files); 17s ... (406 actions, 0 running)
+2026-11-12T21:50:18.6032554Z [33,666 / 37,730] 195 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__serde_json-1.0.154//:_bs; 15s ... (287 actions, 0 running)
+2026-11-12T21:50:19.6288215Z [33,797 / 37,730] 195 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__serde_json-1.0.154//:_bs; 16s ... (169 actions, 0 running)
+2026-11-12T21:50:20.6384341Z [34,224 / 37,730] 211 / 583 tests; Compiling src/objects/js-segmenter.cc [for tool]; 0s remote, remote-cache ... (800 actions, 0 running)
+2026-11-12T21:50:20.8217944Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T21:50:20.8233624Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:50:20.8449198Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:50:20.8742190Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:50:20.8901805Z   119 |   }
+2026-11-12T21:50:20.8953923Z       |   ^
+2026-11-12T21:50:20.9269935Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T21:50:20.9327444Z   310 |     __m_->lock_shared();
+2026-11-12T21:50:20.9472171Z       |           ^
+2026-11-12T21:50:20.9588406Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T21:50:20.9678392Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:50:20.9682441Z       |                                ^
+2026-11-12T21:50:21.0028137Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:50:21.0030805Z   111 |       impl.lock_shared();
+2026-11-12T21:50:21.0123430Z       |            ^
+2026-11-12T21:50:21.0340059Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:50:21.0754213Z   123 |       impl.unlock_shared();
+2026-11-12T21:50:21.0777217Z       |            ^
+2026-11-12T21:50:21.0778688Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T21:50:21.0780415Z   332 |       __m_->unlock_shared();
+2026-11-12T21:50:21.0780947Z       |             ^
+2026-11-12T21:50:21.0782838Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T21:50:21.0783956Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:50:21.0784291Z       |                                ^
+2026-11-12T21:50:21.0784739Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:50:21.0785379Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:50:21.0786301Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:50:21.0787359Z   147 |   }
+2026-11-12T21:50:21.0787560Z       |   ^
+2026-11-12T21:50:21.0788577Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T21:50:21.0789651Z    32 |     __m_.lock();
+2026-11-12T21:50:21.0789884Z       |          ^
+2026-11-12T21:50:21.0790776Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T21:50:21.0791625Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:50:21.0791943Z       |                                ^
+2026-11-12T21:50:21.0792469Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:50:21.0793001Z   138 |       impl.lock();
+2026-11-12T21:50:21.0793230Z       |            ^
+2026-11-12T21:50:21.0793863Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:50:21.0794579Z   151 |       impl.unlock();
+2026-11-12T21:50:21.0794816Z       |            ^
+2026-11-12T21:50:21.0796030Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T21:50:21.0797640Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:50:21.0798122Z       |                                                                         ^
+2026-11-12T21:50:21.0798953Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T21:50:21.0799752Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:50:21.0800064Z       |                                ^
+2026-11-12T21:50:21.0800463Z 4 warnings generated.
+2026-11-12T21:50:21.6438207Z [34,658 / 37,730] 225 / 583 tests; Testing //codex-rs/exec-server:exec-server-health-test; 1s remote, remote-cache ... (796 actions, 0 running)
+2026-11-12T21:50:22.8038510Z [35,011 / 37,730] 229 / 583 tests; Testing //codex-rs/exec-server:exec-server-health-test; 2s remote, remote-cache ... (797 actions, 0 running)
+2026-11-12T21:50:23.7430929Z [35,318 / 37,730] 241 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__crossbeam-deque-0.8.8//:_bs ... (798 actions, 0 running)
+2026-11-12T21:50:24.8203033Z [35,537 / 37,730] 241 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__crossbeam-deque-0.8.8//:_bs; 4s ... (769 actions, 0 running)
+2026-11-12T21:50:25.7458217Z [35,784 / 37,730] 241 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__crossbeam-deque-0.8.8//:_bs; 5s ... (796 actions, 0 running)
+2026-11-12T21:50:26.7448394Z [36,050 / 37,730] 241 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__heapless-0.7.17//:heapless v0.7.17 (26 files); 6s ... (799 actions, 0 running)
+2026-11-12T21:50:27.7451240Z [36,250 / 37,730] 241 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__heapless-0.7.17//:heapless v0.7.17 (26 files); 7s ... (797 actions, 0 running)
+2026-11-12T21:50:28.7508195Z [36,473 / 37,730] 241 / 583 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__schemars-0.8.22//:_bs; 8s ... (662 actions, 0 running)
+2026-11-12T21:50:29.7471234Z [36,723 / 37,730] 241 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__tree-sitter-0.25.10//:tree-sitter v0.25.10 (6 files); 8s ... (438 actions, 0 running)
+2026-11-12T21:50:30.7489192Z [36,916 / 37,730] 241 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__allocative-0.3.6//:allocative v0.3.6 (50 files); 7s ... (248 actions, 0 running)
+2026-11-12T21:50:31.7744657Z [37,094 / 37,730] 241 / 583 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__allocative-0.3.6//:allocative v0.3.6 (50 files); 8s ... (70 actions, 0 running)
+2026-11-12T21:50:32.7680158Z [37,386 / 37,758] 260 / 583 tests; Testing //codex-rs/ext/skills:skills-executor_file_system_authority-test; 0s remote, remote-cache ... (40 actions, 0 running)
+2026-11-12T21:50:33.3850647Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-12T21:50:33.3852874Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.3870253Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T21:50:33.3942653Z    |
+2026-11-12T21:50:33.3998503Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4017579Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4047118Z    |
+2026-11-12T21:50:33.4077228Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:33.4107013Z 
+2026-11-12T21:50:33.4123038Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4137342Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T21:50:33.4167195Z     |
+2026-11-12T21:50:33.4191809Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4217059Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4223838Z 
+2026-11-12T21:50:33.4224937Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4226109Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T21:50:33.4227060Z     |
+2026-11-12T21:50:33.4227843Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4228802Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.4229228Z 
+2026-11-12T21:50:33.4229835Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4230933Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T21:50:33.4231659Z    |
+2026-11-12T21:50:33.4232192Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4232776Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4233161Z 
+2026-11-12T21:50:33.4233693Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4234690Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T21:50:33.4235473Z      |
+2026-11-12T21:50:33.4236089Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4237188Z      |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4237741Z 
+2026-11-12T21:50:33.4238411Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4239501Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T21:50:33.4240247Z      |
+2026-11-12T21:50:33.4241022Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4241958Z      |         ^^^^^^^^^^
+2026-11-12T21:50:33.4242420Z 
+2026-11-12T21:50:33.4243070Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4244471Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T21:50:33.4245226Z    |
+2026-11-12T21:50:33.4245791Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4246449Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4247210Z 
+2026-11-12T21:50:33.4247873Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4248965Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T21:50:33.4249716Z      |
+2026-11-12T21:50:33.4250305Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4251034Z      |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4251562Z 
+2026-11-12T21:50:33.4252211Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4253306Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T21:50:33.4254053Z      |
+2026-11-12T21:50:33.4254828Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4255782Z      |         ^^^^^^^^^^
+2026-11-12T21:50:33.4256261Z 
+2026-11-12T21:50:33.4257141Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4258354Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T21:50:33.4259132Z    |
+2026-11-12T21:50:33.4259693Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4260363Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4260856Z 
+2026-11-12T21:50:33.4261524Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4262614Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T21:50:33.4263350Z     |
+2026-11-12T21:50:33.4263839Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4264471Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4265004Z 
+2026-11-12T21:50:33.4265741Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4266932Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T21:50:33.4267698Z     |
+2026-11-12T21:50:33.4268575Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:50:33.4269805Z     |                        ^^^^^^^^^^
+2026-11-12T21:50:33.4270377Z 
+2026-11-12T21:50:33.4270992Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4272058Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T21:50:33.4272797Z    |
+2026-11-12T21:50:33.4273327Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4273969Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4274429Z 
+2026-11-12T21:50:33.4275067Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4276215Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T21:50:33.4277315Z     |
+2026-11-12T21:50:33.4277909Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4278631Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4279146Z 
+2026-11-12T21:50:33.4279709Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4280636Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T21:50:33.4281281Z     |
+2026-11-12T21:50:33.4281884Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4283766Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.4284221Z 
+2026-11-12T21:50:33.4285241Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4286342Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T21:50:33.4287256Z    |
+2026-11-12T21:50:33.4287751Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4288315Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4289072Z 
+2026-11-12T21:50:33.4289662Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4290835Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T21:50:33.4291577Z     |
+2026-11-12T21:50:33.4292133Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4292801Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4293289Z 
+2026-11-12T21:50:33.4293910Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4295000Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T21:50:33.4295729Z     |
+2026-11-12T21:50:33.4296756Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:50:33.4297686Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.4298058Z 
+2026-11-12T21:50:33.4298598Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4299609Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T21:50:33.4300186Z     |
+2026-11-12T21:50:33.4300541Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4300977Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4301287Z 
+2026-11-12T21:50:33.4301689Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4302333Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T21:50:33.4302787Z     |
+2026-11-12T21:50:33.4303119Z 858 |         ServerInfo::new(
+2026-11-12T21:50:33.4303491Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.4303766Z 
+2026-11-12T21:50:33.4304144Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4304766Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T21:50:33.4305219Z    |
+2026-11-12T21:50:33.4305569Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4305969Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4306260Z 
+2026-11-12T21:50:33.4306947Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4307997Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T21:50:33.4308537Z      |
+2026-11-12T21:50:33.4309151Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4309671Z      |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4309992Z 
+2026-11-12T21:50:33.4310445Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4311306Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T21:50:33.4311770Z      |
+2026-11-12T21:50:33.4312259Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4312932Z      |         ^^^^^^^^^^
+2026-11-12T21:50:33.4313155Z 
+2026-11-12T21:50:33.4313560Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4314400Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T21:50:33.4314720Z    |
+2026-11-12T21:50:33.4314932Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.4315191Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.4315360Z 
+2026-11-12T21:50:33.4315616Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4316114Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T21:50:33.4316425Z      |
+2026-11-12T21:50:33.4317109Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.4317588Z      |                           ^^^^^^^^^^
+2026-11-12T21:50:33.4317874Z 
+2026-11-12T21:50:33.4318288Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.4319113Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T21:50:33.4319620Z      |
+2026-11-12T21:50:33.4320150Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.4321008Z      |         ^^^^^^^^^^
+2026-11-12T21:50:33.4321239Z 
+2026-11-12T21:50:33.4321393Z warning: 26 warnings emitted
+2026-11-12T21:50:33.4321640Z 
+2026-11-12T21:50:33.6252009Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-12T21:50:33.6267691Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6297268Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:50:33.6317287Z    |
+2026-11-12T21:50:33.6349241Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.6367421Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.6377147Z    |
+2026-11-12T21:50:33.6400842Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:33.6427088Z 
+2026-11-12T21:50:33.6447741Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6480845Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:50:33.6497164Z     |
+2026-11-12T21:50:33.6537060Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.6537833Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.6556401Z 
+2026-11-12T21:50:33.6557485Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6558697Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:50:33.6559494Z     |
+2026-11-12T21:50:33.6560350Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.6561342Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.6561856Z 
+2026-11-12T21:50:33.6562239Z warning: 3 warnings emitted
+2026-11-12T21:50:33.6562760Z 
+2026-11-12T21:50:33.6563299Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T21:50:33.6564545Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6565735Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:50:33.6566818Z    |
+2026-11-12T21:50:33.6567416Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:50:33.6568124Z    |                  ^^^^^^^^^^
+2026-11-12T21:50:33.6568799Z    |
+2026-11-12T21:50:33.6569353Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:50:33.6570050Z 
+2026-11-12T21:50:33.6571002Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6572078Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:50:33.6572792Z     |
+2026-11-12T21:50:33.6573355Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:50:33.6574055Z     |                           ^^^^^^^^^^
+2026-11-12T21:50:33.6574565Z 
+2026-11-12T21:50:33.6575216Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:50:33.6576275Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:50:33.6607433Z     |
+2026-11-12T21:50:33.6628305Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:50:33.6637098Z     |         ^^^^^^^^^^
+2026-11-12T21:50:33.6665083Z 
+2026-11-12T21:50:33.6697146Z warning: 3 warnings emitted
+2026-11-12T21:50:33.6730457Z 
+2026-11-12T21:50:33.7634894Z [37,557 / 37,790] 300 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 0s remote, remote-cache ... (21 actions, 3 running)
+2026-11-12T21:50:33.7752409Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (966 files):
+2026-11-12T21:50:33.7754284Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:50:33.7811271Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:50:33.7927373Z    |
+2026-11-12T21:50:33.7987195Z 22 | pub(super) enum Status {
+2026-11-12T21:50:33.8044682Z    |                 ------ variant in this enum
+2026-11-12T21:50:33.8073537Z ...
+2026-11-12T21:50:33.8074219Z 26 |     Unavailable = 4,
+2026-11-12T21:50:33.8074850Z    |     ^^^^^^^^^^^
+2026-11-12T21:50:33.8075980Z    |
+2026-11-12T21:50:33.8077314Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:50:33.8078688Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:50:33.8079373Z 
+2026-11-12T21:50:33.8079782Z warning: field `estimand` is never read
+2026-11-12T21:50:33.8080757Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:50:33.8081704Z    |
+2026-11-12T21:50:33.8082259Z 19 | pub(super) struct Checked {
+2026-11-12T21:50:33.8082970Z    |                   ------- field in this struct
+2026-11-12T21:50:33.8083665Z ...
+2026-11-12T21:50:33.8086802Z 23 |     pub estimand: Digest32,
+2026-11-12T21:50:33.8087487Z    |         ^^^^^^^^
+2026-11-12T21:50:33.8087928Z 
+2026-11-12T21:50:33.8088295Z warning: method `context` is never used
+2026-11-12T21:50:33.8089267Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:50:33.8090224Z    |
+2026-11-12T21:50:33.8091097Z 30 | impl Request {
+2026-11-12T21:50:33.8091722Z    | ------------ method in this implementation
+2026-11-12T21:50:33.8092413Z ...
+2026-11-12T21:50:33.8093026Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:50:33.8093875Z    |                   ^^^^^^^
+2026-11-12T21:50:33.8094361Z 
+2026-11-12T21:50:33.8094713Z warning: 3 warnings emitted
+2026-11-12T21:50:33.8095160Z 
+2026-11-12T21:50:34.7878311Z [37,604 / 37,793] 304 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 1s remote, remote-cache ... (35 actions, 27 running)
+2026-11-12T21:50:35.8225075Z [37,611 / 37,793] 304 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 2s remote, remote-cache ... (29 actions, 27 running)
+2026-11-12T21:50:36.8303857Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files):
+2026-11-12T21:50:36.8304606Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:50:36.8305042Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:50:36.8305406Z    |
+2026-11-12T21:50:36.8305617Z 22 | pub(super) enum Status {
+2026-11-12T21:50:36.8306142Z    |                 ------ variant in this enum
+2026-11-12T21:50:36.8306444Z ...
+2026-11-12T21:50:36.8306985Z 26 |     Unavailable = 4,
+2026-11-12T21:50:36.8307232Z    |     ^^^^^^^^^^^
+2026-11-12T21:50:36.8307434Z    |
+2026-11-12T21:50:36.8307921Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:50:36.8308606Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:50:36.8308878Z 
+2026-11-12T21:50:36.8308996Z warning: field `estimand` is never read
+2026-11-12T21:50:36.8309426Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:50:36.8309906Z    |
+2026-11-12T21:50:36.8310111Z 19 | pub(super) struct Checked {
+2026-11-12T21:50:36.8310391Z    |                   ------- field in this struct
+2026-11-12T21:50:36.8310672Z ...
+2026-11-12T21:50:36.8310875Z 23 |     pub estimand: Digest32,
+2026-11-12T21:50:36.8311124Z    |         ^^^^^^^^
+2026-11-12T21:50:36.8311265Z 
+2026-11-12T21:50:36.8311371Z warning: method `context` is never used
+2026-11-12T21:50:36.8311798Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:50:36.8312209Z    |
+2026-11-12T21:50:36.8312396Z 30 | impl Request {
+2026-11-12T21:50:36.8312650Z    | ------------ method in this implementation
+2026-11-12T21:50:36.8312936Z ...
+2026-11-12T21:50:36.8313201Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:50:36.8313577Z    |                   ^^^^^^^
+2026-11-12T21:50:36.8313729Z 
+2026-11-12T21:50:36.8313831Z warning: 3 warnings emitted
+2026-11-12T21:50:36.8314217Z 
+2026-11-12T21:50:36.8350753Z [37,618 / 37,795] 304 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 3s remote, remote-cache ... (28 actions, 26 running)
+2026-11-12T21:50:37.8419926Z [37,631 / 37,797] 308 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 4s remote, remote-cache ... (25 actions, 23 running)
+2026-11-12T21:50:38.8503292Z [37,644 / 37,801] 311 / 583 tests; Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 5s remote, remote-cache ... (22 actions, 21 running)
+2026-11-12T21:50:40.1743520Z [37,668 / 37,809] 320 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 5s remote, remote-cache ... (19 actions, 17 running)
+2026-11-12T21:50:41.3046969Z [37,687 / 37,820] 324 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 7s remote, remote-cache ... (16 actions, 15 running)
+2026-11-12T21:50:42.5065377Z [37,701 / 37,823] 327 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 8s remote, remote-cache ... (11 actions, 10 running)
+2026-11-12T21:50:43.7417814Z [37,707 / 37,824] 328 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 9s remote, remote-cache ... (8 actions running)
+2026-11-12T21:50:44.7420434Z [37,713 / 37,826] 330 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 10s remote, remote-cache ... (7 actions running)
+2026-11-12T21:50:47.4927824Z [37,714 / 37,826] 330 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 13s remote, remote-cache ... (9 actions, 6 running)
+2026-11-12T21:50:48.7426900Z [37,885 / 37,951] 374 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 14s remote, remote-cache ... (5 actions running)
+2026-11-12T21:50:49.7932993Z [37,886 / 37,951] 374 / 583 tests; Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files); 15s remote, remote-cache ... (5 actions, 4 running)
+2026-11-12T21:50:50.2414087Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files):
+2026-11-12T21:50:50.2414901Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:50:50.2415599Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:50:50.2416146Z    |
+2026-11-12T21:50:50.2416358Z 22 | pub(super) enum Status {
+2026-11-12T21:50:50.2416796Z    |                 ------ variant in this enum
+2026-11-12T21:50:50.2417286Z ...
+2026-11-12T21:50:50.2417501Z 26 |     Unavailable = 4,
+2026-11-12T21:50:50.2417746Z    |     ^^^^^^^^^^^
+2026-11-12T21:50:50.2417963Z    |
+2026-11-12T21:50:50.2418490Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:50:50.2419205Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:50:50.2419515Z 
+2026-11-12T21:50:50.2419626Z warning: field `estimand` is never read
+2026-11-12T21:50:50.2420089Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:50:50.2420531Z    |
+2026-11-12T21:50:50.2420738Z 19 | pub(super) struct Checked {
+2026-11-12T21:50:50.2421034Z    |                   ------- field in this struct
+2026-11-12T21:50:50.2421335Z ...
+2026-11-12T21:50:50.2421541Z 23 |     pub estimand: Digest32,
+2026-11-12T21:50:50.2421798Z    |         ^^^^^^^^
+2026-11-12T21:50:50.2421938Z 
+2026-11-12T21:50:50.2422053Z warning: method `context` is never used
+2026-11-12T21:50:50.2422734Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:50:50.2423172Z    |
+2026-11-12T21:50:50.2423371Z 30 | impl Request {
+2026-11-12T21:50:50.2423625Z    | ------------ method in this implementation
+2026-11-12T21:50:50.2423925Z ...
+2026-11-12T21:50:50.2424195Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:50:50.2424763Z    |                   ^^^^^^^
+2026-11-12T21:50:50.2424925Z 
+2026-11-12T21:50:50.2425027Z warning: 3 warnings emitted
+2026-11-12T21:50:50.2425197Z 
+2026-11-12T21:50:50.8015249Z [37,933 / 37,973] 396 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 16s remote, remote-cache ... (20 actions, 4 running)
+2026-11-12T21:50:52.7431667Z [37,933 / 37,973] 396 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 18s remote, remote-cache ... (20 actions, 19 running)
+2026-11-12T21:50:54.7435280Z [37,933 / 37,973] 396 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 20s remote, remote-cache ... (20 actions running)
+2026-11-12T21:50:55.8076291Z [37,934 / 37,973] 396 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 21s remote, remote-cache ... (20 actions, 19 running)
+2026-11-12T21:50:56.8559053Z [37,946 / 37,977] 400 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 22s remote, remote-cache ... (16 actions, 15 running)
+2026-11-12T21:50:57.9290145Z [37,958 / 37,982] 403 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 23s remote, remote-cache ... (13 actions, 11 running)
+2026-11-12T21:50:59.1955658Z [37,964 / 37,983] 406 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 24s remote, remote-cache ... (10 actions, 9 running)
+2026-11-12T21:51:00.2624483Z [37,967 / 37,984] 407 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 25s remote, remote-cache ... (9 actions, 8 running)
+2026-11-12T21:51:01.6264874Z [37,976 / 37,987] 410 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 27s remote, remote-cache ... (6 actions, 5 running)
+2026-11-12T21:51:02.7447911Z [37,978 / 37,988] 411 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 28s remote, remote-cache ... (5 actions running)
+2026-11-12T21:51:04.2015599Z [37,982 / 37,989] 412 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 29s remote, remote-cache ... (4 actions, 3 running)
+2026-11-12T21:51:05.7452566Z [37,987 / 37,991] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 31s remote, remote-cache ... (2 actions running)
+2026-11-12T21:51:15.7314468Z [37,987 / 37,991] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 41s remote, remote-cache ... (2 actions running)
+2026-11-12T21:51:45.7359670Z [37,987 / 37,991] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 71s remote, remote-cache ... (2 actions running)
+2026-11-12T21:51:46.6959019Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files):
+2026-11-12T21:51:46.6960103Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:51:46.6961036Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:46.6961666Z     |
+2026-11-12T21:51:46.6962007Z  84 | impl LedgerFixture {
+2026-11-12T21:51:46.6962554Z     | ------------------ associated items in this implementation
+2026-11-12T21:51:46.6963122Z ...
+2026-11-12T21:51:46.6963604Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:46.6964251Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6964616Z ...
+2026-11-12T21:51:46.6964865Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:51:46.6965198Z     |                   ^^^^^
+2026-11-12T21:51:46.6965439Z     |
+2026-11-12T21:51:46.6965735Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:51:46.6966021Z 
+2026-11-12T21:51:46.6966163Z warning: function `append_decision` is never used
+2026-11-12T21:51:46.6967175Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:51:46.6967557Z     |
+2026-11-12T21:51:46.6967973Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:51:46.6968478Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6968659Z 
+2026-11-12T21:51:46.6968778Z warning: function `closure` is never used
+2026-11-12T21:51:46.6969373Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:51:46.6969745Z     |
+2026-11-12T21:51:46.6969952Z 212 | pub(super) fn closure(
+2026-11-12T21:51:46.6970203Z     |               ^^^^^^^
+2026-11-12T21:51:46.6970357Z 
+2026-11-12T21:51:46.6970560Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:51:46.6971058Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:46.6971421Z    |
+2026-11-12T21:51:46.6971625Z 84 | impl LedgerFixture {
+2026-11-12T21:51:46.6971959Z    | ------------------ associated function in this implementation
+2026-11-12T21:51:46.6972309Z ...
+2026-11-12T21:51:46.6972603Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:46.6972992Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6973195Z 
+2026-11-12T21:51:46.6973341Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:51:46.6973733Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:51:46.6974073Z    |
+2026-11-12T21:51:46.6974283Z 22 | pub(super) enum Status {
+2026-11-12T21:51:46.6974564Z    |                 ------ variant in this enum
+2026-11-12T21:51:46.6974846Z ...
+2026-11-12T21:51:46.6975044Z 26 |     Unavailable = 4,
+2026-11-12T21:51:46.6975282Z    |     ^^^^^^^^^^^
+2026-11-12T21:51:46.6975487Z    |
+2026-11-12T21:51:46.6975975Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:51:46.6976462Z 
+2026-11-12T21:51:46.6976835Z warning: field `at` is never read
+2026-11-12T21:51:46.6977218Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:51:46.6977588Z    |
+2026-11-12T21:51:46.6977797Z 91 | pub(super) struct Fixture {
+2026-11-12T21:51:46.6978249Z    |                   ------- field in this struct
+2026-11-12T21:51:46.6978548Z 92 |     root: PathBuf,
+2026-11-12T21:51:46.6978781Z 93 |     pub(super) at: u64,
+2026-11-12T21:51:46.6979021Z    |                ^^
+2026-11-12T21:51:46.6979149Z 
+2026-11-12T21:51:46.6979324Z warning: associated function `from_research_store` is never used
+2026-11-12T21:51:46.6979749Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:51:46.6980085Z     |
+2026-11-12T21:51:46.6980326Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:51:46.6980750Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:51:46.6981134Z ...
+2026-11-12T21:51:46.6981351Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:51:46.6981640Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6981826Z 
+2026-11-12T21:51:46.6981936Z warning: field `estimand` is never read
+2026-11-12T21:51:46.6982331Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:51:46.6982718Z    |
+2026-11-12T21:51:46.6982919Z 19 | pub(super) struct Checked {
+2026-11-12T21:51:46.6983203Z    |                   ------- field in this struct
+2026-11-12T21:51:46.6983478Z ...
+2026-11-12T21:51:46.6983672Z 23 |     pub estimand: Digest32,
+2026-11-12T21:51:46.6983923Z    |         ^^^^^^^^
+2026-11-12T21:51:46.6984059Z 
+2026-11-12T21:51:46.6984168Z warning: method `context` is never used
+2026-11-12T21:51:46.6984546Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:51:46.6984932Z    |
+2026-11-12T21:51:46.6985117Z 30 | impl Request {
+2026-11-12T21:51:46.6985362Z    | ------------ method in this implementation
+2026-11-12T21:51:46.6985764Z ...
+2026-11-12T21:51:46.6986033Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:51:46.6986370Z    |                   ^^^^^^^
+2026-11-12T21:51:46.6986718Z 
+2026-11-12T21:51:46.6986938Z warning: function `ledger` is never used
+2026-11-12T21:51:46.6987389Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:51:46.6987784Z    |
+2026-11-12T21:51:46.6987977Z 80 | pub(super) fn ledger(
+2026-11-12T21:51:46.6988219Z    |               ^^^^^^
+2026-11-12T21:51:46.6988362Z 
+2026-11-12T21:51:46.6988481Z warning: function `material` is never used
+2026-11-12T21:51:46.6988896Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:51:46.6989300Z     |
+2026-11-12T21:51:46.6989503Z 302 | pub(super) fn material(
+2026-11-12T21:51:46.6989749Z     |               ^^^^^^^^
+2026-11-12T21:51:46.6989985Z 
+2026-11-12T21:51:46.6990204Z warning: function `material_with_profile` is never used
+2026-11-12T21:51:46.6990676Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:51:46.6991067Z     |
+2026-11-12T21:51:46.6991282Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:51:46.6991568Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6991740Z 
+2026-11-12T21:51:46.6991978Z warning: type alias `Selector` is never used
+2026-11-12T21:51:46.6992556Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:51:46.6993123Z    |
+2026-11-12T21:51:46.6993704Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:51:46.6994486Z    |                 ^^^^^^^^
+2026-11-12T21:51:46.6994730Z 
+2026-11-12T21:51:46.6994882Z warning: 13 warnings emitted
+2026-11-12T21:51:46.6995140Z 
+2026-11-12T21:51:46.7508360Z [37,989 / 37,999] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 72s remote, remote-cache ... (9 actions, 1 running)
+2026-11-12T21:51:47.8473796Z [37,989 / 37,999] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 73s remote, remote-cache ... (9 actions, 2 running)
+2026-11-12T21:51:49.7513105Z [37,989 / 37,999] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 75s remote, remote-cache ... (9 actions running)
+2026-11-12T21:51:57.7375695Z [37,989 / 37,999] 414 / 583 tests; Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 83s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:10.3942638Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files):
+2026-11-12T21:52:10.3943881Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:52:10.3944730Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:52:10.3945361Z     |
+2026-11-12T21:52:10.3945679Z  84 | impl LedgerFixture {
+2026-11-12T21:52:10.3946136Z     | ------------------ associated items in this implementation
+2026-11-12T21:52:10.3946831Z ...
+2026-11-12T21:52:10.3947251Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:52:10.3947788Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3948173Z ...
+2026-11-12T21:52:10.3948505Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:52:10.3949007Z     |                   ^^^^^
+2026-11-12T21:52:10.3949326Z     |
+2026-11-12T21:52:10.3949712Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:52:10.3950089Z 
+2026-11-12T21:52:10.3950273Z warning: function `append_decision` is never used
+2026-11-12T21:52:10.3950827Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:52:10.3951389Z     |
+2026-11-12T21:52:10.3951989Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:52:10.3953081Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3953366Z 
+2026-11-12T21:52:10.3953540Z warning: function `closure` is never used
+2026-11-12T21:52:10.3954164Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:52:10.3954736Z     |
+2026-11-12T21:52:10.3955097Z 212 | pub(super) fn closure(
+2026-11-12T21:52:10.3955499Z     |               ^^^^^^^
+2026-11-12T21:52:10.3955747Z 
+2026-11-12T21:52:10.3956101Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:52:10.3957206Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:52:10.3957818Z    |
+2026-11-12T21:52:10.3958141Z 84 | impl LedgerFixture {
+2026-11-12T21:52:10.3958676Z    | ------------------ associated function in this implementation
+2026-11-12T21:52:10.3959225Z ...
+2026-11-12T21:52:10.3959647Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:52:10.3960282Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3960619Z 
+2026-11-12T21:52:10.3960849Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:52:10.3961430Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:52:10.3961988Z    |
+2026-11-12T21:52:10.3962286Z 22 | pub(super) enum Status {
+2026-11-12T21:52:10.3962681Z    |                 ------ variant in this enum
+2026-11-12T21:52:10.3963084Z ...
+2026-11-12T21:52:10.3963365Z 26 |     Unavailable = 4,
+2026-11-12T21:52:10.3963697Z    |     ^^^^^^^^^^^
+2026-11-12T21:52:10.3964011Z    |
+2026-11-12T21:52:10.3964840Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:52:10.3965683Z 
+2026-11-12T21:52:10.3965852Z warning: field `at` is never read
+2026-11-12T21:52:10.3966469Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:52:10.3967328Z    |
+2026-11-12T21:52:10.3967658Z 91 | pub(super) struct Fixture {
+2026-11-12T21:52:10.3968126Z    |                   ------- field in this struct
+2026-11-12T21:52:10.3968617Z 92 |     root: PathBuf,
+2026-11-12T21:52:10.3969004Z 93 |     pub(super) at: u64,
+2026-11-12T21:52:10.3969396Z    |                ^^
+2026-11-12T21:52:10.3969957Z 
+2026-11-12T21:52:10.3970262Z warning: associated function `from_research_store` is never used
+2026-11-12T21:52:10.3971016Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:52:10.3971584Z     |
+2026-11-12T21:52:10.3971982Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:52:10.3972716Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:52:10.3973366Z ...
+2026-11-12T21:52:10.3973719Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:52:10.3974209Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3974520Z 
+2026-11-12T21:52:10.3974700Z warning: field `estimand` is never read
+2026-11-12T21:52:10.3975388Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:52:10.3976055Z    |
+2026-11-12T21:52:10.3976394Z 19 | pub(super) struct Checked {
+2026-11-12T21:52:10.3977047Z    |                   ------- field in this struct
+2026-11-12T21:52:10.3977529Z ...
+2026-11-12T21:52:10.3977864Z 23 |     pub estimand: Digest32,
+2026-11-12T21:52:10.3978280Z    |         ^^^^^^^^
+2026-11-12T21:52:10.3978506Z 
+2026-11-12T21:52:10.3978680Z warning: method `context` is never used
+2026-11-12T21:52:10.3979359Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:52:10.3980014Z    |
+2026-11-12T21:52:10.3980322Z 30 | impl Request {
+2026-11-12T21:52:10.3980724Z    | ------------ method in this implementation
+2026-11-12T21:52:10.3981211Z ...
+2026-11-12T21:52:10.3981649Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:52:10.3982235Z    |                   ^^^^^^^
+2026-11-12T21:52:10.3982501Z 
+2026-11-12T21:52:10.3982840Z warning: function `ledger` is never used
+2026-11-12T21:52:10.3983525Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:52:10.3984224Z    |
+2026-11-12T21:52:10.3984568Z 80 | pub(super) fn ledger(
+2026-11-12T21:52:10.3984945Z    |               ^^^^^^
+2026-11-12T21:52:10.3985199Z 
+2026-11-12T21:52:10.3985391Z warning: function `material` is never used
+2026-11-12T21:52:10.3986012Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:52:10.3986864Z     |
+2026-11-12T21:52:10.3987176Z 302 | pub(super) fn material(
+2026-11-12T21:52:10.3987561Z     |               ^^^^^^^^
+2026-11-12T21:52:10.3987813Z 
+2026-11-12T21:52:10.3988056Z warning: function `material_with_profile` is never used
+2026-11-12T21:52:10.3988798Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:52:10.3989439Z     |
+2026-11-12T21:52:10.3989785Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:52:10.3990249Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3990537Z 
+2026-11-12T21:52:10.3990721Z warning: type alias `Selector` is never used
+2026-11-12T21:52:10.3991377Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:52:10.3992006Z    |
+2026-11-12T21:52:10.3992649Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:52:10.3993420Z    |                 ^^^^^^^^
+2026-11-12T21:52:10.3993575Z 
+2026-11-12T21:52:10.3993675Z warning: 13 warnings emitted
+2026-11-12T21:52:10.3993835Z 
+2026-11-12T21:52:10.3994320Z [37,990 / 37,999] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 22s remote, remote-cache ... (9 actions, 8 running)
+2026-11-12T21:52:11.7540833Z [37,991 / 38,000] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 23s remote, remote-cache ... (9 actions, 8 running)
+2026-11-12T21:52:13.7543811Z [37,991 / 38,000] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 25s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:21.7415188Z [37,991 / 38,000] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 33s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:24.3123240Z [37,991 / 38,000] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 36s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:25.3450711Z [37,991 / 38,000] 414 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 37s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:26.4675228Z [37,991 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 38s remote, remote-cache ... (9 actions running)
+2026-11-12T21:52:27.7567548Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 39s remote, remote-cache ... (8 actions running)
+2026-11-12T21:52:37.7443356Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 49s remote, remote-cache ... (8 actions running)
+2026-11-12T21:53:07.7487786Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 79s remote, remote-cache ... (8 actions running)
+2026-11-12T21:54:07.7570947Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 139s remote, remote-cache ... (8 actions running)
+2026-11-12T21:54:46.3680838Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 178s remote, remote-cache ... (8 actions running)
+2026-11-12T21:54:47.7749916Z [37,992 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 179s remote, remote-cache ... (8 actions running)
+2026-11-12T21:54:49.7754764Z [37,993 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 181s remote, remote-cache ... (7 actions running)
+2026-11-12T21:55:00.7648012Z [37,993 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 192s remote, remote-cache ... (7 actions running)
+2026-11-12T21:55:13.1056458Z [37,993 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 205s remote, remote-cache ... (7 actions running)
+2026-11-12T21:55:14.3329727Z [37,993 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 206s remote, remote-cache ... (7 actions running)
+2026-11-12T21:55:15.7789607Z [37,993 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8); 207s remote, remote-cache ... (7 actions running)
+2026-11-12T21:55:17.4680666Z FAIL: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8) (Exit 101) (see /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_6_of_8/test.log)
+2026-11-12T21:55:17.4682512Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8):
+2026-11-12T21:55:17.4683395Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8):
+2026-11-12T21:55:17.4683940Z 
+2026-11-12T21:55:17.4684204Z running 153 tests
+2026-11-12T21:55:17.4684884Z test app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly ... ok
+2026-11-12T21:55:17.4685877Z test android_runtime::tests::android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack ... ok
+2026-11-12T21:55:17.4687545Z test authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack ... ok
+2026-11-12T21:55:17.4688833Z test authority_host_admin::tests::strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs ... ok
+2026-11-12T21:55:17.4690761Z test authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:55:17.4692576Z test authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:55:17.4694573Z test authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:55:17.4695920Z test authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:55:17.4697809Z test authority_host_learning_service_root_tests::root_learning_registered_service_dedicated_uid_child ... ignored, only the actual Root parent supplies this dedicated-UID child handoff
+2026-11-12T21:55:17.4698912Z test authority_host_runtime::session::desktop_startup::tests::joint_root_bounds_every_saved_selector_and_original_helper_path ... ok
+2026-11-12T21:55:17.4699821Z test authority_host_runtime::session::desktop_startup::tests::joint_root_fresh_and_recovery_profiles_cannot_relabel_each_other ... ok
+2026-11-12T21:55:17.4700738Z test authority_host_service::admin_issuer::tests::terminal_confirmation_refuses_new_epoch_without_reconstructing_original_lease ... ok
+2026-11-12T21:55:17.4701936Z test authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:55:17.4703446Z test authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:55:17.4704976Z test authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:55:17.4706915Z test authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:55:17.4708331Z test authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:55:17.4709401Z test authority_host_admin::deadline::tests::late_actual_owner_check_cannot_enter_registry_or_issuer_cas ... ok
+2026-11-12T21:55:17.4710160Z test cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims ... ok
+2026-11-12T21:55:17.4710992Z test cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim ... ok
+2026-11-12T21:55:17.4712025Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature ... ok
+2026-11-12T21:55:17.4713157Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission ... ok
+2026-11-12T21:55:17.4714715Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_candidate_source_read_keeps_legacy_missing_then_permanent_native_refusal ... ok
+2026-11-12T21:55:17.4716004Z test circuit_cell::tests::batch_tests::partial_batch_receipt_failure_recovers_only_original_pending_work ... ok
+2026-11-12T21:55:17.4717244Z test circuit_cell::tests::ports_tests::committed_q24_ports_feed_successor_features_and_replay_original_output ... ok
+2026-11-12T21:55:17.4718299Z test circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history ... ok
+2026-11-12T21:55:17.4719320Z test circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen ... ok
+2026-11-12T21:55:17.4720495Z test cognitive_checkpoint_unix::tests::invalid_request_is_refused_before_io_without_consuming_the_channel ... ok
+2026-11-12T21:55:17.4721582Z test cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded ... ok
+2026-11-12T21:55:17.4722760Z test config::root_handoff::late_writer::custody_tests::postload_birth_refusal_consumes_config_but_retains_active_original_session_file ... ok
+2026-11-12T21:55:17.4723807Z test config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed ... ok
+2026-11-12T21:55:17.4724666Z test control::tests::missing_control_socket_path_is_preparable_without_a_listener ... ok
+2026-11-12T21:55:17.4725526Z test cpu_policy::tests::fast_polling_cannot_create_pressure_or_repeated_proposals ... ok
+2026-11-12T21:55:17.4726396Z test cpu_policy::tests::fixed_target_obeys_slew_bound_and_does_not_refill_same_budget ... ok
+2026-11-12T21:55:17.4727701Z test cpu_policy::tests::old_future_and_replayed_measurements_are_refused ... ok
+2026-11-12T21:55:17.4728790Z test cpu_policy::tests::proposal_revalidates_original_sample_age_even_with_a_fresh_read ... ok
+2026-11-12T21:55:17.4729945Z test cpu_policy::tests::retained_charge_above_a_lowered_cap_is_a_valid_observation ... ok
+2026-11-12T21:55:17.4730921Z test cpu_policy::tests::reversed_pressure_does_not_reuse_the_old_streak ... ok
+2026-11-12T21:55:17.4732327Z test deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::registered_objective_text_and_human_signatures_cap_parent_and_refuse_new_use_after_expiry ... ok
+2026-11-12T21:55:17.4734177Z test deployment_issuer::calculator::issuer_final_tests::calculator_original_signature_is_capped_by_its_shorter_independent_parent ... ok
+2026-11-12T21:55:17.4735878Z test deployment_issuer::notes::observation::tests::oversized_metadata_and_counter_overflow_cannot_fall_back_to_old_latest ... ok
+2026-11-12T21:55:17.4737937Z test deployment_issuer::notes::tests::deployment_notes_distinct_payloads_share_canonical_signer_and_original_counter ... ok
+2026-11-12T21:55:17.4739308Z test deployment_issuer::root::tests::deployment_final_use_discards_post_io_expiry_without_reusing_its_sequence ... ok
+2026-11-12T21:55:17.4740140Z test deployment_issuer::root::tests::deployment_protected_factory_rejects_unprotected_parent_without_creating_key ... ok
+2026-11-12T21:55:17.4741326Z test deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease ... ignored, explicit root-only canonical issuer factory qualification on selected protected filesystem
+2026-11-12T21:55:17.4742403Z test deployment_issuer::tests::actual_random_key_signs_original_grant_and_ids_survive_reopen ... ok
+2026-11-12T21:55:17.4743186Z test deployment_issuer::text::recovery::tests::encoded_capacity_preserves_original_refs_and_does_not_consume_next_intent ... ok
+2026-11-12T21:55:17.4744066Z test deployment_issuer::text::retirement::tests::retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof ... ok
+2026-11-12T21:55:17.4745153Z test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal ... ok
+2026-11-12T21:55:17.4746084Z test deployment_issuer::text::tests::retained_text_signature_uses_original_key_store_and_sequence_after_reopen ... ok
+2026-11-12T21:55:17.4747244Z test deployment_issuer::text::tests::full_retention_refuses_new_identity_without_eviction_or_new_signature ... ok
+2026-11-12T21:55:17.4748060Z test desktop_thread_seed::tests::new_desktop_seed_binds_six_tools_and_cannot_enter_legacy_notes_recovery ... ok
+2026-11-12T21:55:17.4748822Z test desktop_thread_tool::proof::tests::neither_app_can_choose_authority_or_replace_the_original_callback_route ... ok
+2026-11-12T21:55:17.4749588Z test final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing ... ok
+2026-11-12T21:55:17.4750396Z test deployment_issuer::writer::tests::rotation::concurrent_exact_rotations_reconcile_one_original_counter_reservation ... ok
+2026-11-12T21:55:17.4751258Z test hos2_device::tests::production_owner_request_and_a02_wire_vectors_match ... ok
+2026-11-12T21:55:17.4751882Z test hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values ... ok
+2026-11-12T21:55:17.4752544Z test intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use ... ok
+2026-11-12T21:55:17.4753177Z test lane_b_runtime::tests::cancellation_deadline_overflow_preserves_dispatched_run ... ok
+2026-11-12T21:55:17.4753783Z test lane_b_runtime::tests::last_representable_cancel_deadline_remains_reconcilable ... ok
+2026-11-12T21:55:17.4754394Z test lane_b_runtime::tests::revision_overflow_preserves_dispatched_and_cancelling_state ... ok
+2026-11-12T21:55:17.4755063Z test lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed ... ok
+2026-11-12T21:55:17.4755827Z test learning_iteration_checkpoint::ports_tests::cancelled_checkpoint_waiter_keeps_the_original_persistence_lane ... ok
+2026-11-12T21:55:17.4756934Z test learning_iteration_checkpoint::profile::tests::learning_profile_refuses_a_progress_checkpoint_as_initial_registration ... ok
+2026-11-12T21:55:17.4757840Z test learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen ... ok
+2026-11-12T21:55:17.4758768Z test learning_iteration_checkpoint::transport::tests::ports_tests::root_checkpoint_ports_recover_original_stages_for_all_decisions ... ok
+2026-11-12T21:55:17.4759673Z test hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_refuses_changed_identity_revision_age_and_missing_proposal ... ok
+2026-11-12T21:55:17.4760609Z test learning_iteration_evidence_client::ordinary_stage_owners::lane::tests::conflicting_return_fences_without_replacing_the_existing_value ... ok
+2026-11-12T21:55:17.4761695Z test learning_iteration_evidence_client::tests::evaluation::missing_original_trainer_refuses_no_update_before_contacting_evaluator ... ok
+2026-11-12T21:55:17.4762681Z test learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding ... ok
+2026-11-12T21:55:17.4763720Z test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update ... ok
+2026-11-12T21:55:17.4764723Z test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit ... ok
+2026-11-12T21:55:17.4765712Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody ... ok
+2026-11-12T21:55:17.4766844Z test neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut ... ok
+2026-11-12T21:55:17.4767674Z test neuron_generation::tests::ordinary_owner_reopen_reads_original_worker_and_committed_prefix_without_dispatch ... ok
+2026-11-12T21:55:17.4768613Z test neuron_generation_current::test_support::drained_tests::same_model::same_model_cannot_bypass_ack_or_drain_and_original_updates_keep_rejecting_it ... ok
+2026-11-12T21:55:17.4769535Z test neuron_generation_current::tests::actual_new_current_or_withdrawal_cut_rejects_stale_selection_before_claim ... ok
+2026-11-12T21:55:17.4770299Z test neuron_generation_runtime::tests::both_drain_paths_retain_unknown_work_and_unacknowledged_output ... ok
+2026-11-12T21:55:17.4771094Z test neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent ... ok
+2026-11-12T21:55:17.4771943Z test neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends ... ok
+2026-11-12T21:55:17.4772787Z test neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome ... ok
+2026-11-12T21:55:17.4773491Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:55:17.4774156Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:55:17.4774892Z test neuron_generation_runtime::tests::update::expected_context::ordinary_runtime_rechecks_revocation_after_dispatch_and_readback ... ok
+2026-11-12T21:55:17.4775806Z test neuron_generation_runtime::tests::update::learning::ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution ... ok
+2026-11-12T21:55:17.4777482Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms ... ok
+2026-11-12T21:55:17.4778521Z test neuron_generation_runtime::tests::update::normal_runtime_reset_and_journal_reopen_keep_original_receipt ... ok
+2026-11-12T21:55:17.4779454Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::q24_loaded_bytes_survive_path_replacement_and_changed_bytes_need_new_bundle ... ok
+2026-11-12T21:55:17.4780650Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_distinguishes_missing_receipt_from_missing_native ... ok
+2026-11-12T21:55:17.4781858Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::q24_native_sgd_changes_one_row_and_serves_distinct_inputs_after_reopen ... ok
+2026-11-12T21:55:17.4782996Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training_plan::q24_frozen_plan_returns_exact_candidate_for_actual_worker_execution ... ok
+2026-11-12T21:55:17.4783982Z test neuron_v13_generation_bootstrap::tests::identity_epoch_and_closure_mismatch_leave_all_owner_files_untouched ... ok
+2026-11-12T21:55:17.4784730Z test notes_bootstrap::startup::tests::notes_startup_refuses_invalid_reservations_before_send ... ok
+2026-11-12T21:55:17.4785490Z test notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes ... ok
+2026-11-12T21:55:17.4786204Z test notes_document_observer::tests::notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery ... ok
+2026-11-12T21:55:17.4787322Z test notes_literal_adapter::thread_sender_tests::a_retained_original_turn_source_cannot_be_attributed_to_a_new_call ... ok
+2026-11-12T21:55:17.4788148Z test notes_thread_tool::human::tests::queue_reconciliation_must_observe_the_same_persisted_turn_without_new_admission ... ok
+2026-11-12T21:55:17.4788911Z test notes_thread_tool::tests::retained_unknown_item_can_only_be_referenced_for_read_only_status ... ok
+2026-11-12T21:55:17.4789608Z test notes_ui_endpoint::tests::notes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes ... ok
+2026-11-12T21:55:17.4790327Z test notes_ui_queue::tests::original_actions_remain_fifo_while_refresh_is_coalesced_and_cannot_fill_them ... ok
+2026-11-12T21:55:17.4791063Z test objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field ... ok
+2026-11-12T21:55:17.4791776Z test objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use ... ok
+2026-11-12T21:55:17.4792461Z test objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust ... ok
+2026-11-12T21:55:17.4793119Z test plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail ... ok
+2026-11-12T21:55:17.4793822Z test plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner ... ok
+2026-11-12T21:55:17.4794533Z test plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution ... ok
+2026-11-12T21:55:17.4795347Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry ... ok
+2026-11-12T21:55:17.4796417Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only ... ok
+2026-11-12T21:55:17.4797811Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once ... ok
+2026-11-12T21:55:17.4799261Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::expired_completed_learning_readback_can_finish_after_one_second_without_new_work ... ok
+2026-11-12T21:55:17.4800523Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_app_ready_with_closed_admission_never_claims ... ok
+2026-11-12T21:55:17.4801771Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::registry_tests::explicit_registry_rejects_aliases_foreign_agents_and_capacity ... ok
+2026-11-12T21:55:17.4803078Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work ... ok
+2026-11-12T21:55:17.4804258Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing ... ok
+2026-11-12T21:55:17.4805149Z test production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas ... ok
+2026-11-12T21:55:17.4805951Z test production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner ... ok
+2026-11-12T21:55:17.4806854Z test root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published ... ok
+2026-11-12T21:55:17.4807584Z test root_observation_cache::tests::revocations_only_accumulate_and_update_barrier_does_not_publish_early ... ok
+2026-11-12T21:55:17.4808324Z test root_observation_stream::tests::cancelled_original_exchange_discards_late_reply_and_stays_closed ... ok
+2026-11-12T21:55:17.4809191Z test root_production_handoff::learning::tests::learning_and_original_v1_handoffs_refuse_each_others_purpose ... ok
+2026-11-12T21:55:17.4810138Z test runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner ... ok
+2026-11-12T21:55:17.4811506Z test runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart ... ignored, requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries
+2026-11-12T21:55:17.4812831Z test neuron_v13_generation_bootstrap::tests::guarded::initial::runtime::actual_initial_v13_rejection_replays_then_retires_to_a_new_selected_task ... ok
+2026-11-12T21:55:17.4813753Z test runtime::tests::circuit_task_ingress::drain_tests::unavailable_owner_blocks_drain_even_without_a_circuit_profile ... ok
+2026-11-12T21:55:17.4814701Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_joins_signed_objective_and_committed_circuit_without_writes ... ok
+2026-11-12T21:55:17.4815736Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_rejects_foreign_operation_result_objective_and_agent ... ok
+2026-11-12T21:55:17.4816777Z test runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay ... ok
+2026-11-12T21:55:17.4817893Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows ... ok
+2026-11-12T21:55:17.4819291Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication ... ok
+2026-11-12T21:55:17.4820694Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows ... ok
+2026-11-12T21:55:17.4822577Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback has been running for over 60 seconds
+2026-11-12T21:55:17.4824706Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence ... FAILED
+2026-11-12T21:55:17.4826793Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback ... ok
+2026-11-12T21:55:17.4829046Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection ... FAILED
+2026-11-12T21:55:17.4830952Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_actual_training_failure_never_returns_or_resigns_b ... ok
+2026-11-12T21:55:17.4832926Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim has been running for over 60 seconds
+2026-11-12T21:55:17.4835205Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim ... FAILED
+2026-11-12T21:55:17.4837146Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use ... ok
+2026-11-12T21:55:17.4838310Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication ... ok
+2026-11-12T21:55:17.4839775Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only ... ignored, requires the original UID-0 issuer fixture
+2026-11-12T21:55:17.4841705Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once ... ignored, requires the original UID-0 issuer fixture
+2026-11-12T21:55:17.4843328Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending ... ok
+2026-11-12T21:55:17.4844780Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending ... FAILED
+2026-11-12T21:55:17.4846001Z test runtime::tests::circuit_task_ingress::runtime_tests::bootstrap_rejects_a_writer_outside_the_process_running_generation ... ok
+2026-11-12T21:55:17.4846865Z test runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store ... ok
+2026-11-12T21:55:17.4847727Z test runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure ... ok
+2026-11-12T21:55:17.4848432Z test runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request ... ok
+2026-11-12T21:55:17.4849104Z test runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome ... ok
+2026-11-12T21:55:17.4849833Z test runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services ... ok
+2026-11-12T21:55:17.4850587Z test runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity ... ok
+2026-11-12T21:55:17.4851345Z test runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract ... ok
+2026-11-12T21:55:17.4852171Z test runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities ... ok
+2026-11-12T21:55:17.4852909Z test runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks ... ok
+2026-11-12T21:55:17.4853493Z test state::isolation_tests::current_durable_run_start_requires_live_owner_trust ... ok
+2026-11-12T21:55:17.4854169Z test text_session::signer::tests::old_owner_receipt_does_not_gain_approval_permission_on_decode_or_reconnect ... ok
+2026-11-12T21:55:17.4854882Z test text_session::worker::tests::missing_root_keeps_reconnect_alive_and_cannot_admit_input ... ok
+2026-11-12T21:55:17.4855892Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature ... ok
+2026-11-12T21:55:17.4856745Z 
+2026-11-12T21:55:17.4856837Z failures:
+2026-11-12T21:55:17.4856955Z 
+2026-11-12T21:55:17.4858041Z ---- runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence stdout ----
+2026-11-12T21:55:17.4859274Z Error: OwnerUnavailable("original learning evidence owner")
+2026-11-12T21:55:17.4859532Z 
+2026-11-12T21:55:17.4860535Z ---- runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection stdout ----
+2026-11-12T21:55:17.4861773Z Error: original read transport: DeadlineElapsed
+2026-11-12T21:55:17.4861991Z 
+2026-11-12T21:55:17.4862080Z Caused by:
+2026-11-12T21:55:17.4862278Z     DeadlineElapsed
+2026-11-12T21:55:17.4862416Z 
+2026-11-12T21:55:17.4863408Z ---- runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim stdout ----
+2026-11-12T21:55:17.4864501Z 
+2026-11-12T21:55:17.4865762Z thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim' (2127) panicked at hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs:435:5:
+2026-11-12T21:55:17.4867487Z assertion failed: matches!(client.readback().await, Err(NextCommandError::Missing))
+2026-11-12T21:55:17.4868053Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T21:55:17.4868366Z 
+2026-11-12T21:55:17.4869133Z ---- runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending stdout ----
+2026-11-12T21:55:17.4870108Z Error: original read transport: DeadlineElapsed
+2026-11-12T21:55:17.4870441Z 
+2026-11-12T21:55:17.4870525Z Caused by:
+2026-11-12T21:55:17.4870728Z     DeadlineElapsed
+2026-11-12T21:55:17.4870855Z 
+2026-11-12T21:55:17.4870859Z 
+2026-11-12T21:55:17.4870942Z failures:
+2026-11-12T21:55:17.4871965Z     runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence
+2026-11-12T21:55:17.4873912Z     runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim
+2026-11-12T21:55:17.4875904Z     runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection
+2026-11-12T21:55:17.4877781Z     runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending
+2026-11-12T21:55:17.4878577Z 
+2026-11-12T21:55:17.4878871Z test result: FAILED. 135 passed; 4 failed; 14 ignored; 0 measured; 1086 filtered out; finished in 203.08s
+2026-11-12T21:55:17.4879271Z 
+2026-11-12T21:55:17.4879407Z ================================================================================
+2026-11-12T21:55:17.7792845Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 209s remote, remote-cache ... (6 actions running)
+2026-11-12T21:55:28.7689048Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 220s remote, remote-cache ... (6 actions running)
+2026-11-12T21:55:58.7729416Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 250s remote, remote-cache ... (6 actions running)
+2026-11-12T21:56:48.2363169Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 300s remote, remote-cache ... (6 actions running)
+2026-11-12T21:56:49.3126233Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 301s remote, remote-cache ... (6 actions running)
+2026-11-12T21:56:50.3780431Z [37,994 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 5 of 8); 302s remote, remote-cache ... (6 actions running)
+2026-11-12T21:56:50.3957407Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 8 of 8):
+2026-11-12T21:56:50.3959294Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 8 of 8):
+2026-11-12T21:56:50.3965365Z 
+2026-11-12T21:56:50.3965656Z running 159 tests
+2026-11-12T21:56:50.3966915Z test app_runtime::tests::notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state ... ok
+2026-11-12T21:56:50.3968241Z test authority_host_admin::tests::live_route_rejects_each_changed_root_lifetime_and_nonce ... ok
+2026-11-12T21:56:50.3969508Z test authority_host_bootstrap_seal::tests::bounded_encoder_does_not_append_an_oversized_fragment ... ok
+2026-11-12T21:56:50.3971328Z test authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.3973699Z test authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.3976265Z test authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.3978440Z test authority_host_runtime::issuer_renewal::tests::concurrent_canonical_revision_or_epoch_change_is_not_overwritten ... ok
+2026-11-12T21:56:50.3979958Z test authority_host_runtime::issuer_renewal::tests::ordinary_process_is_rejected_before_opening_config ... ok
+2026-11-12T21:56:50.3981380Z test authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing ... ok
+2026-11-12T21:56:50.3983400Z test authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:56:50.3985446Z test authority_host_service::tests::observation_discards_a_lease_expiring_during_io_or_a_different_epoch ... ok
+2026-11-12T21:56:50.3996027Z test authority_host_service::tests::observation_never_truncates_a_complete_revocation_head_to_fit ... ok
+2026-11-12T21:56:50.3998167Z test authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer ... ignored, explicit root/data-bind canonical three-lane service qualification
+2026-11-12T21:56:50.4000702Z test authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history ... ignored, explicit actual Root registered learning CAS qualification
+2026-11-12T21:56:50.4002553Z test authority_host_wire::tests::shared_proof_digest_covers_signature_and_closed_nested_original_lease ... ok
+2026-11-12T21:56:50.4003496Z test authority_host_runtime::session::notes_startup::reservation::tests::original_reservation_consume_keeps_the_elapsed_episode_budget ... ok
+2026-11-12T21:56:50.4004735Z test calculator_recovery_process::tests::calculator_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn ... ok
+2026-11-12T21:56:50.4005637Z test automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn ... ok
+2026-11-12T21:56:50.4006346Z test cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound ... ok
+2026-11-12T21:56:50.4007620Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody ... ok
+2026-11-12T21:56:50.4008786Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_cancel_keeps_occupied_lane_and_consumed_channel ... ok
+2026-11-12T21:56:50.4009721Z test cell_temporal_q24::tests::temporal_q24_changed_model_refuses_old_bundle_and_state ... ok
+2026-11-12T21:56:50.4010389Z test cell_temporal_q24::tests::temporal_q24_prefix_capacity_settles_and_survives_cold_reopen ... ok
+2026-11-12T21:56:50.4011277Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback ... ok
+2026-11-12T21:56:50.4012207Z test circuit_cell::tests::batch_tests::one_frozen_batch_keeps_scoped_state_and_ack_replay_independent ... ok
+2026-11-12T21:56:50.4012913Z test circuit_cell::tests::lost_claim_before_cell_admission_cannot_start_new_work_from_recovery ... ok
+2026-11-12T21:56:50.4013697Z test circuit_cell::tests::ports_tests::representation_encoder_rejects_cross_scope_frontier_shape_and_noncanonical_bytes ... ok
+2026-11-12T21:56:50.4014460Z test circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation ... ok
+2026-11-12T21:56:50.4015180Z test circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs ... ok
+2026-11-12T21:56:50.4016051Z test circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration ... ok
+2026-11-12T21:56:50.4017153Z test cognitive_checkpoint_unix::tests::bootstrap_rejects_wrong_lifetime_peer_and_non_pidfd_capabilities ... ok
+2026-11-12T21:56:50.4018160Z test cognitive_checkpoint_unix::tests::initial::non_current_handoff_is_rejected_before_output_and_closes_owned_lane ... ok
+2026-11-12T21:56:50.4019121Z test cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention ... ok
+2026-11-12T21:56:50.4019892Z test cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot ... ok
+2026-11-12T21:56:50.4020646Z test circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference ... ok
+2026-11-12T21:56:50.4021413Z test cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback ... ok
+2026-11-12T21:56:50.4022216Z test cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it ... ok
+2026-11-12T21:56:50.4022995Z test cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records ... ok
+2026-11-12T21:56:50.4023666Z test cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently ... ok
+2026-11-12T21:56:50.4024280Z test control::tests::dangling_control_symlink_is_not_treated_as_a_missing_entry ... ok
+2026-11-12T21:56:50.4024859Z test cpu_policy::tests::both_bounds_saturate_without_generating_equal_cap_writes ... ok
+2026-11-12T21:56:50.4025433Z test cpu_policy::tests::feedback_requires_two_separated_same_direction_samples ... ok
+2026-11-12T21:56:50.4026003Z test deployment_frontier::tests::unsafe_permissions_and_hardlinks_are_refused ... ok
+2026-11-12T21:56:50.4026734Z test cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed ... ok
+2026-11-12T21:56:50.4027614Z test deployment_issuer::notes::observation::tests::dropped_capture_cannot_return_an_older_artifact_as_latest_issue ... ok
+2026-11-12T21:56:50.4028569Z test deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::original_five_clock_samples_keep_post_io_expiry_consumed_and_text_history_exact ... ok
+2026-11-12T21:56:50.4029554Z test deployment_issuer::text::human::tests::exact_human_binding_survives_reopen_and_readback_never_changes_the_original_cas ... ok
+2026-11-12T21:56:50.4030434Z test deployment_issuer::writer::tests::issuer_parent::writer_rotation_revoked_issuer_parent_cannot_replace_retained_proof ... ok
+2026-11-12T21:56:50.4031313Z test deployment_issuer::notes::tests::deployment_notes_preserves_original_objective_route_across_exact_policy_replacement ... ok
+2026-11-12T21:56:50.4032164Z test deployment_issuer::writer::tests::rotation::original_revocation_allows_one_rotation_and_exact_lost_ack_reconcile ... ok
+2026-11-12T21:56:50.4032939Z test desktop_thread_seed::tests::desktop_seed_rechecks_actual_configuration_and_session_metadata ... ok
+2026-11-12T21:56:50.4033696Z test desktop_thread_tool::runtime::tests::missing_history_and_current_state_do_not_manufacture_an_effect_success ... ok
+2026-11-12T21:56:50.4034511Z test final_use_issuer::root_client::tests::root_text_sign_then_lookup_keeps_original_generation_and_signature_identity ... ok
+2026-11-12T21:56:50.4035280Z test hos2_device::bootstrap_tests::g2_initial_and_successor_attach_only_the_original_matching_role ... ok
+2026-11-12T21:56:50.4035929Z test hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable ... ok
+2026-11-12T21:56:50.4036678Z test intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission ... ok
+2026-11-12T21:56:50.4037473Z test learning_iteration_checkpoint::profile::tests::learning_profile_refuses_unknown_storage_fields_and_incompatible_schema ... ok
+2026-11-12T21:56:50.4038354Z test learning_iteration_checkpoint::profile::tests::scoped_learning_profile_roundtrips_and_refuses_scope_substitution ... ok
+2026-11-12T21:56:50.4039198Z test deployment_issuer::writer::tests::rotation::expired_or_original_pruned_predecessor_keeps_strict_signed_identity ... ok
+2026-11-12T21:56:50.4040186Z test learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged ... ok
+2026-11-12T21:56:50.4041141Z test learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_exchange_rejects_legacy_or_rebound_transport_before_storage ... ok
+2026-11-12T21:56:50.4042080Z test learning_iteration_checkpoint::transport::tests::learning_checkpoint_commit_without_ack_requires_fresh_original_connection ... ok
+2026-11-12T21:56:50.4042930Z test learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas ... ok
+2026-11-12T21:56:50.4043723Z test learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset ... ok
+2026-11-12T21:56:50.4044655Z test learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies ... ok
+2026-11-12T21:56:50.4045668Z test learning_iteration_evidence_client::ordinary_stage_owners::lane::tests::poisoned_return_drops_original_and_never_reopens_admission ... ok
+2026-11-12T21:56:50.4046726Z test learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport ... ok
+2026-11-12T21:56:50.4047659Z test learning_iteration_evidence_client::tests::generation::substituted_receipt_and_unpublished_actor_never_contact_evidence_owner ... ok
+2026-11-12T21:56:50.4048558Z test learning_iteration_evidence_client::tests::public_constructor_refuses_the_daemons_own_uid_before_any_request ... ok
+2026-11-12T21:56:50.4049459Z test learning_iteration_evidence_client::tests::generation::retained_and_updated_original_evidence_survives_actor_and_runtime_reopen ... ok
+2026-11-12T21:56:50.4050582Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_generator_journal_after_cache ... ok
+2026-11-12T21:56:50.4051975Z test learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context ... ok
+2026-11-12T21:56:50.4053189Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_source_after_cache ... ok
+2026-11-12T21:56:50.4054351Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... ok
+2026-11-12T21:56:50.4055500Z test learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize ... ok
+2026-11-12T21:56:50.4056635Z test learning_iteration_research_external_material::tests::research_material_canonicalization_sorts_every_object_level ... ok
+2026-11-12T21:56:50.4057530Z test learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases ... ok
+2026-11-12T21:56:50.4058441Z test learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner ... ok
+2026-11-12T21:56:50.4059376Z test learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation ... ok
+2026-11-12T21:56:50.4060414Z test native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:56:50.4061563Z test native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:56:50.4062668Z test native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:56:50.4063606Z test neuron_cell_evaluation::tests::learning::repeated_current_checks_keep_original_bytes_and_expiry_is_an_error ... ok
+2026-11-12T21:56:50.4064543Z test neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown ... ok
+2026-11-12T21:56:50.4065422Z test neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original ... ok
+2026-11-12T21:56:50.4066391Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion ... ok
+2026-11-12T21:56:50.4067459Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty ... ok
+2026-11-12T21:56:50.4068373Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty ... ok
+2026-11-12T21:56:50.4069227Z test neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model ... ok
+2026-11-12T21:56:50.4070058Z test neuron_generation_current::test_support::drained_tests::retirement_requires_both_settled_request_and_actual_output_ack ... ok
+2026-11-12T21:56:50.4071031Z test neuron_generation_current::test_support::drained_tests::same_model::same_model_requires_own_signed_purpose_and_lost_ack_recovery_never_claims_again ... ok
+2026-11-12T21:56:50.4072082Z test neuron_generation_current::test_support::expected_context_tests::expected_context_cold_pending_replay_and_cancellation_keep_original_identity ... ok
+2026-11-12T21:56:50.4073079Z test neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback ... ok
+2026-11-12T21:56:50.4073975Z test neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen ... ok
+2026-11-12T21:56:50.4074919Z test neuron_generation_runtime::tests::queued_old_cancel_and_reconcile_cannot_target_a_new_pending_operation ... ok
+2026-11-12T21:56:50.4075798Z test neuron_generation_runtime::tests::update::adopted_learning::contract::backend_without_encoder_retains_its_explicit_optional_contract ... ok
+2026-11-12T21:56:50.4077204Z test neuron_generation_runtime::tests::update::real_learning::actual_smollm_external_artifact_native_adoption_and_cold_readback ... ignored, explicit external-artifact research owner, real pinned model and fresh operation required
+2026-11-12T21:56:50.4078460Z test neuron_generation_runtime::tests::update::real_learning::learning_iteration_real_model_task_input_routing_is_stage_bound ... ok
+2026-11-12T21:56:50.4079365Z test neuron_generation_runtime::tests::update::successive::cold_takeover_rejects_real_stopped_drained_but_unacknowledged_output ... ok
+2026-11-12T21:56:50.4080403Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::private_head::q24_single_private_head_rejects_frozen_changes_extra_rows_and_no_change ... ok
+2026-11-12T21:56:50.4081604Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::feature::q24_feature_original_pending_reopens_control_and_cell_without_native_reexecution ... ok
+2026-11-12T21:56:50.4082858Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization ... ok
+2026-11-12T21:56:50.4084166Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::observation::q24_anchored_training_observation_preserves_actual_result_and_refuses_rebound_prefix ... ok
+2026-11-12T21:56:50.4085349Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature ... ok
+2026-11-12T21:56:50.4086472Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains ... ok
+2026-11-12T21:56:50.4087812Z test neuron_v13_generation_bootstrap::tests::guarded::initial::initial_unsigned_bad_signature_wrong_binding_and_changed_current_never_activate ... ok
+2026-11-12T21:56:50.4088846Z test neuron_v13_generation_bootstrap::tests::guarded::initial::runtime::initial_ready_rejects_wrong_runtime_identity_and_queue_before_preparation_cost ... ok
+2026-11-12T21:56:50.4089868Z test neuron_v13_generation_bootstrap::tests::guarded::initial::uncertain_initial_claim_remains_pending_until_new_signed_forward_publication ... ok
+2026-11-12T21:56:50.4090775Z test neuron_v13_generation_bootstrap::tests::preparation_scope_is_sticky_after_lock_failure_and_atomic_between_tasks ... ok
+2026-11-12T21:56:50.4091462Z test notes_channel::tests::closed_peer_buffered_frame_remains_readable ... ok
+2026-11-12T21:56:50.4092074Z test notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams ... ok
+2026-11-12T21:56:50.4092759Z test notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent ... ok
+2026-11-12T21:56:50.4093491Z test notes_literal_adapter::desktop_recorded::recovery::tests::empty_validated_cut_has_no_previous_operation ... ok
+2026-11-12T21:56:50.4094258Z test notes_literal_adapter::ui_worker::tests::notes_ui_failed_or_cancelled_refresh_cannot_renew_cached_ready ... ok
+2026-11-12T21:56:50.4094989Z test notes_thread_seed::tests::persisted_seed_metadata_requires_exact_original_identity_and_catalog ... ok
+2026-11-12T21:56:50.4095749Z test notes_thread_tool::status::tests::selector_and_exact_references_are_exclusive_and_cannot_supply_authority ... ok
+2026-11-12T21:56:50.4096403Z test plasticity_host::tests::owner_evidence_receipt_is_context_bound ... ok
+2026-11-12T21:56:50.4097106Z test plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds ... ok
+2026-11-12T21:56:50.4098268Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint ... ok
+2026-11-12T21:56:50.4099693Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::retirement_recovery_tests::ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutation ... ok
+2026-11-12T21:56:50.4101034Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::partial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication ... ok
+2026-11-12T21:56:50.4102355Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::training_no_update_auth_tests::trainer_no_update_recovery_authenticates_generator_selector_and_observer_without_evaluator ... ok
+2026-11-12T21:56:50.4103761Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_readback_rechecks_training_before_requesting_any_attestation ... ok
+2026-11-12T21:56:50.4104768Z test plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint ... ok
+2026-11-12T21:56:50.4105686Z test neuron_v13_generation_bootstrap::tests::real_v13_rejection_retains_cost_and_reopens_original_result_without_repreparation ... ok
+2026-11-12T21:56:50.4106676Z test production_launcher::desktop_deployment::tests::joint_wire_never_defaults_a_release_interaction_or_old_recovery ... ok
+2026-11-12T21:56:50.4107391Z test prompt_runtime::tests::final_delivered_terminal_releases_staged_turn ... ok
+2026-11-12T21:56:50.4108025Z test prompt_runtime::tests::owner_drop_releases_retained_descriptor_without_releasing_successor_lock ... ok
+2026-11-12T21:56:50.4108654Z test prompt_runtime::tests::owner_remains_send_sync_with_fault_injection ... ok
+2026-11-12T21:56:50.4109547Z test root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody ... ignored, explicit actual Root fixture, held descriptors and dedicated-UID child
+2026-11-12T21:56:50.4110524Z test root_production_inputs::tests::empty_or_oversized_handoff_is_refused_before_custody_or_parsing ... ok
+2026-11-12T21:56:50.4111323Z test root_production_inputs::tests::ordinary_json_file_is_not_a_root_production_handoff ... ok
+2026-11-12T21:56:50.4112050Z test root_writer_proof::tests::observation_requires_full_fixed_identity_but_allows_unrelated_store_advancement ... ok
+2026-11-12T21:56:50.4112810Z test root_writer_proof::tests::verified_complete_proof_and_ascii_signature_create_exact_original_lease ... ok
+2026-11-12T21:56:50.4113602Z test production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install ... ok
+2026-11-12T21:56:50.4114315Z test runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor ... ok
+2026-11-12T21:56:50.4115164Z test runtime::hos2_recovery_tests::notes_tests::objective_tests::finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture ... ok
+2026-11-12T21:56:50.4116294Z test runtime::tests::circuit_task_ingress::q24_tests::cold_recovery::q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retained_token_or_repairs ... ok
+2026-11-12T21:56:50.4118084Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion has been running for over 60 seconds
+2026-11-12T21:56:50.4120280Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut has been running for over 60 seconds
+2026-11-12T21:56:50.4122500Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion ... FAILED
+2026-11-12T21:56:50.4124523Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut ... FAILED
+2026-11-12T21:56:50.4126377Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel ... ok
+2026-11-12T21:56:50.4128016Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures ... ok
+2026-11-12T21:56:50.4129625Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute has been running for over 60 seconds
+2026-11-12T21:56:50.4131026Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes ... ok
+2026-11-12T21:56:50.4132116Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision ... ok
+2026-11-12T21:56:50.4133364Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant ... ok
+2026-11-12T21:56:50.4134207Z ================================================================================
+2026-11-12T21:56:50.8429348Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 2 of 8):
+2026-11-12T21:56:50.8437999Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 2 of 8):
+2026-11-12T21:56:50.8438720Z 
+2026-11-12T21:56:50.8438867Z running 159 tests
+2026-11-12T21:56:50.8439459Z test authority_host_bootstrap_seal::tests::non_root_cannot_create_the_bootstrap_descriptor ... ok
+2026-11-12T21:56:50.8440444Z test authority_host_checkpoint::adoption::tests::root_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.8441666Z test authority_host_checkpoint::adoption::tests::root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.8442815Z test authority_host_checkpoint::tests::root_cycle_is_durable_exact_and_never_implicitly_reinitialized ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.8443913Z test authority_host_checkpoint::tests::root_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:56:50.8444854Z test authority_host_runtime::issuer_renewal::tests::changed_plan_fields_never_mutate_the_original_registry ... ok
+2026-11-12T21:56:50.8445621Z test authority_host_runtime::issuer_renewal::tests::preparation_rejects_invalid_lifetime_revision_and_time ... ok
+2026-11-12T21:56:50.8446379Z test authority_host_runtime::listeners::tests::readiness_is_not_called_for_an_invalid_original_lane_parent ... ok
+2026-11-12T21:56:50.8447743Z test authority_host_runtime::process_tests::original_owner_process_rejects_same_uid_with_different_gid ... ignored, explicit Root credential test; only the spawned child changes credentials
+2026-11-12T21:56:50.8449052Z test authority_host_runtime::session::desktop_startup::tests::joint_root_requires_both_exact_previous_policies_and_a_distinct_actual_pair ... ok
+2026-11-12T21:56:50.8450311Z test authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change ... ignored, explicit actual Root scope-refusal test, no Agent runtime is started
+2026-11-12T21:56:50.8451608Z test authority_host_runtime::session::notes_startup::reservation::tests::reservation_checks_real_sender_and_rejects_missing_credential_option ... ok
+2026-11-12T21:56:50.8452823Z test authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:56:50.8453914Z test authority_host_admin::deadline::tests::late_actual_lifetime_read_cannot_enter_registry_or_issuer_cas ... ok
+2026-11-12T21:56:50.8454644Z test calculator_channel::tests::calculator_recovery_rejects_effect_before_sending_any_datagram ... ok
+2026-11-12T21:56:50.8455349Z test cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads ... ok
+2026-11-12T21:56:50.8456109Z test cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled ... ok
+2026-11-12T21:56:50.8457238Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_proof_rejects_same_bytes_after_original_source_drop ... ok
+2026-11-12T21:56:50.8458178Z test automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen ... ok
+2026-11-12T21:56:50.8458875Z test circuit_cell::tests::all_join_materializes_frozen_reference_bytes_for_the_next_native_cell ... ok
+2026-11-12T21:56:50.8459626Z test circuit_cell::tests::batch_tests::circuit_deadline_after_cell_fsync_prevents_batch_contact_and_reopens_pending ... ok
+2026-11-12T21:56:50.8460539Z test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission ... ok
+2026-11-12T21:56:50.8461442Z test circuit_cell::tests::causal_tests::causal_readback_refuses_substituted_inputs_and_absent_cell_owner_history ... ok
+2026-11-12T21:56:50.8462285Z test circuit_cell::tests::either_late_phase_clock_regression_preserves_pending_for_readback ... ok
+2026-11-12T21:56:50.8462988Z test circuit_cell::tests::two_cells_share_one_model_facility_but_keep_separate_state_and_causal_output ... ok
+2026-11-12T21:56:50.8463802Z test circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation ... ok
+2026-11-12T21:56:50.8464675Z test circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting ... ok
+2026-11-12T21:56:50.8465431Z test circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events ... ok
+2026-11-12T21:56:50.8466204Z test circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append ... ok
+2026-11-12T21:56:50.8467217Z test cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records ... ok
+2026-11-12T21:56:50.8467955Z test circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch ... ok
+2026-11-12T21:56:50.8468962Z test config::root_handoff::tests::original_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry ... ignored, explicit actual Root original Registry, file lock and SQLite preparation
+2026-11-12T21:56:50.8470013Z test config::root_handoff::tests::root_handoff_rejects_zero_uid_or_gid_without_releasing_a_runtime ... ok
+2026-11-12T21:56:50.8470634Z test cpu_policy::tests::another_valid_revision_starts_a_new_pressure_streak ... ok
+2026-11-12T21:56:50.8471163Z test cpu_policy::tests::event_loss_is_not_cleared_by_a_later_zero_count ... ok
+2026-11-12T21:56:50.8471675Z test cpu_policy::tests::zero_budget_is_not_inferred_to_be_user_pause ... ok
+2026-11-12T21:56:50.8472367Z test deployment_frontier::tests::restart_retains_cas_and_rejects_an_old_local_snapshot ... ok
+2026-11-12T21:56:50.8473254Z test deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::protected_objective_compatibility_entry_cannot_bypass_original_writer_registration ... ok
+2026-11-12T21:56:50.8474271Z test deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair ... ok
+2026-11-12T21:56:50.8475196Z test deployment_issuer::notes::observation::tests::actual_issuer_result_preserves_original_bytes_id_nonce_epoch_binding_and_signature ... ok
+2026-11-12T21:56:50.8476066Z test deployment_issuer::notes::tests::deployment_notes_ambiguous_notes_slot_cannot_install_or_replace_policy ... ok
+2026-11-12T21:56:50.8477062Z test deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_requires_original_non_notes_policy_and_exact_live_lease ... ok
+2026-11-12T21:56:50.8477976Z test deployment_issuer::original_grant::tests::exact_original_head_cas_refuses_stale_revision_without_advancing_real_state ... ok
+2026-11-12T21:56:50.8478807Z test deployment_issuer::root::tests::deployment_protected_concurrent_revision_cannot_sign_with_an_older_expiry ... ok
+2026-11-12T21:56:50.8479637Z test deployment_issuer::text::recovery::tests::restart_recovers_only_exact_namespace_and_old_generation_without_signing ... ok
+2026-11-12T21:56:50.8480496Z test deployment_issuer::text::unsigned::tests::lost_unsigned_close_ack_and_late_sign_stay_closed_after_original_owner_reopen ... ok
+2026-11-12T21:56:50.8481331Z test deployment_issuer::writer::tests::issuer_parent::writer_proof_revoked_issuer_parent_cannot_create_authority ... ok
+2026-11-12T21:56:50.8482063Z test final_use_issuer::tests::oversized_and_empty_frames_are_rejected_without_reading_a_body ... ok
+2026-11-12T21:56:50.8482699Z test hos2_device::tests::known_request_refusals_cannot_query_an_older_applied_delivery ... ok
+2026-11-12T21:56:50.8483382Z test cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation ... ok
+2026-11-12T21:56:50.8484166Z test intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust ... ok
+2026-11-12T21:56:50.8485060Z test intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes ... ok
+2026-11-12T21:56:50.8485731Z test intelligence_product::tests::missing_current_owner_fails_before_product_use ... ok
+2026-11-12T21:56:50.8486323Z test lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment ... ok
+2026-11-12T21:56:50.8487104Z test lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity ... ok
+2026-11-12T21:56:50.8487808Z test lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission ... ok
+2026-11-12T21:56:50.8488519Z test lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence ... ok
+2026-11-12T21:56:50.8489292Z test learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected ... ok
+2026-11-12T21:56:50.8490148Z test learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_reopens_all_decisions_and_refuses_profile_downgrade ... ok
+2026-11-12T21:56:50.8491024Z test learning_iteration_checkpoint::transport::tests::learning_checkpoint_wrong_semantic_ack_consumes_original_lane ... ok
+2026-11-12T21:56:50.8491945Z test learning_iteration_checkpoint::transport::tests::scope_tests::scoped_root_checkpoint_lost_ack_requires_original_scope_on_fresh_connection ... ok
+2026-11-12T21:56:50.8492960Z test learning_iteration_checkpoint::transport::tests::scope_tests::scoped_root_checkpoint_ports_keep_scope_across_all_decisions_and_cold_recovery ... ok
+2026-11-12T21:56:50.8493898Z test intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution ... ok
+2026-11-12T21:56:50.8494941Z test learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm ... ok
+2026-11-12T21:56:50.8495966Z test learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute ... ok
+2026-11-12T21:56:50.8497079Z test learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims ... ok
+2026-11-12T21:56:50.8498079Z test learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt ... ok
+2026-11-12T21:56:50.8499099Z test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes ... ok
+2026-11-12T21:56:50.8500094Z test learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io ... ok
+2026-11-12T21:56:50.8501073Z test learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads ... ok
+2026-11-12T21:56:50.8501996Z test learning_iteration_research_external_material::tests::research_material_rejects_duplicate_json_keys_at_any_depth ... ok
+2026-11-12T21:56:50.8502856Z test learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced ... ok
+2026-11-12T21:56:50.8503736Z test neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes ... ok
+2026-11-12T21:56:50.8504576Z test neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact ... ok
+2026-11-12T21:56:50.8505351Z test neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator ... ok
+2026-11-12T21:56:50.8506089Z test neuron_cell_evaluation::tests::readback::stale_cell_owner_cannot_read_completed_signed_execution ... ok
+2026-11-12T21:56:50.8507066Z test neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result ... ok
+2026-11-12T21:56:50.8508151Z test neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks ... ok
+2026-11-12T21:56:50.8509144Z test neuron_generation_current::test_support::drained_tests::forward_retirement_preserves_mode_and_fences_the_unchanged_non_stop_predecessor ... ok
+2026-11-12T21:56:50.8510116Z test neuron_generation_current::test_support::drained_tests::resumed_or_changed_drained_cut_rejects_the_original_retirement_signature ... ok
+2026-11-12T21:56:50.8511104Z test neuron_generation_current::test_support::expected_context_tests::expected_context_rejects_foreign_task_and_current_generation_replacement ... ok
+2026-11-12T21:56:50.8511986Z test neuron_generation_runtime::tests::bounded_queue_and_drain_before_worker_start_prevent_model_entry ... ok
+2026-11-12T21:56:50.8512788Z test neuron_generation_runtime::tests::control::uncertain_dispatch_cancels_and_reads_original_without_second_execution ... ok
+2026-11-12T21:56:50.8513529Z hepta-agentd module=neuron-generation: runtime owner failure retained during shutdown
+2026-11-12T21:56:50.8514234Z test neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending ... ok
+2026-11-12T21:56:50.8515039Z test neuron_generation_runtime::tests::retirement_waits_for_exact_ack_and_only_then_permits_same_owner_successor ... ok
+2026-11-12T21:56:50.8516013Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements ... ok
+2026-11-12T21:56:50.8516970Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:56:50.8517513Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:56:50.8518168Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:56:50.8519038Z test neuron_generation_runtime::tests::update::adopted_learning::updated_actor_rechecks_current_withdrawal_and_revocation ... ok
+2026-11-12T21:56:50.8519945Z test neuron_generation_runtime::tests::update::learning::unpublished_actor_refuses_learning_readback_and_keeps_transport_errors ... ok
+2026-11-12T21:56:50.8521012Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback ... ok
+2026-11-12T21:56:50.8522146Z test neuron_generation_runtime::tests::update::adopted_learning::contract::published_contract_mismatch_cannot_become_selection_or_recovered_next_use ... ok
+2026-11-12T21:56:50.8523344Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::snapshot_readback::original_training_snapshot_reads_both_outcomes_and_lost_ack_exactly ... ok
+2026-11-12T21:56:50.8524446Z test neuron_v13_generation_bootstrap::tests::actual_owner_descriptor_aliases_and_wrong_flags_fail_before_decode_or_write ... ok
+2026-11-12T21:56:50.8525531Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly ... ok
+2026-11-12T21:56:50.8526623Z test notes_bootstrap::tests::expired_deadline_cannot_receive_an_offer_or_emit_an_ack ... ok
+2026-11-12T21:56:50.8527311Z test notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects ... ok
+2026-11-12T21:56:50.8528062Z test notes_literal_adapter::desktop_recorded::recovery::tests::another_pending_target_blocks_latest_and_exact ... ok
+2026-11-12T21:56:50.8528893Z test notes_literal_adapter::desktop_recorded::recovery::tests::only_durable_acknowledged_other_targets_allow_no_selection ... ok
+2026-11-12T21:56:50.8529680Z test notes_recovery_selection::tests::startup_selector_and_legacy_exact_are_exclusive_and_strict ... ok
+2026-11-12T21:56:50.8530382Z test notes_thread_tool::tests::original_callback_requires_exact_in_progress_item_and_fixed_thread ... ok
+2026-11-12T21:56:50.8531227Z test notes_ui_wire::tests::notes_document_readback_matches_original_desktop_wire_without_terminal_claim ... ok
+2026-11-12T21:56:50.8531916Z test notes_ui_wire::tests::original_session_can_decode_private_fields_absent_observation ... ok
+2026-11-12T21:56:50.8532607Z test objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications ... ok
+2026-11-12T21:56:50.8533356Z test plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state ... ok
+2026-11-12T21:56:50.8533989Z test plasticity_host::tests::owner_evidence_rejects_context_substitution ... ok
+2026-11-12T21:56:50.8534847Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::current_tests::trainer_no_update_recovery_keeps_frozen_scope_and_original_current ... ok
+2026-11-12T21:56:50.8536049Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_bootstrap_rejects_duplicate_and_foreign_request ... ok
+2026-11-12T21:56:50.8537334Z test neuron_v13_generation_bootstrap::tests::guarded::runtime::cold_typed_publication_recovery_charges_preparation_once_and_replays_real_v13_rejection ... ok
+2026-11-12T21:56:50.8538613Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing ... ok
+2026-11-12T21:56:50.8539876Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::readback_missing_or_partial_checkpoint_never_creates_or_resumes_work ... ok
+2026-11-12T21:56:50.8540912Z test plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown ... ok
+2026-11-12T21:56:50.8541780Z test plasticity_runtime::tests::runtime_queue_capacity_is_bounded ... ok
+2026-11-12T21:56:50.8542412Z test production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback ... ok
+2026-11-12T21:56:50.8543146Z test production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims ... ok
+2026-11-12T21:56:50.8543881Z test production_composition::notes_tests::notes_independent_frontier_refusal_does_not_publish_or_read_handoff ... ok
+2026-11-12T21:56:50.8544877Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_waits_for_app_server_readiness_before_claim ... ok
+2026-11-12T21:56:50.8545912Z test production_composition::objective_sender_tests::retained_signed_body_hash_matches_original_agentd_wire_projection ... ok
+2026-11-12T21:56:50.8546891Z test production_launcher::inputs::tests::explicit_desktop_transfers_distinct_readonly_capabilities_without_notes_inputs ... ok
+2026-11-12T21:56:50.8547644Z test production_launcher::inputs::tests::ordinary_daemon_arguments_remain_byte_exact ... ok
+2026-11-12T21:56:50.8548350Z test root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses ... ok
+2026-11-12T21:56:50.8549124Z test root_observation_cache::tests::request_start_bounds_age_and_ceiling_projection_rounds_conservatively ... ok
+2026-11-12T21:56:50.8549865Z test root_observation_stream::tests::original_peer_death_refuses_before_inherited_socket_reaches_eof ... ok
+2026-11-12T21:56:50.8550838Z test root_production_handoff::learning::tests::root_learning_handoff_dedicated_uid_child ... ignored, only the explicit Root learning parent supplies these inherited descriptors
+2026-11-12T21:56:50.8551825Z test root_production_learning_inputs::tests::scoped_learning_handoff_requires_its_complete_original_profile ... ok
+2026-11-12T21:56:50.8552650Z test production_composition::tests::original_live_verifier_and_protected_clock_failures_during_recovery_do_not_install ... ok
+2026-11-12T21:56:50.8553504Z test runtime::tests::circuit_task_ingress::drain_tests::late_ready_and_generation_refresh_cannot_reopen_draining_ingress ... ok
+2026-11-12T21:56:50.8554575Z test runtime::hos2_recovery_tests::notes_tests::desktop_prepare_deadline_tests::elapsed_desktop_budget_cannot_refresh_before_either_original_reservation ... ok
+2026-11-12T21:56:50.8555806Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_accepts_distinct_nonzero_observer_measurement_references ... ok
+2026-11-12T21:56:50.8557251Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... ok
+2026-11-12T21

@@ -1,0 +1,1391 @@
+{
+  "schema": "hepta.qualification-build-closure.static.v1",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "validation": "STATIC_ONLY_NOT_BUILT_NOT_RESOLVED",
+  "resolver": {
+    "path": "codex-rs/Cargo.toml",
+    "blob": "fcd9d64bd64f5b8f8276ac72cd0a070b97deaeaa",
+    "value": "2"
+  },
+  "members_read": 187,
+  "read_errors": [],
+  "direct_dependers": [
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-intelligence/Cargo.toml"
+  ],
+  "feature": {
+    "name": "qualification-file-observation",
+    "default": [],
+    "new_dependencies": [],
+    "library_api_only_when_enabled": true
+  },
+  "combinations": [
+    {
+      "kind": "Cargo normal product build",
+      "neuron": "default",
+      "generation_test_variant": false,
+      "reason": "Both variant and dispatch arm are cfg(test); dev features are not normal dependency declarations."
+    },
+    {
+      "kind": "Cargo agentd / intelligence tests",
+      "neuron": "qualification-file-observation, unified dev dependency",
+      "generation_test_variant": "agentd lib test only",
+      "reason": "resolver=2; same package/path identity, no second trait crate."
+    },
+    {
+      "kind": "Bazel neuron lib unit tests",
+      "neuron": "hepta-neuron-test-lib, explicit unit_test_features",
+      "new_tests": 4
+    },
+    {
+      "kind": "Bazel agentd lib unit and integration graph",
+      "neuron": "hepta-neuron-test-lib",
+      "reason": "Both direct agentd and intelligence-test-lib dependency replacements; original integration_test_use_unit_test_dependencies retained."
+    },
+    {
+      "kind": "Bazel agentd explicit cognitive unit/product qualification graph",
+      "neuron": "hepta-neuron-test-lib",
+      "reason": "Both library and explicit binary/harness use rust_test_dependencies with same replacement map; no default-neuron alongside qualified-neuron in this value graph."
+    },
+    {
+      "kind": "Bazel binary unit / v13 examples",
+      "neuron": "default product graph",
+      "generation_test_variant": false,
+      "reason": "The library is compiled without cfg(test); main.rs imports the external lib instead of defining generation modules. v13 uses :hepta-agentd plus normal deps. The new API is not referenced in this graph."
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "defs.bzl",
+      "blob": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2"
+    },
+    {
+      "path": "bazel/rules/testing/rust_test_dependencies.bzl",
+      "blob": "140bde6995e31f11dcafaee0484e01baecb99d6c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/v13_acceptance.bzl",
+      "blob": "e4c495e6df35ecbfbe17e4955aa56b86e5e6fbf1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52"
+    }
+  ],
+  "cargo_manifests": [
+    {
+      "path": "codex-rs/aws-auth/Cargo.toml",
+      "blob": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe",
+      "bytes": 618,
+      "sha256": "ce128527d725beb04658974b8f1588baba2735779f24dcb0de8e0e8fa0d35ae8",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/analytics/Cargo.toml",
+      "blob": "8546427469212f824055765ffe79dd174aab3f7f",
+      "bytes": 884,
+      "sha256": "a019cd9deaefe8036bc8c7489db6f6e4c3ccd00841731719e0edbe870fb49955",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/agent-graph-store/Cargo.toml",
+      "blob": "15d116823b73afa82021f3ca55a28ce25e9044aa",
+      "bytes": 713,
+      "sha256": "be00694a31ab9bc2545b512e4d4e122669cadd4534900db837d8af0c4cd58dc0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/agent-identity/Cargo.toml",
+      "blob": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80",
+      "bytes": 737,
+      "sha256": "6abd72371d8289b9a216491aee14eef2dde7627e42bf3dc4c4aa05979c0901b8",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/backend-client/Cargo.toml",
+      "blob": "512d9606170bd8fcdc12c98d82dda43e47910a65",
+      "bytes": 751,
+      "sha256": "7abd63982e59f75c5290acdccb94d2e55b6fa545c633ab9e477f4d968d7fb750",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/bwrap/Cargo.toml",
+      "blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+      "bytes": 305,
+      "sha256": "5b524ac2c30f4029cae77721c026d3487a6628473b042d26f354ab6075ec4a7c",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/build-info/Cargo.toml",
+      "blob": "f9cc3d040fb872382d7801e7720f41447f62e1f9",
+      "bytes": 498,
+      "sha256": "7fbe94be99313b2a432050b7e67ff1934032a5efd7f75c666b5b2e9284b5a137",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ansi-escape/Cargo.toml",
+      "blob": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d",
+      "bytes": 354,
+      "sha256": "39fa775403ba399e193eb9e986dbc98bc519db77f20052fdf5668f7ae075a860",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/async-utils/Cargo.toml",
+      "blob": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0",
+      "bytes": 345,
+      "sha256": "719b0705bd3b6530c146da4b91d1decb08f12167d328053eea7884283de4e5f2",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server/Cargo.toml",
+      "blob": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-transport/Cargo.toml",
+      "blob": "21b4b0f5db010f9a2117ca32156881ff1834d436",
+      "bytes": 1943,
+      "sha256": "87f3540c4435b9fc44325d9e322f0c9d2c84b83c9f3380184d990e16a3ab2e97",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-daemon/Cargo.toml",
+      "blob": "fee57321978f8033232071940d85e5a1b8942b51",
+      "bytes": 938,
+      "sha256": "6f0b22549eddaf7f15525eb8ed4b89b6ee125698a92b43e32bf837057e5544e7",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-client/Cargo.toml",
+      "blob": "cfe7a3d47f690470979c4386d5a89e640a4270d0",
+      "bytes": 1192,
+      "sha256": "44769e3a813312d09298e8f297a99d6cf0fa608b9f4fb1009141fcd64c942200",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-protocol/Cargo.toml",
+      "blob": "da3876496ae9b90bdf3cea620b5a2eac6324e239",
+      "bytes": 1658,
+      "sha256": "addcb59f7f67216ac73eced24411a99d51ae7e03a916f33cbccaeaeaf39057bb",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-protocol-noop-macros/Cargo.toml",
+      "blob": "93a24b070beffa187ab27f331e35cdcefe21c4b8",
+      "bytes": 212,
+      "sha256": "86cca540f740f40a7dd58b1d2d62f518517b54c14915c0f3f2171df9223c0226",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/app-server-test-client/Cargo.toml",
+      "blob": "901afb70d00f16e004913c764337d92afc82808b",
+      "bytes": 847,
+      "sha256": "1929e157ff492633b4dd806ef5627e1c53ccf9241e72dd73944ff5f489483080",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/apply-patch/Cargo.toml",
+      "blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+      "bytes": 846,
+      "sha256": "388b18e13d8e3f8aa419e30385e33fe58748b2bd972df32eb66aa1484ab3d54a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/arg0/Cargo.toml",
+      "blob": "bb45db45521a60e80088f9032431d28ff4e717ed",
+      "bytes": 857,
+      "sha256": "e4202ff52d3d76027ccf9e0bf34361fb34f52a368ea2b6633abb03bab6398f4a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/feedback/Cargo.toml",
+      "blob": "8a01696952358c792d622afe675b609b8b315138",
+      "bytes": 633,
+      "sha256": "52cfe185b70dba9da35f57425fe0d62da4fb9b7bf970bed6c5935a1a404d94a2",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/features/Cargo.toml",
+      "blob": "95be6c400dd0d22ca7304146714a2678164fb38b",
+      "bytes": 514,
+      "sha256": "0e4149f8c444e2ae175677bbb02784de1f1e999620cc963d8e34a3de47fb6b07",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/install-context/Cargo.toml",
+      "blob": "ee84ad2962acf57a698e399b38dbc0a03c51bd11",
+      "bytes": 556,
+      "sha256": "f3889e33551bedcf564069d27568c5f1ea01e9e696cf122e4b8f99a7292fbff8",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-backend-openapi-models/Cargo.toml",
+      "blob": "7baf01935d36ad701d79d0c6e7e9ece0b056142f",
+      "bytes": 571,
+      "sha256": "f1357552f32833762da0fe2730c65a542da56314ed07371a98fa420fceb45da4",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/code-mode/Cargo.toml",
+      "blob": "0ef5079bebb7f523b4b5557ec07e46d3c5230465",
+      "bytes": 1070,
+      "sha256": "95471937bdae80b80c9eef6e7bbf90cbc02d26d1a163db9dc2bfdf81a5cc60c9",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/code-mode-host/Cargo.toml",
+      "blob": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+      "bytes": 1256,
+      "sha256": "d2c65381ca88b25e30059524490a507c6b682a467148ee32414ce50b250a84c0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/code-mode-protocol/Cargo.toml",
+      "blob": "cad10b47ebf4e577d9d9278703424f266ba6cc71",
+      "bytes": 1026,
+      "sha256": "2ac9af96867f5babb423d9865e1e1277329e6e1fb10a069d0cb9e380beef2b70",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/code-mode-runtime/Cargo.toml",
+      "blob": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+      "bytes": 762,
+      "sha256": "8ed47545fe5902110ba01998f94b72b97b6d2df4ed1391f86dae97e01ba29c4c",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-home/Cargo.toml",
+      "blob": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b",
+      "bytes": 461,
+      "sha256": "b2f25e572ade8acec3345403624c26d77b032a6a954a57726561d5f08ba08cec",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/cloud-config/Cargo.toml",
+      "blob": "ecb33d34beb89a3112cbd316e6bcf672b089a833",
+      "bytes": 1002,
+      "sha256": "a408eb39a0a960e3b94186718723629ed2be3bb21d3e88b649f2b1b38f75f934",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/cloud-tasks/Cargo.toml",
+      "blob": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90",
+      "bytes": 1502,
+      "sha256": "5f06b8116e9f3f2486953e3776d256946c4faaab9f3c26c2e4001b9d14a95faf",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/cloud-tasks-client/Cargo.toml",
+      "blob": "8efd78cb22d0b6458e9ec9138f0df03590f75d75",
+      "bytes": 606,
+      "sha256": "713fe5694a802106a72bdb245ed973ce80dd1bd977abfde5f308a14bf3180028",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/cloud-tasks-mock-client/Cargo.toml",
+      "blob": "b249b654e02f36360389a12ccc14bffb787b9726",
+      "bytes": 369,
+      "sha256": "c00ebb5e69c81d6d15793069773c1a84a521cc4d71a2a27b06854c71557f24d4",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/collaboration-mode-templates/Cargo.toml",
+      "blob": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03",
+      "bytes": 255,
+      "sha256": "52aa162c5ba6085b0eead685bd21a15043150789fcd08000465c95db0044fef4",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/connectors/Cargo.toml",
+      "blob": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3",
+      "bytes": 815,
+      "sha256": "20515657b4ab715652a6be25d3b2ff408f36d8b53e0d1dddc1ea014910f95ea0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/config/Cargo.toml",
+      "blob": "37a1c32439b633761727924dc9e762ae0781658d",
+      "bytes": 2304,
+      "sha256": "51fc171c46ddb1f5fec07edf13949b65fa427974efcb2ab54dcdc64bbb1e7814",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/context-fragments/Cargo.toml",
+      "blob": "ca84916ce99b61eef9f5b02cf7dd102c399e5732",
+      "bytes": 329,
+      "sha256": "db10276a50d5844fe1f4855d3a4baad50915ddb890c59fcb21e2529ee48da254",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/shell-command/Cargo.toml",
+      "blob": "999295ec314a37a523f65bd050e8b95453cc7c77",
+      "bytes": 801,
+      "sha256": "6967abe322f82037b6c57f3e6bbe6425030c4ed0a388915527a59dea7317b856",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/shell-escalation/Cargo.toml",
+      "blob": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+      "bytes": 976,
+      "sha256": "154cd9240a02ee6c9075d5ab9543ff98a54768babb91d00e190c590ad3237dc2",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/skills/Cargo.toml",
+      "blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+      "bytes": 682,
+      "sha256": "099f2da853fa6853df18b7923ccd55b6bd1374af7741fd6156ec84b7765ae086",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/core/Cargo.toml",
+      "blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/core-api/Cargo.toml",
+      "blob": "b82d5ee4802d68b29f574bc8ebee1334cf751caa",
+      "bytes": 922,
+      "sha256": "64d89566ae6c63d3dbd6c655fe9f5277dd93765330611be3f05ebf09e15dd015",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/core-plugins/Cargo.toml",
+      "blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+      "bytes": 2192,
+      "sha256": "d691c34a799cd2751e7b03a2eb9aef3c6f2abb085e8cd91ef5bb61e07146ca11",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/diagnostics/Cargo.toml",
+      "blob": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0",
+      "bytes": 313,
+      "sha256": "11974d3cc33cfe81cc15a3def4cdaace9eae05d4ac3b22af0af2e35e12ef6d66",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hooks/Cargo.toml",
+      "blob": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa",
+      "bytes": 1211,
+      "sha256": "03d55888127bb1b7ab683696e11080046f0b9bade863bd4a81e1d746123f7e08",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/Cargo.toml",
+      "blob": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba",
+      "bytes": 496,
+      "sha256": "145110b17fd655a247a6c6a309c8fc1d23c36703edfadf0928a069f120167461",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "935a1addd32da00f7ace31107885954f479532c3",
+      "bytes": 5024,
+      "sha256": "90924116cceb5ab4b2620beda64b30fdbe5dfce983157033850f5593a5f67ca7",
+      "direct_neuron": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/Cargo.toml",
+      "blob": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+      "bytes": 1324,
+      "sha256": "e8e39e69d52921298a29ed75a12ae46790298fae8d031625c502258f0b12c78d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-contracts/Cargo.toml",
+      "blob": "940f8f0f4389ba25ddd35a7bdb6032b4bb71ed80",
+      "bytes": 963,
+      "sha256": "1aa5f0087fc4e29cdf4af78ed70fe02fb9e6bad39d6db23466856c9c0bb17eb9",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-evidence/Cargo.toml",
+      "blob": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+      "bytes": 786,
+      "sha256": "bf06b9f286e93bb5d61122d43ff3cb27314584e04a1d08c18c90663e2b1fa3e0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-authbus/Cargo.toml",
+      "blob": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+      "bytes": 724,
+      "sha256": "e9519193bdc938523023a66cd9776d78f1be7a13d493e3c1204765a1adc2a8a5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+      "blob": "49874f52adebb338f8fd7038ac84fb13d3be8157",
+      "bytes": 382,
+      "sha256": "763db9e31af8e0228baa8e79bdfa14274e9de9fbfa8c4407a35b0042822fe1aa",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/Cargo.toml",
+      "blob": "dd509b3676bc50d1172128051de59f489acb73d4",
+      "bytes": 1076,
+      "sha256": "5ca154dbb3e5b0f1f21df36b2e1984e9a57b8549d5f3c5a41b8605e51ee0d191",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/Cargo.toml",
+      "blob": "0af5dc81a2488f2b273f79c13ef281db2be048c2",
+      "bytes": 681,
+      "sha256": "1b223552faac7f0c0d92028cdf9ea15656c033cfabb9c550240187c7e692aae1",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/Cargo.toml",
+      "blob": "9804ca394a12c4bf31f01031853d7e52c73dbb75",
+      "bytes": 374,
+      "sha256": "e39b386db178829e860d1080e17cfc1d00262e67c30a183af7c6eec77e744eaf",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/Cargo.toml",
+      "blob": "34598e61d6aaff043e048907b48967086d6ecc83",
+      "bytes": 418,
+      "sha256": "ffb2f0dd544d9c91bb3414da88496abe139b149d81c38e622393dce10164033a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/Cargo.toml",
+      "blob": "c836b15097ff4812e735e3feff1d552a87c2cae8",
+      "bytes": 394,
+      "sha256": "4a09011df2d5c04b461760a7650bdf48aafc15f1e096cc27e9392cbcad3ca54e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/Cargo.toml",
+      "blob": "60bc6fb1ee73f31eac3a152db40be10b52b495e3",
+      "bytes": 374,
+      "sha256": "1071e44d09831bbfc6d23f3924159cb2bf3624502ce1e04f454ea8cd12e7c8ab",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "blob": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0",
+      "bytes": 498,
+      "sha256": "848d0613ee522fbf4059b6807c07ecd489e46fb81287c5c8382e08a80b51f19e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/Cargo.toml",
+      "blob": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+      "bytes": 648,
+      "sha256": "e79916aeeb2c9abad1194d8135d007615987932c5e1a82083fdb70b9ece7b4ea",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/Cargo.toml",
+      "blob": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+      "bytes": 384,
+      "sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-inferd/Cargo.toml",
+      "blob": "4b7d6a9e0a775e3da69a873d3d92ff643662731a",
+      "bytes": 290,
+      "sha256": "ff17e12e1ff8f4f34152292b2cdebde7dc968d39ca3e0f23b07c32b059db390d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "bytes": 1486,
+      "sha256": "65121f9be6609bb7613d917348875b6b24b33c25545b4d895f6eeb7733dc3dc9",
+      "direct_neuron": true
+    },
+    {
+      "path": "codex-rs/hepta-kg/Cargo.toml",
+      "blob": "892dbf28b9bc2ecdf0fe72c79eff19294140c198",
+      "bytes": 350,
+      "sha256": "adc5dbdef42503e8382a58adb93bc922a0190eea4265d3e7b8690162131dc117",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/Cargo.toml",
+      "blob": "49113a3bccd7a2f56b18459924d3ec9151cbf980",
+      "bytes": 312,
+      "sha256": "ba9b925f2c580ee906d767692744ff2bf36b3bc8ae2423cfb3d981cb1bc71af5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+      "blob": "913ad075e730da2b3bbff7fcfa153c457141a944",
+      "bytes": 378,
+      "sha256": "6c5ccf623d2abb5c57fd677b7b90a2e4b55b8471d4d5d1d9133c87773924debe",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/Cargo.toml",
+      "blob": "5231fed894f15b6e5ba6255523709067ea656e3d",
+      "bytes": 435,
+      "sha256": "db68575b26afdda63239bde887d56830f2b46d74c93d4b7bdb567fe51efab352",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+      "bytes": 1220,
+      "sha256": "e20f4e783adcfa8d82d3394a827e6f4c6d8e5e8e10e9c3be3b20e1c4824aef74",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "blob": "0860efdb74b678dd257f4c0bf199a4e002d99daf",
+      "bytes": 907,
+      "sha256": "f56a3dd05d7c579553d76d8bfa099e6393aa49c92ff51aebb61c226d04620f15",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-intuition/Cargo.toml",
+      "blob": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5",
+      "bytes": 296,
+      "sha256": "0ac276efa687af407a622e37a00566e467b43a755cc9475a666a65af1bc2dad5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "bytes": 495,
+      "sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/Cargo.toml",
+      "blob": "07cb9e40d44990874991620f89af8c0078575de1",
+      "bytes": 298,
+      "sha256": "18c15cb8ba6c9a1be619230aa7bd275bb986fb7debd617b23ee8db37e7c9728e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+      "blob": "f463e790c182452434287c7ccba68dd78a7c69ca",
+      "bytes": 633,
+      "sha256": "03de8ae7396d32c9b5a1bfa15ddc12401062d3c7c53a15b5cb57dd75ce235fb3",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "blob": "6a22394b289e2af3a7a65d6be3473b6187af77a4",
+      "bytes": 677,
+      "sha256": "ef0f67376bcd0f2d14cd48473472929d31c4ba51457a57ccfc1ca206663fc8e0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+      "blob": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+      "bytes": 412,
+      "sha256": "e66cea514a732f5ddab6ec5eb35a435f46f7becb8a49a4b5b736c89fc37a880a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "blob": "1d76cad44498e9538cefff1e20202482520257ff",
+      "bytes": 676,
+      "sha256": "5cd9913ddcfc84c9b04e95c9a2e212d9f434b9a390e9695d48143496287e825c",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-ndu/Cargo.toml",
+      "blob": "d92d388b0c5bd29552ed0b2719551af973b5cfc4",
+      "bytes": 470,
+      "sha256": "92a89006826453d77ba4fc2dde8629d25d2bd4adad7dff80aba8e86a0b8f6ee7",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-objective/Cargo.toml",
+      "blob": "39085cf5d2edb3766cd1c17cd721d17389ed93cc",
+      "bytes": 633,
+      "sha256": "97b40602202a04523798200363de89b8648e8128643b44aaf811487dc5756d69",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "blob": "139c0d4836edca041d2bdf6c56b63a5cbd035867",
+      "bytes": 709,
+      "sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/Cargo.toml",
+      "blob": "211f8fb711d2c91d1421da930c067c28b61315b0",
+      "bytes": 799,
+      "sha256": "57e80cddbfcc1612225c97d13fb804609f54337e916886050674f95319c13261",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "blob": "e76be92c4fcedd547472196e17727abc375b446b",
+      "bytes": 973,
+      "sha256": "0e49d197a557f879f4478d600cb33e067e5f31fb0b8978823402a231487d9a4d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+      "bytes": 2755,
+      "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "blob": "d7c49d539977550a28c9d20f5ac5aa718a9ed0ae",
+      "bytes": 1587,
+      "sha256": "614b0409fd09e39e6bb3d11c488b9fe2fc1ccd18fa29d059b40143a0dcfc2b34",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-operations/Cargo.toml",
+      "blob": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+      "bytes": 616,
+      "sha256": "140c5b0d1b003dcb08d58d9ae2fe5069975b178ae79603f70ea2027f8b444533",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-types/Cargo.toml",
+      "blob": "753e54835f933be4bf647417b2fb4c90a5e55181",
+      "bytes": 268,
+      "sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-wire/Cargo.toml",
+      "blob": "ab9372f8287d8596794c1ea63d49217b45fd6759",
+      "bytes": 279,
+      "sha256": "c478676c244af850025c7704f0862e570ce97d419702ac589ef4e5c1c24c2373",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-matrix-protocol/Cargo.toml",
+      "blob": "8312e8b0a739d033976c0058a25e5850e3af66a9",
+      "bytes": 471,
+      "sha256": "222313fd7dd9776deee936f6f2ee182a8a4403f92e713a061e0c8c12376b0311",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/Cargo.toml",
+      "blob": "c7b4306766955aafb24d1f66c55803a35c2aee96",
+      "bytes": 1925,
+      "sha256": "fb3f5dcf3c08a05a54826b4f76a21116752908a55d47db31bf32b7cfde887945",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/Cargo.toml",
+      "blob": "1902d731437c9338fdcd5c376749e42354bb6c70",
+      "bytes": 878,
+      "sha256": "a13e4ba58685be73b9612d6a7d1caece142541612aae7b03f436ceb0f575fe26",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "blob": "bb1d3191a35218a18aa4d76b6bb8d3ca9067ac5b",
+      "bytes": 1092,
+      "sha256": "949689b92686671d17f92b7cd263d6611494017b616489e3b0a2edf3996d1f64",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-paths/Cargo.toml",
+      "blob": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af",
+      "bytes": 376,
+      "sha256": "398afd967d82549d08ef22d5f81bf1bdd7ac19e059cebf6fc5658d7a3c9ad756",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-runtime/Cargo.toml",
+      "blob": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+      "bytes": 1108,
+      "sha256": "959da171fccbe0748e859753310c19e2c49aa683f8d623f036e503f6e06b5fec",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+      "blob": "61ac318b90df93fb2e5f04d5ee0ce8a32cfd2cf2",
+      "bytes": 1505,
+      "sha256": "7d8e6e50f9941bb20d1c830ecf40daba45dad62e2645962b854dcd8d1a39a003",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/history/Cargo.toml",
+      "blob": "bd938d2c2ea45333b8f040f41399674a28e54644",
+      "bytes": 463,
+      "sha256": "1efeca5a9781224b2682eb98ce880f0d1ed9ee614ff2d9a906195458924c0a89",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/http-client/Cargo.toml",
+      "blob": "2d54ca7158900eda362091c71e8d1bd742459d4c",
+      "bytes": 1402,
+      "sha256": "f3916be92b33343ee886930865b40be390da62981b5dc45977cda854a5a96d75",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/secrets/Cargo.toml",
+      "blob": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da",
+      "bytes": 677,
+      "sha256": "99d0a0c6bb4972d0ee5336949870ce0b2bc4b05c22bfe34f47edfb3655602150",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/exec/Cargo.toml",
+      "blob": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e",
+      "bytes": 2166,
+      "sha256": "ce0e0e870b5e9f42bc14fa80ba6d487bb8225823f0741f03c6986c7f8e29e242",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/file-system/Cargo.toml",
+      "blob": "382eacb43d3353b2046806f91ba0f976866c9282",
+      "bytes": 433,
+      "sha256": "158866b3e775b98e57d73003f46143c07fde852d70d8d2014aae41e5c94de8ab",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/exec-server-protocol/Cargo.toml",
+      "blob": "9dac711e1a0f404be080113747997690e9cf4a49",
+      "bytes": 677,
+      "sha256": "0ac3a4812639166ce28348c30f68efa1e220b0ca6a4211f74a26d7e905dd8819",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "blob": "455df9eedc14b77ac3779899087cd8391b153b37",
+      "bytes": 2741,
+      "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/exec-server/tests/support/Cargo.toml",
+      "blob": "85ad347b6c5494746f3f017096c7c6a8f4392435",
+      "bytes": 301,
+      "sha256": "88a6c046b04ade54b2306298872765d65a94112bd03843bbf1b4c99672afb5b1",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/execpolicy/Cargo.toml",
+      "blob": "42040222336513132da0b6a274bcd3fc80589f99",
+      "bytes": 874,
+      "sha256": "a30850d1134be2b9a37a15d383d1cf7a3df72c81c3a4b970bcfac8bf15528e94",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/agent/Cargo.toml",
+      "blob": "6c3f10a43319a122e2da129e31ba34aa4f1df49a",
+      "bytes": 520,
+      "sha256": "684fe7c7a41900dd8c394b6cee6d1fcfd206a44c661811f356c846dcc07d51db",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/connectors/Cargo.toml",
+      "blob": "1aead727731475bc9590ac90efb37c2ae7adef64",
+      "bytes": 556,
+      "sha256": "d0dd96da7c42189b2e5a3c6976a54b565b02441bd2f4979652e3192b30b279a8",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/extension-api/Cargo.toml",
+      "blob": "c6eb90ec97d6fae953e8899edca318c492d5138c",
+      "bytes": 739,
+      "sha256": "39f81dc7f64efedecb10f005525ec323943b249c00e87778825a4fdf260c9a51",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/goal/Cargo.toml",
+      "blob": "22ee1794fdf1341819bb8041882b84124ef2362e",
+      "bytes": 1022,
+      "sha256": "c4045cfc2e059809a1edce82f0664dbdd38bd5d03440af3c4d3628a9ab8eae01",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/git-attribution/Cargo.toml",
+      "blob": "e96d0dbcd577bcc0645f3f6175bbe31429f87159",
+      "bytes": 589,
+      "sha256": "15e8f2143ff99c657b40045c9b0609dd93f89b55cc37a95039b9aed89f5e6687",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/guardian-v2/Cargo.toml",
+      "blob": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8",
+      "bytes": 1007,
+      "sha256": "5386f64539248cc425f57d2ecb54e7c0435061281a495239dec6ca7c38a3b2e5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/history-notes/Cargo.toml",
+      "blob": "08fb92dd74557893eb7cf6fa989e798d72a92660",
+      "bytes": 929,
+      "sha256": "2429546ab9f9aeb551465297ec7fbc9e12e6bea36c7720d68697ae9e2a7e9812",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/hepta-governance/Cargo.toml",
+      "blob": "229991524ea3a5219054f2b36b87c7708a2d93a6",
+      "bytes": 688,
+      "sha256": "2e988fe15f26215f82417e5544dfd6cc9dbe417a0a6e44d7a7b5865d722c753e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "bytes": 1184,
+      "sha256": "6b0cd713fab0d2038840dd6d18ad856bf59de3a34f936977e2fa1c2539da3f91",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/Cargo.toml",
+      "blob": "152fea264155931b3994e98e3c754b8f79c57718",
+      "bytes": 535,
+      "sha256": "2ee120b0b61477eb5a7b71cda7355e0d61b74f904e8165f4dc52090616cefed2",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/image-generation/Cargo.toml",
+      "blob": "ad10b2b0a640744ce3986a22990cc46aa24b89b3",
+      "bytes": 1111,
+      "sha256": "4fb2f0a257c85f38a8b0ccd9f15493e2af00ef66274bd960485356465c654177",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/items/Cargo.toml",
+      "blob": "4d58b29bc7004171361e4828e1dda712815ad8d1",
+      "bytes": 489,
+      "sha256": "bbb3630e5a2dd711a1ff6d118e095a062606afaa5ca970316d668114d45d7df5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/memories/Cargo.toml",
+      "blob": "e283140b15ef1547c642310138fc8b04c4ce7607",
+      "bytes": 918,
+      "sha256": "0438581c45b559741c9d35860c5f1b8ae7750cfa30460846c29aba5312221112",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/mcp/Cargo.toml",
+      "blob": "e639081358ca76910ed744f5abc426f60a65a74e",
+      "bytes": 1099,
+      "sha256": "1949e4dd9feaed1c0e221a357933ce6ef016b9d80d8d30c01143c4531ed254e1",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/queue/Cargo.toml",
+      "blob": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187",
+      "bytes": 1019,
+      "sha256": "4d599238c901c3ec072bd166a2d5349f9e315299159567f0c72b991552475951",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/skills/Cargo.toml",
+      "blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+      "bytes": 1454,
+      "sha256": "6dc94276d1316b6c3d911e957f1c80f849c4b92ad679edd64864d7128ce350e0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ext/web-search/Cargo.toml",
+      "blob": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b",
+      "bytes": 814,
+      "sha256": "968f6e7ac1222da951402687c4f884c745830f8f205c9222e3b13e5c570b3afb",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/external-agent-migration/Cargo.toml",
+      "blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+      "bytes": 1325,
+      "sha256": "9d8bac37beeef7e70f85b273285b2b0bfc3d80fea758eafc69a51511b5f24997",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/keyring-store/Cargo.toml",
+      "blob": "a6bcd7cd92e64d5bc87b53a4c7d2a6f8cf8f3a65",
+      "bytes": 290,
+      "sha256": "ca9de7565b566f719d4061e21ff92dbd47b4deab0ac96fbc4bef9d8a106ed10d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/file-search/Cargo.toml",
+      "blob": "e235898982f6eba908c5c0751eae91a5b25cdb1a",
+      "bytes": 692,
+      "sha256": "ac012c6347e727e2a7a9cb927eec9fe4ece2c17a38474f7efa0563d3adbc98d4",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/file-watcher/Cargo.toml",
+      "blob": "afb14fcde634f5478f4d6f981c52bf982b03b0f0",
+      "bytes": 529,
+      "sha256": "3c24cd510f342cdd5fb4bb3cc7d58f3b42083434f098c980e77dc9213ff0dc35",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/linux-sandbox/Cargo.toml",
+      "blob": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+      "bytes": 1187,
+      "sha256": "7af47b8ac3dbc0cf590f9b4e50a51f4e214d6946aa6581991f267450a0ec31f6",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/lmstudio/Cargo.toml",
+      "blob": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76",
+      "bytes": 571,
+      "sha256": "f90889e3a31ae28b860e6a86da3d1fb9941f5b2232f82d42e178a777432cac48",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/login/Cargo.toml",
+      "blob": "2971dec6c1a81cb80379477333371bba6e8fbece",
+      "bytes": 1640,
+      "sha256": "0c762d109c77508556e0d61badaba96a9e9a43ddd5dc1273113d2a8684e76593",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-mcp/Cargo.toml",
+      "blob": "6134f2126db203999727d05f61921836dfed06b7",
+      "bytes": 1726,
+      "sha256": "c14b473064600e0886d20b034fb07ab0a5f71d7120c0e6e585f3b93f88aec0ad",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/mcp-server/Cargo.toml",
+      "blob": "e32d5c6c9cc8e569a49396e085191811835cfdb7",
+      "bytes": 2027,
+      "sha256": "83270726f6d662991ce536df47a055b22f111dfe6e90fba013f0150bea2df850",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/memories/read/Cargo.toml",
+      "blob": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d",
+      "bytes": 419,
+      "sha256": "e51d8384f3a844f0687b9ea4864e19286b3fec7edfee69bd365cd02fd42886b5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/memories/write/Cargo.toml",
+      "blob": "bf031a6a164f5a098757efdb6c791d9e2705ca50",
+      "bytes": 1586,
+      "sha256": "2ce09ca433559076a62b478f42c5a820a531c79811834bc2084b48e12f1276c1",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/model-provider-info/Cargo.toml",
+      "blob": "827dd8744b54ffcaa98673c0c262f5265b717ebf",
+      "bytes": 674,
+      "sha256": "0491e26d931688444482529ebbccaaca6e8ce118faea389384b763a1686c91ec",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/models-manager/Cargo.toml",
+      "blob": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9",
+      "bytes": 913,
+      "sha256": "76ba6621d1ae87904dd7a7d79b31ff80d519c632b5df377f2f3f587f3fea44b5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/network-proxy/Cargo.toml",
+      "blob": "a7a9fb38b83ee02823cb56d04def6763f5dff709",
+      "bytes": 2060,
+      "sha256": "2b813a781ec8c19a293f3eee3d5ba477780da239b50e3bfc8edc4e785876ef06",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/ollama/Cargo.toml",
+      "blob": "29c0852092c0ebdb9846f50f91384e4720f15d71",
+      "bytes": 835,
+      "sha256": "4acd659c88671e6be1ce2be7b2920977c221461245b198c81c195197789ce2eb",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/process-hardening/Cargo.toml",
+      "blob": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176",
+      "bytes": 325,
+      "sha256": "93c8131ae5485a66d16cff10dd254bf56bd49fd33235399cd5f59ccf0d75396d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/protocol/Cargo.toml",
+      "blob": "221275fe73543cc9cd5d882514855204d673353e",
+      "bytes": 2105,
+      "sha256": "8d25b115cd50c940e1efee2fde8e4ea002fdb9cca74ad6fe5cf0eed46cecd088",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/prompts/Cargo.toml",
+      "blob": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362",
+      "bytes": 564,
+      "sha256": "26596093e97c979bc466f7a85a22ccacc5980d3cb9a53ffee30b361346f5c857",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/rollout/Cargo.toml",
+      "blob": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03",
+      "bytes": 1244,
+      "sha256": "f01de658fcc48810495562069af132c828625bd8e6fa2b2c897c410c7b36b657",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/rollout-trace/Cargo.toml",
+      "blob": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31",
+      "bytes": 620,
+      "sha256": "1945dfdbca622a193f680d98cc0a733eec58510e9d3bc3a6efe0e3db153f4c62",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/rmcp-client/Cargo.toml",
+      "blob": "1a88c3aedbe8aeccb5ce2debd97681de04d38116",
+      "bytes": 2543,
+      "sha256": "630a65afa578517edb7bb67ba50963dc8d8f182cfe313d6538c30523d034c047",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/responses-api-proxy/Cargo.toml",
+      "blob": "05d638843f64eacad298a79011798f3a2ef924f7",
+      "bytes": 778,
+      "sha256": "b1d9acb9187527fd7dad5110f0a0e3755a728e8f79f67969304cd8777cfab305",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/response-debug-context/Cargo.toml",
+      "blob": "fcdb6c9630c4d04da55b9c64318e4c111afce441",
+      "bytes": 432,
+      "sha256": "a6075edb089d3c6ab4588c5cf17604e15827821d67320508344e0af5a9c49070",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/sandboxing/Cargo.toml",
+      "blob": "2c0885729b4ea05f0b597b37823f4758839ecb62",
+      "bytes": 1005,
+      "sha256": "f91095a07a37ee6c345d9e7f545c696845a7e4210a8f5b7d2093d2b54d72bef5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/stdio-to-uds/Cargo.toml",
+      "blob": "6b5c037d755d4dc8006424aa836b29036cea8185",
+      "bytes": 609,
+      "sha256": "86bc7744cb3455915a0dca21bdf9b95b1f446c03eee70dccda8ade7497ee1510",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/otel/Cargo.toml",
+      "blob": "6efa93043db5e52f6ec45212435b377ca847d9ad",
+      "bytes": 1939,
+      "sha256": "013fdd3948fdeec49c7cc94b61088a470ca9db9a472e927d5bfd5adaccc44cb3",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/tui/Cargo.toml",
+      "blob": "95db9bee4158d69882f480f6b0842c47a510ca59",
+      "bytes": 5600,
+      "sha256": "a2228fe7630ba633f4c9deb6ea40bf59f7fdc2f9ae3577158a0e1fa84900e079",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/tools/Cargo.toml",
+      "blob": "e621bb830bb4d564c772f5e558c57919de8b32db",
+      "bytes": 1064,
+      "sha256": "3b15cd90e6cfb2184e09da47eee87c5a1cf893522dd7d99fb3e917974763a52f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/v8-poc/Cargo.toml",
+      "blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+      "bytes": 348,
+      "sha256": "e98d307ee1683087debb02cf5fba46cc1a23177a25cd6b03f74f1539239312c9",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/websocket-client/Cargo.toml",
+      "blob": "19baf9842b591c6aba15d5253f124a737d0d1cdf",
+      "bytes": 657,
+      "sha256": "7575122d37c47bbb011945d68541422dc0122ab7be1374c9bc9c78ec56a74231",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/workload-identity/Cargo.toml",
+      "blob": "b64177282accbb1975aa7adbe2411ace4da52662",
+      "bytes": 686,
+      "sha256": "347f3a72058b81058498c83529b69d01a1055384ce6021112038193853a0d0fb",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/absolute-path/Cargo.toml",
+      "blob": "7c5b4840d15d81deed1d1ea30c0b269d399772bc",
+      "bytes": 547,
+      "sha256": "ad98dc1a75333700db00f6bde0685ce7a3e0f5558b0520e7a09e9bbcc6576736",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/build-identity/Cargo.toml",
+      "blob": "d21f6b0fff86daef23570d5c583edbf18eeecafb",
+      "bytes": 170,
+      "sha256": "de159bb2c3a33a554cc071e9e6426996b15afc7525c0747252e63b323f7d944a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/audio/Cargo.toml",
+      "blob": "90540228a6bf5608329d2f2773225271229b9813",
+      "bytes": 486,
+      "sha256": "a8bd5661a23ac093df6f9a307dc9e440201e7bf7995044dbfc632869f62914c0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/path-uri/Cargo.toml",
+      "blob": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371",
+      "bytes": 596,
+      "sha256": "d45031c71d6dbcf8c7770ce1feebabbc2f3224841c5eb770d9e2dc70d19d9d20",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "blob": "191a9d561bf0ed2b2b52a522558a454bb5a66477",
+      "bytes": 352,
+      "sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "blob": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+      "bytes": 1051,
+      "sha256": "1b812bba7cc7dfa5339ab3ddb5e499e35fcafe42a6489e1e7a43208b291a816d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/cache/Cargo.toml",
+      "blob": "3c120c032e8d595a7675f0474ab6d91b0b52a59e",
+      "bytes": 404,
+      "sha256": "79bf902f30726d663ca11ab7dad4bcd617de94b36baaeb33016d188ec06ebe89",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/image/Cargo.toml",
+      "blob": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09",
+      "bytes": 641,
+      "sha256": "1a84e5e2fb4251a62044be94b8e36db7a2143abe87d24a96b0f442e1b562142f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/json-to-toml/Cargo.toml",
+      "blob": "57a28696c8fc2148525480511551b256b35d8b02",
+      "bytes": 307,
+      "sha256": "aa9e8d0262bbc8e021f32488083d6d003a83c2bca10186da2d2b17f764bb77f9",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/home-dir/Cargo.toml",
+      "blob": "2d2de0230e38004d562b8ab5546888cd5da74851",
+      "bytes": 350,
+      "sha256": "9b81719e70c693dc156d90fb43a8d71b328e650ef566816b7bcc8014c4bd8e50",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/pty/Cargo.toml",
+      "blob": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+      "bytes": 860,
+      "sha256": "3333e26a50a65111ea1c961fa0eec59661196a88e1b2bf51ab647b8cc50ab08f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/readiness/Cargo.toml",
+      "blob": "076651d5227baa047d95a42e9e8795c65dc0bc52",
+      "bytes": 435,
+      "sha256": "fae1bb2669768af1ef70d76bc3b124977110f1969c1a977ea65926cdbb0d5353",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/redacted-string/Cargo.toml",
+      "blob": "39f60d8eb109312fba4b052e69649b1c9382a1a4",
+      "bytes": 284,
+      "sha256": "b4db650414f5dff6c4823eeb5e05be5adb9bbf6bfaf87c5763a475379528d81d",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/rustls-provider/Cargo.toml",
+      "blob": "af79eff69252fc01244e2ae721b5a263c1d2fc4c",
+      "bytes": 230,
+      "sha256": "21fda73b6ea661f3626372e94b16bce766c5278e6c695c92fc490274d4582f33",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/string/Cargo.toml",
+      "blob": "8710cffe4697ae4cce6e97d6bac35566db426672",
+      "bytes": 336,
+      "sha256": "3d4f0131321ca76f08410c8a3278d1d2373c8a43118fafa5add9bd8fbb8672ff",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/cli/Cargo.toml",
+      "blob": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08",
+      "bytes": 438,
+      "sha256": "144258eae359f1b20753dcedff9d8c60a5947e261cec4ad97514b1daf1b35ca8",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/elapsed/Cargo.toml",
+      "blob": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f",
+      "bytes": 163,
+      "sha256": "998e972175e47355bcc0f14b326e5c71955bd670a12ab3200890d9168855ff40",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/sandbox-summary/Cargo.toml",
+      "blob": "ab6df005dac274f638a16c387779458950525728",
+      "bytes": 384,
+      "sha256": "7d2c0b41517e95ebe9015d4e7789b17bcd12e5c40c6d4db2de6fd4dec9aba074",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/sleep-inhibitor/Cargo.toml",
+      "blob": "f2abb6df2110e7f3de215cb34a0cd627c0345649",
+      "bytes": 590,
+      "sha256": "6ff5b93c06e9721e935e5e7798de9c799e41139fdc042f50d1501bebff14235f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/approval-presets/Cargo.toml",
+      "blob": "6efd2c482b4386b505a15d96bf60504050633e61",
+      "bytes": 239,
+      "sha256": "a8a1723c8fc4fef9815fa02f426b1bee8b1e16f43e9382b5fb878c9a603cdaff",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/oss/Cargo.toml",
+      "blob": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac",
+      "bytes": 332,
+      "sha256": "204e3ba8509541c37b2088dd6c8e596286f502a8990d2655e861c6babcac9b19",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/output-truncation/Cargo.toml",
+      "blob": "17176c9f5643b3a4f1d5a678a25076094cb7441d",
+      "bytes": 330,
+      "sha256": "f6687530aec9b4c6db64237ab845ffc9ea4a5156c9b5dd1557ae6b1c35e5cd31",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+      "bytes": 697,
+      "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/plugins/Cargo.toml",
+      "blob": "1a4576d59d0fcf04a54236f57976e42683c266a6",
+      "bytes": 609,
+      "sha256": "2aa0eb685dc9595b71c33740108080bea0f448e3439afee76c75e0701d275a28",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/fuzzy-match/Cargo.toml",
+      "blob": "704386e74f6924a016c30bfbaa6447b093f70be0",
+      "bytes": 167,
+      "sha256": "d233d52afa20bbf405df269a31a76aeb7fe45de5e6e6bcc872dd331668996fbb",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/stream-parser/Cargo.toml",
+      "blob": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5",
+      "bytes": 230,
+      "sha256": "d48dda6b4337f17002ae1698fa9a0aeb38df8fd6f35193980396f722afe09fe5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/utils/template/Cargo.toml",
+      "blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
+      "bytes": 225,
+      "sha256": "5785b0365d1f99f5d719c8d6b16586fcaadedc373f4342c92aa28a52eb778368",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-client/Cargo.toml",
+      "blob": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3",
+      "bytes": 460,
+      "sha256": "8551b9182bd6c2c448710a887d4e82fdca2117663775ea08c4ff3baab184a333",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-api/Cargo.toml",
+      "blob": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80",
+      "bytes": 1325,
+      "sha256": "9aa729c8814dbef1b447e8df9604eb135c99b3e43be1300201a2d39084ea3612",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/state/Cargo.toml",
+      "blob": "c76a7b02dd54613127b1a35e23f72e24b1990679",
+      "bytes": 1356,
+      "sha256": "fd29109edf57b7a025380deb8aae9e90fb1a053826b7ee0972f987588508aed0",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/terminal-detection/Cargo.toml",
+      "blob": "9b1bf3a51663289c68b61f566201df8d05e385cf",
+      "bytes": 330,
+      "sha256": "d6afc64a36ea33610d0fb4506f9b9fe809105ccde228bfa41c8ed24497dc4546",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/test-binary-support/Cargo.toml",
+      "blob": "12d995b9720b942daf802ce30c2976b3f36e7371",
+      "bytes": 280,
+      "sha256": "72707d0f0238886c11269f3a9bf28fab63107120c13477e4e34b798add3dc9c5",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/thread-manager-sample/Cargo.toml",
+      "blob": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f",
+      "bytes": 524,
+      "sha256": "502a50a536c149f205579a25ba8175d0ba35a657810ff7a9a85dfb3af21dfd9a",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/thread-store/Cargo.toml",
+      "blob": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+      "bytes": 1308,
+      "sha256": "f4e3449613ba53cf5828c3150d1f89f2f6f33a2ef057e6f327f6b1695b1f5c66",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/uds/Cargo.toml",
+      "blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "bytes": 684,
+      "sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/codex-experimental-api-macros/Cargo.toml",
+      "blob": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d",
+      "bytes": 311,
+      "sha256": "b8fcf3a548dfb052195e49969073aa22d8a2e0948d46732598cbeaaf9826f10b",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/plugin/Cargo.toml",
+      "blob": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1",
+      "bytes": 518,
+      "sha256": "4a2d548f9c31e70ef76fa62048d32e1449c76a3da050f05440460465e8953a9f",
+      "direct_neuron": false
+    },
+    {
+      "path": "codex-rs/model-provider/Cargo.toml",
+      "blob": "377dc7a5c258538df7c52e0f821169fbfc1fa09a",
+      "bytes": 1300,
+      "sha256": "556120ae461f73fb59be6eb34c79dbffb97bed84d0c9366d2133c5d3d1924232",
+      "direct_neuron": false
+    }
+  ],
+  "lock_regeneration": {
+    "status": "NOT_RUN",
+    "hand_edited": false,
+    "remaining_gate": "Root must run the repository's actual bazel-lock-update and inspect its real diff when execution is authorized; static mapping is not proof of resolved Bazel graph."
+  }
+}

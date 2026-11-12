@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.rv.phase-B-completion-and-C-request.root-review.v1",
+  "observed_at_utc": "2026-11-12 12:58:57 UTC",
+  "B": {
+    "job": "1a1cfb71a25-2564-1a94",
+    "status": "RECORDED",
+    "supervisor": "succeeded exit0; complete durable stdout11929B/stderr0",
+    "native_report_canonical_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+    "report_raw_sha256": "d8a2edc6f99abb2ffb895246344f404f946aeb41a7a358080d8bb324160af146",
+    "original_disk_terminals_and_realizations_verified": true,
+    "controller_original_inputs_unchanged": true,
+    "source_inventory_file_info_pending": true,
+    "completed": 2,
+    "effects": [
+      {
+        "arm": "tuned-fixed",
+        "operation_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "task_cost": 0.014269793331623077,
+        "full_cost_observed": false
+      },
+      {
+        "arm": "conditional",
+        "operation_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+        "status": "COMPLETED",
+        "macro": "STOP",
+        "read_executed": false,
+        "quality": 0,
+        "task_cost": 0.013473927038721741,
+        "full_cost_observed": false
+      }
+    ]
+  },
+  "C": {
+    "request_blob": "05cdd4100337fd20f943baa3f5dbde31ec469830",
+    "request_sha256": "00810059c5ed9c70f4f9e22823469b054eeee3597f72536e8e3c012ba375303c",
+    "key": "neuro4-rv-bc-phase-c-862531d-v1",
+    "only_changes": [
+      "args[2] B to C",
+      "stdin.stage B to C",
+      "idempotency_key phase-b to phase-c"
+    ],
+    "driver_and_other_request_fields_unchanged": true,
+    "actual_freeze_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+    "existing_driver_guard": "Requires original source-stable B controller; re-reads full original B; requires RECORDED wrapper and identical report hash with zero incomplete before C START.",
+    "authorized": "Exact request once; UNKNOWN reconciles only exact key/request.",
+    "scope": "Two pre-frozen exposed-source development probes; not independent confirmation."
+  },
+  "qualification_status": "HOLD_NOT_EVALUATED",
+  "owner_decision": null,
+  "production_admission": false
+}

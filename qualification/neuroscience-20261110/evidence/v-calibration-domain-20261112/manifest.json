@@ -1,0 +1,117 @@
+{
+  "schema": "ctrl.v-calibration-domain-audit-bundle.v1",
+  "execution_source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "immutable_runtime_archive": "928a2603a7911cb5e8db439b7b814b9e033b6007",
+  "artifacts": [
+    {
+      "path": "V_CALIBRATION_DOMAIN_AUDIT.md",
+      "blob": "6fce18bc10ef47601702fda159d2d7caf49bd0b0",
+      "bytes": 5667,
+      "sha256": "63c7126f9c0eddc31f7330713bc939b2cec48169a5782d1bf7746132caa83983"
+    },
+    {
+      "path": "v_calibration_observations.json",
+      "blob": "9f03867f8dd88108f62e56503c74fbf804d1f1b2",
+      "bytes": 31075,
+      "sha256": "dcdc72271f7d0350c87379a41326c1247b2803b037d40e8f9b9ccdd99f3a50a5"
+    },
+    {
+      "path": "v_calibration_preconditions.json",
+      "blob": "ae275a984fe0892f4cd59aace05eb35d76a9e78a",
+      "bytes": 5393,
+      "sha256": "412e6fac262b342179d07500c82ef1756e749f50eef19be089fbc30b3c0ddb12"
+    }
+  ],
+  "all_artifact_blobs_independently_read_back_exact": true,
+  "original_sources": [
+    {
+      "path": "scripts/ndu_real_runtime/macro_policy.py",
+      "blob": "abed0043a942e45590ccba2dd89f7e3723c35837",
+      "bytes": 18975,
+      "sha256": "179bfcd6d436e7a28d1171d58715e96993cfc81b1e3c7af9fa08e037324d885b"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/macro_policy_checkpoint.py",
+      "blob": "98f9cc578f65db968cfbab2e1f9a01e16538992a",
+      "bytes": 9463,
+      "sha256": "829098d6eca3851ccc11eceaf7d8efdc468826f032a97ccb4ccc27c9654f371a"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/macro_public_state.py",
+      "blob": "de8afef26f57173f41863196477162d7a2f098b4",
+      "bytes": 1587,
+      "sha256": "be578497e21dfd72fc97786cf89b1a4875b786fb809c060def9dde0588fa228e"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/macro_actor.py",
+      "blob": "c3ef09942dbeed647455a4d27a0dfdeec3070f20",
+      "bytes": 7247,
+      "sha256": "bc2a54b9476c0d5d797f189e1f8636675f45384ff3af5dcd5344e675e6b194bf"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/metacontrol_macro_contract.py",
+      "blob": "e8484808e17bc689ff8c37c7be6a0e2b73b3f134",
+      "bytes": 9748,
+      "sha256": "6fb926e56ef82b85ab28e9b64861c398a567f029d316dcb35b7a3a782e2f35ea"
+    },
+    {
+      "path": "scripts/ctrl_macro_study.py",
+      "blob": "09b8d9e5fa98dc0f54f0e0f5c11d16a689de8ba2",
+      "bytes": 21372,
+      "sha256": "12f118fc1be4f904119e224466124b7599bea6bc8a3496b2bdf8c0da289be5b0"
+    }
+  ],
+  "original_input_inventory_file": "v_calibration_observations.json",
+  "verified": {
+    "export_raw_bytes_and_sha256": true,
+    "export_canonical_pins": 2,
+    "checkpoint_selected_fit_calibration_input_sha256": 4,
+    "known_training_rows_each_mode": 72,
+    "known_calibration_rows_each_mode": 54,
+    "training_minimum_exact_dimensions_each_mode": 47,
+    "training_maximum_exact_dimensions_each_mode": 47,
+    "conditional_public_state_sha256_matches": 96,
+    "source_partitions": "24 fit,18 calibration,16 evaluation;58 unique source IDs with no overlap"
+  },
+  "result": {
+    "frozen": {
+      "admitted": 45,
+      "rejected": 9,
+      "planned": 54,
+      "rejected_sources": 7
+    },
+    "adapted": {
+      "admitted": 47,
+      "rejected": 7,
+      "planned": 54,
+      "rejected_sources": 7
+    },
+    "minimum_independent_sources_per_cell_at_alpha_point_1": 9,
+    "current_sources_per_cell_each_mode": 9,
+    "rank_source_shortfall": 0,
+    "complete_false_root_cause": "Strict train-only raw feature envelope excludes planned calibration rows; all paired gains are known.",
+    "conditional_reasons": {
+      "insufficient_calibration": 94,
+      "outside_observed_feature_envelope": 2
+    },
+    "time_bounds": {
+      "read": 30,
+      "finalizer": 5,
+      "action": 40,
+      "episode_wall": 60
+    }
+  },
+  "method": "Immutable raw JSON digests verified. Python canonical numbers/strings preserved lexically while removing only outside-string whitespace and selecting rows in original planned order. Numeric range checks are direct IEEE-754 comparisons; only observed fixed time inputs 0 and40 were transformed, with equality to the original checkpoint transformation explicitly verified. No re-fit or execution of native policy.",
+  "scope": {
+    "new_actor_executions": 0,
+    "fit_or_export_calls": 0,
+    "original_source_or_plan_changes": 0,
+    "branch_or_ref_updates": 0,
+    "unit_or_native_test_execution_claimed": false,
+    "calibration_admission_passed": false,
+    "V_benefit_established": false,
+    "owner_evaluation": "not_evaluated",
+    "owner_decision": null,
+    "research_state": "HOLD"
+  }
+}

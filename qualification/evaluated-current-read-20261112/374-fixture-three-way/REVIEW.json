@@ -1,0 +1,273 @@
+{
+  "schema": "hepta.fixture-incremental-merge-review.v1",
+  "status": "STATIC_ONLY_NOT_FMT_NOT_COMPILED_NOT_EXECUTED",
+  "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+  "ours_tree": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+  "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "theirs_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "assignment_blob": "1e4013304a42cfa6a9bfe7d1850b6eb934c4f679",
+  "scope": "Three fixture/test intersections, plus exactly one Box field adaptation in the newly upstream B fixture support.",
+  "decisions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "resolution": "Retain ours exact additional real Source withdrawal-after-native-completion test and every assertion; append upstream current_slots child-module registration unchanged.",
+      "source_tail_test_exact_ours": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "resolution": "Retain ours read-only source_publication native assertion helper; retain upstream current_slots support module registration unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "resolution": "Retain ours five Box fields, Box-returning constructors, boxed teardown and exact genuine panel consumption; retain new TrainingComposition + from_panel_with_training + real original Trainer factory + upstream new test module. Both actual consuming branches receive *panel once."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "resolution": "Change only TrainingFixture.host:HostFixture to Box<HostFixture>, matching preserved constructor return. No request, owner, counter, assertion or method changes."
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "94f7031daabce5873329350758545227235c5656",
+      "reason": "Merged ours PanelFixture holds original/panel/member fields in Boxes. This code overlay is to be combined with the full parent merge, not treated as standalone raw374."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "reason": "PanelMemberFixture::complete preserves actual owners and returns Box."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0",
+      "reason": "All five new upstream actual Trainer proof tests retained byte-for-byte by base inheritance."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "blob": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "reason": "New scoped proof is upstream, not overwritten. Old e72 8m+1 expansion no longer applies."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "blob": "90b880ff4446600afc669fe36fca7437232fd04e",
+      "reason": "Actual Original branch consumes the same original Training connection/dataset/completion, not a synthesized reply."
+    }
+  ],
+  "checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "all_parent_function_names_retained": true,
+      "ours_names": [
+        "finish_read",
+        "next_use_context",
+        "original",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "q24_remote_current_set_rejects_source_withdrawal_after_native_completion",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "remote_c",
+        "remote_selection",
+        "selection_context"
+      ],
+      "theirs_names": [
+        "finish_read",
+        "next_use_context",
+        "original",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "remote_c",
+        "remote_selection",
+        "selection_context"
+      ],
+      "post_names": [
+        "finish_read",
+        "next_use_context",
+        "original",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "q24_remote_current_set_rejects_source_withdrawal_after_native_completion",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "remote_c",
+        "remote_selection",
+        "selection_context"
+      ],
+      "asserts": {
+        "ours": 49,
+        "theirs": 42,
+        "post": 49
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "all_parent_function_names_retained": true,
+      "ours_names": [
+        "changed_nonce",
+        "channel",
+        "client",
+        "delayed_response",
+        "evaluated_client",
+        "identity",
+        "pidfd",
+        "profile_client",
+        "reject_evaluated_request_substitutions",
+        "reject_wrong_context",
+        "serve",
+        "source_publication",
+        "withdraw_source_before_final_selection_read"
+      ],
+      "theirs_names": [
+        "changed_nonce",
+        "channel",
+        "client",
+        "delayed_response",
+        "evaluated_client",
+        "identity",
+        "pidfd",
+        "profile_client",
+        "reject_evaluated_request_substitutions",
+        "reject_wrong_context",
+        "serve",
+        "withdraw_source_before_final_selection_read"
+      ],
+      "post_names": [
+        "changed_nonce",
+        "channel",
+        "client",
+        "delayed_response",
+        "evaluated_client",
+        "identity",
+        "pidfd",
+        "profile_client",
+        "reject_evaluated_request_substitutions",
+        "reject_wrong_context",
+        "serve",
+        "source_publication",
+        "withdraw_source_before_final_selection_read"
+      ],
+      "asserts": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "all_parent_function_names_retained": true,
+      "ours_names": [
+        "before_adoption",
+        "before_publication",
+        "commands",
+        "files",
+        "finish",
+        "finish",
+        "from_panel",
+        "new",
+        "original_files",
+        "recover",
+        "upstream_files"
+      ],
+      "theirs_names": [
+        "before_adoption",
+        "before_publication",
+        "commands",
+        "files",
+        "finish",
+        "finish",
+        "from_panel",
+        "from_panel_with_training",
+        "new",
+        "original_files",
+        "recover",
+        "upstream_files"
+      ],
+      "post_names": [
+        "before_adoption",
+        "before_publication",
+        "commands",
+        "files",
+        "finish",
+        "finish",
+        "from_panel",
+        "from_panel_with_training",
+        "new",
+        "original_files",
+        "recover",
+        "upstream_files"
+      ],
+      "asserts": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "all_parent_function_names_retained": true,
+      "ours_names": null,
+      "theirs_names": [
+        "current_responses",
+        "finish",
+        "new",
+        "original_dataset",
+        "requests"
+      ],
+      "post_names": [
+        "current_responses",
+        "finish",
+        "new",
+        "original_dataset",
+        "requests"
+      ],
+      "asserts": {
+        "ours": null,
+        "theirs": 7,
+        "post": 7
+      }
+    }
+  ],
+  "new_B_test_review": {
+    "source_blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0",
+    "methods": 5,
+    "expected_source_not_execution": {
+      "missing_reads": 1,
+      "fresh_execute_reads": 4,
+      "completed_readback_reads": 3
+    },
+    "preserved_assertions": [
+      "actual native Trainer replies rather than fixture replacement",
+      "real original B journal differs after uncertain committed effect",
+      "no second Execute admission",
+      "same peer remains consumed after cancellation",
+      "original member cohort withdrawal after final T still fails",
+      "complete original upstream/journal bytes unchanged where required"
+    ],
+    "limitations": "These are source assertions, not observed counts or passed methods. Full native execution and remaining new CurrentRead integration are parent gates."
+  },
+  "current_read_integration": {
+    "owner": "repository_research_audit",
+    "warning": "Upstream CurrentRead slots10/15 and beforePurpose4 must be adapted to the final combined production call sequence, where ours same-call dedup removes repeated reads. This overlay does not freeze or weaken those counts.",
+    "preserved": "actual first/last physical CURRENT guard and original Source withdrawal tail; all registration and helper paths remain discoverable"
+  },
+  "no_changes": [
+    "production runtime",
+    "cap/deadline",
+    "signer/grant/Root purpose",
+    "existing request framing",
+    "workflow thresholds",
+    "CALLERS rules",
+    "branch/ref",
+    "actor execution"
+  ],
+  "integrity": "Every input and postimage is hashed from full UTF-8 bytes; all input Git blob SHA-1 matched. Output tree readback is recorded separately after creation."
+}

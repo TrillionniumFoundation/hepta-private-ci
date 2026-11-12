@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.374-current-production-merge.v1",
+  "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+  "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "execution": "NOT_RUN_NOT_FMT",
+  "posts": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "edit_base": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+      "bytes": 12547,
+      "sha": "be864ecaa8df20745e04179223ac1a92261eb58b",
+      "sha256": "359a57032c11f0f3c466ce7613530e97f9896e93c3057ccfb6cbcda65376f8a9",
+      "edits": [
+        {
+          "before": "    pub(crate) fn install_fresh_resident_gate(",
+          "after": "    pub(crate) fn original_resident_readback_only(&self) -> bool {\n        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)\n    }\n\n    pub(crate) fn install_fresh_resident_gate("
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "edit_base": "00fb66e36c64b52ddb40b1250a5375e7437629ec",
+      "bytes": 7873,
+      "sha": "636ac446ff8ab0f6d5cf325106400644b7ad4a35",
+      "sha256": "d47b60d3b832da2f961240eb998d0b1b7ab83f033a9c77026690e29ae76ae0ab",
+      "edits": [
+        {
+          "before": "    /// Only the resident fresh-CAS factory calls this while it owns Self by\n",
+          "after": "    /// Observe the origin fixed while consuming the original role channels.\n    /// This cannot install a gate or promote recovered channels to new work.\n    pub(crate) fn original_resident_readback_only(&self) -> bool {\n        self.origin == Origin::Recovered\n    }\n\n    /// Only the resident fresh-CAS factory calls this while it owns Self by\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "edit_base": "8bd47c76fc82365daac44acf5061861e0c552011",
+      "bytes": 16741,
+      "sha": "3052cf32ddbaa99609a27ee38850d1c20a9f595f",
+      "sha256": "bf19fc3975bc720eea862b7988431e16b9ac968a4f3f8beaaa72ed440754764d",
+      "edits": [
+        {
+          "before": "#[path = \"circuit_feature_current_learning.rs\"]\n",
+          "after": "#[path = \"circuit_feature_current_read.rs\"]\nmod current_read;\n#[path = \"circuit_feature_current_learning.rs\"]\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "edit_base": "849cdf6406fb746be80c6fb93ce3ee8e4d0f4112",
+      "bytes": 9246,
+      "sha": "69a88e479494dfa9dda77a642c1cc1c85c1ad590",
+      "sha256": "014520f095fa7ec13dd844d3326d7142a49ed77205728af089174e0af5c6ac87",
+      "edits": [
+        {
+          "before": "use super::*;",
+          "after": "use super::current_read::OriginalPublishedReadCurrent;\nuse super::*;"
+        },
+        {
+          "before": "    pub fn read_learning_selection(\n        &self,\n        coordinator: &LearningIterationCoordinatorV1,\n    ) -> Result<LearningIterationObservationV1, AgentdError> {\n        LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())\n            .map_err(invalid)?;\n        self.task.require_current()?;\n        let Publication::Update { original, previous } = &self.task.0.publication else {\n            return Err(invalid(\"initial Feature task is not a learning selection\"));\n        };\n        if previous.source.history_digest().as_str()\n            != coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()\n        {\n            return Err(invalid(\n                \"learning selection differs from original completed source\",\n            ));\n        }\n        let result = self.task.0.original.lock().map_err(invalid)?.selection(\n            original,\n            coordinator,\n            &previous.manifest,\n        )?;\n        self.task.require_current()?;\n        Ok(result)\n    }\n\n",
+          "after": "    pub fn read_learning_selection(\n        &self,\n        coordinator: &LearningIterationCoordinatorV1,\n    ) -> Result<LearningIterationObservationV1, AgentdError> {\n        let mut current = OriginalPublishedReadCurrent::individual(self);\n        self.read_learning_selection_with_current(coordinator, &mut current)\n    }\n\n    pub(super) fn read_learning_selection_with_current(\n        &self,\n        coordinator: &LearningIterationCoordinatorV1,\n        current: &mut OriginalPublishedReadCurrent<'_, W>,\n    ) -> Result<LearningIterationObservationV1, AgentdError> {\n        LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())\n            .map_err(invalid)?;\n        OriginalPublishedReadCurrent::require(current, self)?;\n        let Publication::Update { original, previous } = &self.task.0.publication else {\n            return Err(invalid(\"initial Feature task is not a learning selection\"));\n        };\n        if previous.source.history_digest().as_str()\n            != coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()\n        {\n            return Err(invalid(\n                \"learning selection differs from original completed source\",\n            ));\n        }\n        let result = self.task.0.original.lock().map_err(invalid)?.selection(\n            original,\n            coordinator,\n            &previous.manifest,\n        )?;\n        OriginalPublishedReadCurrent::require(current, self)?;\n        Ok(result)\n    }\n\n"
+        },
+        {
+          "before": "        let (_, observation, _) = self\n            .read_learning_next_use_set(coordinator, source, identity)?\n            .into_parts();\n        Ok(observation)\n    }\n\n    /// The same physical read",
+          "after": "        let mut current = OriginalPublishedReadCurrent::individual(self);\n        self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)\n    }\n\n    pub(super) fn read_learning_next_use_with_current<SW: AnchorWitnessStore>(\n        &self,\n        coordinator: &LearningIterationCoordinatorV1,\n        source: &CircuitTaskSourceReadbackV1<SW>,\n        identity: &AgentdIdentity,\n        current: &mut OriginalPublishedReadCurrent<'_, W>,\n    ) -> Result<LearningIterationObservationV1, AgentdError> {\n        let (_, observation, _) = self\n            .read_learning_next_use_set(coordinator, source, identity, current)?\n            .into_parts();\n        Ok(observation)\n    }\n\n    /// The same physical read"
+        },
+        {
+          "before": "        source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,\n        identity: &AgentdIdentity,\n    ) -> Result<OriginalCircuitNextUseReadSet, AgentdError> {",
+          "after": "        source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,\n        identity: &AgentdIdentity,\n        current: &mut OriginalPublishedReadCurrent<'_, W>,\n    ) -> Result<OriginalCircuitNextUseReadSet, AgentdError> {"
+        },
+        {
+          "before": "let actual_selection = self.read_learning_selection(&prefix)?;",
+          "after": "let actual_selection = self.read_learning_selection_with_current(&prefix, current)?;"
+        },
+        {
+          "before": "let receipt = self.committed(&before)?;",
+          "after": "let receipt = PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?;"
+        },
+        {
+          "before": "        self.task.require_current()?;\n        Ok(OriginalCircuitNextUseReadSet {",
+          "after": "        OriginalPublishedReadCurrent::require(current, self)?;\n        Ok(OriginalCircuitNextUseReadSet {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "edit_base": "366400a019bcaf29016d74c9540823be8da7969b",
+      "bytes": 13352,
+      "sha": "3802bc408a0736dc7c934293dfbb30d0debcf3f0",
+      "sha256": "3cdbb9ea7651803c14cfe4657857c9fa57293e2dafa64fa817218f676e525605",
+      "edits": [
+        {
+          "before": "use super::super::Publication;",
+          "after": "use super::super::Publication;\nuse super::super::current_read::OriginalPublishedReadCurrent;\nuse super::super::current_read::OriginalPublishedReadPurpose;"
+        },
+        {
+          "before": "    fn require_task_input_current(&self) -> Result<(), Error> {\n        self.cell.task.require_current()?;\n        self.require_original_task_input()?;\n        self.cell.task.require_current()?;\n        Ok(())\n    }",
+          "after": "    fn require_task_input_current(&self) -> Result<(), Error> {\n        let mut current = OriginalPublishedReadCurrent::individual(&self.cell);\n        self.require_task_input_current_with_current(&mut current)\n    }\n\n    fn require_task_input_current_with_current(\n        &self,\n        current: &mut OriginalPublishedReadCurrent<'_, C>,\n    ) -> Result<(), Error> {\n        OriginalPublishedReadCurrent::require(current, &self.cell)?;\n        self.require_original_task_input()?;\n        OriginalPublishedReadCurrent::require(current, &self.cell)?;\n        Ok(())\n    }"
+        },
+        {
+          "before": "        self.cell.task.require_current()?;\n        self.require_original_task_input()?;\n        let coordinator = self.context.decision()?;\n        let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;\n        let (selection, observation, source_publication) = match self.context.mode()? {\n            wire::Mode::Selection => {\n                let selection = cell.read_learning_selection(&coordinator)?;",
+          "after": "        let mut current = OriginalPublishedReadCurrent::for_original_read(&self.cell);\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\n        self.require_original_task_input()?;\n        let coordinator = self.context.decision()?;\n        let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;\n        let mode = self.context.mode()?;\n        OriginalPublishedReadCurrent::select_purpose(\n            &mut current,\n            match mode {\n                wire::Mode::Selection => OriginalPublishedReadPurpose::Selection,\n                wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse,\n            },\n        )?;\n        let (selection, observation, source_publication) = match mode {\n            wire::Mode::Selection => {\n                let selection =\n                    cell.read_learning_selection_with_current(&coordinator, &mut current)?;"
+        },
+        {
+          "before": "                        &self.source,\n                        &self.identity,\n                    )?",
+          "after": "                        &self.source,\n                        &self.identity,\n                        &mut current,\n                    )?"
+        },
+        {
+          "before": "        if cell.read_learning_selection(&coordinator)? != selection {",
+          "after": "        if cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection {"
+        },
+        {
+          "before": "        self.require_original_task_input()?;\n        self.cell.task.require_current()?;\n        Ok(Readback {",
+          "after": "        self.require_original_task_input()?;\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\n        OriginalPublishedReadCurrent::finish(current)?;\n        Ok(Readback {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "edit_base": "db7271f51c7b4ba5b16f9d109ea9a91e63123d1f",
+      "bytes": 5199,
+      "sha": "2c469106274329851ea7329f312ed33d55c4a2f8",
+      "sha256": "89014b736c00ac5b9b4d8db4ce17b9fa0cc597faa39f8bbc49a3e4266276e56f",
+      "edits": [
+        {
+          "before": "Self::Selection => 10",
+          "after": "Self::Selection => 6"
+        },
+        {
+          "before": "Self::NextUse => 15",
+          "after": "Self::NextUse => 9"
+        },
+        {
+          "before": "    /// The original mode becomes known after the first input/Selection reads.\n",
+          "after": "    /// The original authenticated mode fixes the path after the first actual\n    /// CURRENT and Source input reads, before its native Selection/NextUse read.\n"
+        },
+        {
+          "before": "State::BeforePurpose { slots: 4 }",
+          "after": "State::BeforePurpose { slots: 1 }"
+        },
+        {
+          "before": "self.state = State::Reading { purpose, slots: 4 };",
+          "after": "self.state = State::Reading { purpose, slots: 1 };"
+        },
+        {
+          "before": "    /// read, slot 1 and slot 10/15 perform the original full CURRENT I/O; the\n",
+          "after": "    /// read, slot 1 and slot 6/9 perform the original full CURRENT I/O; the\n"
+        },
+        {
+          "before": "if slots >= 4",
+          "after": "if slots >= 1"
+        },
+        {
+          "before": "if !(4..purpose.slots()).contains(&slots)",
+          "after": "if !(1..purpose.slots()).contains(&slots)"
+        }
+      ]
+    }
+  ]
+}

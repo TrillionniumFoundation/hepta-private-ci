@@ -1,0 +1,41 @@
+﻿2026-11-12T21:45:02.5410160Z Current runner version: '2.338.2'
+2026-11-12T21:45:02.5434870Z ##[group]Runner Image Provisioner
+2026-11-12T21:45:02.5435777Z Hosted Compute Agent
+2026-11-12T21:45:02.5436497Z Version: 20261028.624
+2026-11-12T21:45:02.5437151Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T21:45:02.5437981Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T21:45:02.5438689Z Worker ID: {1a235bee-fec8-48f6-bf00-c1a0bdacc760}
+2026-11-12T21:45:02.5439443Z Region: westcentralus
+2026-11-12T21:45:02.5440091Z Cloud: Azure
+2026-11-12T21:45:02.5440640Z ##[endgroup]
+2026-11-12T21:45:02.5442463Z ##[group]Operating System
+2026-11-12T21:45:02.5443150Z Ubuntu
+2026-11-12T21:45:02.5443943Z 24.04.5
+2026-11-12T21:45:02.5444528Z LTS
+2026-11-12T21:45:02.5445056Z ##[endgroup]
+2026-11-12T21:45:02.5445686Z ##[group]Runner Image
+2026-11-12T21:45:02.5446320Z Image: ubuntu-24.04
+2026-11-12T21:45:02.5446971Z Version: 20261101.360.1
+2026-11-12T21:45:02.5448315Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T21:45:02.5450265Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T21:45:02.5451304Z ##[endgroup]
+2026-11-12T21:45:02.5452570Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T21:45:02.5455180Z Contents: read
+2026-11-12T21:45:02.5455825Z Metadata: read
+2026-11-12T21:45:02.5456547Z ##[endgroup]
+2026-11-12T21:45:02.5458662Z Secret source: Actions
+2026-11-12T21:45:02.5459733Z Cache mode: write
+2026-11-12T21:45:02.5460460Z Prepare workflow directory
+2026-11-12T21:45:02.5849000Z Prepare all required actions
+2026-11-12T21:45:02.5952243Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/6213/merge (1749a97b4c7d5cc76245025b1721e831365c8296)
+2026-11-12T21:45:02.5957604Z Complete job name: Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc
+2026-11-12T21:45:02.7122333Z ##[group]Run if [[ "failure" != "success" ]]; then
+2026-11-12T21:45:02.7123815Z [36;1mif [[ "failure" != "success" ]]; then[0m
+2026-11-12T21:45:02.7125503Z [36;1m  echo "Windows Bazel test shards finished with result: failure" >&2[0m
+2026-11-12T21:45:02.7127072Z [36;1m  exit 1[0m
+2026-11-12T21:45:02.7128056Z [36;1mfi[0m
+2026-11-12T21:45:02.7671238Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:45:02.7673561Z ##[endgroup]
+2026-11-12T21:45:02.7939918Z Windows Bazel test shards finished with result: failure
+2026-11-12T21:45:02.7968483Z ##[error]Process completed with exit code 1.
+2026-11-12T21:45:02.8226164Z Cleaning up orphan processes

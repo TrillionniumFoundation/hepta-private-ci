@@ -1,0 +1,697 @@
+ts::blocking_replace_mcp_servers_preserves_inline_comment_suffix ... ok
+2026-11-12T17:34:14.1758455Z test config::edit::tests::blocking_replace_mcp_servers_round_trips ... ok
+2026-11-12T17:34:14.1759042Z test config::edit::tests::blocking_set_hide_full_access_warning_preserves_table ... ok
+2026-11-12T17:34:14.1759706Z test config::permissions::tests::permissions_profiles_reject_unsupported_builtin_extends_parent ... ok
+2026-11-12T17:34:14.1760407Z test config::permissions::tests::read_write_glob_patterns_still_reject_non_subpath_globs ... ok
+2026-11-12T17:34:14.1761055Z test config::permissions::tests::read_write_trailing_glob_suffix_compiles_as_subpath ... ok
+2026-11-12T17:34:14.1761827Z test config::tests::accepts_amazon_bedrock_aws_profile_override ... ok
+2026-11-12T17:34:14.1762378Z test config::tests::agents_max_threads_alias_matches_canonical_config ... ok
+2026-11-12T17:34:14.1762909Z test config::edit::tests::blocking_set_path_updates_notifications ... ok
+2026-11-12T17:34:14.1763782Z test config::tests::bootstrap_respect_system_proxy_honors_feature_requirements ... ok
+2026-11-12T17:34:14.1764434Z test config::tests::approvals_reviewer_stays_manual_only_when_guardian_feature_is_enabled ... ok
+2026-11-12T17:34:14.1765092Z test config::tests::approvals_reviewer_can_be_set_in_config_without_guardian_approval ... ok
+2026-11-12T17:34:14.1765768Z test agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context ... FAILED
+2026-11-12T17:34:14.1766389Z test config::tests::default_permissions_profile_can_extend_builtin_workspace ... ok
+2026-11-12T17:34:14.1766969Z test config::tests::config_applies_managed_auth_store_and_chatgpt_base_url ... ok
+2026-11-12T17:34:14.1767672Z test config::tests::config_resolves_explicit_keyring_auth_store_mode ... ok
+2026-11-12T17:34:14.1768276Z test config::tests::derive_sandbox_policy_falls_back_to_read_only_for_implicit_defaults ... ok
+2026-11-12T17:34:14.1768953Z test config::tests::disabled_network_proxy_feature_does_not_start_profile_proxy_policy ... ok
+2026-11-12T17:34:14.1769627Z test config::tests::explicit_builtin_workspace_profile_ignores_legacy_workspace_write_settings ... ok
+2026-11-12T17:34:14.1770244Z test config::tests::goal_max_token_budget_requires_positive_integer ... ok
+2026-11-12T17:34:14.1770758Z test config::tests::explicit_untrusted_approval_policy_is_rejected ... ok
+2026-11-12T17:34:14.1771483Z test config::tests::feature_requirements_auto_review_disables_guardian_approval ... ok
+2026-11-12T17:34:14.1772054Z test config::tests::legacy_profile_selection_is_rejected ... ok
+2026-11-12T17:34:14.1772536Z test config::tests::discovers_multiple_standalone_agent_role_files ... ok
+2026-11-12T17:34:14.1773087Z test config::tests::load_config_applies_amazon_bedrock_transport_overrides ... ok
+2026-11-12T17:34:14.1773787Z test config::tests::load_config_rejects_invalid_token_budget_reminder_template ... ok
+2026-11-12T17:34:14.1774339Z test config::tests::in_app_chat_feature_requirements_are_valid ... ok
+2026-11-12T17:34:14.1774892Z test config::tests::legacy_sandbox_mode_builds_profiles_with_compatible_projection ... ok
+2026-11-12T17:34:14.1775500Z test config::tests::load_global_mcp_servers_accepts_legacy_ms_field ... ok
+2026-11-12T17:34:14.1776020Z test config::tests::load_config_rejects_missing_agent_role_config_file ... ok
+2026-11-12T17:34:14.1776649Z test config::tests::managed_unrestricted_permission_profile_still_enables_network_requirements ... ok
+2026-11-12T17:34:14.1777250Z test config::tests::load_config_resolves_token_budget_config ... ok
+2026-11-12T17:34:14.1777781Z test config::tests::multi_agent_v2_allows_disabled_wait_agent_without_sleep_tool ... ok
+2026-11-12T17:34:14.1778446Z test config::tests::permissions_profiles_reject_nested_entries_for_non_workspace_roots ... ok
+2026-11-12T17:34:14.1779108Z test config::tests::mixed_legacy_and_standalone_agent_role_sources_merge_with_precedence ... ok
+2026-11-12T17:34:14.1779772Z test config::tests::permission_profile_override_falls_back_when_disallowed_by_requirements ... ok
+2026-11-12T17:34:14.1780455Z test config::tests::rejects_provider_auth_with_env_key ... ok
+2026-11-12T17:34:14.1780926Z test config::tests::requirements_guardian_policy_beats_auto_review ... ok
+2026-11-12T17:34:14.1781700Z test config::tests::runtime_config_resolves_session_picker_view_default_and_override ... ok
+2026-11-12T17:34:14.1782543Z test config::tests::project_profiles_are_ignored ... ok
+2026-11-12T17:34:14.1783219Z test config::tests::runtime_config_resolves_terminal_resize_reflow_defaults_and_overrides ... ok
+2026-11-12T17:34:14.1783867Z test config::tests::rebuild_preserving_session_layers_refreshes_requirements ... ok
+2026-11-12T17:34:14.1784400Z test config::tests::tui_pet_anchor_defaults_to_composer ... ok
+2026-11-12T17:34:14.1784964Z test config::tests::test_set_default_oss_provider_rejects_legacy_ollama_chat_provider ... ok
+2026-11-12T17:34:14.1785518Z test config::tests::tui_session_picker_view_defaults_to_none ... ok
+2026-11-12T17:34:14.1785956Z test config::tests::tui_theme_defaults_to_none ... ok
+2026-11-12T17:34:14.1786512Z test config::tests::web_search_mode_for_turn_falls_back_when_provider_disallows_external_web_access ... ok
+2026-11-12T17:34:14.1787214Z test config::tests::test_load_config_rejects_legacy_ollama_chat_provider_with_helpful_error ... ok
+2026-11-12T17:34:14.1787850Z test config::tests::selected_plugin_wins_after_discovered_plugin_requirements ... ok
+2026-11-12T17:34:14.1788481Z test config::tests::web_search_mode_for_turn_prefers_live_for_disabled_permissions ... ok
+2026-11-12T17:34:14.1789062Z test config::tests::web_search_mode_for_turn_uses_preference_for_read_only ... ok
+2026-11-12T17:34:14.1789774Z test connectors::tests::tool_suggest_includes_connectors_from_loaded_plugin_apps ... ok
+2026-11-12T17:34:14.1790169Z 
+2026-11-12T17:34:14.1790259Z failures:
+2026-11-12T17:34:14.1790403Z 
+2026-11-12T17:34:14.1790676Z ---- agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context stdout ----
+2026-11-12T17:34:14.1791077Z 
+2026-11-12T17:34:14.1791732Z thread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (6820) panicked at core/src\agent\control_tests.rs:395:14:
+2026-11-12T17:34:14.1792522Z terminal cleanup should finish before persisting resume context: Elapsed(())
+2026-11-12T17:34:14.1792870Z 
+2026-11-12T17:34:14.1792874Z 
+2026-11-12T17:34:14.1792960Z failures:
+2026-11-12T17:34:14.1793435Z     agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context
+2026-11-12T17:34:14.1793786Z 
+2026-11-12T17:34:14.1794205Z test result: FAILED. 88 passed; 1 failed; 0 ignored; 0 measured; 2266 filtered out; finished in 17.67s
+2026-11-12T17:34:14.1794702Z 
+2026-11-12T17:34:14.1794711Z 
+2026-11-12T17:34:14.1794830Z running 79 tests
+2026-11-12T17:34:14.1795262Z test context::contextual_user_message::tests::contextual_user_fragment_is_dyn_compatible ... ok
+2026-11-12T17:34:14.1795879Z test context::contextual_user_message::tests::ignores_regular_user_text ... ok
+2026-11-12T17:34:14.1796494Z test context::world_state::apps_instructions::tests::legacy_guidance_is_not_injected_again ... ok
+2026-11-12T17:34:14.1797194Z test context::world_state::compact_permissions::tests::renders_only_newly_approved_prefixes ... ok
+2026-11-12T17:34:14.1797952Z test context::world_state::environment::render_tests::serialize_environment_context_with_full_filesystem_profile ... ok
+2026-11-12T17:34:14.1798731Z test context::world_state::environment::tests::legacy_single_environment_snapshot_does_not_change ... ok
+2026-11-12T17:34:14.1799478Z test context::world_state::model::tests::model_change_renders_when_persisted_or_inferred_from_previous_turn ... ok
+2026-11-12T17:34:14.1800281Z test context::world_state::multi_agent_mode::tests::unchanged_mode_is_reemitted_after_usage_hint_migration ... ok
+2026-11-12T17:34:14.1800988Z test context::world_state::tests::snapshot_uses_stable_section_ids_and_omits_null_fields ... ok
+2026-11-12T17:34:14.1801792Z test context_manager::history::tests::data_url_without_base64_marker_is_unchanged ... ok
+2026-11-12T17:34:14.1802597Z test context_manager::history::tests::drop_last_n_user_turns_ignores_session_prefix_user_messages ... ok
+2026-11-12T17:34:14.1803487Z test context_manager::history::tests::for_prompt_clears_image_generation_result_when_images_are_unsupported ... ok
+2026-11-12T17:34:14.1804204Z test context::world_state::plugins_instructions::tests::snapshots ... ok
+2026-11-12T17:34:14.1804697Z test context::world_state::permissions::tests::snapshots ... ok
+2026-11-12T17:34:14.1805244Z test context_manager::history::tests::mixed_case_data_url_markers_are_adjusted ... ok
+2026-11-12T17:34:14.1805968Z test context_manager::history::tests::normalize_mixed_inserts_and_removals_panics_in_debug - should panic ... ok
+2026-11-12T17:34:14.1806743Z test context_manager::history::tests::format_exec_output_reports_omitted_lines_and_keeps_head_and_tail ... ok
+2026-11-12T17:34:14.1807502Z test context_manager::history::tests::record_annotated_items_preserves_metadata_while_processing_item ... ok
+2026-11-12T17:34:14.1808181Z test context_manager::history::tests::remove_first_item_handles_local_shell_pair ... ok
+2026-11-12T17:34:14.1808842Z test context_manager::history::tests::remove_first_item_removes_matching_output_for_function_call ... ok
+2026-11-12T17:34:14.1809631Z test context_manager::history::tests::rewind_to_recovery_boundary_rejects_malformed_boundary_without_mutation ... ok
+2026-11-12T17:34:14.1810351Z test environment_selection::tests::blocking_snapshot_waits_for_starting_environment ... ok
+2026-11-12T17:34:14.1811033Z test environment_selection::tests::default_thread_environment_selections_use_manager_default_id ... ok
+2026-11-12T17:34:14.1812122Z test environment_selection::tests::resolved_environment_selections_use_first_selection_as_primary ... ok
+2026-11-12T17:34:14.1812771Z test exec::tests::aggregate_output_rebalances_when_stderr_is_small ... ok
+2026-11-12T17:34:14.1813425Z test exec::tests::windows_elevated_supports_unreadable_globs ... ok
+2026-11-12T17:34:14.1814048Z test environment_selection::tests::replacement_environment_events_follow_selected_environment ... ok
+2026-11-12T17:34:14.1814688Z test exec::tests::windows_restricted_token_allows_workspace_write_profiles ... ok
+2026-11-12T17:34:14.1815259Z test exec::tests::windows_sandbox_backend_honors_unelevated_configuration ... ok
+2026-11-12T17:34:14.1815804Z test exec_env::tests::test_core_inherit_with_default_excludes_enabled ... ok
+2026-11-12T17:34:14.1816433Z test exec_env::tests::inject_permission_profile_env_replaces_differently_cased_windows_key ... ok
+2026-11-12T17:34:14.1816960Z test exec_env::tests::test_inherit_none ... ok
+2026-11-12T17:34:14.1817516Z test exec_policy::model_policy::tests::cyber_policy_keeps_heuristically_safe_commands_inside_the_sandbox ... ok
+2026-11-12T17:34:14.1818346Z test exec_policy::tests::exec_approval_requirement_rejects_unmatched_sandbox_escalation_when_granular_sandbox_is_disabled ... ok
+2026-11-12T17:34:14.1819202Z test exec_policy::model_policy::tests::cyber_policy_requires_approval_for_broad_wrapped_and_resolved_prefixes ... ok
+2026-11-12T17:34:14.1819939Z test exec_policy::tests::forced_rm_rejected_prompt_reason_does_not_repeat_command ... ok
+2026-11-12T17:34:14.1820545Z test exec_policy::tests::exec_policies_require_project_trust_without_config_toml ... ok
+2026-11-12T17:34:14.1821176Z test exec_policy::tests::ignore_user_project_rules_keeps_system_policy_files ... ok
+2026-11-12T17:34:14.1821945Z test exec_policy::tests::ignores_policy_files_when_config_stack_disables_exec_policy_rules ... ok
+2026-11-12T17:34:14.1822629Z test exec_policy::tests::mixed_rule_and_sandbox_prompt_prioritizes_rule_for_rejection_decision ... ok
+2026-11-12T17:34:14.1823420Z test exec_policy::tests::parse_starlark_line_from_message_extracts_path_and_line ... ok
+2026-11-12T17:34:14.1824031Z test exec_policy::tests::malformed_custom_rules_preserve_requirements_exec_policy ... ok
+2026-11-12T17:34:14.1824731Z test exec_policy::tests::proposed_execpolicy_amendment_is_present_for_single_command_without_policy_match ... ok
+2026-11-12T17:34:14.1825588Z test exec_policy::tests::proposed_execpolicy_amendment_is_present_when_heuristics_allow ... ok
+2026-11-12T17:34:14.1826253Z test exec_policy::tests::preserves_host_executables_when_requirements_overlay_is_present ... ok
+2026-11-12T17:34:14.1826971Z test exec_policy::tests::proposed_execpolicy_amendment_is_suppressed_when_policy_matches_allow ... ok
+2026-11-12T17:34:14.1827629Z test exec_policy::tests::proposes_full_command_amendment_for_heredoc_prompts ... ok
+2026-11-12T17:34:14.1828222Z test exec_policy::tests::requested_prefix_rule_can_approve_absolute_path_commands ... ok
+2026-11-12T17:34:14.1828897Z test exec_policy::tests::unmatched_granular_policy_still_prompts_for_restricted_sandbox_escalation ... ok
+2026-11-12T17:34:14.1829671Z test exec_policy::tests::windows_tests::writable_windows_policy_without_sandbox_backend_still_requires_approval ... ok
+2026-11-12T17:34:14.1830478Z test git_info_tests::resolve_root_git_project_for_trust_detects_worktree_pointer_without_git_command ... ok
+2026-11-12T17:34:14.1831237Z test git_info_tests::resolve_root_git_project_for_trust_rejects_mismatched_common_dir ... ok
+2026-11-12T17:34:14.1831946Z test exec::tests::process_exec_tool_call_respects_cancellation_token ... ok
+2026-11-12T17:34:14.1832617Z test git_info_tests::worktree_trust_tests::resolve_root_git_project_for_trust_preserves_canonical_checkout_case ... ok
+2026-11-12T17:34:14.1833528Z test git_info_tests::test_recent_commits_non_git_directory_returns_empty ... ok
+2026-11-12T17:34:14.1834444Z test guardian::review_session::tests::guardian_review_session_compact_scope_change_invalidates_cached_session ... ok
+2026-11-12T17:34:14.1835361Z test guardian::review_session::tests::run_before_review_deadline_rejects_ready_result_after_deadline ... ok
+2026-11-12T17:34:14.1836103Z test guardian::review_session::tests::run_before_review_deadline_times_out_before_future_completes ... ok
+2026-11-12T17:34:14.1837123Z test guardian::review_session::tests::guardian_review_session_config_change_invalidates_cached_session ... ok
+2026-11-12T17:34:14.1837882Z test guardian::review_session::tests::run_before_review_deadline_with_cancel_cancels_token_on_abort ... ok
+2026-11-12T17:34:14.1838646Z test guardian::tests::guardian_rejection_circuit_breaker_interrupts_after_three_consecutive_denials ... ok
+2026-11-12T17:34:14.1839359Z test context_manager::history::tests::original_detail_images_are_capped_at_max_patch_count ... ok
+2026-11-12T17:34:14.1840096Z test guardian::tests::guardian_review_session_config_preserves_context_overrides_for_same_effective_model ... ok
+2026-11-12T17:34:14.1840840Z test guardian::tests::approval_review_uses_caller_runtime_after_construction_runtime_shutdown ... ok
+2026-11-12T17:34:14.1841826Z test guardian::tests::guardian_review_session_config_uses_default_guardian_policy_without_requirements_override ... ok
+2026-11-12T17:34:14.1842551Z test guardian::tests::routes_approval_to_guardian_requires_guardian_reviewer ... ok
+2026-11-12T17:34:14.1843207Z test mcp_tool_approval_templates::tests::bundled_templates_load ... ok
+2026-11-12T17:34:14.1843802Z test mcp_tool_call::telemetry::tests::mcp_call_metric_outcome_bounds_and_sanitizes_error_code ... ok
+2026-11-12T17:34:14.1844689Z test mcp_tool_call::tests::accepted_elicitation_without_content_defaults_to_accept ... ok
+2026-11-12T17:34:14.1845307Z test hook_runtime::tests::hook_run_analytics_payload_falls_back_to_turn_context_id ... ok
+2026-11-12T17:34:14.1846019Z test mcp_tool_call::tests::approval_elicitation_meta_merges_session_and_always_persist_for_custom_servers ... ok
+2026-11-12T17:34:14.1846945Z test guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion ... ok
+2026-11-12T17:34:14.1847529Z test mcp_tool_call::tests::mcp_app_resource_uri_reads_known_tool_meta_keys ... ok
+2026-11-12T17:34:14.1848143Z test mcp_tool_call::tests::custom_mcp_tool_approval_mode_uses_plugin_mcp_policy ... ok
+2026-11-12T17:34:14.1848987Z test mcp_tool_call::tests::custom_mcp_tool_approval_mode_uses_updated_plugin_mcp_policy_after_cache_warm ... ok
+2026-11-12T17:34:14.1849867Z test mcp_tool_call::tests::mcp_result_telemetry_ignores_invalid_and_missing_values ... ok
+2026-11-12T17:34:14.1850460Z test mcp_tool_call::tests::persist_codex_app_tool_approval_writes_tool_override ... ok
+2026-11-12T17:34:14.1851094Z test mcp_tool_call::tests::mcp_tool_call_request_meta_includes_turn_metadata_for_custom_server ... ok
+2026-11-12T17:34:14.1851918Z test image_preparation::tests::detail_policies_apply_the_expected_budgets ... ok
+2026-11-12T17:34:14.1852268Z 
+2026-11-12T17:34:14.1852536Z test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 2276 filtered out; finished in 49.53s
+2026-11-12T17:34:14.1852925Z 
+2026-11-12T17:34:14.1852929Z 
+2026-11-12T17:34:14.1853048Z running 81 tests
+2026-11-12T17:34:14.1853629Z test mcp_tool_call::tests::sanitize_mcp_tool_result_for_model_rewrites_unsupported_media_content ... ok
+2026-11-12T17:34:14.1854600Z test model_provider_policy::ephemeral_input::tests::renders_one_escaped_reference_and_freezes_digest_oracles ... ok
+2026-11-12T17:34:14.1855407Z test model_provider_policy::lifecycle::tests::composite_finish_attempts_every_lease_and_surfaces_failures ... ok
+2026-11-12T17:34:14.1856197Z test network_policy_decision::tests::denied_network_policy_message_for_denylist_block_is_explicit ... ok
+2026-11-12T17:34:14.1856868Z test plugins::mentions::tests::collect_explicit_app_ids_from_linked_text_mentions ... ok
+2026-11-12T17:34:14.1857499Z test plugins::mentions::tests::collect_explicit_app_ids_ignores_non_app_paths ... ok
+2026-11-12T17:34:14.1858299Z test realtime_context::tests::current_thread_section_includes_short_turns_newest_first_until_budget ... ok
+2026-11-12T17:34:14.1858983Z test realtime_context::tests::workspace_section_requires_meaningful_structure ... ok
+2026-11-12T17:34:14.1859666Z test realtime_conversation::bem::tests::client_prefixes_override_only_their_configured_channels ... ok
+2026-11-12T17:34:14.1860357Z test realtime_conversation::tests::streamed_v3_handoff_omits_the_final_message_prefix ... ok
+2026-11-12T17:34:14.1860991Z test realtime_conversation::tests::wraps_handoff_with_transcript_delta ... ok
+2026-11-12T17:34:14.1861776Z test realtime_context::tests::workspace_section_includes_user_root_tree_when_distinct ... ok
+2026-11-12T17:34:14.1862425Z test realtime_conversation::tests::wraps_realtime_delegation_input_with_xml_escaping ... ok
+2026-11-12T17:34:14.1863235Z test safety::tests::explicit_read_only_subpaths_prevent_auto_approval_for_external_sandbox ... ok
+2026-11-12T17:34:14.1863939Z test sandbox_tags::tests::external_sandbox_keeps_external_tag_when_linux_sandbox_defaults_apply ... ok
+2026-11-12T17:34:14.1864615Z test sandbox_tags::tests::root_write_managed_profile_with_enabled_network_is_untagged ... ok
+2026-11-12T17:34:14.1865211Z test safety::tests::missing_project_dot_codex_config_requires_approval ... ok
+2026-11-12T17:34:14.1865916Z test plugins::discoverable::tests::list_tool_suggest_discoverable_plugins_returns_empty_when_plugins_feature_disabled ... ok
+2026-11-12T17:34:14.1866695Z test mcp_tool_exposure::tests::applies_per_tool_app_policy_across_the_exposure_build ... ok
+2026-11-12T17:34:14.1867588Z test session::input_queue::tests::input_queue_tracks_pending_trigger_turn_mail ... ok
+2026-11-12T17:34:14.1868283Z test session::mcp::tests::guardian_elicitation_review_request_defaults_missing_tool_params ... ok
+2026-11-12T17:34:14.1869022Z test session::rollout_reconstruction_tests::reconstruct_history_prefers_compacted_window_over_session_meta ... ok
+2026-11-12T17:34:14.1870065Z test session::rollout_reconstruction_tests::reconstruct_history_restores_initial_window_from_session_meta ... ok
+2026-11-12T17:34:14.1870793Z test session::tests::admission_fence_waiters_observe_cleanup_without_retiring_its_owner ... ok
+2026-11-12T17:34:14.1871814Z test session::tests::build_initial_context_omits_prompt_fragments_without_extension_state ... ok
+2026-11-12T17:34:14.1872485Z test session::inject::tests::mailbox_accepted_before_dispatch_suppresses_ready ... ok
+2026-11-12T17:34:14.1873405Z test session::tests::collect_explicit_app_ids_from_skill_items_includes_linked_mentions ... ok
+2026-11-12T17:34:14.1874069Z test session::tests::closed_construction_runtime_finish_claims_before_detached_spawn ... ok
+2026-11-12T17:34:14.1874674Z test session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive ... ok
+2026-11-12T17:34:14.1875472Z test session::tests::falls_back_to_content_when_structured_is_null ... ok
+2026-11-12T17:34:14.1876055Z test session::tests::closed_construction_runtime_suspends_on_caller_runtime ... ok
+2026-11-12T17:34:14.1876661Z test session::tests::configuration_tests::refresh_runtime_config_refreshes_hooks ... ok
+2026-11-12T17:34:14.1877357Z test session::tests::configuration_tests::reload_user_config_layer_updates_effective_tool_suggest_config ... ok
+2026-11-12T17:34:14.1878094Z test session::tests::interrupting_regular_turn_waiting_on_startup_prewarm_emits_turn_aborted ... ok
+2026-11-12T17:34:14.1878739Z test session::tests::managed_network_proxy_decider_survives_full_access_start ... ok
+2026-11-12T17:34:14.1879501Z test session::tests::guardian_tests::guardian_allows_unified_exec_additional_permissions_requests_past_policy_validation ... ok
+2026-11-12T17:34:14.1880206Z test session::tests::panicking_finish_terminalizer_retains_fence ... ok
+2026-11-12T17:34:14.1880710Z test session::tests::mcp_policy_changes_schedule_runtime_refresh ... ok
+2026-11-12T17:34:14.1881417Z test session::tests::hook_transcript_path_does_not_persist_non_local_thread_store ... ok
+2026-11-12T17:34:14.1882085Z test session::tests::realtime_conversation_list_voices_emits_builtin_list ... ok
+2026-11-12T17:34:14.1882830Z test session::tests::recompute_token_usage_updates_model_context_window ... ok
+2026-11-12T17:34:14.1883683Z test session::tests::record_context_updates_and_set_reference_context_item_reinjects_full_context_after_clear ... ok
+2026-11-12T17:34:14.1884678Z test session::tests::record_context_updates_use_environment_permission_profile_and_workspace_roots ... ok
+2026-11-12T17:34:14.1885322Z test session::tests::hung_finish_terminalizer_watchdog_retains_fence ... ok
+2026-11-12T17:34:14.1885886Z test session::tests::resolve_multi_agent_version_handles_unset_and_legacy_history ... ok
+2026-11-12T17:34:14.1886589Z test session::tests::regular_turn_emits_turn_started_with_trace_id_without_waiting_for_startup_prewarm ... ok
+2026-11-12T17:34:14.1887206Z test session::tests::shutdown_and_wait_allows_multiple_waiters ... ok
+2026-11-12T17:34:14.1887878Z test session::tests::record_context_updates_and_set_reference_context_item_persists_split_file_system_policy_to_rollout ... ok
+2026-11-12T17:34:14.1888588Z test session::tests::spawn_task_turn_span_inherits_dispatch_trace_context ... ok
+2026-11-12T17:34:14.1889198Z test session::tests::stale_runtime_start_transition_drop_retains_witness_for_shutdown_drain ... ok
+2026-11-12T17:34:14.1889878Z test session::tests::shutdown_complete_does_not_append_to_thread_store_after_shutdown ... ok
+2026-11-12T17:34:14.1890582Z test session::tests::success_flag_reflects_is_error_true ... ok
+2026-11-12T17:34:14.1891351Z test session::tests::stale_runtime_abort_after_claim_take_retains_fail_closed_fence ... ok
+2026-11-12T17:34:14.1891990Z test session::tests::step_context_selected_plugins_come_from_atomic_mcp_binding ... ok
+2026-11-12T17:34:14.1892571Z test session::tests::subagent_activity_emits_matching_start_and_completion ... ok
+2026-11-12T17:34:14.1893246Z test session::tests::thread_rollback_fails_when_num_turns_is_zero ... ok
+2026-11-12T17:34:14.1893792Z test session::tests::thread_rollback_fails_without_persisted_thread_history ... ok
+2026-11-12T17:34:14.1894576Z test session::tests::tool_calls_reopen_mailbox_delivery_for_current_turn ... ok
+2026-11-12T17:34:14.1895219Z test session::thread_settings::tests::standalone_update_rejects_taskless_transition_reservation ... ok
+2026-11-12T17:34:14.1896179Z test session::turn_input::tests::interrupted_confirmed_flush_error_persists_strictly_newer_unready ... ok
+2026-11-12T17:34:14.1897084Z test session::turn_input::tests::abort_turn_if_active_revalidates_ready_after_task_quiesces ... ok
+2026-11-12T17:34:14.1897716Z test state::auto_compact_window::tests::tracks_prefill_and_window_boundaries ... ok
+2026-11-12T17:34:14.1898359Z test session::turn_input::tests::recovery_rejects_stale_epoch_after_intervening_interrupted_turn ... ok
+2026-11-12T17:34:14.1899392Z test stream_events_utils::tests::external_context_pollution_items_include_web_search_and_tool_search ... ok
+2026-11-12T17:34:14.1900100Z test session::turn_input::tests::start_only_rejects_active_turn_without_injecting ... ok
+2026-11-12T17:34:14.1900703Z test state::session::tests::clear_connector_selection_removes_entries ... ok
+2026-11-12T17:34:14.1901746Z test stream_events_utils::tests::last_assistant_message_from_item_strips_citations_and_plan_blocks ... ok
+2026-11-12T17:34:14.1902371Z test tasks::tests::emit_compact_metric_records_manual_remote_v2 ... ok
+2026-11-12T17:34:14.1902990Z test thread_manager::tests::effective_originator_prefers_thread_scoped_sources_before_env_originator ... ok
+2026-11-12T17:34:14.1903839Z test session::turn_input::tests::start_only_rejects_pending_trigger_turn_without_injecting ... ok
+2026-11-12T17:34:14.1904483Z test thread_manager::tests::child_session_inherits_client_mcp_extensions ... ok
+2026-11-12T17:34:14.1905037Z test thread_manager::tests::truncates_before_requested_user_message ... ok
+2026-11-12T17:34:14.1905684Z test thread_rollout_truncation::tests::truncate_rollout_after_turn_id_rejects_synthetic_legacy_turn_id ... ok
+2026-11-12T17:34:14.1907388Z test thread_rollout_truncation::tests::truncates_rollout_to_last_n_fork_turns_drops_startup_prefix_even_when_under_limit ... ok
+2026-11-12T17:34:14.1908870Z test tools::code_mode::tests::truncated_text_output_starts_with_warning ... ok
+2026-11-12T17:34:14.1910153Z test tools::context::tests::exec_command_tool_output_preserves_omission_metadata_when_truncated ... ok
+2026-11-12T17:34:14.1911393Z test tools::context::tests::mcp_tool_output_response_item_includes_wall_time ... ok
+2026-11-12T17:34:14.1912687Z test tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow ... ok
+2026-11-12T17:34:14.1914332Z test stream_events_utils::tests::handle_output_item_done_returns_contributed_last_agent_message ... ok
+2026-11-12T17:34:14.1915624Z test thread_manager::tests::start_thread_keeps_internal_threads_hidden_from_normal_lookups ... ok
+2026-11-12T17:34:14.1916902Z test thread_manager::tests::shutdown_all_threads_bounded_submits_shutdown_to_every_thread ... ok
+2026-11-12T17:34:14.1917543Z 
+2026-11-12T17:34:14.1918031Z test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 2274 filtered out; finished in 10.77s
+2026-11-12T17:34:14.1918663Z 
+2026-11-12T17:34:14.1918706Z 
+2026-11-12T17:34:14.1918852Z running 56 tests
+2026-11-12T17:34:14.1919594Z test tools::handlers::extension_tools::tests::function_extensions_reject_custom_payloads ... ok
+2026-11-12T17:34:14.1920907Z test tools::handlers::list_available_plugins_to_install::tests::list_tool_does_not_support_parallel_calls ... ok
+2026-11-12T17:34:14.1922658Z test tools::handlers::mcp::search_tests::search_info_uses_mcp_tool_metadata_and_parameter_names ... ok
+2026-11-12T17:34:14.1924283Z test tools::handlers::multi_agents::tests::build_agent_resume_config_clears_base_instructions ... ok
+2026-11-12T17:34:14.1925643Z test tools::handlers::extension_tools::tests::image_generation_publication_preserves_extension_saved_path ... ok
+2026-11-12T17:34:14.1926454Z test tools::handlers::multi_agents::tests::multi_agent_v2_send_message_accepts_root_target_from_child ... ok
+2026-11-12T17:34:14.1927165Z test tools::handlers::multi_agents::tests::resume_agent_rejects_invalid_id ... ok
+2026-11-12T17:34:14.1927817Z test tools::handlers::multi_agents::tests::multi_agent_v2_send_message_rejects_legacy_items_field ... ok
+2026-11-12T17:34:14.1928465Z test tools::handlers::multi_agents::tests::send_input_rejects_invalid_id ... ok
+2026-11-12T17:34:14.1929343Z test tools::handlers::multi_agents_spec::tests::list_agents_tool_status_schema_includes_interrupted ... ok
+2026-11-12T17:34:14.1930119Z test tools::handlers::request_user_input::tests::multi_agent_v2_request_user_input_rejects_subagent_threads ... ok
+2026-11-12T17:34:14.1930856Z test tools::handlers::shell_spec::tests::write_stdin_tool_matches_expected_spec ... ok
+2026-11-12T17:34:14.1931485Z test tools::handlers::test_sync_spec::tests::test_sync_tool_matches_expected_spec ... ok
+2026-11-12T17:34:14.1932205Z test tools::handlers::tests::fresh_additional_permissions_still_require_exec_permission_approvals_feature ... ok
+2026-11-12T17:34:14.1932990Z test tools::handlers::multi_agents::tests::multi_agent_v2_interrupt_agent_accepts_task_name_target ... ok
+2026-11-12T17:34:14.1933711Z test tools::handlers::unified_exec::tests::test_get_command_respects_explicit_cmd_shell ... ok
+2026-11-12T17:34:14.1934721Z test tools::handlers::unified_exec::tests::test_get_command_resolves_powershell_by_type ... ok
+2026-11-12T17:34:14.1935346Z test tools::handlers::view_image::tests::log_preview_omits_image_data ... ok
+2026-11-12T17:34:14.1935911Z test tools::hosted_spec::tests::web_search_tool_preserves_configured_options ... ok
+2026-11-12T17:34:14.1936550Z test tools::network_approval::tests::approval_denial_messages_are_bounded_for_model_context ... ok
+2026-11-12T17:34:14.1937266Z test tools::network_approval::tests::attributed_blocked_request_targets_one_of_multiple_active_calls ... ok
+2026-11-12T17:34:14.1938031Z test tools::network_approval::tests::blocked_request_does_not_override_recorded_approval_outcome ... ok
+2026-11-12T17:34:14.1938856Z test tools::network_approval::tests::disconnect_fallback_preserves_earlier_approval_outcome ... ok
+2026-11-12T17:34:14.1939541Z test tools::network_approval::tests::pending_approvals_are_deduped_within_one_execution ... ok
+2026-11-12T17:34:14.1940210Z test tools::network_approval::tests::session_approved_hosts_preserve_protocol_and_port_scope ... ok
+2026-11-12T17:34:14.1940917Z test tools::network_approval::tests::specific_approval_outcome_replaces_earlier_blocked_request ... ok
+2026-11-12T17:34:14.1941767Z test tools::handlers::unified_exec::tests::write_stdin_post_tool_use_payload_uses_original_exec_call_id_and_command_on_completion ... ok
+2026-11-12T17:34:14.1942567Z test tools::parallel::tests::panic_after_handler_terminal_does_not_emit_a_second_terminal ... ok
+2026-11-12T17:34:14.1943212Z test tools::registry::tests::registry_allows_identical_names_in_different_namespaces ... ok
+2026-11-12T17:34:14.1944305Z test tools::runtimes::apply_patch::tests::approval_keys_include_environment_id ... ok
+2026-11-12T17:34:14.1945082Z test tools::runtimes::disable_powershell_profile_tests::inserts_no_profile_before_encoded_command ... ok
+2026-11-12T17:34:14.1945883Z test tools::runtimes::disable_powershell_profile_tests::inserts_no_profile_for_elevated_windows_sandbox ... ok
+2026-11-12T17:34:14.1946610Z test tools::runtimes::disable_powershell_profile_tests::leaves_unsandboxed_attempts_alone ... ok
+2026-11-12T17:34:14.1947313Z test tools::sandboxing::tests::exec_server_env_keeps_command_native_and_carries_sandbox_context ... ok
+2026-11-12T17:34:14.1947980Z test tools::sandboxing::tests::restricted_sandbox_requires_exec_approval_on_request ... ok
+2026-11-12T17:34:14.1948634Z test tools::registry::tests::dispatch_uses_canonical_tool_names_for_lifecycle_contributors ... ok
+2026-11-12T17:34:14.1949333Z test tools::spec_plan::tests::code_mode_only_exposes_configured_dynamic_namespace_directly ... ok
+2026-11-12T17:34:14.1950446Z test tools::spec_plan::tests::code_mode_only_exposes_code_executor_and_hides_nested_tools ... ok
+2026-11-12T17:34:14.1951709Z test tools::handlers::multi_agents::tests::spawn_agent_service_tier_override_validates_the_effective_child_model ... ok
+2026-11-12T17:34:14.1952503Z test tools::spec_plan::tests::hosted_web_search_fallback_follows_winning_browser_runtime ... ok
+2026-11-12T17:34:14.1953389Z test tools::spec_plan::tests::request_plugin_install_description_requires_exhausting_tool_search ... ok
+2026-11-12T17:34:14.1955303Z test tools::spec_plan::tests::shell_family_registers_only_unified_exec_tools ... ok
+2026-11-12T17:34:14.1956397Z test turn_diff_tracker::tests::invalidated_tracker_suppresses_existing_diff ... ok
+2026-11-12T17:34:14.1957603Z test tools::spec_plan::tests::strict_tool_collisions_allow_identical_names_in_different_namespaces ... ok
+2026-11-12T17:34:14.1958928Z test turn_metadata::tests::turn_metadata_state_includes_thread_spawn_subagent_parent_without_fork ... ok
+2026-11-12T17:34:14.1960345Z test turn_metadata::tests::turn_metadata_state_merges_client_metadata_without_replacing_reserved_fields ... ok
+2026-11-12T17:34:14.1961765Z test turn_metadata::tests::turn_metadata_state_overlays_compaction_only_on_compaction_requests ... ok
+2026-11-12T17:34:14.1962994Z test tools::spec_plan::tests::tool_search_cache_rebuilds_when_deferred_sources_change ... ok
+2026-11-12T17:34:14.1964481Z test turn_timing::tests::turn_timing_state_tracks_concurrent_items_and_preserves_first_start ... ok
+2026-11-12T17:34:14.1965737Z test unified_exec::process_manager::tests::env_overlay_for_exec_server_keeps_runtime_changes_only ... ok
+2026-11-12T17:34:14.1967102Z test unified_exec::process_manager::tests::exec_env_policy_excludes_non_inheritable_and_runtime_variables ... ok
+2026-11-12T17:34:14.1968444Z test turn_metadata::tests::turn_metadata_state_coalesces_concurrent_git_enrichment ... ok
+2026-11-12T17:34:14.1969539Z test util::tests::emit_feedback_request_tags_records_sentry_feedback_fields ... ok
+2026-11-12T17:34:14.1971021Z test unified_exec::process_manager::tests::failed_initial_end_for_unstored_process_uses_fallback_output ... ok
+2026-11-12T17:34:14.1972974Z test turn_metadata::tests::turn_metadata_state_preserves_lineage_after_git_enrichment ... ok
+2026-11-12T17:34:14.1974650Z test tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions ... ok
+2026-11-12T17:34:14.1975595Z 
+2026-11-12T17:34:14.1976144Z test result: ok. 56 passed; 0 failed; 0 ignored; 0 measured; 2299 filtered out; finished in 14.05s
+2026-11-12T17:34:14.1976814Z 
+2026-11-12T17:34:14.1977090Z ================================================================================
+2026-11-12T17:34:14.2005446Z INFO: Found 144 test targets...
+2026-11-12T17:34:14.4032611Z [3,901 / 3,901] 93 / 144 tests, 1 failed; no actions running
+2026-11-12T17:34:14.4528921Z INFO: Elapsed time: 801.165s, Critical Path: 617.55s
+2026-11-12T17:34:14.4529958Z INFO: 3901 processes: 2594 remote cache hit, 1319 internal, 90 local.
+2026-11-12T17:34:14.4533903Z INFO: Build completed, 1 test FAILED, 3901 total actions
+2026-11-12T17:34:14.4534598Z INFO: 
+2026-11-12T17:34:14.4641137Z //codex-rs/agent-identity:agent-identity-unit-tests             (cached) PASSED in 61.8s
+2026-11-12T17:34:14.4708422Z //codex-rs/app-server-protocol:app-server-protocol-unit-tests   (cached) PASSED in 15.2s
+2026-11-12T17:34:14.4716882Z   WARNING: //codex-rs/app-server-protocol:app-server-protocol-unit-tests: Test execution time (15.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4726213Z //codex-rs/arg0:arg0-unit-tests                                 (cached) PASSED in 39.3s
+2026-11-12T17:34:14.4729966Z //codex-rs/cloud-tasks:cloud-tasks-unit-tests                   (cached) PASSED in 83.7s
+2026-11-12T17:34:14.4739073Z //codex-rs/cloud-tasks-client:cloud-tasks-client-unit-tests     (cached) PASSED in 1.4s
+2026-11-12T17:34:14.4748664Z   WARNING: //codex-rs/cloud-tasks-client:cloud-tasks-client-unit-tests: Test execution time (1.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4756401Z //codex-rs/code-mode-runtime:code-mode-runtime-jit-test         (cached) PASSED in 0.7s
+2026-11-12T17:34:14.4763229Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-jit-test: Test execution time (0.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4770452Z //codex-rs/codex-api:codex-api-models_integration-test          (cached) PASSED in 1.9s
+2026-11-12T17:34:14.4771768Z   WARNING: //codex-rs/codex-api:codex-api-models_integration-test: Test execution time (1.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4772818Z //codex-rs/codex-api:codex-api-unit-tests                       (cached) PASSED in 86.8s
+2026-11-12T17:34:14.4773569Z //codex-rs/codex-backend-openapi-models:codex-backend-openapi-models-unit-tests (cached) PASSED in 63.4s
+2026-11-12T17:34:14.4774679Z //codex-rs/collaboration-mode-templates:collaboration-mode-templates-unit-tests (cached) PASSED in 58.7s
+2026-11-12T17:34:14.4781846Z //codex-rs/diagnostics:diagnostics-unit-tests                   (cached) PASSED in 56.3s
+2026-11-12T17:34:14.4785071Z //codex-rs/exec-server-protocol:exec-server-protocol-unit-tests (cached) PASSED in 105.6s
+2026-11-12T17:34:14.4793001Z //codex-rs/ext/git-attribution:git-attribution-unit-tests       (cached) PASSED in 83.4s
+2026-11-12T17:34:14.4797336Z //codex-rs/ext/goal:goal-goal_extension_backend-test            (cached) PASSED in 12.6s
+2026-11-12T17:34:14.4801497Z   WARNING: //codex-rs/ext/goal:goal-goal_extension_backend-test: Test execution time (12.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4842154Z //codex-rs/ext/hepta-governance:hepta-governance-unit-tests     (cached) PASSED in 89.6s
+2026-11-12T17:34:14.4843374Z //codex-rs/ext/hepta-memory:hepta-memory-unit-tests             (cached) PASSED in 19.2s
+2026-11-12T17:34:14.4846427Z   WARNING: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests: Test execution time (19.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4848221Z //codex-rs/ext/items:items-unit-tests                           (cached) PASSED in 79.6s
+2026-11-12T17:34:14.4849340Z //codex-rs/ext/skills:skills-skills_extension-test              (cached) PASSED in 0.4s
+2026-11-12T17:34:14.4851221Z   WARNING: //codex-rs/ext/skills:skills-skills_extension-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4854179Z //codex-rs/external-agent-migration:external-agent-migration-unit-tests (cached) PASSED in 12.2s
+2026-11-12T17:34:14.4856869Z   WARNING: //codex-rs/external-agent-migration:external-agent-migration-unit-tests: Test execution time (12.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4858987Z //codex-rs/features:features-unit-tests                         (cached) PASSED in 63.5s
+2026-11-12T17:34:14.4860078Z //codex-rs/file-search:file-search-unit-tests                   (cached) PASSED in 80.2s
+2026-11-12T17:34:14.4861358Z //codex-rs/file-system:file-system-unit-tests                   (cached) PASSED in 110.2s
+2026-11-12T17:34:14.4862421Z //codex-rs/git-utils:git-utils-unit-tests                       (cached) PASSED in 96.2s
+2026-11-12T17:34:14.4863749Z //codex-rs/hepta-authbus-p1-3-qualification:hepta-authbus-p1-3-qualification-unit-tests (cached) PASSED in 115.1s
+2026-11-12T17:34:14.4865579Z //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test (cached) PASSED in 13.9s
+2026-11-12T17:34:14.4868472Z   WARNING: //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test: Test execution time (13.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4870953Z //codex-rs/hepta-automation:hepta-automation-unit-tests         (cached) PASSED in 54.1s
+2026-11-12T17:34:14.4872409Z //codex-rs/hepta-bao-adapter:hepta-bao-adapter-final_use_host-test (cached) PASSED in 0.9s
+2026-11-12T17:34:14.4874732Z   WARNING: //codex-rs/hepta-bao-adapter:hepta-bao-adapter-final_use_host-test: Test execution time (0.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4877749Z //codex-rs/hepta-bellman-operator:hepta-bellman-operator-unit-tests (cached) PASSED in 96.2s
+2026-11-12T17:34:14.4879013Z //codex-rs/hepta-cognitive-read:hepta-cognitive-read-unit-tests (cached) PASSED in 85.2s
+2026-11-12T17:34:14.4880829Z //codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test (cached) PASSED in 127.0s
+2026-11-12T17:34:14.4882641Z //codex-rs/hepta-control-plane:hepta-control-plane-runtime_retirement_dependencies-test (cached) PASSED in 1.8s
+2026-11-12T17:34:14.4885285Z   WARNING: //codex-rs/hepta-control-plane:hepta-control-plane-runtime_retirement_dependencies-test: Test execution time (1.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4887641Z //codex-rs/hepta-control-plane:hepta-control-plane-unit-tests   (cached) PASSED in 1.9s
+2026-11-12T17:34:14.4889873Z   WARNING: //codex-rs/hepta-control-plane:hepta-control-plane-unit-tests: Test execution time (1.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4892079Z //codex-rs/hepta-fleet:hepta-fleet-unit-tests                   (cached) PASSED in 125.4s
+2026-11-12T17:34:14.4893800Z //codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test (cached) PASSED in 66.2s
+2026-11-12T17:34:14.4895005Z //codex-rs/hepta-ndu:hepta-ndu-unit-tests                       (cached) PASSED in 126.3s
+2026-11-12T17:34:14.4897086Z //codex-rs/hepta-paths:hepta-paths-unit-tests                   (cached) PASSED in 125.5s
+2026-11-12T17:34:14.4897861Z //codex-rs/hepta-runtime:hepta-runtime-unit-tests               (cached) PASSED in 114.9s
+2026-11-12T17:34:14.4898494Z //codex-rs/hooks:hooks-unit-tests                               (cached) PASSED in 40.0s
+2026-11-12T17:34:14.4899325Z //codex-rs/install-context:install-context-unit-tests           (cached) PASSED in 75.4s
+2026-11-12T17:34:14.4900161Z //codex-rs/lmstudio:lmstudio-unit-tests                         (cached) PASSED in 4.1s
+2026-11-12T17:34:14.4902330Z   WARNING: //codex-rs/lmstudio:lmstudio-unit-tests: Test execution time (4.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4904187Z //codex-rs/mcp-server:mcp-server-unit-tests                     (cached) PASSED in 64.0s
+2026-11-12T17:34:14.4905357Z //codex-rs/mcp-server/tests/common:common-unit-tests            (cached) PASSED in 114.3s
+2026-11-12T17:34:14.4906843Z //codex-rs/model-provider:model-provider-unit-tests             (cached) PASSED in 109.1s
+2026-11-12T17:34:14.4908039Z //codex-rs/models-manager:models-manager-unit-tests             (cached) PASSED in 113.4s
+2026-11-12T17:34:14.4909139Z //codex-rs/otel:otel-unit-tests                                 (cached) PASSED in 1.2s
+2026-11-12T17:34:14.4910773Z   WARNING: //codex-rs/otel:otel-unit-tests: Test execution time (1.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4912487Z //codex-rs/protocol:protocol-unit-tests                         (cached) PASSED in 111.4s
+2026-11-12T17:34:14.4913842Z //codex-rs/response-debug-context:response-debug-context-unit-tests (cached) PASSED in 84.3s
+2026-11-12T17:34:14.4915069Z //codex-rs/responses-api-proxy:responses-api-proxy-unit-tests   (cached) PASSED in 71.7s
+2026-11-12T17:34:14.4916480Z //codex-rs/rmcp-client:rmcp-client-unit-tests                   (cached) PASSED in 117.0s
+2026-11-12T17:34:14.4917575Z //codex-rs/secrets:secrets-unit-tests                           (cached) PASSED in 93.5s
+2026-11-12T17:34:14.4918943Z //codex-rs/utils/build-identity:build-identity-unit-tests       (cached) PASSED in 46.7s
+2026-11-12T17:34:14.4920049Z //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test         (cached) PASSED in 0.3s
+2026-11-12T17:34:14.4921886Z   WARNING: //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.4923804Z //codex-rs/utils/json-to-toml:json-to-toml-unit-tests           (cached) PASSED in 101.0s
+2026-11-12T17:34:14.4925514Z //codex-rs/utils/path-utils:path-utils-unit-tests               (cached) PASSED in 75.8s
+2026-11-12T17:34:14.4927389Z //codex-rs/utils/plugins:plugins-unit-tests                     (cached) PASSED in 73.5s
+2026-11-12T17:34:14.4928486Z //codex-rs/utils/readiness:readiness-unit-tests                 (cached) PASSED in 77.4s
+2026-11-12T17:34:14.4930739Z //codex-rs/utils/sandbox-summary:sandbox-summary-unit-tests     (cached) PASSED in 111.9s
+2026-11-12T17:34:14.4932021Z //codex-rs/utils/template:template-unit-tests                   (cached) PASSED in 65.7s
+2026-11-12T17:34:14.4933626Z //codex-rs/cli:cli-debug_clear_memories-test-windows-cross              SKIPPED
+2026-11-12T17:34:14.4935363Z //codex-rs/cli:cli-execpolicy-test-windows-cross                        SKIPPED
+2026-11-12T17:34:14.4937103Z //codex-rs/cli:cli-marketplace_add-test-windows-cross                   SKIPPED
+2026-11-12T17:34:14.4938179Z //codex-rs/cli:cli-marketplace_remove-test-windows-cross                SKIPPED
+2026-11-12T17:34:14.4940034Z //codex-rs/cli:cli-mcp_add_remove-test-windows-cross                    SKIPPED
+2026-11-12T17:34:14.4941131Z //codex-rs/cli:cli-queue-test-windows-cross                             SKIPPED
+2026-11-12T17:34:14.4942696Z //codex-rs/code-mode-host:code-mode-host-grpc_tcp-test-windows-cross    SKIPPED
+2026-11-12T17:34:14.4943858Z //codex-rs/code-mode-host:code-mode-host-websocket-test-windows-cross   SKIPPED
+2026-11-12T17:34:14.4945542Z //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4947036Z //codex-rs/codex-api:codex-api-models_integration-test-windows-cross    SKIPPED
+2026-11-12T17:34:14.4948601Z //codex-rs/codex-api:codex-api-sse_end_to_end-test-windows-cross        SKIPPED
+2026-11-12T17:34:14.4950273Z //codex-rs/core:core-all-test-windows-cross                             SKIPPED
+2026-11-12T17:34:14.4951323Z //codex-rs/exec:exec-all-test-windows-cross                             SKIPPED
+2026-11-12T17:34:14.4952800Z //codex-rs/exec-server:exec-server-accepted_websocket-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4953970Z //codex-rs/exec-server:exec-server-authorized_read_rpc-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4955902Z //codex-rs/exec-server:exec-server-environment-test-windows-cross       SKIPPED
+2026-11-12T17:34:14.4957572Z //codex-rs/exec-server:exec-server-forward-test-windows-cross           SKIPPED
+2026-11-12T17:34:14.4959166Z //codex-rs/exec-server:exec-server-http_request_logging-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4960288Z //codex-rs/exec-server:exec-server-initialize-test-windows-cross        SKIPPED
+2026-11-12T17:34:14.4961921Z //codex-rs/exec-server:exec-server-process-test-windows-cross           SKIPPED
+2026-11-12T17:34:14.4963060Z //codex-rs/execpolicy:execpolicy-basic-test-windows-cross               SKIPPED
+2026-11-12T17:34:14.4964651Z //codex-rs/ext/extension-api:extension-api-registry-test-windows-cross  SKIPPED
+2026-11-12T17:34:14.4966046Z //codex-rs/ext/goal:goal-goal_extension_backend-test-windows-cross      SKIPPED
+2026-11-12T17:34:14.4967676Z //codex-rs/ext/mcp:mcp-executor_plugin_mcp-test-windows-cross           SKIPPED
+2026-11-12T17:34:14.4968749Z //codex-rs/ext/queue:queue-queue_service-test-windows-cross             SKIPPED
+2026-11-12T17:34:14.4970349Z //codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4971900Z //codex-rs/hepta-agentd:hepta-agentd-intuition_policy_product-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4973578Z //codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4974786Z //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4976675Z //codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4978034Z //codex-rs/hepta-agentd:hepta-agentd-verify1_kernel_evidence_product-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4980177Z //codex-rs/hepta-automation:hepta-automation-authorized_effect-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4981793Z //codex-rs/hepta-automation:hepta-automation-automation-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4983102Z //codex-rs/hepta-automation:hepta-automation-retirement_recovery-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4984503Z //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4986621Z //codex-rs/hepta-contracts:hepta-contracts-authbus_b3_adapter_qualification-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4988463Z //codex-rs/hepta-contracts:hepta-contracts-final_use_linearization-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4989935Z //codex-rs/hepta-control-plane:hepta-control-plane-runtime_retirement_dependencies-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4992115Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4995591Z //codex-rs/hepta-operations:hepta-operations-destination_recovery_binding-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4997373Z //codex-rs/hepta-supervisor:hepta-supervisor-writer_handoff_production-test-windows-cross SKIPPED
+2026-11-12T17:34:14.4998576Z //codex-rs/http-client:http-client-ca_env-test-windows-cross            SKIPPED
+2026-11-12T17:34:14.4999625Z //codex-rs/keyring-store:keyring-store-store_contract-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5000694Z //codex-rs/login:login-all-test-windows-cross                           SKIPPED
+2026-11-12T17:34:14.5002250Z //codex-rs/network-proxy:network-proxy-windows_stable_ingress-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5003475Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5004598Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5006360Z //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test-windows-cross    SKIPPED
+2026-11-12T17:34:14.5007436Z //codex-rs/tools:tools-json_schema_policy_fixtures-test-windows-cross   SKIPPED
+2026-11-12T17:34:14.5008629Z //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5010416Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test-windows-cross SKIPPED
+2026-11-12T17:34:14.5011774Z //codex-rs/app-server-test-client:codex-app-server-test-client-bin-unit-tests PASSED in 83.6s
+2026-11-12T17:34:14.5015141Z //codex-rs/apply-patch:apply_patch-bin-unit-tests                        PASSED in 83.7s
+2026-11-12T17:34:14.5016501Z //codex-rs/cli:cli-debug_clear_memories-test                             PASSED in 0.7s
+2026-11-12T17:34:14.5018372Z   WARNING: //codex-rs/cli:cli-debug_clear_memories-test: Test execution time (0.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5020627Z //codex-rs/cli:cli-marketplace_add-test                                  PASSED in 0.2s
+2026-11-12T17:34:14.5039610Z   WARNING: //codex-rs/cli:cli-marketplace_add-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5041211Z //codex-rs/cli:cli-marketplace_remove-test                               PASSED in 0.2s
+2026-11-12T17:34:14.5043388Z   WARNING: //codex-rs/cli:cli-marketplace_remove-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5045083Z //codex-rs/cli:cli-queue-test                                            PASSED in 0.3s
+2026-11-12T17:34:14.5046867Z   WARNING: //codex-rs/cli:cli-queue-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5058209Z //codex-rs/cli:cli-sandbox_network_proxy-test                            PASSED in 0.1s
+2026-11-12T17:34:14.5059955Z   WARNING: //codex-rs/cli:cli-sandbox_network_proxy-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5061733Z //codex-rs/cli:logs_client-bin-unit-tests                                PASSED in 83.3s
+2026-11-12T17:34:14.5062812Z //codex-rs/code-mode-host:code-mode-host-grpc_notifications-test         PASSED in 0.2s
+2026-11-12T17:34:14.5064723Z   WARNING: //codex-rs/code-mode-host:code-mode-host-grpc_notifications-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5066848Z //codex-rs/code-mode-host:codex-code-mode-host-bin-unit-tests            PASSED in 1.6s
+2026-11-12T17:34:14.5069739Z   WARNING: //codex-rs/code-mode-host:codex-code-mode-host-bin-unit-tests: Test execution time (1.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5071743Z //codex-rs/exec-server:exec-server-environment-test                      PASSED in 9.9s
+2026-11-12T17:34:14.5073947Z   WARNING: //codex-rs/exec-server:exec-server-environment-test: Test execution time (9.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5075899Z //codex-rs/exec-server:exec-server-http_client-test                      PASSED in 7.8s
+2026-11-12T17:34:14.5078263Z   WARNING: //codex-rs/exec-server:exec-server-http_client-test: Test execution time (7.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5079967Z //codex-rs/hepta-agentd:hepta-agentd-neuron_generation_process_e2e-test  PASSED in 0.1s
+2026-11-12T17:34:14.5081790Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-neuron_generation_process_e2e-test: Test execution time (0.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5083589Z //codex-rs/hepta-agentd:hepta-agentd-runtime_shutdown_outcomes-test      PASSED in 0.2s
+2026-11-12T17:34:14.5085608Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-runtime_shutdown_outcomes-test: Test execution time (0.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5087759Z //codex-rs/hepta-agentd:hepta-g2-native-owner-bin-unit-tests             PASSED in 84.3s
+2026-11-12T17:34:14.5089101Z //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test PASSED in 0.4s
+2026-11-12T17:34:14.5091074Z   WARNING: //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5093034Z //codex-rs/hepta-automation:hepta-taskflow-runtime-bin-unit-tests        PASSED in 108.1s
+2026-11-12T17:34:14.5094129Z //codex-rs/hepta-infer-core:hepta-infer-control-bin-unit-tests           PASSED in 144.2s
+2026-11-12T17:34:14.5095206Z //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts-unit-tests  PASSED in 151.3s
+2026-11-12T17:34:14.5096597Z //codex-rs/hepta-matrixd:codex-hepta-matrixd-bin-unit-tests              PASSED in 84.2s
+2026-11-12T17:34:14.5098972Z //codex-rs/hepta-supervisor:hepta-supervisor-daemon_product-test         PASSED in 0.2s
+2026-11-12T17:34:14.5100778Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-daemon_product-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5102690Z //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery-bin-unit-tests PASSED in 101.8s
+2026-11-12T17:34:14.5103873Z //codex-rs/hepta-supervisor:hepta-supervisor-isolated_execution_handoff_unix-test PASSED in 0.1s
+2026-11-12T17:34:14.5105875Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-isolated_execution_handoff_unix-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5108370Z //codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test PASSED in 0.3s
+2026-11-12T17:34:14.5110281Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5112154Z //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test PASSED in 0.4s
+2026-11-12T17:34:14.5114028Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5118389Z //codex-rs/hepta-supervisor:hepta-supervisor-writer_handoff_production-test PASSED in 1.3s
+2026-11-12T17:34:14.5120449Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-writer_handoff_production-test: Test execution time (1.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5122399Z //codex-rs/hepta-supervisor:hepta-supervisord-bin-unit-tests             PASSED in 104.9s
+2026-11-12T17:34:14.5123430Z //codex-rs/linux-sandbox:linux-sandbox-all-test                          PASSED in 1.2s
+2026-11-12T17:34:14.5125113Z   WARNING: //codex-rs/linux-sandbox:linux-sandbox-all-test: Test execution time (1.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5127209Z //codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test            PASSED in 0.1s
+2026-11-12T17:34:14.5128996Z   WARNING: //codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5130759Z //codex-rs/rmcp-client:rmcp-client-resources-test                        PASSED in 0.2s
+2026-11-12T17:34:14.5147541Z   WARNING: //codex-rs/rmcp-client:rmcp-client-resources-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5149325Z //codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test             PASSED in 2.0s
+2026-11-12T17:34:14.5151108Z   WARNING: //codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test: Test execution time (2.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T17:34:14.5152872Z //codex-rs/rmcp-client:test_mcp_2026_stdio_server-bin-unit-tests         PASSED in 103.2s
+2026-11-12T17:34:14.5153838Z //codex-rs/tui:codex-tui-bin-unit-tests                                  PASSED in 83.2s
+2026-11-12T17:34:14.5154786Z //codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.3s
+2026-11-12T17:34:14.5156557Z   D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-exec_process-test/test.log
+2026-11-12T17:34:14.5158133Z //codex-rs/core:core-unit-tests                                           FLAKY, failed in 1 out of 9 in 177.7s
+2026-11-12T17:34:14.5158971Z   Stats over 9 runs: max = 177.7s, min = 45.3s, avg = 89.7s, dev = 41.8s
+2026-11-12T17:34:14.5160394Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (67.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5163288Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (129.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5165679Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (112.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5168609Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (103.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5170841Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (45.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5173321Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (46.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5235447Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (61.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T17:34:14.5237993Z   D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_1.log
+2026-11-12T17:34:14.5239009Z 
+2026-11-12T17:34:14.5239384Z Executed 35 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped.
+2026-11-12T17:34:16.4047661Z INFO: 
+2026-11-12T17:34:19.0449490Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/25e8ff41-cd89-4df4-a642-d4846546e449
+2026-11-12T17:34:19.5719708Z No Bazel action failures were found in the captured console output.
+2026-11-12T17:34:26.7110682Z ##[group]Bazel test log tail for //codex-rs/core:core-unit-tests
+2026-11-12T17:34:26.7111429Z Missing test log: D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/test.log
+2026-11-12T17:34:26.7112196Z ##[endgroup]
+2026-11-12T17:34:26.7642808Z ##[group]Bazel test log tail for //codex-rs/exec-server:exec-server-exec_process-test
+2026-11-12T17:34:26.7835351Z Executing tests from //codex-rs/exec-server:exec-server-exec_process-test
+2026-11-12T17:34:26.7836271Z -----------------------------------------------------------------------------
+2026-11-12T17:34:26.7836779Z 
+2026-11-12T17:34:26.7836930Z running 24 tests
+2026-11-12T17:34:26.7837857Z test exec_process_preserves_queued_events_before_subscribe::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7839334Z test exec_process_preserves_queued_events_before_subscribe::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7840520Z test exec_process_pushes_events::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7841677Z test exec_process_pushes_events::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7842974Z test exec_process_rejects_write_without_pipe_stdin::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7844416Z test exec_process_rejects_write_without_pipe_stdin::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7845788Z test exec_process_replays_events_after_close::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7847484Z test exec_process_replays_events_after_close::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7848957Z test exec_process_retains_output_after_exit_until_streams_close::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7850328Z test exec_process_retains_output_after_exit_until_streams_close::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7851098Z test exec_process_signal_interrupts_process::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7851831Z test exec_process_signal_interrupts_process::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7852431Z test exec_process_signal_terminates_on_windows::test_case_1_local ... ok
+2026-11-12T17:34:26.7852899Z test exec_process_signal_terminates_on_windows::test_case_2_remote ... ok
+2026-11-12T17:34:26.7853455Z test exec_process_starts_and_exits::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7854076Z test exec_process_starts_and_exits::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7854688Z test exec_process_streams_output::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7855299Z test exec_process_streams_output::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7856124Z test exec_process_write_then_read::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7857483Z test exec_process_write_then_read::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7858187Z test exec_process_write_then_read_without_tty::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7858897Z test exec_process_write_then_read_without_tty::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7859916Z test remote_exec_process_recovers_after_transport_disconnect ... ignored, Unix-only exec-server process test
+2026-11-12T17:34:26.7860487Z test remote_windows_sandbox_process_accepts_process_write ... FAILED
+2026-11-12T17:34:26.7860747Z 
+2026-11-12T17:34:26.7860817Z failures:
+2026-11-12T17:34:26.7860918Z 
+2026-11-12T17:34:26.7861090Z ---- remote_windows_sandbox_process_accepts_process_write stdout ----
+2026-11-12T17:34:26.7862026Z Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T17:34:26.7862779Z 
+2026-11-12T17:34:26.7862783Z 
+2026-11-12T17:34:26.7862852Z failures:
+2026-11-12T17:34:26.7863074Z     remote_windows_sandbox_process_accepts_process_write
+2026-11-12T17:34:26.7863286Z 
+2026-11-12T17:34:26.7863535Z test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.67s
+2026-11-12T17:34:26.7863885Z 
+2026-11-12T17:34:26.7864272Z ##[endgroup]
+2026-11-12T17:34:26.8631497Z ##[error]Process completed with exit code 3.
+2026-11-12T17:34:26.9514932Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T17:34:26.9515802Z with:
+2026-11-12T17:34:26.9516163Z   name: bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1
+2026-11-12T17:34:26.9516595Z   path: D:\a\_temp/bazel-execution-logs
+2026-11-12T17:34:26.9516898Z   if-no-files-found: ignore
+2026-11-12T17:34:26.9517155Z   compression-level: 6
+2026-11-12T17:34:26.9517384Z   overwrite: false
+2026-11-12T17:34:26.9517612Z   include-hidden-files: false
+2026-11-12T17:34:26.9517871Z   archive: true
+2026-11-12T17:34:26.9518068Z env:
+2026-11-12T17:34:26.9518248Z   CI_BUILD_ROOT: D:
+2026-11-12T17:34:26.9518539Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T17:34:26.9518899Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T17:34:26.9519379Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T17:34:26.9519696Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T17:34:26.9520265Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43267839274-test-windows-shard
+2026-11-12T17:34:26.9520780Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T17:34:26.9521048Z   TEMP: D:/tmp
+2026-11-12T17:34:26.9521244Z   TMP: D:/tmp
+2026-11-12T17:34:26.9521457Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T17:34:26.9532162Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T17:34:26.9534421Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T17:34:26.9537919Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T17:34:26.9540532Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T17:34:26.9558740Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T17:34:26.9574048Z   UCRTVersion: 10.0.26100.0
+2026-11-12T17:34:26.9574336Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:26.9574791Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T17:34:26.9575574Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T17:34:26.9576341Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T17:34:26.9576994Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T17:34:26.9577879Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:26.9578213Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T17:34:26.9578462Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T17:34:26.9586949Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T17:34:26.9595808Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T17:34:26.9596158Z ##[endgroup]
+2026-11-12T17:34:27.8357183Z With the provided path, there will be 1 file uploaded
+2026-11-12T17:34:27.8363626Z Artifact name is valid!
+2026-11-12T17:34:27.8365099Z Root directory input is valid!
+2026-11-12T17:34:28.0461131Z Uploading artifact: bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1.zip
+2026-11-12T17:34:28.0506479Z Beginning upload of artifact content to blob storage
+2026-11-12T17:34:28.5108042Z Uploaded bytes 5220522
+2026-11-12T17:34:28.5243485Z Finished uploading artifact content to blob storage!
+2026-11-12T17:34:28.5245767Z SHA256 digest of uploaded artifact is 9a25b79b2bf74e1a24626ef4c3a296a7d598334f5c0b5cf92a19ff5e775b0616
+2026-11-12T17:34:28.5246572Z Finalizing artifact upload
+2026-11-12T17:34:28.9024096Z Artifact bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1 successfully finalized. Artifact ID 13968491414
+2026-11-12T17:34:28.9025244Z Artifact bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1 has been successfully uploaded! Final size is 5220522 bytes. Artifact ID is 13968491414
+2026-11-12T17:34:28.9032982Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43267839274/artifacts/13968491414
+2026-11-12T17:34:28.9368484Z Prepare all required actions
+2026-11-12T17:34:28.9420719Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T17:34:28.9421013Z env:
+2026-11-12T17:34:28.9421179Z   CI_BUILD_ROOT: D:
+2026-11-12T17:34:28.9421783Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T17:34:28.9422121Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T17:34:28.9422339Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T17:34:28.9422605Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T17:34:28.9423057Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43267839274-test-windows-shard
+2026-11-12T17:34:28.9423492Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T17:34:28.9423730Z   TEMP: D:/tmp
+2026-11-12T17:34:28.9423900Z   TMP: D:/tmp
+2026-11-12T17:34:28.9424078Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T17:34:28.9426847Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T17:34:28.9429065Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T17:34:28.9432565Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T17:34:28.9435212Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T17:34:28.9453674Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T17:34:28.9469010Z   UCRTVersion: 10.0.26100.0
+2026-11-12T17:34:28.9469312Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:28.9469747Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T17:34:28.9470300Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T17:34:28.9471074Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T17:34:28.9471986Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T17:34:28.9472371Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:28.9472677Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T17:34:28.9472923Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T17:34:28.9481984Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T17:34:28.9490667Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T17:34:28.9491020Z ##[endgroup]
+2026-11-12T17:34:28.9511923Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T17:34:28.9660614Z ##[group]Run set -euo pipefail
+2026-11-12T17:34:28.9660929Z [36;1mset -euo pipefail[0m
+2026-11-12T17:34:28.9661137Z [36;1m[0m
+2026-11-12T17:34:28.9661943Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T17:34:28.9662500Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T17:34:28.9662750Z [36;1m  exit 0[0m
+2026-11-12T17:34:28.9662921Z [36;1mfi[0m
+2026-11-12T17:34:28.9663086Z [36;1m[0m
+2026-11-12T17:34:28.9663446Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T17:34:28.9663893Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T17:34:28.9664127Z [36;1mexit 1[0m
+2026-11-12T17:34:28.9680343Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T17:34:28.9680746Z env:
+2026-11-12T17:34:28.9680916Z   CI_BUILD_ROOT: D:
+2026-11-12T17:34:28.9681186Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T17:34:28.9681855Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T17:34:28.9682080Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T17:34:28.9682368Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T17:34:28.9682822Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43267839274-test-windows-shard
+2026-11-12T17:34:28.9683254Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T17:34:28.9683491Z   TEMP: D:/tmp
+2026-11-12T17:34:28.9683668Z   TMP: D:/tmp
+2026-11-12T17:34:28.9684022Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T17:34:28.9686576Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T17:34:28.9688735Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T17:34:28.9692320Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T17:34:28.9695173Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T17:34:28.9711853Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T17:34:28.9727203Z   UCRTVersion: 10.0.26100.0
+2026-11-12T17:34:28.9727510Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:28.9727963Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T17:34:28.9728519Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T17:34:28.9729311Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T17:34:28.9729961Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T17:34:28.9730333Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T17:34:28.9730641Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T17:34:28.9730899Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T17:34:28.9740139Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T17:34:28.9749107Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T17:34:28.9749466Z ##[endgroup]
+2026-11-12T17:34:29.4493127Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=498]
+2026-11-12T17:34:29.4748317Z Post job cleanup.
+2026-11-12T17:34:29.4752798Z ##[start-action display=Set up Bazel;id=__1c90c486-9d22-42a2-8728-999dfd3532b5.__bazel-contrib_setup-bazel]
+2026-11-12T17:34:29.4916194Z Post job cleanup.
+2026-11-12T17:34:29.7004042Z ##[end-action id=__1c90c486-9d22-42a2-8728-999dfd3532b5.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=225]
+2026-11-12T17:34:29.7222728Z Post job cleanup.
+2026-11-12T17:34:29.9719611Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T17:34:30.0102944Z git version 2.56.0.windows.4
+2026-11-12T17:34:30.0167877Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\3c53bda7-2f45-477f-8d10-900490677407\.gitconfig'
+2026-11-12T17:34:30.0193365Z Temporarily overriding HOME='D:\a\_temp\3c53bda7-2f45-477f-8d10-900490677407' before making global git config changes
+2026-11-12T17:34:30.0194374Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T17:34:30.0206775Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T17:34:30.0600057Z Removing SSH command configuration
+2026-11-12T17:34:30.0612740Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T17:34:30.1010399Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T17:34:30.6621550Z Removing HTTP extra header
+2026-11-12T17:34:30.6633800Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T17:34:30.7030995Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T17:34:31.2318308Z Removing includeIf entries pointing to credentials config files
+2026-11-12T17:34:31.2332035Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T17:34:31.2678441Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T17:34:31.2679365Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T17:34:31.2722804Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T17:34:31.3073565Z D:\a\_temp\git-credentials-2b5f4635-0712-4ca2-83f6-9aa2375efd11.config
+2026-11-12T17:34:31.3122731Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-2b5f4635-0712-4ca2-83f6-9aa2375efd11.config
+2026-11-12T17:34:31.3509917Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T17:34:31.3853209Z D:\a\_temp\git-credentials-2b5f4635-0712-4ca2-83f6-9aa2375efd11.config
+2026-11-12T17:34:31.3897196Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-2b5f4635-0712-4ca2-83f6-9aa2375efd11.config
+2026-11-12T17:34:31.4285437Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T17:34:31.9404612Z Removing credentials config 'D:\a\_temp\git-credentials-2b5f4635-0712-4ca2-83f6-9aa2375efd11.config'
+2026-11-12T17:34:31.9625970Z Cleaning up orphan processes
+2026-11-12T17:34:32.1569656Z Terminate orphan process: pid (5416) (java)

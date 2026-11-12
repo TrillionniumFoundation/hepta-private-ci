@@ -1,0 +1,621 @@
+{
+  "source": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "blocks": {
+    "131515141142": [
+      {
+        "shard": 6,
+        "announced": 153,
+        "terminals": 153,
+        "status_counts": {
+          "ok": 135,
+          "FAILED": 4,
+          "ignored": 14
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+            "status": "FAILED",
+            "line_1_based": 8617
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection",
+            "status": "FAILED",
+            "line_1_based": 8619
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "status": "FAILED",
+            "line_1_based": 8622
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending",
+            "status": "FAILED",
+            "line_1_based": 8628
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 8616
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "line_1_based": 8621
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          8483,
+          8676
+        ],
+        "normalized_sha256": "cb401879877fd0ef2778b7156a7a7eefe95b22e1c687c5e2f09fc80d5d5927f9"
+      },
+      {
+        "shard": 8,
+        "announced": 159,
+        "terminals": 145,
+        "status_counts": {
+          "ok": 132,
+          "FAILED": 2,
+          "ignored": 11
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "status": "FAILED",
+            "line_1_based": 8826
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+            "status": "FAILED",
+            "line_1_based": 8827
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "line_1_based": 8824
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+            "line_1_based": 8825
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+            "line_1_based": 8830
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+            "line_1_based": 8830
+          }
+        ],
+        "original_span": [
+          8683,
+          8834
+        ],
+        "normalized_sha256": "71d57ec839352b75ee8e9661ed5fca1748c1b84dd2418aa5ecc3157bf8fc4f62"
+      },
+      {
+        "shard": 2,
+        "announced": 159,
+        "terminals": 134,
+        "status_counts": {
+          "ok": 125,
+          "FAILED": 0,
+          "ignored": 9
+        },
+        "failed_methods": [],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners",
+            "line_1_based": 8973
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+            "line_1_based": 8974
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+            "line_1_based": 8977
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_recovered_missing_cannot_claim",
+            "line_1_based": 8978
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 8981
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 8981
+          }
+        ],
+        "original_span": [
+          8836,
+          8982
+        ],
+        "normalized_sha256": "d483632640990d8f30ed792ba1ee2511ccdfe8fd291caa1cedfcebc0c101c51f"
+      },
+      {
+        "shard": 1,
+        "announced": 160,
+        "terminals": 131,
+        "status_counts": {
+          "ok": 116,
+          "FAILED": 5,
+          "ignored": 10
+        },
+        "failed_methods": [
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_native_artifact_after_cache",
+            "status": "FAILED",
+            "line_1_based": 9063
+          },
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+            "status": "FAILED",
+            "line_1_based": 9064
+          },
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+            "status": "FAILED",
+            "line_1_based": 9090
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "status": "FAILED",
+            "line_1_based": 9119
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim",
+            "status": "FAILED",
+            "line_1_based": 9121
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "line_1_based": 9117
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+            "line_1_based": 9118
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim",
+            "line_1_based": 9120
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          8985,
+          9123
+        ],
+        "normalized_sha256": "13307317023865051b82a9f94ff39a001e71f37505e27bc888237d925c0ccc95"
+      },
+      {
+        "shard": 5,
+        "announced": 152,
+        "terminals": 126,
+        "status_counts": {
+          "ok": 115,
+          "FAILED": 1,
+          "ignored": 10
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+            "status": "FAILED",
+            "line_1_based": 9284
+          }
+        ],
+        "warnings": [
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+            "line_1_based": 9216
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+            "line_1_based": 9283
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+            "line_1_based": 9285
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+            "line_1_based": 9285
+          }
+        ],
+        "original_span": [
+          9125,
+          9286
+        ],
+        "normalized_sha256": "a8159ddb527698e388703fed4a0f2c266a6734a942655ab8f2e33ffededb4c8d"
+      },
+      {
+        "shard": 7,
+        "announced": 166,
+        "terminals": 150,
+        "status_counts": {
+          "ok": 132,
+          "FAILED": 3,
+          "ignored": 15
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+            "status": "FAILED",
+            "line_1_based": 9469
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+            "status": "FAILED",
+            "line_1_based": 9471
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+            "status": "FAILED",
+            "line_1_based": 9474
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+            "line_1_based": 9472
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::member_readback::original_evaluation_member_readback_keeps_full_original_bytes_below_peer_bound",
+            "line_1_based": 9473
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          9288,
+          9478
+        ],
+        "normalized_sha256": "935d4df0139cf06f37136e3622d1266e77a8acd9690c78a643a94805ea906ed8"
+      },
+      {
+        "shard": 4,
+        "announced": 156,
+        "terminals": 146,
+        "status_counts": {
+          "ok": 133,
+          "FAILED": 1,
+          "ignored": 12
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication",
+            "status": "FAILED",
+            "line_1_based": 9638
+          }
+        ],
+        "warnings": [],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          9490,
+          9639
+        ],
+        "normalized_sha256": "027b4630c7a7c79d9df03b8252665c6200a1e322f21d754394347f46cc7fe000"
+      }
+    ],
+    "131515141372": [
+      {
+        "shard": 6,
+        "announced": 153,
+        "terminals": 153,
+        "status_counts": {
+          "ok": 135,
+          "FAILED": 4,
+          "ignored": 14
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+            "status": "FAILED",
+            "line_1_based": 8738
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection",
+            "status": "FAILED",
+            "line_1_based": 8740
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "status": "FAILED",
+            "line_1_based": 8743
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending",
+            "status": "FAILED",
+            "line_1_based": 8749
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 8737
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "line_1_based": 8742
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          8604,
+          8797
+        ],
+        "normalized_sha256": "cb401879877fd0ef2778b7156a7a7eefe95b22e1c687c5e2f09fc80d5d5927f9"
+      },
+      {
+        "shard": 8,
+        "announced": 159,
+        "terminals": 145,
+        "status_counts": {
+          "ok": 132,
+          "FAILED": 2,
+          "ignored": 11
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "status": "FAILED",
+            "line_1_based": 8948
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+            "status": "FAILED",
+            "line_1_based": 8949
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "line_1_based": 8946
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+            "line_1_based": 8947
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+            "line_1_based": 8952
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+            "line_1_based": 8952
+          }
+        ],
+        "original_span": [
+          8805,
+          8956
+        ],
+        "normalized_sha256": "71d57ec839352b75ee8e9661ed5fca1748c1b84dd2418aa5ecc3157bf8fc4f62"
+      },
+      {
+        "shard": 2,
+        "announced": 159,
+        "terminals": 134,
+        "status_counts": {
+          "ok": 125,
+          "FAILED": 0,
+          "ignored": 9
+        },
+        "failed_methods": [],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners",
+            "line_1_based": 9095
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+            "line_1_based": 9096
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+            "line_1_based": 9099
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_recovered_missing_cannot_claim",
+            "line_1_based": 9100
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 9103
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+            "line_1_based": 9103
+          }
+        ],
+        "original_span": [
+          8958,
+          9104
+        ],
+        "normalized_sha256": "d483632640990d8f30ed792ba1ee2511ccdfe8fd291caa1cedfcebc0c101c51f"
+      },
+      {
+        "shard": 5,
+        "announced": 152,
+        "terminals": 126,
+        "status_counts": {
+          "ok": 115,
+          "FAILED": 1,
+          "ignored": 10
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+            "status": "FAILED",
+            "line_1_based": 9265
+          }
+        ],
+        "warnings": [
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+            "line_1_based": 9197
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+            "line_1_based": 9264
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+            "line_1_based": 9266
+          }
+        ],
+        "warnings_without_later_terminal": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+            "line_1_based": 9266
+          }
+        ],
+        "original_span": [
+          9106,
+          9267
+        ],
+        "normalized_sha256": "a8159ddb527698e388703fed4a0f2c266a6734a942655ab8f2e33ffededb4c8d"
+      },
+      {
+        "shard": 7,
+        "announced": 166,
+        "terminals": 150,
+        "status_counts": {
+          "ok": 132,
+          "FAILED": 3,
+          "ignored": 15
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+            "status": "FAILED",
+            "line_1_based": 9451
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+            "status": "FAILED",
+            "line_1_based": 9453
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+            "status": "FAILED",
+            "line_1_based": 9456
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+            "line_1_based": 9454
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::member_readback::original_evaluation_member_readback_keeps_full_original_bytes_below_peer_bound",
+            "line_1_based": 9455
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          9270,
+          9460
+        ],
+        "normalized_sha256": "935d4df0139cf06f37136e3622d1266e77a8acd9690c78a643a94805ea906ed8"
+      },
+      {
+        "shard": 1,
+        "announced": 160,
+        "terminals": 131,
+        "status_counts": {
+          "ok": 116,
+          "FAILED": 5,
+          "ignored": 10
+        },
+        "failed_methods": [
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_native_artifact_after_cache",
+            "status": "FAILED",
+            "line_1_based": 9540
+          },
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+            "status": "FAILED",
+            "line_1_based": 9541
+          },
+          {
+            "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+            "status": "FAILED",
+            "line_1_based": 9567
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "status": "FAILED",
+            "line_1_based": 9596
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim",
+            "status": "FAILED",
+            "line_1_based": 9598
+          }
+        ],
+        "warnings": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "line_1_based": 9594
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+            "line_1_based": 9595
+          },
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim",
+            "line_1_based": 9597
+          }
+        ],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          9462,
+          9600
+        ],
+        "normalized_sha256": "13307317023865051b82a9f94ff39a001e71f37505e27bc888237d925c0ccc95"
+      },
+      {
+        "shard": 4,
+        "announced": 156,
+        "terminals": 146,
+        "status_counts": {
+          "ok": 133,
+          "FAILED": 1,
+          "ignored": 12
+        },
+        "failed_methods": [
+          {
+            "method": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication",
+            "status": "FAILED",
+            "line_1_based": 9760
+          }
+        ],
+        "warnings": [],
+        "warnings_without_later_terminal": [],
+        "original_span": [
+          9612,
+          9761
+        ],
+        "normalized_sha256": "027b4630c7a7c79d9df03b8252665c6200a1e322f21d754394347f46cc7fe000"
+      }
+    ]
+  },
+  "limit": "Method FAILED markers are real even in timed-out target stdout; lack of terminal is unknown. Identical GNU/musl block hashes do not imply independent replications."
+}

@@ -1,0 +1,1075 @@
+{
+  "announced": "running 209 tests",
+  "first_line": 9626,
+  "last_line": 9841,
+  "rows": 208,
+  "unique_methods": 208,
+  "passed": 208,
+  "failed": 0,
+  "ignored": 0,
+  "unterminated_names": [
+    "test cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement has been running for over 60 seconds"
+  ],
+  "tail": [
+    "test sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable ... ok",
+    "test sparse::tests::ticks_advance_sequence_without_changing_artifact_generation ... ok",
+    "test sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact ... ok",
+    "test tests::generation_must_advance ... ok",
+    "test tests::model_drift_is_rejected ... ok",
+    "test tests::step_is_deterministic_and_authority_free ... ok",
+    "test tests::width_drift_is_rejected ... ok",
+    "test witness::tests::physical_current::witness_current_physical_corruption_fences_reads_and_cas_after_restore ... ok",
+    "test witness::tests::physical_current::witness_current_rehashed_history_cannot_preserve_cached_frontier ... ok",
+    "test witness::tests::physical_current::witness_current_shared_reads_preserve_original_cursor_and_lock ... ok",
+    "test witness::tests::witness_capacity_and_independent_writer_are_bounded ... ok",
+    "test witness::tests::witness_history_survives_reopen_and_fences_stale_cas ... ok",
+    "test witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history ... ok",
+    "test sparse::tests::long_replay_remains_bounded_and_immutable ... ok",
+    "test journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor ... ok",
+    "test cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement has been running for over 60 seconds",
+    "-- Test timed out at 2026-11-12 20:04:20 UTC --",
+    "================================================================================"
+  ],
+  "terminal_rows": [
+    {
+      "method": "cell::tests::a_request_valid_receipt_must_still_match_the_entire_frozen_runtime_tuple",
+      "state": "ok",
+      "line": 9629
+    },
+    {
+      "method": "cell::tests::actual_over_budget_inference_is_recorded_and_abstains",
+      "state": "ok",
+      "line": 9630
+    },
+    {
+      "method": "cell::tests::batch_dispatch_rechecks_queue_age_and_rejects_clock_rollback_after_admission",
+      "state": "ok",
+      "line": 9631
+    },
+    {
+      "method": "cell::tests::batch_error_retains_each_admission_and_does_not_repeat_dispatch",
+      "state": "ok",
+      "line": 9632
+    },
+    {
+      "method": "cell::tests::complete_mask_is_checked_and_masked_maximum_cannot_win",
+      "state": "ok",
+      "line": 9633
+    },
+    {
+      "method": "cell::tests::batch_routing_digest_cannot_relabel_a_receipt_for_another_cell",
+      "state": "ok",
+      "line": 9634
+    },
+    {
+      "method": "cell::tests::competing_prepared_writers_and_frontier_reset_are_fenced",
+      "state": "ok",
+      "line": 9635
+    },
+    {
+      "method": "cell::tests::complete_native_path_commits_policy_and_state_only_at_owner_boundary",
+      "state": "ok",
+      "line": 9636
+    },
+    {
+      "method": "cell::tests::deadlines_and_changed_bundle_reject_before_backend_dispatch",
+      "state": "ok",
+      "line": 9637
+    },
+    {
+      "method": "cell::tests::batch_scope::one_prepared_transition_per_scope_preserves_independent_batch_and_next_state",
+      "state": "ok",
+      "line": 9638
+    },
+    {
+      "method": "cell::tests::entry_replays_before_encoding_and_new_snapshot_cannot_reidentify_an_operation",
+      "state": "ok",
+      "line": 9639
+    },
+    {
+      "method": "cell::tests::incomplete_microbatch_cannot_publish_any_state",
+      "state": "ok",
+      "line": 9640
+    },
+    {
+      "method": "cell::tests::inference_control_rejects_receipts_from_a_different_source_or_request",
+      "state": "ok",
+      "line": 9641
+    },
+    {
+      "method": "cell::tests::uncertain_commit_reconciles_exact_persisted_decision_without_new_inference",
+      "state": "ok",
+      "line": 9642
+    },
+    {
+      "method": "cell::tests::shared_inference_ids_are_partitioned_but_do_not_change_with_owner_revision",
+      "state": "ok",
+      "line": 9643
+    },
+    {
+      "method": "cell::tests::updates_are_next_generation_bounded_candidates_and_do_not_mutate_live_state",
+      "state": "ok",
+      "line": 9644
+    },
+    {
+      "method": "cell::tests::shared_microbatch_matches_reordered_outputs_to_isolated_requests",
+      "state": "ok",
+      "line": 9645
+    },
+    {
+      "method": "cell::tests::state_and_exact_operation_identity_are_partitioned_by_run",
+      "state": "ok",
+      "line": 9646
+    },
+    {
+      "method": "cell_generation_control::tests::actor_loss_closes_the_owner_without_reissuing_an_uncertain_operation",
+      "state": "ok",
+      "line": 9647
+    },
+    {
+      "method": "cell_generation_control::tests::independent_worker_does_not_block_durable_cancellation_or_exact_readback",
+      "state": "ok",
+      "line": 9648
+    },
+    {
+      "method": "cell_generation_control::tests::invalid_scope_and_invalid_worker_proposals_never_become_terminal_records",
+      "state": "ok",
+      "line": 9649
+    },
+    {
+      "method": "cell_generation_control::tests::known_no_contact_observations_abort_without_forging_the_admission_clock",
+      "state": "ok",
+      "line": 9650
+    },
+    {
+      "method": "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+      "state": "ok",
+      "line": 9651
+    },
+    {
+      "method": "cell_generation_control::tests::terminal_control_reopen_reads_original_bytes_without_running_another_worker",
+      "state": "ok",
+      "line": 9652
+    },
+    {
+      "method": "cell_generation_control::tests::unknown_worker_keeps_the_single_pending_slot_across_reopen",
+      "state": "ok",
+      "line": 9653
+    },
+    {
+      "method": "cell_generation_control::tests::shutdown_timeout_retains_the_real_file_lock_until_the_worker_exits",
+      "state": "ok",
+      "line": 9654
+    },
+    {
+      "method": "cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work",
+      "state": "ok",
+      "line": 9655
+    },
+    {
+      "method": "cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+      "state": "ok",
+      "line": 9656
+    },
+    {
+      "method": "cell_generation_current::tests::feature_journal::published_feature_journal_requires_same_current_on_reopen_and_every_read",
+      "state": "ok",
+      "line": 9657
+    },
+    {
+      "method": "cell_generation_current::tests::feature_journal::readback::published_feature_readonly_refuses_unacknowledged_completion_and_empty_files",
+      "state": "ok",
+      "line": 9658
+    },
+    {
+      "method": "cell_generation_current::tests::preparing_identity_cannot_import_a_nonempty_history",
+      "state": "ok",
+      "line": 9659
+    },
+    {
+      "method": "cell_generation_current::tests::retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_changing_bytes",
+      "state": "ok",
+      "line": 9660
+    },
+    {
+      "method": "cell_generation_current::tests::feature_journal::readback::published_feature_readonly_reopens_exact_ack_cut_without_witness_cas",
+      "state": "ok",
+      "line": 9661
+    },
+    {
+      "method": "cell_generation_current::tests::staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot",
+      "state": "ok",
+      "line": 9662
+    },
+    {
+      "method": "cell_generation_journal::tests::acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen",
+      "state": "ok",
+      "line": 9663
+    },
+    {
+      "method": "cell_generation_journal::tests::actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement",
+      "state": "ok",
+      "line": 9664
+    },
+    {
+      "method": "cell_generation_journal::tests::cancellation_and_drain_retain_unknown_work_then_settle_without_output",
+      "state": "ok",
+      "line": 9665
+    },
+    {
+      "method": "cell_generation_journal::tests::incomplete_resumable_learning_closure_cannot_reopen_or_reinitialize",
+      "state": "ok",
+      "line": 9666
+    },
+    {
+      "method": "cell_generation_journal::tests::independent_process_second_writer_cannot_acquire_the_owner_journal",
+      "state": "ok",
+      "line": 9667
+    },
+    {
+      "method": "cell_generation_journal::tests::learning_evolution_scope_and_predecessor_drift_never_reinitialize",
+      "state": "ok",
+      "line": 9668
+    },
+    {
+      "method": "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+      "state": "ok",
+      "line": 9669
+    },
+    {
+      "method": "cell_generation_journal::tests::deadline_and_failed_receipts_preserve_cost_without_fabricating_state",
+      "state": "ok",
+      "line": 9670
+    },
+    {
+      "method": "cell_generation_journal::tests::full_committed_prefix_still_allows_cancelled_and_expired_cost_settlement",
+      "state": "ok",
+      "line": 9671
+    },
+    {
+      "method": "cell_generation_journal::tests::bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack",
+      "state": "ok",
+      "line": 9672
+    },
+    {
+      "method": "cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery",
+      "state": "ok",
+      "line": 9673
+    },
+    {
+      "method": "cell_generation_journal::tests::observation::temporal_control_stop_preserves_state_and_never_claims_numerical_use_after_reopen",
+      "state": "ok",
+      "line": 9674
+    },
+    {
+      "method": "cell_generation_journal::tests::physical_current::physical_current_fences_witness_change_between_original_descriptor_reads",
+      "state": "ok",
+      "line": 9675
+    },
+    {
+      "method": "cell_generation_journal::tests::physical_current::physical_current_preserves_complete_bytes_cursor_state_and_append_owner",
+      "state": "ok",
+      "line": 9676
+    },
+    {
+      "method": "cell_generation_journal::tests::physical_current::physical_current_rejects_header_change_and_preserves_cursor_after_restore",
+      "state": "ok",
+      "line": 9677
+    },
+    {
+      "method": "cell_generation_journal::tests::physical_current::physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm",
+      "state": "ok",
+      "line": 9678
+    },
+    {
+      "method": "cell_generation_journal::tests::physical_current::physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair",
+      "state": "ok",
+      "line": 9679
+    },
+    {
+      "method": "cell_generation_journal::tests::qualification::failed_read_restores_the_original_cursor_and_keeps_contenders_excluded",
+      "state": "ok",
+      "line": 9680
+    },
+    {
+      "method": "cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+      "state": "ok",
+      "line": 9681
+    },
+    {
+      "method": "cell_generation_journal::tests::qualification::qualification_byte_bounds_leave_the_same_owner_and_cursor_usable",
+      "state": "ok",
+      "line": 9682
+    },
+    {
+      "method": "cell_generation_journal::tests::precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch",
+      "state": "ok",
+      "line": 9683
+    },
+    {
+      "method": "cell_generation_journal::tests::qualification::unsupported_witness_observation_returns_unavailable_without_cached_bytes",
+      "state": "ok",
+      "line": 9684
+    },
+    {
+      "method": "cell_generation_journal::tests::qualification::qualification_bytes_match_both_original_files_without_releasing_either_lock",
+      "state": "ok",
+      "line": 9685
+    },
+    {
+      "method": "cell_generation_journal::tests::state_prefix_outbox_cost_and_replay_survive_owner_reopen",
+      "state": "ok",
+      "line": 9686
+    },
+    {
+      "method": "cell_generation_journal::tests::reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history",
+      "state": "ok",
+      "line": 9687
+    },
+    {
+      "method": "cell_generation_journal::tests::torn_unwitnessed_commit_tail_restores_exact_pending_admission",
+      "state": "ok",
+      "line": 9688
+    },
+    {
+      "method": "cell_generation_journal::tests::unobserved_pending_work_never_becomes_fresh_admission_after_reopen",
+      "state": "ok",
+      "line": 9689
+    },
+    {
+      "method": "cell_inference::tests::any_backend_error_retains_admission_and_duplicate_prepared_work_cannot_execute",
+      "state": "ok",
+      "line": 9690
+    },
+    {
+      "method": "cell_inference::tests::crossing_deadline_after_decision_also_forces_abstention_at_commit",
+      "state": "ok",
+      "line": 9691
+    },
+    {
+      "method": "cell_inference::tests::late_recovery_preserves_usage_and_settles_pending_as_abstention",
+      "state": "ok",
+      "line": 9692
+    },
+    {
+      "method": "cell_inference::tests::missing_and_unsuccessful_readbacks_never_release_the_pending_request",
+      "state": "ok",
+      "line": 9693
+    },
+    {
+      "method": "cell_inference::tests::native_stage_clocks_cannot_move_before_admission_or_decision",
+      "state": "ok",
+      "line": 9694
+    },
+    {
+      "method": "cell_inference::tests::output_lost_before_commit_is_recovered_by_reading_the_original_request_only",
+      "state": "ok",
+      "line": 9695
+    },
+    {
+      "method": "cell_inference::tests::receipt_capacity_is_checked_before_spending_compute",
+      "state": "ok",
+      "line": 9696
+    },
+    {
+      "method": "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+      "state": "ok",
+      "line": 9697
+    },
+    {
+      "method": "cell_journal::tests::admission_reserves_room_for_its_eventual_atomic_state_commit",
+      "state": "ok",
+      "line": 9698
+    },
+    {
+      "method": "cell_journal::tests::acknowledged_rollback_is_rejected_before_any_tail_repair",
+      "state": "ok",
+      "line": 9699
+    },
+    {
+      "method": "cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+      "state": "ok",
+      "line": 9700
+    },
+    {
+      "method": "cell_journal::tests::batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending",
+      "state": "ok",
+      "line": 9701
+    },
+    {
+      "method": "cell_journal::tests::batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_time",
+      "state": "ok",
+      "line": 9702
+    },
+    {
+      "method": "cell_journal::tests::incomplete_unacknowledged_tail_is_trimmed_after_witness_validation",
+      "state": "ok",
+      "line": 9703
+    },
+    {
+      "method": "cell_journal::tests::inference_clock::single_admission_sync_rechecks_deadline_clock_and_queue_before_contact",
+      "state": "ok",
+      "line": 9704
+    },
+    {
+      "method": "cell_journal::tests::inference_clock::single_uncertain_admission_never_contacts_native_or_invents_queue_cost",
+      "state": "ok",
+      "line": 9705
+    },
+    {
+      "method": "cell_journal::tests::journal_lock_excludes_a_second_owner_before_it_reads_or_repairs",
+      "state": "ok",
+      "line": 9706
+    },
+    {
+      "method": "cell_journal::tests::lost_witness_ack_fences_new_work_until_original_log_is_read_back",
+      "state": "ok",
+      "line": 9707
+    },
+    {
+      "method": "cell_journal::tests::batch_cost_recovery::batch_queue_cost_and_policy_survive_native_errors_and_lost_measurement_ack",
+      "state": "ok",
+      "line": 9708
+    },
+    {
+      "method": "cell_journal::tests::pending_dispatch_survives_reopen_and_recovery_only_reads_original_model_result",
+      "state": "ok",
+      "line": 9709
+    },
+    {
+      "method": "cell_journal::tests::persisted_frontier_fence_resets_state_and_rejects_prepared_writer",
+      "state": "ok",
+      "line": 9710
+    },
+    {
+      "method": "cell_journal::tests::queue_cost::legacy_committed_history_replays_but_all_unmeasured_pending_history_holds",
+      "state": "ok",
+      "line": 9711
+    },
+    {
+      "method": "cell_journal::tests::queue_cost::unmeasured_admission_reserves_measurement_and_commit_and_measurement_is_bound",
+      "state": "ok",
+      "line": 9712
+    },
+    {
+      "method": "cell_journal::tests::representation::committed_representation_recovers_exact_original_channels_without_inference",
+      "state": "ok",
+      "line": 9713
+    },
+    {
+      "method": "cell_journal::tests::inference_clock::single_queue_cost_and_policy_survive_errors_and_lost_measurement_ack",
+      "state": "ok",
+      "line": 9714
+    },
+    {
+      "method": "cell_journal::tests::representation::representation_substitution_is_rejected_before_any_commit_bytes",
+      "state": "ok",
+      "line": 9715
+    },
+    {
+      "method": "cell_journal::tests::uncertain_admission_never_dispatches_and_recovery_does_not_assume_no_contact",
+      "state": "ok",
+      "line": 9716
+    },
+    {
+      "method": "cell_journal::tests::shared_file_recovers_independent_checkpoints_and_exact_policy_receipts",
+      "state": "ok",
+      "line": 9717
+    },
+    {
+      "method": "cell_task_cost::tests::deserialize_does_not_bypass_identity_or_duplicate_validation",
+      "state": "ok",
+      "line": 9718
+    },
+    {
+      "method": "cell_task_cost::tests::envelope_rejects_unaccounted_overhead_missing_nested_and_duplicate_members",
+      "state": "ok",
+      "line": 9719
+    },
+    {
+      "method": "cell_task_cost::tests::failed_cancelled_rejected_and_unknown_work_remains_charged",
+      "state": "ok",
+      "line": 9720
+    },
+    {
+      "method": "cell_task_cost::tests::inclusive_observation_cannot_fill_unknown_exclusive_energy",
+      "state": "ok",
+      "line": 9721
+    },
+    {
+      "method": "cell_task_cost::tests::missing_stage_and_unknown_measurement_are_not_measured_zero",
+      "state": "ok",
+      "line": 9722
+    },
+    {
+      "method": "cell_task_cost::tests::overflow_refuses_new_charge_without_clamping_or_partial_append",
+      "state": "ok",
+      "line": 9723
+    },
+    {
+      "method": "cell_task_cost::tests::overlapping_envelopes_never_double_charge_parallel_exclusive_work",
+      "state": "ok",
+      "line": 9724
+    },
+    {
+      "method": "cell_task_cost::tests::replay_after_serialized_reopen_is_free_but_conflicting_reuse_is_atomic",
+      "state": "ok",
+      "line": 9725
+    },
+    {
+      "method": "cell_task_cost::tests::task_source_and_zero_identity_refusals_preserve_state",
+      "state": "ok",
+      "line": 9726
+    },
+    {
+      "method": "deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state",
+      "state": "ok",
+      "line": 9727
+    },
+    {
+      "method": "deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion",
+      "state": "ok",
+      "line": 9728
+    },
+    {
+      "method": "cell_task_cost::tests::capacity_keeps_replay_available_without_permitting_new_work",
+      "state": "ok",
+      "line": 9729
+    },
+    {
+      "method": "feature_control::tests::feature_control_dispatch_fsync_deadline_and_late_result_keep_original_cost",
+      "state": "ok",
+      "line": 9730
+    },
+    {
+      "method": "feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write",
+      "state": "ok",
+      "line": 9731
+    },
+    {
+      "method": "feature_control::tests::feature_control_original_cell_path_binds_admission_and_pending_recovery",
+      "state": "ok",
+      "line": 9732
+    },
+    {
+      "method": "feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds",
+      "state": "ok",
+      "line": 9733
+    },
+    {
+      "method": "inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed",
+      "state": "ok",
+      "line": 9734
+    },
+    {
+      "method": "inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence",
+      "state": "ok",
+      "line": 9735
+    },
+    {
+      "method": "feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen",
+      "state": "ok",
+      "line": 9736
+    },
+    {
+      "method": "journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes",
+      "state": "ok",
+      "line": 9737
+    },
+    {
+      "method": "journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail",
+      "state": "ok",
+      "line": 9738
+    },
+    {
+      "method": "journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged",
+      "state": "ok",
+      "line": 9739
+    },
+    {
+      "method": "journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor",
+      "state": "ok",
+      "line": 9740
+    },
+    {
+      "method": "journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair",
+      "state": "ok",
+      "line": 9741
+    },
+    {
+      "method": "journal::anchor_tests::malformed_anchor_rejects_before_file_mutation",
+      "state": "ok",
+      "line": 9742
+    },
+    {
+      "method": "journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame",
+      "state": "ok",
+      "line": 9743
+    },
+    {
+      "method": "journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail",
+      "state": "ok",
+      "line": 9744
+    },
+    {
+      "method": "journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair",
+      "state": "ok",
+      "line": 9745
+    },
+    {
+      "method": "journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover",
+      "state": "ok",
+      "line": 9746
+    },
+    {
+      "method": "journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix",
+      "state": "ok",
+      "line": 9747
+    },
+    {
+      "method": "journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry",
+      "state": "ok",
+      "line": 9748
+    },
+    {
+      "method": "journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file",
+      "state": "ok",
+      "line": 9749
+    },
+    {
+      "method": "journal::tests::child_process_commit_and_exit",
+      "state": "ok",
+      "line": 9750
+    },
+    {
+      "method": "journal::tests::committed_checkpoint_and_receipt_survive_reopen",
+      "state": "ok",
+      "line": 9751
+    },
+    {
+      "method": "journal::tests::complete_corruption_is_rejected_without_truncation",
+      "state": "ok",
+      "line": 9752
+    },
+    {
+      "method": "journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen",
+      "state": "ok",
+      "line": 9753
+    },
+    {
+      "method": "journal::tests::equal_retry_after_later_commit_does_not_append",
+      "state": "ok",
+      "line": 9754
+    },
+    {
+      "method": "cell_journal::tests::mismatched_admission_cannot_write_unreplayable_history",
+      "state": "ok",
+      "line": 9755
+    },
+    {
+      "method": "journal::tests::incomplete_header_and_excess_file_size_are_not_repaired",
+      "state": "ok",
+      "line": 9756
+    },
+    {
+      "method": "journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop",
+      "state": "ok",
+      "line": 9757
+    },
+    {
+      "method": "journal::tests::invalid_tick_and_record_cap_do_not_append",
+      "state": "ok",
+      "line": 9758
+    },
+    {
+      "method": "journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame",
+      "state": "ok",
+      "line": 9761
+    },
+    {
+      "method": "journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain",
+      "state": "ok",
+      "line": 9762
+    },
+    {
+      "method": "journal::tests::write_error_requires_reopen_and_reconciliation",
+      "state": "ok",
+      "line": 9763
+    },
+    {
+      "method": "journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal",
+      "state": "ok",
+      "line": 9764
+    },
+    {
+      "method": "perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+      "state": "ok",
+      "line": 9765
+    },
+    {
+      "method": "perception::tests::perception_global_and_dense_retain_identical_raw_evidence_identity",
+      "state": "ok",
+      "line": 9766
+    },
+    {
+      "method": "perception::tests::perception_latents_require_nonempty_bounded_vectors_and_exact_evidence_links",
+      "state": "ok",
+      "line": 9767
+    },
+    {
+      "method": "perception::tests::perception_rebinding_forged_bytes_does_not_make_them_actor_observed",
+      "state": "ok",
+      "line": 9768
+    },
+    {
+      "method": "perception::tests::perception_residuals_require_the_hosts_separately_pinned_predictor",
+      "state": "ok",
+      "line": 9769
+    },
+    {
+      "method": "perception::tests::perception_wire_rejects_teacher_fields_duplicates_and_oversize_inputs",
+      "state": "ok",
+      "line": 9770
+    },
+    {
+      "method": "perception_encoder::tests::perception_adapter_checks_scope_frontier_encoder_and_actor_source_before_inference",
+      "state": "ok",
+      "line": 9771
+    },
+    {
+      "method": "perception_encoder::tests::perception_fixture_reaches_shared_inference_and_owner_replay_keeps_exact_evidence",
+      "state": "ok",
+      "line": 9772
+    },
+    {
+      "method": "perception_proposal::tests::perception_failed_attempts_remain_charged_while_exact_cost_replay_is_idempotent",
+      "state": "ok",
+      "line": 9773
+    },
+    {
+      "method": "perception_proposal::tests::perception_proposal_binds_observation_ndu_predictor_and_original_source_extent",
+      "state": "ok",
+      "line": 9774
+    },
+    {
+      "method": "perception_proposal::tests::perception_proposal_uses_task_ledger_without_dispatching_or_reserving_work",
+      "state": "ok",
+      "line": 9775
+    },
+    {
+      "method": "perception_proposal::tests::perception_unknown_cost_missing_stages_and_overflow_never_create_budget",
+      "state": "ok",
+      "line": 9776
+    },
+    {
+      "method": "perception_source::tests::perception_evidence_rejects_unknown_source_and_coordinate_fields",
+      "state": "ok",
+      "line": 9777
+    },
+    {
+      "method": "perception_source::tests::perception_image_and_video_regions_use_actual_rows_and_frame_timestamps",
+      "state": "ok",
+      "line": 9778
+    },
+    {
+      "method": "perception_source::tests::perception_original_offsets_preserve_exact_unicode_numbers_and_negation",
+      "state": "ok",
+      "line": 9779
+    },
+    {
+      "method": "perception_source::tests::perception_uncaptured_source_bytes_are_unavailable_even_with_valid_original_coordinates",
+      "state": "ok",
+      "line": 9780
+    },
+    {
+      "method": "plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation",
+      "state": "ok",
+      "line": 9781
+    },
+    {
+      "method": "plasticity::tests::global_l1_trust_region_projects_without_changing_inputs",
+      "state": "ok",
+      "line": 9782
+    },
+    {
+      "method": "plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected",
+      "state": "ok",
+      "line": 9783
+    },
+    {
+      "method": "plasticity::tests::zero_modulator_produces_zero_candidate_delta",
+      "state": "ok",
+      "line": 9784
+    },
+    {
+      "method": "population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition",
+      "state": "ok",
+      "line": 9785
+    },
+    {
+      "method": "population_v2::tests::every_activation_requires_a_registered_temporal_projection",
+      "state": "ok",
+      "line": 9786
+    },
+    {
+      "method": "population_v2::tests::population_partition_must_be_complete_and_non_overlapping",
+      "state": "ok",
+      "line": 9787
+    },
+    {
+      "method": "population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors",
+      "state": "ok",
+      "line": 9788
+    },
+    {
+      "method": "protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields",
+      "state": "ok",
+      "line": 9789
+    },
+    {
+      "method": "protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields",
+      "state": "ok",
+      "line": 9790
+    },
+    {
+      "method": "protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields",
+      "state": "ok",
+      "line": 9791
+    },
+    {
+      "method": "protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields",
+      "state": "ok",
+      "line": 9792
+    },
+    {
+      "method": "protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips",
+      "state": "ok",
+      "line": 9793
+    },
+    {
+      "method": "protocol::tests::checkpoint_publication_rejects_forged_owner_summary",
+      "state": "ok",
+      "line": 9794
+    },
+    {
+      "method": "qualification::tests::config_ablations_remove_only_the_named_mechanism",
+      "state": "ok",
+      "line": 9795
+    },
+    {
+      "method": "qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic",
+      "state": "ok",
+      "line": 9796
+    },
+    {
+      "method": "qualification::tests::resource_summary_rejects_mixed_host_profiles",
+      "state": "ok",
+      "line": 9797
+    },
+    {
+      "method": "qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority",
+      "state": "ok",
+      "line": 9798
+    },
+    {
+      "method": "runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers",
+      "state": "ok",
+      "line": 9799
+    },
+    {
+      "method": "runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority",
+      "state": "ok",
+      "line": 9800
+    },
+    {
+      "method": "runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state",
+      "state": "ok",
+      "line": 9801
+    },
+    {
+      "method": "runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention",
+      "state": "ok",
+      "line": 9802
+    },
+    {
+      "method": "runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation",
+      "state": "ok",
+      "line": 9803
+    },
+    {
+      "method": "runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness",
+      "state": "ok",
+      "line": 9804
+    },
+    {
+      "method": "runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model",
+      "state": "ok",
+      "line": 9805
+    },
+    {
+      "method": "sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write",
+      "state": "ok",
+      "line": 9806
+    },
+    {
+      "method": "sparse::body_scope_tests::successor_rejects_body_scope_drift",
+      "state": "ok",
+      "line": 9807
+    },
+    {
+      "method": "sparse::tests::changed_config_is_rejected",
+      "state": "ok",
+      "line": 9808
+    },
+    {
+      "method": "sparse::tests::changed_scope_or_objective_is_rejected",
+      "state": "ok",
+      "line": 9809
+    },
+    {
+      "method": "sparse::tests::clock_regression_is_rejected",
+      "state": "ok",
+      "line": 9810
+    },
+    {
+      "method": "sparse::tests::damaged_checkpoint_is_rejected",
+      "state": "ok",
+      "line": 9811
+    },
+    {
+      "method": "sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected",
+      "state": "ok",
+      "line": 9812
+    },
+    {
+      "method": "sparse::tests::edge_order_does_not_change_config_or_output",
+      "state": "ok",
+      "line": 9813
+    },
+    {
+      "method": "sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow",
+      "state": "ok",
+      "line": 9814
+    },
+    {
+      "method": "sparse::tests::invalid_inhibition_is_rejected",
+      "state": "ok",
+      "line": 9815
+    },
+    {
+      "method": "sparse::tests::lateral_inhibition_changes_winner",
+      "state": "ok",
+      "line": 9816
+    },
+    {
+      "method": "journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence",
+      "state": "ok",
+      "line": 9817
+    },
+    {
+      "method": "sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected",
+      "state": "ok",
+      "line": 9818
+    },
+    {
+      "method": "sparse::tests::replay_or_skipped_sequence_is_rejected",
+      "state": "ok",
+      "line": 9819
+    },
+    {
+      "method": "sparse::tests::saturation_and_eligibility_l1_projection_are_counted",
+      "state": "ok",
+      "line": 9820
+    },
+    {
+      "method": "sparse::tests::signed_multiply_rounds_half_to_even",
+      "state": "ok",
+      "line": 9821
+    },
+    {
+      "method": "sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds",
+      "state": "ok",
+      "line": 9822
+    },
+    {
+      "method": "sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest",
+      "state": "ok",
+      "line": 9823
+    },
+    {
+      "method": "sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable",
+      "state": "ok",
+      "line": 9824
+    },
+    {
+      "method": "sparse::tests::ticks_advance_sequence_without_changing_artifact_generation",
+      "state": "ok",
+      "line": 9825
+    },
+    {
+      "method": "sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact",
+      "state": "ok",
+      "line": 9826
+    },
+    {
+      "method": "tests::generation_must_advance",
+      "state": "ok",
+      "line": 9827
+    },
+    {
+      "method": "tests::model_drift_is_rejected",
+      "state": "ok",
+      "line": 9828
+    },
+    {
+      "method": "tests::step_is_deterministic_and_authority_free",
+      "state": "ok",
+      "line": 9829
+    },
+    {
+      "method": "tests::width_drift_is_rejected",
+      "state": "ok",
+      "line": 9830
+    },
+    {
+      "method": "witness::tests::physical_current::witness_current_physical_corruption_fences_reads_and_cas_after_restore",
+      "state": "ok",
+      "line": 9831
+    },
+    {
+      "method": "witness::tests::physical_current::witness_current_rehashed_history_cannot_preserve_cached_frontier",
+      "state": "ok",
+      "line": 9832
+    },
+    {
+      "method": "witness::tests::physical_current::witness_current_shared_reads_preserve_original_cursor_and_lock",
+      "state": "ok",
+      "line": 9833
+    },
+    {
+      "method": "witness::tests::witness_capacity_and_independent_writer_are_bounded",
+      "state": "ok",
+      "line": 9834
+    },
+    {
+      "method": "witness::tests::witness_history_survives_reopen_and_fences_stale_cas",
+      "state": "ok",
+      "line": 9835
+    },
+    {
+      "method": "witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history",
+      "state": "ok",
+      "line": 9836
+    },
+    {
+      "method": "sparse::tests::long_replay_remains_bounded_and_immutable",
+      "state": "ok",
+      "line": 9837
+    },
+    {
+      "method": "journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor",
+      "state": "ok",
+      "line": 9838
+    }
+  ]
+}

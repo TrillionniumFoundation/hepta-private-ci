@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "source": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "run_id": 43310500072,
+  "originals": [
+    {
+      "job_id": 131505675917,
+      "full_original": {
+        "bytes": 815904,
+        "sha256": "b8ecf2e6cc7f2fc28c14ac2fe4f23e88893f725e1164f6c6db1905e1b0352f68",
+        "git_blob": "7c1bb9cfeb9663eba703d9cf23047c65fc3bf0a2"
+      },
+      "parts": 5,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505675917,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:29:09Z",
+        "completed_at": "2026-11-12T21:36:18Z",
+        "runner_id": 1000135462,
+        "runner_name": "GitHub Actions 1000135462",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505675952,
+      "full_original": {
+        "bytes": 454751,
+        "sha256": "e9d05faee22f78cc7c3842c3386313f8251b20c62ec22c3cb561c0e7a479a74e",
+        "git_blob": "6f20d3898228956f521217c562c2c94f8ee195af"
+      },
+      "parts": 3,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505675952,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:41:51Z",
+        "runner_id": 1000135474,
+        "runner_name": "GitHub Actions 1000135474",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505675966,
+      "full_original": {
+        "bytes": 880685,
+        "sha256": "4f151ee72a13b49ca499567ddac826c40019a774a9fa2dfd79518721b30a6ee0",
+        "git_blob": "b2d9d96047b5dacefbbbfedf0af8c645800c1509"
+      },
+      "parts": 5,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505675966,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-12T21:29:11Z",
+        "completed_at": "2026-11-12T21:45:10Z",
+        "runner_id": 1000135467,
+        "runner_name": "GitHub Actions 1000135467",
+        "labels": [
+          "macos-15-intel"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505675999,
+      "full_original": {
+        "bytes": 601798,
+        "sha256": "73dbaa6600cbce57278b8d110db12332fb543e17bad3e5a2ae72151ccf19889b",
+        "git_blob": "ff3c608a5f0f19eb2d6e12b8e70c042c0b90f57a"
+      },
+      "parts": 4,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505675999,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-12T21:29:11Z",
+        "completed_at": "2026-11-12T21:44:45Z",
+        "runner_id": 1000135477,
+        "runner_name": "GitHub Actions 1000135477",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676009,
+      "full_original": {
+        "bytes": 408991,
+        "sha256": "3c1263628903b207f163594ed8212297b98fb65feaf7a2d9a3f63bec85224fa0",
+        "git_blob": "1482f17aae248479b93fd5719cbdbd92f7513cd6"
+      },
+      "parts": 3,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676009,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:44:53Z",
+        "runner_id": 1000135473,
+        "runner_name": "GitHub Actions 1000135473",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676018,
+      "full_original": {
+        "bytes": 350176,
+        "sha256": "3dc47b26f2dd9d6e17666bcfe84463321276998fece43ca4743e1008bc5eebac",
+        "git_blob": "6fbc2b92d50907de4eff30ebabe0e9769e4d6948"
+      },
+      "parts": 2,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676018,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-12T21:29:12Z",
+        "completed_at": "2026-11-12T21:44:58Z",
+        "runner_id": 1000135478,
+        "runner_name": "GitHub Actions 1000135478",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676069,
+      "full_original": {
+        "bytes": 1215225,
+        "sha256": "2723b071cf2a56fdb8e95ecde7458d5fbf378e18dafeb72530600174020eccc2",
+        "git_blob": "11ac13d6be6e00ac65e701443c5c2e346d75afff"
+      },
+      "parts": 7,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676069,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:42:38Z",
+        "runner_id": 1000135463,
+        "runner_name": "GitHub Actions 1000135463",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676103,
+      "full_original": {
+        "bytes": 485973,
+        "sha256": "f6085d4a87036a2feaeed2d4ec24e9e96e54f46149d9961d86771417aa9f27bc",
+        "git_blob": "2a50487835668370f38875824c1fc2b0a292884d"
+      },
+      "parts": 3,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676103,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:29:09Z",
+        "completed_at": "2026-11-12T21:41:20Z",
+        "runner_id": 1000135475,
+        "runner_name": "GitHub Actions 1000135475",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676113,
+      "full_original": {
+        "bytes": 1217164,
+        "sha256": "48d02e95a5a226c56ad4dc0084f355929132b888463f62e72fc82882810da3bd",
+        "git_blob": "8aeb841603e6164ee44d3662692d7892b2eff62b"
+      },
+      "parts": 7,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676113,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:42:20Z",
+        "runner_id": 1000135465,
+        "runner_name": "GitHub Actions 1000135465",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676145,
+      "full_original": {
+        "bytes": 1290109,
+        "sha256": "f7778b3cb8846ac67b5b78a3930085a6470527d56b8917ba4743c722b46971af",
+        "git_blob": "b5fd2e9c260a9130e463597e39eb1e4e93045ebe"
+      },
+      "parts": 8,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676145,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:36:36Z",
+        "runner_id": 1000135464,
+        "runner_name": "GitHub Actions 1000135464",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131505676184,
+      "full_original": {
+        "bytes": 349446,
+        "sha256": "ce7da199e65c31c54d5f438df1013fd303cb11253dfb0b038c8c9f3cb4169f71",
+        "git_blob": "b42477c5933cf10fccfa7a8ea5780e9ed8ee4aac"
+      },
+      "parts": 2,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131505676184,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-12T21:29:11Z",
+        "completed_at": "2026-11-12T21:44:55Z",
+        "runner_id": 1000135476,
+        "runner_name": "GitHub Actions 1000135476",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    },
+    {
+      "job_id": 131514652503,
+      "full_original": {
+        "bytes": 2646,
+        "sha256": "343a78ab29ffb3b826e0c504ab6ed9b782384ed97f264c1a962ec94b4327b0d1",
+        "git_blob": "16f5291560cc1d56dc431587e19bcbb6519dcd46"
+      },
+      "parts": 1,
+      "all_original_contiguous_parts_verified": true,
+      "actual_job_status": {
+        "id": 131514652503,
+        "run_id": 43310500072,
+        "run_attempt": 1,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:45:01Z",
+        "completed_at": "2026-11-12T21:45:05Z",
+        "runner_id": 1000135562,
+        "runner_name": "GitHub Actions 1000135562",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "CRLF_and_BOM_preserved": true,
+      "original_metadata_independently_matched": true
+    }
+  ],
+  "complete_original_job_logs": 12,
+  "complete_original_log_bytes": 8072868,
+  "all_original_matrix_jobs_terminal_at_snapshot": true,
+  "whole_matrix_result": "Not successful; original GNU/musl/Windows-shard-1 failures remain; other tests cancelled by original workflow after new head.",
+  "unretrieved_matrix_jobs": [
+    {
+      "id": 131505676047,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-12T21:29:06Z",
+      "completed_at": "2026-11-12T21:44:09Z",
+      "runner_name": ""
+    },
+    {
+      "id": 131505676118,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-12T21:29:06Z",
+      "completed_at": "2026-11-12T21:44:09Z",
+      "runner_name": ""
+    },
+    {
+      "id": 131505676147,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-12T21:29:06Z",
+      "completed_at": "2026-11-12T21:44:09Z",
+      "runner_name": ""
+    },
+    {
+      "id": 131505678794,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-12T21:29:06Z",
+      "completed_at": "2026-11-12T21:29:06Z",
+      "runner_name": null
+    }
+  ],
+  "no_complete_method_denominator_inferred": true,
+  "cancelled_jobs_do_not_erase_prior_failures": true,
+  "gnu_musl_same_shard_output_not_independent_samples": true,
+  "current_source_results_transferred": false,
+  "original_job_metadata_source": {
+    "blob": "002d36e278eac6c81bb75213a3b79984fce83848",
+    "path": "JOBS_SNAPSHOT_0009_ORIGINAL_API.json",
+    "original_mcp_api_unwrapped": true
+  },
+  "metadata_schema_correction": "Filled original_job_metadata from each archived log and independently matched the original jobs snapshot; full original byte verification is unchanged."
+}

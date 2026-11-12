@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "source": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "job_id": 131505849080,
+  "actual_result": "failure",
+  "actual_checkout": "1749a97b4c7d5cc76245025b1721e831365c8296",
+  "actual_checkout_tree_equal": true,
+  "full_original_log": {
+    "bytes": 147000,
+    "sha256": "df2f72c8e8bc2204085078d7229445e6111f630ca1dd8810d8a6219ec89e31a4",
+    "git_blob": "1eddc53b7d69b9829f9587ad3b5a1711ec621c70"
+  },
+  "reported_hunks_recomputed_from_full_original": 11,
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "base": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "bytes": 3836,
+      "sha256": "23647fb2779c7e7fe70d1f733b4f8cdc8cf29ddecd79ac732f3a0a50c8ef45e5",
+      "git_blob": "838618b3aca1d7ecf4cfa3bde43eb78fe649de68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "base": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "bytes": 6680,
+      "sha256": "e9b2061b04a27b903893164ac7525848dd57c04d1c5ab15068812cfac1dc7c59",
+      "git_blob": "3aba24ba741737488e7143d69847689bcc49820b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "base": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "bytes": 13919,
+      "sha256": "7654e28ed6b9cb3e37308312fb45f0e65223cffcd1a3caacb4282688685cbcd5",
+      "git_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee"
+    }
+  ],
+  "scope": "Exact original Rustfmt hunk replay; include trailing comma/rebracketing and a single-return-expression block, not a whitespace-only equality claim. CALLERS guard/pin separately reviewed.",
+  "execution": "NOT_RUN"
+}

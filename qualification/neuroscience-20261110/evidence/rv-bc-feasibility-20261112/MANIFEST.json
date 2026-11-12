@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.rv.development-bc-feasibility-manifest.v1",
+  "status": "READ_ONLY_REVIEW_AND_UNFROZEN_PROPOSAL",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "date_utc": "2026-11-12",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 9165,
+      "sha256": "47fb049798bc8d1bad26837b155e31f4a9d73a7320dc8a4cee4730b0e21b4c2c",
+      "git_blob": "f5b26fc7aa6b620043f6e34a706a54ffbbab8d28"
+    },
+    {
+      "path": "REGISTRATION_CANDIDATE.json",
+      "bytes": 2414,
+      "sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4",
+      "git_blob": "d9af2e485396472b4039ed51188504ec4959bd0d"
+    },
+    {
+      "path": "PREFLIGHT_AND_ONCE_ONLY.json",
+      "bytes": 9501,
+      "sha256": "6d77e5c226fc903233eccd75c9a45ed489678ab063e549d92b70f7cd3e281ffe",
+      "git_blob": "70357781d715f3d787f3e9fb21b851ccf326ad3d"
+    },
+    {
+      "path": "SOURCE_AND_OLD_EFFECT_AUDIT.json",
+      "bytes": 11895,
+      "sha256": "1f7c7520427cc6fe5350570c5547f7c35be6413240e574847801d67f1cb7b4be",
+      "git_blob": "e351ba495c0b5db2bab77ab37357fd3dd16eacda"
+    }
+  ],
+  "verification": {
+    "all_four_utf8_blob_bytes_read_back_and_sha256_checked": true,
+    "source_files_match_original_asset_source_pins": 8,
+    "old_full_report_original_bytes_sha256_verified": true,
+    "candidate_case_records_equal_original_frozen_evaluation_rows": true,
+    "commands_run": false,
+    "new_freeze_created": false,
+    "remote_jobs": 0,
+    "actor_calls": 0,
+    "new_process_permission_granted": false
+  },
+  "scope": {
+    "production_admission": false,
+    "native_owner_authenticated": false,
+    "owner_decision": null,
+    "full_cost_observed": false,
+    "calibration_complete": false,
+    "fresh_source_confirmation": false,
+    "independent_new_sources": 0,
+    "planned_development_macro_rows": 4,
+    "actual_new_macro_rows": 0
+  },
+  "links": {
+    "original_wrapper_blob": "94e819d579232597de08a5c239a78e9d40768416",
+    "original_entry_assets_manifest_blob": "85a86e1956d1134dcef62539c480081558d7b390",
+    "old_report_blob": "7a1545248aa4a9e8d4f551c05db0abb03158609a",
+    "native_source_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "schema": "hepta.qualification.same-invocation-read-reduction-design.v1",
+  "status": "STATIC_DESIGN_ONLY_NOT_IMPLEMENTED_NOT_EXECUTED",
+  "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "baseline_audit": {
+    "tree": "66c0780c3f46c1093de1f4793c46350241a0b0e9",
+    "audit_blob": "6903278fa49cb8830635dd613eb724ccbfea1bb8",
+    "pins_blob": "9b061a91308dc8c638f261d650ad7bbb7fe5f4f6"
+  },
+  "decision": "Do not publish isolated A/B savings as closure. Neither the current implementation nor these narrow candidates has demonstrated a complete return path within the retained 128-frame budget or the original time limits.",
+  "invariant_set": [
+    "Original 128-frame counters, purpose-bound peer/pidfd and absolute session end remain unchanged.",
+    "S/Material Evidence and readiness <=500ms, original command caller timeouts and <=300s absolute lifetime remain unchanged; generic owner command allows <=30s independently.",
+    "No reconnect, endpoint substitution, counter pooling or new Source instance.",
+    "Every outer invocation independently reads real original owners before and after; no cached CURRENT or proof survives an invocation.",
+    "Original Source/Cell/Artifact/CURRENT/journal bytes continue to be physically read and compared at the required end of the operation.",
+    "Execute keeps its actual preclaim live reads, original NewWork/origin/clock checks, once-only consumption and original signing/FinalUse authority.",
+    "Readback/proof cannot create Fresh, Qualified adoption or generic issuer authority.",
+    "Cancellation, incomplete slot traversal or failed final read permanently invalidates that invocation proof."
+  ],
+  "cuts": [
+    {
+      "id": "A_Bound_B_readonly_middle",
+      "status": "NARROW_REVIEWABLE_CANDIDATE_NOT_IMPLEMENTED",
+      "exact_files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+          "blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+          "blob": "0b328d77083060c943234ae0d8bf68088474bd6f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "blob": "0416c8965a3cb48e60568ac48b3f1c25dffd19a1"
+        }
+      ],
+      "present_call_sequence": "Host read_panel_with_training(before) -> ReceiptOwner::readback -> authenticate_completed performs its own actual Trainer read -> Host read_panel_with_training(after) -> final actual receipt journal read -> proof.finish -> final signature authentication.",
+      "concrete_seam": "A new private Host-only completed-Readback path may borrow the already admitted OriginalPanelTrainingReadV1, require its exact middle boundary and same actual Trainer/config, and provide the original verified immutable Training signature solely to authenticate_roles. The proof must also track consumption of this receipt slot; it cannot silently accept an omitted receipt operation.",
+      "preserved": "The two existing real Trainer boundary reads remain at their actual panel positions; prepare/runner/Cell/Qualification and both journal reads remain. Existing public standalone readback, Individual mode and Execute use their existing paths.",
+      "no_free_signature_api": "Do not expose a pub getter returning a SignedLearningEvidenceV1 as if it were a current owner read. The scoped receipt result is provisional and cannot escape until the original last panel read, journal equality and proof.finish all pass.",
+      "hypothetical_cost": {
+        "B_Readback": 2,
+        "B_Execute": 4,
+        "version_only": "140+20R",
+        "Root_same_host": "164+24R"
+      },
+      "reject_examples": [
+        "same bytes from different actual Trainer Arc",
+        "wrong panel/source config",
+        "receipt operation before/after its one permitted boundary",
+        "second receipt use",
+        "incomplete panel traversal",
+        "Trainer withdrawal at final original read",
+        "cancel after provisional receipt result",
+        "journal changes during final read"
+      ],
+      "global_budget_closure": false
+    },
+    {
+      "id": "B_Version_three_readonly_factories",
+      "status": "NARROW_REVIEWABLE_CANDIDATE_NOT_IMPLEMENTED",
+      "exact_files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "blob": "226e0ea70d356f1950a5fc6f1c103cf6615f008e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+          "blob": "c09af8045788a82ff53b3824e0521acb2e98e066"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "blob": "703556738f5fc6adf866c568ff26bcbc06f83081"
+        }
+      ],
+      "methods": [
+        "bind_original_evaluated_selection_owner",
+        "bind_original_evaluated_next_use_owner",
+        "prepare_evaluated_readiness_reader"
+      ],
+      "present_call_sequence": "Each uses full read_original before and after its same-call no-effect construction work; each full read_original itself contains two actual D/T/B cuts and physical artifact/phase reads.",
+      "concrete_seam": "Split only the private mechanics of a full read_original into begin/observe/finish operations accepted by one private borrowed factory scope. Keep both real outer cut reads, every physical artifact/phase/Source/Cell/CURRENT read and full equality checks; inner immutable cut checks authenticate the exact expected pins without sending another original T/B request.",
+      "binding": "Tie the scope to this host, exact retained state/cut, shared T/B client identities, purpose, absolute end and one call identity. No caller can construct it, reset it, serialize it or retain it in host state.",
+      "preserved": "The separate actual live Selection/current call or S Evidence remains in the middle. C factory still pays its S Evidence's two T/B pairs. Recovered origins cannot create a fresh owner. Return actual owner only after the final physical checks and cancellation/lifetime gates.",
+      "hypothetical_savings": {
+        "S_factory_pairs_saved": 2,
+        "C_factory_pairs_saved": 2,
+        "readiness_factory_pairs_saved": 2,
+        "total_Q_saved": 6
+      },
+      "with_A": {
+        "version_only": "128+20R",
+        "Root_same_host": "152+24R"
+      },
+      "reject_examples": [
+        "different host or cut with equal receipt bytes",
+        "different retained client identity",
+        "phase changes inside window",
+        "source/artifact/current withdrawal between middle and tail",
+        "cancel queued factory before first effect",
+        "skip final physical read",
+        "attempt to retain token for a second factory"
+      ],
+      "global_budget_closure": false
+    },
+    {
+      "id": "C_actual_C_to_S_parent_window",
+      "status": "REQUIRES_NEW_PRIVATE_TYPED_OWNER_PROTOCOL_NO_EXISTING_SAFE_API",
+      "exact_files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "blob": "4c3b619ca773ab78acecebd457e8b294ffcb1a39"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "blob": "ace5e11b051086db4500c06489fc308a4cd7a798"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_evidence.rs",
+          "blob": "dc4819422faed3c4a72667bdf2a3de7c38dac106"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "blob": "5a4f15029a607278663add228efb0bdf8e4fa2ea"
+        }
+      ],
+      "present_api_gap": "NextUseSources::selector returns &LearningIterationEvidenceClientV1; predecessors calls its generic readback(snapshot, expected S). The actual S evidence handler receives bytes+request_id and performs its own readback_evaluated_remote_selection. No existing argument carries an unforgeable borrowed parent C invocation or proves that this S request belongs to the same common-predecessor window.",
+      "forbidden_shortcut": "Neither the current signature, equal expected T/B pins, a caller bool, nor a global/thread-local current proof may suppress S's actual T/B reads. Existing S Evidence cannot be silently rebranded into a fresh or cross-call proof.",
+      "minimum_new_contract": [
+        "Original consuming S/C factories establish an actual private relationship between the already held C->S evidence purpose and the exact shared original T/B owners; no extra endpoint or Source is created.",
+        "A single C outer call starts from actual T/B reads and owns a nonserializable or purpose-fixed strictly authenticated invocation context. Generic Evidence callers cannot enter this mode.",
+        "Both original S journal/Source/CURRENT reads still occur on the original S capability. Their full original signatures and expected predecessor pins must be returned from this invocation and checked.",
+        "The last actual T/B read must follow the last S I/O, then the original final C Source/Cell/journal checks must run. Otherwise the returned S result is not bracketed.",
+        "Exactly two S slots are accepted for the corresponding C call; wrong peer/pidfd/request/cut/order/time, overlap, unknown/cancelled/expired window or missing tail refuses.",
+        "No Trainer lane or MutexGuard may be held while making a recursive S/B request that needs the same lane.",
+        "No proof or owner decision escapes before the complete outer window closes; a public Readback result remains read-only."
+      ],
+      "arithmetic_only_if_contract_is_implemented_without_new_original_reads": {
+        "C_pairs_per_command": "6 -> 2",
+        "Q_saved": "4*(3+R)=12+4R",
+        "combined_A_B_version_only": "104+12R",
+        "combined_A_B_Root_same_host": "128+16R",
+        "R1_Root_same_host": 144
+      },
+      "conclusion": "Even this larger unimplemented protocol would not close the same-host R=1 path by itself. Its hypothetical frame saving is not an authorization or execution proof.",
+      "global_budget_closure": false
+    }
+  ],
+  "residual_budget": {
+    "R1_scenarios": [
+      {
+        "scope": "current",
+        "Version_only_B_Trainer": 240,
+        "Root_same_host_B_Trainer": 280
+      },
+      {
+        "scope": "A only",
+        "Version_only_B_Trainer": 160,
+        "Root_same_host_B_Trainer": 188
+      },
+      {
+        "scope": "A plus B",
+        "Version_only_B_Trainer": 148,
+        "Root_same_host_B_Trainer": 176
+      },
+      {
+        "scope": "A plus B plus hypothetical C",
+        "Version_only_B_Trainer": 116,
+        "Root_same_host_B_Trainer": 144
+      }
+    ],
+    "post_A_B_target": "With Readback=2 and one Execute=4, a same-host complete path needs at most 63 total B calls. A+B at R=1 still has 87 B calls, so 24 more B invocations must be eliminated inside legitimate same-invocation windows. Version-only needs 10 more Readback calls eliminated.",
+    "post_A_B_C_target": "The hypothetical C cut still needs 8 further B-call savings at R=1 in the same-host assembly; a tiny extra local reduction is not assumed.",
+    "remaining_seams": [
+      "A Root same-invocation complete original read vector may avoid independently rereading the same S/T/B that the actual C owner just validated. It needs a private typed response proving actual per-request observations, exact cut/nonce/peer and first/last sources; a copied receipt vector is insufficient.",
+      "Nested Version Prepare/publish cuts must be examined as effect boundaries. Original actual preclaim and post-effect checks, independent FinalUse, Unknown semantics and source withdrawal-before-effect behavior cannot be replaced by an earlier pin.",
+      "Issuer claim and pre-request checks occur in separate queued blocking closures with the Version mutex released before external Root I/O. Do not simply call them one readonly window."
+    ],
+    "explicit_no_closed_implementation": "No complete safe same-host scheme has yet been implemented or independently checked for the remaining eight or twenty-four call savings, hidden setup frames, or 500ms/300s timing. Current source must not be labeled closed."
+  },
+  "required_next_verification": {
+    "static": [
+      "exact-source all caller/guard registration",
+      "complete per-connection ledger including setup and every original endpoint alias",
+      "new functions reject generic legacy/evidence callers",
+      "no proof cached in owner state across requests"
+    ],
+    "native": [
+      "actual original Bound Trainer peer count and same client ID before/after",
+      "same bytes/different Arc rejection",
+      "late Source/T/B/S withdrawal",
+      "queued cancellation and unknown response no reentry",
+      "original journals/witness/full-signature unchanged on refused read",
+      "source and end timestamps unchanged",
+      "complete one-return chain under original cap and deadline, then explicit expected refusal if cap exhausted"
+    ],
+    "execution_status": "NOT_RUN",
+    "preserve_historical": [
+      "84ee conditional budget and all original failed/timeout evidence",
+      "default PublicationFixture independent topology",
+      "prior scientific HOLD and owner_decision null"
+    ]
+  }
+}

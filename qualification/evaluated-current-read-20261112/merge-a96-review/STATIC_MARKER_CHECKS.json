@@ -1,0 +1,170 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn original_receipt_predecessors(",
+    "marker": "self.authenticate(at, PublicationAccess::Readback)?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn original_receipt_predecessors(",
+    "marker": "self.verify_original_predecessors(at)",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn clone_for_original_receipt(",
+    "marker": "scope: self.scope.clone()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn clone_for_original_receipt(",
+    "marker": "verifier: self.verifier.clone()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn clone_for_original_receipt(",
+    "marker": "training: self.training.clone()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn clone_for_original_receipt(",
+    "marker": "evaluation: self.evaluation.clone()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn clone_for_original_receipt(",
+    "marker": "origin: self.origin",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn into_original_receipt_readback(",
+    "marker": "self.origin = Origin::Readback",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_selection(",
+    "marker": "context.into_original_receipt_readback()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_selection(",
+    "marker": "OriginalCut::Selection(context)",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_selection(",
+    "marker": "profile.binding(now()?)?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_next_use(",
+    "marker": "selection.into_original_receipt_readback()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_next_use(",
+    "marker": "OriginalCut::NextUse(selection)",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn for_original_next_use(",
+    "marker": "profile.binding(now()?)?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+    "function": "fn require_original_context(",
+    "marker": "self.context.legacy()?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": ".original_receipt_predecessors(at)",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "LearningIterationStageV1::Selection",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "context.receipt_context_binding()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "prefix.receipts.len() != length",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "coordinator.next_stage() != Some(stage)",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "prefix.training_no_update_v2().is_some()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "self.scope.validate_snapshot(prefix)?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "&encode_original_owner_snapshot_v1(prefix)?",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "function": "fn binding(",
+    "marker": "self.scope.binding().as_array()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn receipt_context_binding(",
+    "marker": "&self.training.attestation().signing_bytes()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn receipt_context_binding(",
+    "marker": "&self.training.attestation().signature",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn receipt_context_binding(",
+    "marker": "&self.evaluation.attestation().signing_bytes()",
+    "in_function": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "function": "fn receipt_context_binding(",
+    "marker": "&self.evaluation.attestation().signature",
+    "in_function": true
+  }
+]

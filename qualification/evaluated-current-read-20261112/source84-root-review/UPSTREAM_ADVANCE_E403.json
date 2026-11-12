@@ -1,0 +1,92 @@
+{
+  "compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "head": "e403c45570ad313851ca71392625e5572882405f",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/374aa919931e8ee5446b4ccdc49e651b7848cc5d"
+    },
+    "merge_base_commit": {
+      "sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/374aa919931e8ee5446b4ccdc49e651b7848cc5d"
+    },
+    "files": [
+      {
+        "filename": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "status": "modified",
+        "additions": 16,
+        "deletions": 6,
+        "changes": 22,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "status": "modified",
+        "additions": 15,
+        "deletions": 2,
+        "changes": 17,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "status": "modified",
+        "additions": 14,
+        "deletions": 1,
+        "changes": 15,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 2,
+        "changes": 4,
+        "previous_filename": null
+      }
+    ]
+  },
+  "commit": {
+    "sha": "e403c45570ad313851ca71392625e5572882405f",
+    "node_id": "C_kwDOTrgxoNoAKGU0MDNjNDU1NzBhZDMxMzg1MWNhNzEzOTI2MjVlNTU3Mjg4MjQwNWY",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e403c45570ad313851ca71392625e5572882405f",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e403c45570ad313851ca71392625e5572882405f",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:30:58Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:30:58Z"
+    },
+    "tree": {
+      "sha": "70e0953a49cb203acbed270a853fce2e72164a18",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/70e0953a49cb203acbed270a853fce2e72164a18"
+    },
+    "message": "Retarget original mutation checks to consuming read helpers\n\nThe complete 374aa919 source gate ran 504 cases and exposed one stale function-set assertion plus fourteen obsolete mutation locations. Update four QA files to the actual B/C helpers while preserving every original case and attack, adding explicit Individual wrapper and physical CURRENT deletion checks.\n\nProduction Rust, CALLERS, the verifier and runtime budgets are unchanged. Scoped B 14 cases and C 21 cases pass. Complete source verification on this child is pending; native and ordinary qualification are not claimed.",
+    "parents": [
+      {
+        "sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/374aa919931e8ee5446b4ccdc49e651b7848cc5d"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "time": "2026-11-12 19:40:06 UTC"
+}

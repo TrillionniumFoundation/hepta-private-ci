@@ -1,0 +1,95 @@
+{
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "job_id": "1a1cf87d54c-2564-1a51",
+  "mode": "partial-read-only-diagnostic",
+  "qualification_gate": false,
+  "complete": false,
+  "requested_boundaries": 537,
+  "requested_protected_files": 386,
+  "original_rejections": [
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_host_profile("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_profile",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile"
+      },
+      "error": "learning_original_evaluation_host_profile: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_profile",
+      "index": 459,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_host_completed("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_receipt_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed"
+      },
+      "error": "learning_original_evaluation_host_receipt_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_receipt_current",
+      "index": 460,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "identifier": "learning_original_evaluation_host_constructor",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner"
+      },
+      "error": "learning_original_evaluation_host_constructor: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_constructor",
+      "index": 461,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "git_blob_sha": "6c8e5ae94ff4753a48cb92c6b46b8a7559f00793",
+      "bytes": 3464
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "git_blob_sha": "8768614e0da009a3ea5deba932c4a62e6694d79b",
+      "bytes": 7347
+    }
+  ]
+}

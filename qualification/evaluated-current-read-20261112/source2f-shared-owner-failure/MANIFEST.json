@@ -1,0 +1,128 @@
+{
+  "schema": "actual-shared-owner-result-v1",
+  "source_commit": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "source_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "run_id": 43308682376,
+  "job_id": 131498639993,
+  "conclusion": "failure",
+  "completed_at": "2026-11-12T21:41:16Z",
+  "full_original_log": {
+    "job_id": 131498639993,
+    "bytes": 474966,
+    "sha256": "dfbfb102672a5aad1dd466457351a530c9da23ea887df3cf9e2c826ca875355f",
+    "git_blob": "901f545bdd7aa40b67cbbf290b1c826b59af27ee"
+  },
+  "raw_log_parts": [
+    "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JOB.part01.log",
+    "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JOB.part02.log"
+  ],
+  "result": {
+    "tests": 1454,
+    "passed": 1443,
+    "failed": 11,
+    "aborted": 0,
+    "timed_out": 0,
+    "filtered_out": 98,
+    "original_nextest_attempts": "TRY 1 and TRY 2 are both present; this shared workflow was not a zero-retry run",
+    "junit_testcases": 1454,
+    "junit_failures": 11,
+    "junit_errors": 0,
+    "junit_skipped": 0,
+    "before_after_identity_clean": true
+  },
+  "selected_pass_observations": [
+    {
+      "line": 2367,
+      "text": "        PASS [  20.469s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback"
+    },
+    {
+      "line": 2368,
+      "text": "        PASS [  14.493s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal"
+    },
+    {
+      "line": 2369,
+      "text": "        PASS [  15.479s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal"
+    },
+    {
+      "line": 2833,
+      "text": "        PASS [  15.123s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest"
+    },
+    {
+      "line": 2834,
+      "text": "        PASS [  26.024s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+    },
+    {
+      "line": 2835,
+      "text": "        PASS [  14.759s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_completed_missing_and_cold_regression"
+    },
+    {
+      "line": 2836,
+      "text": "        PASS [  13.610s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_completed_pending_and_cold_regression"
+    },
+    {
+      "line": 2837,
+      "text": "        PASS [  10.269s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_renewed_evidence_and_expired_window"
+    },
+    {
+      "line": 2838,
+      "text": "        PASS [  17.980s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression"
+    }
+  ],
+  "boundaries": [
+    "This is source2f, before the source0a B Readback change; results do not transfer to source0a or sourcedff5.",
+    "The four split Model methods all have actual PASS records, but this does not establish aggregate wall-time equivalence or the full scientific protocol.",
+    "The three NextUse command identities previously observed with stack overflow now have ordinary failures; they remain failing.",
+    "The Version failure contains actual positive-generator completed=128. Other OwnerUnavailable events do not by themselves prove an exact cap."
+  ],
+  "derived_record_transformation": "EXECUTION_RECORD and JUNIT_COLLECTION retain original JSON text with only the GitHub timestamp prefix and trailing CR removed, plus a final newline; original integer spellings are preserved.",
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JOB.part01.log",
+      "blob": "64f0ac1886f4470a4d018ab447be7416d7eeafaa",
+      "bytes": 290026,
+      "sha256": "7d04c613abf42009d803edd4291fdf4c798a26d109901ea03eb6c16101da139a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JOB.part02.log",
+      "blob": "fcfb8513ad0940ce5042a068de7815497a5c1ec3",
+      "bytes": 184940,
+      "sha256": "08c440a44a0296f0e424953b4132ea83a4636e694195322891dbdce7116ea97f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JOBS_API.json",
+      "blob": "8e3fa90c9eec55e012c066bd34c485602bb99fd6",
+      "bytes": 3795,
+      "sha256": "c2b3f79b1b936b25207857d7b2c8a9488e086363c57bd1f349fabf90a10f9414"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/EXECUTION_RECORD.json",
+      "blob": "7f3563b6a56463aba61a1a28f131c42cde070b7e",
+      "bytes": 1492,
+      "sha256": "6302e383ac96e669fbe9fc380ede82afdbf94e0727c998c5cc73c1cd96492e41"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/JUNIT_COLLECTION.json",
+      "blob": "9300cf9e04f4d09916e33041523fbd625b85f3ff",
+      "bytes": 802,
+      "sha256": "28cafaa3d0ed199a9b6eea0b1d299941253d9960d2062d493487a178780d98df"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/FAILURE_INDEX.json",
+      "blob": "9805532ee383b222ca207b0346ea5e67db755071",
+      "bytes": 20586,
+      "sha256": "37b6228dd67bbb2a0ecc704cbf0cef79f1c8ba03853987a9f2b484e48026f983"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/ORIGINAL_FAILURE_SECTION.log",
+      "blob": "45f0b4cfc903d64a173b524a6e27abe3e9753ede",
+      "bytes": 67978,
+      "sha256": "845dd3e8c027799ea5125d41c061602ac4328eb0fa9cca0fc7bef19db50a50ed"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure/SELECTED_ORIGINAL_PASS_LINES.log",
+      "blob": "7cb78ca4b0a42d6880fa5eaef57c62917c8eda99",
+      "bytes": 2879,
+      "sha256": "dd7c6ea14efb240fe63c6046361f9dfafced8f6e0077589cf90020d4208bb2ff"
+    }
+  ]
+}

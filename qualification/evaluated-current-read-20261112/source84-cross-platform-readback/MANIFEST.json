@@ -1,0 +1,429 @@
+{
+  "schema": "hepta.source84-cross-platform-ci-readback.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "actual_checkout": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+  "checkout_tree_equals_head": true,
+  "blocking_run": 43293663395,
+  "overall_conclusion": "cancelled",
+  "run_attempt": 1,
+  "prefix": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/",
+  "new_executions_dispatched": 0,
+  "source_ref_edits": 0,
+  "original_full_logs": 9,
+  "original_full_log_bytes": 6134932,
+  "log_parts": 30,
+  "notes": [
+    "Full logs are returned decoded UTF-8 bytes, preserving original newline sequences. Concatenate ordered parts without inserting separators.",
+    "whole_git_blob is a computed whole-content Git digest, not an additional created Git object; use the listed immutable part objects.",
+    "Bazel target counts include cached results and skipped targets. Original retries and log replays are retained but not independent samples.",
+    "Cancelled jobs can contain earlier actual failures. No final method denominator is invented.",
+    "The observations are derived indices; the full original logs and API/tool payloads remain separately identifiable."
+  ],
+  "external_private_state": {
+    "run": 43293663313,
+    "job": 131446135835,
+    "overall": "failure",
+    "failure_step": "Rustfmt",
+    "native_exact_selection": {
+      "passed": 36,
+      "failed": 0,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578"
+    },
+    "directory_attack_step": "skipped",
+    "tree": "9c967ab6b43459d0c319bfba4a1a5f01316a953f",
+    "manifest": "dbafec9511886837e39b6f888de933bc58ccb185",
+    "prefix": "qualification/evaluated-current-read-20261112/source84-windows-private-result/",
+    "full_log_sha256": "1e4c5290e9180ee6f3c6e99610095248f86a06c1c9cfb5fd75796965e9ab07ce",
+    "full_log_bytes": 370188,
+    "note": "Independently retrieved matching log; do not duplicate the other agent's original archive."
+  },
+  "logs": [
+    {
+      "job_id": 131446361279,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 411713,
+      "whole_sha256": "30ebc0e94932733c91e9923649d6b0675e24f46e5e431fa741a58fccb7cc6064",
+      "whole_git_blob": "761ee70d9d4d6638a1a20461f15ca7642784bef9",
+      "newline": "original CRLF preserved",
+      "parts": [
+        {
+          "path": "job-131446361279.log.part00",
+          "offset": 0,
+          "bytes": 239956,
+          "git_blob": "0fb20cc74d560875ec8bca162b427833448917c4",
+          "sha256": "61047aac9e57b50a2bda21890ebf2e64051446ff408cd565729f6a20228c11af"
+        },
+        {
+          "path": "job-131446361279.log.part01",
+          "offset": 239956,
+          "bytes": 171757,
+          "git_blob": "4a23bda275a32521c7c872d11997b88d90e7644c",
+          "sha256": "01804bbdaa0388cc8e0e71411d4c811c050ce2f97b1391ec52f0942ae76f092e"
+        }
+      ],
+      "whole_git_blob_object_created": false
+    },
+    {
+      "job_id": 131446361296,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 804063,
+      "whole_sha256": "32628f4f89abd326c66c187d213b8d112403d020704508bf227e77a014bd8636",
+      "whole_git_blob": "9fbbc9e0bcf36cfd45aad8cd9000f02d02a5c09e",
+      "newline": "original CRLF preserved",
+      "parts": [
+        {
+          "path": "job-131446361296.log.part00",
+          "offset": 0,
+          "bytes": 239970,
+          "git_blob": "c38da4be75bad33908cf5463006eaa9c3c57456a",
+          "sha256": "1ab52b0c7318635ef88cb94231b7fb9922359dda4de4b5ed8865d9b3fdcfbc97"
+        },
+        {
+          "path": "job-131446361296.log.part01",
+          "offset": 239970,
+          "bytes": 239708,
+          "git_blob": "2eea185826084af7d2be9626b2ad1abbbdd5b296",
+          "sha256": "ce76c0ffbeeff78fcb8b98a971ef585a030eced2561e41a41ee07e68964bbfb6"
+        },
+        {
+          "path": "job-131446361296.log.part02",
+          "offset": 479678,
+          "bytes": 239621,
+          "git_blob": "97bf7bba65e04c093b4145a723c3dd1823f5c6ea",
+          "sha256": "d539b5b7b8984223150d8849f291371f9d71087175df0fbae3124ad7c9922f0b"
+        },
+        {
+          "path": "job-131446361296.log.part03",
+          "offset": 719299,
+          "bytes": 84764,
+          "git_blob": "b45c1efa0fb3da3e75523d6da5242246f229deba",
+          "sha256": "6916df7918c1b8d4c3ba68ae96235981ae1879248ed905cedd74f8c24edfab7d"
+        }
+      ],
+      "whole_git_blob_object_created": false
+    },
+    {
+      "job_id": 131446361182,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 646816,
+      "whole_sha256": "2192f19521689ba76f710c08e830744cda892cb85522fa222734c28bae0f68dc",
+      "whole_git_blob": "a4276376afbbc18fa95adc51b372f321919f0f7a",
+      "newline": "original CRLF preserved",
+      "parts": [
+        {
+          "path": "job-131446361182.log.part00",
+          "offset": 0,
+          "bytes": 239970,
+          "git_blob": "dbb844a600e8a6f4b15a9f3818286507aff5ea7c",
+          "sha256": "6063776c5d8b2f0f23d84575d0950b8393314ebc38f43d4c2d477da288ac1b9f"
+        },
+        {
+          "path": "job-131446361182.log.part01",
+          "offset": 239970,
+          "bytes": 242876,
+          "git_blob": "5b9f949cea4be044126262fb942c061fbe8c07d9",
+          "sha256": "2d8b38ee4c11a53088937bdd15b580e144741d768b4ab88354c0ce9dc77b0fa2"
+        },
+        {
+          "path": "job-131446361182.log.part02",
+          "offset": 482846,
+          "bytes": 163970,
+          "git_blob": "c3587fe7d1f65247a8247ef11e7b8e60298201b5",
+          "sha256": "570b591c82b211b4ab5e6f97a99fe741a236fe79524790aa5bd6599d5162a5f0"
+        }
+      ],
+      "whole_git_blob_object_created": false
+    },
+    {
+      "job_id": 131446137061,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 1753644,
+      "whole_sha256": "a2732fbb2fc47978da6bf8d98859637bf33b8a6fe79756cbd4629b09fce9100f",
+      "whole_git_blob": "ae88dfcb2e1c47e9b29c3060eadee29eb4c04ec9",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446137061.log.part00",
+          "offset": 0,
+          "bytes": 239888,
+          "git_blob": "fe6405c87f179e6f4cf64ef8fbb9513cdce8fb64",
+          "sha256": "7773a68926a6a015872e54b7f452965b6999b33abaa7a0776ae101ef77cedb4e"
+        },
+        {
+          "path": "job-131446137061.log.part01",
+          "offset": 239888,
+          "bytes": 239996,
+          "git_blob": "02d30c86c74161de8037a1a1ad5ddcb6135778e2",
+          "sha256": "e5a9c00b123946789635995bc658ec9f83c51c694344e4bb8c6868add53b1808"
+        },
+        {
+          "path": "job-131446137061.log.part02",
+          "offset": 479884,
+          "bytes": 239981,
+          "git_blob": "2a755eef58e847052887830390be5cabc405ec54",
+          "sha256": "59bc914b10f8641f45f055bb0385d21ce2c9f8db0a7b77b57981687e4c111ac9"
+        },
+        {
+          "path": "job-131446137061.log.part03",
+          "offset": 719865,
+          "bytes": 239889,
+          "git_blob": "f5bf9d6b90cc20088163ec99b04eb7b0de6df059",
+          "sha256": "82d9d0111686480845c611d20610b3dd70e1b5b1435a7a9e3ea1b502c9bda94f"
+        },
+        {
+          "path": "job-131446137061.log.part04",
+          "offset": 959754,
+          "bytes": 239877,
+          "git_blob": "3901b3f12a02dfeda4e351655828bf61662eb6e9",
+          "sha256": "e1f7fe28fd9746d6740aa55c1334b166ef2ce27184160de698321c453e7d0490"
+        },
+        {
+          "path": "job-131446137061.log.part05",
+          "offset": 1199631,
+          "bytes": 239802,
+          "git_blob": "2c0da22b7101dca9c86541efb974eac2200d0cf3",
+          "sha256": "161e91a5cbfca27779967bfa9de934d983e6e1b5af38f27d46268a49e63c3d03"
+        },
+        {
+          "path": "job-131446137061.log.part06",
+          "offset": 1439433,
+          "bytes": 239909,
+          "git_blob": "130d1016f7173717d379357596ba2b515b693ba5",
+          "sha256": "880eecfb7f00ff296dcf8f95dfdbbb6f70db56bb2963c279175c65b358d8efa4"
+        },
+        {
+          "path": "job-131446137061.log.part07",
+          "offset": 1679342,
+          "bytes": 74302,
+          "git_blob": "2be8c416eae135060d211ce0db7159429b7629fa",
+          "sha256": "b9d2d2e4df81a1cc832311b5472abcda0a47c1e93b9a0a5114ba6a2d73f84781"
+        }
+      ]
+    },
+    {
+      "job_id": 131446360485,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 97456,
+      "whole_sha256": "e5f0fb037eba4dbc4031df14b78c67e3686a525526007e3b43511624d095ba44",
+      "whole_git_blob": "cec25e46a93ee4af7205fef69d43b98004329590",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446360485.log.part00",
+          "offset": 0,
+          "bytes": 97456,
+          "git_blob": "cec25e46a93ee4af7205fef69d43b98004329590",
+          "sha256": "e5f0fb037eba4dbc4031df14b78c67e3686a525526007e3b43511624d095ba44"
+        }
+      ]
+    },
+    {
+      "job_id": 131446361430,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 603146,
+      "whole_sha256": "c0ea89f2cea7a24693b1f123f6ffae48bf6b184acf9a8d70aca4ef6b19e9d165",
+      "whole_git_blob": "69124797cd12ba649e77e6c230f1984e12257e44",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446361430.log.part00",
+          "offset": 0,
+          "bytes": 239926,
+          "git_blob": "bbe9b961f96dde7652e42f42be841df62ae00140",
+          "sha256": "25bfa45345056de729d62bc9739dcafaf8d9864c360a95cc4d35230e3b788c69"
+        },
+        {
+          "path": "job-131446361430.log.part01",
+          "offset": 239926,
+          "bytes": 239984,
+          "git_blob": "42b14562dd93ef1a3381195d41961c4dedfa88bf",
+          "sha256": "b5af790d56b9c2dc4cd000d46d932449005e014a30f9ef1a7344c409fa6aaa7b"
+        },
+        {
+          "path": "job-131446361430.log.part02",
+          "offset": 479910,
+          "bytes": 123236,
+          "git_blob": "55af846c00ba24a03d08fb94cefb72f339859b2b",
+          "sha256": "6ea1bea6cf44f83229fc7967116cb093cb9eb7b17427e58f9811dee8caefc242"
+        }
+      ]
+    },
+    {
+      "job_id": 131446360965,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 473577,
+      "whole_sha256": "38de777eabb4e173ee979871e6bff2c4382f79ab6bdfb35b32dffda71d0b5726",
+      "whole_git_blob": "d2b3b156ebeb6501c659d28a0c1e903b432e77c9",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446360965.log.part00",
+          "offset": 0,
+          "bytes": 239977,
+          "git_blob": "49ed3007569fecd9b9a07e6f0c98e81cdc00ebf5",
+          "sha256": "e7e4bf2441358342d425602c7822544ae35e42c77b2ece822987574a5eb629ae"
+        },
+        {
+          "path": "job-131446360965.log.part01",
+          "offset": 239977,
+          "bytes": 233600,
+          "git_blob": "1c83b71b5d2ea96cdc8c0d114538bce69bad0956",
+          "sha256": "5f36320523586812d6f432864e5889dd44afdd2545246ed9877ab6e3571ec632"
+        }
+      ]
+    },
+    {
+      "job_id": 131446361362,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 996996,
+      "whole_sha256": "4bb11a4edce764c7eb685870a6736f3521b052543823545413d818eab705a182",
+      "whole_git_blob": "c12c69fd678cf344661bcfe05b037fc8e799f753",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446361362.log.part00",
+          "offset": 0,
+          "bytes": 239984,
+          "git_blob": "e7efa8c654a9a8330fb9198f900170995b3b6386",
+          "sha256": "361f49cebde48c7a95db8394493af5d69f55c54527a6d2c74891c74972d3bb09"
+        },
+        {
+          "path": "job-131446361362.log.part01",
+          "offset": 239984,
+          "bytes": 239972,
+          "git_blob": "32c9367ae8a161f585caead61585b49dc365ec88",
+          "sha256": "888f9518cef74212c3976e50177aa744eee33f569056c8485ecde21680a71598"
+        },
+        {
+          "path": "job-131446361362.log.part02",
+          "offset": 479956,
+          "bytes": 239882,
+          "git_blob": "c92432a6dcf308c8e62318d0e611460b8cb5994d",
+          "sha256": "cd969f0d16e7415a845458e4f1b511a6b94361e8f01ae0af4a38022333ff5bd7"
+        },
+        {
+          "path": "job-131446361362.log.part03",
+          "offset": 719838,
+          "bytes": 239971,
+          "git_blob": "d5235624a27ef3c2a48409793a24d15b4cdc7863",
+          "sha256": "4e7b614b964a06bfe5ad30bed162d0a51d4224a3de2204a872bf1f9d0dab7251"
+        },
+        {
+          "path": "job-131446361362.log.part04",
+          "offset": 959809,
+          "bytes": 37187,
+          "git_blob": "6ee3c08eb337aa91c0afd667eb020e697716d041",
+          "sha256": "f84bad05277076a4513896676c6ee5327cbdd220ee3ae552f8ed4cc0bf18facb"
+        }
+      ]
+    },
+    {
+      "job_id": 131446361489,
+      "run_id": 43293663395,
+      "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+      "whole_bytes": 347521,
+      "whole_sha256": "28d6d16d3fa8dba0f9ec72a01bb50a1b35baafb54df116c1f89b90efc5462234",
+      "whole_git_blob": "cd88660f4b7b639b3ac04d2d7c451a75917c308c",
+      "whole_git_blob_object_created": false,
+      "newline": "Original returned UTF-8 bytes retained, including CRLF where present",
+      "parts": [
+        {
+          "path": "job-131446361489.log.part00",
+          "offset": 0,
+          "bytes": 239982,
+          "git_blob": "d632fddcf215d3b6a830fa559a92b90bb277fb95",
+          "sha256": "831b07c0027a7e8b33a92095efd85711c66b0032c1e9d2088a77c0669e1a0a48"
+        },
+        {
+          "path": "job-131446361489.log.part01",
+          "offset": 239982,
+          "bytes": 107539,
+          "git_blob": "7ccff39d0c8764a0544d463cd889a050c8219938",
+          "sha256": "2669051bea78cabe76edb32ac3eb87a7b666b01c8ce309a50c95d906e187018d"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "SUMMARY.zh-CN.md",
+      "git_blob": "d75cfc8a38eead8a72eed7d14276d4f97e81eaeb",
+      "bytes": 6847,
+      "sha256": "a4d5308d081d8ef1488fb3011ba14c628faf3b9c81a780f05ce7f29625ea6b2d"
+    },
+    {
+      "path": "OBSERVATIONS.json",
+      "git_blob": "40d05513945645dabd8a2b1c8723b8e220bb6e15",
+      "bytes": 63794,
+      "sha256": "7e81259803c72d5d783bc4d930878a8ae3c80f7d0a3d17edae83912f83a3087a"
+    },
+    {
+      "path": "MAC_NEURON_PARTIAL.json",
+      "git_blob": "1e456a6a9db193612bb38e7e55f2c583c1a8e895",
+      "bytes": 35155,
+      "sha256": "81a91eb8ae3caa1d09c40d693b7bc030031f08ae7cd2a71b62149454aa06e259"
+    },
+    {
+      "path": "FENCE_REPORT_ORIGINAL.json",
+      "git_blob": "0e8d1c61d3a3135150ed70c6a7fdd64805736dc0",
+      "bytes": 5533,
+      "sha256": "25ac7bd5f073d4fb39de15a25728c6a4e00a2a9d3455ee8f89ef7f2af9e55263"
+    },
+    {
+      "path": "READBACK_VERIFICATION.json",
+      "git_blob": "67986334173991c10968b3dec4b07caa71764d52",
+      "bytes": 2487,
+      "sha256": "015118ea2db5644ae751a0ffe2ac09800dd10372dedcfb549fc065a51cea33d1"
+    },
+    {
+      "path": "BLOCKING_JOB_SNAPSHOT_RAW.json",
+      "git_blob": "d9f06a9121f1176c0b00a5289eb3d41a8f38861b",
+      "bytes": 56205,
+      "sha256": "9d9ee8d25380633bf4859fc8819e71e6315b72077ad6e5f79680495a035559d4"
+    },
+    {
+      "path": "FINAL_RUN_RAW.json",
+      "git_blob": "ded51db73209f0c2b009efc9eec046b2ef06fa11",
+      "bytes": 36710,
+      "sha256": "848e4320fea3cdddefb3789f8388506f507b3bbee72cf2c2a97ab818d21f94ab"
+    },
+    {
+      "path": "MAC_NEURON_ORIGINAL_BLOCK.log",
+      "git_blob": "3473021e19a0ef733dbd019a5d68e7d05fe9f061",
+      "bytes": 27354,
+      "sha256": "86af2b9676a0cba9e5de8dc79e7d162a42a098709d412fe8ea9610311159d10b",
+      "excerpt_of_job": 131446361362,
+      "original_lines": [
+        9626,
+        9841
+      ]
+    },
+    {
+      "path": "SOURCE_IDENTITY_RAW.json",
+      "git_blob": "ae0c8317cb73b04fdb9e54ab2187795dfdd572e0",
+      "bytes": 6697,
+      "sha256": "9bff026186b33fec745ecc505688efad8bd0e47ff579dcd7ddccd738390058e2"
+    }
+  ],
+  "additional_fetched_commit_diff": {
+    "git_blob": "83818b4688ae0821d0e99b6f3e864c02e6fb1d93",
+    "bytes": 2664461,
+    "sha256": "09bbf8e2a0fed6f3e0ba5bd03098cb32acc3159c64d57c3f47c8c34a5da05b6c",
+    "note": "Complete earlier commit API payload is preserved as this immutable object but omitted from the review tree because its 2.66MB diff duplicates repository source; concise original git/commits payload proves the same identity."
+  }
+}

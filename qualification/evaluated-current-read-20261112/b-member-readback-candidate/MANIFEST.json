@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.b-member-readback-candidate.v1",
+  "source_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "code_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "status": {
+    "rustfmt": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native": "NOT_RUN",
+    "source_closure": "NOT_RUN",
+    "caller_scan": "NOT_RUN",
+    "actor": 0,
+    "owner_authority": "UNCHANGED_DENY_ALL",
+    "scientific_benefit": "NOT_EVALUATED"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "sha": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "sha256": "84a45871a6f94603e3b3887a35774ce6858d0f22fc22fe4957e9b0462270b7fa",
+      "bytes": 3758,
+      "base_blob": null,
+      "added_lines": 91,
+      "removed_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "sha": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "sha256": "dc4554f89a30c3853835934389283013b8e19294295d3bd8b2535acd8ee5d125",
+      "bytes": 6346,
+      "base_blob": null,
+      "added_lines": 166,
+      "removed_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "sha": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "sha256": "35cc00872d03cc10057a113df16c4a866cec53eed24742a6a7c4647ea49c1295",
+      "bytes": 13872,
+      "base_blob": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "added_lines": 134,
+      "removed_lines": 23
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "sha": "4807f4f5aa158f885119d2cb394e2170e6842385",
+      "sha256": "6cb2478192d303d85cc94db92be8d71b9ca2a860e2081221ad07cfb1a1f9f2f4",
+      "bytes": 13432,
+      "base_blob": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "added_lines": 50,
+      "removed_lines": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "sha": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "sha256": "7620897ea5d075a3add9811aabfa3c0f725b84fdabc9b40dedd3c2919070b3ac",
+      "bytes": 12916,
+      "base_blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "added_lines": 15,
+      "removed_lines": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "sha": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+      "sha256": "febd324dfd87c5fa16a35697082caf08e941e265836b97da8f3259e782923aff",
+      "bytes": 11187,
+      "base_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "added_lines": 7,
+      "removed_lines": 2
+    },
+    {
+      "path": "CALLERS.toml",
+      "sha": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "sha256": "1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a",
+      "bytes": 1898908,
+      "base_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+      "added_lines": null,
+      "removed_lines": null
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "sha256": "7c5ebdb53998acbc944fb96e3b692c878b870ed6d2cad87b51bee84957b1bc6f",
+      "bytes": 11847,
+      "base_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "added_lines": null,
+      "removed_lines": null
+    }
+  ],
+  "source_diff": {
+    "added": 463,
+    "removed": 32,
+    "excludes": "CALLERS and exact allowlist line; these have separate delta"
+  },
+  "manifest_structure_only": {
+    "old_boundaries": 628,
+    "new_boundaries": 629,
+    "existing_boundary_rows_changed": [],
+    "protected_file_rows": 429,
+    "protected_rows_changed": [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs"
+    ],
+    "old_function_guard_rows": 1349,
+    "new_function_guard_rows": 1351,
+    "all_sequences_at_least_two": true
+  },
+  "unchanged_proof_function_text_slices": {
+    "pub(super) fn from_original_training_readback(": true,
+    "fn require_source(": true,
+    "fn authenticate() and module tail": true
+  },
+  "new_native_methods": 3,
+  "new_qa_methods": 1,
+  "modified_existing_native_counts": {
+    "original_evaluation_host_reads_actual_panel_and_cold_original_signature": {
+      "before": [
+        34,
+        30
+      ],
+      "after": [
+        19,
+        15
+      ]
+    },
+    "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect": {
+      "before": [
+        10,
+        10
+      ],
+      "after": [
+        4,
+        4
+      ]
+    }
+  },
+  "static_counts_not_execution": {
+    "individual_success_readback": {
+      "primary_before": 9,
+      "primary_after": 3,
+      "each_retention_before": 8,
+      "each_retention_after": 2
+    },
+    "individual_execute_unchanged": {
+      "primary": 10,
+      "each_retention": 8
+    },
+    "bound_unchanged": {
+      "execute": 4,
+      "readback": 3
+    },
+    "new_fourteen_readback_case": {
+      "primary": 54,
+      "retention": 38
+    }
+  },
+  "unmodified_original_pins": {
+    "receipt_owner": "0416c8965a3cb48e60568ac48b3f1c25dffd19a1",
+    "panel": "07c68b6971721515ad819544d9cc8dc442a20336",
+    "panel_member": "49f23508db7805fc7fec663af10269f39fa3a271",
+    "qualification_owner": "514d6cbf873acddb19c7e4540d198e3a498fe084",
+    "qualification_sources": "a193092ffd45d4c894999b126072f6d9c48fb7b2",
+    "qualification_readback": "91a3a5b87a1746d1cb4178cc652f9480574986c1",
+    "host_fixture": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+    "member_fixture": "c45505b07af09894ff697030bcb57838e4bc5a43",
+    "source_fixture_withdraw_target": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+    "existing_bound_native_tests": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+  },
+  "known_limits": [
+    "Production Bound Version-only static demand 210+30R remains OPEN; this candidate leaves Bound3/4 unchanged.",
+    "No latency result is measured; no 600ms event is reclassified as proven cap exhaustion.",
+    "Native proof tests use real journals/transports with explicit test custody; they do not certify actual production owner assembly or scientific gain.",
+    "One new first/last pair is created for every no-effect Readback invocation; no cross-call current/proof cache."
+  ],
+  "git_readback": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "bytes": 3758,
+      "sha256": "84a45871a6f94603e3b3887a35774ce6858d0f22fc22fe4957e9b0462270b7fa",
+      "sha": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "readback": "MATCH"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "bytes": 6346,
+      "sha256": "dc4554f89a30c3853835934389283013b8e19294295d3bd8b2535acd8ee5d125",
+      "sha": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "readback": "MATCH"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "bytes": 13872,
+      "sha256": "35cc00872d03cc10057a113df16c4a866cec53eed24742a6a7c4647ea49c1295",
+      "sha": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "readback": "MATCH"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "bytes": 13432,
+      "sha256": "6cb2478192d303d85cc94db92be8d71b9ca2a860e2081221ad07cfb1a1f9f2f4",
+      "sha": "4807f4f5aa158f885119d2cb394e2170e6842385",
+      "readback": "MATCH"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "bytes": 12916,
+      "sha256": "7620897ea5d075a3add9811aabfa3c0f725b84fdabc9b40dedd3c2919070b3ac",
+      "sha": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "readback": "MATCH"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "bytes": 11187,
+      "sha256": "febd324dfd87c5fa16a35697082caf08e941e265836b97da8f3259e782923aff",
+      "sha": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+      "readback": "MATCH"
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1898908,
+      "sha256": "1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a",
+      "sha": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "readback": "MATCH"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 11847,
+      "sha256": "7c5ebdb53998acbc944fb96e3b692c878b870ed6d2cad87b51bee84957b1bc6f",
+      "sha": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "readback": "MATCH"
+    }
+  ],
+  "allowlist_delta": {
+    "base_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+    "old_line": "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+    "new_line": "sha256:1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a CALLERS.toml",
+    "sole_active_CALLERS_pin": true,
+    "non_CALLERS_entries_unchanged": true
+  },
+  "guard_scan_correction": {
+    "original_preserved": "3c8931faffabd7e14f1800aa792900cc327dbaf1",
+    "corrected_source53_scan": "26de9c4407496bf721ff10b59f1f8057852f3310",
+    "actual_transaction_QA_base": "980b7c9b8d364453e13cd0a220611600d6204891",
+    "actual_service_SHA256_kept": "d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640"
+  },
+  "upstream_1cb_manifest_overlap": "Independent audit 67e2697/67daf53: upstream owner-command row already identical to source53; no additional caller delta, no obsolete f470 CALLERS allowlist pin added."
+}

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source_sha": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+  "source_tree": "e338a817d39a7269ea815bf4b1a594d9985779d9",
+  "original_run": {
+    "job_id": "1a1cf3462ea-2564-19c4",
+    "idempotency_key": "owner6213-ai395-088-source-862531d11598-v1",
+    "source_closure_passed": 376,
+    "owner_parser_passed": 16,
+    "exit_code": 0
+  },
+  "purpose": "Lossless supplementary export of original inventory gzip and original wrapper stdout. No recompression, source change, or test execution.",
+  "inventory": {
+    "reconstruction": "Concatenate raw binary parts in ascending index without decoding, separators, newlines, or recompression.",
+    "bytes": 762747,
+    "sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
+    "decompressed_inventory_sha256": "4e37e391b868311ffd4a60c9d67167780de77821c2517c8c59270002e26a6d29",
+    "tracked_files": 14753,
+    "original_before": {
+      "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-088-source/source-before.files.json.gz",
+      "mtime_ns": "1794477738899437600",
+      "ctime_ns": "1794477738899437600"
+    },
+    "original_after": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-088-source/source-after.files.json.gz",
+      "sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
+      "size": 762747,
+      "version": "66306:75283503:762747:1794477793501500741:1794477793501500741"
+    },
+    "before_after_same_full_bytes": true,
+    "parts": [
+      {
+        "index": 0,
+        "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part000",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "816c4ce73ad6c7a9f09ac0d30ba2a312284f1059b1021f104c765544814982e1",
+        "blob_sha": "214962b4de7a638e48ca2539e355e5fe90436cdc"
+      },
+      {
+        "index": 1,
+        "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part001",
+        "offset": 350000,
+        "bytes": 350000,
+        "sha256": "5522c21e2d86bab8fdab82376ffc51c3965dd0bfb88cac2bd68c241750642025",
+        "blob_sha": "62000e656e1d98bafd955f90bd5e42699ecbc09f"
+      },
+      {
+        "index": 2,
+        "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part002",
+        "offset": 700000,
+        "bytes": 62747,
+        "sha256": "38880970877c77fb34b7b389aac484d54e3548070ba3e551e46dcb0cf30e0233",
+        "blob_sha": "9eaf60d19ebaf27cdb2ca106bc4a25b6dd2d5430"
+      }
+    ]
+  },
+  "runner_log": {
+    "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.runner.log",
+    "original": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-088-source/source-closure.runner.log",
+    "bytes": 86485,
+    "sha256": "7c4df6143e48ca0ac5b18fb4bd9f536f8204d32a3d206b4458ad341044d020f4",
+    "blob_sha": "8c179246accb645c5ddd4204dea029c5b74bf4b5"
+  },
+  "relationship": {
+    "prior_log_archive_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+    "prior_manifest_blob": "4c2f273e746e04b2b04f6bac40e5f12e7de63e22",
+    "changes_to_prior_artifacts": "None. This separate manifest completes the previously pending inventory payload and wrapper log export."
+  },
+  "not_claimed": [
+    "new execution",
+    "Rust native result",
+    "new source SHA qualification"
+  ]
+}

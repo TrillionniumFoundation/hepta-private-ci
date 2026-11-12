@@ -1,0 +1,250 @@
+{
+  "schema": "hepta.same-call-current-readset-independent-review.v1",
+  "classification": "NO_NEW_STATIC_BLOCKER_FOUND_NOT_RUN_NOT_FMT_NOT_COMPILED",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate_tree": "ec949496b0fdb728ad830ad61e541ba080e3391c",
+  "files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "post_blob": "2bca82fb841d53f177cc6b7448d45946606e108b",
+      "post_bytes": 11699,
+      "post_sha256": "c83cf494a67b205be32cc2c24427e2800cc78cccb85eb0470bcb090bdac7f87a",
+      "base_blob": "3032a463b76c44a934ee9338d2bffe51640727b9",
+      "base_bytes": 11699,
+      "base_sha256": "8983cbf6ea5bce8098580d840a1c633ca7379062c11d764376dc98e0be7bd07e"
+    },
+    {
+      "path": "CALLERS.toml",
+      "post_blob": "a78d6b4960878f0df2b895c45fd131afe6caf87e",
+      "post_bytes": 1131679,
+      "post_sha256": "a5fe2dfabc9dfd0486c96a10d9c9e1a11f8c3908e5c6de2f93ef164abf8ba46f",
+      "base_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+      "base_bytes": 1129169,
+      "base_sha256": "d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "post_blob": "849cdf6406fb746be80c6fb93ce3ee8e4d0f4112",
+      "post_bytes": 8039,
+      "post_sha256": "5423690e485670cff1f3c303ba3f7e78be44f0f1961f6878928afb53918886e3",
+      "base_blob": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "base_bytes": 6502,
+      "base_sha256": "f189f9e3a6ecc5e6cd68aae34c75cd7987528a2ad641ae45cfbd3171625c40c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "post_blob": "752bee454a024280be6d5033b826abff398d2edf",
+      "post_bytes": 18406,
+      "post_sha256": "057d18f8c90b5324d72761648092bb6439cd5f77ba5ef20cdb6a4018c3afa652",
+      "base_blob": "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "base_bytes": 16129,
+      "base_sha256": "7a04acd4563a993228a2d4041d1def47194c0139e93cda48e2172e11b305197d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "post_blob": "32ca73705cb3ccb07938cd930095d3a3dbf3bf17",
+      "post_bytes": 11415,
+      "post_sha256": "39cbe8f2d7c7aeb3d0056dc2bd8771878641defd532e9c49fcbd00d6cf1e7a68",
+      "base_blob": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+      "base_bytes": 9561,
+      "base_sha256": "e4f4071f644f6adf89a19ffe794a6137f05397b078ba794a8cdc23b00ae80f34"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "post_blob": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+      "post_bytes": 11423,
+      "post_sha256": "c8dc7ac72aa6cb4f510a7e2b59b2589962ecf1943ab11d237365bedad5c205a8",
+      "base_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "base_bytes": 11113,
+      "base_sha256": "26f09f954a8ccdda618c35ec789eeb7dd59c85fbb23c4fa86315dee50230f3d7"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "post_blob": "6d3f2de97fa58f1c572a5468bab2742c77737fcb",
+      "post_bytes": 33457,
+      "post_sha256": "d4634134216f6a6fbfb29f6f6f502e83fcf6413f15e3dcb271a890f5c211569d",
+      "base_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+      "base_bytes": 33501,
+      "base_sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "post_blob": "e82e40cf341b980665114e1a95646063597deb7d",
+      "post_bytes": 26472,
+      "post_sha256": "05aea236dd18d4e1ae340a2519cfe1f46c1e63c08afd3935eb24f89046caee2b",
+      "base_blob": "1a94d6e95dfb5314bfc2fe1e32c19aa71bf0606a",
+      "base_bytes": 26213,
+      "base_sha256": "e4b2027353ce1868ad59754a3d604a502ce16856763401381ace15cb3d496697"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "post_blob": "f1518b0e8a2f0469876b3872c1b3e7511cce544d",
+      "post_bytes": 10882,
+      "post_sha256": "c591ab9e83247e178656dae0df6fb83b2163b3bb3c5f80389ec2a237fdd2bab6",
+      "base_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+      "base_bytes": 10942,
+      "base_sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "post_blob": "0c21eebe62b86c858453f69b2ed10c535161e400",
+      "post_bytes": 12586,
+      "post_sha256": "cc345931a775c7cc353c2216614587b4cc4643f9eaff83a66a8517ff32f393d2",
+      "base_blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+      "base_bytes": 12582,
+      "base_sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "post_blob": "8526a800e6d88c8cbd4aa07acb5a960bcd96d999",
+      "post_bytes": 19130,
+      "post_sha256": "8ebe5e564904f06962180ba14afba32f1e0715a20a03967130cc448607783169",
+      "base_blob": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+      "base_bytes": 17403,
+      "base_sha256": "8bccc0d63999c2b0ebbad62ceaf33e97201a0e6f4b6c3a547dc828f05053724e"
+    }
+  ],
+  "actual_source_context": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "blob": "68cf423686f24d192d015b0c06e86eea530dfc81",
+      "bytes": 16039,
+      "sha256": "d5fee13397caa51a0f112962c46ad2a39426ac81c1fe65b70c7cee5e32edc232"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "bytes": 6682,
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "blob": "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+      "bytes": 2565,
+      "sha256": "dafc0ad870c3402605c42bd79ac5da4983b04be7603ff80bda073e94e60d7333"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "blob": "38241d599afe14815efea41cdf56d13668983d25",
+      "bytes": 15155,
+      "sha256": "fb045d06fa9eb2273895aa915baa69abc306beffe5a1e543ca3985a032d9f539"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+      "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1",
+      "bytes": 2249,
+      "sha256": "dcd62da9a50909741cd23baee3b050d4a012f10edc6b911456cbb4eff9b8e719"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs",
+      "blob": "d50bd0b02754d203824227b871036503b89e4a19",
+      "bytes": 3813,
+      "sha256": "db1fc2ff69696e2d26a8015322e1e99aff8d447ce7015f3794fa20ca654ec581"
+    }
+  ],
+  "findings": [
+    "The complete original native read_learning_next_use function body is byte-identical in read_learning_next_use_set after reversing only the retained selection clone and three-field owned-result return. All original snapshot/NextUse stage, Selection prefix, selected bundle/source-run, Cell committed receipt, original Source publication before/after, and final task-current checks stay in the same original order.",
+    "The old public generic API delegates once to this private native operation and consumes its result. The new struct has private fields, no Clone/decoder/public constructor, and into_parts consumes self. Its sole external product caller is the pre-existing CURRENT service; the other original public callers continue using the public wrapper.",
+    "The CURRENT service starts a new no-effect native window for every response. It authenticates the request and context clock before I/O and again after I/O. In NextUse mode it consumes the native Selection/observation/source publication produced inside that same call, and subsequently re-reads original Selection, original Source input/withdrawal, and task CURRENT before returning. It stores no read-set or cached availability across responses.",
+    "The final require_original_task_input is a real physical check, not just input equality: SourceReadback uses the same original Arc-owned locked SourceOwner, calls require_current, compares the original identity and configured input, then require_active and require_current. require_active itself checks physical current and the actual withdraw journal. require_current brackets the same original file's read_current_anchor with independent witness reads and fences on error.",
+    "The underlying physical read_current_anchor reads and replays the complete bounded original file, compares reconstructed anchor and records with the same held owner's state, restores cursor and permanently poisons on mismatch/I/O. Both SourceOwner::retain and the underlying store reject a completed key whose bytes differ, so removing the extra outer publication decode pair does not allow the existing run's publication to be replaced with another body. An unrelated valid append does not change that immutable publication, while withdrawal is independently checked at the tail.",
+    "The native regression first obtains a real completed C observation and exact source-publication digest, verifies the unchanged original owner bytes, then truncates the actual same Source journal only after the native observation and before the final checks. It requires failure, verifies actual file length zero, and requires the consumed connection to stay unavailable. This cfg(test) seam is absent in production; it grants no public source writer or authority.",
+    "The five QA migrations retain every original method and reject call, moving guards to their actual new function locations and adding the same-call source/Cell mutation checks. Original observer callers change from three to two only because service now uses the precisely registered private method. No other boundary row changes; one boundary is added, and only the two corresponding protected rows change."
+  ],
+  "qa_migration": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "base_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+      "post_blob": "6d3f2de97fa58f1c572a5468bab2742c77737fcb",
+      "old_methods": 22,
+      "new_methods": 22,
+      "removed_methods": [],
+      "new_methods_named": [],
+      "old_reject_calls": 47,
+      "new_reject_calls": 47
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "base_blob": "1a94d6e95dfb5314bfc2fe1e32c19aa71bf0606a",
+      "post_blob": "e82e40cf341b980665114e1a95646063597deb7d",
+      "old_methods": 16,
+      "new_methods": 16,
+      "removed_methods": [],
+      "new_methods_named": [],
+      "old_reject_calls": 29,
+      "new_reject_calls": 29
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "base_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+      "post_blob": "f1518b0e8a2f0469876b3872c1b3e7511cce544d",
+      "old_methods": 6,
+      "new_methods": 6,
+      "removed_methods": [],
+      "new_methods_named": [],
+      "old_reject_calls": 2,
+      "new_reject_calls": 2
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "base_blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+      "post_blob": "0c21eebe62b86c858453f69b2ed10c535161e400",
+      "old_methods": 15,
+      "new_methods": 15,
+      "removed_methods": [],
+      "new_methods_named": [],
+      "old_reject_calls": 21,
+      "new_reject_calls": 21
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "base_blob": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+      "post_blob": "8526a800e6d88c8cbd4aa07acb5a960bcd96d999",
+      "old_methods": 8,
+      "new_methods": 9,
+      "removed_methods": [],
+      "new_methods_named": [
+        "test_same_call_set_keeps_native_source_and_cell_guards_before_consumption"
+      ],
+      "old_reject_calls": 23,
+      "new_reject_calls": 27
+    }
+  ],
+  "guard_summary": {
+    "boundaries_old": 541,
+    "boundaries_new": 542,
+    "protected_old": 390,
+    "protected_new": 390,
+    "boundary_changed": [
+      "circuit_feature_original_next_use_observation"
+    ],
+    "boundary_added": [
+      "circuit_feature_original_next_use_read_set"
+    ],
+    "boundary_removed": [],
+    "protected_changed": [
+      "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    ],
+    "oldrows": 390,
+    "newrows": 390,
+    "changed_rows": [
+      {
+        "index": 207,
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
+      },
+      {
+        "index": 351,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+      }
+    ],
+    "unique_protected_paths": 319,
+    "callers_sha256": "a5fe2dfabc9dfd0486c96a10d9c9e1a11f8c3908e5c6de2f93ef164abf8ba46f",
+    "active_callers_pin_count": 1
+  },
+  "limits": [
+    "This is static source and exact-blob review. It does not certify the checker, Rust type checker, formatter or new native test has run.",
+    "The reduction is local to one CURRENT response. The outer original Trainer/Selector evidence RPCs, actual deadlines and capacities remain unchanged; no measured <=500 ms success or complete recursive frame budget is claimed.",
+    "The source-check and native method totals for the combined branch must be measured anew; no older head's PASS is inherited."
+  ]
+}

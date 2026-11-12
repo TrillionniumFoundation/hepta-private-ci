@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.source-closure-marker-migration.v1",
+  "base_source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "base_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "merged_callers": {
+    "sha": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "bytes": 1895095,
+    "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f"
+  },
+  "code_tree": "f8cfa50c897d7b1ff7cf1ae909de51f6284e2332",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "base": "4da0873c757803beb46256d84e27e63b12991347",
+      "post": {
+        "sha": "7d9c5a41caa0cfc559f52274ae35f9baac8929f8",
+        "bytes": 13298,
+        "sha256": "b5c8443b407ceb266bcc6b7dcd7217d6f8a58506ec030e7f3f1018c8ed57056a"
+      },
+      "exact_git_readback": true,
+      "exact_inverse_to_base": true,
+      "replacements": [
+        {
+          "before": "\"sources\\n            .prepare(&self.qualification.config, started_at)\\n            .await?\",",
+          "after": "\"OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(\","
+        },
+        {
+          "before": "\".finish_readback(\",",
+          "after": "\"OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(\","
+        },
+        {
+          "before": "        for marker in (\"self.fenced = true\", \"if result.is_ok()\", \"self.read_original_panel(&mut clock).await\"):\n            self.rejects(CORE, \"fn read_current_with_clock(\", marker)",
+          "after": "        self.rejects(\n            CORE,\n            \"fn read_current_with_clock(\",\n            \"self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)\",\n        )\n        for marker in (\n            \"self.fenced = true\", \"if result.is_ok()\",\n            \"self.read_original_panel(&mut clock, training).await\",\n        ):\n            self.rejects(CORE, \"fn read_current_with_training(\", marker)"
+        },
+        {
+          "before": "\"let before = self.read_members(clock).await?\",",
+          "after": "\"let before = self.read_members(clock, training).await?\","
+        },
+        {
+          "before": "\"let after = self.read_members(clock).await?\",",
+          "after": "\"let after = self.read_members(clock, training).await?\","
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "base": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+      "post": {
+        "sha": "bad5b389ab00c6bb4b500ba6e21fe4c653488753",
+        "bytes": 12716,
+        "sha256": "8d1340ad9a3fb43ee364c7e0a5e58526727eb04afd256072afa49586085c673d"
+      },
+      "exact_git_readback": true,
+      "exact_inverse_to_base": true,
+      "replacements": [
+        {
+          "before": "\"fn read_original(\", \"fn read_trainer(\", \"fn prepare(\", \"fn verify_current(\",",
+          "after": "\"fn read_original(\", \"fn read_trainer(\", \"fn prepare(\", \"fn prepare_with_training(\",\n        \"fn verify_current(\","
+        },
+        {
+          "before": "\"fn readback(\", \"fn read_completed(\", \"fn finish_readback(\",",
+          "after": "\"fn readback(\", \"fn read_completed(\", \"fn finish_readback(\",\n        \"fn finish_readback_with_training(\","
+        }
+      ]
+    }
+  ],
+  "production_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "sha": "07c68b6971721515ad819544d9cc8dc442a20336",
+      "bytes": 7213,
+      "sha256": "3a945a8fee7bd172a495514eb0b4bfca671118c6681ec02761273435c5793c8d",
+      "changed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "sha": "49f23508db7805fc7fec663af10269f39fa3a271",
+      "bytes": 7463,
+      "sha256": "5f5d206208a37307eed55209a83e55e0fde8446c47ff1f047b6b58946f852022",
+      "changed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "sha": "a193092ffd45d4c894999b126072f6d9c48fb7b2",
+      "bytes": 4629,
+      "sha256": "982f6e072989ee6ddafa1a746d3baba4b040cd0d2bbb61a1d8b48dd17609b434",
+      "changed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "sha": "91a3a5b87a1746d1cb4178cc652f9480574986c1",
+      "bytes": 7204,
+      "sha256": "f210d96f1908ac37a3191cab817a369515e5a62ab71e2f41f36ff54bcb07cdb0",
+      "changed": false
+    }
+  ],
+  "reason": [
+    "Original Panel fence/body moved from read_current_with_clock to read_current_with_training; wrappers keep the Individual path.",
+    "Original Panel member calls now use prepare_with_training and finish_readback_with_training; physical Cell/cohort reads, completed Qualification bytes and final fresh authentication are unchanged.",
+    "Qualification exact guarded-function sets omitted prepare_with_training and finish_readback_with_training. Both existing producer methods are added to the original all-marker mutation and read-only effect-rejection loops."
+  ],
+  "constraints": {
+    "production_changes": 0,
+    "callers_changes": 0,
+    "removed_test_methods": 0,
+    "added_test_methods": 0,
+    "preserved_test_methods": 14,
+    "skips_added": 0,
+    "guard_relaxations": 0,
+    "test_execution": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "commit_created": false,
+    "ref_changed": false,
+    "actor_dispatched": false
+  },
+  "static_scope": "Exact base/post byte/hash readback and inverse substitutions; Python AST syntax and unchanged 8+6 method names; literal Qualification function sets equal final CALLERS. No verifier or unittest execution for these QA candidates.",
+  "original_failure": {
+    "run_id": "43288106844",
+    "job_id": "131426787351",
+    "source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "source_closure": {
+      "methods": 504,
+      "failures": 1,
+      "errors": 14,
+      "observed_passed": 489,
+      "log_bytes": 132876,
+      "log_sha256": "81bd32f4dbf580fea089612e226ec0fca68bbe6b3f014271c305a5726f3e3f0b"
+    },
+    "full_job_log": {
+      "path": "/workspace/scratch/862531d11598/evidence_work/UP374_NATIVE_JOB_131426787351.log",
+      "bytes": 1900203,
+      "sha256": "e2ab52ec4109853951347a0b20fd0b00649eb227ca2e7727edaf23e73a78afb2",
+      "verbatim_substring_ranges": [
+        {
+          "original_byte_offset": 1872700,
+          "bytes": 1144,
+          "sha256": "47e88e4be20577d3c0de940841adaa7e85d3a2a6d09cef33cd117cc2cde1dce7"
+        },
+        {
+          "original_byte_offset": 1873973,
+          "bytes": 1139,
+          "sha256": "9f54c1fb3b4c7d8f960b87afa27063bd6be1ce7d4191251257899c41af111205"
+        },
+        {
+          "original_byte_offset": 1892285,
+          "bytes": 915,
+          "sha256": "03948f5288707e145c15cfd8d001a49ebb24bd863a6c6a2ee5118c527873c34f"
+        }
+      ]
+    },
+    "excerpt_description": "Three exact discontiguous substrings joined in original order; not the full original job log."
+  },
+  "artifacts": [
+    {
+      "name": "B_QA.diff",
+      "sha": "97f21f964678d725f51a2d7a6193539d0a88d399",
+      "bytes": 2727,
+      "sha256": "ab991aa522388a6e18e4cb0571d53e4d2f82df4e557ed7b08a08dcd7451aaa27"
+    },
+    {
+      "name": "STATIC_REVIEW.json",
+      "sha": "041808b58684e17593f987903d061eb63971aa13",
+      "bytes": 3478,
+      "sha256": "17c55b452d58fcb688ea395b68a82f4b1c95423895b94caf80202be4c13db249"
+    },
+    {
+      "name": "ORIGINAL_B_FAILURES.log",
+      "sha": "cc2c9ddc50d4c1515677731472f1f4184d8cb4cd",
+      "bytes": 3198,
+      "sha256": "7008a0a4ad88d83683f6a72e2ff216e9d6acc6454fd8f8e69b389e5322fbce2a"
+    }
+  ]
+}

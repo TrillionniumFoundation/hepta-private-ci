@@ -1,0 +1,552 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling hyper v1.12.0
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+   Compiling hyper-util v0.1.21
+   Compiling yansi v1.0.1
+   Compiling hyper-rustls v0.27.10
+   Compiling hyper-tls v0.6.0
+   Compiling hyper-timeout v0.5.2
+   Compiling reqwest v0.12.28
+   Compiling tonic v0.14.6
+   Compiling codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+   Compiling codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+   Compiling codex-websocket-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.6
+   Compiling codex-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-client)
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-http v0.31.0
+   Compiling opentelemetry-otlp v0.31.1
+   Compiling aws-smithy-http-client v1.5.1
+   Compiling axum v0.8.9
+   Compiling aws-smithy-runtime v1.16.1
+   Compiling codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+   Compiling codex-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-api)
+   Compiling codex-shell-command v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-command)
+   Compiling codex-exec-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server-protocol)
+   Compiling codex-otel v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/otel)
+   Compiling codex-model-provider-info v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider-info)
+   Compiling codex-secrets v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/secrets)
+   Compiling aws-runtime v1.10.0
+   Compiling codex-features v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/features)
+   Compiling codex-windows-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs)
+   Compiling codex-sandboxing v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/sandboxing)
+   Compiling codex-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/config)
+   Compiling codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+   Compiling codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+   Compiling codex-agent-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-identity)
+   Compiling codex-workload-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/workload-identity)
+   Compiling codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+   Compiling oauth2 v5.0.0
+   Compiling reqwest v0.13.5
+   Compiling codex-exec-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server)
+   Compiling codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+   Compiling codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+   Compiling rmcp v3.9.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-sts v1.119.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling aws-config v1.12.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+   Compiling sentry v0.46.2
+   Compiling codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+   Compiling codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+   Compiling codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+   Compiling codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+   Compiling codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+   Compiling codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+   Compiling codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-context-fragments v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/context-fragments)
+   Compiling codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/extension-api)
+   Compiling codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+   Compiling codex-hooks v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hooks)
+   Compiling codex-apply-patch v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-escalation)
+   Compiling codex-prompts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/read)
+   Compiling codex-utils-audio v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/audio)
+   Compiling codex-hepta-operations v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-operations)
+   Compiling codex-backend-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/backend-client)
+   Compiling codex-hepta-memory v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory)
+   Compiling codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+   Compiling codex-thread-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/thread-store)
+   Compiling codex-core-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/skills)
+   Compiling codex-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core)
+   Compiling codex-linux-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/linux-sandbox)
+   Compiling codex-arg0 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/arg0)
+   Compiling codex-home v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-authbus)
+   Compiling codex-hepta-evidence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-evidence)
+   Compiling codex-connectors-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cli)
+   Compiling codex-hepta-governance v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-memory)
+   Compiling codex-git-attribution v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-prompt)
+   Compiling diff v0.1.13
+   Compiling predicates-core v1.0.10
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-automation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-automation)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+   Compiling num_cpus v1.17.0
+   Compiling assert_cmd v2.2.2
+   Compiling termtree v0.5.1
+   Compiling dtor-proc-macro v0.0.6
+   Compiling difflib v0.4.0
+   Compiling deadpool-runtime v0.1.4
+   Compiling deadpool v0.12.3
+   Compiling predicates v3.1.4
+   Compiling dtor v0.1.1
+   Compiling predicates-tree v1.0.13
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+   Compiling assert-json-diff v2.0.2
+   Compiling wait-timeout v0.2.1
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling wiremock v0.6.5
+   Compiling codex-hepta-supervisor v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor)
+   Compiling codex-memories-write v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/write)
+   Compiling codex-external-agent-migration v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/external-agent-migration)
+   Compiling codex-memories-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/memories)
+   Compiling codex-cloud-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cloud-config)
+   Compiling codex-mcp-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/mcp)
+   Compiling codex-image-generation-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/image-generation)
+   Compiling codex-guardian-v2 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/guardian-v2)
+   Compiling codex-agent-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/agent)
+   Compiling codex-history-notes-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/history-notes)
+   Compiling codex-goal-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/goal)
+   Compiling codex-chatgpt v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/chatgpt)
+   Compiling codex-web-search-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/web-search)
+   Compiling codex-app-server-transport v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-transport)
+   Compiling codex-queue-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-store)
+   Compiling codex-app-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+   Compiling core_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core/tests/common)
+   Compiling app_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server/tests/common)
+   Compiling codex-hepta-neuron v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron)
+warning: variable does not need to be mutable
+   --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+    |
+310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-neuron` (lib test) generated 1 warning (run `cargo fix --lib -p codex-hepta-neuron --tests` to apply 1 suggestion)
+   Compiling codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-learning-artifacts/src/owner_service_readback_support_tests.rs:109:9
+    |
+109 |         assert_eq!(
+    |         ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-learning-artifacts/src/owner_service_readback_support_tests.rs:8:5
+    |
+  8 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0659`.
+error: could not compile `codex-hepta-learning-artifacts` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `selection` is never read
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:32:5
+   |
+31 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+   |            ---------------------------------------- field in this struct
+32 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+   |     ^^^^^^^^^
+
+warning: method `original_selection` is never used
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:51:19
+   |
+38 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+   | --------------------------------------------- method in this implementation
+...
+51 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+   |
+19 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+23 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+error: command `/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

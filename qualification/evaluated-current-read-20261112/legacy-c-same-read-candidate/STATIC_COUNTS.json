@@ -1,0 +1,43 @@
+{
+  "scope": "Static explicit task.require_current calls in the published CURRENT graph only; excludes nested original Trainer/material operations and internal physical I/O.",
+  "per_current_request": {
+    "Selection": {
+      "before": 10,
+      "after": 6
+    },
+    "NextUse": {
+      "before": 15,
+      "after": 9
+    }
+  },
+  "per_legacy_c_evidence_callback": {
+    "training_requests": {
+      "before": 6,
+      "after": 6
+    },
+    "selector_evidence_requests": {
+      "before": 2,
+      "after": 2
+    },
+    "next_use_current_requests": {
+      "before": 2,
+      "after": 2
+    },
+    "selection_current_requests": {
+      "before": 4,
+      "after": 4
+    },
+    "explicit_task_current_calls": {
+      "before": 70,
+      "after": 42
+    }
+  },
+  "limits": {
+    "request_bound": 128,
+    "timeout_ms": 500,
+    "lifetime_seconds": 300,
+    "changed": false
+  },
+  "latency_result": "NOT_MEASURED",
+  "deep_material_budget": "UNCHANGED_AND_NOT_CLOSED"
+}

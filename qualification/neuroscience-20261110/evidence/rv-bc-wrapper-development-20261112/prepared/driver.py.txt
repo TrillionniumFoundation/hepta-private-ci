@@ -1,0 +1,363 @@
+"""Create-only ordinary development B/C lifecycle runner; no owner authority.
+
+The freeze request cannot launch subprocesses. B/C require an external actual
+freeze pin and their own durable request; reconcile never resumes an operation.
+"""
+import hashlib
+import importlib.util
+import json
+import math
+import os
+from pathlib import Path
+import stat
+import sys
+import time
+import traceback
+
+CONTROL = Path("/home/qq/neuro-rv-bc-inputs-862531d11598-v1")
+OUTPUT = Path("/home/qq/neuro-rv-bc-development-862531d11598-v1")
+TRAINING = Path("/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen")
+REPORT = TRAINING.parent / "factorial/REPORT.json"
+REPOSITORY = Path("/home/qq/ctrl-real-policy-20261112-1333-v3")
+WRAPPER = CONTROL / "replay_perception_native.py"
+REGISTRATION = CONTROL / "REGISTRATION.json"
+WRAPPER_SHA = "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a"
+WRAPPER_BLOB = "94e819d579232597de08a5c239a78e9d40768416"
+REGISTRATION_SHA = "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4"
+TRAINING_SHA = "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497"
+CHECKPOINT_SHA = "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+COLD_SHA = "25484514789cde0458068b940d2a35d77869f60085b1e414417ba9624a4011ee"
+REPORT_SHA = "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a"
+NATIVE_SOURCE = "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"
+STAGES = {"freeze", "inspect", "B", "C", "reconcile-B", "reconcile-C"}
+OBSERVED = {}
+BLOCKED = []
+STAGE = None
+sys.dont_write_bytecode = True
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def strict(raw):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("Duplicate JSON key: " + key)
+            result[key] = value
+        return result
+
+    def finite(text):
+        value = float(text)
+        if not math.isfinite(value):
+            raise ValueError("Nonfinite JSON float")
+        return value
+
+    def constant(text):
+        raise ValueError("Nonfinite JSON constant: " + text)
+
+    return json.loads(raw, object_pairs_hook=pairs, parse_float=finite, parse_constant=constant)
+
+
+def version(value):
+    return [value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns]
+
+
+def read_bytes(path, expected=None, maximum=67108864, observe=False):
+    path = Path(path)
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode) or before.st_size > maximum:
+        raise ValueError("Bounded regular input required: " + str(path))
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        first = os.fstat(fd)
+        if version(first) != version(before):
+            raise ValueError("Input changed before open: " + str(path))
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(maximum + 1)
+        after = os.fstat(fd)
+    finally:
+        os.close(fd)
+    if len(raw) != first.st_size or version(first) != version(after) or version(path.lstat()) != version(first):
+        raise ValueError("Input changed during read: " + str(path))
+    if expected is not None and sha(raw) != expected:
+        raise ValueError("Input SHA256 differs: " + str(path))
+    if observe:
+        OBSERVED[str(path)] = {"path": str(path), "bytes": len(raw), "sha256": sha(raw), "version": version(first)}
+    return raw
+
+
+def write_once(path, raw):
+    with Path(path).open("xb") as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+    return sha(raw)
+
+
+def save(path, value):
+    return write_once(path, (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n").encode())
+
+
+def audit(event, args):
+    denied = event.startswith("socket.")
+    if STAGE not in {"B", "C"}:
+        denied = denied or event in {"subprocess.Popen", "os.system", "os.posix_spawn",
+                                    "os.posix_spawnp", "os.exec", "os.fork", "os.forkpty"}
+    if STAGE in {"inspect", "reconcile-B", "reconcile-C"}:
+        denied = denied or event in {"os.mkdir", "os.remove", "os.rmdir", "os.rename",
+                                    "os.link", "os.symlink", "os.truncate", "os.chmod", "os.chown", "os.utime"}
+        if event == "open":
+            mode, flags = args[1:3]
+            denied = denied or (isinstance(mode, str) and any(c in mode for c in "wax+"))
+            denied = denied or (isinstance(flags, int) and bool(flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)))
+    if denied:
+        BLOCKED.append(event)
+        raise PermissionError("Lifecycle stage forbids side effect: " + event)
+
+
+def original_inputs(registration):
+    frozen = strict(read_bytes(TRAINING / "FROZEN.json", TRAINING_SHA, observe=True))
+    collection = strict(read_bytes(TRAINING / "COLLECTION_PLAN.json", frozen["collection_plan_bytes_sha256"], observe=True))
+    checkpoint = strict(read_bytes(TRAINING / "CHECKPOINT.json", CHECKPOINT_SHA, observe=True))
+    read_bytes(TRAINING / "COLD_LOAD.json", COLD_SHA, observe=True)
+    if (frozen["repository"] != str(REPOSITORY) or collection != frozen["collection_plan"]
+            or registration["repository"] != str(REPOSITORY) or registration["training_run"] != str(TRAINING)
+            or registration["training_freeze_sha256"] != TRAINING_SHA
+            or registration["checkpoint_sha256"] != CHECKPOINT_SHA
+            or checkpoint["calibration"]["complete"] is not False or checkpoint["tuned_fixed"] != "STOP"
+            or checkpoint["full_cost_observed"] is not False):
+        raise ValueError("Original training lineage or unchanged STOP/calibration boundary differs")
+    if (frozen["read_seconds_bound"], frozen["finalizer_seconds_reserve"], collection["action_budget_seconds"],
+            collection["config"]["episode_wall_seconds"], frozen["alpha"], frozen["ridge"]) != (30, 5, 40, 60, 0.1, 0.001):
+        raise ValueError("Original budget or fitting parameter changed")
+    config, profile = collection["config"], collection["profile"]
+    if os.geteuid() == 0 or not os.path.samefile(sys.executable, config["python"]):
+        raise PermissionError("Original configured ordinary-account Python is required")
+    for pin in [*collection["source_pins"],
+                {"path": str(REPOSITORY / "scripts/ctrl_macro_study.py"), "sha256": frozen["driver_sha256"]},
+                {"path": str(REPOSITORY / "scripts/ctrl_macro_analysis.py"), "sha256": frozen["analysis_sha256"]}]:
+        read_bytes(pin["path"], pin["sha256"], observe=True)
+    for path, pin in [(profile["weights"], profile["model_sha256"]),
+                      (profile["control_plan"], profile["control_plan_sha256"]),
+                      (config["source_exposure_ledger_path"], config["source_exposure_ledger_sha256"])]:
+        read_bytes(path, pin, observe=True)
+    for phase in ("B", "C"):
+        rows = registration["phases"][phase]
+        if len(rows) != 1 or rows[0] not in frozen["evaluation_cases"] or rows[0]["case"]["role"] != "development":
+            raise ValueError("Exact original one-context development roster required")
+    protected = [Path(p).resolve() for p in config["runtime_roots"]]
+    protected += [TRAINING.parent.resolve(), Path(config["material_root"]).resolve()]
+    for target in (CONTROL, OUTPUT):
+        if target.resolve() != target or any(target == p or target in p.parents or p in target.parents for p in protected):
+            raise ValueError("New path aliases an original/private/runtime root")
+    if CONTROL == OUTPUT or CONTROL in OUTPUT.parents or OUTPUT in CONTROL.parents:
+        raise ValueError("Control evidence and wrapper output must be disjoint")
+    raw = read_bytes(REPORT, REPORT_SHA, maximum=3108442, observe=True)
+    old = strict(raw)
+    ids = [row["execution_id"] for row in old["rows"]]
+    if len(raw) != 3108442 or len(ids) != 576 or len(set(ids)) != 576 or any(
+            type(item) is not str or len(item) != 70 or not item.startswith("macro-") for item in ids):
+        raise ValueError("Complete original 576-effect inventory required")
+    return frozen, config, sorted(ids)
+
+
+def unchanged(before):
+    after = {}
+    for path, row in before.items():
+        raw = read_bytes(path, row["sha256"])
+        actual = {"path": path, "bytes": len(raw), "sha256": sha(raw), "version": version(Path(path).lstat())}
+        if actual != row:
+            raise ValueError("Original input version changed: " + path)
+        after[path] = actual
+    return after
+
+
+def load_wrapper(config):
+    sys.path.insert(0, config["pillow_path"])
+    source = read_bytes(WRAPPER, WRAPPER_SHA, observe=True)
+    spec = importlib.util.spec_from_file_location("rv_original_published_wrapper", WRAPPER)
+    module = importlib.util.module_from_spec(spec)
+    exec(compile(source, str(WRAPPER), "exec"), module.__dict__)
+    if sha(source) != WRAPPER_SHA:
+        raise ValueError("Wrapper source changed")
+    return module
+
+
+def actual_roster(wrapper, registration, expected, old_ids):
+    raw = read_bytes(OUTPUT / "FROZEN.json", expected)
+    frozen = strict(raw)
+    if (frozen["registration"] != registration or frozen["request_sha256"] != REGISTRATION_SHA
+            or frozen["driver_sha256"] != WRAPPER_SHA or frozen["methods"] != ["tuned-fixed", "conditional"]
+            or frozen["planned"] != {"B": 2, "C": 2}):
+        raise ValueError("New freeze differs from reviewed registration or wrapper")
+    native = wrapper.load_native(registration)
+    modules = native[0]
+    groups = wrapper.validate_partitions(registration["phases"], native[1]["collection_plan"], native[3])
+    if frozen["source_partitions"] != groups:
+        raise ValueError("New source partitions differ")
+    effects, plans = [], {}
+    for phase in ("B", "C"):
+        raw_plan = read_bytes(OUTPUT / (phase + "_PLAN.json"))
+        plan = strict(raw_plan)
+        pin = frozen["execution_plan_sha256s"][phase]
+        modules["macro_execution_plan"].validate_plan(plan, pin)
+        modules["macro_execution_plan"].check_inputs(plan, OUTPUT / phase)
+        if plan["registered_cases"] != registration["phases"][phase]:
+            raise ValueError("Plan case registration differs")
+        roster = modules["macro_execution"]._roster(plan, pin)
+        if len(roster) != 2 or {arm["arm_id"] for _, _, arm in roster} != {"tuned-fixed", "conditional"}:
+            raise ValueError("Exactly two actual original macro operations required")
+        for operation, context, arm in roster:
+            if operation != "macro-" + modules["digest"]([pin, context, arm["arm_id"]]):
+                raise ValueError("Original roster identity formula changed")
+            effects.append({"phase": phase, "operation_id": operation, "context": context,
+                            "arm_id": arm["arm_id"], "plan_sha256": pin,
+                            "output": str(OUTPUT / phase / operation)})
+        plans[phase] = {"canonical_sha256": pin, "raw_sha256": sha(raw_plan), "bytes": len(raw_plan)}
+    new_ids = [row["operation_id"] for row in effects]
+    if len(set(new_ids)) != 4 or set(new_ids) & set(old_ids):
+        raise ValueError("New effect identity duplicates old campaign or another phase")
+    return frozen, native, {"schema": "hepta.rv.actual-frozen-effect-roster.v1", "freeze_sha256": sha(raw),
+                          "old_report_sha256": REPORT_SHA, "old_effect_count": len(old_ids),
+                          "old_effect_ids_sha256": sha(("\n".join(old_ids) + "\n").encode()),
+                          "intersection": [], "plans": plans, "effects": effects,
+                          "existing_development_sources": 2, "independent_new_sources": 0}
+
+
+def readonly_phase(wrapper, phase, frozen, native):
+    report, summary = wrapper.reconcile(OUTPUT, phase, native[0], frozen)
+    return {"native_report": report, "native_report_sha256": native[0]["digest"](report),
+            "wrapper_summary": summary}
+
+
+def main():
+    global STAGE
+    raw_request = sys.stdin.buffer.read(1048577)
+    payload = strict(raw_request)
+    STAGE = payload["stage"]
+    if len(raw_request) > 1048576 or STAGE not in STAGES or sys.argv[1:] != [STAGE]:
+        raise ValueError("Exact bounded lifecycle request required")
+    if set(payload) != {"schema", "stage", "driver_sha256", "wrapper_utf8", "registration_utf8", "expected_frozen_sha256"}:
+        raise ValueError("Unexpected lifecycle request fields")
+    driver = sys.orig_argv[2].encode()
+    wrapper_raw, registration_raw = payload["wrapper_utf8"].encode(), payload["registration_utf8"].encode()
+    if (sys.orig_argv[1] != "-c" or sha(driver) != payload["driver_sha256"]
+            or payload["schema"] != "hepta.rv.lifecycle-request.v1"
+            or sha(wrapper_raw) != WRAPPER_SHA or sha(registration_raw) != REGISTRATION_SHA
+            or hashlib.sha1(b"blob " + str(len(wrapper_raw)).encode() + b"\0" + wrapper_raw).hexdigest() != WRAPPER_BLOB):
+        raise ValueError("Exact driver/wrapper/registration bytes required")
+    expected = payload["expected_frozen_sha256"]
+    if STAGE == "freeze" and expected is not None:
+        raise ValueError("Freeze cannot claim an existing new freeze pin")
+    if STAGE not in {"freeze", "inspect"} and (type(expected) is not str or len(expected) != 64):
+        raise ValueError("Phase requires the actual external freeze SHA256")
+    sys.addaudithook(audit)
+    registration = strict(registration_raw)
+    _, config, old_ids = original_inputs(registration)
+    if STAGE == "freeze":
+        if CONTROL.exists() or OUTPUT.exists():
+            raise FileExistsError("Existing preparation is read-only; inspect without retry")
+        CONTROL.mkdir(parents=False, exist_ok=False)
+        write_once(CONTROL / "driver.py", driver)
+        write_once(WRAPPER, wrapper_raw)
+        write_once(REGISTRATION, registration_raw)
+        write_once(CONTROL / "freeze-request.json", raw_request)
+        save(CONTROL / "OLD_EFFECT_IDS.json", {"source_sha256": REPORT_SHA, "ids": old_ids})
+    elif STAGE == "inspect" and not CONTROL.exists():
+        print(json.dumps({"status": "NO_CONTROL_DIRECTORY_OBSERVED", "historical_effects": "UNKNOWN",
+                          "actor_calls_this_request": 0, "owner_decision": None}, sort_keys=True))
+        return
+    else:
+        read_bytes(CONTROL / "driver.py", payload["driver_sha256"])
+        read_bytes(WRAPPER, WRAPPER_SHA)
+        read_bytes(REGISTRATION, REGISTRATION_SHA)
+    if STAGE == "inspect" and not (OUTPUT / "FROZEN.json").exists():
+        print(json.dumps({"status": "INCOMPLETE_FREEZE_NOT_EXECUTABLE", "actor_calls_this_request": 0,
+                          "owner_decision": None, "blocked_events": BLOCKED}, sort_keys=True))
+        return
+    wrapper = load_wrapper(config)
+    read_bytes(REGISTRATION, REGISTRATION_SHA, observe=True)
+    read_bytes(CONTROL / "driver.py", sha(driver), observe=True)
+    before = dict(OBSERVED)
+    mutating = STAGE in {"freeze", "B", "C"}
+    if STAGE in {"B", "C"} and any((CONTROL / (STAGE + suffix)).exists() for suffix in
+                                     ("-request.json", "-source-before.json", "-START.json", "-TERMINAL.json")):
+        raise FileExistsError("Prior phase request is read-only; reconcile without another dispatch")
+    started = False
+    result = {"stage": STAGE, "native_source_commit": NATIVE_SOURCE, "request_sha256": sha(raw_request),
+              "driver_sha256": sha(driver), "owner_decision": None, "qualification_status": "HOLD_NOT_EVALUATED",
+              "production_admission": False, "full_cost_observed": False, "independent_new_sources": 0,
+              "actor_calls_this_request": 0 if STAGE not in {"B", "C"} else None,
+              "python": {"executable": sys.executable, "version": sys.version, "uid": os.geteuid(),
+                         "binary_expected_sha256": None}, "status": "UNKNOWN"}
+    if STAGE in {"B", "C"}:
+        write_once(CONTROL / (STAGE + "-request.json"), raw_request)
+    try:
+        if mutating:
+            save(CONTROL / (STAGE + "-source-before.json"), before)
+        if STAGE == "freeze":
+            save(CONTROL / "freeze-START.json", {"time_ns": time.time_ns(), "actor_dispatch_allowed": False,
+                                               "request_sha256": sha(raw_request), "driver_sha256": sha(driver)})
+            started = True
+            actual = wrapper.freeze(REGISTRATION, REGISTRATION_SHA, OUTPUT)
+            expected = actual["freeze_sha256"]
+        frozen, native, roster = actual_roster(wrapper, registration, expected, old_ids)
+        result["freeze_sha256"], result["effect_roster"] = roster["freeze_sha256"], roster
+        if STAGE == "freeze":
+            if any((OUTPUT / p).exists() or (OUTPUT / (p + "_START.json")).exists() for p in ("B", "C")):
+                raise ValueError("Freeze unexpectedly has execution artifacts")
+            save(CONTROL / "EFFECT_ROSTER.json", roster)
+            result["status"] = "FROZEN_VERIFIED_NO_ACTORS"
+        elif STAGE in {"B", "C"}:
+            retained = strict(read_bytes(CONTROL / "EFFECT_ROSTER.json"))
+            if retained != roster or strict(read_bytes(CONTROL / "freeze-TERMINAL.json"))["status"] != "FROZEN_VERIFIED_NO_ACTORS":
+                raise ValueError("Original completed freeze/roster admission missing")
+            if (OUTPUT / STAGE).exists() or (OUTPUT / (STAGE + "_START.json")).exists():
+                raise FileExistsError("Phase is read-only after any prior start")
+            if STAGE == "C":
+                prior_control = strict(read_bytes(CONTROL / "B-TERMINAL.json"))
+                if prior_control["status"] != "RECORDED" or prior_control.get("original_inputs_unchanged") is not True:
+                    raise ValueError("Complete source-stable original B controller result required")
+                prior = readonly_phase(wrapper, "B", frozen, native)
+                terminal = strict(read_bytes(OUTPUT / "B_TERMINAL.json"))
+                if terminal["status"] != "RECORDED" or terminal["native_report_sha256"] != prior["native_report_sha256"] or prior["wrapper_summary"]["incomplete"]:
+                    raise ValueError("Unchanged complete B required before C")
+            save(CONTROL / (STAGE + "-START.json"), {"time_ns": time.time_ns(), "status": "MAY_HAVE_DISPATCHED",
+                                                   "freeze_sha256": expected, "request_sha256": sha(raw_request),
+                                                   "driver_sha256": sha(driver)})
+            started = True
+            result["wrapper_terminal"] = wrapper.run_phase(OUTPUT, STAGE, frozen, native)
+            actual = readonly_phase(wrapper, STAGE, frozen, native)
+            save(CONTROL / (STAGE + "-NATIVE_REPORT.json"), actual["native_report"])
+            result["reconciled"] = actual
+            result["status"] = "RECORDED" if not actual["wrapper_summary"]["incomplete"] else "RECORDED_INCOMPLETE"
+        elif STAGE.startswith("reconcile-"):
+            result["reconciled"] = readonly_phase(wrapper, STAGE[-1], frozen, native)
+            result["status"] = "READ_ONLY_RECONCILED"
+        else:
+            result["status"] = "READ_ONLY_FROZEN_INSPECTION"
+            result["phase_artifacts"] = {p: {name: (OUTPUT / name).exists() for name in
+                                            (p, p + "_START.json", p + "_TERMINAL.json")} for p in ("B", "C")}
+        after = unchanged(before)
+        result["original_inputs_unchanged"] = True
+        if mutating:
+            save(CONTROL / (STAGE + "-source-after.json"), after)
+    except BaseException as error:
+        failure_status = "UNKNOWN" if started and STAGE in {"B", "C"} else (
+            "FAILED" if mutating else "RECONCILIATION_ERROR_UNRESOLVED")
+        result.update(status=failure_status,
+                      error={"type": type(error).__name__, "message": str(error),
+                             "traceback": traceback.format_exc()})
+        raise
+    finally:
+        result["blocked_events"] = BLOCKED
+        if mutating:
+            save(CONTROL / (STAGE + "-TERMINAL.json"), result)
+        print(json.dumps(result, sort_keys=True, allow_nan=False), flush=True)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.rv.entry-asset-evidence-manifest.v1",
+  "job_id": "1a1cf673fde-2564-1a15",
+  "idempotency_key": "neuro4-rv-v2-entry-assets-read-862531d-v1",
+  "state": "succeeded",
+  "exit_code": 0,
+  "original_sdk_payloads": [
+    {
+      "operation_id": "60e2ab3868652e24856b385c5ed036ab3fe89b8a554ea0909c6ecad0cdb5fe7d",
+      "bytes": 51859,
+      "sha256": "bec0db3a5786bcd67cae68f87c2eec56b768cb59e1611bc68e09e342848d1b5b"
+    },
+    {
+      "operation_id": "7b43ff0506622160b890743b158ee2ec5df3babb34a722c6275a6002a4e3b7ab",
+      "bytes": 9987,
+      "sha256": "61278872518da31927b0d5c2a522d50d3a42d44a666ca1b23950aa16f43a6077"
+    },
+    {
+      "operation_id": "4976b1c5a77a185ce97b7a0f3061dc7f3048e4da0cbb5a61b3c232ec154c3113",
+      "bytes": 912,
+      "sha256": "7851eceb09329c7170839d9afd006bae8574e6e42993a29306e46ed0323c7bad"
+    }
+  ],
+  "qualification_status": "HOLD_NOT_EVALUATED",
+  "owner_decision": null,
+  "formal_wrapper_freeze_performed": false,
+  "actor_calls": 0,
+  "files": [
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROBE_SOURCE.py",
+      "bytes": 14061,
+      "sha256": "a7fe5f85e056f9f323361cbf5ab0dce50c3e3fb707b4ed938a471ffc5b5c3632",
+      "blob_sha": "a9f5e3fbe55e3123ede6b8a76abdee6236934204"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROBE_INPUT.json",
+      "bytes": 18815,
+      "sha256": "ec7df5dcede52a5076260559fc47702e28e1c7a78a7c9c8c65ad29bc333a1960",
+      "blob_sha": "8f05229bf12b54d34dc19e12df21d5df1a5eca6d"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROCESS_REQUEST.json",
+      "bytes": 35788,
+      "sha256": "ca027099058f3e230641044d3a3a0cae647b3128a2634c9d648cf95eae30a0c0",
+      "blob_sha": "e4c2280f082e541c5de6c7db74ac073ec09f5f6e"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROCESS_START_TOOL_RESULT.json",
+      "bytes": 16019,
+      "sha256": "0c6d63f1c7ed1b37aec7bd7231deb51fcc118d6a5bf582a2cebded42ee5468ee",
+      "blob_sha": "ee3e432e918f90d57e42d4be551985ced579c9af"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/DIRECT_READ_TIMEOUT_TOOL_RESULT.json",
+      "bytes": 218,
+      "sha256": "8a12f082809adbd62d567ab20e2c58ced3d75fda16bd66a697111bf132672cba",
+      "blob_sha": "4d4ad28a9f1e2c0ebcbc9474349fdfb72d8786d1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/READ0_ORIGINAL_SDK.json",
+      "bytes": 51859,
+      "sha256": "bec0db3a5786bcd67cae68f87c2eec56b768cb59e1611bc68e09e342848d1b5b",
+      "blob_sha": "538d9db474cf284cc8bf14b84e1c725c78fc856e"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/READ_TAIL_ORIGINAL_SDK.json",
+      "bytes": 9987,
+      "sha256": "61278872518da31927b0d5c2a522d50d3a42d44a666ca1b23950aa16f43a6077",
+      "blob_sha": "afdadf9c84d68ab493619d028399ded59952fbd1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STATUS_ORIGINAL_SDK.json",
+      "bytes": 912,
+      "sha256": "7851eceb09329c7170839d9afd006bae8574e6e42993a29306e46ed0323c7bad",
+      "blob_sha": "67e21af1b6205d25cd25358a5b3de484b0e6bf47"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STDOUT.json",
+      "bytes": 19447,
+      "sha256": "6d766ffeda9c1f48be08422f8fb3427ec5430a30a30fb63ccc2f7bf3b3e75d37",
+      "blob_sha": "f9a02869b98fdcde2c6b102b8bf39155bce6fa86"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STDERR.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/README.md",
+      "bytes": 5830,
+      "sha256": "978c08d8e34931370489b5733c135df0c684edecac7b46446637cedc69b9985a",
+      "blob_sha": "97e279d2f21cc3694bdacadb9c241db72e9464a3"
+    }
+  ]
+}

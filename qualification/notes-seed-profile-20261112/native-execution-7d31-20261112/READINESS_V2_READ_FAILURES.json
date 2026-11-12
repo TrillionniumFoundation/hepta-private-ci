@@ -1,0 +1,79 @@
+{
+  "status": "UNKNOWN_READBACK_TIMEOUT",
+  "job_id": "1a1cf846da2-2564-1a49",
+  "results": [
+    {
+      "key": "act6243:native_run:readiness_v2_opstatus:0664729b3dcea797e47468c9dd496be9a7731a74292cb376409a9979c3b08ab4",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.operation_status`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "act6243:native_run:readiness_v2_opstatus:54f92477cb9b6ba3dd9e3cc8bd6372084b8eb09541704f49fec289928cdf4b00",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.operation_status`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "act6243:native_run:readiness_v2_result:status:0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "act6243:native_run:readiness_v2_result:read:0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "act6243:native_run:readiness_v2_direct_status",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.process_status`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "act6243:native_run:readiness_v2_direct_read",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.process_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "interpretation": "Read API timeout is not process failure or success; native runner retained its own resource/tool/source gates."
+}

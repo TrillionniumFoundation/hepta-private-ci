@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.b-readback-applicability.v1",
+  "source_commit": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "base": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "code_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "direct_file_reads": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "expected": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "observed": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "bytes": 8712
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "expected": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "observed": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "bytes": 12526
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "expected": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "observed": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "bytes": 10961
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "expected": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "observed": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "bytes": 10749
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "expected": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "observed": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "bytes": 11847
+    }
+  ],
+  "CALLERS": {
+    "sha": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "scope": "root independently confirms unchanged; not fetched again in this five-file read"
+  },
+  "execution": "NOT_RUN"
+}

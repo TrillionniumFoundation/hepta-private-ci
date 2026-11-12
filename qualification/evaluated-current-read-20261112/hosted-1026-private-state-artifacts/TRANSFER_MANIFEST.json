@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.windows-private-state-artifact-extraction.v1",
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "workflow_run": 43213822708,
+  "artifact_id": 13947043334,
+  "original_zip_bytes": 13530,
+  "original_zip_sha256": "31209f7ec99daef47fc1c9a935fc9ac202dcb42584604c3775875fa783b66b93",
+  "ingest_original_result_blob": "7a191cfeacdc33d36e1d231d4c66d141769bbc8e",
+  "members": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/manifest.json",
+      "original_member": "manifest.json",
+      "blob": "b8c3d51f6dbafc3dfed3efe5e8620d9cef102104",
+      "bytes": 3166,
+      "sha256": "e42120b850125966890e6af365fedf914d18fc80eb42591326b9762103fdd720",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/path-check-open.log",
+      "original_member": "path-check-open.log",
+      "blob": "62cefb53402e629067515e157acd83ddce64b97f",
+      "bytes": 8215,
+      "sha256": "e42f50753a5278e50eb08bb23c7c313c9abfeb32bebe3c7f5c2511cdd666ad49",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/path-check-open.patch",
+      "original_member": "path-check-open.patch",
+      "blob": "c049101386d41c4855503b83d23ac2bb4a8f6b36",
+      "bytes": 962,
+      "sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/path-check-open.rs.txt",
+      "original_member": "path-check-open.rs",
+      "blob": "514b1c509712861582bd71e62d224e5e5338335e",
+      "bytes": 6191,
+      "sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+      "renamed_for_archival_only": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/positive.log",
+      "original_member": "positive.log",
+      "blob": "e9a6e01fd59b491671f71809273ef5ba5a8fdf6f",
+      "bytes": 7484,
+      "sha256": "c48b6cd9d4d8031ecec2e59ca79030fe17fd648b53f2dd2050fc72bcd9700201",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/positive.rs.txt",
+      "original_member": "positive.rs",
+      "blob": "dcf75023b7aa0df18ab4a875c8253f0bc10debbb",
+      "bytes": 5855,
+      "sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+      "renamed_for_archival_only": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/unchecked-create.log",
+      "original_member": "unchecked-create.log",
+      "blob": "97029042d453d23654388bce3de5212091850fe6",
+      "bytes": 8135,
+      "sha256": "85a840c6bf9fdd53102ab9c65bb60dd6e67ea5b46ddea560445b62d927f2bcce",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/unchecked-create.patch",
+      "original_member": "unchecked-create.patch",
+      "blob": "7c7712044ab466a42b92ef2f9b0545e3318f5435",
+      "bytes": 694,
+      "sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+      "renamed_for_archival_only": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/hosted-1026-private-state-artifacts/unchecked-create.rs.txt",
+      "original_member": "unchecked-create.rs",
+      "blob": "b47cb064972b3e741c2e3528873b32248aa107ec",
+      "bytes": 6231,
+      "sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+      "renamed_for_archival_only": true
+    }
+  ],
+  "scope_note": "Original Windows private-state acquisition artifact, separate from selected36 LEARN native tests. It is not Linux evaluated CURRENT/Root recovery qualification. Archived Rust text uses .rs.txt without changing bytes; no original tests rerun."
+}

@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "head": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
+  "tree": "65269d8d380a4e0e772c8f0b726fbe8cdf5190ba",
+  "actual_format_checkout": "81e63e9afa1c6aa1d8b77417056e3f6e7c4a6900",
+  "actual_format_tree": "65269d8d380a4e0e772c8f0b726fbe8cdf5190ba",
+  "actual_merge_parents": [
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "286c567593ca6bb5e8cf4ee03602155526bf47ec"
+  ],
+  "rustfmt": {
+    "run": 43266970777,
+    "job": 131353397871,
+    "result": "failure",
+    "command": "cargo fmt -- --config imports_granularity=Item --check",
+    "toolchain": "1.96.0",
+    "diagnostic_hunks": 3,
+    "diagnostic_files": 2
+  },
+  "fence": {
+    "run": 43266970777,
+    "job": 131353006036,
+    "result": "failure",
+    "action": "openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "runtime_version": "0.10.0",
+    "mode": "audit",
+    "error": "local_control_inventory_unavailable",
+    "checkout": "skipped",
+    "blob_policy_test": "skipped",
+    "changed_blob_check": "skipped",
+    "followup_errors": "Clean-worktree local action is unavailable before checkout; Fence post-job active Action evidence missing.",
+    "scope": "No hash mismatch or blob-policy execution was observed. This failure remains unresolved; no permission/mode/version change or rerun performed."
+  },
+  "format_candidate": {
+    "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+    "items": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+        "base": {
+          "bytes": 23392,
+          "sha256": "c5474be07f9d3f08a5b5731f991b1a14c4f0d5cb49810b113ff20d31e8ce1a45",
+          "git_blob_sha": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4"
+        },
+        "post": {
+          "bytes": 23184,
+          "sha256": "869d03336ccd4cd6e66bdd4dfaad2fe76677ca8c5149bd7f02f05fd991c31193",
+          "git_blob_sha": "b0fe2b873db6158978e64d69fe686e3a1692fc2f"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+        "base": {
+          "bytes": 8977,
+          "sha256": "bc3d2ae7cf0b8ae04254552cdf5ad64f31758b1a6560f9ca150a7380e5b1dc5d",
+          "git_blob_sha": "526596aa073290c60bf3e8d44f52d2812910b158"
+        },
+        "post": {
+          "bytes": 9005,
+          "sha256": "b6ce4d6021c3cc99132d68f969e468667e38e45facc6800cc09f785fab0f5ac7",
+          "git_blob_sha": "ec295b7aa459e14fbe5109354ab888b7f9239e85"
+        }
+      }
+    ],
+    "scope": "Whitespace-only postimages copied from actual formatter output; no local formatter, compiler, tests or ref changes."
+  },
+  "original_files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/rustfmt.job.log",
+      "bytes": 138138,
+      "sha256": "e0cef1f2357fce490e439a7cca7b25b7815f183269c3f88c245f7b073b648796",
+      "git_blob_sha": "6d914af830b9d9fd47b41d876d8798f9574de73a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/fence.job.log",
+      "bytes": 9224,
+      "sha256": "58be19a06342def3d4183dc02f1f7bfbc7c7e6e4dac1d7e22196e9477e4d2fc6",
+      "git_blob_sha": "40c3c48897d5513e04120e0f3ce17e298aee3ff0"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/synthetic-merge.original.json",
+      "bytes": 2798,
+      "sha256": "4b42ac2b4c121e5899bd351add2a745307fe661ea6fba1d36f17cc7dc3b8c6ed",
+      "git_blob_sha": "cd2a0ade0f7da54d53bfab387701aa098632dc52"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/source-commit.original.json",
+      "bytes": 1316,
+      "sha256": "84e4a0f668db668ff0e0b3738d017c2206fcb30c2082c465d26835d3f318893d",
+      "git_blob_sha": "2731155223ca44bccddc6e25783cc71675b20fdb"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/blocking-jobs.original.json",
+      "bytes": 73591,
+      "sha256": "bafdd6c72cd750d3d76a11768e02425c562e6089fe9a6c69f1bcce19044ffc08",
+      "git_blob_sha": "317633241532a9950ed5b436bc035ccfa52ea591"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/daemon-jobs.initial.original.json",
+      "bytes": 5299,
+      "sha256": "fbfe9f37609fd3856c11e36efee40ab5448a4fcef42ff1921b10e4d11345cdee",
+      "git_blob_sha": "5011c1b05ffb8457bf5a07e6844d4f0a07ae0af8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/check-runs.initial.original.json",
+      "bytes": 157862,
+      "sha256": "6bb16a7a39b42a16e5307e38c26e0101bf1db235a31c78ede9f3ba72194030db",
+      "git_blob_sha": "227df9a66ffe43458da73b308e3dc2e2fdfde621"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/workflow-runs.initial.original.json",
+      "bytes": 121563,
+      "sha256": "22008880d9d85456a1832dcc09a72d4169a61e86c62e27d5178c38b91fa0b8c2",
+      "git_blob_sha": "7837df082ff8fb1c910986d1f55a2ed1f79196de"
+    }
+  ]
+}

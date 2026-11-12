@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "purpose": "Actual exact-source unittest execution evidence, not owner adoption or Root qualification",
+  "source_runs": [
+    {
+      "pr": 6240,
+      "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+      "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80",
+      "job_id": "1a1cf222fed-2564-19a1",
+      "status": "passed",
+      "passed": 19,
+      "failed": 0,
+      "exit_code": 0,
+      "runtime": {
+        "euid": 1000,
+        "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+        "module_origins": {
+          "test_ctrl_macro_analysis": "/home/qq/neuro-owner-6240-2411261-862531d11598/scripts/test_ctrl_macro_analysis.py",
+          "test_ctrl_macro_factorial": "/home/qq/neuro-owner-6240-2411261-862531d11598/scripts/test_ctrl_macro_factorial.py",
+          "test_summarize_ctrl_factorial": "/home/qq/neuro-owner-6240-2411261-862531d11598/qualification/ctrl-real-comparison-20261112/analysis/test_summarize_ctrl_factorial.py"
+        },
+        "numpy": "1.26.4",
+        "numpy_file": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/numpy/__init__.py",
+        "pillow": "12.0.0",
+        "pillow_file": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py",
+        "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+        "uid": 1000
+      },
+      "source_before": {
+        "bytes": 99508,
+        "path": "source-before.json",
+        "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+      },
+      "source_after": {
+        "bytes": 99508,
+        "path": "source-after.json",
+        "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+      },
+      "junit": {
+        "path": null,
+        "status": "not_emitted_by_original_unittest_command"
+      },
+      "prefix": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation",
+      "git_dirty": false,
+      "scope": "unittest regression mechanics only"
+    },
+    {
+      "pr": 6221,
+      "source_sha": "2d1f610f0f2abf6dc5d7d903243621376697b407",
+      "tree": "93ada9e27db2eb991e21e97f4554d3963de1ccc6",
+      "job_id": "1a1cf230cd2-2564-19a4",
+      "status": "passed",
+      "passed": 26,
+      "failed": 0,
+      "exit_code": 0,
+      "runtime": {
+        "euid": 1000,
+        "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+        "module_origins": {
+          "ndu_real_runtime.test_macro_policy": "/home/qq/neuro-owner-6221-2d1f610-862531d11598/scripts/ndu_real_runtime/test_macro_policy.py",
+          "ndu_real_runtime.test_macro_policy_checkpoint": "/home/qq/neuro-owner-6221-2d1f610-862531d11598/scripts/ndu_real_runtime/test_macro_policy_checkpoint.py"
+        },
+        "numpy": "1.26.4",
+        "numpy_file": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/numpy/__init__.py",
+        "pillow": "12.0.0",
+        "pillow_file": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py",
+        "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+        "uid": 1000
+      },
+      "source_before": {
+        "bytes": 83452,
+        "path": "source-before.json",
+        "sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f"
+      },
+      "source_after": {
+        "bytes": 83452,
+        "path": "source-after.json",
+        "sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f"
+      },
+      "junit": {
+        "path": null,
+        "status": "not_emitted_by_original_unittest_command"
+      },
+      "prefix": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation",
+      "git_dirty": false,
+      "scope": "unittest regression mechanics only"
+    }
+  ],
+  "files": [
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/preparation.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7e389c54e698528f87731a2da2f75b0a2c5d10e",
+      "bytes": 301,
+      "sha256": "fbc145828cd7cea2adb4b201604f3260a520c201497bb38871b4a1b733d49159",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/request.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f55902510ba9805514cb912a2546858489d35d21",
+      "bytes": 886,
+      "sha256": "a92e34d566ec4265a4463904454bca93b2ab3499a80c0856a52adab0e74bc372",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/runtime.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93347fae1478b2985a4659d1a19d78789f71d75c",
+      "bytes": 849,
+      "sha256": "9626f3aea29f6f9949790079538989626a67520136d704ebb7701efd0d6748bb",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_analysis.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8a8b7c8b857cff8efa1973e381d6ecdd4007796",
+      "bytes": 1496,
+      "sha256": "3bf0e48d19cc1ef026b3204a375b3b3cc1f9684221b226e7bab8b8d329de4480",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_analysis.json.12d298f09e034851af84882f6afc158d.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "890e4dc9a759a85ae5782d9d745475d0bf7c8dc6",
+      "bytes": 1135,
+      "sha256": "cf722deb46afb2557a0fe4ec8918045e0c863509bdf1bedfd4cc72abfced5c9b",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_analysis.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0682594066f951a54e5b38a7ef795e6e22c2a0f",
+      "bytes": 2483,
+      "sha256": "a539f6fb483984c2cdbf5c8b916b78b10023743c76c871ccf5c302f7cb2efcb9",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_factorial.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32785e5cbfa90e702a0ed97977f7a023a5dbfa11",
+      "bytes": 1499,
+      "sha256": "d4280d7b362faa69bb496e5b4b91772bf5820a14b4b85033a7c41374cc625fd5",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_factorial.json.95162e3868a54d66ac162c86b6cde75b.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6736166862b74469c425a3f22b99925e90442854",
+      "bytes": 3882,
+      "sha256": "ca910d70cfd5167e53e6ad0afef188ad955f9900e7c90bb78a58013cb2d89421",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_ctrl_macro_factorial.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "238c2f2fa22ddd6ddadb6ed7e3f7670bc167876f",
+      "bytes": 5233,
+      "sha256": "937350c695a9cf8de85dca0e63bac23aa513e9d0e3538d12df13b493b3e2495b",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_summarize_ctrl_factorial.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3700680f853c97e03ba34976431c6e8931e49e38",
+      "bytes": 1505,
+      "sha256": "a75e5e4ac0e85aab4c240e8f671f11edaa47f2eb59bb4b24b1832d659078dda2",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_summarize_ctrl_factorial.json.c191d1abdda9459488b56510764dee67.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bbffe859467be090bc3482d715d0bcd80d51b6d9",
+      "bytes": 718,
+      "sha256": "af2f1030fc7661cedc0e2105214b9142f25fe43a5eb9bf31a5aa68c091d360d4",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/test_summarize_ctrl_factorial.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d952124ab222a1ba76c6867321ace06081873c96",
+      "bytes": 2075,
+      "sha256": "aa4471de467144a813184b9bd2b981279606b97360a5513e3e33c4a2ea9a4131",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/RESULT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e01e057a445823fdb57918b499f5e45527a9ec81",
+      "bytes": 10273,
+      "sha256": "30e739c8e48ebe5a7ee4b57fa28e066dccec0e571c2140f22b98d5560a82c999",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/source-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0acd35652b9af7d1d29f16825e47c46bacca5cd5",
+      "bytes": 99508,
+      "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/source-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0acd35652b9af7d1d29f16825e47c46bacca5cd5",
+      "bytes": 99508,
+      "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/runner-source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9bb25c3212c7c45bef0a4fe291eec257ec0363b0",
+      "bytes": 8911,
+      "sha256": "6cd21e62235d03db4131ec10ccbc0bcfaad7e36085e9cf12ac2d0eb0660bf95a",
+      "provenance": "exact_dispatched_python_source"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/h-request.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b0e1873a6b1a4fd558d458151d66bd8bd6ee912d",
+      "bytes": 10635,
+      "sha256": "e30cebe0fbca8bff16deec1cbb7d46c7c4ccfb2cd09c43a417a4be0ac940f583",
+      "provenance": "serialized_exact_request"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/h-stdout.jsonl",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4269650688e0e40169c92b5e89a5efaf894dcfb",
+      "bytes": 10207,
+      "sha256": "52640a3198ace9398997e70c4dc7e82a2c4132a07bf905c50aa9844d87f8c4a2",
+      "provenance": "original_complete_durable_stdout"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/h-status.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de0c32e5ec3449b1c2b67ffa7ed6f0e8630243d3",
+      "bytes": 734,
+      "sha256": "60f982ac6b54ff4f8d331c751b24bf49e7b944f0013ce73242e54b3c842962f1",
+      "provenance": "serialized_authoritative_status"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "edaafd22b7373dd6836bcc84a6d61a03cd22701f",
+      "bytes": 1517,
+      "sha256": "0ce6071cd71b806e0d803f5369479b942c7dfa20d83a4996fdc1310cbb7f6dcb",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json.0ba652e4852e4251bdf2e70c95dc7208.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "beb0c9275a3ad2588d317c38e2d71c3738570d2d",
+      "bytes": 3157,
+      "sha256": "8a37d64d84695920f366b65b9cf4c1da3970d24db98cc3eccd98d4414b047c6b",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f604e8e537b65873553134449eac2d3019d877c",
+      "bytes": 4526,
+      "sha256": "4f2987721275e359388d2791e4a248c337c31dbd8ef0d721535a719851834761",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy_checkpoint.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f32ad1dcf32145b0d2db8ad73cda2d9ba134345d",
+      "bytes": 1537,
+      "sha256": "b0aa3603ef5ed0befa8f0cd59566e05e56a924daa6b31f844ce32b8207a76567",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy_checkpoint.json.8c36afdb210845a99b45be8e31be2133.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45f36d49b4a43e7723a9ca7f554e1bd807113597",
+      "bytes": 1390,
+      "sha256": "a8cd900962e54893d4b70c8a627fe777613dc563f80123d301a787425c42cb08",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy_checkpoint.runner.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d10f3ad1826af6a00d304334a02eda877e042122",
+      "bytes": 2779,
+      "sha256": "25e6bc3e2b19f2df15ded023c4555346fc1d65a55f72749a661f023fb0767c29",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/preparation.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "91ce3ace3c96f96129237c5969a64291a2d8a478",
+      "bytes": 288,
+      "sha256": "7f01b643aa03edf94da0bd5af53c6de4064b318eed8c4a49a7fe83186f9be869",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/request.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "274bb987a68609d9b7433a61e3fbee92c42e7abe",
+      "bytes": 695,
+      "sha256": "71fb23b2427eab004ea11ab08720955ccb43d8f1b4749640e3acc664482515bb",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/runtime.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "897628607b8066acd78bfb5eb1dd10c3fbce856f",
+      "bytes": 740,
+      "sha256": "4ebd5d44e35b5abbd554002ad230539c2ee368b3a515f4c06125aee0afe57031",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/RESULT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7020a8585116bf80b4b9eb0c4040a2a292aedbf",
+      "bytes": 7852,
+      "sha256": "84bbf9d5737e7115176e068abdb7aa155ccc45a6f921fb9f8c7a00a8a8fecb76",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/source-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3dcf4cb957a4ea6ac3d0e79de00fa24aa14ba881",
+      "bytes": 83452,
+      "sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/source-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3dcf4cb957a4ea6ac3d0e79de00fa24aa14ba881",
+      "bytes": 83452,
+      "sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f",
+      "provenance": "original_remote_file"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/runner-source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9bb25c3212c7c45bef0a4fe291eec257ec0363b0",
+      "bytes": 8911,
+      "sha256": "6cd21e62235d03db4131ec10ccbc0bcfaad7e36085e9cf12ac2d0eb0660bf95a",
+      "provenance": "exact_dispatched_python_source"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/h-request.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "13fa2f75f75156bc3501cf2105b97a034410c480",
+      "bytes": 10472,
+      "sha256": "e7e03d23fb7247f19fe83248a9630b1bbca2dfa9dedc850afbb80ef454b0e879",
+      "provenance": "serialized_exact_request"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/h-stdout.jsonl",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae94c01c9239728b6aee7bbc79a75b528e8f00e6",
+      "bytes": 8031,
+      "sha256": "4fb027f43a0a7c0742cee1e1c5a97d03f94b271c256282b4b66d62ff067a6866",
+      "provenance": "original_complete_durable_stdout"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/h-status.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5755ebc476b51f146f6d59412eefba2be2383d1d",
+      "bytes": 732,
+      "sha256": "df54644c7dcd307c6b49ffc2c959115847767224c465d66ed7775d99e6df1560",
+      "provenance": "serialized_authoritative_status"
+    }
+  ],
+  "excluded_remote_placeholder": "runner.py is a 53-byte pointer to the durable request. runner-source.py and h-request.json preserve the actual dispatched code instead."
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.evaluation-predecessor-diagnostic.v1",
+  "base_tree": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+  "src_tree": "33f1e2430d1ffa0dfdca4d37493485ae141fff28",
+  "status": "STATIC_NOT_RUN_NOT_FMT",
+  "code_tree": "3868c1af50954ef88ebc6d2a4d3954a2851da0df",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "base": "ece1fdf2adcc54de868fa6378ea1638b949a5565",
+      "post": "c1a56101fc6db3ea93155784c2776dfff3f44973",
+      "bytes": 6107,
+      "sha256": "d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "base": null,
+      "post": "6c075688f8eb85ef77bd9495fcb85810acfe658e",
+      "bytes": 4300,
+      "sha256": "f2ea2a22fc0dc6058f9c732ff27a5b4239c86b9e4f137981468ebedc81cb3bed"
+    }
+  ],
+  "patch": {
+    "path": "qualification/evaluated-current-read-20261112/e72-evaluation-predecessor-diagnostic/SOURCE.diff",
+    "blob": "8f48dcf19b666b0620c954e7403c21b0254de416",
+    "bytes": 6722,
+    "sha256": "15d81787c4a9718bbba45ada90ed6492a0cbca6a0f748003999bc9bad75fcd84"
+  },
+  "edits": [
+    {
+      "index": 799,
+      "from": "impl OriginalCellEvaluationHostV1 {\n",
+      "to": "#[cfg(test)]\n#[path = \"neuron_cell_evaluation_host_diagnostics_tests.rs\"]\nmod diagnostics;\n\nimpl OriginalCellEvaluationHostV1 {\n"
+    },
+    {
+      "index": 2108,
+      "from": "        for request_id in 1..=128_u64 {\n",
+      "to": "        for request_id in 1..=128_u64 {\n            #[cfg(test)]\n            diagnostics::begin_request(request_id);\n"
+    },
+    {
+      "index": 3917,
+      "from": "    fn original_response(&self, action: wire::Action) -> Result<wire::Outcome, Error> {\n        let completed =",
+      "to": "    fn original_response(&self, action: wire::Action) -> Result<wire::Outcome, Error> {\n        #[cfg(test)]\n        let diagnostic_started = std::time::Instant::now();\n        let completed ="
+    },
+    {
+      "index": 4387,
+      "from": "        match completed {\n            Ok(original) =>",
+      "to": "        #[cfg(test)]\n        if let Err(error) = &completed {\n            diagnostics::capture(action, self.binding, diagnostic_started.elapsed(), error);\n        }\n        match completed {\n            Ok(original) =>"
+    },
+    {
+      "index": 5732,
+      "from": "        self.serve_channel(channel)\n    }\n\n    pub(crate) fn fixture_command_response(",
+      "to": "        let result = self.serve_channel(channel);\n        // The original service, including its last exchange, has returned.\n        diagnostics::flush();\n        result\n    }\n\n    pub(crate) fn fixture_command_response("
+    }
+  ],
+  "proof": {
+    "inverse_replacements_reproduce_exact_base_bytes": true,
+    "production_function_edit_ranges": [
+      {
+        "index": 799,
+        "added_cfg_test_only": true
+      },
+      {
+        "index": 2108,
+        "added_cfg_test_only": true
+      },
+      {
+        "index": 3917,
+        "added_cfg_test_only": true
+      },
+      {
+        "index": 4387,
+        "added_cfg_test_only": true
+      }
+    ],
+    "existing_test_only_fixture_return_preserves_exact_result": true,
+    "original_state_function_unchanged": true,
+    "no_product_payload_or_signature_formatted": true,
+    "all_new_stderr_only_after_fixture_serve_channel_returns": true,
+    "raw_error_debug_formatting": false,
+    "only_enum_categories_discriminants_static_binding_reasons": true
+  },
+  "observed_failure": {
+    "execution_source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "tail_blob": "48c873e78aa594816c87537a45c7188ffdf577ea",
+    "tail_sha256": "33ae5710943289558cd68373101e6f4d2723c9d692d490f6c28a79ee8faad135",
+    "outer_error": "Receipt(Evaluated(Evaluation(PredecessorUnavailable)))",
+    "S_callback_elapsed_ms": [
+      600.407218,
+      601.860501,
+      603.923026
+    ]
+  },
+  "scope": [
+    "Capture only the first Panel/Qualification/PredecessorUnavailable failure per original fixture service thread; no successful or expected Pending/Missing payload is collected.",
+    "Only explicit Panel/Qualification categories, compiler enum discriminants and &'static str Binding/OwnerUnavailable reasons are retained. No original enum fields, requests, responses, receipts, signatures or arbitrary messages are formatted.",
+    "Flush runs after the unchanged serve_channel returns; the original result and all match/wire outcomes are unchanged.",
+    "No callback deadline, 128-frame cap, lifetime, clock, signing, assertion, source/ref or experiment is changed.",
+    "This observes the next original failed execution; it does not establish or repair its root cause.",
+    "No formatter, compiler, tests or actor was run.",
+    "An inner enum discriminant is an opaque same-source diagnostic tag, not a payload or proof of the cause. It must be interpreted against this exact compiled source."
+  ],
+  "source_closure": {
+    "CALLERS_changed": false,
+    "service_guard_present": true,
+    "all_existing_required_sequences_preserved": true,
+    "helper_module_cfg_test": true
+  },
+  "supersedes_candidate": "2eb80896ccbddb7b281af1c8c8d12e2498aef359",
+  "readback": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "post": "c1a56101fc6db3ea93155784c2776dfff3f44973",
+      "full_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "post": "6c075688f8eb85ef77bd9495fcb85810acfe658e",
+      "full_readback": true
+    }
+  ]
+}

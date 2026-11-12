@@ -1,0 +1,153 @@
+import json, os, pathlib, re, shutil, signal, stat, subprocess, sys, time, urllib.parse
+def emit(event, **fields):
+    print(json.dumps({"event": event, **fields}, sort_keys=True), flush=True)
+def timeout(signum, frame):
+    raise TimeoutError("Read-only asset locator exceeded 45 seconds")
+signal.signal(signal.SIGALRM, timeout)
+signal.setitimer(signal.ITIMER_REAL, 45)
+began = time.monotonic()
+home = pathlib.Path("/home/qian-qi")
+emit("identity", schema="hepta.readonly-desktop-assets.v1", uid=os.getuid(), euid=os.geteuid(), cwd=os.getcwd(), max_directory_entries=200, build_calls=0, installs=0, actors=0)
+def small(path, limit=65536):
+    try:
+        with open(path, "rb") as stream:
+            value = stream.read(limit + 1)
+        return value[:limit].decode("utf-8", "replace"), len(value) > limit
+    except OSError:
+        return None, False
+def fs_info(path, role):
+    try:
+        st, fs = os.stat(path), os.statvfs(path)
+        emit("filesystem", role=role, path=str(path), resolved=os.path.realpath(path), device=st.st_dev, available_bytes=fs.f_bavail*fs.f_frsize, available_inodes=fs.f_favail, read_only=bool(fs.f_flag & getattr(os, "ST_RDONLY", 1)), noexec=bool(fs.f_flag & getattr(os, "ST_NOEXEC", 8)), access_write_traverse=os.access(path, os.W_OK | os.X_OK), actual_write_test=False)
+    except OSError as exc:
+        emit("filesystem", role=role, path=str(path), error=type(exc).__name__, errno=exc.errno)
+for path in (home, pathlib.Path("/tmp")):
+    fs_info(path, "observed_home_or_tmp")
+mounts, mount_truncated = small("/proc/self/mountinfo")
+seen_mounts, mount_count = set(), 0
+for line in (mounts or "").splitlines():
+    fields = line.split()
+    try:
+        separator = fields.index("-")
+        filesystem = fields[separator + 1]
+        path = re.sub(r"\\([0-7]{3})", lambda m: chr(int(m[1], 8)), fields[4])
+    except (ValueError, IndexError):
+        continue
+    if filesystem not in {"ext4", "xfs", "btrfs", "f2fs", "zfs", "bcachefs", "fuseblk", "ntfs3", "overlay"}:
+        continue
+    if path in seen_mounts or not (path == "/" or path == "/home" or path.startswith(("/data", "/mnt/", "/media/", "/workspace", "/projects"))):
+        continue
+    seen_mounts.add(path)
+    if mount_count >= 8:
+        continue
+    fs_info(path, "observed_local_mount")
+    mount_count += 1
+emit("mount_scope", source="/proc/self/mountinfo", truncated=mount_truncated, eligible_mounts=len(seen_mounts), statvfs_count=mount_count)
+parents = [home]
+for path in [home/name for name in ("projects", "workspace", "workspaces", "work", "src", "repos", "code")] + [pathlib.Path(p) for p in ("/workspace", "/workspaces", "/projects", "/work")]:
+    if path.is_dir() and not path.is_symlink() and path not in parents:
+        parents.append(path)
+scanned, limited, candidates = 0, False, []
+for parent in parents:
+    if scanned >= 200:
+        limited = True
+        break
+    try:
+        with os.scandir(parent) as entries:
+            for entry in entries:
+                if scanned >= 200:
+                    limited = True
+                    break
+                scanned += 1
+                if not entry.name.startswith(".") and re.search(r"hepta|codex", entry.name, re.I) and entry.is_dir(follow_symlinks=False):
+                    candidates.append(pathlib.Path(entry.path))
+    except OSError as exc:
+        emit("directory_scope_error", path=str(parent), error=type(exc).__name__, errno=exc.errno)
+emit("directory_scope", roots=[str(p) for p in parents], entries_observed=scanned, limit_reached=limited, matching_directories=len(candidates), recursive=False)
+environment = {"PATH":"/usr/bin:/bin", "LANG":"C", "LC_ALL":"C", "GIT_OPTIONAL_LOCKS":"0", "GIT_CONFIG_NOSYSTEM":"1", "GIT_CONFIG_GLOBAL":"/dev/null"}
+def git(path, args):
+    try:
+        p = subprocess.run(["/usr/bin/git", "-C", str(path), *args], cwd="/", env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=2, check=False)
+        return p.returncode, p.stdout[:16384].decode("utf-8", "replace").strip()
+    except (OSError, subprocess.TimeoutExpired):
+        return None, ""
+def redacted_remote(raw):
+    host, path = None, ""
+    if "://" in raw:
+        try:
+            value = urllib.parse.urlsplit(raw)
+            host, path = value.hostname, value.path
+        except ValueError:
+            pass
+    else:
+        match = re.fullmatch(r"(?:[^@\s]+@)?([^:/\s]+):(.+)", raw)
+        if match:
+            host, path = match.groups()
+    match = path.rstrip("/").removesuffix(".git").lower().endswith("/trillionniumfoundation/hepta-private-ci") or path.rstrip("/").removesuffix(".git").lower() == "trillionniumfoundation/hepta-private-ci"
+    return {"host":host, "repository":"TrillionniumFoundation/hepta-private-ci" if match else "NON_TARGET_OR_UNRECOGNIZED", "expected_repository_name":match, "raw_url_printed":False}
+python_paths = [pathlib.Path("/usr/bin/python3")]
+for path in candidates[:12]:
+    marker = path / ".git"
+    entry = {"path":str(path), "git_marker_exists":marker.exists(), "working_tree_cleanliness":"NOT_CHECKED", "files_read":"git identity only; no source or credential files"}
+    if marker.exists():
+        rc, head = git(path, ["rev-parse", "--verify", "HEAD"])
+        entry["head"] = head if rc == 0 and re.fullmatch(r"[0-9a-f]{40}", head) else None
+        rc, remote = git(path, ["config", "--local", "--no-includes", "--get", "remote.origin.url"])
+        entry["origin"] = redacted_remote(remote) if rc == 0 else {"status":"UNAVAILABLE"}
+    emit("candidate", **entry)
+    for relative in ("target", "codex-rs/target"):
+        target = path / relative
+        if target.is_dir():
+            fs_info(target, "existing_target_metadata_only")
+    for relative in (".venv/bin/python", "venv/bin/python", "ci-env/bin/python"):
+        executable = path / relative
+        if executable.is_file():
+            python_paths.append(executable)
+uv = shutil.which("uv")
+uv_version = None
+if uv:
+    try:
+        with open(uv, "rb") as stream:
+            elf = stream.read(4) == b"\x7fELF"
+        if elf:
+            p = subprocess.run([uv, "--version"], cwd="/", env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=2, check=False)
+            uv_version = p.stdout[:256].decode("utf-8", "replace").strip() if p.returncode == 0 else None
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+emit("uv", path=uv, version=uv_version, install_or_cache_command_executed=False)
+cache_paths = {str(home/".cache"/"uv")}
+if os.environ.get("UV_CACHE_DIR"):
+    cache_paths.add(os.environ["UV_CACHE_DIR"])
+if os.environ.get("XDG_CACHE_HOME"):
+    cache_paths.add(str(pathlib.Path(os.environ["XDG_CACHE_HOME"])/"uv"))
+for path in sorted(cache_paths):
+    if os.path.isdir(path):
+        fs_info(path, "uv_cache_metadata_only")
+package_code = "import importlib,json,sys\nout={'python':sys.version,'executable':sys.executable,'prefix':sys.prefix,'dont_write_bytecode':sys.dont_write_bytecode}\nfor name in ('numpy','PIL'):\n try:\n  module=importlib.import_module(name)\n  out[name]={'available':True,'version':getattr(module,'__version__',None),'path':getattr(module,'__file__',None)}\n except Exception as error:\n  out[name]={'available':False,'error_type':type(error).__name__}\nprint(json.dumps(out,sort_keys=True))\n"
+python_environment = {"PATH":"/usr/bin:/bin","LANG":"C","LC_ALL":"C","OPENBLAS_NUM_THREADS":"1","OMP_NUM_THREADS":"1","MKL_NUM_THREADS":"1"}
+seen_python, python_count = set(), 0
+for executable in python_paths:
+    root = executable.parent.parent
+    identity = (os.path.realpath(executable), str(root) if (root/"pyvenv.cfg").is_file() else None)
+    if identity in seen_python:
+        continue
+    seen_python.add(identity)
+    if python_count >= 4:
+        continue
+    try:
+        with open(executable, "rb") as stream:
+            elf = stream.read(4) == b"\x7fELF"
+        if not elf:
+            emit("python_packages", executable=str(executable), status="NON_ELF_NOT_EXECUTED")
+            continue
+        p = subprocess.run([str(executable), "-I", "-B", "-c", package_code], cwd="/", env=python_environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=5, check=False)
+        observed = json.loads(p.stdout) if p.returncode == 0 else None
+        emit("python_packages", executable=str(executable), exit_code=p.returncode, observed=observed, actor_calls=0)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        emit("python_packages", executable=str(executable), error=type(exc).__name__)
+    python_count += 1
+emit("python_scope", identified=len(seen_python), probed=python_count, capped=python_count < len(seen_python))
+for kind in ("cpu", "memory", "io"):
+    value, truncated = small("/proc/pressure/"+kind, 1024)
+    emit("pressure", kind=kind, text=value, truncated=truncated)
+emit("complete", elapsed_seconds=time.monotonic()-began, load_average=list(os.getloadavg()), build_calls=0, installs=0, actor_calls=0, script_file_write_calls=0, target_du_calls=0, new_checkouts=0)

@@ -1,0 +1,22 @@
+test_actual_workflow_ordinary_report_wiring_reads_recorded_log (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_actual_workflow_ordinary_report_wiring_reads_recorded_log) ... ok
+test_actual_workflow_retains_all_five_maintained_owner_postimages (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_actual_workflow_retains_all_five_maintained_owner_postimages) ... ok
+test_actual_workflow_still_refuses_maintenance_outside_exact_owner_scope (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_actual_workflow_still_refuses_maintenance_outside_exact_owner_scope) ... ok
+test_each_original_owner_group_is_required_in_both_reports (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_each_original_owner_group_is_required_in_both_reports) ... ok
+test_exact_subset_retains_other_native_cases (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_exact_subset_retains_other_native_cases) ... ok
+test_missing_and_duplicate_required_cases_reject (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_missing_and_duplicate_required_cases_reject) ... ok
+test_nested_and_orphan_cases_cannot_supply_coverage (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_nested_and_orphan_cases_cannot_supply_coverage) ... ok
+test_original_evaluator_cases_cannot_be_supplied_by_agentd (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_original_evaluator_cases_cannot_be_supplied_by_agentd) ... ok
+test_raw_log_missing_substituted_duplicate_and_failed_rows_reject (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_raw_log_missing_substituted_duplicate_and_failed_rows_reject) ... ok
+test_retained_execution_refuses_failed_records_bad_identity_and_symlinks (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_retained_execution_refuses_failed_records_bad_identity_and_symlinks) ... ok
+test_retained_execution_uses_exact_original_log_identity (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_retained_execution_uses_exact_original_log_identity) ... ok
+test_retained_log_aliases_and_path_escape_are_rejected (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_retained_log_aliases_and_path_escape_are_rejected) ... ok
+test_retained_raw_bytes_cannot_be_changed_truncated_or_extended (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_retained_raw_bytes_cannot_be_changed_truncated_or_extended) ... ok
+test_same_names_require_native_package_and_suite_identity (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_same_names_require_native_package_and_suite_identity) ... ok
+test_skipped_failed_and_errored_cases_are_not_passes (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_skipped_failed_and_errored_cases_are_not_passes) ... ok
+test_workflow_ordinary_executes_all_original_owner_packages (test_hepta_c_observer_coverage.OriginalObserverCoverageTests.test_workflow_ordinary_executes_all_original_owner_packages) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.094s
+
+OK
+{"after": {"commit": "088aadac3c88a5be6299ece1561d1ed54dd7d494", "dirty": false, "parents": ["7efec4fff19ce49b3dceb9d704ac9559a8d92c54"], "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9"}, "base_sha": "", "before": {"commit": "088aadac3c88a5be6299ece1561d1ed54dd7d494", "dirty": false, "parents": ["7efec4fff19ce49b3dceb9d704ac9559a8d92c54"], "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9"}, "command": ["/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python", "-B", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_hepta_c_observer_coverage.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 0.1859634139109403, "exit_code": 0, "finished_at": "2026-11-12T10:03:13.135095+00:00", "job": null, "lane": "source-head", "log_bytes": 3123, "log_file": "owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log", "log_sha256": "d71f03d1d594190e776f3acf143e24afc022515dc45cd60147dcdf5e8ce49ccf", "minimum_tests": 1, "observed_failed_tests": 0, "observed_passed_tests": 16, "output_limit_exceeded": false, "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "088aadac3c88a5be6299ece1561d1ed54dd7d494", "started_at": "2026-11-12T10:03:12.948336+00:00", "status": "passed", "tested_sha": "088aadac3c88a5be6299ece1561d1ed54dd7d494", "timed_out": false, "working_directory": "/home/qq/neuro-owner-6213-088aada-862531d11598"}

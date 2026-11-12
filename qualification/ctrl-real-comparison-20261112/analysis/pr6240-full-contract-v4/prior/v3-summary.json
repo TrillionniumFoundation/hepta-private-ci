@@ -1,0 +1,206 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/home/qq/neuro-owner-tools-862531d11598/v1/bin/uv",
+        "--version"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3",
+      "elapsed_seconds": 0.0043985850643366575,
+      "exit_code": 0,
+      "label": "uv-version",
+      "log": "uv-version.console.log",
+      "log_bytes": 37,
+      "log_sha256": "cbaa487aa52e8dacd228992f11a8a49459a06b479806187cb00a93c880b5460e",
+      "timed_out": false,
+      "timeout_seconds": 20
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--no-checkout",
+        "--no-hardlinks",
+        "--no-tags",
+        "/home/qq/neuro-owner-6240-2411261-862531d11598",
+        "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3",
+      "elapsed_seconds": 0.7650892571546137,
+      "exit_code": 0,
+      "label": "clone",
+      "log": "clone.console.log",
+      "log_bytes": 80,
+      "log_sha256": "938d7a638a91879189175862a695c3cbdf9691a174b274f953c9a15f941242db",
+      "timed_out": false,
+      "timeout_seconds": 180
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "2411261240f0f38bd0d60e2ba158304f918b8ce1"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout",
+      "elapsed_seconds": 0.5151197919622064,
+      "exit_code": 0,
+      "label": "checkout",
+      "log": "checkout.console.log",
+      "log_bytes": 96,
+      "log_sha256": "006dda838cd30cd8e23c4ee5d462fd60ce90f5453eb86a935f29e7ca031d7829",
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/bootstrap-uv/uv",
+        "--version"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3",
+      "elapsed_seconds": 0.008246378973126411,
+      "exit_code": 0,
+      "label": "bootstrap-uv-version",
+      "log": "bootstrap-uv-version.console.log",
+      "log_bytes": 37,
+      "log_sha256": "a818fb9c737b68643250e71a91736da811c2c6b2bcc9619044d505b7b5891764",
+      "timed_out": false,
+      "timeout_seconds": 20
+    },
+    {
+      "command": [
+        "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/bootstrap-uv/uv",
+        "python",
+        "install",
+        "--install-dir",
+        "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/managed-python",
+        "--no-bin",
+        "3.12.14"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout",
+      "elapsed_seconds": 30.87948419805616,
+      "exit_code": 0,
+      "label": "install-python-3.12.14",
+      "log": "install-python-3.12.14.console.log",
+      "log_bytes": 193,
+      "log_sha256": "656c0103e553cb1af9cbfa69cbc987f1ae400c44d16920ca363c31014143cefc",
+      "timed_out": false,
+      "timeout_seconds": 360
+    },
+    {
+      "command": [
+        "/home/qq/neuro-owner-tools-862531d11598/v1/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "--python",
+        "3.12.14",
+        "--with",
+        "numpy==2.3.5",
+        "--with",
+        "pillow==11.3.0",
+        "python",
+        "-c",
+        "import json,os,platform,sys,numpy,PIL\nfrom pathlib import Path\nd={'python':platform.python_version(),'numpy':numpy.__version__,'pillow':PIL.__version__,'python_executable':sys.executable,'numpy_file':numpy.__file__,'pillow_file':PIL.__file__,'uid':os.getuid(),'pid':os.getpid(),'probe_scope':'independent_runtime_preflight','hosted_run':False}\nassert (d['python'],d['numpy'],d['pillow'])==('3.12.14','2.3.5','11.3.0')\np=Path('/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/evidence/runtime-exact.json')\nwith p.open('x',encoding='utf-8') as f: json.dump(d,f,sort_keys=True);f.write('\\n')\nprint(json.dumps(d,sort_keys=True))\n"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout",
+      "elapsed_seconds": 25.146916853031144,
+      "exit_code": 0,
+      "label": "prepare-exact-runtime",
+      "log": "prepare-exact-runtime.console.log",
+      "log_bytes": 904,
+      "log_sha256": "8a476f7374d6c1af27b0b03cb572a12abe9b4717e891e42dbb778599596e4df7",
+      "timed_out": false,
+      "timeout_seconds": 360
+    },
+    {
+      "command": [
+        "/home/qq/neuro-owner-tools-862531d11598/v1/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "--python",
+        "3.12.14",
+        "ruff",
+        "--version"
+      ],
+      "cwd": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout",
+      "elapsed_seconds": 0.11443588905967772,
+      "exit_code": 0,
+      "label": "ruff-version",
+      "log": "ruff-version.console.log",
+      "log_bytes": 13,
+      "log_sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c",
+      "timed_out": false,
+      "timeout_seconds": 120
+    }
+  ],
+  "correction": "remove external PYTHONVERBOSE; preserve original test command",
+  "environment_controls": {
+    "BASE_SHA": "",
+    "HEPTA_CI_LANE": "source-head",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout/scripts:/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/checkout",
+    "SOURCE_SHA": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+    "TESTED_SHA": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+    "UV_CACHE_DIR": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/uv-cache",
+    "UV_PROJECT_ENVIRONMENT": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/project-env",
+    "UV_PYTHON_BIN_DIR": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/python-bin",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "UV_PYTHON_INSTALL_DIR": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/managed-python"
+  },
+  "error": {
+    "message": "[Errno 2] No such file or directory: '/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/uv-cache/builds-v0/.tmpvSdbg5/bin/python'",
+    "type": "FileNotFoundError"
+  },
+  "exact_python_install_exit_code": 0,
+  "host": "ai395",
+  "hosted_run": false,
+  "operator_uid": 1000,
+  "origin_probe_scope": "independent_preexecution_module_resolution_not_test_pid",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "prior_attempt_jobs": [
+    "1a1cf50d48a-2564-19ea",
+    "1a1cf5d9c1b-2564-1a03"
+  ],
+  "production_owner_decision": null,
+  "python_bootstrap_tool": {
+    "archive_bytes": 16671812,
+    "archive_sha256": "c5221ff41b7892bfc223543883600125f6a47fe845093e0f5bdff4f359196d83",
+    "archive_url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-gnu.tar.gz",
+    "binary_bytes": 37512936,
+    "binary_sha256": "4b5e59bc557ff2cd70934beb59d0eaa92820702853d49f0066b50aa11a8f0c52",
+    "path": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/bootstrap-uv/uv",
+    "scope": "install managed Python only; all project test and formatter commands retain uv 0.11.3",
+    "version": "0.13.7"
+  },
+  "research_actor_calls": 0,
+  "ruff_version": "0.15.13",
+  "runtime": {
+    "hosted_run": false,
+    "numpy": "2.3.5",
+    "numpy_file": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/uv-cache/archive-v0/a2imLJ_la02Bp00PFisgs/lib/python3.12/site-packages/numpy/__init__.py",
+    "pid": 336210,
+    "pillow": "11.3.0",
+    "pillow_file": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/uv-cache/archive-v0/a2imLJ_la02Bp00PFisgs/lib/python3.12/site-packages/PIL/__init__.py",
+    "probe_scope": "independent_runtime_preflight",
+    "python": "3.12.14",
+    "python_executable": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v3/uv-cache/builds-v0/.tmpvSdbg5/bin/python",
+    "uid": 1000
+  },
+  "runtime_lane": "workflow_locked_versions_on_ai395_not_hosted",
+  "schema": "ctrl6240.full-contract-execution.v1",
+  "scope": "manufactured_contract_regressions",
+  "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+  "status": "failed",
+  "suites": [],
+  "uv": {
+    "bytes": 59258456,
+    "path": "/home/qq/neuro-owner-tools-862531d11598/v1/bin/uv",
+    "sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438"
+  }
+}

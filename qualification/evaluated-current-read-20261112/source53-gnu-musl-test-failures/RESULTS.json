@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.source53.gnu-musl.original-results.v1",
+  "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579660,
+  "actual_checkout": "7302b0d4d0cd9335c9c505db7995689e8dc9f9c8",
+  "actual_tree_equals_source": true,
+  "conclusion": "failure",
+  "logs": [
+    {
+      "job_id": 131460489376,
+      "whole": {
+        "bytes": 1214871,
+        "sha256": "31be12d2f36be705fe99ced465060a551f1911f31bc99f639b78eb0d450eb5ec",
+        "git_blob": "a0258d8388dc145acd52803d6e3c641868dc9f96"
+      },
+      "parts": [
+        {
+          "path": "job-131460489376.part-001.log.txt",
+          "offset_char": 0,
+          "end_char": 240000,
+          "bytes": 240002,
+          "sha256": "88adad619d2b36c0ee3f2f042eb979a4aa5ce0b52ec441cdd6ca59c81204b9be",
+          "git_blob": "3d55b4ded4b2c995624c0b5609d2887960a23546"
+        },
+        {
+          "path": "job-131460489376.part-002.log.txt",
+          "offset_char": 240000,
+          "end_char": 480000,
+          "bytes": 240000,
+          "sha256": "957aa66e6f3f0eb00bcd98a1c87ec630bef3a982a32b38e019ef180c2d8ad2ba",
+          "git_blob": "f0769d3edcd7189d3bbfd2010e763c3b263bf541"
+        },
+        {
+          "path": "job-131460489376.part-003.log.txt",
+          "offset_char": 480000,
+          "end_char": 720000,
+          "bytes": 240000,
+          "sha256": "077f27db76c7a12f410e5c5955cb78ea72b2c907a41f5b684e6d4c4b19d78f81",
+          "git_blob": "23601bfcf2a5835f0b04f1e530150cf4f8014f5e"
+        },
+        {
+          "path": "job-131460489376.part-004.log.txt",
+          "offset_char": 720000,
+          "end_char": 960000,
+          "bytes": 240000,
+          "sha256": "6a2dce967e1cd1e339380e152072b0615dc1ea53c14dace204d0a4dc56a5acae",
+          "git_blob": "78bc6bacba4e186e05bb49230ca6adfabdc5bb98"
+        },
+        {
+          "path": "job-131460489376.part-005.log.txt",
+          "offset_char": 960000,
+          "end_char": 1200000,
+          "bytes": 240000,
+          "sha256": "f31c736152bb35f02bad3eee9e03cb2643d4a5996756a03324ecb0ccc12dbf96",
+          "git_blob": "008c0a456ca8fb9e7410602f937bb6a025ba46f4"
+        },
+        {
+          "path": "job-131460489376.part-006.log.txt",
+          "offset_char": 1200000,
+          "end_char": 1214869,
+          "bytes": 14869,
+          "sha256": "ee9d276a5891c38798d7556dbeb760fd9c3545807737a350f81761ea82f310f3",
+          "git_blob": "88bf1c262b5d13da82d6d0b18e4356c62fd2819f"
+        }
+      ],
+      "summary_lines": [
+        "INFO: Build completed, 1 test FAILED, 38000 total actions",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 7 out of 8 in 300.1s",
+        "Executed 23 out of 583 tests: 415 tests pass, 1 fails remotely, and 167 were skipped.",
+        "INFO: Build completed successfully, 6 total actions",
+        "Executed 1 out of 1 test: 1 test passes."
+      ],
+      "printed_method_records": 1083,
+      "printed_unique_method_names": 955,
+      "printed_status_counts": {
+        "ok": 976,
+        "ignored": 90,
+        "FAILED": 17
+      },
+      "explicit_unique_failed_methods": [
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_source_after_cache",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_completed_identity_and_queued_cancellation_never_revive",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_cancellation_never_restores_cached_current",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_refuses_changed_signature_pin_and_head_proof",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim"
+      ],
+      "complete_roster_proven": false,
+      "qualification": "Reprinted cached shard output and separate follow-up selected target are retained. Do not use printed totals as one fresh complete ordinary-method denominator.",
+      "printed_records_are_complete_method_denominator": false
+    },
+    {
+      "job_id": 131460489453,
+      "whole": {
+        "bytes": 1217000,
+        "sha256": "e34f5224ec1d9d1d84b79c896ccd9abd448518610490e0ad29f9d57783328c11",
+        "git_blob": "443a1431736c50bbc56d07410073908d4418f19f"
+      },
+      "parts": [
+        {
+          "path": "job-131460489453.part-001.log.txt",
+          "offset_char": 0,
+          "end_char": 240000,
+          "bytes": 240002,
+          "sha256": "3fc097c9343456f72f0e780915096a2d6c009f394bc6fac818b997797de899d2",
+          "git_blob": "da2c34257a3a3ecf051020ea40a6fcc61bd09895"
+        },
+        {
+          "path": "job-131460489453.part-002.log.txt",
+          "offset_char": 240000,
+          "end_char": 480000,
+          "bytes": 240000,
+          "sha256": "411fce4d81e2f370bf13b660410e7384a255fd3ae346f7889ce2aa90a1c144c1",
+          "git_blob": "bfb1f389dc5b290d2bb649bf7e7dd711d795e321"
+        },
+        {
+          "path": "job-131460489453.part-003.log.txt",
+          "offset_char": 480000,
+          "end_char": 720000,
+          "bytes": 240000,
+          "sha256": "8fb4e932558a5fc009782deae50cf50a775413b661db47a406acebc78844d7b2",
+          "git_blob": "abfaf5dcf2f829cda9a02eb23274c3f4a1d8c9ed"
+        },
+        {
+          "path": "job-131460489453.part-004.log.txt",
+          "offset_char": 720000,
+          "end_char": 960000,
+          "bytes": 240000,
+          "sha256": "2f41b040511ed97e68222a85f091a451c894374663096acafd28c8aa31fdac10",
+          "git_blob": "88700e7e7f5a74e73ea9202a83b155a9cb0a9670"
+        },
+        {
+          "path": "job-131460489453.part-005.log.txt",
+          "offset_char": 960000,
+          "end_char": 1200000,
+          "bytes": 240000,
+          "sha256": "247b00c0b79da281d1d6558e6301dc047c8943f90387bbd2d0589e48aecc07e5",
+          "git_blob": "5cee4f0e2a81f8f6d5a425b90ca57392ce45af76"
+        },
+        {
+          "path": "job-131460489453.part-006.log.txt",
+          "offset_char": 1200000,
+          "end_char": 1216998,
+          "bytes": 16998,
+          "sha256": "96dbc53f28322cb38beee925783ef15325adf89d77a16180ae76dbb3ff71e47a",
+          "git_blob": "30e4df0816478f533f1ae96e9986671af8b3949b"
+        }
+      ],
+      "summary_lines": [
+        "INFO: Build completed, 1 test FAILED, 38000 total actions",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 7 out of 8 in 300.1s",
+        "Executed 2 out of 583 tests: 415 tests pass, 1 fails remotely, and 167 were skipped.",
+        "INFO: Build completed successfully, 6 total actions",
+        "Executed 1 out of 1 test: 1 test passes."
+      ],
+      "printed_method_records": 1083,
+      "printed_unique_method_names": 955,
+      "printed_status_counts": {
+        "ok": 976,
+        "ignored": 90,
+        "FAILED": 17
+      },
+      "explicit_unique_failed_methods": [
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_source_after_cache",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_completed_identity_and_queued_cancellation_never_revive",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_cancellation_never_restores_cached_current",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_refuses_changed_signature_pin_and_head_proof",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim"
+      ],
+      "complete_roster_proven": false,
+      "qualification": "Reprinted cached shard output and separate follow-up selected target are retained. Do not use printed totals as one fresh complete ordinary-method denominator.",
+      "printed_records_are_complete_method_denominator": false
+    }
+  ],
+  "new_manual_execution": false,
+  "previous_compile_error_recurred": false,
+  "no_retries_or_budget_changes": true,
+  "independent_replicates_claimed": false,
+  "ordinary_Root_results_inferred": false,
+  "all_blockers_closed": false,
+  "owner_decision": null
+}

@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.native-1631-three-failure-candidate.v1",
+  "base": {
+    "commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc"
+  },
+  "evidence": {
+    "run_id": 43243479903,
+    "job_id": 131269839345,
+    "raw_failure_index_blob": "827fbbee6453cc2b796c7bff6a54f86bac392cf9",
+    "full_joblog_bytes": 3729153,
+    "full_joblog_sha256": "8a4a6593e70fb2f2104e37ec44d91e70bcfa419f30e3c99d3fe5ab97a37a48bb",
+    "full_joblog_archive_tree": "5006cbcd8b6f74e893816b0958ef65b2a201486a",
+    "observed_counts": {
+      "total": 1733,
+      "passed": 1697,
+      "failed": 36,
+      "exit": 100,
+      "elapsed_seconds_original": "579.314821929",
+      "test_retries": 0
+    }
+  },
+  "scope": "three failing methods; test-fixture/expectation repair only; production and CALLERS unchanged",
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "blob": "968a47ad243f98a6b1a516153009ed325550ff23",
+      "sha256": "5b89a782b4b228430156fd6247cb010d6e41528c07ebb01cabd8ad6a23a52114",
+      "bytes": 29208,
+      "lines": 752
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "blob": "261f400a6a1dadbd79dffb58005851553ab5b294",
+      "sha256": "5fe8a0151b8e11b40eb232ec1e77f964c596718c97f42d82b69ad4a8ef778b30",
+      "bytes": 5093,
+      "lines": 131
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "blob": "6bf99819add8f14b1cbfe50d7f1e87c0bef8fb63",
+      "sha256": "adb3b35ffec34e0193bd7f0346058015a1eda9fbec972e06d99f7ce1c25f97fe",
+      "bytes": 5323,
+      "lines": 132
+    }
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "blob": "94cfa5ef7411b4b1e9946ec5f55b88c8272a0197",
+      "bytes": 7914,
+      "sha256": "b85347ae622705801953036d1efbbcc31e4bd4a7a612ddbaaa040995bed2035b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "blob": "5ede1c00140028683d537fa1ce7bb1b19493101b",
+      "bytes": 32708,
+      "sha256": "0a8f325ade1fe5df690e7315e24249761baab07bfe2dbdc9926c8e4bc20b5f2a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "blob": "e099a12408afcb7bb993c733d0ec067c18fa8926",
+      "bytes": 8068,
+      "sha256": "779316f273e35c8e99ebf63a93ee23d5ac73107cf0af631433dfcf0df9d155ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "blob": "0416c8965a3cb48e60568ac48b3f1c25dffd19a1",
+      "bytes": 23943,
+      "sha256": "b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "blob": "7dc9c197f009b90fde594f05523b6e7f9820a162",
+      "bytes": 29257,
+      "sha256": "53d31cc6a1844ae7e890b0557269a651f61d51046be2ffdd2d151eaf2f52ccb9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "blob": "a5fadf41d93333097f9b3613e07f9ca705f36223",
+      "bytes": 18775,
+      "sha256": "45448e905bb96b8266201c96c2d246cb89a0e37676559b0a6634d02ee558dc14"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+      "bytes": 16766,
+      "sha256": "cadff53b207810423e0125e419093ff8ff84deee2f7a5aa66b857ceedbbb184c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "blob": "5a462fab5c7b93038596953957434c52e62a00ee",
+      "bytes": 4438,
+      "sha256": "563d82440c91f580e49dfcc55569900b7777fbd88ac8cfc83eff856540704647"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_binding.rs",
+      "blob": "d67f5a628c1729105205564df359ec154240747a",
+      "bytes": 11831,
+      "sha256": "2557725b0e01450791be17dd2af9dcfcacdab5bb00e88efe79343d1ab57d215f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_tests.rs",
+      "blob": "a2256001fb5a8c5fd3b2e22b0586e5240669f3ff",
+      "bytes": 31428,
+      "sha256": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7"
+    }
+  ],
+  "preserved_failed_tests": [
+    {
+      "test": "learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions",
+      "seconds": "2.428",
+      "status": "FAIL"
+    },
+    {
+      "test": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+      "seconds": "3.452",
+      "status": "FAIL"
+    },
+    {
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "seconds": "3.967",
+      "status": "FAIL"
+    }
+  ],
+  "new_methods": [
+    "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_evidence_never_reads_original_stage_attestations",
+    "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt"
+  ],
+  "verification": {
+    "source_readback_sha256": "3 complete postimages verified",
+    "independent_route_static_review": "replay_perception_research read full base and postimage; no concrete blocker found",
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "h_dispatches": 0,
+    "actor_dispatches": 0
+  },
+  "integration": {
+    "production_delta": "none",
+    "caller_delta": "none; all modified/new files are test modules",
+    "root_parallel_fix": "model-proposal insufficient branch and deadline boundary separate",
+    "preserve_denominator": "existing 1733 method identities retained; this candidate adds exactly 2 methods; final integrated count must be actually measured"
+  }
+}

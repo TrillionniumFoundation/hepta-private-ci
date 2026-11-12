@@ -1,0 +1,119 @@
+{
+  "base_head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "base_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "prepared_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "exact_ten_path_diff": true,
+  "tree_pairs": [
+    {
+      "before": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+      "after": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+      "prefix": ""
+    },
+    {
+      "before": "da48350014fc6c84f82d1a6723bf24b1ae1cde8a",
+      "after": "c0dfa1786e7a478e63bc14766b83bf9b7f8d6b0e",
+      "prefix": ".github/"
+    },
+    {
+      "before": "9c41ae77703686ac7818dec2f16ac9be30eba37e",
+      "after": "395a2b3323c154816fbc34abca9388c39154f4f0",
+      "prefix": "codex-rs/"
+    },
+    {
+      "before": "8eec82c70cae15f192b18f63438c3d1fb5d67b2d",
+      "after": "20179ac3129904e1c9150f543dc4c9c51d87540c",
+      "prefix": "qa/"
+    },
+    {
+      "before": "d42591a80f9b0b0aaf62006123385a5fc6436242",
+      "after": "bb0c91b7c3c54baed485ca8499c678f62eabaecd",
+      "prefix": "codex-rs/hepta-agentd/"
+    },
+    {
+      "before": "4be689a6c2868df9e051cebcd5c3ff14f1a6c0e6",
+      "after": "a7a4fd6b949101680f127c97530b9616cd827ebf",
+      "prefix": "codex-rs/hepta-neuron/"
+    },
+    {
+      "before": "29662dfd4825336c8d3cfb7f14db7f8c5ebb2f35",
+      "after": "d0a2595ebde96ed4777f98e4220942b213dbf74f",
+      "prefix": "qa/b4-no-bypass/"
+    },
+    {
+      "before": "288a1283f30e9e80438ed32a491a83d56c2082e5",
+      "after": "38951f70b2c4f809d26533ea498dd7b635cd7b8f",
+      "prefix": "codex-rs/hepta-agentd/src/"
+    },
+    {
+      "before": "43ac92eee5e88bac19af8887275718e9d3405f79",
+      "after": "3eb796c30b0d846c001b45276e25679d104a7569",
+      "prefix": "codex-rs/hepta-neuron/src/"
+    }
+  ],
+  "changed_paths": [
+    {
+      "path": "CALLERS.toml",
+      "before": "73fdfb4db43bee14530701784ab163a64dbb5956",
+      "after": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "mode": "100644"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "after": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "before": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "after": "4807f4f5aa158f885119d2cb394e2170e6842385",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "before": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "after": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "after": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "before": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "after": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "before": null,
+      "after": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "before": null,
+      "after": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+      "after": "d657dff9aa7be59bad252fe37ffd8e3171a9cb74",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "before": "6cbc878cc2d85691dba75c9e21a4699506368164",
+      "after": "6179ad309c5cbaeb7ab938acbc8aa4ee7fa13698",
+      "mode": "100644"
+    }
+  ],
+  "old_source8_fixes_preserved": true,
+  "no_other_leaf_changes": true,
+  "NOT_RUN": true,
+  "all_blockers_closed": false
+}

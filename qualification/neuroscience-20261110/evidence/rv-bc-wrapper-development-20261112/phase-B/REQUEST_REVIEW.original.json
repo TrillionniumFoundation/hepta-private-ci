@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.rv.phase-b-exact-request-review.v1",
+  "state": "PREPARED_NOT_DISPATCHED",
+  "source_freeze_job": "1a1cf9dcdb3-2564-1a6a",
+  "source_freeze_request_git_blob": "95156b8e5a021af195a9d6f07d4d68e58ad006cd",
+  "actual_frozen_git_blob": "c46a6dec3a7da871a5dceae023ec0948a59d3a7e",
+  "actual_frozen_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "actual_roster_git_blob": "ba48623d1342ca9e7a92c37649522d94addfa38f",
+  "runner_git_blob": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+  "runner_sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb",
+  "request_sha256": "aa16491cb7703a1ab6001708541f56c1cb0d67c24e8cd53812dab3469015756d",
+  "stdin_sha256": "baeafb061f0a8dccdd98cb347263160011e6515b483cea9feaffca8d465b42cd",
+  "changes_only": {
+    "args[2]": {
+      "from": "freeze",
+      "to": "B"
+    },
+    "stdin.stage": {
+      "from": "freeze",
+      "to": "B"
+    },
+    "stdin.expected_frozen_sha256": {
+      "from": null,
+      "to": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b"
+    },
+    "idempotency_key": {
+      "from": "neuro4-rv-bc-freeze-862531d-v1",
+      "to": "neuro4-rv-bc-phase-b-862531d-v1"
+    },
+    "timeout_seconds": {
+      "from": 180,
+      "to": 600
+    }
+  },
+  "other_top_fields_unchanged": true,
+  "wrapper_and_registration_bytes_unchanged": true,
+  "planned_B_effects": [
+    {
+      "arm_id": "tuned-fixed",
+      "context": {
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      },
+      "operation_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+      "phase": "B",
+      "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+    },
+    {
+      "arm_id": "conditional",
+      "context": {
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      },
+      "operation_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+      "phase": "B",
+      "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+    }
+  ],
+  "actor_cap": 2,
+  "actual_actor_calls": 0,
+  "calibration_complete": false,
+  "expected_macro_if_successful": "STOP for both tuned-fixed and conditional",
+  "existing_development_sources": 1,
+  "independent_new_sources": 0,
+  "owner_decision": null,
+  "production_admission": false,
+  "full_cost_observed": false,
+  "phase_C_not_in_request": true
+}

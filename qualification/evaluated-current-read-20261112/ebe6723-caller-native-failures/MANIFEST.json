@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "source_sha": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+  "source_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+  "run_id": 43237175984,
+  "source_closure": {
+    "methods": 414,
+    "passed": 414,
+    "elapsed_seconds_reported_by_unittest": "146.624",
+    "result": "OK"
+  },
+  "parser": {
+    "methods": 16,
+    "result": "OK",
+    "elapsed_seconds_reported_by_unittest": "0.244"
+  },
+  "caller": {
+    "self_test": "PASS",
+    "verify": "FAIL",
+    "message": "learning_original_owner_snapshot_encode: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs']",
+    "artifact": {
+      "id": 13953479397,
+      "bytes": 1642,
+      "sha256": "18b373c267e651c8bc45c7b4ad737d1eba38834406e5eb3e77bb488049564fe8"
+    }
+  },
+  "native": {
+    "same_source_helper_build": "PASS",
+    "ordinary_command": "just test --locked --offline -p codex-hepta-agentd -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron --lib --test-threads 2 --retries 0 --status-level pass --success-output final --failure-output final",
+    "ordinary_returncode": 101,
+    "ordinary_observed_passed_tests": 0,
+    "ordinary_observed_failed_tests": 0,
+    "compiler_error": "E0308 at hepta-agentd/src/circuit_completion_readiness_support_tests.rs:33: expected OriginalCircuitLearningReadContextV1, found ReadProfile",
+    "junit": "absent; original collector rejected",
+    "root_tests": "not_started",
+    "scoped_fix_fmt": "not_started",
+    "artifact": {
+      "id": 13955355408,
+      "bytes": 3636449,
+      "sha256": "518509ab29287f35a14404e1a0b29eeb89a276c5ce7e89e4abf1c2652e6b6f37"
+    }
+  },
+  "originals": [
+    {
+      "name": "caller",
+      "job_id": 131247514828,
+      "bytes": 1705860,
+      "sha256": "a745b96c079c76d5deb0f798161d063217dd1c2768a028b5bbcaad6ed7645b93",
+      "reconstruction": "Concatenate all parts in numeric offset order with no separator.",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/caller.job.original.log.part-000",
+          "offset": 0,
+          "bytes": 350000,
+          "sha256": "3d698406061f4305b0c9979f08613a4b7d0315f11c6888dbd1a724bac4735c2f",
+          "blob_sha": "f957e933654281ff4dd61616264090c46cbd6240"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/caller.job.original.log.part-001",
+          "offset": 350000,
+          "bytes": 350000,
+          "sha256": "18b5f4f7cd1f9e56ba8a6d377962a7c6848ff227126c9049e03326dc0c8c314f",
+          "blob_sha": "52adbe4f549b408b70b7be338ff726b1e01af9c1"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/caller.job.original.log.part-002",
+          "offset": 700000,
+          "bytes": 350000,
+          "sha256": "f29a33fe488e6311958f6979154cfb4c2f6746e6bfc9d7f6859a4bcd9a91e31d",
+          "blob_sha": "9c3152395dd2ef6c8b35a090b3ec11dc403c256d"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/caller.job.original.log.part-003",
+          "offset": 1050000,
+          "bytes": 350000,
+          "sha256": "6690f68ff925a7d3bb8b85a8bc187e017b0c648e99239524ba3de59ca0e14bda",
+          "blob_sha": "32b64301b187ec7233295278cad70470a96363ba"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/caller.job.original.log.part-004",
+          "offset": 1400000,
+          "bytes": 305860,
+          "sha256": "713611a3cfb73fca3efd3d489324cf0a24c5224c91a42ba4ea1b3c6acdd83211",
+          "blob_sha": "3699cb21c1aeadaddfb78df0844ac5c21b2e0e04"
+        }
+      ]
+    },
+    {
+      "name": "native",
+      "job_id": 131247515370,
+      "bytes": 2018235,
+      "sha256": "521d4b9779e1ac6fc23e3f65ea049b7793345d2465c8f6cff789a338adeda526",
+      "reconstruction": "Concatenate all parts in numeric offset order with no separator.",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-000",
+          "offset": 0,
+          "bytes": 350000,
+          "sha256": "3fc35d8352d2131be5560aca556fcfb14dc5096335a15d18c2d1e9cb911bb9f6",
+          "blob_sha": "be38af496b609c9248a803a8e336ad252dc2f5db"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-001",
+          "offset": 350000,
+          "bytes": 350000,
+          "sha256": "550cdc28fa2b6d1d0ca38ab127013897ca43506d2179c3be33998b694bc43016",
+          "blob_sha": "629e8dab9bf92b1780938e1f4d9935d1f144304f"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-002",
+          "offset": 700000,
+          "bytes": 350000,
+          "sha256": "20c4d7abb020cbd6b47628d1af085cd8a1b2dbd6e47284ceb42127bdd3100518",
+          "blob_sha": "ba04b3b9eb633a45b600851c9b13404fd68664f9"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-003",
+          "offset": 1050000,
+          "bytes": 350000,
+          "sha256": "152415f5be3ba71a148627f3bbf35b45d58891316e658123f79d8b49e34bf67f",
+          "blob_sha": "ca67b6ed3ab8f26f6d38a56a9da3d3f1f59ba23c"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-004",
+          "offset": 1400000,
+          "bytes": 350000,
+          "sha256": "aebcc66ed2de89de3587414f5bdee12392b0ad338f44444bd99f1d22009f6391",
+          "blob_sha": "68a3682e1389f60025d3e3f44a0b49cafad8ff49"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/native.job.original.log.part-005",
+          "offset": 1750000,
+          "bytes": 268235,
+          "sha256": "68854e0b753ff472579f07316ac209e3b4bb4a9b813a5fedb2bec9f45c3551a0",
+          "blob_sha": "e7970e27888a5ddc7cde83d8bba441874d6efe29"
+        }
+      ]
+    }
+  ],
+  "jobs_metadata": {
+    "path": "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures/jobs.original.json",
+    "blob_sha": "e184b8fb60a4ae72e1659ce160f5c1bcd7703a17",
+    "bytes": 6619,
+    "sha256": "65ae191dea040e13c0ce1f6155eb832d967ef5bbef9da46419290cbd82cdcbc0"
+  },
+  "artifact_member_bytes_retrieved": false,
+  "no_result_transfer_to_followup_source": true
+}

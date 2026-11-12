@@ -1,0 +1,51 @@
+{
+  "kind": "static byte comparison, not Rust execution",
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "four_bases_equal_original_84_and_direct_53_directory": true,
+  "public_record_bytes_unchanged": true,
+  "merge_incoming_validation_and_identity_order_bytes_unchanged": true,
+  "test_methods": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "old_count": 0,
+      "new_count": 0,
+      "all_original_method_bytes_present": true,
+      "added": []
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "old_count": 17,
+      "new_count": 18,
+      "all_original_method_bytes_present": true,
+      "added": [
+        "failed_cost_batch_keeps_live_owner_journal_and_witness_unchanged"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "old_count": 0,
+      "new_count": 0,
+      "all_original_method_bytes_present": true,
+      "added": []
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "old_count": 10,
+      "new_count": 13,
+      "all_original_method_bytes_present": true,
+      "added": [
+        "batch_merge_matches_ordered_record_for_replays_and_envelopes",
+        "batch_merge_preserves_first_error_and_the_successful_prefix",
+        "empty_batch_preserves_legacy_nonvalidation"
+      ]
+    }
+  ],
+  "new_methods": 4,
+  "patch_additions": 241,
+  "patch_deletions": 6,
+  "rust_compilation": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "tests": "NOT_RUN",
+  "bazel": "NOT_RUN"
+}

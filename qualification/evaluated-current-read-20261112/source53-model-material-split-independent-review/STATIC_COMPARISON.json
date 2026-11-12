@@ -1,0 +1,96 @@
+{
+  "base": {
+    "bytes": 12053,
+    "git_blob_sha": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+    "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed"
+  },
+  "post": {
+    "bytes": 13985,
+    "git_blob_sha": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+    "sha256": "3c79aea5e8bcf03fdfed514ac9f8e0a0b71047d220e0ec62822154d993c53746"
+  },
+  "all_six_original_input_blobs_hash_verified": true,
+  "unchanged_other_methods": [
+    "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+  ],
+  "old_methods": [
+    "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+  ],
+  "new_methods": [
+    "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+    "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+    "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+  ],
+  "original_count": 3,
+  "new_count": 6,
+  "net_added": 3,
+  "prefix_suffix_and_two_other_methods_byte_equal": true,
+  "sequences": [
+    {
+      "method": "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "comparison": "original first fixture and all five loop faults exact bytes",
+      "original_segment": {
+        "bytes": 1102,
+        "git_blob_sha": "fdda56599048db9ece5484928a5a3544b7d3ab78",
+        "sha256": "8748b048c466aaab5318e4c35115132534f381a1397e069562eebb43e1ee7f01"
+      },
+      "method_local_assertions_expanded": 18
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+      "comparison": "original loop body after exactly one four-space dedent; original missing pair fixed verbatim",
+      "original_segment": {
+        "bytes": 1731,
+        "git_blob_sha": "1c7f6cd0536d22c6da1055d47d59a62fb890e3df",
+        "sha256": "d846b4e3f3166f2e8f92ade6b8d38e21473bf27b16c0b45ac2ea13a34fb5b704"
+      },
+      "dedented_segment": {
+        "bytes": 1555,
+        "git_blob_sha": "7dd29102208856478e7e670630de25407307acc6",
+        "sha256": "76a16aaba869a38037875ee5973b5e5a52703fdf125bf9b624b1d057c2f1afd7"
+      },
+      "method_local_assertions_expanded": 10
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+      "comparison": "same original loop body after one four-space dedent; original pending pair fixed verbatim",
+      "original_segment": {
+        "bytes": 1731,
+        "git_blob_sha": "1c7f6cd0536d22c6da1055d47d59a62fb890e3df",
+        "sha256": "d846b4e3f3166f2e8f92ade6b8d38e21473bf27b16c0b45ac2ea13a34fb5b704"
+      },
+      "dedented_segment": {
+        "bytes": 1555,
+        "git_blob_sha": "7dd29102208856478e7e670630de25407307acc6",
+        "sha256": "76a16aaba869a38037875ee5973b5e5a52703fdf125bf9b624b1d057c2f1afd7"
+      },
+      "method_local_assertions_expanded": 10
+    },
+    {
+      "method": "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window",
+      "comparison": "original final fixture segment including Ok exact bytes",
+      "original_segment": {
+        "bytes": 1597,
+        "git_blob_sha": "6aedbefcb9aa467486f477de9a11326147ddc334",
+        "sha256": "a40332226e389b719e0fbdd39103d1570458a746de4061e266ab7dd4450e1476"
+      },
+      "method_local_assertions_expanded": 9
+    }
+  ],
+  "assertions": {
+    "method_local_static_before": 25,
+    "method_local_static_after": 35,
+    "method_local_fully_expanded_before": 47,
+    "method_local_fully_expanded_after": 47,
+    "additional_unchanged_complete_helper_assertion_calls": 4,
+    "note": "47 counts method-local statements only; unchanged helper/fixture assertions are additional. This is static coverage, not executed pass count."
+  },
+  "cross_group": "Each original group already created and consumed its own HostFixture. No local or peer handle from prior groups is passed into the next group. Their test-runtime and admission scheduling now differ, as expressly authorized.",
+  "execution": "NOT_RUN_NOT_FMT"
+}
