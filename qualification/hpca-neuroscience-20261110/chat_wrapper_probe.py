@@ -183,7 +183,7 @@ def main():
         "cost_excluded":["CI setup and queue","power","Owner lifecycle"],
         "started_utc":began_utc,
         "finished_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "scope":"ONE public-task output-format diagnostic, NOT HPCA gain, future B, or production"})
+        "scope":"ONE public-task output-format diagnostic, NOT HPCA gain, future B, or production"}
     write_json_exclusive(args.out / "RESULT.json",report)
     print("HPCA_PUBLIC_CHAT_RESULT",json.dumps(report["summary"],sort_keys=True),flush=True)
     print("RESULT_SHA256",sha256(args.out/"RESULT.json"),flush=True)
