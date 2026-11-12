@@ -179,5 +179,88 @@ fn witness_capacity_and_independent_writer_are_bounded() {
     );
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn original_readonly_witness_observer_does_not_take_the_live_writer_lock() {
+    let fixture = Fixture::new();
+    let mut writer = checked(FileAnchorWitnessStore::open(
+        fixture.file(),
+        scope(),
+        generation(),
+        /*max_records*/ 8,
+    ));
+    let readonly = checked(File::open(fixture.path()));
+    let original = checked(fs::read(fixture.path()));
+    assert!(matches!(
+        readonly.try_lock_shared(),
+        Err(TryLockError::WouldBlock)
+    ));
+    assert_eq!(
+        checked(observe_original_file_anchor_v1(
+            &readonly,
+            scope(),
+            generation(),
+            /*max_records*/ 8
+        )),
+        None,
+    );
+    assert_eq!(checked(fs::read(fixture.path())), original);
+    assert!(matches!(
+        readonly.try_lock_shared(),
+        Err(TryLockError::WouldBlock)
+    ));
+
+    checked(writer.compare_and_swap(/*expected*/ None, anchor(1)));
+    let committed = checked(fs::read(fixture.path()));
+    assert_eq!(
+        checked(observe_original_file_anchor_v1(
+            &readonly,
+            scope(),
+            generation(),
+            /*max_records*/ 8
+        )),
+        Some(anchor(1)),
+    );
+    assert_eq!(checked(fs::read(fixture.path())), committed);
+    assert!(matches!(
+        readonly.try_lock_shared(),
+        Err(TryLockError::WouldBlock)
+    ));
+    drop(writer);
+    checked(readonly.try_lock_shared());
+    checked(readonly.unlock());
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn original_readonly_witness_observer_rejects_empty_and_partial_without_repair() {
+    let fixture = Fixture::new();
+    let readonly = checked(File::open(fixture.path()));
+    assert_eq!(
+        observe_original_file_anchor_v1(&readonly, scope(), generation(), /*max_records*/ 8),
+        Err(WitnessStoreError::Corrupt),
+    );
+    assert!(checked(fs::read(fixture.path())).is_empty());
+    let writer = checked(FileAnchorWitnessStore::open(
+        fixture.file(),
+        scope(),
+        generation(),
+        /*max_records*/ 8,
+    ));
+    let mut partial = checked(fs::read(fixture.path()));
+    partial.push(/*value*/ 1);
+    checked(fs::write(fixture.path(), &partial));
+    assert_eq!(
+        observe_original_file_anchor_v1(&readonly, scope(), generation(), /*max_records*/ 8),
+        Err(WitnessStoreError::Corrupt),
+    );
+    assert_eq!(checked(fs::read(fixture.path())), partial);
+    assert!(matches!(
+        readonly.try_lock_shared(),
+        Err(TryLockError::WouldBlock)
+    ));
+    drop(writer);
+}
+
 #[path = "witness_physical_current_tests.rs"]
 mod physical_current;
