@@ -464,3 +464,7 @@ pub(crate) mod tests;
 
 #[path = "neuron_cell_evaluation_material_projection.rs"]
 mod material_projection;
+
+#[path = "neuron_cell_evaluation_on_policy.rs"]
+mod on_policy;
+pub use on_policy::freeze_paired_cell_learning_evaluation_plan_v1;
