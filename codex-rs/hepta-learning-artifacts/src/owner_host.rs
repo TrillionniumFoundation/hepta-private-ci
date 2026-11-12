@@ -27,8 +27,6 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 
-use crate::ArtifactEvent;
-use crate::ArtifactManifest;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationTransactionSnapshotV1;
@@ -55,6 +53,18 @@ use crate::write_registry_snapshot_beneath;
 
 #[path = "owner_host_readback.rs"]
 mod readback;
+
+#[path = "owner_host_registry_durable.rs"]
+mod registry_durable;
+
+#[path = "owner_head_source.rs"]
+mod head_source;
+pub use head_source::ArtifactHeadSigningConfigV1;
+pub use head_source::UntrustedArtifactRegistryDurableV1;
+pub use head_source::decode_artifact_head_bytes_v1;
+pub use head_source::encode_artifact_head_bytes_v1;
+
+pub use registry_durable::OriginalArtifactRegistryDurableV1;
 pub use readback::OriginalArtifactPublicationReadbackErrorV1;
 pub use readback::OriginalArtifactPublicationReadbackV1;
 
@@ -516,31 +526,7 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
         }
-        let event_id = StableId::new(format!(
-            "artifact-publication:{}",
-            transaction.intent().intent_digest
-        ))
-        .map_err(|_| ArtifactOwnerHostError::InternalInvariant)?;
-        let predecessor_id = if v2.predecessor_ids.len() == 1 {
-            v2.predecessor_ids.first().cloned()
-        } else {
-            None
-        };
-        Ok(registry.append(ArtifactEvent::Register {
-            event_id,
-            manifest: ArtifactManifest {
-                artifact_id: v2.artifact_id.clone(),
-                kind: v2.kind,
-                generation: v2.generation,
-                predecessor_id,
-                content_digest: v2.bytes_digest,
-                objective_digest: v2.objective_class_digest,
-                support_digest: admission.validated_manifest.manifest_digest,
-                producer_id: v2.producer_id.clone(),
-                compatibility_digest: v2.compatibility_digest,
-                encoded_size_bytes: v2.encoded_size_bytes,
-            },
-        })?)
+        Ok(registry.append(registry_durable::original_registration_event(transaction)?)?)
     }
 
     /// Persist or reconcile immutable payload bytes, then checkpoint the
@@ -929,35 +915,7 @@ impl LearningArtifactOwnerHost {
         &self,
         operation_id: &StableId,
     ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
-        let mut latest = None;
-        let mut missing_seen = false;
-        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32)> = None;
-        for phase in ordered_phases() {
-            let path = self.checkpoint_path(operation_id, phase);
-            if !path.exists() {
-                missing_seen = true;
-                continue;
-            }
-            if missing_seen {
-                return Err(ArtifactOwnerHostError::CheckpointGap);
-            }
-            let bytes = read_small_record(&path, MAX_SMALL_RECORD_BYTES)?;
-            let checkpoint = decode_checkpoint(&bytes)?;
-            if checkpoint.operation_id != *operation_id || checkpoint.phase != phase {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            }
-            let key = (
-                checkpoint.intent_digest,
-                checkpoint.admission_digest,
-                checkpoint.withdrawal_scope_digest,
-                checkpoint.expected_registry_predecessor_head,
-            );
-            if invariant.is_some_and(|value| value != key) {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            }
-            invariant = Some(key);
-            latest = Some(checkpoint);
-        }
+        let latest = self.read_original_publication_checkpoint(operation_id)?;
         Ok(latest.map(|checkpoint| ArtifactOwnerRecoveryV1 {
             requires_exact_snapshot: checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged,
             checkpoint,
@@ -1000,8 +958,11 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         let mut records = Vec::new();
-        for entry in fs::read_dir(self.root.join("heads"))? {
-            if records.len() >= MAX_HEAD_RECORDS {
+        for (index, entry) in fs::read_dir(self.root.join("heads"))?
+            .take(MAX_HEAD_RECORDS + 1)
+            .enumerate()
+        {
+            if index >= MAX_HEAD_RECORDS {
                 return Err(ArtifactOwnerHostError::Capacity);
             }
             let entry = entry?;
