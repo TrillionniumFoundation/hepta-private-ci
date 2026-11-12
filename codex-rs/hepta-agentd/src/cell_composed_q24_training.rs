@@ -179,6 +179,13 @@ impl CellQ24SgdRuleV1 {
         &self,
         batch: &CellQ24TrainingBatchV1,
     ) -> Result<Digest32, CellQ24TrainingErrorV1> {
+        self.digest_for_original_batch(batch.digest)
+    }
+
+    pub(crate) fn digest_for_original_batch(
+        &self,
+        batch: Digest32,
+    ) -> Result<Digest32, CellQ24TrainingErrorV1> {
         if !(1..=256).contains(&self.epochs) || !(1..=codec::Q).contains(&self.learning_rate_q24) {
             return Err(CellQ24TrainingErrorV1::Binding("SGD rule"));
         }
@@ -186,7 +193,7 @@ impl CellQ24SgdRuleV1 {
             b"hepta.cell.q24.sgd.v1\0fixed-order;half-squared-error;STE-truncate-and-clip;single-i128-gradient-division;clip-coefficients-eight",
             &self.epochs.to_le_bytes(),
             &self.learning_rate_q24.to_le_bytes(),
-            batch.digest.as_array(),
+            batch.as_array(),
         ]))
     }
 }

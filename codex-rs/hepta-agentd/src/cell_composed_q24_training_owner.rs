@@ -57,6 +57,14 @@ mod construction;
 mod observation;
 pub use observation::CellQ24TrainingObservationV2;
 
+#[path = "cell_composed_q24_training_result_data.rs"]
+mod result_data;
+#[path = "cell_composed_q24_training_work.rs"]
+mod work;
+pub(crate) use work::OriginalQ24TrainingWorkDataV1;
+pub(crate) use work::OriginalQ24TrainingWorkObservedV1;
+pub(crate) use work::original_q24_work_contract;
+
 /// Owns one exact frozen Dataset cut and its bounded native optimizer. Transfer
 /// exclusive file ownership; writable duplicate descriptors are not supported.
 /// The witness must retain its original independent rollback domain on reopen.
@@ -234,23 +242,16 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     }
 
     fn decode(&self, mut bytes: &[u8]) -> Result<CellQ24TrainingOutcomeV1, Error> {
-        if take::<8>(&mut bytes)? != *b"HQ24TRES"
-            || take::<32>(&mut bytes)? != self.key.binding_digest.into_array()
-        {
+        let result_data::OriginalResultHeader {
+            binding,
+            tag,
+            bundle_digest,
+            metrics,
+            length,
+        } = result_data::decode_header(&mut bytes)?;
+        if binding != self.key.binding_digest {
             return Err(Error::Binding("training result and original job"));
         }
-        let tag = take::<1>(&mut bytes)?[0];
-        let bundle_digest = Digest32::from_array(take::<32>(&mut bytes)?);
-        let metrics = CellQ24TrainingMetricsV1 {
-            batch_digest: Digest32::from_array(take::<32>(&mut bytes)?),
-            optimizer_rule: Digest32::from_array(take::<32>(&mut bytes)?),
-            update_rule: Digest32::from_array(take::<32>(&mut bytes)?),
-            optimizer_steps: u64::from_le_bytes(take::<8>(&mut bytes)?),
-            squared_error_before_q48: u128::from_le_bytes(take::<16>(&mut bytes)?),
-            squared_error_after_q48: u128::from_le_bytes(take::<16>(&mut bytes)?),
-            elapsed_microseconds: u64::from_le_bytes(take::<8>(&mut bytes)?),
-        };
-        let length = u32::from_le_bytes(take::<4>(&mut bytes)?) as usize;
         let optimizer = self.rule.digest(&self.batch)?;
         let update_rule = super::cell_q24_single_head_update_rule_v1(
             &self.plan.prefix.request.selected_bundle,

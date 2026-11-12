@@ -22,6 +22,7 @@ where
 /// this is neither an evaluator authority nor a transferable source grant.
 pub(crate) struct OriginalQ24TrainingOperationEvidenceV1<'read> {
     completed: OriginalCellQ24TrainingCompletionV1,
+    work: Option<crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1>,
     snapshot: LearningIterationSnapshotV1,
     source: &'read OriginalPreparedReadV1<'read>,
 }
@@ -99,8 +100,14 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
             completed.receipt.clone(),
             completed.receipt.observed_unix_seconds,
         )?;
+        let work = self
+            .owners
+            .training
+            .read_original_work_with_source(self.dataset, self.source)
+            .map_err(owner_error)?;
         Ok(OriginalQ24TrainingOperationEvidenceV1 {
             completed,
+            work,
             snapshot: cut.snapshot().clone(),
             source: self.source,
         })
@@ -116,6 +123,14 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
 }
 
 impl OriginalQ24TrainingOperationEvidenceV1<'_> {
+    pub(crate) fn original_training_work(
+        &self,
+    ) -> Result<&crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1, RuntimeError> {
+        self.require_current_training_source()?;
+        self.original_candidate_material()?;
+        self.work.as_ref().ok_or(RuntimeError::WrongScope)
+    }
+
     /// Pure data from this same completed native owner. This is neither B
     /// authority nor permission to publish the candidate in CURRENT.
     pub(crate) fn original_candidate_material(
