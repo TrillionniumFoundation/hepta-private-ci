@@ -1,0 +1,85 @@
+{
+  "schema": "hepta-local-native-evidence-checkpoint-v1",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "recorded_at_utc": "2026-11-12 01:14:46 UTC",
+  "files": [
+    {
+      "name": "4453ce70-source-alignment.json",
+      "bytes": 487,
+      "sha256": "effd478377ead9b9630fe37225b26e0281a418b558052b6590098f057dd07ae8",
+      "github_blob_sha": "b9e760ebe1ccac9e72b84589d146b0760bd42439"
+    },
+    {
+      "name": "4453ce70-fmt-check.json",
+      "bytes": 1157,
+      "sha256": "bf0fa6560022a3c545856a957ec75acc2cb7a4681510aa31cbce58625438a3be",
+      "github_blob_sha": "9996727a2392a0b2b8479e28d50a708fde5c24c5"
+    },
+    {
+      "name": "4453ce70-fmt-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "github_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "name": "4453ce70-caller-self-test.json",
+      "bytes": 1145,
+      "sha256": "6f3841487677dde4186e31d83a344eb5c5e46aceb1dd75ffa0bd3b70ccdf6d4f",
+      "github_blob_sha": "7fcfadb1f5e6fe67f34eefb86c7631e6da2004f8"
+    },
+    {
+      "name": "4453ce70-caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "github_blob_sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2"
+    },
+    {
+      "name": "4453ce70-just-test-artifacts-eval.json",
+      "bytes": 1458,
+      "sha256": "8785c89130de7067f3a7e0593f71fa0a5d48abcfda16348e4ef17d5f0c5ec74d",
+      "github_blob_sha": "ff386cbceb219cf1d81d9a12da514c570377eec9"
+    },
+    {
+      "name": "4453ce70-just-test-artifacts-eval.log",
+      "bytes": 40941,
+      "sha256": "6a94a88ac77e12cb36358fae986e2da38ebdcca82b509527e34ac75388f9c224",
+      "github_blob_sha": "12df1a702554daa839781fdf9b6d7b0a07e7e745"
+    }
+  ],
+  "observations": {
+    "pinned_rust": "1.96.0",
+    "fmt_check_exit_code": 0,
+    "original_caller_self_test_exit_code": 0,
+    "original_full_caller_verification": "not yet passed",
+    "native": {
+      "passed": 269,
+      "failed": 0,
+      "skipped": 1,
+      "packages": {
+        "codex-hepta-learning-artifacts": 125,
+        "codex-hepta-intelligence-eval": 144
+      },
+      "source_before_after_clean": true,
+      "cargo_lock_unchanged": true
+    },
+    "original_summary": "     Summary [   2.296s] 269 tests run: 269 passed, 1 skipped",
+    "selector_regressions": [
+      "        PASS [   0.055s] (229/269) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_cannot_outlive_selector_key",
+      "        PASS [   0.057s] (231/269) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_cannot_cross_scheduled_revocation",
+      "        PASS [   0.039s] (232/269) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_records_only_selected_transition"
+    ],
+    "process_kill_reopen_parent": "        PASS [   1.023s] (269/269) codex-hepta-learning-artifacts owner_host::tests::owner_host_process_kill_reopen_matrix",
+    "incomplete_evidence_precedence": "        PASS [   0.010s] (  1/269) codex-hepta-intelligence-eval closure::tests::incomplete_evidence_keeps_failed_metrics_without_a_completed_negative_decision"
+  },
+  "qualifications": {
+    "scope": "Two original native library suites and formatter/self-test checks on the exact final source. Original raw logs and command/source records are included.",
+    "full_agentd_and_uid0_root_suite_on_this_source": "awaiting original hosted execution",
+    "full_ordinary_notes_learning_chain": "not established",
+    "independent_B_C_task_benefit": "not established",
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "production_adoption": false,
+    "rsi_claim": false
+  }
+}

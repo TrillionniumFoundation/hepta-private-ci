@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/workspace/scratch/1f3ba4601505/tools/just-1.51.0/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work/codex-rs",
+  "timeout_seconds": 1200,
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+  },
+  "started_unix": 1794445897.5430937,
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-just-test-artifacts-eval.log",
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "ended_unix": 1794445911.7264774,
+  "log_sha256": "6a94a88ac77e12cb36358fae986e2da38ebdcca82b509527e34ac75388f9c224",
+  "log_bytes": 40941,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+  },
+  "source_unchanged": true,
+  "summary_lines": [
+    " Nextest run ID 7c4a80ae-0868-4640-8145-732d4921d1cf with nextest profile: local",
+    "    Starting 269 tests across 2 binaries (1 test skipped)",
+    "     Summary [   2.296s] 269 tests run: 269 passed, 1 skipped"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "python",
+    "scripts/verify_hepta_callers.py",
+    "self-test"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work",
+  "timeout_seconds": 120,
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+  },
+  "started_unix": 1794445897.367175,
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-caller-self-test.log",
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "ended_unix": 1794445897.4843369,
+  "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+  "log_bytes": 48,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+  },
+  "source_unchanged": true,
+  "summary_lines": [
+    "{\"status\": \"PASS_HEPTA_CALLER_PROOF_SELF_TEST\"}"
+  ]
+}
