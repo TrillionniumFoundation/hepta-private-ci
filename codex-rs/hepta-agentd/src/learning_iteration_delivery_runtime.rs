@@ -30,6 +30,8 @@ pub(crate) struct CircuitLearningDeliveryRuntimeV1 {
     source: CircuitLearningSourceV1,
     #[cfg(target_os = "linux")]
     retained_source: Option<Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>>,
+    #[cfg(target_os = "linux")]
+    historical_delivery: Option<super::historical_source::OriginalHistoricalLearningDeliveryV1>,
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
@@ -101,12 +103,18 @@ impl LearningIterationRuntimeBootstrapV1 {
                 source: self.circuit_delivery_source,
                 #[cfg(target_os = "linux")]
                 retained_source: self.retained_source.take(),
+                #[cfg(target_os = "linux")]
+                historical_delivery: self.historical_delivery.take(),
             })
     }
 }
 
 impl CircuitLearningDeliveryRuntimeV1 {
     pub(crate) fn attach_sources(&self, state: &AgentdState) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(delivery) = &self.historical_delivery {
+            return delivery.require_original_source(state.identity());
+        }
         #[cfg(target_os = "linux")]
         if let Some(source) = &self.retained_source {
             return state.attach_original_retained_learning_source(Arc::clone(source));
@@ -126,6 +134,10 @@ impl CircuitLearningDeliveryRuntimeV1 {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(delivery) = self.historical_delivery {
+            return delivery.run(self.handle, state, cancellation).await;
+        }
         #[cfg(target_os = "linux")]
         let store = if let Some(source) = &self.retained_source {
             let source: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =

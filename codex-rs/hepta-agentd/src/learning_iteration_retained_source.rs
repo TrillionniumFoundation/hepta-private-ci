@@ -19,6 +19,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             AgentdError::GenerationFenced("original Root source registry required".into())
         })?;
         if self.retained_source.is_some()
+            || self.historical_source.is_some()
             || !self.enforce_circuit_admission
             || !matches!(
                 self.circuit_delivery_source,

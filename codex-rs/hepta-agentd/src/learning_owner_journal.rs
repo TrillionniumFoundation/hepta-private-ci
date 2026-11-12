@@ -18,6 +18,10 @@ use codex_hepta_neuron::JournalAnchor;
 use codex_hepta_neuron::WitnessStoreError;
 use codex_hepta_types::Digest32;
 
+#[cfg(target_os = "linux")]
+#[path = "learning_owner_journal_historical_delivery.rs"]
+mod historical_delivery;
+
 #[derive(Debug, thiserror::Error)]
 pub enum LearningOriginalOwnerErrorV1 {
     #[error("original learning owner binding: {0}")]

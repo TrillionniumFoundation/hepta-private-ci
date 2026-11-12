@@ -75,6 +75,26 @@ impl HistoricalDatasetLedgerV1 {
 }
 
 impl CellQ24TrainingBatchV1 {
+    pub(crate) fn require_original_historical_dataset_receipt(
+        &self,
+        receipt: &Arc<OriginalHistoricalTaskReadReceiptV1>,
+    ) -> Result<(), Error> {
+        let source = self
+            .source
+            .as_ref()
+            .ok_or(Error::Binding("original Dataset capability absent"))?;
+        let OriginalDatasetLedgerV1::Historical(ledger) = &source.ledger else {
+            return Err(Error::Binding("historical Dataset capability required"));
+        };
+        if !Arc::ptr_eq(&ledger.receipt, receipt) {
+            return Err(Error::Binding(
+                "Dataset belongs to another original Root receipt",
+            ));
+        }
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&ledger.trust, receipt)?;
+        Ok(())
+    }
+
     pub(crate) fn from_original_historical_dataset(
         ledger: Arc<HistoricalDatasetLedgerV1>,
         frozen: LedgerSnapshot,
