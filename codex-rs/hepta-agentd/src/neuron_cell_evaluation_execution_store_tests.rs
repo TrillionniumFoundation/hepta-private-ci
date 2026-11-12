@@ -23,7 +23,10 @@ fn d(label: &str) -> Digest32 {
 }
 fn key() -> ProductEvaluationExecutionKeyV1 {
     ProductEvaluationExecutionKeyV1 {
-        plan_id: StableId::new("original-execution-plan").expect("test plan id"),
+        plan_id: match StableId::new("original-execution-plan") {
+            Ok(plan_id) => plan_id,
+            Err(error) => panic!("test plan id: {error:?}"),
+        },
         binding_digest: d("original-execution-key"),
     }
 }
@@ -73,12 +76,19 @@ impl Fixture {
         )?)
     }
     fn recover(&self) -> Result<Owner, Error> {
-        Owner::recover(
-            self.existing_file("raw").expect("existing raw"),
-            self.witness(self.existing_file("witness").expect("existing witness"))
-                .expect("valid original witness file"),
-            d("original-raw-binding"),
-        )
+        let raw = match self.existing_file("raw") {
+            Ok(raw) => raw,
+            Err(error) => panic!("existing raw: {error:?}"),
+        };
+        let witness_file = match self.existing_file("witness") {
+            Ok(file) => file,
+            Err(error) => panic!("existing witness: {error:?}"),
+        };
+        let witness = match self.witness(witness_file) {
+            Ok(witness) => witness,
+            Err(error) => panic!("valid original witness file: {error:?}"),
+        };
+        Owner::recover(raw, witness, d("original-raw-binding"))
     }
     fn bytes(&self) -> anyhow::Result<[Vec<u8>; 2]> {
         Ok([
