@@ -1,0 +1,384 @@
+{
+  "schema": "root-hpca-original-main-readback-v1",
+  "source_commit": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+  "original_result_sha256": "0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b",
+  "parser_implementation": "Independent Python fullmatch after strip/lower; no credit.py import",
+  "rows": 1632,
+  "unique_condition_task_pairs": 1632,
+  "unique_content_questions": 64,
+  "seed_count": 4,
+  "repeated_evaluations_are_independent_tasks": false,
+  "scores": {
+    "base": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed11-routed": {
+      "content": {
+        "denominator": 64,
+        "valid": 56,
+        "correct": 27,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 9,
+        "correct": 6,
+        "failed": 0
+      }
+    },
+    "seed11-shuffled": {
+      "content": {
+        "denominator": 64,
+        "valid": 58,
+        "correct": 29,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 10,
+        "correct": 5,
+        "failed": 0
+      }
+    },
+    "seed11-no_eligibility": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed11-scalar": {
+      "content": {
+        "denominator": 64,
+        "valid": 50,
+        "correct": 24,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 9,
+        "correct": 4,
+        "failed": 0
+      }
+    },
+    "seed17-routed": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 15,
+        "correct": 9,
+        "failed": 0
+      }
+    },
+    "seed17-shuffled": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 17,
+        "correct": 9,
+        "failed": 0
+      }
+    },
+    "seed17-no_eligibility": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed17-scalar": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 18,
+        "correct": 10,
+        "failed": 0
+      }
+    },
+    "seed23-routed": {
+      "content": {
+        "denominator": 64,
+        "valid": 50,
+        "correct": 24,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 7,
+        "correct": 3,
+        "failed": 0
+      }
+    },
+    "seed23-shuffled": {
+      "content": {
+        "denominator": 64,
+        "valid": 50,
+        "correct": 24,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 5,
+        "correct": 3,
+        "failed": 0
+      }
+    },
+    "seed23-no_eligibility": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed23-scalar": {
+      "content": {
+        "denominator": 64,
+        "valid": 50,
+        "correct": 24,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 5,
+        "correct": 3,
+        "failed": 0
+      }
+    },
+    "seed29-routed": {
+      "content": {
+        "denominator": 64,
+        "valid": 63,
+        "correct": 37,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed29-shuffled": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 33,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed29-no_eligibility": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    },
+    "seed29-scalar": {
+      "content": {
+        "denominator": 64,
+        "valid": 64,
+        "correct": 32,
+        "failed": 0
+      },
+      "retention": {
+        "denominator": 32,
+        "valid": 14,
+        "correct": 8,
+        "failed": 0
+      }
+    }
+  },
+  "paired_content": [
+    {
+      "seed": 11,
+      "routed_correct": 27,
+      "shuffled_correct": 29,
+      "routed_only_correct": 27,
+      "shuffled_only_correct": 29,
+      "paired_correct_difference": -2,
+      "gains": [
+        "content-0-00",
+        "content-0-02",
+        "content-1-02",
+        "content-1-03",
+        "content-0-04",
+        "content-0-06",
+        "content-0-08",
+        "content-0-10",
+        "content-1-11",
+        "content-0-12",
+        "content-0-14",
+        "content-1-14",
+        "content-1-15",
+        "content-0-16",
+        "content-0-18",
+        "content-1-18",
+        "content-1-19",
+        "content-0-20",
+        "content-0-22",
+        "content-0-24",
+        "content-0-26",
+        "content-1-26",
+        "content-1-27",
+        "content-0-28",
+        "content-0-30",
+        "content-1-30",
+        "content-1-31"
+      ],
+      "losses": [
+        "content-1-00",
+        "content-0-01",
+        "content-1-01",
+        "content-0-03",
+        "content-1-04",
+        "content-1-05",
+        "content-0-07",
+        "content-1-08",
+        "content-0-09",
+        "content-1-09",
+        "content-0-11",
+        "content-1-12",
+        "content-0-13",
+        "content-1-13",
+        "content-0-15",
+        "content-1-16",
+        "content-1-17",
+        "content-0-19",
+        "content-1-20",
+        "content-1-21",
+        "content-0-23",
+        "content-1-24",
+        "content-0-25",
+        "content-1-25",
+        "content-0-27",
+        "content-1-28",
+        "content-0-29",
+        "content-1-29",
+        "content-0-31"
+      ]
+    },
+    {
+      "seed": 17,
+      "routed_correct": 32,
+      "shuffled_correct": 32,
+      "routed_only_correct": 0,
+      "shuffled_only_correct": 0,
+      "paired_correct_difference": 0,
+      "gains": [],
+      "losses": []
+    },
+    {
+      "seed": 23,
+      "routed_correct": 24,
+      "shuffled_correct": 24,
+      "routed_only_correct": 0,
+      "shuffled_only_correct": 0,
+      "paired_correct_difference": 0,
+      "gains": [],
+      "losses": []
+    },
+    {
+      "seed": 29,
+      "routed_correct": 37,
+      "shuffled_correct": 33,
+      "routed_only_correct": 5,
+      "shuffled_only_correct": 1,
+      "paired_correct_difference": 4,
+      "gains": [
+        "content-0-07",
+        "content-0-13",
+        "content-0-23",
+        "content-0-29",
+        "content-0-31"
+      ],
+      "losses": [
+        "content-1-31"
+      ]
+    }
+  ],
+  "zero_eligibility": {
+    "11": {
+      "all_96_original_generations_equal_base": true
+    },
+    "17": {
+      "all_96_original_generations_equal_base": true
+    },
+    "23": {
+      "all_96_original_generations_equal_base": true
+    },
+    "29": {
+      "all_96_original_generations_equal_base": true
+    }
+  },
+  "actual_generation_attempts": 1632,
+  "actual_completed_generations": 1632,
+  "actual_failed_generations": 0,
+  "manual_sgd_calls": 4096,
+  "nonzero_update_receipts": 3072,
+  "retention_gate_passed": false,
+  "independent_future_B": false,
+  "model_forwards_started_by_this_readback": 0,
+  "optimizer_calls_started_by_this_readback": 0,
+  "cold_replay_is_separate": true,
+  "status": "DESCRIPTIVE_RECHECK_HOLD_NO_GO"
+}
