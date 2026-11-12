@@ -86,11 +86,13 @@ CALLERS = {
     "root_historical_source_armed_capture": (PIN,),
     "root_historical_source_armed_record": (PIN,),
     "root_generation_current_original_broker_head": (
-        AGENT + "authority_host_generation_publication_enrollment.rs",
-        AGENT + "authority_host_generation_publication_transport.rs",
-        AGENT + "authority_host_generation_initial_enrollment.rs",
-        AGENT + "authority_host_generation_initial_transport.rs", PIN,
-        AGENT + "authority_host_run_start_context.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+        "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
     ),
     "root_initial_exact_retained_record": (
         AGENT + "authority_host_generation_initial_enrollment.rs",

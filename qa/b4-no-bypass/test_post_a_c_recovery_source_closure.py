@@ -115,8 +115,8 @@ class PostACRecoverySourceTests(unittest.TestCase):
     def test_new_c_keeps_real_grant_single_ingress_and_original_end(self):
         self.check_markers(CONT, 'fn run(', (
             'original_end != end', 'OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(',
-            'prepared.final_use_binding().clone()', 'issuer_cancelled.is_cancelled()',
-            'grants.request_grant(&binding)', 'OriginalQ24PreparedSuccessorV1::publish(prepared, signed)',
+            'require_continuation(&state, &identity, &cancelled, end)?',
+            'OriginalQ24PreparedSuccessorV1::publish_from_original_root(prepared)',
             'OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(',
             'OriginalCircuitFeatureIngressV1::submit_until(',
             'OriginalGenerationFiles::into_original_handoff(',
