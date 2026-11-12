@@ -192,7 +192,7 @@ where
         move || (profile.clock)(),
         profile.queue_capacity,
     )?;
-    let readback = Arc::new(source.readback());
+    let readback = Arc::new(DurableCircuitTaskSourceV1::readback(&source));
     Ok(CircuitQ24TaskRuntimeV1 {
         bootstrap,
         invocation: Arc::new(source),

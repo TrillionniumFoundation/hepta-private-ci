@@ -82,6 +82,7 @@ impl Recovered {
     }
 }
 
+#[cfg(test)]
 impl Context {
     fn open(self, read_only_witness: bool) -> anyhow::Result<Recovered> {
         let binding = cell::d("original-task-ledger-fixture");

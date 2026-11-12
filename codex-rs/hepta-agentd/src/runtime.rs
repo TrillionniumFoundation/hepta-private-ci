@@ -157,6 +157,7 @@ pub async fn run_with_shutdown(
         EVENT_CAPACITY,
     )?);
     if let Some(delivery) = &circuit_learning_delivery {
+        let delivery: &crate::learning_iteration::CircuitLearningDeliveryRuntimeV1 = delivery;
         delivery.attach_sources(&state)?;
     }
     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {

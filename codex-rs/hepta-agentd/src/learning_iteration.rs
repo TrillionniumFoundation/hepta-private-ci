@@ -33,6 +33,7 @@ mod delivery;
 #[cfg(target_os = "linux")]
 #[path = "learning_iteration_retained_source.rs"]
 mod retained_source;
+pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
 pub(crate) use delivery::CircuitLearningSourceV1;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;

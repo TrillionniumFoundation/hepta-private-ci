@@ -3,6 +3,7 @@
 //! completion or FileCAS is created.
 
 use super::*;
+use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -87,10 +88,25 @@ impl Fixture {
             .prefix("publication-witness-")
             .tempdir_in(witness_parent)?;
         std::fs::set_permissions(witnesses.path(), std::fs::Permissions::from_mode(0o700))?;
-        let workspace = protected.path().join("workspace");
+        let runtime_directory = tempfile::Builder::new().prefix("hgp-").tempdir_in("/run")?;
+        owned_mode(
+            runtime_directory.path(),
+            /*uid*/ 0,
+            /*gid*/ 60001,
+            /*mode*/ 0o2710,
+        )?;
+        // Ordinary identity paths must be traversable by the dedicated child.
+        // Root authority, CURRENT and witnesses remain in their private domains.
+        let workspace = runtime_directory.path().join("workspace");
         std::fs::create_dir(&workspace)?;
-        let fleet = HeptaFleetRoot::parse(protected.path().join("fleet"))?;
+        let fleet = HeptaFleetRoot::parse(runtime_directory.path().join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet.clone())?;
+        owned_mode(
+            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+        )?;
+        owned_mode(
+            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+        )?;
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         registry.register(AgentManifest::new(
             agent.clone(),
@@ -103,7 +119,7 @@ impl Fixture {
         let registered = HostAuthorityRegisteredIdentity {
             agent_id: agent.clone(),
             spawn_generation: starting.generation,
-            fleet_root: protected.path().join("fleet"),
+            fleet_root: fleet.as_path().to_path_buf(),
             workspace,
             resources: ResourceBudget::local_default(),
         };
@@ -113,13 +129,6 @@ impl Fixture {
             .enable_all()
             .build()?;
         let fresh = runtime.block_on(crate::FreshHostCognitiveState::prepare(&registered))?;
-        let runtime_directory = tempfile::Builder::new().prefix("hgp-").tempdir_in("/run")?;
-        owned_mode(
-            runtime_directory.path(),
-            /*uid*/ 0,
-            /*gid*/ 60001,
-            /*mode*/ 0o2710,
-        )?;
         let local = runtime_directory.path().join("consumer-local");
         std::fs::create_dir(&local)?;
         owned_mode(
@@ -421,7 +430,8 @@ impl Fixture {
         );
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
-                control(&self.offer, b"ORIGINAL_INPUTS_READY")?;
+                control(&self.offer, b"ORIGINAL_INPUTS_READY")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
                 // The original child has now opened both real nonce owners.
                 // The production loader invokes the original same-PID cap.
                 let unchanged = support::protected_files(&self.current_path)?;
@@ -442,11 +452,13 @@ impl Fixture {
                     );
                     send_data(&self.offer, &false)?;
                 } else {
-                    let registered = outcome?;
+                    let registered = outcome
+                        .with_context(|| format!("initial parent {phase:?}: registering original deployment"))?;
                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
                     send_data(&self.offer, &true)?;
                 }
-                control(&self.offer, b"STABLE")?;
+                control(&self.offer, b"STABLE")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting STABLE"))?;
                 if !reject {
                     let head = self.head()?;
                     anyhow::ensure!(
@@ -455,11 +467,13 @@ impl Fixture {
                     );
                 }
                 assert_eq!(self.offer.send(b"CHECKED")?, 7);
-                control(&self.offer, b"DONE")?;
+                control(&self.offer, b"DONE")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting DONE"))?;
                 Ok(())
             });
             let served = prepared.serve_with_ready(move || {
                 crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)
+                    .with_context(|| format!("initial parent {phase:?}: sending original production handoff"))
                     .map_err(io::Error::other)?;
                 crate::send_root_generation_initial_handoff(
                     send.try_clone()?,
@@ -467,20 +481,32 @@ impl Fixture {
                     &root_pin,
                     TIMEOUT,
                 )
+                .with_context(|| format!("initial parent {phase:?}: sending original initial handoff"))
                 .map_err(io::Error::other)?;
-                send_data(&send, &plan).map_err(io::Error::other)?;
-                send_target_files(&send, target_writer, witness_writer).map_err(io::Error::other)
+                send_data(&send, &plan)
+                    .with_context(|| format!("initial parent {phase:?}: sending component plan"))
+                    .map_err(io::Error::other)?;
+                send_target_files(&send, target_writer, witness_writer)
+                    .with_context(|| format!("initial parent {phase:?}: sending original target descriptors"))
+                    .map_err(io::Error::other)
             });
-            registration
+            let registered = registration
                 .join()
-                .map_err(|_| anyhow::anyhow!("initial registration thread"))??;
+                .map_err(|_| anyhow::anyhow!("initial registration thread panicked"))
+                .and_then(|outcome| outcome);
+            if let Err(error) = registered {
+                return Err(error.context(format!(
+                    "initial parent {phase:?}, controlled_ack_loss={}: original Root serve result: {served:?}",
+                    self.drop_ack
+                )));
+            }
             if reject || (phase == Phase::Publish && self.drop_ack) {
                 anyhow::ensure!(
                     served.is_err(),
                     "source refusal or controlled ACK loss closes original lane"
                 );
             } else {
-                served?;
+                served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
             }
             Ok(())
         })

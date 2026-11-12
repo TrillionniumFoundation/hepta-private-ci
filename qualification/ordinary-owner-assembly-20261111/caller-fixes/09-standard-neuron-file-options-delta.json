@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.std-openoptions-explicit-receiver-source-delta.v1",
+  "source_sha": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "mode": "100644",
+      "before": {
+        "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+        "git_blob": "0db16e687c9c04862fecd15b21321ea94dd929e5",
+        "bytes": 8346,
+        "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f"
+      },
+      "after": {
+        "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+        "git_blob": "8e7e9d5ecc01abee9c8d01aa2228ccd7cedf7dfd",
+        "bytes": 8403,
+        "sha256": "8b72969cf76e10fb777df8e14f64c879ceb49bc66b68729ac72965f44bf675a1"
+      },
+      "exact_replacements": [
+        {
+          "old": "    pub(super) fn file(&self, name: &str) -> File {\n        checked(\n            OpenOptions::new()\n",
+          "new": "    pub(super) fn file(&self, name: &str) -> File {\n        let mut options: std::fs::OpenOptions = OpenOptions::new();\n        checked(\n            options\n"
+        }
+      ]
+    }
+  ],
+  "untouched": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "git_blob": "fc4740b284785c41c846baf55ed041fe981683be",
+      "reason": "Parent explicitly retained existing true cfg(test) start_profile; it already excludes the historical fixture chain."
+    }
+  ],
+  "callers_delta": [],
+  "checker_delta": [],
+  "ignore_delta": [],
+  "product_caller_delta": [],
+  "native_executed": false
+}

@@ -38,20 +38,17 @@ impl AgentdProductionLaunch {
             notes_ui,
             lifetime,
         } = selected.ok_or_else(|| {
-            AgentdError::Invalid("original late writer requires a complete production launch".into())
+            AgentdError::Invalid(
+                "original late writer requires a complete production launch".into(),
+            )
         })?;
         require_late_owner(uid, gid)?;
         let session_end = Instant::now() + lifetime;
-        let (bootstrap, root_pidfd, writer) = crate::receive_root_production_writer_handoff(
-            handoff,
-            remaining(bootstrap_deadline)?,
-        )?;
+        let (bootstrap, root_pidfd, writer) =
+            crate::receive_root_production_writer_handoff(handoff, remaining(bootstrap_deadline)?)?;
         let learning = learning_handoff
             .map(|handoff| {
-                crate::receive_root_learning_handoff(
-                    handoff,
-                    remaining(bootstrap_deadline)?,
-                )
+                crate::receive_root_learning_handoff(handoff, remaining(bootstrap_deadline)?)
             })
             .transpose()?;
         let q24_model = q24_model_handoff
@@ -88,12 +85,9 @@ impl AgentdProductionLaunch {
             original_session_remaining(session_end)?,
         )
         .await?;
-        let mut config = AgentdConfig::from_root_writer_handoff(
-            &root,
-            writer,
-            std::env::current_dir()?,
-        )?
-        .with_root_bound_sockets(control, app_server)?;
+        let mut config =
+            AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
+                .with_root_bound_sockets(control, app_server)?;
         if config.identity() != expected {
             return Err(AgentdError::GenerationFenced(
                 "late writer loaded another original Starting identity".into(),

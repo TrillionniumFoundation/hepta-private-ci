@@ -37,12 +37,12 @@ pub(super) fn now() -> u64 {
 }
 
 pub(super) fn file(root: &Path, name: &str) -> anyhow::Result<File> {
-    Ok(OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .truncate(false)
-        .open(root.join(name))?)
+    let mut options: std::fs::OpenOptions = OpenOptions::new();
+    options.read(true);
+    options.write(true);
+    options.create(true);
+    options.truncate(false);
+    Ok(options.open(root.join(name))?)
 }
 
 pub(super) fn witness(
@@ -61,6 +61,7 @@ pub(super) fn witness(
     )?)
 }
 
+#[cfg(test)]
 impl Fixture {
     pub(super) async fn new(run: &str, lifetime: u64, automatic: bool) -> anyhow::Result<Self> {
         let root = tempfile::tempdir()?;

@@ -2,6 +2,7 @@
 //! owner are production implementations; no FileCas/test authority is used.
 
 use super::*;
+use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -95,10 +96,26 @@ impl Fixture {
             .prefix("publication-witness-")
             .tempdir_in(witness_parent)?;
         std::fs::set_permissions(witnesses.path(), std::fs::Permissions::from_mode(0o700))?;
-        let workspace = protected.path().join("workspace");
+        let runtime_directory = tempfile::Builder::new().prefix("hgp-").tempdir_in("/run")?;
+        owned_mode(
+            runtime_directory.path(),
+            /*uid*/ 0,
+            /*gid*/ 60001,
+            /*mode*/ 0o2710,
+        )?;
+        // The original non-Root identity resolves these ordinary paths.
+        // Keep Root authority files in the separate protected 0700 directory.
+        let workspace = runtime_directory.path().join("workspace");
         std::fs::create_dir(&workspace)?;
-        let fleet = HeptaFleetRoot::parse(protected.path().join("fleet"))?;
+        let fleet_path = runtime_directory.path().join("fleet");
+        let fleet = HeptaFleetRoot::parse(fleet_path.clone())?;
         let registry = FleetRegistry::initialize(fleet.clone())?;
+        owned_mode(
+            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+        )?;
+        owned_mode(
+            &fleet_path, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+        )?;
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         registry.register(AgentManifest::new(
             agent.clone(),
@@ -111,7 +128,7 @@ impl Fixture {
         let registered = HostAuthorityRegisteredIdentity {
             agent_id: agent.clone(),
             spawn_generation: starting.generation,
-            fleet_root: protected.path().join("fleet"),
+            fleet_root: fleet_path,
             workspace,
             resources: ResourceBudget::local_default(),
         };
@@ -121,13 +138,6 @@ impl Fixture {
             .enable_all()
             .build()?;
         let fresh = runtime.block_on(crate::FreshHostCognitiveState::prepare(&registered))?;
-        let runtime_directory = tempfile::Builder::new().prefix("hgp-").tempdir_in("/run")?;
-        owned_mode(
-            runtime_directory.path(),
-            /*uid*/ 0,
-            /*gid*/ 60001,
-            /*mode*/ 0o2710,
-        )?;
         let local = runtime_directory.path().join("consumer-local");
         std::fs::create_dir(&local)?;
         owned_mode(
@@ -497,7 +507,9 @@ impl Fixture {
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
                 deployment.component_trigger_original(&late_material)?;
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
-                let registered = deployment.wait_and_register(&stopping)?;
+                let registered = deployment
+                    .wait_and_register(&stopping)
+                    .with_context(|| format!("publication {phase:?}: original late registration"))?;
                 anyhow::ensure!(
                     !registered.binding().parse::<Digest32>()?.is_zero(),
                     "actual Root acknowledgement"
@@ -542,12 +554,17 @@ impl Fixture {
                 )
                 .map_err(io::Error::other)
             });
+            // Retain the original service result even when the control worker
+            // returns first with a failed handshake.
+            eprintln!("ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}");
             let result = registration
                 .join()
-                .map_err(|_| anyhow::anyhow!("original Root registration worker panicked"))??;
+                .map_err(|_| anyhow::anyhow!("original Root registration worker panicked"))?
+                .with_context(|| {
+                    format!("publication {phase:?}: control worker failed; service={served:?}")
+                })?;
             // A deliberate refused frame can close its worker before or during
             // the original fixed-lane shutdown. The child asserts that refusal.
-            println!("ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}");
             Ok::<_, anyhow::Error>(result)
         })?;
         assert_eq!(

@@ -302,14 +302,12 @@ impl Fixture {
         config: CellGenerationConfigV2,
     ) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
         let open = |name: &str| {
-            checked(
-                OpenOptions::new()
-                    .create(true)
-                    .truncate(false)
-                    .read(true)
-                    .write(true)
-                    .open(self.directory.path().join(name)),
-            )
+            let mut options: std::fs::OpenOptions = OpenOptions::new();
+            options.create(true);
+            options.truncate(false);
+            options.read(true);
+            options.write(true);
+            checked(options.open(self.directory.path().join(name)))
         };
         let witness = checked(FileAnchorWitnessStore::open(
             open(&format!("{stem}-witness")),
