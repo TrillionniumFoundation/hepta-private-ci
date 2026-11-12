@@ -1,0 +1,293 @@
+[
+  {
+    "seed": 41,
+    "status": "DESCRIPTIVE_PROTOCOL_COMPLETE",
+    "complete_rounds": 9,
+    "decisions": {
+      "F": ["FROZEN_CONTROL", "FROZEN_CONTROL", "FROZEN_CONTROL"],
+      "L": ["ADOPT", "NO_UPDATE", "ADOPT"],
+      "R": ["ADOPT", "NO_UPDATE", "NO_UPDATE"]
+    },
+    "future": [
+      {
+        "F": 0.453125,
+        "L": 0.90234375,
+        "L_minus_F": 0.44921875,
+        "R": 0.96484375,
+        "R_minus_L": 0.0625,
+        "generation": 0
+      },
+      {
+        "F": 0.49609375,
+        "L": 0.8828125,
+        "L_minus_F": 0.38671875,
+        "R": 0.9375,
+        "R_minus_L": 0.0546875,
+        "generation": 1
+      },
+      {
+        "F": 0.53515625,
+        "L": 0.9609375,
+        "L_minus_F": 0.42578125,
+        "R": 0.94921875,
+        "R_minus_L": -0.01171875,
+        "generation": 2
+      }
+    ],
+    "final_D": {
+      "F": 0.5078125,
+      "L": 0.99609375,
+      "R": 0.95703125
+    },
+    "b_queries": {
+      "F": 0,
+      "L": 9,
+      "R": 9
+    },
+    "meta_trials": {
+      "F": 0,
+      "L": 0,
+      "R": 24
+    },
+    "costs": {
+      "F": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.2370697799999999,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.4179276689992548
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "L": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.42318834299999986,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.7575198339982308
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "R": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.6042272849999999,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 1.096401999999216
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      }
+    },
+    "files": 100,
+    "bytes": 552229
+  },
+  {
+    "seed": 67,
+    "status": "DESCRIPTIVE_PROTOCOL_COMPLETE",
+    "complete_rounds": 9,
+    "decisions": {
+      "F": ["FROZEN_CONTROL", "FROZEN_CONTROL", "FROZEN_CONTROL"],
+      "L": ["ADOPT", "ADOPT", "ADOPT"],
+      "R": ["ADOPT", "ADOPT", "ADOPT"]
+    },
+    "future": [
+      {
+        "F": 0.515625,
+        "L": 0.9375,
+        "L_minus_F": 0.421875,
+        "R": 0.94921875,
+        "R_minus_L": 0.01171875,
+        "generation": 0
+      },
+      {
+        "F": 0.44921875,
+        "L": 0.9765625,
+        "L_minus_F": 0.52734375,
+        "R": 0.98046875,
+        "R_minus_L": 0.00390625,
+        "generation": 1
+      },
+      {
+        "F": 0.4921875,
+        "L": 0.96484375,
+        "L_minus_F": 0.47265625,
+        "R": 0.97265625,
+        "R_minus_L": 0.0078125,
+        "generation": 2
+      }
+    ],
+    "final_D": {
+      "F": 0.46875,
+      "L": 0.97265625,
+      "R": 0.984375
+    },
+    "b_queries": {
+      "F": 0,
+      "L": 9,
+      "R": 9
+    },
+    "meta_trials": {
+      "F": 0,
+      "L": 0,
+      "R": 24
+    },
+    "costs": {
+      "F": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.20268137200000003,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.2899567320000642
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "L": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.32942777199999984,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.47472939000090264
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "R": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.649393988,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.9977241330016113
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      }
+    },
+    "files": 99,
+    "bytes": 552364
+  },
+  {
+    "seed": 101,
+    "status": "DESCRIPTIVE_PROTOCOL_COMPLETE",
+    "complete_rounds": 9,
+    "decisions": {
+      "F": ["FROZEN_CONTROL", "FROZEN_CONTROL", "FROZEN_CONTROL"],
+      "L": ["ADOPT", "NO_UPDATE", "NO_UPDATE"],
+      "R": ["ADOPT", "NO_UPDATE", "NO_UPDATE"]
+    },
+    "future": [
+      {
+        "F": 0.45703125,
+        "L": 0.97265625,
+        "L_minus_F": 0.515625,
+        "R": 0.97265625,
+        "R_minus_L": 0.0,
+        "generation": 0
+      },
+      {
+        "F": 0.51953125,
+        "L": 0.95703125,
+        "L_minus_F": 0.4375,
+        "R": 0.9609375,
+        "R_minus_L": 0.00390625,
+        "generation": 1
+      },
+      {
+        "F": 0.44921875,
+        "L": 0.9609375,
+        "L_minus_F": 0.51171875,
+        "R": 0.95703125,
+        "R_minus_L": -0.00390625,
+        "generation": 2
+      }
+    ],
+    "final_D": {
+      "F": 0.46484375,
+      "L": 0.9765625,
+      "R": 0.96484375
+    },
+    "b_queries": {
+      "F": 0,
+      "L": 9,
+      "R": 9
+    },
+    "meta_trials": {
+      "F": 0,
+      "L": 0,
+      "R": 24
+    },
+    "costs": {
+      "F": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.2026588669999999,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.34830880199933745
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "L": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.3460551370000001,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.585484555000221
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      },
+      "R": {
+        "known_lower_bounds": {
+          "cpu_seconds": 0.539413402,
+          "energy_joules": 0.0,
+          "provider_charges": 0.0,
+          "wall_seconds": 0.96014421900054
+        },
+        "totals": {
+          "cpu_seconds": null,
+          "energy_joules": null,
+          "provider_charges": null,
+          "wall_seconds": null
+        }
+      }
+    },
+    "files": 99,
+    "bytes": 552284
+  }
+]

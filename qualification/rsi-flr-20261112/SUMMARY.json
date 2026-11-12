@@ -1,0 +1,70 @@
+{
+  "authority_granted": false,
+  "comparison": "descriptive synthetic repeats; R lower than L on D in two of three seeds",
+  "counts": {
+    "F_FROZEN_CONTROL": 9,
+    "L_ADOPT": 6,
+    "L_NO_UPDATE": 3,
+    "R_ADOPT": 5,
+    "R_NO_UPDATE": 4,
+    "b_queries": 54,
+    "c_uses": 27,
+    "candidate_attempts": 54,
+    "d_audits": 9,
+    "learner_trials": 72,
+    "rounds": 27
+  },
+  "daemon_plus_root_cold_recovery_established": 0,
+  "final_D_R_minus_L_by_seed": {
+    "101": -0.01171875,
+    "41": -0.0390625,
+    "67": 0.01171875
+  },
+  "final_D_by_seed": {
+    "101": {
+      "F": 0.46484375,
+      "L": 0.9765625,
+      "R": 0.96484375
+    },
+    "41": {
+      "F": 0.5078125,
+      "L": 0.99609375,
+      "R": 0.95703125
+    },
+    "67": {
+      "F": 0.46875,
+      "L": 0.97265625,
+      "R": 0.984375
+    }
+  },
+  "final_D_repeat_means": {
+    "F": 0.48046875,
+    "L": 0.9817708333333334,
+    "R": 0.96875
+  },
+  "full_cost_qualified": false,
+  "generations": 3,
+  "independent_D_custody_qualified": false,
+  "independent_real_task_sources": 0,
+  "ordinary_native_adopt_chains_established": 0,
+  "ordinary_native_noupdate_chains_established": 0,
+  "production_adoption_qualified": false,
+  "recursive_self_improvement_qualified": false,
+  "retained_original_files": 298,
+  "schema": "hepta.flr.qualification-summary.v1",
+  "scientific_efficacy_qualified": false,
+  "seeds": [41, 67, 101],
+  "source_commit": "29ef370999d3f4beb9b6efdf98d142ff0e5e6fe3",
+  "source_tree": "2ae06f03aca3eb068a8609ffa551b12f740257f7",
+  "synthetic_generator_families": 1,
+  "tests": {
+    "failed": 0,
+    "formatted_python_asts_identical": true,
+    "passed": 74,
+    "skipped": 0,
+    "source_clean_before_and_after": true,
+    "tests_rerun_after_format": false
+  },
+  "unit_test_source": "326a7df9073945c3dc682a96733b92c5c04096ab",
+  "unit_test_tree": "c757193f2339bca634b8a038a0ac526621c7456e"
+}
