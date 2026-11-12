@@ -1,0 +1,17 @@
+{
+  "source": "ce1a14cb65a07de949b80290cd9978ecbf0015f8",
+  "tree": "0b2b3516e4d604dbb23d18315cec5b60b03f7d81",
+  "prerequisite": "22a45021ecdad65a804362f5fdc104ef13bdf673",
+  "scope": "Same actual Root CURRENT recovery intent data getter",
+  "format": "PASS; just fmt --base 22a45021ecdad65a804362f5fdc104ef13bdf673",
+  "diff_check": "PASS",
+  "native": "NOT_RUN",
+  "source_qa": "NOT_RUN",
+  "files": [
+    "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+    "codex-rs/hepta-agentd/src/root_generation_current_history.rs"
+  ],
+  "bundle_sha256": "8512232fff9a1d9e7bb14ff592463e58fb4193010d5409ca67c9530616e6a66b"
+}
