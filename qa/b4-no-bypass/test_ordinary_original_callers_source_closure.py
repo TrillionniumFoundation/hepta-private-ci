@@ -145,6 +145,16 @@ class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
 
     def test_original_generation_fixtures_cannot_supply_product_open_calls(self):
         row = self.boundaries["post_a_artifact_existing_owner_open"]
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
+        files = PROOF._source_files(ROOT, PROOF._string_tuple(manifest, "source_roots"))
+        full_index = {
+            path.relative_to(ROOT).as_posix(): PROOF._strip_cfg_test_items(
+                PROOF._strip_rust_non_code(path.read_text())
+            ) for path in files
+        }
+        # These ambiguous same-name calls depend on actual authority fields
+        # elsewhere in the repository. Use the complete CLI's field context.
+        fields = {row.receiver_type: PROOF.authority_fields(full_index, row.receiver_type)}
         for path in (
             A + "neuron_generation_drained_test_support.rs",
             A + "neuron_generation_runtime_test_support.rs",
@@ -156,7 +166,9 @@ class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
             with self.subTest(fixture=path):
                 actual = dict(self.index)
                 actual[path] = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
-                PROOF._verify_boundary(ROOT, row, actual, ())
+                PROOF._verify_boundary(
+                    ROOT, row, actual, (), fields_by_receiver_type=fields
+                )
                 for attribute in ("", "// #![cfg(test)]", "#![cfg(any(test, unix))]"):
                     changed = source.replace("#![cfg(test)]", attribute, 1)
                     self.assertNotEqual(changed, source)
@@ -166,7 +178,9 @@ class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
                         PROOF.VerificationFailure,
                         "unresolved possible LearningArtifactOwnerService::open receiver",
                     ):
-                        PROOF._verify_boundary(ROOT, row, altered, ())
+                        PROOF._verify_boundary(
+                            ROOT, row, altered, (), fields_by_receiver_type=fields
+                        )
 
 
 if __name__ == "__main__":
