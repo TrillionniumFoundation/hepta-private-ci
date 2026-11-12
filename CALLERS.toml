@@ -5058,12 +5058,6 @@ forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "Sign
 required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_publication_session()?", "Command::Observe", "stream\n            .exchange(", "validate_head(profile, &response.head)?", "connection.require_original_publication_session()?", "Ok(Self {"] }, { function = "fn exchange_response(", sequence = ["self.fenced.load(", "self\n            .connection\n            .require_original_publication_session()", "self.lane.try_lock()", "held.take()", "let request_id = lane.sequence", "request_id.checked_add(1)", "let stream: &mut OriginalPublicationStream = &mut lane.stream;", "stream\n            .exchange(", "response.profile != self.profile", "validate_head(&self.profile, &response.head)?", "self\n            .connection\n            .require_original_publication_session()", "*held = Some(lane)"] }]
 
 [[protected_file]]
-path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
-required = ["anon_inode:[pidfd]", "libc::SO_PEERCRED", "actual.uid != 0\n            || actual.pid != peer.pid as i32", "timeout > Duration::from_millis(500)", "lifetime > Duration::from_secs(300)", "fds[0].revents != 0"]
-forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "block_on(", "UnixStream::connect("]
-required_function_order = [{ function = "fn exchange(", sequence = ["request.len() > 16_384", "check_lifetime(&self.root)", "self.write(", "self.read(&mut prefix", "size > 16_384", "self.read(&mut response", "check_lifetime(&self.root)", "Instant::now() >= end"] }]
-
-[[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
 required = ["libc::getuid()", "bundle.root != original.root", "bundle.consumer != original.consumer", "bundle.writer != original.writer_proof.sha256()", "OriginalPublicationStream::from_stream_until(", "RootGenerationCurrentClient::from_original_stream(", "NeuronGenerationCurrentOwnerV1::from_original_root_publication(", "connection: RootGenerationPublicationConnectionV1", "connection.original_launch_binding()", "connection.require_original_publication_session()?"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "RootAuthorityDirectory::open", "HostAuthorityFrontierStore::initialize"]
@@ -7179,14 +7173,6 @@ definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.
 definition_markers = ["fn from_stream_until(", "actual.uid != 0", "Instant::now() >= end"]
 product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_independent_b_client_connect.rs", "codex-rs/hepta-agentd/src/root_independent_b_source_client.rs"]
 caller_markers = []
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
-required = ["pub(crate) fn from_stream_until("]
-forbidden = ["end: Instant::now() +","end = Instant::now() +"]
-required_function_order = [{function = "fn from_stream(",sequence = ["lifetime.is_zero() || lifetime > Duration::from_secs(300)","Instant::now()",".checked_add(lifetime)","Self::from_stream_until(stream, root, peer, timeout, end)"]},{function = "fn from_stream_until(",sequence = ["let remaining = end",".checked_duration_since(Instant::now())","remaining.is_zero()","remaining > Duration::from_secs(300)","root.as_raw_fd()","libc::SO_PEERCRED","actual.uid != 0","check_lifetime(&root)","stream.set_nonblocking(true)?","Instant::now() >= end","Ok(Self {","end,"]},{function = "fn wait(",sequence = ["end\n                .checked_duration_since(Instant::now())","libc::poll(","fds[0].revents != 0","libc::POLLERR | libc::POLLHUP | libc::POLLNVAL","Instant::now() >= end"]}]
-
-# Original Q24 Observer control: data-only wire and exact original producer custody.
 
 [[boundary]]
 id = "q24_outcome_control_original_identity"
@@ -15831,3 +15817,17 @@ forbidden = ["SigningKey", "RootDataRefusalV1::open_existing", "impl CellGenerat
 [[protected_file.required_function_order]]
 function = "fn register_original_initial_cell("
 sequence = ["original_root()?", "RootDataRefusalV1::create_fresh(", "RootDataKind::CellSnapshot", "std::time::Instant::now() >= end", "self.with_initial_publication_context(", "slot.mode != RootGenerationInitialModeV1::Reserve", "slot.profile.writer != proof", "crate::neuron_generation_process_identity_digest_v1(&self.identity)", "slot.require_profile()?", "slot.require_target(          true)?", "slot.require_selection(", "PreparedOriginalCellFiles::into_initialized(files)?", "files.require_original_cell_baseline()?", "let baseline = CellRecord", "publisher_epoch: registration.publisher_epoch", "uid: config.peer_uid", "pid: registration.peer_pid", "boot_id: registration.boot_id.clone()", "process_start_ticks: registration.process_start_ticks", "peer_gid: config.peer_gid", "registered_identity: serde_json::to_string(", "&registration.registered_identity", "HostAuthorityFrontierStore::initialize(", "store.load(&owner)", "!= baseline", "files.require_original_cell_baseline()?", "slot.require_target(          true)?", "slot.require_profile()?", "slot.require_selection(", "retained = Some((store, baseline, files))", "std::time::Instant::now() >= end", "retained.ok_or_else(", "Ok(RegisteredOriginalCellCaptureV1"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+required = ["anon_inode:[pidfd]", "libc::SO_PEERCRED", "actual.uid != 0\n            || actual.pid != peer.pid as i32", "timeout > Duration::from_millis(500)", "lifetime > Duration::from_secs(300)", "fds[0].revents != 0"]
+forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "block_on(", "UnixStream::connect("]
+required_function_order = [{ function = "fn exchange(", sequence = ["request.len() > 16_384", "let end = (Instant::now() + self.timeout).min(self.end)", "check_lifetime(&self.root)", "self.write(", "self.read(&mut prefix", "size > 16_384", "self.read(&mut response", "check_lifetime(&self.root)", "Instant::now() >= end"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+required = ["pub(crate) fn from_stream_until("]
+forbidden = ["end: Instant::now() +","end = Instant::now() +"]
+required_function_order = [{ function = "fn from_stream(", sequence = ["lifetime.is_zero() || lifetime > Duration::from_secs(300)", "Instant::now()", ".checked_add(lifetime)", "Self::from_stream_until(stream, root, peer, timeout, end)"] }, { function = "fn from_stream_until(", sequence = ["let remaining = end", ".checked_duration_since(Instant::now())", "remaining.is_zero()", "remaining > Duration::from_secs(300)", "root.as_raw_fd()", "libc::SO_PEERCRED", "actual.uid != 0", "check_lifetime(&root)", "stream.set_nonblocking(true)?", "Instant::now() >= end", "Ok(Self {", "end,"] }, { function = "fn wait(", sequence = ["end.checked_duration_since(Instant::now())", "remaining.is_zero()", "libc::poll(", "let poll_error = (ready < 0).then(io::Error::last_os_error)", "if ready < 0", "error.kind() == io::ErrorKind::Interrupted", "continue;", "if ready <= 0", "fds[0].revents != 0", "libc::POLLERR | libc::POLLHUP | libc::POLLNVAL", "|| Instant::now() >= end", "poll_error.as_ref().and_then(io::Error::raw_os_error)", "if fds[1].revents & events != 0", "return Ok(())"] }, { function = "fn frame_error(", sequence = ["let kind = error.kind()", "let os_error = error.raw_os_error()", "io::Error::new(\n        kind,"] }]
+
+# Original Q24 Observer control: data-only wire and exact original producer custody.
