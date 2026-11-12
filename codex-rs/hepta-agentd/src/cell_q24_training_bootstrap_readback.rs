@@ -11,12 +11,12 @@ use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
+use super::super::super::readonly;
+use super::super::super::wire;
 use super::super::Error;
 use super::super::OriginalCellQ24TrainingBootstrapOwnerV1;
 use super::super::OriginalCellQ24TrainingCommandErrorV1;
 use super::super::OriginalCellQ24TrainingCommandOwnerV1;
-use super::super::super::readonly;
-use super::super::super::wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
@@ -38,7 +38,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )
         .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         tokio::task::spawn_blocking(move || {
@@ -49,17 +54,18 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         .map_err(|_| Error::Uncertain)?
     }
 
-    pub(in crate::learning_iteration_evidence_client::training_command) fn
-        serve_original_training_readback_channel(
-            &self,
-            channel: &mut HostAuthorityPeerChannel,
-        ) -> Result<u64, Error> {
+    pub(in crate::learning_iteration_evidence_client::training_command) fn serve_original_training_readback_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
-            if !channel.exchange(|bytes| {
-                self.original_training_readback_response(bytes, request_id)
-                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
-            })
-            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)? {
+            if !channel
+                .exchange(|bytes| {
+                    self.original_training_readback_response(bytes, request_id)
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                })
+                .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?
+            {
                 return Ok(request_id - 1);
             }
         }
@@ -75,7 +81,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             serde_json::from_slice(bytes).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         let initial = &self.config.material.initial;
         let canonical = |value: &str| -> bool {
-            value.parse::<Digest32>()
+            value
+                .parse::<Digest32>()
                 .is_ok_and(|digest| !digest.is_zero() && digest.to_string() == value)
         };
         if request.schema != 1
@@ -90,19 +97,25 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             || !canonical(&request.binding)
             || !canonical(&request.dataset_head)
         {
-            return Err(Error::Binding("same original read-only Trainer bootstrap purpose"));
+            return Err(Error::Binding(
+                "same original read-only Trainer bootstrap purpose",
+            ));
         }
         let result = match self.ready()? {
             Some(original) => {
-                return Ok(OriginalCellQ24TrainingCommandOwnerV1::original_training_readback_response(
-                    &original, bytes, request_id,
-                )?);
+                return Ok(
+                    OriginalCellQ24TrainingCommandOwnerV1::original_training_readback_response(
+                        &original, bytes, request_id,
+                    )?,
+                );
             }
             // This describes the endpoint's admission, not the contents of a
             // file that this read-only request has not opened or recovered.
             None => wire::CommandResult::ReadbackRequired,
         };
-        Ok(serde_json::to_vec(&wire::Response::from_request(&request, result))
-            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?)
+        Ok(
+            serde_json::to_vec(&wire::Response::from_request(&request, result))
+                .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?,
+        )
     }
 }

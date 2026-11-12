@@ -68,9 +68,15 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)
                 .map_err(|_| Error::Binding("current Training readback initial context"))?;
         if current < started_at || after != initial_binding {
-            return Err(Error::Binding("unchanged Training readback initial context"));
+            return Err(Error::Binding(
+                "unchanged Training readback initial context",
+            ));
         }
-        Ok(Self { peer: channel, material, initial_binding })
+        Ok(Self {
+            peer: channel,
+            material,
+            initial_binding,
+        })
     }
 
     /// Consume the original connection only after actual opaque D and T arrive.
@@ -88,23 +94,33 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
             verifier: self.material.verifier.clone(),
         };
         if context.validate()? != self.material.initial {
-            return Err(Error::Binding("same original Training readback initial cut"));
+            return Err(Error::Binding(
+                "same original Training readback initial cut",
+            ));
         }
         let binding = binding(&context)?;
         self.peer.check_peer_lifetime()?;
         let (original, current) =
-            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
-                .map_err(|_| Error::Binding("current Training readback initial context"))?;
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
+                &self.material,
+            )
+            .map_err(|_| Error::Binding("current Training readback initial context"))?;
         let verified_at =
             OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
-                &dataset, &self.material,
+                &dataset,
+                &self.material,
             )
             .map_err(|_| Error::Binding("same original Dataset before Training readback"))?;
         if current < started_at || verified_at < current || original != self.initial_binding {
-            return Err(Error::Binding("unchanged Training readback clock and initial context"));
+            return Err(Error::Binding(
+                "unchanged Training readback clock and initial context",
+            ));
         }
         let verified = wire::authenticate_receipt(
-            &context, training.receipt.clone(), training.attestation.clone(), verified_at,
+            &context,
+            training.receipt.clone(),
+            training.attestation.clone(),
+            verified_at,
         )?;
         if verified != training {
             return Err(Error::Binding("exact original Training readback signature"));
@@ -123,7 +139,9 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
         };
         Ok(LearningIterationEvidenceClientV1 {
             channel: Mutex::new(None),
-            command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Training(reader)))),
+            command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Training(
+                reader,
+            )))),
             initial,
             actor_id,
             verifier,
@@ -152,7 +170,10 @@ impl OriginalTrainingReadbackV1 {
             return Err(Error::Binding("same original completed Training readback"));
         }
         let request = request(&self.context, self.binding, self.next_request_id);
-        self.next_request_id = self.next_request_id.checked_add(1).ok_or(Error::Unavailable)?;
+        self.next_request_id = self
+            .next_request_id
+            .checked_add(1)
+            .ok_or(Error::Unavailable)?;
         let encoded = serde_json::to_vec(&request)?;
         let (peer, bytes) = tokio::task::spawn_blocking(move || {
             let bytes = peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
@@ -163,21 +184,23 @@ impl OriginalTrainingReadbackV1 {
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         peer.check_peer_lifetime()?;
-        let current =
-            OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
-                &self.dataset, &self.material,
-            )
-            .map_err(|_| Error::Binding("current original Dataset after Training readback"))?;
+        let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            &self.dataset,
+            &self.material,
+        )
+        .map_err(|_| Error::Binding("current original Dataset after Training readback"))?;
         if current < started_at {
             return Err(Error::Binding("Training readback clock moved backwards"));
         }
         let completed = match response.result {
-            wire::CommandResult::Completed { snapshot, evidence } =>
-                wire::decode_completed(&self.context, snapshot, evidence, current)?,
+            wire::CommandResult::Completed { snapshot, evidence } => {
+                wire::decode_completed(&self.context, snapshot, evidence, current)?
+            }
             // This capability already pins a real completed T. A different
             // current state cannot erase that fact or become a fresh NoUpdate.
-            wire::CommandResult::Missing | wire::CommandResult::Pending =>
-                return Err(Error::CommitUncertain),
+            wire::CommandResult::Missing | wire::CommandResult::Pending => {
+                return Err(Error::CommitUncertain);
+            }
             wire::CommandResult::Busy => return Err(Error::Busy),
             wire::CommandResult::Expired => return Err(Error::DeadlineExceeded),
             wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired),
@@ -185,14 +208,18 @@ impl OriginalTrainingReadbackV1 {
             wire::CommandResult::Unavailable => return Err(Error::Unavailable),
         };
         if completed != self.training {
-            return Err(Error::Binding("unchanged complete original Training signature"));
+            return Err(Error::Binding(
+                "unchanged complete original Training signature",
+            ));
         }
         self.peer = Some(peer);
         Ok((completed.attestation, current))
     }
 }
 
-pub(super) fn binding(context: &OriginalCellQ24TrainingCommandContextV1) -> Result<Digest32, Error> {
+pub(super) fn binding(
+    context: &OriginalCellQ24TrainingCommandContextV1,
+) -> Result<Digest32, Error> {
     Ok(Digest32::of_parts(&[
         b"hepta.agentd.original-q24-training-readback.v1\0",
         context.binding()?.as_array(),
@@ -205,7 +232,11 @@ pub(super) fn request(
     request_id: u64,
 ) -> wire::Request {
     let mut request = wire::Request::new(
-        context, binding, request_id, wire::Action::Readback, /*cancelled*/ false,
+        context,
+        binding,
+        request_id,
+        wire::Action::Readback,
+        /*cancelled*/ false,
     );
     request.operation = OPERATION.into();
     request
@@ -229,7 +260,9 @@ pub(super) fn require_request(
         || observed.action != wire::Action::Readback
         || observed.cancelled
     {
-        return Err(Error::Binding("same original read-only Training purpose and context"));
+        return Err(Error::Binding(
+            "same original read-only Training purpose and context",
+        ));
     }
     Ok(())
 }

@@ -212,7 +212,9 @@ impl LearningIterationEvidenceClientV1 {
         }
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
         if let Some(command) = &self.command {
-            return self.read_original_command(command, receipt, &payload, role).await;
+            return self
+                .read_original_command(command, receipt, &payload, role)
+                .await;
         }
         let mut channel = self
             .channel
@@ -295,13 +297,13 @@ pub(crate) use tests::fixture_original_receipt_client;
 #[cfg(test)]
 pub(crate) use material::retained_version_dataset_fixture;
 #[cfg(test)]
+pub(crate) use selection_command::original_readback_test_ports;
+#[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client_until_close;
 #[cfg(test)]
 pub(crate) use training_command::command_test_support;
 #[cfg(test)]
 pub(crate) use training_command::original_bootstrap_test_ports;
-#[cfg(test)]
-pub(crate) use selection_command::original_readback_test_ports;
 
 #[cfg(test)]
 pub(crate) use selection_command::command_test_support as selection_command_test_support;

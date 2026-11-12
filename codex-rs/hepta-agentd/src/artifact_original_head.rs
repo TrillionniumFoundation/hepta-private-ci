@@ -10,16 +10,16 @@ use std::time::UNIX_EPOCH;
 
 pub use codex_hepta_learning_artifacts::ArtifactHeadSigningConfigV1;
 
-#[path = "artifact_original_head_wire.rs"]
-mod wire;
-#[path = "artifact_original_registry_source.rs"]
-mod source;
+#[path = "artifact_original_head_client.rs"]
+mod client;
 #[path = "artifact_original_head_owner.rs"]
 mod owner;
 #[path = "artifact_original_head_service.rs"]
 mod service;
-#[path = "artifact_original_head_client.rs"]
-mod client;
+#[path = "artifact_original_registry_source.rs"]
+mod source;
+#[path = "artifact_original_head_wire.rs"]
+mod wire;
 
 pub use client::OriginalArtifactHeadConnectionV1;
 pub use owner::OriginalArtifactHeadOwnerV1;
@@ -55,13 +55,17 @@ pub enum OriginalArtifactHeadErrorV1 {
 type Error = OriginalArtifactHeadErrorV1;
 
 fn now() -> Result<u64, Error> {
-    let elapsed = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| Error::Unavailable)?;
+    let elapsed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| Error::Unavailable)?;
     u64::try_from(elapsed.as_millis()).map_err(|_| Error::Unavailable)
 }
 
 fn fresh(started: u64) -> Result<u64, Error> {
     let current = now()?;
-    if current < started { return Err(Error::Binding("original HEAD clock moved backwards")); }
+    if current < started {
+        return Err(Error::Binding("original HEAD clock moved backwards"));
+    }
     Ok(current)
 }
 
@@ -69,6 +73,8 @@ fn require_peer(
     peer: &crate::LearningIterationEvidencePeerV1,
     expected: &codex_hepta_types::StableId,
 ) -> Result<(), Error> {
-    if &peer.actor_id != expected { return Err(Error::Binding("original enrolled peer actor")); }
+    if &peer.actor_id != expected {
+        return Err(Error::Binding("original enrolled peer actor"));
+    }
     Ok(())
 }

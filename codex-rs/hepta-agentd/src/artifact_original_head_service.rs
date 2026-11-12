@@ -24,16 +24,29 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
     pub async fn serve_commands(
-        self: &Arc<Self>, stream: UnixStream, consumer: LearningIterationEvidencePeerV1,
-        original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
+        self: &Arc<Self>,
+        stream: UnixStream,
+        consumer: LearningIterationEvidencePeerV1,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
         require_peer(&consumer, &self.source.config.writer_lease.producer_id)?;
-        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         // Construct the original channel and its absolute end before enqueue.
         let mut channel = original_owner_command_channel_v1(
-            stream, AgentdRootAuthorityPeer { pid: consumer.pid, boot_id: consumer.boot_id,
-                process_start_ticks: consumer.process_start_ticks },
-            consumer.uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: consumer.pid,
+                boot_id: consumer.boot_id,
+                process_start_ticks: consumer.process_start_ticks,
+            },
+            consumer.uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         let binding = self.source.config.binding()?;
         let original = Arc::clone(self);
@@ -42,7 +55,9 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             for nonce in 1..=128 {
-                if cancelled.load(Ordering::Acquire) { return Err(Error::Unavailable); }
+                if cancelled.load(Ordering::Acquire) {
+                    return Err(Error::Unavailable);
+                }
                 let mut failure = None;
                 let exchanged = channel.exchange(|bytes| {
                     if cancelled.load(Ordering::Acquire) {
@@ -50,18 +65,24 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
                     }
                     let result = (|| {
                         let started = now()?;
-                        let request = wire::Request::decode(bytes, wire::Purpose::Head, nonce, binding)?;
+                        let request =
+                            wire::Request::decode(bytes, wire::Purpose::Head, nonce, binding)?;
                         original.source.config.authenticate_current(started)?;
                         let response = match request.action {
                             wire::Action::Sign => original.sign_original(&cancelled),
                             wire::Action::Readback => original.read_original(&cancelled),
                         };
-                        original.source.config.authenticate_current(fresh(started)?)?;
+                        original
+                            .source
+                            .config
+                            .authenticate_current(fresh(started)?)?;
                         match response {
                             Ok(signed) => request.response(wire::Status::Completed, &signed),
                             Err(Error::Missing) => request.response(wire::Status::Missing, &[]),
                             Err(Error::Pending) => request.response(wire::Status::Pending, &[]),
-                            Err(Error::ReadbackRequired) => request.response(wire::Status::ReadbackRequired, &[]),
+                            Err(Error::ReadbackRequired) => {
+                                request.response(wire::Status::ReadbackRequired, &[])
+                            }
                             Err(error) => Err(error),
                         }
                     })();
@@ -77,7 +98,9 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
                 }
             }
             Err(Error::Unavailable)
-        }).await.map_err(|_| Error::CommitUncertain)?;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?;
         drop(waiting);
         result
     }

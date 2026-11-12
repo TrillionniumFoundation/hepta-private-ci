@@ -41,20 +41,38 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
     ) -> Result<Self, Error> {
         config.authenticate_current(now()?)?;
         let binding = config.binding()?;
-        Ok(Self { writer, config, binding, connections: Arc::new(Semaphore::new(4)) })
+        Ok(Self {
+            writer,
+            config,
+            binding,
+            connections: Arc::new(Semaphore::new(4)),
+        })
     }
 
     pub async fn serve_reads(
-        self: &Arc<Self>, stream: UnixStream, consumer: LearningIterationEvidencePeerV1,
-        original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
+        self: &Arc<Self>,
+        stream: UnixStream,
+        consumer: LearningIterationEvidencePeerV1,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
         // The original Head identity was selected natively, not by a request.
         require_peer(&consumer, &self.config.signer_id)?;
-        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, AgentdRootAuthorityPeer { pid: consumer.pid, boot_id: consumer.boot_id,
-                process_start_ticks: consumer.process_start_ticks },
-            consumer.uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: consumer.pid,
+                boot_id: consumer.boot_id,
+                process_start_ticks: consumer.process_start_ticks,
+            },
+            consumer.uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         let original = Arc::clone(self);
         let cancelled = Arc::new(AtomicBool::new(false));
@@ -62,7 +80,9 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             for nonce in 1..=128 {
-                if cancelled.load(Ordering::Acquire) { return Err(Error::Unavailable); }
+                if cancelled.load(Ordering::Acquire) {
+                    return Err(Error::Unavailable);
+                }
                 let mut failure = None;
                 let exchanged = channel.exchange(|bytes| {
                     if cancelled.load(Ordering::Acquire) {
@@ -80,7 +100,9 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
                 }
             }
             Err(Error::Unavailable)
-        }).await.map_err(|_| Error::Unavailable)?;
+        })
+        .await
+        .map_err(|_| Error::Unavailable)?;
         drop(waiting);
         result
     }
@@ -91,7 +113,8 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
         self.config.authenticate_current(started)?;
         let writer = self.writer.try_lock().map_err(|_| Error::Busy)?;
         let observed = LearningArtifactOwnerService::read_original_registry_durable(
-            &writer, &self.config.publication,
+            &writer,
+            &self.config.publication,
         )?;
         drop(writer);
         // Encoding is pure. The original writer has already reread payload,
@@ -105,7 +128,9 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
 
 pub(super) struct QueueFence(pub(super) Arc<AtomicBool>);
 impl Drop for QueueFence {
-    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
+    fn drop(&mut self) {
+        self.0.store(true, Ordering::Release);
+    }
 }
 
 struct Channel {
@@ -126,34 +151,54 @@ pub struct OriginalArtifactRegistrySourceClientV1 {
 
 impl OriginalArtifactRegistrySourceClientV1 {
     pub fn from_original_stream(
-        stream: UnixStream, peer: LearningIterationEvidencePeerV1,
-        original_writer_pidfd: OwnedFd, config: ArtifactHeadSigningConfigV1,
-        timeout: Duration, lifetime: Duration,
+        stream: UnixStream,
+        peer: LearningIterationEvidencePeerV1,
+        original_writer_pidfd: OwnedFd,
+        config: ArtifactHeadSigningConfigV1,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<Self, Error> {
         let started = now()?;
         require_peer(&peer, &config.writer_lease.producer_id)?;
         config.authenticate_current(started)?;
         let binding = config.binding()?;
         let channel = original_owner_command_channel_v1(
-            stream, AgentdRootAuthorityPeer { pid: peer.pid, boot_id: peer.boot_id,
-                process_start_ticks: peer.process_start_ticks },
-            peer.uid, original_writer_pidfd, timeout, lifetime,
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: peer.pid,
+                boot_id: peer.boot_id,
+                process_start_ticks: peer.process_start_ticks,
+            },
+            peer.uid,
+            original_writer_pidfd,
+            timeout,
+            lifetime,
         )?;
         channel.check_peer_lifetime()?;
         let observed = fresh(started)?;
         config.authenticate_current(observed)?;
         Ok(Self {
-            config, binding, initial_at: observed,
-            channel: Mutex::new(Some(Channel { peer: channel, next: 1, source_at: 0, subject: None })),
+            config,
+            binding,
+            initial_at: observed,
+            channel: Mutex::new(Some(Channel {
+                peer: channel,
+                next: 1,
+                source_at: 0,
+                subject: None,
+            })),
         })
     }
 
-    pub(super) async fn read_current(self: &Arc<Self>) -> Result<UntrustedArtifactRegistryDurableV1, Error> {
+    pub(super) async fn read_current(
+        self: &Arc<Self>,
+    ) -> Result<UntrustedArtifactRegistryDurableV1, Error> {
         let original = Arc::clone(self);
         let cancelled = Arc::new(AtomicBool::new(false));
         let waiting = QueueFence(Arc::clone(&cancelled));
         let result = tokio::task::spawn_blocking(move || original.read_current_in_lane(&cancelled))
-            .await.map_err(|_| Error::Unavailable)?;
+            .await
+            .map_err(|_| Error::Unavailable)?;
         drop(waiting);
         result
     }
@@ -161,16 +206,31 @@ impl OriginalArtifactRegistrySourceClientV1 {
     /// Only native original HEAD code running in its blocking lane may call
     /// this direct exchange. It avoids a nested blocking-pool network wait.
     pub(super) fn read_current_in_lane(
-        &self, cancelled: &AtomicBool,
+        &self,
+        cancelled: &AtomicBool,
     ) -> Result<UntrustedArtifactRegistryDurableV1, Error> {
-        let mut channel = self.channel.try_lock().map_err(|_| Error::Busy)?.take().ok_or(Error::Unavailable)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Busy)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         let started = now()?;
-        if started < self.initial_at || cancelled.load(Ordering::Acquire) { return Err(Error::Unavailable); }
+        if started < self.initial_at || cancelled.load(Ordering::Acquire) {
+            return Err(Error::Unavailable);
+        }
         self.config.authenticate_current(started)?;
-        let request = wire::Request::new(wire::Purpose::Registry, wire::Action::Readback, channel.next, self.binding)?;
+        let request = wire::Request::new(
+            wire::Purpose::Registry,
+            wire::Action::Readback,
+            channel.next,
+            self.binding,
+        )?;
         channel.next = channel.next.checked_add(1).ok_or(Error::Unavailable)?;
         channel.peer.check_peer_lifetime()?;
-        if cancelled.load(Ordering::Acquire) { return Err(Error::Unavailable); }
+        if cancelled.load(Ordering::Acquire) {
+            return Err(Error::Unavailable);
+        }
         let bytes = channel.peer.request(&request.encode())?;
         let payload = request.read_response(&bytes)?;
         let source = UntrustedArtifactRegistryDurableV1::decode(payload, &self.config)?;

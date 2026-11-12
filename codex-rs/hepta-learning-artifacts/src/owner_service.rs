@@ -190,9 +190,9 @@ impl LearningArtifactOwnerService {
         // legacy reconciliation method must not bypass a lost continuation.
         if self.original_preparation_active {
             return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
-                self.recovery_required.clone().ok_or(
-                    LearningArtifactOwnerServiceError::UnexpectedPhase,
-                )?,
+                self.recovery_required
+                    .clone()
+                    .ok_or(LearningArtifactOwnerServiceError::UnexpectedPhase)?,
             ));
         }
         if let Some(blocked) = &self.recovery_required

@@ -433,8 +433,6 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapOwne
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
 #[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24TrainingReadbackConnectionV1;
-#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionErrorV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionV1;
@@ -446,11 +444,11 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandErrorV
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingReadbackConnectionV1;
 
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandClientV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandContextV1;
 #[cfg(target_os = "linux")]
@@ -459,6 +457,8 @@ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandError
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandClientV1;
@@ -483,6 +483,8 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
+#[cfg(target_os = "linux")]
+mod artifact_original_head;
 mod cell_q24_material_receipt_owner;
 mod cell_q24_model_material;
 mod cell_q24_model_proposal;
@@ -507,8 +509,6 @@ mod learning_iteration_research_external;
 mod learning_iteration_research_external_material;
 #[cfg(target_os = "linux")]
 mod learning_owner_command_channel;
-#[cfg(target_os = "linux")]
-mod artifact_original_head;
 mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;

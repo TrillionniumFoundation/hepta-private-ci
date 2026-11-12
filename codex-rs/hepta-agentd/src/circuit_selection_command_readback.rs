@@ -70,9 +70,15 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)
                 .map_err(|_| Error::Binding("current Selector readback initial context"))?;
         if current < started_at || after != initial_binding {
-            return Err(Error::Binding("unchanged Selector readback initial context"));
+            return Err(Error::Binding(
+                "unchanged Selector readback initial context",
+            ));
         }
-        Ok(Self { peer: channel, material, initial_binding })
+        Ok(Self {
+            peer: channel,
+            material,
+            initial_binding,
+        })
     }
 
     /// This consumes only a read-only connection. No fresh/cold brand can
@@ -91,26 +97,38 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
             training,
         )?;
         if context.initial()? != self.material.initial {
-            return Err(Error::Binding("same original Selector readback initial cut"));
+            return Err(Error::Binding(
+                "same original Selector readback initial cut",
+            ));
         }
         let binding = context_binding(&context, started_at)?;
         self.peer.check_peer_lifetime()?;
         let (original, current) =
-            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
-                .map_err(|_| Error::Binding("current Selector readback initial context"))?;
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
+                &self.material,
+            )
+            .map_err(|_| Error::Binding("current Selector readback initial context"))?;
         let verified_at =
             OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
-                &dataset, &self.material,
+                &dataset,
+                &self.material,
             )
             .map_err(|_| Error::Binding("same original Dataset before Selector readback"))?;
         if current < started_at || verified_at < current || original != self.initial_binding {
-            return Err(Error::Binding("unchanged Selector readback clock and initial context"));
+            return Err(Error::Binding(
+                "unchanged Selector readback clock and initial context",
+            ));
         }
         let verified = wire::authenticate_completed(
-            &context, selection.snapshot.clone(), selection.attestation.clone(), verified_at,
+            &context,
+            selection.snapshot.clone(),
+            selection.attestation.clone(),
+            verified_at,
         )?;
         if verified != selection || context_binding(&context, verified_at)? != binding {
-            return Err(Error::Binding("exact original Selector readback signatures"));
+            return Err(Error::Binding(
+                "exact original Selector readback signatures",
+            ));
         }
         let initial = self.material.initial.clone();
         let actor_id = initial.owners.selector.clone();
@@ -126,7 +144,9 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
         };
         Ok(LearningIterationEvidenceClientV1 {
             channel: Mutex::new(None),
-            command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Selection(reader)))),
+            command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Selection(
+                reader,
+            )))),
             initial,
             actor_id,
             verifier,
@@ -155,7 +175,10 @@ impl OriginalSelectionReadbackV1 {
             return Err(Error::Binding("same original completed Selection readback"));
         }
         let request = request(&self.context, self.binding, self.next_request_id);
-        self.next_request_id = self.next_request_id.checked_add(1).ok_or(Error::Unavailable)?;
+        self.next_request_id = self
+            .next_request_id
+            .checked_add(1)
+            .ok_or(Error::Unavailable)?;
         let encoded = serde_json::to_vec(&request)?;
         let (peer, bytes) = tokio::task::spawn_blocking(move || {
             let bytes = peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
@@ -166,19 +189,23 @@ impl OriginalSelectionReadbackV1 {
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         peer.check_peer_lifetime()?;
-        let current =
-            OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
-                &self.dataset, &self.material,
-            )
-            .map_err(|_| Error::Binding("current original Dataset after Selector readback"))?;
+        let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            &self.dataset,
+            &self.material,
+        )
+        .map_err(|_| Error::Binding("current original Dataset after Selector readback"))?;
         if current < started_at || context_binding(&self.context, current)? != self.binding {
-            return Err(Error::Binding("unchanged Selector readback clock and context"));
+            return Err(Error::Binding(
+                "unchanged Selector readback clock and context",
+            ));
         }
         let completed = match response.result {
-            wire::CommandResult::Completed { snapshot, evidence } =>
-                wire::decode_completed(&self.context, snapshot, evidence, current)?,
-            wire::CommandResult::Missing | wire::CommandResult::Pending =>
-                return Err(Error::CommitUncertain),
+            wire::CommandResult::Completed { snapshot, evidence } => {
+                wire::decode_completed(&self.context, snapshot, evidence, current)?
+            }
+            wire::CommandResult::Missing | wire::CommandResult::Pending => {
+                return Err(Error::CommitUncertain);
+            }
             wire::CommandResult::Busy => return Err(Error::Busy),
             wire::CommandResult::Expired => return Err(Error::DeadlineExceeded),
             wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired),
@@ -186,7 +213,9 @@ impl OriginalSelectionReadbackV1 {
             wire::CommandResult::Unavailable => return Err(Error::Unavailable),
         };
         if completed != self.selection {
-            return Err(Error::Binding("unchanged complete original Selection signatures"));
+            return Err(Error::Binding(
+                "unchanged complete original Selection signatures",
+            ));
         }
         self.peer = Some(peer);
         Ok((completed.attestation, current))
@@ -231,7 +260,9 @@ pub(super) fn require_request(
         || observed.actor_id != expected.actor_id
         || observed.action != wire::Action::Readback
     {
-        return Err(Error::Binding("same original read-only Selector purpose and context"));
+        return Err(Error::Binding(
+            "same original read-only Selector purpose and context",
+        ));
     }
     Ok(())
 }

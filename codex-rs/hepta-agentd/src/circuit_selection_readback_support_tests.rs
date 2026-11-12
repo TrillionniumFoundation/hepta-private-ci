@@ -8,8 +8,12 @@ use std::thread::JoinHandle;
 
 pub(crate) fn connection(
     material: OriginalCellQ24MaterialReceiptConfigV1,
-) -> anyhow::Result<(OriginalCircuitSelectionReadbackConnectionV1, HostAuthorityPeerChannel)> {
-    let (initial_binding, _) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
+) -> anyhow::Result<(
+    OriginalCircuitSelectionReadbackConnectionV1,
+    HostAuthorityPeerChannel,
+)> {
+    let (initial_binding, _) =
+        OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
     let (stream, server) = UnixStream::pair()?;
     let channel = |stream| -> anyhow::Result<HostAuthorityPeerChannel> {
         Ok(HostAuthorityPeerChannel::from_stream(
@@ -28,9 +32,14 @@ pub(crate) fn connection(
             crate::learning_iteration_evidence_client::command_test_support::pidfd()?,
         )?)
     };
-    Ok((OriginalCircuitSelectionReadbackConnectionV1 {
-        peer: channel(stream)?, material, initial_binding,
-    }, channel(server)?))
+    Ok((
+        OriginalCircuitSelectionReadbackConnectionV1 {
+            peer: channel(stream)?,
+            material,
+            initial_binding,
+        },
+        channel(server)?,
+    ))
 }
 
 pub(crate) fn serve<W: AnchorWitnessStore + Send + 'static>(

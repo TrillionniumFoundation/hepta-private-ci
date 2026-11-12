@@ -25,10 +25,10 @@ mod command;
 mod contract;
 #[path = "neuron_cell_evaluation_host_service.rs"]
 mod service;
-#[path = "neuron_cell_evaluation_host_wire.rs"]
-mod wire;
 #[path = "neuron_cell_evaluation_host_training_readback.rs"]
 mod training_readback;
+#[path = "neuron_cell_evaluation_host_wire.rs"]
+mod wire;
 
 pub use command::OriginalCellEvaluationCommandClientV1;
 pub use command::OriginalCellEvaluationCommandConnectionV1;

@@ -36,7 +36,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -46,11 +51,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         .map_err(|_| Error::CommitUncertain)?
     }
 
-    pub(in crate::learning_iteration_evidence_client::training_command) fn
-        serve_original_training_readback_channel(
-            &self,
-            channel: &mut HostAuthorityPeerChannel,
-        ) -> Result<u64, Error> {
+    pub(in crate::learning_iteration_evidence_client::training_command) fn serve_original_training_readback_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
             if !channel.exchange(|bytes| {
                 self.original_training_readback_response(bytes, request_id)
@@ -62,18 +66,22 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         Err(Error::Unavailable)
     }
 
-    pub(in crate::learning_iteration_evidence_client::training_command) fn
-        original_training_readback_response(
-            &self,
-            bytes: &[u8],
-            request_id: u64,
-        ) -> Result<Vec<u8>, Error> {
+    pub(in crate::learning_iteration_evidence_client::training_command) fn original_training_readback_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
         let request: wire::Request = serde_json::from_slice(bytes)?;
         readonly::require_request(&request, &self.context, request_id)?;
-        let completed = self.runtime.block_on(SourceBoundCellQ24TrainingStageV1::readback(
-            &self.stage, &self.context.dataset,
-        ));
+        let completed = self
+            .runtime
+            .block_on(SourceBoundCellQ24TrainingStageV1::readback(
+                &self.stage,
+                &self.context.dataset,
+            ));
         let result = self.completed_response(completed)?;
-        Ok(serde_json::to_vec(&wire::Response::from_request(&request, result))?)
+        Ok(serde_json::to_vec(&wire::Response::from_request(
+            &request, result,
+        ))?)
     }
 }

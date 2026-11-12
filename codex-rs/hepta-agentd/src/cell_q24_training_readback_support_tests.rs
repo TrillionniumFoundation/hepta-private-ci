@@ -7,7 +7,10 @@ use codex_hepta_contracts::HostIssuerPeer;
 pub(in crate::learning_iteration_evidence_client::training_command) fn connection(
     material: OriginalCellQ24MaterialReceiptConfigV1,
     lifetime: Duration,
-) -> anyhow::Result<(OriginalCellQ24TrainingReadbackConnectionV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingReadbackConnectionV1,
+    HostAuthorityPeerChannel,
+)> {
     let (initial_binding, _) =
         OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
     let (stream, server) = UnixStream::pair()?;

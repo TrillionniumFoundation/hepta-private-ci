@@ -64,9 +64,9 @@ pub use head_source::UntrustedArtifactRegistryDurableV1;
 pub use head_source::decode_artifact_head_bytes_v1;
 pub use head_source::encode_artifact_head_bytes_v1;
 
-pub use registry_durable::OriginalArtifactRegistryDurableV1;
 pub use readback::OriginalArtifactPublicationReadbackErrorV1;
 pub use readback::OriginalArtifactPublicationReadbackV1;
+pub use registry_durable::OriginalArtifactRegistryDurableV1;
 
 const MAX_TRUSTED_SIGNERS: usize = 32;
 const MAX_HEAD_RECORDS: usize = 4_096;

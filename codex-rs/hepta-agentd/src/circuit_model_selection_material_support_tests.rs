@@ -295,7 +295,10 @@ pub(super) fn unstarted_material_with_profile(
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
     next_use_observer: StableId,
-) -> anyhow::Result<(crate::OriginalCellQ24MaterialReceiptConfigV1, crate::CellQ24SgdRuleV1)> {
+) -> anyhow::Result<(
+    crate::OriginalCellQ24MaterialReceiptConfigV1,
+    crate::CellQ24SgdRuleV1,
+)> {
     let input = publication.input();
     let initial = LearningIterationCoordinatorV1::new(
         LearningIterationRequestV1 {
@@ -405,8 +408,16 @@ pub(super) fn material_with_profile(
     evaluation_profile: Digest32,
 ) -> anyhow::Result<Material> {
     let (config, optimizer) = unstarted_material_with_profile(
-        root, writer, credentials, source, identity, baseline, bundle,
-        publication, evaluation_profile, id("unused-positive-next-use-role"),
+        root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
+        evaluation_profile,
+        id("unused-positive-next-use-role"),
     )?;
     let input = publication.input();
     let initial = config.initial.clone();

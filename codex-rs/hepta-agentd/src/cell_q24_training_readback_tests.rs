@@ -1,7 +1,7 @@
 //! Actual deferred Trainer and four original Material services. Same-UID
 //! admission and Outcome enrollment are explicit test custody, not deployment.
-use super::*;
 use super::super::super::readonly;
+use super::*;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LearningIterationRuntimeErrorV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -24,9 +24,8 @@ pub(super) fn prebound(
     lifetime: Duration,
 ) -> anyhow::Result<(OriginalCellQ24TrainingReadbackConnectionV1, Server)> {
     let (connection, mut channel) = readonly::test_support::connection(config, lifetime)?;
-    let server = std::thread::spawn(move || {
-        owner.serve_original_training_readback_channel(&mut channel)
-    });
+    let server =
+        std::thread::spawn(move || owner.serve_original_training_readback_channel(&mut channel));
     Ok((connection, server))
 }
 
@@ -36,9 +35,14 @@ async fn train(
     dataset: &OriginalCellQ24MaterialCommandReceiptV1,
 ) -> anyhow::Result<OriginalCellQ24TrainingCommandReceiptV1> {
     let (client, server) = connected(
-        Arc::clone(owner), context(fixture, dataset), Origin::Fresh, /*expected*/ None,
+        Arc::clone(owner),
+        context(fixture, dataset),
+        Origin::Fresh,
+        /*expected*/ None,
     )?;
-    let completed = client.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await?;
+    let completed = client
+        .execute_training(Arc::new(AtomicBool::new(/*v*/ false)))
+        .await?;
     assert!(matches!(
         completed.receipt().observation,
         LearningIterationObservationV1::TrainingNoUpdateV2(_)
@@ -47,12 +51,11 @@ async fn train(
     Ok(completed)
 }
 
-fn join_readback(
-    client: LearningIterationEvidenceClientV1,
-    server: Server,
-) -> anyhow::Result<u64> {
+fn join_readback(client: LearningIterationEvidenceClientV1, server: Server) -> anyhow::Result<u64> {
     drop(client);
-    Ok(server.join().expect("original Trainer read-only endpoint")?)
+    Ok(server
+        .join()
+        .expect("original Trainer read-only endpoint")?)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -65,21 +68,34 @@ async fn original_training_readback_unready_and_wrong_purpose_never_initialize()
     let context = context(&fixture, &dataset);
     let mut request = readonly::request(&context, readonly::binding(&context)?, 1);
     let bytes = serde_json::to_vec(&request)?;
-    let response: wire::Response = serde_json::from_slice(
-        &owner.original_training_readback_response(&bytes, 1)?,
-    )?;
-    assert!(matches!(response.result, wire::CommandResult::ReadbackRequired));
-    assert!(owner.command_response(&bytes, 1).is_err(), "new purpose is not old bootstrap");
+    let response: wire::Response =
+        serde_json::from_slice(&owner.original_training_readback_response(&bytes, 1)?)?;
+    assert!(matches!(
+        response.result,
+        wire::CommandResult::ReadbackRequired
+    ));
+    assert!(
+        owner.command_response(&bytes, 1).is_err(),
+        "new purpose is not old bootstrap"
+    );
     request.operation = wire::OPERATION.into();
-    assert!(owner.original_training_readback_response(
-        &serde_json::to_vec(&request)?, 1,
-    ).is_err());
+    assert!(
+        owner
+            .original_training_readback_response(&serde_json::to_vec(&request)?, 1,)
+            .is_err()
+    );
     request.operation = readonly::OPERATION.into();
     request.action = wire::Action::Execute;
-    assert!(owner.original_training_readback_response(
-        &serde_json::to_vec(&request)?, 1,
-    ).is_err(), "read-only endpoint must reject Execute before Ready");
-    assert!(matches!(&*owner.state.lock().expect("state"), State::Awaiting(_)));
+    assert!(
+        owner
+            .original_training_readback_response(&serde_json::to_vec(&request)?, 1,)
+            .is_err(),
+        "read-only endpoint must reject Execute before Ready"
+    );
+    assert!(matches!(
+        &*owner.state.lock().expect("state"),
+        State::Awaiting(_)
+    ));
     assert_eq!(fixture.training_bytes()?, original);
     drop(owner);
     assert_eq!(finish_material(peers)?, [0; 4]);
@@ -91,8 +107,14 @@ async fn original_training_readback_unready_and_wrong_purpose_never_initialize()
     let response: wire::Response = serde_json::from_slice(
         &recovered.original_training_readback_response(&serde_json::to_vec(&request)?, 1)?,
     )?;
-    assert!(matches!(response.result, wire::CommandResult::ReadbackRequired));
-    assert!(matches!(&*recovered.state.lock().expect("state"), State::Awaiting(_)));
+    assert!(matches!(
+        response.result,
+        wire::CommandResult::ReadbackRequired
+    ));
+    assert!(matches!(
+        &*recovered.state.lock().expect("state"),
+        State::Awaiting(_)
+    ));
     assert_eq!(fixture.training_bytes()?, original);
     drop(recovered);
     assert_eq!(finish_material(peers)?, [0; 4]);
@@ -105,50 +127,78 @@ async fn original_training_readback_preserves_cold_signature_and_initial_deadlin
     let fixture = MaterialCommandFixture::new().await?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let (connection, readonly_server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Duration::from_secs(300),
     )?;
     let dataset = complete_material(&fixture).await?;
     let training = train(&fixture, &owner, &dataset).await?;
     let retained = fixture.training_bytes()?;
     let material = fixture.bytes()?;
     let evidence = connection.bind_original_training(dataset.clone(), training.clone())?;
-    assert_eq!(evidence.readback(dataset.snapshot(), training.receipt()).await?,
-        *training.attestation());
+    assert_eq!(
+        evidence
+            .readback(dataset.snapshot(), training.receipt())
+            .await?,
+        *training.attestation()
+    );
     assert_eq!(join_readback(evidence, readonly_server)?, 1);
     assert_eq!(fixture.training_bytes()?, retained);
     assert_eq!(fixture.bytes()?, material);
 
     // A stream bound to the old command endpoint is rejected by its original
     // operation check. The new client must not silently retry that purpose.
-    let (wrong, mut channel) = readonly::test_support::connection(
-        fixture.config.clone(), Duration::from_secs(300),
-    )?;
+    let (wrong, mut channel) =
+        readonly::test_support::connection(fixture.config.clone(), Duration::from_secs(300))?;
     let wrong_server = {
         let owner = Arc::clone(&owner);
         std::thread::spawn(move || owner.serve_command_channel(&mut channel))
     };
     let wrong = wrong.bind_original_training(dataset.clone(), training.clone())?;
-    assert!(wrong.readback(dataset.snapshot(), training.receipt()).await.is_err());
-    assert!(wrong.readback(dataset.snapshot(), training.receipt()).await.is_err());
+    assert!(
+        wrong
+            .readback(dataset.snapshot(), training.receipt())
+            .await
+            .is_err()
+    );
+    assert!(
+        wrong
+            .readback(dataset.snapshot(), training.receipt())
+            .await
+            .is_err()
+    );
     drop(wrong);
-    assert!(wrong_server.join().expect("wrong-purpose original endpoint").is_err());
+    assert!(
+        wrong_server
+            .join()
+            .expect("wrong-purpose original endpoint")
+            .is_err()
+    );
     assert_eq!(fixture.training_bytes()?, retained);
 
-    let (expired, mut channel) = readonly::test_support::connection(
-        fixture.config.clone(), Duration::from_millis(30),
-    )?;
+    let (expired, mut channel) =
+        readonly::test_support::connection(fixture.config.clone(), Duration::from_millis(30))?;
     let expired_server = std::thread::spawn(move || -> anyhow::Result<()> {
         let mut received = false;
         let _closed = channel.exchange(|_| {
             received = true;
             Err(HostIssuerTransportError::Unavailable)
         });
-        anyhow::ensure!(!received, "late binding must not send on an expired initial stream");
+        anyhow::ensure!(
+            !received,
+            "late binding must not send on an expired initial stream"
+        );
         Ok(())
     });
     tokio::time::sleep(Duration::from_millis(60)).await;
-    assert!(expired.bind_original_training(dataset.clone(), training.clone()).is_err());
-    expired_server.join().expect("original absolute readback end")?;
+    assert!(
+        expired
+            .bind_original_training(dataset.clone(), training.clone())
+            .is_err()
+    );
+    expired_server
+        .join()
+        .expect("original absolute readback end")?;
     assert_eq!(fixture.training_bytes()?, retained);
     drop(owner);
     let fresh_counts = finish_material(peers)?;
@@ -156,30 +206,50 @@ async fn original_training_readback_preserves_cold_signature_and_initial_deadlin
 
     let (recovered, peers) = support::owner(&fixture, Origin::Recovered)?;
     let (cold, cold_server) = prebound(
-        Arc::clone(&recovered), fixture.config.clone(), Duration::from_secs(300),
+        Arc::clone(&recovered),
+        fixture.config.clone(),
+        Duration::from_secs(300),
     )?;
     let cold = cold.bind_original_training(dataset.clone(), training.clone())?;
-    assert!(cold.readback(dataset.snapshot(), training.receipt()).await.is_err());
+    assert!(
+        cold.readback(dataset.snapshot(), training.receipt())
+            .await
+            .is_err()
+    );
     assert_eq!(join_readback(cold, cold_server)?, 1);
-    assert!(matches!(&*recovered.state.lock().expect("state"), State::Awaiting(_)));
+    assert!(matches!(
+        &*recovered.state.lock().expect("state"),
+        State::Awaiting(_)
+    ));
     assert_eq!(fixture.training_bytes()?, retained);
 
     // Recovery is a separate, explicit original-host operation. Only after it
     // has retained Ready may a newly delivered read-only connection observe T.
     let (reader, reader_server) = connected(
-        Arc::clone(&recovered), context(&fixture, &dataset),
-        Origin::Recovered, Some(training.clone()),
+        Arc::clone(&recovered),
+        context(&fixture, &dataset),
+        Origin::Recovered,
+        Some(training.clone()),
     )?;
     assert_eq!(reader.readback().await?, training);
-    assert!(matches!(reader.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await,
-        Err(CommandError::ReadbackRequired)));
+    assert!(matches!(
+        reader
+            .execute_training(Arc::new(AtomicBool::new(/*v*/ false)))
+            .await,
+        Err(CommandError::ReadbackRequired)
+    ));
     assert_eq!(finish(reader, reader_server)?, 1);
     let (cold, cold_server) = prebound(
-        Arc::clone(&recovered), fixture.config.clone(), Duration::from_secs(300),
+        Arc::clone(&recovered),
+        fixture.config.clone(),
+        Duration::from_secs(300),
     )?;
     let cold = cold.bind_original_training(dataset.clone(), training.clone())?;
-    assert_eq!(cold.readback(dataset.snapshot(), training.receipt()).await?,
-        *training.attestation());
+    assert_eq!(
+        cold.readback(dataset.snapshot(), training.receipt())
+            .await?,
+        *training.attestation()
+    );
     assert_eq!(join_readback(cold, cold_server)?, 1);
     assert_eq!(fixture.training_bytes()?, retained);
     assert_eq!(fixture.bytes()?, material);
@@ -202,41 +272,54 @@ fn fault_peer(
     fixture: &MaterialCommandFixture,
     expected: &OriginalCellQ24TrainingCommandReceiptV1,
     fault: Fault,
-) -> anyhow::Result<(OriginalCellQ24TrainingReadbackConnectionV1, JoinHandle<anyhow::Result<u64>>)> {
-    let (connection, mut channel) = readonly::test_support::connection(
-        fixture.config.clone(), Duration::from_secs(300),
-    )?;
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingReadbackConnectionV1,
+    JoinHandle<anyhow::Result<u64>>,
+)> {
+    let (connection, mut channel) =
+        readonly::test_support::connection(fixture.config.clone(), Duration::from_secs(300))?;
     let verifier = fixture.config.verifier.clone();
     let expected = expected.clone();
     let server = std::thread::spawn(move || -> anyhow::Result<u64> {
         for request_id in 1..=128 {
             if !channel.exchange(|bytes| {
-                let bytes = owner.original_training_readback_response(bytes, request_id)
+                let bytes = owner
+                    .original_training_readback_response(bytes, request_id)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 let mut response: wire::Response = serde_json::from_slice(&bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                let wire::CommandResult::Completed { snapshot, evidence } = response.result
-                else { return Err(HostIssuerTransportError::InvalidRequest); };
+                let wire::CommandResult::Completed { snapshot, evidence } = response.result else {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                };
                 response.result = match fault {
                     Fault::Missing => wire::CommandResult::Missing,
                     Fault::Pending => wire::CommandResult::Pending,
                     Fault::Renewed => {
-                        let mut changed = evidence.decode()
+                        let mut changed = evidence
+                            .decode()
                             .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                         if changed != *expected.attestation() {
                             return Err(HostIssuerTransportError::InvalidRequest);
                         }
                         changed.expires_at += 1;
                         changed.signature = SigningKey::from_bytes(&[1; 32])
-                            .sign(&changed.signing_bytes()).to_bytes();
-                        let payload = learning_iteration_receipt_signing_bytes_v1(expected.receipt())
-                            .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                        verifier.verify(LearningEvidenceRoleV1::Generator, &changed, &payload,
-                            super::super::super::now()
-                                .map_err(|_| HostIssuerTransportError::InvalidRequest)?)
+                            .sign(&changed.signing_bytes())
+                            .to_bytes();
+                        let payload =
+                            learning_iteration_receipt_signing_bytes_v1(expected.receipt())
+                                .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                        verifier
+                            .verify(
+                                LearningEvidenceRoleV1::Generator,
+                                &changed,
+                                &payload,
+                                super::super::super::now()
+                                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?,
+                            )
                             .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                         wire::CommandResult::Completed {
-                            snapshot, evidence: evidence_wire::Evidence::from_original(&changed),
+                            snapshot,
+                            evidence: evidence_wire::Evidence::from_original(&changed),
                         }
                     }
                 };
@@ -257,7 +340,9 @@ fn cancel_queued_readback(
     training: OriginalCellQ24TrainingCommandReceiptV1,
 ) -> anyhow::Result<()> {
     let runtime = tokio::runtime::Builder::new_current_thread()
-        .max_blocking_threads(1).enable_all().build()?;
+        .max_blocking_threads(1)
+        .enable_all()
+        .build()?;
     runtime.block_on(async move {
         let (connection, server) = prebound(owner, config, Duration::from_secs(300))?;
         let client = connection.bind_original_training(dataset.clone(), training.clone())?;
@@ -272,9 +357,15 @@ fn cancel_queued_readback(
         std::future::poll_fn(|cx| match std::future::Future::poll(future.as_mut(), cx) {
             std::task::Poll::Pending => std::task::Poll::Ready(()),
             std::task::Poll::Ready(_) => panic!("readback must queue behind the blocker"),
-        }).await;
+        })
+        .await;
         drop(future);
-        assert!(client.readback(dataset.snapshot(), training.receipt()).await.is_err());
+        assert!(
+            client
+                .readback(dataset.snapshot(), training.receipt())
+                .await
+                .is_err()
+        );
         release_tx.send(())?;
         blocker.await??;
         // A queued read may finish as a read, but cannot restore the abandoned
@@ -296,11 +387,20 @@ async fn original_training_readback_changed_evidence_and_withdrawal_consume_chan
     for fault in [Fault::Renewed, Fault::Missing, Fault::Pending] {
         let (connection, server) = fault_peer(Arc::clone(&owner), &fixture, &training, fault)?;
         let client = connection.bind_original_training(dataset.clone(), training.clone())?;
-        assert!(client.readback(dataset.snapshot(), training.receipt()).await.is_err());
-        assert!(matches!(client.readback(dataset.snapshot(), training.receipt()).await,
+        assert!(
+            client
+                .readback(dataset.snapshot(), training.receipt())
+                .await
+                .is_err()
+        );
+        assert!(matches!(
+            client
+                .readback(dataset.snapshot(), training.receipt())
+                .await,
             Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
                 "original learning evidence owner"
-            ))));
+            ))
+        ));
         drop(client);
         assert_eq!(server.join().expect("changed original reply")?, 1);
         assert_eq!(fixture.training_bytes()?, retained);
@@ -312,18 +412,35 @@ async fn original_training_readback_changed_evidence_and_withdrawal_consume_chan
         let dataset = dataset.clone();
         let training = training.clone();
         move || cancel_queued_readback(owner, config, dataset, training)
-    }).await??;
+    })
+    .await??;
     assert_eq!(fixture.training_bytes()?, retained);
     assert_eq!(fixture.bytes()?, material);
     let (connection, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Duration::from_secs(300),
     )?;
     let client = connection.bind_original_training(dataset.clone(), training.clone())?;
-    assert_eq!(client.readback(dataset.snapshot(), training.receipt()).await?,
-        *training.attestation());
+    assert_eq!(
+        client
+            .readback(dataset.snapshot(), training.receipt())
+            .await?,
+        *training.attestation()
+    );
     fixture.withdraw()?;
-    assert!(client.readback(dataset.snapshot(), training.receipt()).await.is_err());
-    assert!(client.readback(dataset.snapshot(), training.receipt()).await.is_err());
+    assert!(
+        client
+            .readback(dataset.snapshot(), training.receipt())
+            .await
+            .is_err()
+    );
+    assert!(
+        client
+            .readback(dataset.snapshot(), training.receipt())
+            .await
+            .is_err()
+    );
     drop(client);
     assert_eq!(server.join().expect("withdrawn real original Source")?, 2);
     assert_eq!(fixture.training_bytes()?, retained);

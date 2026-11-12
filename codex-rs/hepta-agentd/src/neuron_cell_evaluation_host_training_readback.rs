@@ -28,7 +28,11 @@ impl OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> {
     ) -> Result<OriginalCellEvaluationHostV1, Error> {
         let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())
             .map_err(|_| Error::Binding("original Dataset before Evaluator readback"))?;
-        actual.record(training.receipt().clone(), training.receipt().observed_unix_seconds)
+        actual
+            .record(
+                training.receipt().clone(),
+                training.receipt().observed_unix_seconds,
+            )
             .map_err(|_| Error::Binding("original Training before Evaluator readback"))?;
         let (receipt, _) = OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self);
         if panel.fenced || receipt.training != *actual.snapshot() {
@@ -41,9 +45,12 @@ impl OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> {
                 || original.scope != receipt.scope
                 || original.verifier.trust_digest() != receipt.signing.verifier.trust_digest()
                 || original.verifier.scope_digest() != receipt.signing.verifier.scope_digest()
-                || original.verifier.objective_digest() != receipt.signing.verifier.objective_digest()
+                || original.verifier.objective_digest()
+                    != receipt.signing.verifier.objective_digest()
             {
-                return Err(Error::Binding("same original full Training for every panel member"));
+                return Err(Error::Binding(
+                    "same original full Training for every panel member",
+                ));
             }
         }
         let trainer = Arc::new(

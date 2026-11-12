@@ -123,7 +123,10 @@ impl LearningArtifactOwnerService {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
         if self.recovery_required.is_some()
-            || self.host.read_original_publication_checkpoint(&context.operation_id)?.is_some()
+            || self
+                .host
+                .read_original_publication_checkpoint(&context.operation_id)?
+                .is_some()
         {
             return Err(OriginalArtifactPreparationErrorV1::ReadbackRequired);
         }
@@ -142,35 +145,57 @@ impl LearningArtifactOwnerService {
         }
         // Complete validation before consuming the original writer entrance.
         ArtifactPublicationTransactionV1::begin(
-            context.operation_id.clone(), context.admission.clone(),
-            &self.withdrawal_registry, &predecessor,
-            context.expected_registry_predecessor_head, fresh(clock, started)?,
+            context.operation_id.clone(),
+            context.admission.clone(),
+            &self.withdrawal_registry,
+            &predecessor,
+            context.expected_registry_predecessor_head,
+            fresh(clock, started)?,
         )?;
         self.recovery_required = Some(context.operation_id.clone());
         self.original_preparation_active = true;
         let mut transaction = self.host.begin_publication(
-            context.operation_id.clone(), context.admission.clone(),
-            &self.withdrawal_registry, &predecessor,
-            context.expected_registry_predecessor_head, fresh(clock, started)?,
+            context.operation_id.clone(),
+            context.admission.clone(),
+            &self.withdrawal_registry,
+            &predecessor,
+            context.expected_registry_predecessor_head,
+            fresh(clock, started)?,
         )?;
         let mut staged = predecessor;
-        self.host.stage_compatibility_registration(&transaction, &mut staged, fresh(clock, started)?)?;
-        self.host.ensure_payload_durable(&mut transaction, &staged, payload, fresh(clock, started)?)?;
+        self.host.stage_compatibility_registration(
+            &transaction,
+            &mut staged,
+            fresh(clock, started)?,
+        )?;
+        self.host.ensure_payload_durable(
+            &mut transaction,
+            &staged,
+            payload,
+            fresh(clock, started)?,
+        )?;
         self.host.ensure_registry_durable(
-            &mut transaction, &staged, &self.withdrawal_registry,
-            self.storage_binding, fresh(clock, started)?,
+            &mut transaction,
+            &staged,
+            &self.withdrawal_registry,
+            self.storage_binding,
+            fresh(clock, started)?,
         )?;
         let observed = self.read_original_registry_durable_with_clock(&context, clock)?;
         if observed.checkpoint().phase != ArtifactPublicationPhaseV1::RegistryDurable
             || observed.checkpoint().state_digest != transaction.state_digest()
             || observed.observed_unix_millis() < started
         {
-            self.original_preparation_fenced.store(true, Ordering::Release);
+            self.original_preparation_fenced
+                .store(true, Ordering::Release);
             return Err(OriginalArtifactPreparationErrorV1::ChangedDuringRead);
         }
         Ok(OriginalArtifactPreparedPublicationV1 {
             original_instance: Arc::clone(&self.original_preparation_instance),
-            context, transaction, staged, observed,
+            context,
+            transaction,
+            staged,
+            observed,
         })
     }
 
@@ -183,14 +208,20 @@ impl LearningArtifactOwnerService {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
         let result = self.host.read_original_registry_durable(
-            context, &self.withdrawal_registry, self.storage_binding, clock,
+            context,
+            &self.withdrawal_registry,
+            self.storage_binding,
+            clock,
         );
-        if matches!(&result, Err(OriginalArtifactPreparationErrorV1::Owner(_)
-            | OriginalArtifactPreparationErrorV1::Publication(_)
-            | OriginalArtifactPreparationErrorV1::ChangedDuringRead
-            | OriginalArtifactPreparationErrorV1::Clock))
-        {
-            self.original_preparation_fenced.store(true, Ordering::Release);
+        if matches!(
+            &result,
+            Err(OriginalArtifactPreparationErrorV1::Owner(_)
+                | OriginalArtifactPreparationErrorV1::Publication(_)
+                | OriginalArtifactPreparationErrorV1::ChangedDuringRead
+                | OriginalArtifactPreparationErrorV1::Clock)
+        ) {
+            self.original_preparation_fenced
+                .store(true, Ordering::Release);
         }
         result
     }
@@ -201,32 +232,40 @@ impl LearningArtifactOwnerService {
         signed: SignedCurrentArtifactHeadV1,
         clock: &impl Fn() -> Result<u64, OriginalArtifactPreparationErrorV1>,
     ) -> Result<ArtifactPublicationReceiptV1, OriginalArtifactPreparationErrorV1> {
-        if !Arc::ptr_eq(&prepared.original_instance, &self.original_preparation_instance)
-            || self.recovery_required.as_ref() != Some(&prepared.context.operation_id)
+        if !Arc::ptr_eq(
+            &prepared.original_instance,
+            &self.original_preparation_instance,
+        ) || self.recovery_required.as_ref() != Some(&prepared.context.operation_id)
         {
             return Err(OriginalArtifactPreparationErrorV1::ReadbackRequired);
         }
         let before = self.read_original_registry_durable_with_clock(&prepared.context, clock)?;
         if before.observed_unix_millis() < prepared.observed.observed_unix_millis() {
-            self.original_preparation_fenced.store(true, Ordering::Release);
+            self.original_preparation_fenced
+                .store(true, Ordering::Release);
             return Err(OriginalArtifactPreparationErrorV1::Clock);
         }
         if !before.same_original_read(&prepared.observed)
             || before.checkpoint().phase != ArtifactPublicationPhaseV1::RegistryDurable
             || signed.binding != self.storage_binding
             || signed.witness.head_digest != before.registry_receipt().head_digest
-            || signed.witness.predecessor_head_digest != prepared.context.expected_registry_predecessor_head
+            || signed.witness.predecessor_head_digest
+                != prepared.context.expected_registry_predecessor_head
             || signed.withdrawal_scope_digest != prepared.context.admission.withdrawal_scope_digest
         {
             return Err(OriginalArtifactPreparationErrorV1::Context);
         }
         let started = before.observed_unix_millis();
         self.host.ensure_witness_durable(
-            &mut prepared.transaction, &signed, &self.withdrawal_registry,
+            &mut prepared.transaction,
+            &signed,
+            &self.withdrawal_registry,
             fresh(clock, started)?,
         )?;
         let receipt = self.host.acknowledge(
-            &mut prepared.transaction, &self.withdrawal_registry, fresh(clock, started)?,
+            &mut prepared.transaction,
+            &self.withdrawal_registry,
+            fresh(clock, started)?,
         )?;
         let after = self.read_original_registry_durable_with_clock(&prepared.context, clock)?;
         if after.checkpoint().phase != ArtifactPublicationPhaseV1::Acknowledged
@@ -234,7 +273,8 @@ impl LearningArtifactOwnerService {
             || after.current_head() != Some(&signed)
             || after.observed_unix_millis() < started
         {
-            self.original_preparation_fenced.store(true, Ordering::Release);
+            self.original_preparation_fenced
+                .store(true, Ordering::Release);
             return Err(OriginalArtifactPreparationErrorV1::ChangedDuringRead);
         }
         self.registry = prepared.staged;
@@ -256,7 +296,8 @@ fn fresh(
 }
 
 fn now_unix_millis() -> Result<u64, OriginalArtifactPreparationErrorV1> {
-    let elapsed = SystemTime::now().duration_since(UNIX_EPOCH)
+    let elapsed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .map_err(|_| OriginalArtifactPreparationErrorV1::Clock)?;
     u64::try_from(elapsed.as_millis()).map_err(|_| OriginalArtifactPreparationErrorV1::Clock)
 }

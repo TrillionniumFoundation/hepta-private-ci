@@ -27,26 +27,40 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseReceiptOwnerV
         selection: OriginalCircuitSelectionCommandReceiptV1,
     ) -> Result<OriginalCircuitNextUseCommandOwnerV1<W>, Error> {
         let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
-        actual.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
-        actual.record(selection.receipt().clone(), selection.receipt().observed_unix_seconds)?;
+        actual.record(
+            training.receipt().clone(),
+            training.receipt().observed_unix_seconds,
+        )?;
+        actual.record(
+            selection.receipt().clone(),
+            selection.receipt().observed_unix_seconds,
+        )?;
         if actual.snapshot() != &self.config.selection
             || selection.snapshot() != &self.config.selection
             || training.attestation() != &self.config.training_evidence
             || selection.training_attestation() != &self.config.training_evidence
             || selection.attestation() != &self.config.selection_evidence
         {
-            return Err(Error::Binding("same original C D/T/S and complete signatures"));
+            return Err(Error::Binding(
+                "same original C D/T/S and complete signatures",
+            ));
         }
         let original_trainer = OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(
-            trainer, dataset.clone(), training.clone(),
+            trainer,
+            dataset.clone(),
+            training.clone(),
         )
         .map_err(|_| Error::Binding("original Trainer read-only command capability"))?;
-        let original_selector = OriginalCircuitSelectionReadbackConnectionV1::bind_original_selection(
-            selector, dataset, &training, selection,
-        )
-        .map_err(|_| Error::Binding("original Selector read-only command capability"))?;
+        let original_selector =
+            OriginalCircuitSelectionReadbackConnectionV1::bind_original_selection(
+                selector, dataset, &training, selection,
+            )
+            .map_err(|_| Error::Binding("original Selector read-only command capability"))?;
         OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(
-            self, live, original_trainer, original_selector,
+            self,
+            live,
+            original_trainer,
+            original_selector,
         )
     }
 }

@@ -7,19 +7,21 @@ use super::super::super::super::source;
 use super::transport;
 use super::*;
 use crate::LearningIterationEvidenceClientV1;
+use crate::LoadedCellQ24ModelV1;
+use crate::OriginalCellQ24MaterialCommandOwnerV1;
+use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24MaterialSourceConnectionV1;
 use crate::learning_iteration_evidence_client::Channel as EvidenceChannel;
 use crate::root_observation_stream::RootObservationStream;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_neuron::FileAnchorWitnessStore;
-use crate::LoadedCellQ24ModelV1;
-use crate::OriginalCellQ24MaterialReceiptConfigV1;
-use crate::OriginalCellQ24MaterialCommandOwnerV1;
 
 pub(crate) type Peer = JoinHandle<anyhow::Result<u64>>;
 pub(crate) type OriginalHost = OriginalCellQ24MaterialCommandOwnerV1<
-    FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
 >;
 
 pub(crate) fn commands(
@@ -34,7 +36,14 @@ pub(crate) fn commands_for_original(
     config: OriginalCellQ24MaterialReceiptConfigV1,
     role: Role,
 ) -> anyhow::Result<(OriginalCellQ24MaterialCommandClientV1, Peer)> {
-    transport::connected_original(host, config, role, Mode::ExecuteOnce, None, Effect::Original)
+    transport::connected_original(
+        host,
+        config,
+        role,
+        Mode::ExecuteOnce,
+        None,
+        Effect::Original,
+    )
 }
 
 fn policy(timeout: Duration, lifetime: Duration) -> HostAuthorityPeerPolicy {
@@ -57,7 +66,9 @@ pub(crate) fn source_connection(
 ) -> anyhow::Result<(OriginalCellQ24MaterialSourceConnectionV1, Peer)> {
     source_for_original(
         Arc::clone(fixture.host.as_ref().expect("same original Material pair")),
-        &fixture.config, fixture.training_baseline(), lifetime,
+        &fixture.config,
+        fixture.training_baseline(),
+        lifetime,
     )
 }
 
@@ -120,7 +131,8 @@ pub(crate) fn evidence(
 ) -> anyhow::Result<(LearningIterationEvidenceClientV1, Peer)> {
     evidence_for_original(
         Arc::clone(fixture.host.as_ref().expect("same original Material pair")),
-        &fixture.config, role,
+        &fixture.config,
+        role,
     )
 }
 

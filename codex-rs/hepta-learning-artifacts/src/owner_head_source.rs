@@ -49,11 +49,14 @@ impl ArtifactHeadSigningConfigV1 {
         bytes.extend_from_slice(verifier.trust_digest().as_array());
         bytes.extend_from_slice(self.storage_binding.as_array());
         bytes.extend_from_slice(self.writer_lease_digest().as_array());
-        bytes.extend_from_slice(crate::publication::digest_intent(
-            &self.publication.operation_id,
-            &self.publication.admission,
-            self.publication.expected_registry_predecessor_head,
-        ).as_array());
+        bytes.extend_from_slice(
+            crate::publication::digest_intent(
+                &self.publication.operation_id,
+                &self.publication.admission,
+                self.publication.expected_registry_predecessor_head,
+            )
+            .as_array(),
+        );
         push_id(&mut bytes, &self.signer_id);
         bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
         bytes.extend_from_slice(&self.signature_expires_at.to_be_bytes());
@@ -74,7 +77,8 @@ impl ArtifactHeadSigningConfigV1 {
         let manifest = &self.publication.admission.validated_manifest.manifest;
         if self.storage_binding.is_zero()
             || manifest.producer_id != writer.producer_id
-            || self.publication.admission.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
+            || self.publication.admission.withdrawal_scope_digest
+                != self.trust.withdrawal_scope_digest
             || self.signer_id == writer.producer_id
             || self.signature_expires_at < now
             || self.signature_expires_at > self.writer_lease.expires_at
@@ -87,10 +91,16 @@ impl ArtifactHeadSigningConfigV1 {
             &self.publication.admission,
             self.publication.admission.withdrawal_head_digest,
             now,
-        ).map_err(|_| Error::CheckpointMismatch)?;
-        let signer = verifier.head_signers.get(&self.signer_id).ok_or(Error::UnknownSigner)?;
+        )
+        .map_err(|_| Error::CheckpointMismatch)?;
+        let signer = verifier
+            .head_signers
+            .get(&self.signer_id)
+            .ok_or(Error::UnknownSigner)?;
         if self.signature_expires_at > signer.expires_at
-            || signer.revoked_at.is_some_and(|at| self.signature_expires_at >= at)
+            || signer
+                .revoked_at
+                .is_some_and(|at| self.signature_expires_at >= at)
             || self.trust.writer_signers.iter().any(|writer| {
                 writer.signer_id == signer.signer_id || writer.verifying_key == signer.verifying_key
             })
@@ -98,8 +108,12 @@ impl ArtifactHeadSigningConfigV1 {
             return Err(Error::SignerContext);
         }
         verify_signer_context(
-            signer, Digest32::of_bytes(&signer.verifying_key), self.authority_epoch,
-            now, now, /*require_current*/ true,
+            signer,
+            Digest32::of_bytes(&signer.verifying_key),
+            self.authority_epoch,
+            now,
+            now,
+            /*require_current*/ true,
         )
     }
 
@@ -107,20 +121,32 @@ impl ArtifactHeadSigningConfigV1 {
     /// No key bytes are generated, enrolled, returned or transported here.
     pub fn require_registered_key(&self, verifying_key: &[u8; 32], now: u64) -> Result<(), Error> {
         self.authenticate_current(now)?;
-        let signer = self.trust.head_signers.iter().find(|entry| entry.signer_id == self.signer_id)
+        let signer = self
+            .trust
+            .head_signers
+            .iter()
+            .find(|entry| entry.signer_id == self.signer_id)
             .ok_or(Error::UnknownSigner)?;
-        if &signer.verifying_key != verifying_key { return Err(Error::InvalidKey); }
+        if &signer.verifying_key != verifying_key {
+            return Err(Error::InvalidKey);
+        }
         Ok(())
     }
 
     /// Derive only the exact unsigned HEAD of a validated source observation.
     /// A caller-created observation still provides no native signing custody.
     pub fn unsigned_head(
-        &self, source: &UntrustedArtifactRegistryDurableV1, issued_at: u64,
+        &self,
+        source: &UntrustedArtifactRegistryDurableV1,
+        issued_at: u64,
     ) -> Result<SignedCurrentArtifactHeadV1, Error> {
         source.authenticate_current(self, issued_at)?;
         let generation = self.expected_generation(source)?;
-        let signer = self.trust.head_signers.iter().find(|entry| entry.signer_id == self.signer_id)
+        let signer = self
+            .trust
+            .head_signers
+            .iter()
+            .find(|entry| entry.signer_id == self.signer_id)
             .ok_or(Error::UnknownSigner)?;
         Ok(SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: self.trust.withdrawal_scope_digest,
@@ -141,8 +167,10 @@ impl ArtifactHeadSigningConfigV1 {
     }
 
     pub fn verify_original_head(
-        &self, source: &UntrustedArtifactRegistryDurableV1,
-        signed: &SignedCurrentArtifactHeadV1, now: u64,
+        &self,
+        source: &UntrustedArtifactRegistryDurableV1,
+        signed: &SignedCurrentArtifactHeadV1,
+        now: u64,
     ) -> Result<(), Error> {
         source.authenticate_current(self, now)?;
         if signed.witness.issued_at > now {
@@ -150,14 +178,19 @@ impl ArtifactHeadSigningConfigV1 {
         }
         // Reconstruct immutable fields without treating the old issued_at as
         // a fresh physical read or changing the original signed window.
-        let signer = self.trust.head_signers.iter().find(|entry| entry.signer_id == self.signer_id)
+        let signer = self
+            .trust
+            .head_signers
+            .iter()
+            .find(|entry| entry.signer_id == self.signer_id)
             .ok_or(Error::UnknownSigner)?;
         if signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.binding != self.storage_binding
             || signed.witness.registry_id != self.trust.registry_id
             || signed.witness.generation != self.expected_generation(source)?
             || signed.witness.head_digest != source.registry_receipt().head_digest
-            || signed.witness.predecessor_head_digest != self.publication.expected_registry_predecessor_head
+            || signed.witness.predecessor_head_digest
+                != self.publication.expected_registry_predecessor_head
             || signed.witness.authority_epoch != self.authority_epoch
             || signed.witness.signer_id != self.signer_id
             || signed.witness.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
@@ -172,26 +205,48 @@ impl ArtifactHeadSigningConfigV1 {
             return Err(Error::CurrentHeadConflict);
         }
         let verifier = ArtifactOwnerVerifierV1::new(self.trust.clone())?;
-        verifier.verify_signed_head(signed, &RegistryHeadRequirementV1 {
-            registry_id: self.trust.registry_id.clone(),
-            minimum_generation: signed.witness.generation,
-            expected_predecessor_head_digest: self.publication.expected_registry_predecessor_head,
-            minimum_authority_epoch: self.trust.minimum_authority_epoch,
-            now,
-        }, /*require_current_signer*/ true)?;
+        verifier.verify_signed_head(
+            signed,
+            &RegistryHeadRequirementV1 {
+                registry_id: self.trust.registry_id.clone(),
+                minimum_generation: signed.witness.generation,
+                expected_predecessor_head_digest: self
+                    .publication
+                    .expected_registry_predecessor_head,
+                minimum_authority_epoch: self.trust.minimum_authority_epoch,
+                now,
+            },
+            /*require_current_signer*/ true,
+        )?;
         Ok(())
     }
 
-    fn expected_generation(&self, source: &UntrustedArtifactRegistryDurableV1) -> Result<Generation, Error> {
+    fn expected_generation(
+        &self,
+        source: &UntrustedArtifactRegistryDurableV1,
+    ) -> Result<Generation, Error> {
         match source.current_head() {
-            Some(current) if current.witness.head_digest == source.registry_receipt().head_digest => {
+            Some(current)
+                if current.witness.head_digest == source.registry_receipt().head_digest =>
+            {
                 Ok(current.witness.generation)
             }
-            Some(current) if current.witness.head_digest == self.publication.expected_registry_predecessor_head => {
-                if self.authority_epoch < current.witness.authority_epoch { return Err(Error::SignerContext); }
-                current.witness.generation.next().map_err(|_| Error::CurrentHeadContext)
+            Some(current)
+                if current.witness.head_digest
+                    == self.publication.expected_registry_predecessor_head =>
+            {
+                if self.authority_epoch < current.witness.authority_epoch {
+                    return Err(Error::SignerContext);
+                }
+                current
+                    .witness
+                    .generation
+                    .next()
+                    .map_err(|_| Error::CurrentHeadContext)
             }
-            None if self.publication.expected_registry_predecessor_head == self.trust.genesis_predecessor_head_digest => {
+            None if self.publication.expected_registry_predecessor_head
+                == self.trust.genesis_predecessor_head_digest =>
+            {
                 Ok(self.trust.minimum_registry_generation)
             }
             Some(_) | None => Err(Error::CurrentHeadConflict),

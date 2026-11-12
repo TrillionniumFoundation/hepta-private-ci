@@ -302,9 +302,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             verify_signed_actor_separation(&training, &verified, issued_at)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        let result = self.finish_original_readback(
-            &source, &observed, &bytes, started_at, /*new_attestation*/ true,
-        ).await;
+        let result = self
+            .finish_original_readback(
+                &source, &observed, &bytes, started_at, /*new_attestation*/ true,
+            )
+            .await;
         if result.is_err() {
             self.completion_fenced = true;
         }
@@ -343,9 +345,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             authenticate_training(&self.config, &before, now()?)?;
         }
         let bytes = self.journal.read(&self.saved)?;
-        let result = self.finish_original_readback(
-            &source, &observed, &bytes, started_at, /*new_attestation*/ false,
-        ).await;
+        let result = self
+            .finish_original_readback(
+                &source, &observed, &bytes, started_at, /*new_attestation*/ false,
+            )
+            .await;
         if result.is_err() {
             self.completion_fenced = true;
         }
@@ -415,9 +419,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             return Err(OwnerError::CommitUncertain.into());
         }
         let current = now()?;
-        self.authenticate_completed(
-            completed, &evidence, started_at, current, new_attestation,
-        )
+        self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
     }
 
     fn decode_completed(
@@ -425,7 +427,14 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         source: &impl SelectionSources,
         observed: &LearningIterationObservationV1,
         bytes: &[u8],
-    ) -> Result<(LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1), Error> {
+    ) -> Result<
+        (
+            LearningIterationReceiptV1,
+            Vec<u8>,
+            SignedLearningEvidenceV1,
+        ),
+        Error,
+    > {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
@@ -442,7 +451,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
 
     fn authenticate_completed(
         &self,
-        completed: (LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1),
+        completed: (
+            LearningIterationReceiptV1,
+            Vec<u8>,
+            SignedLearningEvidenceV1,
+        ),
         evidence: &SignedLearningEvidenceV1,
         started_at: u64,
         current: u64,

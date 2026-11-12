@@ -24,11 +24,16 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwne
         training: OriginalCellQ24TrainingCommandReceiptV1,
     ) -> Result<OriginalCircuitSelectionCommandOwnerV1<W>, Error> {
         let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
-        actual.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
+        actual.record(
+            training.receipt().clone(),
+            training.receipt().observed_unix_seconds,
+        )?;
         if actual.snapshot() != &self.config.decision
             || training.attestation() != &self.config.training_evidence
         {
-            return Err(Error::Binding("same original Selector D/T and complete signature"));
+            return Err(Error::Binding(
+                "same original Selector D/T and complete signature",
+            ));
         }
         let trainer = OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(
             trainer, dataset, training,
