@@ -1,0 +1,856 @@
+{
+  "schema": "hepta.full-caller-source-domain-inventory.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+    "tree": "71382739c728e026f1d3ae4aab146eb770074c7e",
+    "manifest_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "source_roots": [
+      "codex-rs"
+    ],
+    "boundary_records": 736,
+    "protected_records": 506
+  },
+  "verifier": {
+    "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "function": "_source_files",
+    "behavior": "Only manifest source_roots are recursively scanned; ignored_path_fragments affect boundary-use filtering, not the Rust file count. rustFilesScanned is len(files)."
+  },
+  "recorder": {
+    "original_blob": "8e39295637267d3ebc17cd3a57421cf451670dfd",
+    "function": "source_snapshot",
+    "same_source_roots_scan": true,
+    "old_wrong_expected_rust_files": 6766,
+    "correct_source_roots_expected": 6655,
+    "not_previously_executed_or_passed_by_this_agent": true
+  },
+  "baseline": {
+    "commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17",
+    "codex_tree": "e428b7f98a15da931306346d4c36fbaaac1b5888",
+    "source_root_rust_files": 6644,
+    "source_path_sha256": "3b2c33d71a17c76edd0c82eb7b9167ce377e8f67bcf55e8fc23b4397851cc16d",
+    "outer_blob": "c44de5c5a5d02de6f54912a7f0ff4591f3c5e6c2",
+    "outer_full_repository_tracked_rust_files": 6766,
+    "outer_actual_code": "rust=git(\"ls-files\",\"*.rs\").splitlines()",
+    "outer_scope_is_not_verifier_source_roots": true
+  },
+  "current": {
+    "codex_tree": "bf4474c1eaa53073c7658118c1d7bd91d2ee6152",
+    "codex_tree_entries": 12359,
+    "codex_tree_truncated": false,
+    "source_root_rust_files": 6655,
+    "full_repository_tracked_rust_files": 6777,
+    "source_path_order": "Python Path component lexicographic order; all observed Rust paths ASCII",
+    "source_path_blob": "f4998431db2cede056ac45e2b8c2dc1926e71095",
+    "source_path_bytes": 358983,
+    "source_path_sha256": "c548ca0923e16e5664fe5981e054de218a0074db02a1c8214136218f828921b7",
+    "new_rust_files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+        "sha": "aaaa0a0d70c8b9f3126eef0be3066f369f541b65",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+        "sha": "53d666e3027dff653c891c2c1403c79131ee1044",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+        "sha": "9c53e2efc865081e68805e060b025b6d0ea5cf8e",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+        "sha": "4b213bbb565f667cb8b6523ec292433cf2f637d6",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+        "sha": "c5037acf9d2ab99e211f724550f0c5318ba2ed23",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+        "sha": "d4a62890aef097ed2465a023ab85bf860a5fdc03",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_tests.rs",
+        "sha": "f4a0c06969011e7516889859f03ac2ded1149cf7",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+        "sha": "02f5309fb3001f8a5855153e9305c57d6593a1bf",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "sha": "5f7d7c4164bde16a7d84645e631e4215c8c146a7",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+        "sha": "7974b0498ccbb088a7f10751320628400cffa178",
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_policy_tests.rs",
+        "sha": "cd29c732d217ad8cc10bc81d11350a2f9dae7934",
+        "mode": "100644"
+      }
+    ],
+    "removed_rust_files": [],
+    "outside_source_roots": [
+      {
+        "path": "apps/hepta-browser/servo-worker/src/main.rs",
+        "sha": "68615d97227481e32f2b3c1e216e47a29b244871",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/bin/hepta-control-theme.rs",
+        "sha": "5242f16ceb91a3c0748f8749c7d08b423752d957",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/canonical.rs",
+        "sha": "ecefbf42ccb2cb2db40cc3d1d301e84b75f243fe",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/basic_tests.rs",
+        "sha": "d535e51221065cd82ba219278dc49d2c817a0357",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/fixtures.rs",
+        "sha": "7ae4a2e2fc435a423d59e44666aa07340137c890",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/integration_tests.rs",
+        "sha": "c66c62304e08c52e266416800132f646880d904e",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/local_archive.rs",
+        "sha": "3ff7df1d96e7f1c5d675243b3fcb3b43e8ba1a18",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/local_archive_tests.rs",
+        "sha": "b7d76ce7be929c62ec79b2961aa8efcc6d660f55",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat/partition_tests.rs",
+        "sha": "be33a7fdb8babfe08fdd558ffe34e6fc69ce6476",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat.rs",
+        "sha": "e121fd668bc2675ff26e5355ee5e9f45162d62d4",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_owner.rs",
+        "sha": "4d732f91ff4e3157d2fdae115bf813f75234bffb",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_owner_recovery.rs",
+        "sha": "423dad46f99b0677167d924a4828123edba06d07",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_owner_recovery_tests.rs",
+        "sha": "abd7aaf68b082a2c21a9c4a9b277828e24053522",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_owner_tests.rs",
+        "sha": "f3d391e1549a4f9ca1f3a0512efbc770699a8817",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_stream.rs",
+        "sha": "a47b7a0701d96f26db54db639521b0bda11e4713",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_stream_tests.rs",
+        "sha": "6895897a16acc9de839260859753720a5495980f",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/chat_timeline.rs",
+        "sha": "191990a9458b20fcb70b69a21afcc2271091b7aa",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/confirmation.rs",
+        "sha": "a5981737d83eba464ef1856ce10d8615c22de061",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/controller/recovery.rs",
+        "sha": "f389cd180b1554284ac34b84df9fd1be23ba6b9b",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/controller/types.rs",
+        "sha": "094a1c2a092701495628a323f16ba61e3e23c18c",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/controller.rs",
+        "sha": "e9a7175dc58ed9051488baa468b31f3e255f107e",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/error.rs",
+        "sha": "643716d93f36b3fa944d6c87605381c2072ac5f0",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/ledger/model.rs",
+        "sha": "09fbd0ce7bd37b281168a1703bd1dad9d2165d7e",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/ledger.rs",
+        "sha": "3a23dd2e4cafb4cab2e500229addbdeec093e6c3",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/lib.rs",
+        "sha": "68d5d5f620cc711ad5437458243dfbd5ea7069e7",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/owner_view.rs",
+        "sha": "e9532863c105609a8ca88f1297132f0afea45699",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/owner_view_tests.rs",
+        "sha": "754f1f1e0e5f19ff19d5577ff338475020e37327",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/projection.rs",
+        "sha": "ba25b47f72e9239b982791abca7b9c1bd1c47645",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/recovery.rs",
+        "sha": "cbb3761fddd4ef3ee6f5aee0fa76d140aa1dc82d",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/runtime_view.rs",
+        "sha": "55d713dd8e4632faf0fb35199b42c720387dadeb",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs",
+        "sha": "67087a126ac7bd78c23362e849661a1c41875734",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/scheduler.rs",
+        "sha": "531fce1ac00de0b428ac17c5bcfd5062ec84fcab",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/src/theme.rs",
+        "sha": "7dc40feed59d2e9fd76f23074718737dae749a9d",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/tests/canonical_differential.rs",
+        "sha": "75b70e01f45529f9dede5a0a9e06a5539e3f4d3a",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/tests/controller.rs",
+        "sha": "63e2244535811894a2d17b4cde521c2081ab0bb1",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/tests/unit/confirmation_tests.rs",
+        "sha": "90b71930ee493c699afcbd0286e20b923d134778",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/core/tests/unit/projection_tests.rs",
+        "sha": "88e1bf1951570ca090b9502c17de1a44e693adb6",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/build.rs",
+        "sha": "846c97953250109d99cfc17dfdf85ec552b051d2",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/app.rs",
+        "sha": "1577e8767c97c5e18b278fc6e32219152bcf03e3",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/chat_source.rs",
+        "sha": "e7ae6351ae6273d116a392a64bbf6532b3d0eef6",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/chat_source_tests.rs",
+        "sha": "31c34f706a38d8955d6b3c77f06246381cfdce76",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate.rs",
+        "sha": "5bf8ac8fdcfa23fd2ec840a9ee6e457f5df33126",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate_tests.rs",
+        "sha": "4ccf1af5980ce9783a865ae1c2853e4384b7b42b",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs",
+        "sha": "7b4e538faa9345aeb3648ae9a0c47079073418ec",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/lib.rs",
+        "sha": "0f651cc6a782faeaa765eec292e2d9e407524759",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/main.rs",
+        "sha": "4529e71d29b3b7f3a723ab2e9912ebdadb661d8c",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_host/mod.rs",
+        "sha": "64db09445a11ab693fa0f898b1222685268dc2c5",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_host/render.rs",
+        "sha": "5eb06ee982fae602c3832d7031ee496b79d15b26",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch.rs",
+        "sha": "995fc346ae6269fe0eb891a574bdd7c05ee42bf3",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch_tests.rs",
+        "sha": "2cc67b8434b51312cc316c3d6d7e4100f56bbff8",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/clipboard.rs",
+        "sha": "2da95d70eba90532626bef14e9a08d90388046b8",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/edit.rs",
+        "sha": "244de9be615bcf71119b7f3fd604128d769f87f0",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/mod.rs",
+        "sha": "8675e1f1e545df979d3fd19061199481e5c98eb4",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/text.rs",
+        "sha": "e8dfbf18bdaf185a90bda1dd1329f7bb0e0e9922",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/text_tests.rs",
+        "sha": "133b3be5c7bac31dfa6e63381fad41a08dc67fcd",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/tree.rs",
+        "sha": "356e761f6d3798ea3f15bfe0174e1db73b59a4b3",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls.rs",
+        "sha": "bb76507a7b2ec6749c1ab8afb5d55edb7ca76342",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls_tests.rs",
+        "sha": "d3e983c4a00bedd37512c69c6b0cf94cb9e133ae",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs",
+        "sha": "d8eb424f4fbeff3fdf52c5d4c6dd477c1da7461d",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/native_presentation_tests.rs",
+        "sha": "7e133d0ac873632a5d85c83661c66a4d4927aa03",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/render.rs",
+        "sha": "908790fafdc738ee1efafa39659ff943c58763bb",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_resources.rs",
+        "sha": "5b8cd7f049256ad4fa4044dbd67a61b162b22668",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_resources_tests.rs",
+        "sha": "c24b2a0cae1de5ea5911335bbcddaf103bb4ee50",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_status.rs",
+        "sha": "1d73af8db9a12cdb40b4b643096f3d348461f07a",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_status_layout.rs",
+        "sha": "fdc09bc9148523d85265270941be1c9a06451c09",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/presentation.rs",
+        "sha": "f7e3aa347a2088ab2d2ec495184344d24a2b67f2",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/presentation_tests.rs",
+        "sha": "e97b7f56059122aef731a6c056c1d144345ebe53",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer.rs",
+        "sha": "a4ce8b5a5348fff69c761d484d5ed8b8240ed0bf",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction.rs",
+        "sha": "5b5b4c410d0dd05fa3fa5fab1c3cbcec62f0348b",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction_tests.rs",
+        "sha": "62641393a2d524ec105cd29b64c753348ff824f1",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/dock.rs",
+        "sha": "f95e32df0692ed611b3e8c001c3270ab938d7763",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs",
+        "sha": "741c870b3d8a2058223d5ee8f170cd85012f044f",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/hover_highlight.rs",
+        "sha": "8019caa2b94d25da39a700e68962694e5262bc25",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/mod.rs",
+        "sha": "e1864334935fde26837c2ccdace18a55a4961dec",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs",
+        "sha": "48bf43988cb17efafc00406da0a3e2fb14ab33df",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs",
+        "sha": "6124703a3e8d27bcc4dce703019576326ebf9db9",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/rooms.rs",
+        "sha": "d29e92ae89b407ec4f8f948eff3433bf944e8c45",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/sidebar_fixture.rs",
+        "sha": "164c4b5ee4a52cccf2200d7ee4f52f5ca1d74413",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/styles.rs",
+        "sha": "6de4967a8c203df4d40017b00445293ebed22e37",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs",
+        "sha": "023224729b13adff6f3605a9f4fdb0095dbe0c42",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs",
+        "sha": "abb17e4b8bc80fc4a42008a190d2e61f4cbf4908",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/app/effects.rs",
+        "sha": "0b2fc69be29bc73eff361fa51872c4b9cbb6fde8",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/app/lifecycle.rs",
+        "sha": "76039d2648b5a7fc8ca8606d29fa7617b898eb9a",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/app/maintenance.rs",
+        "sha": "788e57d0ca45b2ae1498af466e7bfdb8bb2ad914",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/app.rs",
+        "sha": "ea9bc88cd433ffbd8097f2a3350fa06378c698a6",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/dom/lists.rs",
+        "sha": "0e807a82c5a3001fcd75ca680dcf446434530653",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/dom.rs",
+        "sha": "d74151faccaa5a564ac652646d68e80393d3f934",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/lib.rs",
+        "sha": "70b91fbbe6650a72cd6b89484d674adcfcbc3d9c",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/recovery/browser.rs",
+        "sha": "168e0d857044930d097b5b6f76760119cd7ef2d0",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/recovery/directory.rs",
+        "sha": "e735f55ad3a3b3d1d4adb4ba9983e758619b7923",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/recovery/storage_tests.rs",
+        "sha": "1bdd043b093df5eb774368f23b5d11691417053a",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/recovery.rs",
+        "sha": "115760b2f59167e2ea9a88d46651c520b2bb6610",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/transport/browser.rs",
+        "sha": "d17352d4b93845fb741b15f57ea50c7ee5e1e909",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/transport/contract_tests.rs",
+        "sha": "21882c6f81470279e0bba851c6ac6a031af3907d",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/transport/deadline.rs",
+        "sha": "80c4f75a5610fc8924779658cc9461af9d1bdfe0",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/web/src/transport.rs",
+        "sha": "14a90bfefd5d2c56f604c6a35e98c8318eee6ada",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/test/fixtures/cjk-font-probe.rs",
+        "sha": "e146637ce75a493764353db036ba5b33bd7ae50e",
+        "mode": "100644"
+      },
+      {
+        "path": "apps/hepta-control-ui/test/fixtures/ime-router-probe.rs",
+        "sha": "61dee0191ac794f5449e54342177a29d0ddd91cb",
+        "mode": "100644"
+      },
+      {
+        "path": "bazel/rules/testing/wine/fixtures/windows_smoke.rs",
+        "sha": "ffd98a2443599925879d4f5bfaf42880dae1b2e2",
+        "mode": "100644"
+      },
+      {
+        "path": "bazel/rules/testing/wine/src/lib.rs",
+        "sha": "76cb029e17dca561a93c0fd5294e413b8c439873",
+        "mode": "100644"
+      },
+      {
+        "path": "bazel/rules/testing/wine/src/lib_tests.rs",
+        "sha": "92e309829de24fa54472f8678c0011a6b7fffdcd",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-adversarial-reference/src/learning.rs",
+        "sha": "d360840b2f9ce04b5c4441f47c710b63697d2731",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-adversarial-reference/src/lib.rs",
+        "sha": "bac436058e0d8926370dfb35f8331a54bcca5dd0",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-adversarial-reference/src/recall.rs",
+        "sha": "9aca11cdffc8b07c8007fa583b1fa27957b53f18",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-adversarial-reference/src/tests.rs",
+        "sha": "7cfb55874a31411a93f4650a49425045e797836d",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-contract-reference/src/lib.rs",
+        "sha": "c26fdfdc0b420e60c043fa24ffc0ba295b478b5b",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/hnmf-reference/src/lib.rs",
+        "sha": "23573cbdd50d4357d709764de458d3e18060a1f4",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/lane-f-shadow/src/lib.rs",
+        "sha": "0f50f0f56b0fc0af3a993aefccf0449a65c3d51a",
+        "mode": "100644"
+      },
+      {
+        "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
+        "sha": "0ba0c909396cfdee1a315e889f7708b785594dc6",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/driver.rs",
+        "sha": "b6417d45fdcbb43b0e858556d71eea1e007ed070",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/src/bin/argument-comment-lint.rs",
+        "sha": "9dfe83b0fbb5330207d97811effb7e53f56666e5",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/src/comment_parser.rs",
+        "sha": "7ea66c195b7b4d50a4fb2c4ec7d73c73ea09e683",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/src/lib.rs",
+        "sha": "76b9e17732db18c5e5dda3a3ddbdfa4e057bc6fa",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/allow_char_literals.rs",
+        "sha": "85ef7d362f306918cb5b9f51941090ee740a2927",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/allow_self_documenting_methods.rs",
+        "sha": "d57f7c521da455f8067141294c6a8ace01e74f64",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/allow_string_literals.rs",
+        "sha": "9d61c4a761ed097dba3ce83aed250c3ded546f36",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/comment_matches.rs",
+        "sha": "f582fb958f24eccfcd01d601f6559b325624c207",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/comment_matches_multiline.rs",
+        "sha": "45683841ff0cda533df6ff40cd2a4c961dc83afa",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/comment_mismatch.rs",
+        "sha": "f3ad4db75478f4db40c6ea331e1a06fe78c7229d",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/ignore_external_methods.rs",
+        "sha": "44c72707d069f0bf5e9776ae337c234b069b3b3b",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/multiple_method_arguments.rs",
+        "sha": "e15f15624300bc09e4e1db165c51d68120cb34f3",
+        "mode": "100644"
+      },
+      {
+        "path": "tools/argument-comment-lint/ui/uncommented_literal.rs",
+        "sha": "a64804c78094e74646e512cb2815d4592df8b495",
+        "mode": "100644"
+      }
+    ],
+    "matching_tree_or_submodule_paths_ending_rs": [],
+    "source_root_symlink_rs": []
+  },
+  "canonical_tree_hash_checks": {
+    "a757_codex": {
+      "root": "bf4474c1eaa53073c7658118c1d7bd91d2ee6152",
+      "entries": 12359,
+      "verifiedTrees": 1231
+    },
+    "fde_codex": {
+      "root": "e428b7f98a15da931306346d4c36fbaaac1b5888",
+      "entries": 12348,
+      "verifiedTrees": 1231
+    },
+    "qualification": {
+      "root": "40a654d950e6dd38e8f18c417cab6edd3736e11e",
+      "entries": 2173,
+      "verifiedTrees": 287
+    },
+    ".codex": {
+      "root": "4697cb070366598c6ef529811515c255f4369f3f",
+      "entries": 35,
+      "verifiedTrees": 18
+    },
+    ".devcontainer": {
+      "root": "d930c4761f5bc87ba6308f0e78a93d4a911025a1",
+      "entries": 12,
+      "verifiedTrees": 2
+    },
+    ".g1": {
+      "root": "67598d14cb17933af7bc6eac148f54b4fc54ce59",
+      "entries": 8,
+      "verifiedTrees": 3
+    },
+    ".github": {
+      "root": "ab2319c8d2aa7e81f3765341c3b1d4045c9e43a7",
+      "entries": 201,
+      "verifiedTrees": 24
+    },
+    ".vscode": {
+      "root": "b26f3b4bbfa530719068fbf14ad6ea3a4b502b33",
+      "entries": 3,
+      "verifiedTrees": 1
+    },
+    "apps": {
+      "root": "c2ed6666fb6d722d05526bea0e693f3b429b9445",
+      "entries": 343,
+      "verifiedTrees": 47
+    },
+    "archive": {
+      "root": "537c09e0cc980c97d992673890fb98f147a933c5",
+      "entries": 331,
+      "verifiedTrees": 35
+    },
+    "bazel": {
+      "root": "a63126a6c952997f9c09561b7bbe666ac61ef23a",
+      "entries": 25,
+      "verifiedTrees": 10
+    },
+    "codex-cli": {
+      "root": "8a51d813d1387f192cc66bb9feade5e12675a3f7",
+      "entries": 9,
+      "verifiedTrees": 3
+    },
+    "docs": {
+      "root": "af76060eea2887827bf7aa6320dae9fad54e92e1",
+      "entries": 336,
+      "verifiedTrees": 69
+    },
+    "evidence": {
+      "root": "2786862dd5ff8baea11cbba8a12b257bac5f33e0",
+      "entries": 15,
+      "verifiedTrees": 4
+    },
+    "experiments": {
+      "root": "bad6b71102ddeff0f1396dee65246e5c746fa15c",
+      "entries": 20,
+      "verifiedTrees": 4
+    },
+    "external": {
+      "root": "6717a894bfc52f7908d89aedeb0003e8eb660eec",
+      "entries": 3,
+      "verifiedTrees": 2
+    },
+    "patches": {
+      "root": "ad76fe0e407216af8ec351cd218be86594e2458b",
+      "entries": 26,
+      "verifiedTrees": 1
+    },
+    "proposals": {
+      "root": "75887434b6b1c7c8773749347ad3f226cdd29cbf",
+      "entries": 14,
+      "verifiedTrees": 2
+    },
+    "qa": {
+      "root": "30b5acaec23810eaa6f098d079f5ddf0ebbf7873",
+      "entries": 165,
+      "verifiedTrees": 9
+    },
+    "scratch": {
+      "root": "65b649147864de2851b5a9e4ddfaa3bc93e0fb77",
+      "entries": 1,
+      "verifiedTrees": 1
+    },
+    "scripts": {
+      "root": "7d27a1e78117e64ed4d59c41394abb0b9b7f10c5",
+      "entries": 386,
+      "verifiedTrees": 16
+    },
+    "sdk": {
+      "root": "03867fb100b45ae6b18fc56b3e517dbd2c0bdb47",
+      "entries": 161,
+      "verifiedTrees": 35
+    },
+    "third_party": {
+      "root": "b7078ccdf97d138cafdebecca0515f4dbcab47dd",
+      "entries": 34,
+      "verifiedTrees": 9
+    },
+    "tools": {
+      "root": "118399106aac089a8a164e83467b546e1a231ba9",
+      "entries": 139,
+      "verifiedTrees": 15
+    }
+  },
+  "limits": {
+    "fixed_Git_tree_metadata_only": true,
+    "actual_host_rglob_not_observed": true,
+    "ignored_or_generated_host_Rust_files_not_inferred": true,
+    "host_source_snapshot_must_still_observe_and_match_exact_expected_count": true,
+    "no_verifier_source_roots_or_ignore_rule_changes": true,
+    "no_H": true,
+    "no_Python": true,
+    "no_fullcaller_execution": true,
+    "ordinary_acceptance": 0
+  },
+  "correction_authorized_by_root": true,
+  "correction_does_not_change_source_domain": true
+}
