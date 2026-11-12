@@ -1,0 +1,65 @@
+{
+  "before": {
+    "source_sha": "7ab547ba0174e38748d9b618d3903305a17e7eab",
+    "tree": "3f2cf166ada76a023c5d17803c92133f689a47d8",
+    "dirty": ""
+  },
+  "native_executed": 0,
+  "ordinary_fullchain": 0,
+  "steps": [
+    {
+      "name": "provider-source-guards",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_evaluation_provider_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.9097394943237305,
+      "bytes": 6281,
+      "sha256": "7130bd244d3d5a312fafd75ee64a792679d636bcf66dd704d4ce5cf398f222c2"
+    },
+    {
+      "name": "coverage-parser",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.27323484420776367,
+      "bytes": 3123,
+      "sha256": "e9a883f768ae77a31773bb887e970a30fbc983d57061eb539d2ceebb3d0293ba"
+    },
+    {
+      "name": "py-compile",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-c",
+        "import pathlib,py_compile; paths=[\"qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py\",\"scripts/hepta_c_observer_coverage.py\"]; out=pathlib.Path('/workspace/scratch/ce434f960ee9/provider-qualification-7ab547ba-v1'); [py_compile.compile(p,cfile=str(out/(str(i)+\".pyc\")),doraise=True) for i,p in enumerate(paths)]"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04264402389526367,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after": {
+    "source_sha": "7ab547ba0174e38748d9b618d3903305a17e7eab",
+    "tree": "3f2cf166ada76a023c5d17803c92133f689a47d8",
+    "dirty": ""
+  },
+  "source_unchanged": true
+}
