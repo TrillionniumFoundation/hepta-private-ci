@@ -75,7 +75,7 @@ impl OriginalCellEvaluationHostV1 {
                             _ => wire::Outcome::Uncertain,
                         };
                         self.context.authenticate(super::super::now()?)?;
-                        return serde_json::to_vec(&wire::Response { request, outcome }).map_err(Error::from);
+                        return encode_response(request, outcome);
                     }
                 };
                 let _body = Body::decode(&bytes)?;
@@ -109,9 +109,7 @@ impl OriginalCellEvaluationHostV1 {
             }
         };
         self.context.authenticate(super::super::now()?)?;
-        let encoded = serde_json::to_vec(&wire::Response { request, outcome })?;
-        if encoded.len() > 16_384 { return Err(Error::Binding("bounded original material response")); }
-        Ok(encoded)
+        encode_response(request, outcome)
     }
 
     fn read_original_model_material(&self) -> Result<Vec<u8>, Error> {
@@ -124,6 +122,12 @@ impl OriginalCellEvaluationHostV1 {
     }
 }
 
+fn encode_response(request: wire::Request, outcome: wire::Outcome) -> Result<Vec<u8>, Error> {
+    let encoded = serde_json::to_vec(&wire::Response { request, outcome })?;
+    if encoded.len() > 16_384 { return Err(Error::Binding("bounded original material response")); }
+    Ok(encoded)
+}
+
 fn page(active: &mut Transfer, index: usize) -> Result<wire::Outcome, Error> {
     if index != active.next_page || index >= MAX_PAGES { return Err(Error::Binding("ordered original material pages")); }
     let offset = index.checked_mul(PAGE_BYTES).ok_or(Error::CommitUncertain)?;
@@ -134,3 +138,7 @@ fn page(active: &mut Transfer, index: usize) -> Result<wire::Outcome, Error> {
     Ok(wire::Outcome::Page { transfer: active.id, index: index as u32, offset,
         total: active.bytes.len(), digest: active.digest.to_string(), bytes })
 }
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_model_material_service_support_tests.rs"]
+mod tests;

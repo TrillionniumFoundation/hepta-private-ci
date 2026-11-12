@@ -345,7 +345,17 @@ ORIGINAL_EVALUATION_HOST_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::model_material::" + name
+    for name in (
+        "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_model_material", PACKAGE, ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES),
     ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
     ("original_evaluation_panel_members", PACKAGE, ORIGINAL_EVALUATION_PANEL_MEMBER_CASES),
     ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),

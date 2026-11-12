@@ -21,7 +21,7 @@ pub(super) struct Member {
     pub qualification_namespace: Digest32,
     pub metrics: u32,
     pub record: Vec<u8>,
-    pub scopes: Vec<u8>,
+    pub snapshots: Vec<u8>,
     pub holdout: Vec<u8>,
     pub plan: Vec<u8>,
     pub request: Vec<u8>,
@@ -42,7 +42,7 @@ impl Body {
         if !(2..=MAX_MEMBERS).contains(&self.members.len()) {
             return Err(Error::Binding("complete bounded original panel material"));
         }
-        let mut bytes = b"HECMM001".to_vec();
+        let mut bytes = b"HECMM002".to_vec();
         bytes.extend_from_slice(self.context.as_array());
         bytes.extend_from_slice(self.panel.as_array());
         put_bytes(&mut bytes, &self.snapshot)?;
@@ -54,7 +54,7 @@ impl Body {
             }
             bytes.extend_from_slice(&member.metrics.to_be_bytes());
             for part in [
-                &member.record, &member.scopes, &member.holdout, &member.plan, &member.request,
+                &member.record, &member.snapshots, &member.holdout, &member.plan, &member.request,
                 &member.decision, &member.qualification, &member.estimand, &member.roles,
                 &member.generator, &member.evaluator, &member.execution,
                 &member.execution_record, &member.cohort, &member.freeze,
@@ -69,7 +69,7 @@ impl Body {
     pub(super) fn decode(bytes: &[u8]) -> Result<Self, Error> {
         if bytes.len() > MAX_BYTES { return Err(Error::Binding("total original material bound")); }
         let mut reader = Reader::new(bytes);
-        reader.literal(b"HECMM001")?;
+        reader.literal(b"HECMM002")?;
         let context = reader.digest()?;
         let panel = reader.digest()?;
         let snapshot = reader.bytes()?.to_vec();
@@ -81,7 +81,7 @@ impl Body {
             members.push(Member {
                 binding: reader.digest()?, execution_namespace: reader.digest()?,
                 qualification_namespace: reader.digest()?, metrics: reader.u32()?,
-                record: reader.bytes()?.to_vec(), scopes: reader.bytes()?.to_vec(),
+                record: reader.bytes()?.to_vec(), snapshots: reader.bytes()?.to_vec(),
                 holdout: reader.bytes()?.to_vec(), plan: reader.bytes()?.to_vec(), request: reader.bytes()?.to_vec(),
                 decision: reader.bytes()?.to_vec(), qualification: reader.bytes()?.to_vec(),
                 estimand: reader.bytes()?.to_vec(), roles: reader.bytes()?.to_vec(),
