@@ -1,0 +1,66 @@
+{
+  "stage": "readview-guards-01",
+  "runs": [
+    {
+      "name": "readview-guard-fmt01",
+      "command": [
+        "/home/qq/hepta-learn-ff41-tools/bin/just",
+        "fmt",
+        "--base",
+        "106f5e41f2ff8421c5aad10eeb746d453ed00563"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "readview-artifact-sourceqa01",
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_initial_artifact_readview_source_closure.py"
+      ],
+      "exit_code": 1
+    },
+    {
+      "name": "readview-generic-sourceqa01",
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_exact_generic_function_order.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "head": "97496ccc30d6af80e08ef7ad8defce91270ac1b0",
+  "applied": true,
+  "quick": {
+    "boundary_count": 511,
+    "protected_count": 384,
+    "failures": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs",
+        "error": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs:fn revalidate_original_initial_artifacts(: required_order must contain marker sequences"
+      }
+    ],
+    "scope": "all definition/caller markers and protected-file checks; not full caller scan"
+  },
+  "diff_check": 0,
+  "status": " M .github/blob-size-allowlist.txt\n M CALLERS.toml\n M scripts/verify_hepta_callers.py\n?? qa/b4-no-bypass/test_exact_generic_function_order.py\n?? qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py\n",
+  "postimages": {
+    "CALLERS.toml": "6d942a461925f0194359138c7b16c3c9da7484dc",
+    "scripts/verify_hepta_callers.py": "c80a1074b92fc01127f920b63c271c4c8562a167",
+    "qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py": "03eba115ee2d8c1231b5ddc69808619d6f57eb4e",
+    "qa/b4-no-bypass/test_exact_generic_function_order.py": "b7fe723040a711e9ec795ed2275e25e778818eae",
+    ".github/blob-size-allowlist.txt": "5b7807a040bc578fa917ef64fcfc03ead51e0d0a"
+  },
+  "exit_code": 1
+}
