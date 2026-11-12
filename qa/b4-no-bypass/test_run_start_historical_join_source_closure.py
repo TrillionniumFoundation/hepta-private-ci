@@ -15,10 +15,10 @@ ROOT = original.ROOT
 PROOF = original.PROOF
 PATH = original.A + "authority_host_run_start_historical.rs"
 CALLERS = {
-    "root_initial_run_start_historical_context": (),
-    "root_initial_run_start_historical_publisher": (),
-    "root_initial_run_start_historical_physical": (),
-    "root_initial_run_start_historical_digest": (),
+    "root_initial_run_start_historical_context": (original.A + "authority_host_historical_task.rs",),
+    "root_initial_run_start_historical_publisher": (original.A + "authority_host_historical_task.rs",),
+    "root_initial_run_start_historical_physical": (original.A + "authority_host_historical_task.rs",),
+    "root_initial_run_start_historical_digest": (original.A + "authority_host_historical_task.rs",),
     "root_initial_run_start_physical_unchecked": (PATH,),
 }
 
@@ -40,7 +40,7 @@ class RunStartHistoricalJoinSourceTests(unittest.TestCase):
     def setUpClass(cls):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
-        paths = {PATH, original.STORE}
+        paths = {PATH, original.STORE, original.A + "authority_host_historical_task.rs"}
         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in paths}
 
@@ -53,7 +53,7 @@ class RunStartHistoricalJoinSourceTests(unittest.TestCase):
     mutation = original.OriginalRunStartRetentionSourceTests.mutation
     remove = original.OriginalRunStartRetentionSourceTests.remove
 
-    def test_only_actual_unchecked_reader_has_a_product_caller(self):
+    def test_actual_whole_task_and_unchecked_readers_have_exact_callers(self):
         for identifier, expected in CALLERS.items():
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
