@@ -178,3 +178,43 @@ instances that learn the same function when sharing preserves retained ability.
 Instance count should follow workload, state isolation and measured parallelism.
 This version performs no automatic split, merge or population search; a changed
 plan is a new reviewed experimental configuration with its own evidence.
+
+## A strong reference before structural search
+
+Run the bounded reference from the repository root:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=scripts \
+  python3 -m hepta_cells.differentiation_reference --output /new/attempt-directory
+```
+
+The frozen, task-conditioned shared-bank and separately stored-head arms receive
+the same task IDs, numeric inputs, initial weights and evaluation rows. Both
+trained arms actually use `SemanticComponent.propose` and the SQLite owner for
+inference. They have the same total private parameters and the same selected-head
+training arithmetic and input exposures. The shared bank uses disjoint readout
+blocks: it has the same hypothesis class as the separately stored heads. This
+checks parameter-layout equivalence, not negative transfer or a learned router.
+The old task is read again after training the new task; a separate dense-serving
+control executes every head on the same routed parameters and is charged for it.
+
+Each attempt retains its protocol and source hashes, input/parameter arrays,
+training receipts, SQLite journals, immediate fit checkpoints, original outputs
+and a failed-attempt event when an exception occurs. A completed fit receipt is
+retained before its checkpoint is written, so a checkpoint failure does not erase
+the recorded optimizer work. A used output directory cannot be overwritten.
+
+MAC counts and updated-scalar counts are explicit algebraic work measures, not
+hardware instruction counts. Provider and routing counts, explicit bank copies,
+wall/CPU observations and unknown physical costs are reported separately. Dense
+serving time is included in its arm's measured wall/CPU time, so that timing must
+not be compared directly with the selected-only control as a speedup estimate.
+Resident-byte integrals, energy, allocations and full dependency costs remain
+unqualified. `total_physical_compute_matched` therefore stays false.
+
+Even an exact equality result remains `HOLD / NoUpdate`: it creates no automatic
+split/merge, independent real confirmation task, native Population adoption or
+claim that adding Cell types improves task quality. A genuine differentiation
+experiment must next identify repeatable interference in the shared computation,
+offer all arms the same information and tuning opportunities, and meet the
+existing task, retention and full-cost gates.
