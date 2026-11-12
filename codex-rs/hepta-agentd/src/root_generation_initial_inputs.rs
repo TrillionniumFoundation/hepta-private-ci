@@ -29,25 +29,39 @@ impl RootGenerationInitialHandoffV1 {
     /// Receive the exact deployment profile from the same original Root. No
     /// initial grant, nonce owner, CURRENT or task completion is manufactured.
     pub async fn connect(
-        mut self,
+        self,
         connection: RootGenerationPublicationConnectionV1,
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(refused("original Initial lifetime exceeds its bound"));
+        }
+        let end = Instant::now().checked_add(lifetime)
+            .ok_or_else(|| refused("original Initial deadline overflow"))?;
+        self.connect_until(connection, timeout, end).await
+    }
+
+    /// Carry the original launch's absolute end through every file and peer
+    /// check. This entry cannot renew time already consumed by startup.
+    pub(crate) async fn connect_until(
+        mut self,
+        connection: RootGenerationPublicationConnectionV1,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
+        remaining_until(end)?;
         // SAFETY: both calls only read the current process's credentials.
         if unsafe { libc::getuid() } == 0
             || unsafe { libc::geteuid() } == 0
             || timeout.is_zero()
             || timeout > Duration::from_millis(500)
-            || lifetime.is_zero()
-            || lifetime > Duration::from_secs(300)
         {
             return Err(refused(
                 "original non-Root consumer and bounded initial publication timing required",
             ));
         }
         connection.require_original_publication_session()?;
-        let end = Instant::now() + lifetime;
         let size = self.bootstrap.metadata()?.len();
         if size == 0 || size > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
             return Err(refused("initial publication bootstrap bound"));
@@ -106,14 +120,10 @@ impl RootGenerationInitialHandoffV1 {
             unsafe { libc::getegid() },
         )?;
         connection.require_original_publication_session()?;
-        let stream = tokio::time::timeout(timeout, tokio::net::UnixStream::connect(&socket))
+        let stream = tokio::time::timeout(timeout.min(remaining_until(end)?), tokio::net::UnixStream::connect(&socket))
             .await
             .map_err(|_| refused("initial publication Root connection timed out"))??;
-        let remaining = end
-            .checked_duration_since(Instant::now())
-            .filter(|value| !value.is_zero())
-            .ok_or_else(|| refused("initial publication route expired"))?;
-        let original = OriginalPublicationStream::from_stream(
+        let original = OriginalPublicationStream::from_stream_until(
             stream.into_std()?,
             self.root_pidfd,
             AgentdRootAuthorityPeer {
@@ -122,15 +132,17 @@ impl RootGenerationInitialHandoffV1 {
                 process_start_ticks: bundle.root.process_start_ticks,
             },
             timeout,
-            remaining,
+            end,
         )?;
         // Only observation occurs during bootstrap. Cancellation discards the
         // result and original stream; it never starts a CURRENT mutation.
         tokio::task::spawn_blocking(move || {
+            remaining_until(end)?;
             connection.require_original_publication_session()?;
             let client = RootGenerationInitialClient::from_original_initial_stream(
                 original, &bundle, connection,
             )?;
+            remaining_until(end)?;
             Ok(OriginalRootGenerationInitialV1 {
                 client: Arc::new(client),
             })
@@ -138,6 +150,12 @@ impl RootGenerationInitialHandoffV1 {
         .await
         .map_err(|_| refused("initial publication connect worker lost"))?
     }
+}
+
+fn remaining_until(end: Instant) -> Result<Duration, AgentdError> {
+    end.checked_duration_since(Instant::now())
+        .filter(|remaining| !remaining.is_zero() && *remaining <= Duration::from_secs(300))
+        .ok_or_else(|| refused("original Initial absolute deadline expired"))
 }
 
 fn refused(message: impl Into<String>) -> AgentdError {

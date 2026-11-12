@@ -33,13 +33,28 @@ impl OriginalPublicationStream {
         timeout: Duration,
         lifetime: Duration,
     ) -> io::Result<Self> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(unavailable());
+        }
+        let end = Instant::now().checked_add(lifetime).ok_or_else(unavailable)?;
+        Self::from_stream_until(stream, root, peer, timeout, end)
+    }
+
+    pub(crate) fn from_stream_until(
+        stream: UnixStream,
+        root: OwnedFd,
+        peer: AgentdRootAuthorityPeer,
+        timeout: Duration,
+        end: Instant,
+    ) -> io::Result<Self> {
+        let remaining = end.checked_duration_since(Instant::now()).ok_or_else(unavailable)?;
         if peer.pid == 0
             || peer.pid > i32::MAX as u32
             || peer.process_start_ticks == 0
             || timeout.is_zero()
             || timeout > Duration::from_millis(500)
-            || lifetime.is_zero()
-            || lifetime > Duration::from_secs(300)
+            || remaining.is_zero()
+            || remaining > Duration::from_secs(300)
         {
             return Err(unavailable());
         }
@@ -87,11 +102,14 @@ impl OriginalPublicationStream {
         }
         crate::root_observation_stream::check_lifetime(&root).map_err(io::Error::other)?;
         stream.set_nonblocking(true)?;
+        if Instant::now() >= end {
+            return Err(unavailable());
+        }
         Ok(Self {
             stream,
             root,
             timeout,
-            end: Instant::now() + lifetime,
+            end,
         })
     }
 
