@@ -86,7 +86,7 @@ jobs:
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_provider_handoff
       - name: Check offline provider admission and process supervision
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 40 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 42 \
             --output "$RUNNER_TEMP/mem7-records/mem11-provider-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_local_provider \
             test_hepta_ci_exec_deadline test_hepta_ci_exec_output
