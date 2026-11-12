@@ -168,7 +168,7 @@ receiver_type = "FinalUseAuthority"
 receiver_methods = ["open_state_dir", "open_state_dir_with_clock", "open_state_dir_with_trust", "open_state_dir_with_issuer_keys"]
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/production_authority.rs", "codex-rs/hepta-agentd/src/root_production_inputs.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/production_authority.rs", "codex-rs/hepta-agentd/src/root_production_inputs.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
 caller_markers = ["FinalUseAuthority"]
 
 [[boundary]]
@@ -8016,6 +8016,7 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+forbidden = []
 required = ["evaluation: evaluation::OriginalEvaluationExchange","#[path = \"same_actor_q24_phase_learning_evaluation.rs\"]"]
 required_function_order = [
   { function = "fn from_original_scope(", sequence = ["OriginalSameActorRootContext::require_current(&context)?","CellQ24PreparedLearningV1::revalidate_source(&prepared)","OriginalEvaluationExchange::new(Arc::clone(context.gate()))","Ok(Arc::new(Self","context,","prepared,","jobs,","evaluation,"] }
@@ -8023,6 +8024,7 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+forbidden = []
 required = ["#[path = \"cell_q24_learning_evaluation_phase.rs\"]"]
 required_function_order = [
   { function = "fn install_independent_evaluation(", sequence = ["let inner = Arc::clone(&self.inner)",".in_lane(","if owners.evaluation.is_some()","return Err(Error::WrongScope)","trainer_source.require_original_owner(",".block_on(training.readback(&inner.dataset_cut))","LearningIterationCoordinatorV1::from_snapshot(inner.dataset_cut.clone())?","cut.record(","inner.require_original_phase_entry()?","if let Some(phase) = &inner.same_actor_work","OriginalSameActorLearningWork::require_original_evaluation_installation(","phase,","cut.snapshot(),",")?;","let mut evaluation: OriginalCellQ24EvaluationStageV1 = original",".into_stage(cut.snapshot().clone(), inner.prepared.scope().clone())?","evaluation.require_training(cut.snapshot(), inner.prepared.scope())?","evaluation.require_original_training_evidence(&completed.attestation)",")?;","if let Some(phase) = &inner.same_actor_work","OriginalSameActorLearningWork::require_original_evaluation_installation(","phase,","cut.snapshot(),",")?;","owners.evaluation = Some(evaluation)","Ok(())",".await"] }
@@ -8030,12 +8032,16 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+required = []
+forbidden = []
 required_function_order = [
   { function = "fn wait_original_same_actor_evaluation_stage(", sequence = ["stage != LearningIterationStageV1::Evaluation","return Ok(())","let Some(original) = &self.original_q24","return Ok(())","if !OriginalCellQ24LearningStageOwnersV1::wait_original_same_actor_evaluation(","original,","snapshot,",")\n        .await?","return Ok(())","self.require_stage_admission(state)?","self.require_frozen_scope(&snapshot.request)?","now_unix_seconds()? >= snapshot.request.envelope.expiry_unix_seconds","return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)","Ok(())"] }
 ]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = []
+forbidden = []
 required_function_order = [
   { function = "fn process(", sequence = ["LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?","self.ports.restore(&request).await?","authenticate_restored_iteration_v1(","while let Some(stage) = coordinator.next_stage()","self.require_stage_admission(state)?","clock()? >= request.envelope.expiry_unix_seconds","return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)","self.wait_original_same_actor_evaluation_stage(state, coordinator.snapshot(), stage)",".await?;","self.wait_original_successor_stage(state, coordinator.snapshot(), stage)",".await?;","self.ports.execute_stage(coordinator.snapshot(), stage)","coordinator.record(receipt, clock()?)?",".checkpoint(previous, coordinator.snapshot())",".await?;","committed != coordinator.snapshot().head_digest","return Err(LearningIterationRuntimeErrorV1::CommitUncertain)"] }
 ]

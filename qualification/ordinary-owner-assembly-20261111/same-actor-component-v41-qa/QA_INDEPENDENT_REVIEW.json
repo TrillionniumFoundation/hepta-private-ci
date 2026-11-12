@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "kind": "independent-bounded-static-review",
+  "reviewer": "chain_nextuse",
+  "verdict": "No confirmed static blocker in the seven-path QA correction; execution remains unperformed.",
+  "packet": {
+    "git": "28b5619ec67869446bdf71a4ac37b06a687fefe8",
+    "bytes": 14752,
+    "sha256": "a7acf50cce494203ffb56dca7e689c80de19e141ff040e6dac4acbe7926a07e8"
+  },
+  "source": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+    "original_log": {
+      "git": "027309c3a14784f1f21c1ae624c055bc096612b9",
+      "bytes": 105524,
+      "sha256": "c68dc5c2688bfca3d5376bc285ae01bb284ef7eaa5b0641c3a801d4042403c69"
+    },
+    "original_result": {
+      "tests": 221,
+      "failures": 13,
+      "errors": 25,
+      "executor_passed": 183,
+      "executor_failed": 38,
+      "status": "failed",
+      "timeout": false
+    }
+  },
+  "dependencies": {
+    "root_callers_packet": "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526",
+    "root_callers_post": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "independent_root_callers_review": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6",
+    "reason": "The 25 errors are real missing-key schema failures, not test exceptions to suppress. The real sixth FinalUse caller must be declared in both independent inventories."
+  },
+  "verification": {
+    "files": [
+      {
+        "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "pre": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+        "post": "1029add3438b0c5443894ffda39daf9380030fc5",
+        "ops": 1,
+        "method_count": 0,
+        "assert_calls": 0,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "pre": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "post": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+        "ops": 1,
+        "method_count": 6,
+        "assert_calls": 6,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "pre": "8d0de4f77b939c477376927021ded17e6e526dd8",
+        "post": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+        "ops": 2,
+        "method_count": 8,
+        "assert_calls": 12,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "pre": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+        "post": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+        "ops": 6,
+        "method_count": 6,
+        "assert_calls": 14,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "pre": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+        "post": "7015e686e71d88293ffaebb9577d33bfde41a933",
+        "ops": 5,
+        "method_count": 14,
+        "assert_calls": 10,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+        "pre": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+        "post": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+        "ops": 2,
+        "method_count": 3,
+        "assert_calls": 5,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "pre": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "post": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+        "ops": 1,
+        "method_count": 11,
+        "assert_calls": 2,
+        "unique_forward_reverse": true
+      }
+    ],
+    "total_operations": 18,
+    "all_fixed_source_preimages_fetched_by_path": true,
+    "all_postimages_fetched_by_blob": true,
+    "all_pre_post_git_size_sha256_match": true,
+    "all_operations_unique_forward_reverse": true,
+    "all_other_bytes_identical": true,
+    "test_methods_unchanged": 48,
+    "assert_method_sequence_unchanged": true,
+    "checker_python_or_native_executed": false,
+    "h_or_refs_or_source_mutated": false
+  },
+  "findings": [
+    {
+      "area": "Schema",
+      "finding": "Original _string_tuple allows [] but rejects a missing key. The 25 errors require Root's actual CALLERS six-field correction; no fixture is skipped or setUp suppressed. That dependency is retained, not counted as QA execution."
+    },
+    {
+      "area": "Independent kernel inventory",
+      "finding": "Parsed pre/post JSON differs only in final_use_open_state.allowedCallers: the sixth exact path root_production_same_actor_phase_inputs.rs is appended. Its actual FinalUseAuthority::open_state_dir_with_issuer_keys call was read in fixed source 0a42efb. Definition/patterns/all other boundary JSON remain identical."
+    },
+    {
+      "area": "Training finite sets",
+      "finding": "create/recover keep exactly INPUTS; attest adds only actual SAME_ACTOR; readback stays exactly STAGE. Actual phase source b633e9 contains the original attest_original_completion, fit_or_readback and require_original_dataset_scope calls. SAME_ACTOR is added to real source dictionaries used by the unchanged omitted-declaration and unregistered-source mutants, not just to expected tuples."
+    },
+    {
+      "area": "Bootstrap and publication finite sets",
+      "finding": "All added paths were independently read at fixed53ed. They contain actual prepare_fresh_from_registered, seal_learning_checkpoint/seal_bytes, serve_with_ready, with_learning_profile and with_original_publication calls. Exact tuple equality, omission and relocated-source mutants stay intact. No wildcard or checker exception is added."
+    },
+    {
+      "area": "Moved validation fixtures",
+      "finding": "Both restore mutations now remove the original validate_snapshot at its actual 32-space indent. Frozen-scope and StoreMode::Reopen mutations target the actual reserve/open *_in_phase shared helper; wrapper/file parsing and None-delegation remain protected. The removed validation itself and rejection assertion are unchanged."
+    },
+    {
+      "area": "Latent RootAdmin mutation",
+      "finding": "The new unique context matches actual Session Drop: cache.fence then optional phase.close then worker.abort. Replacement removes only cache.fence and retains phase.close/abort. The original setUp, occurrences check and assertRaises verifier remain unchanged."
+    }
+  ],
+  "actual_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "git": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "sha256": "78d7a9e0636b9de36dac9601f78b12d15603c1221aaf45836d35621f46f9d6ab",
+      "bytes": 21439
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "git": "b633e9cc6bbfb784328eb80df3f102db74e200de",
+      "sha256": "3c17d6e8fb90142d2a9addc7fcc3184dc1d93164f1e337e18d47e57e2b09f870",
+      "bytes": 7739
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "git": "e6d5747e7b5a7a9217b77f5600a7d1112daeda15",
+      "sha256": "a8ce7f10a269e7a7816661ff0ee70316e3348ff1a85c336c47c21e22b27ae4c2",
+      "bytes": 11915
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "git": "fb95d13214318a255f868aea9f016911bc69990c",
+      "sha256": "2bc47c81923dcb90dc2aee6cd2d2ea83d28c22861d2dc60b1818b5aeb0c75726",
+      "bytes": 9444
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "git": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+      "sha256": "e891bd32d3d4fdd9edf9459e0dd1808c5e8ff00c93f5dbfc6c442f04e08beddc",
+      "bytes": 11967
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "git": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+      "sha256": "41b0deec6a947f1f8681a9e49a8d4184e1db09f908c8cdea1c90c024ce187be5",
+      "bytes": 8167
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "git": "4488fefa0dba45c0300a16f176c74c33b035d112",
+      "sha256": "da061794ef23e08ddaa36806b3355b14e5f2fbd4211d77f4fb3bbc158839a237",
+      "bytes": 5292
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393",
+      "bytes": 30409
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "git": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "git": "c15095f1e98667efae9c366a8221d58d0a95a09d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833"
+    }
+  ],
+  "limits": [
+    "This is Git/bytes/finite-source static review; no Python import, AST, original checker, Rust compiler, formatter, CI or native test was run.",
+    "No full repository caller discovery was rerun; changed finite caller sets were matched to fixed actual files and current CALLERS.",
+    "Original V40 remains failed: 221 tests, 13 failures and 25 errors. No result is inherited by a future source.",
+    "ordinary_complete_chain / positive_adoption_chain / no_update_or_rollback_chain remains 0/0/0."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review",
+  "reviewed_packet": "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526",
+  "source": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "callers_before": "e36da4a9a874ac5cdea0cae954de180128674dc6",
+    "callers_after": "cec0af947a10465414faff8f4e755e023a7f892d"
+  },
+  "decision": "No confirmed local blocker; five exact row replacements are necessary schema/caller corrections, not checker relaxations.",
+  "verification": {
+    "forward_reverse_exact": true,
+    "all_ops_unique": 5,
+    "boundaries": 638,
+    "protected_rows": 440,
+    "required_ids": 638,
+    "all_protected_required_and_forbidden_keys_explicit": true,
+    "all_other_fields_byte_or_value_identical": true,
+    "actual_caller": {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "git": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "function": "fn open_original_phase_consumer(",
+      "call": "FinalUseAuthority::open_state_dir_with_issuer_keys(",
+      "function_line": 517,
+      "call_line": 557
+    }
+  },
+  "changes": [
+    {
+      "type": "boundary",
+      "id": "final_use_open_state",
+      "only": "append true caller"
+    },
+    {
+      "type": "protected",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "only": [
+        "forbidden"
+      ]
+    },
+    {
+      "type": "protected",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "only": [
+        "forbidden"
+      ]
+    },
+    {
+      "type": "protected",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "only": [
+        "required",
+        "forbidden"
+      ]
+    },
+    {
+      "type": "protected",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "only": [
+        "required",
+        "forbidden"
+      ]
+    }
+  ],
+  "limits": [
+    "Original checker, typed helper, Python, Cargo, native harness and tests were not executed.",
+    "The six empty arrays repair a previously rejected manifest shape; they do not turn the old 25 error records into test passes.",
+    "The independent kernel JSON must separately name the same real sixth caller; that exact QA change is authored in the companion packet.",
+    "No production Rust, source authority checks, retries, freshness or time budgets are modified."
+  ]
+}

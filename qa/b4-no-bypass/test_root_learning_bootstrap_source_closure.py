@@ -32,7 +32,7 @@ SOURCE = AGENT + "objective_learning_source.rs"
 LAUNCHER = AGENT + "production_launcher.rs"
 CLI = AGENT + "bin/hepta-authority-host.rs"
 CALLERS = {
-    "root_prepared_fresh_session": (CLI,),
+    "root_prepared_fresh_session": (CLI, AGENT + "authority_host_same_actor_q24_phase.rs"),
     "root_retained_native_ui_launch": (),
     "root_retained_native_ready_launch": (CLI,),
     "root_prepared_native_ready_text_session": (AGENT + "authority_host_native_launch.rs", CLI),
@@ -41,7 +41,7 @@ CALLERS = {
     "root_learning_original_store_reopen": (SESSION, MODEL_REGISTRATION),
     "root_learning_original_owner_install": (CLI,),
     "root_learning_original_scope_seal": (CLI,),
-    "root_learning_original_scope_capture": (SESSION,),
+    "root_learning_original_scope_capture": (SESSION, AGENT + "authority_host_same_actor_q24_phase_worker.rs"),
     "root_learning_same_service_serve": (SESSION,),
     "root_learning_registered_checkpoint_constructor": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
@@ -61,9 +61,11 @@ CALLERS = {
     "root_learning_original_runtime_consume": (CONFIG,),
     "root_learning_original_delivery_source": (INPUTS,),
     "root_learning_completed_circuit_source": (DELIVERY,),
-    "root_original_registered_ready_serve": (CLI,),
+    "root_original_registered_ready_serve": (CLI, AGENT + "authority_host_same_actor_q24_host.rs"),
     "root_original_private_sealed_bytes": (
         REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,
+        AGENT + "authority_host_same_actor_q24_phase_worker.rs",
+        AGENT + "authority_host_same_actor_q24_phase.rs",
     ),
 }
 
@@ -172,7 +174,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_recovery_is_open_only_and_uses_original_owner(self):
         for function, marker in (
-            ("fn open_registered_learning_checkpoint(", "StoreMode::Reopen"),
+            ("fn open_original_learning_profile_in_phase(", "StoreMode::Reopen"),
             ("fn learning_store(", "StoreMode::Reopen => HostAuthorityFrontierStore::open("),
             ("fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered("),
             ("fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2("),

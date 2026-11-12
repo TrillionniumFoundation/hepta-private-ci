@@ -105,8 +105,15 @@ class RootAdminSourceClosureTests(unittest.TestCase):
     def test_retirement_cannot_release_consumers_before_fencing(self):
         self.rejects(
             "codex-rs/hepta-agentd/src/root_authority_session.rs",
-            "self.live.cache.fence();\n        self.worker.abort();",
-            "self.worker.abort();",
+            "self.live.cache.fence();\n"
+            "        if let Some(phase) = &self.live.phase {\n"
+            "            phase.close();\n"
+            "        }\n"
+            "        self.worker.abort();",
+            "if let Some(phase) = &self.live.phase {\n"
+            "            phase.close();\n"
+            "        }\n"
+            "        self.worker.abort();",
         )
 
     def test_admin_activation_cannot_precede_original_ready_callback(self):

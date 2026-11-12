@@ -1,0 +1,971 @@
+{
+  "schema_version": 1,
+  "kind": "author-static-source-alignment-receipt",
+  "source_commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "qa_packet": {
+    "git": "28b5619ec67869446bdf71a4ac37b06a687fefe8",
+    "bytes": 14752,
+    "sha256": "a7acf50cce494203ffb56dca7e689c80de19e141ff040e6dac4acbe7926a07e8"
+  },
+  "root_metadata_review": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6",
+  "all_source_postimages_created_and_get_byte_equal": true,
+  "exact_ops": {
+    "paths": 7,
+    "operations": 18,
+    "forward_unique": true,
+    "reverse_unique": true,
+    "full_pre_post_git_sha_size_verified": true
+  },
+  "test_structure": [
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 6,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 8,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 6,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 14,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 3,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "test_names_equal": true,
+      "old_tests": 11,
+      "assertion_method_sequence_equal": true,
+      "setUp_byte_equal": true,
+      "reject_helper_byte_equal": true
+    }
+  ],
+  "independent_tuple_static_comparison": [
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "cases": 25,
+      "exact_tuples_match": true,
+      "changes": [
+        {
+          "id": "root_prepared_fresh_session",
+          "old": [
+            "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_learning_original_scope_capture",
+          "old": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+          ]
+        },
+        {
+          "id": "root_original_registered_ready_serve",
+          "old": [
+            "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+          ]
+        },
+        {
+          "id": "root_original_private_sealed_bytes",
+          "old": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "cases": 4,
+      "exact_tuples_match": true,
+      "changes": [
+        {
+          "id": "root_learning_live_profile_action",
+          "old": [
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs"
+          ]
+        },
+        {
+          "id": "q24_publication_original_lane",
+          "old": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+          ],
+          "next": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+          ]
+        }
+      ]
+    }
+  ],
+  "training_exact_expected": {
+    "learning_original_training_receipt_create": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    ],
+    "learning_original_training_receipt_recover": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    ],
+    "learning_original_training_receipt_attest": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "learning_original_training_receipt_readback": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+    ],
+    "cell_q24_original_training_execute": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "cell_q24_original_training_pair_binding": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "learning_original_training_stage_constructor": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+    ],
+    "learning_original_training_stage_execute": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+    ],
+    "learning_original_training_stage_readback": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
+    ],
+    "learning_original_training_stage_attestation": [],
+    "root_learning_original_stage_assembly": []
+  },
+  "static_mutation_projections": [
+    {
+      "qa": "test_learning_checkpoint_source_closure.py",
+      "path": "learning_iteration_checkpoint_transport.rs",
+      "function": "fn restore(",
+      "marker": "scope\n                                .validate_snapshot(&snapshot)",
+      "source_git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "function_line": 156,
+      "guard_line": 171,
+      "raw_occurrences_in_function": 1,
+      "baseline_order_positions": [
+        273,
+        382,
+        582,
+        697,
+        1009,
+        1081
+      ],
+      "deleted_guard_static_projection_rejected": true,
+      "reason": "Error: missing at 608 \"scope\\n                                .validate_snapshot(&snapshot)\""
+    },
+    {
+      "qa": "test_root_learning_scope_source_closure.py",
+      "path": "learning_iteration_checkpoint_transport.rs",
+      "function": "fn restore(",
+      "marker": "scope\n                                .validate_snapshot(&snapshot)",
+      "source_git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "function_line": 156,
+      "guard_line": 171,
+      "raw_occurrences_in_function": 1,
+      "baseline_order_positions": [
+        273,
+        382,
+        582,
+        697,
+        1009,
+        1081
+      ],
+      "deleted_guard_static_projection_rejected": true,
+      "reason": "Error: missing at 608 \"scope\\n                                .validate_snapshot(&snapshot)\""
+    },
+    {
+      "qa": "test_root_learning_bootstrap_source_closure.py",
+      "path": "authority_host_learning_registration.rs",
+      "function": "fn open_original_learning_profile_in_phase(",
+      "marker": "StoreMode::Reopen",
+      "source_git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "function_line": 161,
+      "guard_line": 183,
+      "raw_occurrences_in_function": 1,
+      "baseline_order_positions": [
+        481,
+        814,
+        919,
+        958,
+        1468,
+        1592,
+        1657,
+        1800
+      ],
+      "deleted_guard_static_projection_rejected": true,
+      "reason": "Error: missing at 829 \"StoreMode::Reopen\""
+    },
+    {
+      "qa": "test_root_learning_scope_source_closure.py",
+      "path": "authority_host_learning_registration.rs",
+      "function": "fn reserve_original_learning_profile_in_phase(",
+      "marker": "profile.frozen_scope(&initial)?",
+      "source_git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "function_line": 89,
+      "guard_line": 108,
+      "raw_occurrences_in_function": 1,
+      "baseline_order_positions": [
+        472,
+        808,
+        1053,
+        1097,
+        1255
+      ],
+      "deleted_guard_static_projection_rejected": true,
+      "reason": "Error: missing at 499 \"profile.frozen_scope(&initial)?\""
+    }
+  ],
+  "root_admin_11_literal_lookups": [
+    {
+      "test": "test_slow_check_cannot_drop_its_post_check_deadline",
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "original": "check()?;\n    require_before(end)?;",
+      "replacement": "check()?;",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_original_registry_cannot_drop_its_locked_deadline",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "original": "deadline.check()?;\n    // This comparison and the existing CAS/persistence below share one lock.",
+      "replacement": "// This comparison and the existing CAS/persistence below share one lock.",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_two_cas_stages_cannot_skip_the_original_context_recheck",
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "original": "context.check_for(self)?;\n        let result = revoked.revoke_original_grant();",
+      "replacement": "let result = revoked.revoke_original_grant();",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_consumer_confirmation_must_observe_both_original_owners",
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "original": "consumers.notes.frontier_for_handoff(head)",
+      "replacement": "consumers.device.frontier_for_handoff(head)",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_strict_own_signature_cannot_be_replaced_by_ordinary_verify",
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "original": ".verify_strict(&bytes, &signature)",
+      "replacement": ".verify(&bytes, &signature)",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_valid_signed_artifact_cannot_skip_existing_full_lease_binding",
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "original": "current.binding != expected",
+      "replacement": "current.lease_id.is_empty()",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_retained_read_only_verification_cannot_authorize_mutation",
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "original": "self.verify_original_artifact(signed, before, VerificationPurpose::LiveRevocation)",
+      "replacement": "self.verify_original_artifact(signed, before, VerificationPurpose::RetainedObservation)",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_root_preparation_cannot_unlock_shared_original_file_custody",
+      "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "original": "std::sync::Arc::strong_count(&self._writer_lock) != 1",
+      "replacement": "false",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_writer_custody_cannot_replace_original_verification",
+      "path": "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+      "original": "self.inner.verify(authority, expected_agent)",
+      "replacement": "Ok(())",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    },
+    {
+      "test": "test_retirement_cannot_release_consumers_before_fencing",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "original": "self.live.cache.fence();\n        self.worker.abort();",
+      "replacement": "self.worker.abort();",
+      "actual_occurrences": 0,
+      "expected_occurrences": 1,
+      "new_original": "self.live.cache.fence();\n        if let Some(phase) = &self.live.phase {\n            phase.close();\n        }\n        self.worker.abort();",
+      "new_replacement": "if let Some(phase) = &self.live.phase {\n            phase.close();\n        }\n        self.worker.abort();"
+    },
+    {
+      "test": "test_admin_activation_cannot_precede_original_ready_callback",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "original": "let ready = || {\n                ready()?;",
+      "replacement": "let ready = || {",
+      "actual_occurrences": 1,
+      "expected_occurrences": 1
+    }
+  ],
+  "latent_session_fixture": {
+    "test": "test_retirement_cannot_release_consumers_before_fencing",
+    "reported_v40_status": "ERROR in setUp before mutation; not an additional observed native FAIL",
+    "latent_old_fixture_occurrences": 0,
+    "new_fixture_occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "source_git": "0f10fdb6433c09968fc4146254adfc204baad411",
+    "original": "self.live.cache.fence();\n        if let Some(phase) = &self.live.phase {\n            phase.close();\n        }\n        self.worker.abort();",
+    "replacement": "if let Some(phase) = &self.live.phase {\n            phase.close();\n        }\n        self.worker.abort();",
+    "only_source_mutation": "delete cache fence; retain phase.close and worker.abort exactly",
+    "static_masked_order_baseline": [
+      23851,
+      24013,
+      24131,
+      24418,
+      24558
+    ],
+    "static_mutated_order_rejection": "Error: missing at 25048 \"self.worker.abort()\"",
+    "old_setup_and_assertions_unchanged": true
+  },
+  "original_38_records": [
+    {
+      "record": 1,
+      "original_log_start_line": 249,
+      "original_title": "ERROR: test_admin_activation_cannot_precede_original_ready_callback (test_root_admin_source_closure.RootAdminSourceClosureTests.test_admin_activation_cannot_precede_original_ready_callback)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 2,
+      "original_log_start_line": 263,
+      "original_title": "ERROR: test_consumer_confirmation_must_observe_both_original_owners (test_root_admin_source_closure.RootAdminSourceClosureTests.test_consumer_confirmation_must_observe_both_original_owners)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 3,
+      "original_log_start_line": 277,
+      "original_title": "ERROR: test_original_registry_cannot_drop_its_locked_deadline (test_root_admin_source_closure.RootAdminSourceClosureTests.test_original_registry_cannot_drop_its_locked_deadline)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 4,
+      "original_log_start_line": 291,
+      "original_title": "ERROR: test_retained_read_only_verification_cannot_authorize_mutation (test_root_admin_source_closure.RootAdminSourceClosureTests.test_retained_read_only_verification_cannot_authorize_mutation)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 5,
+      "original_log_start_line": 305,
+      "original_title": "ERROR: test_retirement_cannot_release_consumers_before_fencing (test_root_admin_source_closure.RootAdminSourceClosureTests.test_retirement_cannot_release_consumers_before_fencing)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved.",
+      "latent_followup": "Separately identified latent fixture mismatch: current Session phase.close lies between fence and abort. QA packet expands that exact source context and still deletes only cache.fence.",
+      "additional_packet": "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+    },
+    {
+      "record": 6,
+      "original_log_start_line": 319,
+      "original_title": "ERROR: test_root_preparation_cannot_unlock_shared_original_file_custody (test_root_admin_source_closure.RootAdminSourceClosureTests.test_root_preparation_cannot_unlock_shared_original_file_custody)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 7,
+      "original_log_start_line": 333,
+      "original_title": "ERROR: test_slow_check_cannot_drop_its_post_check_deadline (test_root_admin_source_closure.RootAdminSourceClosureTests.test_slow_check_cannot_drop_its_post_check_deadline)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 8,
+      "original_log_start_line": 347,
+      "original_title": "ERROR: test_strict_own_signature_cannot_be_replaced_by_ordinary_verify (test_root_admin_source_closure.RootAdminSourceClosureTests.test_strict_own_signature_cannot_be_replaced_by_ordinary_verify)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 9,
+      "original_log_start_line": 361,
+      "original_title": "ERROR: test_two_cas_stages_cannot_skip_the_original_context_recheck (test_root_admin_source_closure.RootAdminSourceClosureTests.test_two_cas_stages_cannot_skip_the_original_context_recheck)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 10,
+      "original_log_start_line": 375,
+      "original_title": "ERROR: test_valid_signed_artifact_cannot_skip_existing_full_lease_binding (test_root_admin_source_closure.RootAdminSourceClosureTests.test_valid_signed_artifact_cannot_skip_existing_full_lease_binding)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 11,
+      "original_log_start_line": 389,
+      "original_title": "ERROR: test_writer_custody_cannot_replace_original_verification (test_root_admin_source_closure.RootAdminSourceClosureTests.test_writer_custody_cannot_replace_original_verification)",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Original setUp copies all protected files and the unchanged checker rejects a missing forbidden key. Root supplies six explicit empty arrays over four actual rows; setup is preserved."
+    },
+    {
+      "record": 12,
+      "original_log_start_line": 403,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn learning_iteration_channel_v1(', marker='None')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 13,
+      "original_log_start_line": 420,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn learning_iteration_channel_scoped_v2(', marker='Some(scope)')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 14,
+      "original_log_start_line": 437,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn learning_iteration_channel(', marker='ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 15,
+      "original_log_start_line": 454,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn require_frozen_scope(', marker='self.ports.frozen_scope_binding()')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 16,
+      "original_log_start_line": 471,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn require_frozen_scope(', marker='scope.validate_request(request, &self.owners)?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 17,
+      "original_log_start_line": 488,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn process_readback(', marker='self.require_frozen_scope(&request)?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 18,
+      "original_log_start_line": 505,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn process_readback(', marker='scope.validate_snapshot(restored.snapshot())?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 19,
+      "original_log_start_line": 522,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn process(', marker='self.require_frozen_scope(&request)?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 20,
+      "original_log_start_line": 539,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn process(', marker='scope.validate_snapshot(restored.snapshot())?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 21,
+      "original_log_start_line": 556,
+      "original_title": "ERROR: test_worker_checks_scope_before_authentication_and_progress (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress) (item='fn process(', marker='scope.validate_observation(&receipt.observation)?')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "The actual marker was already found before baseline verification. The scoped worker protected row lacked required/forbidden arrays; Root adds explicit empty arrays while preserving its function order."
+    },
+    {
+      "record": 22,
+      "original_log_start_line": 573,
+      "original_title": "ERROR: test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence) (path='codex-rs/hepta-agentd/src/learning_iteration.rs', marker='if let Some(decision)')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Actual marker lookup succeeded before baseline verification. Missing required/forbidden on the actual learning_iteration.rs protected row caused the error; QA file is unchanged."
+    },
+    {
+      "record": 23,
+      "original_log_start_line": 590,
+      "original_title": "ERROR: test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence) (path='codex-rs/hepta-agentd/src/learning_iteration.rs', marker='decision,')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Actual marker lookup succeeded before baseline verification. Missing required/forbidden on the actual learning_iteration.rs protected row caused the error; QA file is unchanged."
+    },
+    {
+      "record": 24,
+      "original_log_start_line": 607,
+      "original_title": "ERROR: test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence) (path='codex-rs/hepta-agentd/src/learning_iteration.rs', marker='&receipt,')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Actual marker lookup succeeded before baseline verification. Missing required/forbidden on the actual learning_iteration.rs protected row caused the error; QA file is unchanged."
+    },
+    {
+      "record": 25,
+      "original_log_start_line": 624,
+      "original_title": "ERROR: test_no_update_keeps_frozen_rule_and_generator_selector_separation (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_no_update_keeps_frozen_rule_and_generator_selector_separation) (path='codex-rs/hepta-agentd/src/learning_iteration.rs', marker='else if restored.snapshot().requires_scoped_owner_v2()')",
+      "classification": "metadata schema rejection before original negative mutation",
+      "affected_file": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "fix_packets": [
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Actual marker lookup succeeded before baseline verification. Missing required/forbidden on the actual learning_iteration.rs protected row caused the error; QA file is unchanged."
+    },
+    {
+      "record": 26,
+      "original_log_start_line": 641,
+      "original_title": "FAIL: test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_open_state')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8",
+        "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526"
+      ],
+      "details": "Add the actual root_production_same_actor_phase_inputs.rs open_state_dir_with_issuer_keys caller to both independent kernel allowedCallers and the real CALLERS boundary; preserve original methods/patterns and kernel Python."
+    },
+    {
+      "record": 27,
+      "original_log_start_line": 659,
+      "original_title": "FAIL: test_scoped_profile_and_material_validation_cannot_be_omitted (test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_scoped_profile_and_material_validation_cannot_be_omitted) (function='fn restore(', marker='scope\\n                            .validate_snapshot(&snapshot)')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "fn restore scope.validate_snapshot uses 32 spaces after native formatting, not the fixture's 28; only this literal spacing changes."
+    },
+    {
+      "record": 28,
+      "original_log_start_line": 672,
+      "original_title": "FAIL: test_native_training_and_stage_ports_have_exact_registered_callers (test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_native_training_and_stage_ports_have_exact_registered_callers)",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Add the real phase training source to static source fixtures and exact execute/pair-binding tuples. Verify all other loop tuples, including cases hidden after its first equality failure. Keep all per-caller omission and undeclared typed-call negatives."
+    },
+    {
+      "record": 29,
+      "original_log_start_line": 691,
+      "original_title": "FAIL: test_training_receipt_ports_require_original_custody_callers (test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_training_receipt_ports_require_original_custody_callers)",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Add the actual phase source and attest caller only. create/recover stay INPUTS; readback stays STAGE. Four original receipt cases and all negative assertions remain."
+    },
+    {
+      "record": 30,
+      "original_log_start_line": 710,
+      "original_title": "FAIL: test_inventory_and_exact_product_callers_are_closed (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed) (boundary='root_prepared_fresh_session')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Independent exact tuple for root_prepared_fresh_session appends only its real existing phase source(s), retaining all old callers and omission/unregistered-source checks."
+    },
+    {
+      "record": 31,
+      "original_log_start_line": 729,
+      "original_title": "FAIL: test_inventory_and_exact_product_callers_are_closed (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed) (boundary='root_learning_original_scope_capture')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Independent exact tuple for root_learning_original_scope_capture appends only its real existing phase source(s), retaining all old callers and omission/unregistered-source checks."
+    },
+    {
+      "record": 32,
+      "original_log_start_line": 748,
+      "original_title": "FAIL: test_inventory_and_exact_product_callers_are_closed (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed) (boundary='root_original_registered_ready_serve')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Independent exact tuple for root_original_registered_ready_serve appends only its real existing phase source(s), retaining all old callers and omission/unregistered-source checks."
+    },
+    {
+      "record": 33,
+      "original_log_start_line": 767,
+      "original_title": "FAIL: test_inventory_and_exact_product_callers_are_closed (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed) (boundary='root_original_private_sealed_bytes')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Independent exact tuple for root_original_private_sealed_bytes appends only its real existing phase source(s), retaining all old callers and omission/unregistered-source checks."
+    },
+    {
+      "record": 34,
+      "original_log_start_line": 782,
+      "original_title": "FAIL: test_recovery_is_open_only_and_uses_original_owner (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_recovery_is_open_only_and_uses_original_owner) (marker='StoreMode::Reopen')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Move StoreMode::Reopen deletion to its actual shared original owner function open_original_learning_profile_in_phase; the old read_root_json/None delegate remains separately protected and untouched."
+    },
+    {
+      "record": 35,
+      "original_log_start_line": 794,
+      "original_title": "FAIL: test_restored_training_and_checkpoint_are_checked_before_cas (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_restored_training_and_checkpoint_are_checked_before_cas) (path='codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs', item='fn restore(', marker='scope\\n                            .validate_snapshot(&snapshot)')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Same fn restore 28-to-32 indentation correction as the checkpoint fixture; preserve validation deletion."
+    },
+    {
+      "record": 36,
+      "original_log_start_line": 807,
+      "original_title": "FAIL: test_root_handoff_retains_scope_through_the_worker_choice (test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_root_handoff_retains_scope_through_the_worker_choice) (path='codex-rs/hepta-agentd/src/authority_host_learning_registration.rs', item='fn register_learning_checkpoint(', marker='profile.frozen_scope(&initial)?')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Move the same profile.frozen_scope(&initial)? deletion to actual reserve_original_learning_profile_in_phase; retain original rejection assertion and protected old wrapper/None chain."
+    },
+    {
+      "record": 37,
+      "original_log_start_line": 819,
+      "original_title": "FAIL: test_original_owner_edges_keep_exact_registered_callers (test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_original_owner_edges_keep_exact_registered_callers) (boundary='root_learning_live_profile_action')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Append actual Initial phase and phase-join with_learning_profile callers to the exact tuple; existing per-caller removal/relocation negatives now also cover those paths."
+    },
+    {
+      "record": 38,
+      "original_log_start_line": 834,
+      "original_title": "FAIL: test_original_owner_edges_keep_exact_registered_callers (test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_original_owner_edges_keep_exact_registered_callers) (boundary='q24_publication_original_lane')",
+      "classification": "observed QA exact source/caller mismatch",
+      "affected_file": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "fix_packets": [
+        "28b5619ec67869446bdf71a4ac37b06a687fefe8"
+      ],
+      "details": "Append actual cell_q24_publication_same_actor.rs original publication lane caller; retain every old exact caller and negative mutation."
+    }
+  ],
+  "original_counts": {
+    "errors": 25,
+    "failures": 13
+  },
+  "exact_source_evidence": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "git": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+      "bytes": 19493,
+      "sha256": "8a9c3a6e39e4c720af6e6cb9e3abbe5cf16a35981ef21d36765245976d1aeb61"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "git": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "bytes": 21439,
+      "sha256": "78d7a9e0636b9de36dac9601f78b12d15603c1221aaf45836d35621f46f9d6ab"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "git": "b633e9cc6bbfb784328eb80df3f102db74e200de",
+      "bytes": 7739,
+      "sha256": "3c17d6e8fb90142d2a9addc7fcc3184dc1d93164f1e337e18d47e57e2b09f870"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "bytes": 16659,
+      "sha256": "b42d2c87a7f4e71dc54cde893d666c226177c17de6d90a43b4592a86efc44904"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "bytes": 15023,
+      "sha256": "61e8bae856e7a8a5e337efdade1834a80c1253c9a6a02c20a7ae669245f6b767"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "git": "e6d5747e7b5a7a9217b77f5600a7d1112daeda15",
+      "bytes": 11915,
+      "sha256": "a8ce7f10a269e7a7816661ff0ee70316e3348ff1a85c336c47c21e22b27ae4c2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "git": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+      "bytes": 15084,
+      "sha256": "84ed9016cac40efe92522aa60ada4d39b34ba12105db787d4e015689e6d8cdba"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "git": "fb95d13214318a255f868aea9f016911bc69990c",
+      "bytes": 9444,
+      "sha256": "2bc47c81923dcb90dc2aee6cd2d2ea83d28c22861d2dc60b1818b5aeb0c75726"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "git": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+      "bytes": 11967,
+      "sha256": "e891bd32d3d4fdd9edf9459e0dd1808c5e8ff00c93f5dbfc6c442f04e08beddc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "git": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+      "bytes": 8167,
+      "sha256": "41b0deec6a947f1f8681a9e49a8d4184e1db09f908c8cdea1c90c024ce187be5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "git": "4488fefa0dba45c0300a16f176c74c33b035d112",
+      "bytes": 5292,
+      "sha256": "da061794ef23e08ddaa36806b3355b14e5f2fbd4211d77f4fb3bbc158839a237"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "git": "78bb33225842f61c46ef7c8dbedce84ed01580d7",
+      "bytes": 734,
+      "sha256": "08d3a4030f242efb4bdd01951f18f1b97fe5f8075514db34e62d6dddbb533ba0"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "git": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "bytes": 5176,
+      "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "git": "e02b8d792936932f98f6902935904f14853dc469",
+      "bytes": 5726,
+      "sha256": "592c7008c07d06f1071d0e159b754b7013ad8f49c9ae794f7977fbd3f0528f11"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "git": "9e498c1685651f41e970b836de499a7a83f11b68",
+      "bytes": 2945,
+      "sha256": "3bc76f5586d0a72ff4ced1e55058fa97dc33664bb92730cb0356eec3e5bd259c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "git": "7bff1b0b377126de452880deffb83d6a01472441",
+      "bytes": 4232,
+      "sha256": "a4310bea0e1d470212694b294249f8006c91ea2e7cbc37d672c3cecca48b5c9d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "git": "0071512a960b4e9b19b1d2897128c0d67fa59271",
+      "bytes": 9725,
+      "sha256": "ce7a08933a135401786a67c431bb87fb4e2ced22fc21e02a520d1faae4f43a42"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+      "git": "5d6047c3809c4ff317e49a0ae09fee6f09ce7de1",
+      "bytes": 2193,
+      "sha256": "1026a1369dd53397fcfcfe4e157a4761133d1b363ca033e96b0c73d016ccd6bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "bytes": 30409,
+      "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "git": "43c9834f05390bca33a07d04361c0aecead8e662",
+      "bytes": 21205,
+      "sha256": "156edac21e763aac143c3918ec8e3fbf7e7e73a0261ba81cf1c2a92b331e3fd9"
+    }
+  ],
+  "explicit_nonchanges": [
+    "Original checker 7a6709691c372504ca11b5d2a74e14ba819fca8f and typed helper e23bb8aa42241b429ef5dbce5a4660853b66eb2f unchanged.",
+    "Kernel Python test unchanged; independent JSON only appends one actual caller.",
+    "test_training_no_update_source_closure.py unchanged.",
+    "All 48 methods in the six changed Python files retain names/order; no test added/deleted/skipped, no assertion or rejection helper removed.",
+    "All source Rust, ownership, freshness, deadlines, counts and harness are unchanged."
+  ],
+  "methods_and_limits": [
+    "Only JavaScript data/replay/source-token checks were evaluated. Original Python parser/checker/typed helper, QA, formatter, compiler and native harness were not run.",
+    "Restricted literal-table decoding was used only for static comparison of the fixed Python expectations against the actual registry; the tests continue to contain independent literal expectations.",
+    "Four existing mutation positions plus the latent Session fence case were projected against the existing raw/masked order requirements. This is not a full checker result.",
+    "The original 221/13 failures/25 errors record remains failed; 183/38 executor counts are not inherited by a next source.",
+    "No new ordinary business result, completion, A/B/C evidence, or 0/0/0 counter change is claimed."
+  ],
+  "nested_instructions": {
+    "queries": [
+      "qa/AGENTS.md",
+      "qa/b4-no-bypass/AGENTS.md"
+    ],
+    "ref": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "result": "Both fixed-source queries were 404; repository root AGENTS previously read."
+  }
+}

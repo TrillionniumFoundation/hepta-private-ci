@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "title": "V40 QA 实际源码锚点与精确调用者清单修订",
+  "status": "frozen for independent review; not executed",
+  "base": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+    "result": "221 tests; 13 failures + 25 errors; executor 183 pass / 38 fail; retained original failure",
+    "log": "027309c3a14784f1f21c1ae624c055bc096612b9"
+  },
+  "exact_packet": {
+    "git": "28b5619ec67869446bdf71a4ac37b06a687fefe8",
+    "bytes": 14752,
+    "sha256": "a7acf50cce494203ffb56dca7e689c80de19e141ff040e6dac4acbe7926a07e8"
+  },
+  "static_receipt": {
+    "git": "0ef79f04b2e295151572ad217773624b65bfa71a",
+    "bytes": 54109,
+    "sha256": "9cc6997e5f0e73286ccdd223d7069beeb50535b1385cdfb50d3c67f012364a0a"
+  },
+  "paths": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "pre": {
+        "git": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+        "bytes": 19493,
+        "sha256": "8a9c3a6e39e4c720af6e6cb9e3abbe5cf16a35981ef21d36765245976d1aeb61"
+      },
+      "post": {
+        "git": "1029add3438b0c5443894ffda39daf9380030fc5",
+        "bytes": 19573,
+        "sha256": "2b337a6b2699972f926441ecb6c04a98318364a70d55806e2c16f3f6da80cf90"
+      },
+      "operation_count": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "pre": {
+        "git": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b"
+      },
+      "post": {
+        "git": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+        "bytes": 7656,
+        "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0"
+      },
+      "operation_count": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "pre": {
+        "git": "8d0de4f77b939c477376927021ded17e6e526dd8",
+        "bytes": 12239,
+        "sha256": "20764926d42c9bf8996b18a5e2619ef70765875569883b24023c30d1de5d481d"
+      },
+      "post": {
+        "git": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+        "bytes": 12257,
+        "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51"
+      },
+      "operation_count": 2
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "pre": {
+        "git": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+        "bytes": 11110,
+        "sha256": "4a19e37cc6d944a224f6f11c8e429d8e58d413981d827ecc9353d2b4c9ce6945"
+      },
+      "post": {
+        "git": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+        "bytes": 11309,
+        "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53"
+      },
+      "operation_count": 6
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "pre": {
+        "git": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+        "bytes": 18820,
+        "sha256": "52a25d3505b4926946f6cda8fac2ab7f93a8a555fceb404cd941accbc4ab1e55"
+      },
+      "post": {
+        "git": "7015e686e71d88293ffaebb9577d33bfde41a933",
+        "bytes": 19100,
+        "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad"
+      },
+      "operation_count": 5
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "pre": {
+        "git": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+        "bytes": 4547,
+        "sha256": "6dc536c78a226a4baba0b48f96b348f1034402a61a3151b82613e769e5730355"
+      },
+      "post": {
+        "git": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+        "bytes": 4726,
+        "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977"
+      },
+      "operation_count": 2
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "pre": {
+        "git": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "post": {
+        "git": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+        "bytes": 5148,
+        "sha256": "e73bece8bb45bb203336c77125bc985ff57f6d5fe9053ad562c491d941fe165d"
+      },
+      "operation_count": 1
+    }
+  ],
+  "required_root_metadata": {
+    "packet": "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526",
+    "callers": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "independent_review": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6",
+    "changes": "四个原 protected rows 补六个显式空数组；final_use_open_state 只追加实际第六个 caller。该修改由 Root 单独作者，QA 包不覆盖 CALLERS。"
+  },
+  "diagnosis": [
+    {
+      "observed": 25,
+      "category": "ERROR",
+      "cause": "原 checker 在 baseline/setUp 真实拒绝缺 required/forbidden 键；不能改 setup、忽略 row 或吞异常。",
+      "fix": "Root 六个显式空数组；QA 仍执行原 baseline 和所有负向断言。"
+    },
+    {
+      "observed": 9,
+      "category": "FAIL",
+      "cause": "精确 caller 预期未纳已存在 same-actor 实际路径。",
+      "fix": "独立 kernel JSON 与相关三个 Python 精确 tuple 表补真实有限路径；training source 字典同时包含真实源，保持所有遗漏/未登记调用者负测。"
+    },
+    {
+      "observed": 4,
+      "category": "FAIL",
+      "cause": "两个 restore 空白字面和两个已抽取 owner helper 的旧 mutation 锚点。",
+      "fix": "仅 28→32 空格，或移动到实际原 helper；删除的权限 guard 和原拒绝断言不变。"
+    },
+    {
+      "observed": 0,
+      "category": "additional static finding inside one of the 25 ERROR cases",
+      "cause": "RootAdmin setup 修复后，Session fixture 原 fence/abort 相邻串在真实源码为零次。",
+      "fix": "扩入实际中间 phase.close；负样本仍仅删 cache.fence，保 phase.close、abort 与其后清消费者代码。"
+    }
+  ],
+  "preserved": {
+    "rust_paths_changed": 0,
+    "checker_changes": 0,
+    "typed_helper_changes": 0,
+    "harness_changes": 0,
+    "new_test_methods": 0,
+    "removed_test_methods": 0,
+    "old_methods_in_changed_python_files": 48,
+    "all_setUp_and_reject_helpers_byte_identical": true,
+    "all_assert_method_sequences_identical": true,
+    "all_old_callers_preserved": true,
+    "training_readback_still_original_stage_only": true,
+    "source_or_refs_mutated": false,
+    "ordinary_counts": "0/0/0 unchanged"
+  },
+  "verification": {
+    "seven_postimages_create_and_get_full_byte_equal": true,
+    "unique_forward_reverse_ops": 18,
+    "source_evidence_pins": 20,
+    "all_25_bootstrap_and_4_publication_expected_tuples_checked": true,
+    "all_11_training_boundary_expectations_checked": true,
+    "root_admin_actual_literal_checks": "10 original anchors each occur once; corrected Session anchor occurs once",
+    "five_changed_guard_deletion_static_projection": "Original masked-order baseline found, deleting the actual guard fails the static order projection; not an original-checker run."
+  },
+  "qualification": "未执行 Python、原 checker/helper、formatter、Cargo、native 或新 tests。新源仍须由 Root 固定并运行不变全量资格入口；不得把旧 failed 结果继承为通过。",
+  "review": {
+    "independent_qa_review": "pending chain_nextuse; source pins frozen",
+    "root_metadata_independent_review": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6"
+  }
+}

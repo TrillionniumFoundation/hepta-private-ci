@@ -1,0 +1,281 @@
+{
+  "kind": "bounded static order projection, not original checker execution",
+  "projections": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "source_git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "function": "fn restore(",
+      "guard": "scope\n                                .validate_snapshot(&snapshot)",
+      "all_relevant_orders": [
+        {
+          "sequence": [
+            "request != &self.initial.request",
+            "self\n            .exchange(Command::Restore",
+            "decode_snapshot(&encoded)?",
+            "scope\n                                .validate_snapshot(&snapshot)",
+            "snapshot.request != self.initial.request",
+            "snapshot.owners != self.initial.owners"
+          ],
+          "baseline_positions": [
+            273,
+            382,
+            582,
+            697,
+            1009,
+            1081
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 608 \"scope\\n                                .validate_snapshot(&snapshot)\""
+        },
+        {
+          "sequence": [
+            "let mut phase_closing = self.original_phase_failure_scope()",
+            "self.require_original_phase(",
+            "false)?",
+            "request != &self.initial.request",
+            "let result = self\n            .exchange(Command::Restore",
+            "decode_snapshot(&encoded)?",
+            "snapshot.request != self.initial.request",
+            "snapshot.owners != self.initial.owners",
+            ".await;",
+            "if result.is_ok()",
+            "self.require_original_phase(",
+            "false)?",
+            "closing.disarm()",
+            "result"
+          ],
+          "baseline_positions": [
+            143,
+            212,
+            253,
+            273,
+            369,
+            582,
+            1009,
+            1081,
+            1440,
+            1456,
+            1488,
+            1529,
+            1610,
+            1660
+          ],
+          "guard_deletion_rejected_by_this_order": false,
+          "reason": null
+        }
+      ],
+      "guard_deletion_rejected_by_static_projection": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "source_git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "function": "fn restore(",
+      "guard": "scope\n                                .validate_snapshot(&snapshot)",
+      "all_relevant_orders": [
+        {
+          "sequence": [
+            "request != &self.initial.request",
+            "self\n            .exchange(Command::Restore",
+            "decode_snapshot(&encoded)?",
+            "scope\n                                .validate_snapshot(&snapshot)",
+            "snapshot.request != self.initial.request",
+            "snapshot.owners != self.initial.owners"
+          ],
+          "baseline_positions": [
+            273,
+            382,
+            582,
+            697,
+            1009,
+            1081
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 608 \"scope\\n                                .validate_snapshot(&snapshot)\""
+        },
+        {
+          "sequence": [
+            "let mut phase_closing = self.original_phase_failure_scope()",
+            "self.require_original_phase(",
+            "false)?",
+            "request != &self.initial.request",
+            "let result = self\n            .exchange(Command::Restore",
+            "decode_snapshot(&encoded)?",
+            "snapshot.request != self.initial.request",
+            "snapshot.owners != self.initial.owners",
+            ".await;",
+            "if result.is_ok()",
+            "self.require_original_phase(",
+            "false)?",
+            "closing.disarm()",
+            "result"
+          ],
+          "baseline_positions": [
+            143,
+            212,
+            253,
+            273,
+            369,
+            582,
+            1009,
+            1081,
+            1440,
+            1456,
+            1488,
+            1529,
+            1610,
+            1660
+          ],
+          "guard_deletion_rejected_by_this_order": false,
+          "reason": null
+        }
+      ],
+      "guard_deletion_rejected_by_static_projection": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "source_git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "function": "fn open_original_learning_profile_in_phase(",
+      "guard": "StoreMode::Reopen",
+      "all_relevant_orders": [
+        {
+          "sequence": [
+            "self.with_learning_profile(",
+            "learning_store(",
+            "StoreMode::Reopen",
+            "profile.frozen_scope(&initial)?",
+            "validate_runtime_lanes(config)?",
+            "paths.push(&socket_path)",
+            "validate_lane_paths(&paths, config.peer_gid)?",
+            "RegisteredHostLearningCheckpointV1"
+          ],
+          "baseline_positions": [
+            481,
+            814,
+            919,
+            958,
+            1468,
+            1592,
+            1657,
+            1800
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 829 \"StoreMode::Reopen\""
+        },
+        {
+          "sequence": [
+            "self.with_learning_profile(",
+            "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?",
+            "learning_store(",
+            "StoreMode::Reopen",
+            "profile.frozen_scope(&initial)?",
+            "phase.require_claimed()?",
+            "validate_lane_paths(",
+            "phase.require_claimed()?",
+            "q24_model: None"
+          ],
+          "baseline_positions": [
+            481,
+            662,
+            814,
+            919,
+            958,
+            1076,
+            1657,
+            1753,
+            1916
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 829 \"StoreMode::Reopen\""
+        }
+      ],
+      "guard_deletion_rejected_by_static_projection": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "source_git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "function": "fn reserve_original_learning_profile_in_phase(",
+      "guard": "profile.frozen_scope(&initial)?",
+      "all_relevant_orders": [
+        {
+          "sequence": [
+            "self.with_learning_profile(",
+            "profile.frozen_scope(&initial)?",
+            "learning_store(",
+            "StoreMode::Register",
+            "HostAuthorityLearningRegistrationV1"
+          ],
+          "baseline_positions": [
+            472,
+            808,
+            1053,
+            1097,
+            1255
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 499 \"profile.frozen_scope(&initial)?\""
+        },
+        {
+          "sequence": [
+            "self.with_learning_profile(",
+            "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?",
+            "profile.frozen_scope(&initial)?",
+            "phase.require_claimed()?",
+            "learning_store(&config.state_dir, &initial, StoreMode::Register, scope)?",
+            "phase.require_claimed()?",
+            "production_ready: false"
+          ],
+          "baseline_positions": [
+            472,
+            656,
+            808,
+            993,
+            1053,
+            1192,
+            1539
+          ],
+          "guard_deletion_rejected_by_this_order": true,
+          "reason": "Error: missing at 778 \"profile.frozen_scope(&initial)?\""
+        }
+      ],
+      "guard_deletion_rejected_by_static_projection": true
+    }
+  ],
+  "all_11_root_admin_actual_anchors_unique": true,
+  "latent_session_orders": [
+    {
+      "order": [
+        "impl Drop for AgentdRootAuthoritySession",
+        "self.live.cache.fence()",
+        "self.worker.abort()",
+        "self.live.consumers.lock()",
+        "consumers.clear()"
+      ],
+      "baseline_positions": [
+        23851,
+        24013,
+        24131,
+        24418,
+        24558
+      ],
+      "guard_deletion_rejected": true
+    },
+    {
+      "order": [
+        "impl Drop for AgentdRootAuthoritySession",
+        "self.live.cache.fence()",
+        "if let Some(phase) = &self.live.phase",
+        "phase.close()",
+        "self.worker.abort()"
+      ],
+      "baseline_positions": [
+        23851,
+        24013,
+        24046,
+        24098,
+        24131
+      ],
+      "guard_deletion_rejected": true
+    }
+  ],
+  "original_native_failure_unchanged": true
+}

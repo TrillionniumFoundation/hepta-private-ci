@@ -178,7 +178,7 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
             (CHECKPOINT, "fn load(", "record.schema != schema"),
             (CHECKPOINT, "fn load(", "record.binding != binding"),
             (CHECKPOINT, "fn load(", "scope\n                .validate_snapshot(&snapshot)"),
-            (TRANSPORT, "fn restore(", "scope\n                            .validate_snapshot(&snapshot)"),
+            (TRANSPORT, "fn restore(", "scope\n                                .validate_snapshot(&snapshot)"),
             (TRANSPORT, "fn checkpoint(", "scope.validate_snapshot(snapshot)"),
         ):
             with self.subTest(path=path, item=item, marker=marker):
@@ -202,7 +202,7 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
 
     def test_root_handoff_retains_scope_through_the_worker_choice(self):
         for path, item, marker in (
-            (REGISTRATION, "fn register_learning_checkpoint(", "profile.frozen_scope(&initial)?"),
+            (REGISTRATION, "fn reserve_original_learning_profile_in_phase(", "profile.frozen_scope(&initial)?"),
             (REGISTRATION, "fn seal_learning_checkpoint(", "learning.backend.frozen_scope_binding()"),
             (REGISTRATION, "fn learning_store(", "scope.validate_snapshot(initial)"),
             (REGISTRATION, "fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2("),

@@ -30,6 +30,8 @@ CALLERS = {
         AGENT + "authority_host_generation_publication_enrollment.rs",
         AGENT + "authority_host_generation_publication_transport.rs",
         AGENT + "authority_host_generation_publication_session.rs",
+        AGENT + "authority_host_generation_initial_phase.rs",
+        AGENT + "authority_host_same_actor_q24_phase_join.rs",
     ),
     "q24_publication_original_b_manifest": (
         AGENT + "cell_q24_publication_driver.rs",
@@ -40,6 +42,7 @@ CALLERS = {
         AGENT + "cell_q24_publication_current.rs",
         AGENT + "cell_q24_publication_root_stage.rs",
         AGENT + "cell_q24_publication_successor_current.rs",
+        AGENT + "cell_q24_publication_same_actor.rs",
     ),
 }
 

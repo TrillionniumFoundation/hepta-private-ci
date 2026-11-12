@@ -1,0 +1,116 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+    "pin": "b633e9cc6bbfb784328eb80df3f102db74e200de",
+    "hits": [
+      {
+        "marker": "attest_original_completion",
+        "line": 99,
+        "raw": "  // durable outcome is retained; no new receipt is started.\n                        for_work\n                            .require_original_work_entry()\n                            .map_err(|_| Error::CommitUncertain)?;\n                        let (receipt, attestation) =\n                            receipts.attest_original_completion(training)?;\n                        Ok(OriginalCellQ24TrainingCompletionV1 {\n                            outcome,\n                            receipt,\n                            attestation,\n                        })\n                    }\n                    Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).int",
+        "role": "actual_call"
+      },
+      {
+        "marker": "fit_or_readback",
+        "line": 91,
+        "raw": "             for_work\n                            .require_original_work_entry()\n                            .map_err(|_| Error::CommitUncertain)?;\n                        let outcome = match retained_outcome {\n                            Some(outcome) => outcome,\n                            None => training.fit_or_readback(&cancellation)?,\n                        };\n                        // An admitted fit may finish after cancellation. Its real\n                        // durable outcome is retained; no new receipt is started.\n                        for_work\n                            .require_original_work_entry()\n                            .map_err(|_| E",
+        "role": "actual_call"
+      },
+      {
+        "marker": "require_original_dataset_scope",
+        "line": 140,
+        "raw": "(move || {\n                let _permit = permit;\n                let mut closing = for_work.original_failure_scope();\n                let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;\n                let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;\n                training.require_original_dataset_scope(\n                    &owners.receipts.config.dataset,\n                    &owners.receipts.config.scope,\n                )?;\n                for_work\n                    .require_training_context(\n                        &owners.receipts.config.dataset,\n                        &owners.receipts.config.scope,\n                    ",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+    "pin": "e6d5747e7b5a7a9217b77f5600a7d1112daeda15",
+    "hits": [
+      {
+        "marker": "prepare_fresh_from_registered",
+        "line": 80,
+        "raw": "iginal =\n            PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?;\n        Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )\n    }\n\n    pub async fn prepare_fresh_from_registered(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n        current_directory: Arc<RootAuthorityDirectory>,\n        initial: crate::HostGenerationInitialDeploymentV1,\n        model: crate::HostAuthorityQ24ModelFactoryReservationV1,\n    ) -> io::Result<Self> {\n        let config: HostAutho",
+        "role": "method_definition"
+      },
+      {
+        "marker": "prepare_fresh_from_registered",
+        "line": 92,
+        "raw": "  ) -> io::Result<Self> {\n        let config: HostAuthorityServiceConfig = read_root_json(config_file)?;\n        let deadline = SameActorPhaseDeadline::at_original_service_start(\n            std::time::Duration::from_millis(config.lifetime_ms),\n        )?;\n        let original = PreparedHostAuthoritySession::prepare_fresh_from_registered(\n            config_file,\n            registration_file,\n            owner_pidfd,\n        )\n        .await?;\n        Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )\n    }\n\n    fn capture_original_phase(\n",
+        "role": "actual_call"
+      },
+      {
+        "marker": "seal_bytes",
+        "line": 184,
+        "raw": "            .ok_or_else(|| io::Error::other(\"original Root listener parent missing\"))?\n                        .join(CONTROL_SOCKET),\n                };\n                let encoded = serde_json::to_vec(&descriptor).map_err(io::Error::other)?;\n                let sealed = crate::authority_host_bootstrap_seal::seal_bytes(&encoded)?;\n                gate.require_open()?;\n                retained = Some((record, descriptor, sealed));\n                Ok(())\n            },\n        )?;\n        gate.require_open()?;\n        let (record, descriptor, sealed) =\n            retained.ok_or_else(|| io::Error::other(\"original phase startup capture missing\"))?;\n        let (sco",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+    "pin": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+    "hits": [
+      {
+        "marker": "seal_learning_checkpoint",
+        "line": 338,
+        "raw": "ile,\n        model.clone(),\n        Some(&namespace),\n    )?;\n    if factory.profile != factory_profile {\n        return Err(io::Error::other(\n            \"original reserved Model factory changed on open\",\n        ));\n    }\n    learning.q24_model = Some(factory);\n    let learning_bootstrap = original.service.seal_learning_checkpoint(\n        &original.config,\n        &original.registration,\n        &original.owner_pidfd,\n        &learning,\n    )?;\n    gate.require_open()?;\n    let (publication, capability, publication_offer) =\n        generation_publication::original_publication_route(\n            &original.service,\n            &original.config,\n            &ori",
+        "role": "actual_call"
+      },
+      {
+        "marker": "seal_bytes",
+        "line": 375,
+        "raw": "col::SCOPED_PURPOSE.into(),\n        phase: descriptor.phase.clone(),\n        original: descriptor.clone(),\n        learning: submission.profile,\n        claim: record.claimed()?.clone(),\n        factory: factory_profile.binding().to_string(),\n    };\n    let scoped_seal = crate::authority_host_bootstrap_seal::seal_bytes(\n        &serde_json::to_vec(&scoped_descriptor).map_err(io::Error::other)?,\n    )?;\n    let lane = learning::BoundLearning::bind(learning, &original.config, Some(publication))?;\n    record.require_scoped()?;\n    gate.require_open()?;\n    let enrolled = RootSameActorScopedEnrollmentV1 {\n        offer: crate::root_production_handoff::same_actor_pha",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+    "pin": "fb95d13214318a255f868aea9f016911bc69990c",
+    "hits": [
+      {
+        "marker": "serve_with_ready",
+        "line": 154,
+        "raw": "            })\n                    .map_err(|_| io::Error::other(\"original CURRENT host acknowledgement lost\"))?;\n                worker_gate.require_open()?;\n                closing.disarm();\n                Ok(())\n            });\n            let ready_gate = Arc::clone(&gate);\n            let served = self.serve_with_ready(move || {\n                // All required Root workers already exist at this callback.\n                // Sending rights does not wait for an enrollment ACK or for\n                // the daemon's five-lane requests, so serving can now proceed.\n                ready_gate.require_open()?;\n                crate::send_root_production_writer_hand",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+    "pin": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+    "hits": [
+      {
+        "marker": "with_learning_profile",
+        "line": 50,
+        "raw": "       original: &RegisteredGenerationInitial,\n        profile: &HostAuthorityLearningProfileV1,\n        record: &mut OriginalPhaseRecord,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> io::Result<OriginalSameActorPhaseClaim> {\n        let mut captured = None;\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            profile,\n            |initial, proof| {\n                let _admission = gate.enter_original_lane()?;\n                let scope = profile.require_cell_scope(&initial)?;\n                if original.mode != RootGenerationInitialModeV1::Reserve\n            ",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+    "pin": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+    "hits": [
+      {
+        "marker": "with_learning_profile",
+        "line": 143,
+        "raw": "clone()?,\n        gate.deadline().instant(),\n    )\n    .map_err(io::Error::other)?;\n    for sequence in [1_u8, 2_u8] {\n        let received = channel\n            .exchange(|bytes| {\n                let _admission = gate.enter_original_lane().map_err(unavailable)?;\n                service\n                    .with_learning_profile(\n                        config,\n                        registration,\n                        owner,\n                        profile,\n                        |initial, _proof| {\n                            profile.require_cell_scope(&initial)?;\n                            let request: PhaseJoinRequest =\n                                ",
+        "role": "actual_call"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+    "pin": "4488fefa0dba45c0300a16f176c74c33b035d112",
+    "hits": [
+      {
+        "marker": "with_original_publication",
+        "line": 42,
+        "raw": "         let owners: Arc<OriginalCellQ24LearningStageOwnersV1> = Arc::clone(&original.owners);\n            let snapshot = original.decision.snapshot.clone();\n            let manifest = original.manifest.clone();\n            let effect_gate = Arc::clone(&gate);\n            let result = owners\n                .with_original_publication(snapshot, manifest, move || {\n                    self.original.decision.require_new_work()?;\n                    request.now = self.authorities.now()?;\n                    let receipt = {\n                        let mut locked = self\n                            .authorities\n                            .artifacts\n                   ",
+        "role": "actual_call"
+      }
+    ]
+  }
+]

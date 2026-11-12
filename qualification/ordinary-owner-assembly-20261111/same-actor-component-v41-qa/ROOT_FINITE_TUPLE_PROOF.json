@@ -1,0 +1,170 @@
+{
+  "implementation": "function parseFinite(raw){const out={},constants={};function expr(s){const chunks=s.trim().split(/\\s*\\+\\s*/);return chunks.map(c=>{if(/^\"(?:[^\"\\\\]|\\\\.)*\"$/.test(c))return JSON.parse(c);if(/^[A-Z][A-Z0-9_]*$/.test(c)&&Object.hasOwn(constants,c))return constants[c];throw Error(\"unsupported finite expression \"+c);}).join(\"\");}for(const m of raw.matchAll(/^([A-Z][A-Z0-9_]*) = ([^\\n]+)$/gm)){if(m[2]===\"{\")continue;try{constants[m[1]]=expr(m[2]);}catch{}}const block=/^CALLERS = \\{([\\s\\S]*?)^\\}/m.exec(raw)?.[1];if(!block)throw Error(\"no finite table\");const re=/^[ \\t]*\"([^\"]+)\": \\(([\\s\\S]*?)\\),[ \\t]*$/gm;let rem=block;for(const m of block.matchAll(re)){if(out[m[1]])throw Error(\"duplicate\");out[m[1]]=m[2].split(\",\").map(s=>s.trim()).filter(Boolean).map(expr);rem=rem.replace(m[0],\"\");}if(rem.trim())throw Error(\"unparsed finite rows\");return out;}",
+  "independent_literal_tables": [
+    {
+      "source": "7015e686e71d88293ffaebb9577d33bfde41a933",
+      "expected": {
+        "root_prepared_fresh_session": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+        ],
+        "root_retained_native_ui_launch": [],
+        "root_retained_native_ready_launch": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_prepared_native_ready_text_session": [
+          "codex-rs/hepta-agentd/src/authority_host_native_launch.rs",
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_learning_explicit_registration": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_learning_original_store_registration": [
+          "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+        ],
+        "root_learning_original_store_reopen": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+        ],
+        "root_learning_original_owner_install": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_learning_original_scope_seal": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_learning_original_scope_capture": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+        ],
+        "root_learning_same_service_serve": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+        ],
+        "root_learning_registered_checkpoint_constructor": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+        ],
+        "root_learning_scoped_checkpoint_constructor": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+        ],
+        "root_learning_original_client_constructor": [
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ],
+        "root_learning_scoped_client_constructor": [
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ],
+        "root_learning_original_purpose_send": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "root_learning_original_purpose_receive": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+        ],
+        "root_learning_original_handoff_consume": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+        ],
+        "root_learning_original_config_hold": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+        ],
+        "root_learning_original_stage_assembly": [],
+        "root_learning_original_runtime_consume": [
+          "codex-rs/hepta-agentd/src/config_root_learning.rs"
+        ],
+        "root_learning_original_delivery_source": [
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ],
+        "root_learning_completed_circuit_source": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+        ],
+        "root_original_registered_ready_serve": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+        ],
+        "root_original_private_sealed_bytes": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+        ]
+      },
+      "rows": 25,
+      "exact_current_registry_match": true
+    },
+    {
+      "source": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+      "expected": {
+        "learning_artifact_verified_current_view": [
+          "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs"
+        ],
+        "root_learning_live_profile_action": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs"
+        ],
+        "q24_publication_original_b_manifest": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+        ],
+        "q24_publication_original_lane": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+        ]
+      },
+      "rows": 4,
+      "exact_current_registry_match": true
+    }
+  ],
+  "training_exact_expected": {
+    "learning_original_training_receipt_create": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    ],
+    "learning_original_training_receipt_recover": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    ],
+    "learning_original_training_receipt_attest": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "learning_original_training_receipt_readback": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+    ],
+    "cell_q24_original_training_execute": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "cell_q24_original_training_pair_binding": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+    ],
+    "learning_original_training_stage_constructor": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+    ],
+    "learning_original_training_stage_execute": [
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+    ],
+    "learning_original_training_stage_readback": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
+    ],
+    "learning_original_training_stage_attestation": [],
+    "root_learning_original_stage_assembly": []
+  },
+  "training_cases": 11,
+  "typed_discovery_rerun": false,
+  "original_checker_executed": false
+}

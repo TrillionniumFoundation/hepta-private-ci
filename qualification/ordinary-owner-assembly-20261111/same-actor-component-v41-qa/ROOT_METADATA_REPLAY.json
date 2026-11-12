@@ -1,0 +1,63 @@
+{
+  "source": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "pre": {
+    "blob": "e36da4a9a874ac5cdea0cae954de180128674dc6",
+    "bytes": 891284,
+    "sha256": "7f5a212aefdc3783ede6fdf2b8033aa7c6ff92eacd85309b05520193fc750dce"
+  },
+  "post": {
+    "blob": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "bytes": 891444,
+    "sha256": "5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86"
+  },
+  "unique_forward_reverse_operations": 5,
+  "changes": [
+    {
+      "i": 17,
+      "kind": "boundary",
+      "id": "final_use_open_state",
+      "changed_keys": [
+        "product_callers"
+      ]
+    },
+    {
+      "i": 948,
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "changed_keys": [
+        "forbidden"
+      ]
+    },
+    {
+      "i": 949,
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "changed_keys": [
+        "forbidden"
+      ]
+    },
+    {
+      "i": 950,
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "changed_keys": [
+        "required",
+        "forbidden"
+      ]
+    },
+    {
+      "i": 951,
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "changed_keys": [
+        "required",
+        "forbidden"
+      ]
+    }
+  ],
+  "all_protected_rows_with_explicit_well_typed_arrays": true,
+  "protected_rows": 440,
+  "boundary_rows": 638,
+  "all_other_rows_and_fields_equal": true,
+  "checker_executed": false
+}

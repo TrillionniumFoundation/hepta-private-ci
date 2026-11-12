@@ -1,0 +1,388 @@
+{
+  "kind": "Root exact QA fixture replay",
+  "packet": "28b5619ec67869446bdf71a4ac37b06a687fefe8",
+  "source": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+    "original_log": {
+      "git": "027309c3a14784f1f21c1ae624c055bc096612b9",
+      "bytes": 105524,
+      "sha256": "c68dc5c2688bfca3d5376bc285ae01bb284ef7eaa5b0641c3a801d4042403c69"
+    },
+    "original_result": {
+      "tests": 221,
+      "failures": 13,
+      "errors": 25,
+      "executor_passed": 183,
+      "executor_failed": 38,
+      "status": "failed",
+      "timeout": false
+    }
+  },
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "pre": {
+        "git": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+        "bytes": 19493,
+        "sha256": "8a9c3a6e39e4c720af6e6cb9e3abbe5cf16a35981ef21d36765245976d1aeb61"
+      },
+      "post": {
+        "git": "1029add3438b0c5443894ffda39daf9380030fc5",
+        "bytes": 19573,
+        "sha256": "2b337a6b2699972f926441ecb6c04a98318364a70d55806e2c16f3f6da80cf90"
+      },
+      "operations": 1,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": null,
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "f5f1b77327061f02290bde56e04693d2a14fc8bbaa4bfcf95ab94ac4c567691d",
+          "new_sha256": "9188f6b3ce67f353f33fb3b86eb9c120d914c1006048d1437c4c1c27337c158b",
+          "old_text": "        \"codex-rs/hepta-agentd/src/root_production_inputs.rs\",\n        \"codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs\"\n      ]\n    },\n    {\n      \"id\": \"final_use_claim\",",
+          "new_text": "        \"codex-rs/hepta-agentd/src/root_production_inputs.rs\",\n        \"codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs\",\n        \"codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs\"\n      ]\n    },\n    {\n      \"id\": \"final_use_claim\",",
+          "reason": "Independent exact kernel caller inventory adds the already-existing concrete phase consumer open_state_dir_with_issuer_keys call; no pattern/checker change."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "pre": {
+        "git": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b"
+      },
+      "post": {
+        "git": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+        "bytes": 7656,
+        "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0"
+      },
+      "operations": 1,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 6,
+        "methods": [
+          "test_original_typed_callers_cannot_be_omitted_or_extended",
+          "test_original_writer_checks_cannot_be_borrowed_from_other_methods",
+          "test_service_requires_same_agent_peer_and_both_lifetime_checks",
+          "test_request_binding_and_original_checkpoint_dispatch_are_required",
+          "test_scoped_profile_and_material_validation_cannot_be_omitted",
+          "test_unvalidated_reply_cannot_restore_the_consumed_connection"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "c6a8ca3f8cb84f1863d94a58878b58bfcaea08dfac987063910d5dc7d5c9bdec",
+          "new_sha256": "96723313270d2ca4a3d54d042885f4ad5ecec2211ed82d82ec15cf180387d90e",
+          "old_text": "\"scope\\n                            .validate_snapshot(&snapshot)\"",
+          "new_text": "\"scope\\n                                .validate_snapshot(&snapshot)\"",
+          "reason": "Match the actual native-formatted fn restore guard (32 spaces); remove the same scope validation in the original negative fixture."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "pre": {
+        "git": "8d0de4f77b939c477376927021ded17e6e526dd8",
+        "bytes": 12239,
+        "sha256": "20764926d42c9bf8996b18a5e2619ef70765875569883b24023c30d1de5d481d"
+      },
+      "post": {
+        "git": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+        "bytes": 12257,
+        "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51"
+      },
+      "operations": 2,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 8,
+        "methods": [
+          "test_scoped_product_caller_sets_remain_exact",
+          "test_evidence_uid_constructor_distinguishes_other_stream_types",
+          "test_profile_requires_original_scope_rule_and_matching_schema",
+          "test_transport_cannot_downgrade_or_accept_another_profile",
+          "test_restored_training_and_checkpoint_are_checked_before_cas",
+          "test_worker_checks_scope_before_authentication_and_progress",
+          "test_root_handoff_retains_scope_through_the_worker_choice",
+          "test_frozen_component_boundary_and_rule_cannot_be_widened"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "c6a8ca3f8cb84f1863d94a58878b58bfcaea08dfac987063910d5dc7d5c9bdec",
+          "new_sha256": "96723313270d2ca4a3d54d042885f4ad5ecec2211ed82d82ec15cf180387d90e",
+          "old_text": "\"scope\\n                            .validate_snapshot(&snapshot)\"",
+          "new_text": "\"scope\\n                                .validate_snapshot(&snapshot)\"",
+          "reason": "Match the actual native-formatted fn restore guard (32 spaces); remove the same scope validation in the original negative fixture."
+        },
+        {
+          "i": 1,
+          "old_sha256": "205683933e2637fc675323f260940ed6acc7e27b678b1ce0802068ba5c82de51",
+          "new_sha256": "aaec2bf42237e81495a08050da79c5109b990c44b949e443c6cae1a737adcf1b",
+          "old_text": "(REGISTRATION, \"fn register_learning_checkpoint(\", \"profile.frozen_scope(&initial)?\")",
+          "new_text": "(REGISTRATION, \"fn reserve_original_learning_profile_in_phase(\", \"profile.frozen_scope(&initial)?\")",
+          "reason": "Remove same frozen_scope check at its actual shared original owner helper; keep original rejection assertion."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "pre": {
+        "git": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+        "bytes": 11110,
+        "sha256": "4a19e37cc6d944a224f6f11c8e429d8e58d413981d827ecc9353d2b4c9ce6945"
+      },
+      "post": {
+        "git": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+        "bytes": 11309,
+        "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53"
+      },
+      "operations": 6,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 6,
+        "methods": [
+          "test_training_receipt_ports_require_original_custody_callers",
+          "test_native_training_and_stage_ports_have_exact_registered_callers",
+          "test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane",
+          "test_signer_enrollment_exact_dataset_and_scope_precede_signature_custody",
+          "test_native_completed_read_precedes_claim_and_no_caller_payload_is_signed",
+          "test_readback_requires_original_time_exact_payload_identity_and_both_current_heads"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "4e254425cd1db6192510c1081ee5b33529fbf8a65f185540247878803b100c57",
+          "new_sha256": "d71f0c75c73c5f5fba57d16d36682401658a4cbd7e42b276601a3d4bef2d5478",
+          "old_text": "STAGE = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\n",
+          "new_text": "STAGE = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nSAME_ACTOR = \"codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs\"\n",
+          "reason": "Name the concrete existing phase training caller as a fixed independent path."
+        },
+        {
+          "i": 1,
+          "old_sha256": "05429db692726172f3f3b5631b3ab9d1b31d29e12a9b98fb167db3ec6c1cb3eb",
+          "new_sha256": "09fa4a4a185f136385189733473f0ae13a6ef70945a8c090e3ea5c2eaa24a448",
+          "old_text": "            for path in (OWNER, STAGE, INPUTS)\n",
+          "new_text": "            for path in (OWNER, STAGE, INPUTS, SAME_ACTOR)\n",
+          "reason": "Include real phase source in the unchanged receipt boundary and undeclared-caller negative checks."
+        },
+        {
+          "i": 2,
+          "old_sha256": "555546d112981bb7e135d3219ebf2a7230202d3d0c1511abcd0a0202b29b7c90",
+          "new_sha256": "70d13c4543c2ac5fa8927ea6318536ae30217bf060a2acb4a7bd9c89784e70e6",
+          "old_text": "        for suffix in (\"create\", \"recover\", \"attest\", \"readback\"):\n",
+          "new_text": "        for suffix, expected in (\n            (\"create\", (INPUTS,)),\n            (\"recover\", (INPUTS,)),\n            (\"attest\", (STAGE, SAME_ACTOR)),\n            (\"readback\", (STAGE,)),\n        ):\n",
+          "reason": "Keep four original cases and order; attest gains its actual phase caller, while readback retains its original sole caller."
+        },
+        {
+          "i": 3,
+          "old_sha256": "829bc7248eba2952fa1806cc35a63527bb1a6b075ec145ac50aa45d3e7e30e2f",
+          "new_sha256": "1d9d37bd1f252cb06db3be12cbf9bbf0ebecab3407beee7e18716f46c93bef0f",
+          "old_text": "        ):\n            row = rows[\"learning_original_training_receipt_\" + suffix]\n            self.assertIn(row.identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])\n            self.assertEqual(row.product_callers, (STAGE,) if suffix in (\"attest\", \"readback\") else (INPUTS,))\n",
+          "new_text": "        ):\n            row = rows[\"learning_original_training_receipt_\" + suffix]\n            self.assertIn(row.identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])\n            self.assertEqual(row.product_callers, expected)\n",
+          "reason": "Continue exact tuple equality against the independent fixed case table."
+        },
+        {
+          "i": 4,
+          "old_sha256": "37ebfc4a580c1ddd4b5038a6173103b2a10a6b7c0a903f622788698e587ed5c4",
+          "new_sha256": "35a93b660d19ee71a4cb52c67fbf2902c292f3cdd3abe2761c13e9b6d07f6298",
+          "old_text": "            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)\n",
+          "new_text": "            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, SAME_ACTOR)\n",
+          "reason": "Include actual phase receiver declarations for execute/pair-binding and all original omission/unregistered-source mutations."
+        },
+        {
+          "i": 5,
+          "old_sha256": "3a6818aade4c1783ce5dcca7d2518b4fc9c742fb2e9b669ac0beaf04eece75f6",
+          "new_sha256": "0e6109c2eda6b331f78819ded1ebb502f28e78496b469782244020a9ab2a79d8",
+          "old_text": "            (\"cell_q24_original_training_execute\", (STAGE,)),\n            (\"cell_q24_original_training_pair_binding\", (STAGE, MODEL_MATERIAL)),\n",
+          "new_text": "            (\"cell_q24_original_training_execute\", (STAGE, SAME_ACTOR)),\n            (\"cell_q24_original_training_pair_binding\", (STAGE, MODEL_MATERIAL, SAME_ACTOR)),\n",
+          "reason": "Append only actual phase training execute and dataset-scope caller; retain prior callers and order."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "pre": {
+        "git": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+        "bytes": 18820,
+        "sha256": "52a25d3505b4926946f6cda8fac2ab7f93a8a555fceb404cd941accbc4ab1e55"
+      },
+      "post": {
+        "git": "7015e686e71d88293ffaebb9577d33bfde41a933",
+        "bytes": 19100,
+        "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad"
+      },
+      "operations": 5,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 14,
+        "methods": [
+          "test_inventory_and_exact_product_callers_are_closed",
+          "test_registration_cannot_omit_original_authority_or_postchecks",
+          "test_recovery_is_open_only_and_uses_original_owner",
+          "test_profile_requires_canonical_empty_initial_and_original_writer",
+          "test_handoff_requires_original_root_and_exact_two_rights",
+          "test_client_requires_cross_lane_scope_and_original_current",
+          "test_unassembled_stage_owners_are_refused_before_runtime_side_effects",
+          "test_original_source_scope_requires_registered_membership",
+          "test_original_root_source_join_cannot_be_dropped_or_downgraded",
+          "test_each_original_source_kind_cannot_fall_back_to_host_stage_owners",
+          "test_retained_original_source_cannot_be_dropped_or_use_current_outbox",
+          "test_pending_guard_must_execute_at_top_level",
+          "test_registered_learning_cannot_be_silently_dropped_by_retained_serve",
+          "test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "a7cd8b8cf2edcae0a5e87f9ea8affb34f4ba753e5103888ec41e7f15a5626f99",
+          "new_sha256": "ed63afa1228edf49fa8f8de0c141a674221fb1321681067cb4404105d2186f61",
+          "old_text": "    \"root_prepared_fresh_session\": (CLI,),\n",
+          "new_text": "    \"root_prepared_fresh_session\": (CLI, AGENT + \"authority_host_same_actor_q24_phase.rs\"),\n",
+          "reason": "Add the actual fresh phase wrapper's original prepare call."
+        },
+        {
+          "i": 1,
+          "old_sha256": "fd7eba7f0f9d7e9fd556fba3bc5dc7a857557941504d37eed9d8dd82ca3d6a9e",
+          "new_sha256": "84ddc0b83ac43e05daf7ab3da494eb91ab554febde03fce4ca5e7b244f2f2c89",
+          "old_text": "    \"root_learning_original_scope_capture\": (SESSION,),\n",
+          "new_text": "    \"root_learning_original_scope_capture\": (SESSION, AGENT + \"authority_host_same_actor_q24_phase_worker.rs\"),\n",
+          "reason": "Add the actual same-service phase worker's original scope sealing call."
+        },
+        {
+          "i": 2,
+          "old_sha256": "95a5e7e4267ebc4b22a5c213cbe3d7f5fde58cfcfb1dcbe13cd2c102963f057b",
+          "new_sha256": "5d0bd051d88ca795fbfcd1f64648f712c6853531427b13b9ecb9434c6d7c2bf6",
+          "old_text": "    \"root_original_registered_ready_serve\": (CLI,),\n",
+          "new_text": "    \"root_original_registered_ready_serve\": (CLI, AGENT + \"authority_host_same_actor_q24_host.rs\"),\n",
+          "reason": "Add the concrete phase host serve_with_ready call."
+        },
+        {
+          "i": 3,
+          "old_sha256": "fc4b5646e428b9d269cec5ad99f27f7a445a791b99fba038c5a554819b225c8b",
+          "new_sha256": "adb2fef8fae060b62ff9c29b301a1803dd3e309c45247a3f4d72924fb937d643",
+          "old_text": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,\n",
+          "new_text": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,\n        AGENT + \"authority_host_same_actor_q24_phase_worker.rs\",\n        AGENT + \"authority_host_same_actor_q24_phase.rs\",\n",
+          "reason": "Append both actual private seal_bytes phase callers in the exact registered order."
+        },
+        {
+          "i": 4,
+          "old_sha256": "aa711b768237990d1c6b164d4242eb0d2ef5dda5b3fb99f9694d7f3ba3c24b0d",
+          "new_sha256": "9689c353cf868ab348b08767382369f15cb01f0d274bfd267d25c1544864e262",
+          "old_text": "(\"fn open_registered_learning_checkpoint(\", \"StoreMode::Reopen\")",
+          "new_text": "(\"fn open_original_learning_profile_in_phase(\", \"StoreMode::Reopen\")",
+          "reason": "Target real shared owner helper holding original open-only StoreMode::Reopen; old wrapper/None delegation remains protected."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "pre": {
+        "git": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+        "bytes": 4547,
+        "sha256": "6dc536c78a226a4baba0b48f96b348f1034402a61a3151b82613e769e5730355"
+      },
+      "post": {
+        "git": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+        "bytes": 4726,
+        "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977"
+      },
+      "operations": 2,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 3,
+        "methods": [
+          "test_original_owner_edges_keep_exact_registered_callers",
+          "test_each_actual_caller_must_remain_declared",
+          "test_same_original_typed_call_cannot_move_to_an_unregistered_file"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "bda45dbdd3ef32a435b95a85aa578393faa5c55ee3ea1fe7bdecac88c33c0756",
+          "new_sha256": "00f2bd6d03bf09d9f4d15f57b4e8e2d85f625d3333583bdf215fde0c58751cd0",
+          "old_text": "        AGENT + \"authority_host_generation_publication_session.rs\",\n",
+          "new_text": "        AGENT + \"authority_host_generation_publication_session.rs\",\n        AGENT + \"authority_host_generation_initial_phase.rs\",\n        AGENT + \"authority_host_same_actor_q24_phase_join.rs\",\n",
+          "reason": "Add two actual original profile action phase callers without changing boundary/receiver."
+        },
+        {
+          "i": 1,
+          "old_sha256": "68b714e057ac22646c8a6e030ec6fc4078d427f57264071d79e2fcd353f321dd",
+          "new_sha256": "3e04e49e74ee803e6835128d42cb5b05427e71e6ca2bf0344a50d412a2ec1cdc",
+          "old_text": "        AGENT + \"cell_q24_publication_successor_current.rs\",\n",
+          "new_text": "        AGENT + \"cell_q24_publication_successor_current.rs\",\n        AGENT + \"cell_q24_publication_same_actor.rs\",\n",
+          "reason": "Add actual phase publication original lane caller; omission/relocated-source negative checks automatically cover it."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "pre": {
+        "git": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "post": {
+        "git": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+        "bytes": 5148,
+        "sha256": "e73bece8bb45bb203336c77125bc985ff57f6d5fe9053ad562c491d941fe165d"
+      },
+      "operations": 1,
+      "forward_equal": true,
+      "reverse_equal": true,
+      "tests": {
+        "count": 11,
+        "methods": [
+          "test_slow_check_cannot_drop_its_post_check_deadline",
+          "test_original_registry_cannot_drop_its_locked_deadline",
+          "test_two_cas_stages_cannot_skip_the_original_context_recheck",
+          "test_consumer_confirmation_must_observe_both_original_owners",
+          "test_strict_own_signature_cannot_be_replaced_by_ordinary_verify",
+          "test_valid_signed_artifact_cannot_skip_existing_full_lease_binding",
+          "test_retained_read_only_verification_cannot_authorize_mutation",
+          "test_root_preparation_cannot_unlock_shared_original_file_custody",
+          "test_writer_custody_cannot_replace_original_verification",
+          "test_retirement_cannot_release_consumers_before_fencing",
+          "test_admin_activation_cannot_precede_original_ready_callback"
+        ],
+        "assert_sequence_unchanged": true
+      },
+      "traces": [
+        {
+          "i": 0,
+          "old_sha256": "2c4500f63fda628c1615429e246e709ef83da78ae33b953ab4050088f1ff836f",
+          "new_sha256": "3fbde6feb9c9f35556e02ff5995a222bd356c50461c3a6005bda52aa90482029",
+          "old_text": "            \"self.live.cache.fence();\\n        self.worker.abort();\",\n            \"self.worker.abort();\",\n",
+          "new_text": "            \"self.live.cache.fence();\\n\"\n            \"        if let Some(phase) = &self.live.phase {\\n\"\n            \"            phase.close();\\n\"\n            \"        }\\n\"\n            \"        self.worker.abort();\",\n            \"if let Some(phase) = &self.live.phase {\\n\"\n            \"            phase.close();\\n\"\n            \"        }\\n\"\n            \"        self.worker.abort();\",\n",
+          "reason": "Latent fixture mismatch hidden by the real setUp schema failure: preserve the actual phase.close branch while removing only the original Session cache fence before worker abort."
+        }
+      ]
+    }
+  ],
+  "operations": 18,
+  "test_methods": 48,
+  "rust_or_checker_changed": false,
+  "native_or_python_executed": false,
+  "counts": {
+    "ordinary": 0,
+    "adoption": 0,
+    "no_update_rollback": 0
+  }
+}

@@ -17,6 +17,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+SAME_ACTOR = "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
 INPUTS = "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
 MODEL_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
@@ -53,12 +54,17 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
-            for path in (OWNER, STAGE, INPUTS)
+            for path in (OWNER, STAGE, INPUTS, SAME_ACTOR)
         }
-        for suffix in ("create", "recover", "attest", "readback"):
+        for suffix, expected in (
+            ("create", (INPUTS,)),
+            ("recover", (INPUTS,)),
+            ("attest", (STAGE, SAME_ACTOR)),
+            ("readback", (STAGE,)),
+        ):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else (INPUTS,))
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
@@ -76,11 +82,11 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
-            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)
+            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, SAME_ACTOR)
         }
         for name, expected in (
-            ("cell_q24_original_training_execute", (STAGE,)),
-            ("cell_q24_original_training_pair_binding", (STAGE, MODEL_MATERIAL)),
+            ("cell_q24_original_training_execute", (STAGE, SAME_ACTOR)),
+            ("cell_q24_original_training_pair_binding", (STAGE, MODEL_MATERIAL, SAME_ACTOR)),
         ):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])

@@ -1,0 +1,286 @@
+{
+  "schema": "hepta.same-actor-component-v41-root-review.v1",
+  "source_parent": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "source_parent_tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+  "actual_predecessor_result": {
+    "tests": 221,
+    "failures": 13,
+    "errors": 25,
+    "executor_passed": 183,
+    "executor_failed": 38,
+    "status": "failed"
+  },
+  "intended_scope": "Correct only exact QA source fixtures/caller inventories and mandatory CALLERS metadata fields against actual frozen Rust; no Rust or original checker/helper/harness edits.",
+  "source_changes": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "pre": {
+        "blob": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+        "bytes": 19493,
+        "sha256": "8a9c3a6e39e4c720af6e6cb9e3abbe5cf16a35981ef21d36765245976d1aeb61"
+      },
+      "post": {
+        "blob": "1029add3438b0c5443894ffda39daf9380030fc5",
+        "bytes": 19573,
+        "sha256": "2b337a6b2699972f926441ecb6c04a98318364a70d55806e2c16f3f6da80cf90"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "pre": {
+        "blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b"
+      },
+      "post": {
+        "blob": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+        "bytes": 7656,
+        "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "pre": {
+        "blob": "8d0de4f77b939c477376927021ded17e6e526dd8",
+        "bytes": 12239,
+        "sha256": "20764926d42c9bf8996b18a5e2619ef70765875569883b24023c30d1de5d481d"
+      },
+      "post": {
+        "blob": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+        "bytes": 12257,
+        "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "pre": {
+        "blob": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+        "bytes": 11110,
+        "sha256": "4a19e37cc6d944a224f6f11c8e429d8e58d413981d827ecc9353d2b4c9ce6945"
+      },
+      "post": {
+        "blob": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+        "bytes": 11309,
+        "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "pre": {
+        "blob": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+        "bytes": 18820,
+        "sha256": "52a25d3505b4926946f6cda8fac2ab7f93a8a555fceb404cd941accbc4ab1e55"
+      },
+      "post": {
+        "blob": "7015e686e71d88293ffaebb9577d33bfde41a933",
+        "bytes": 19100,
+        "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "pre": {
+        "blob": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+        "bytes": 4547,
+        "sha256": "6dc536c78a226a4baba0b48f96b348f1034402a61a3151b82613e769e5730355"
+      },
+      "post": {
+        "blob": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+        "bytes": 4726,
+        "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "pre": {
+        "blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "post": {
+        "blob": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+        "bytes": 5148,
+        "sha256": "e73bece8bb45bb203336c77125bc985ff57f6d5fe9053ad562c491d941fe165d"
+      },
+      "kind": "qa_exact_existing_fixture_and_caller_correction"
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "e36da4a9a874ac5cdea0cae954de180128674dc6",
+        "bytes": 891284,
+        "sha256": "7f5a212aefdc3783ede6fdf2b8033aa7c6ff92eacd85309b05520193fc750dce"
+      },
+      "post": {
+        "blob": "cec0af947a10465414faff8f4e755e023a7f892d",
+        "bytes": 891444,
+        "sha256": "5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86"
+      },
+      "kind": "explicit_schema_fields_and_actual_sixth_caller"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "pre": {
+        "git": "4b442bf66d8878d5c7f3a3add392d1cf3d3872d8",
+        "bytes": 12066,
+        "sha256": "ed40f145cd368cb5beb2bc1719ef187ffb9bd28c4f031e81729874cce9bbc27a",
+        "blob": "4b442bf66d8878d5c7f3a3add392d1cf3d3872d8"
+      },
+      "post": {
+        "git": "e5e5dc49a216d6fa490867ddf9d83d0c8146a6df",
+        "bytes": 12066,
+        "sha256": "afb0014567e482d033f68dcb2ba9f2aba5cff9b4ffc512fddd05626943e82e0c",
+        "blob": "e5e5dc49a216d6fa490867ddf9d83d0c8146a6df"
+      },
+      "kind": "same_existing_path_exact_hash_only"
+    }
+  ],
+  "qa_operations": 18,
+  "metadata_operations": 5,
+  "unchanged_existing_tests": 48,
+  "source_evidence": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "git": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+      "source_inventory_pin": null,
+      "binding": "GitHub exact commit directory GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "git": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "source_inventory_pin": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "git": "b633e9cc6bbfb784328eb80df3f102db74e200de",
+      "source_inventory_pin": "b633e9cc6bbfb784328eb80df3f102db74e200de",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "source_inventory_pin": "78e2fc63c61fd8650fe20fc1ca61215613cf2833",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "git": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "source_inventory_pin": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "git": "e6d5747e7b5a7a9217b77f5600a7d1112daeda15",
+      "source_inventory_pin": "e6d5747e7b5a7a9217b77f5600a7d1112daeda15",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "git": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+      "source_inventory_pin": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "git": "fb95d13214318a255f868aea9f016911bc69990c",
+      "source_inventory_pin": "fb95d13214318a255f868aea9f016911bc69990c",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "git": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+      "source_inventory_pin": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "git": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+      "source_inventory_pin": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "git": "4488fefa0dba45c0300a16f176c74c33b035d112",
+      "source_inventory_pin": "4488fefa0dba45c0300a16f176c74c33b035d112",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "git": "78bb33225842f61c46ef7c8dbedce84ed01580d7",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "git": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "git": "e02b8d792936932f98f6902935904f14853dc469",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "git": "9e498c1685651f41e970b836de499a7a83f11b68",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "git": "7bff1b0b377126de452880deffb83d6a01472441",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "git": "0071512a960b4e9b19b1d2897128c0d67fa59271",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+      "git": "5d6047c3809c4ff317e49a0ae09fee6f09ce7de1",
+      "source_inventory_pin": null,
+      "binding": "Root direct fixed-commit file GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "source_inventory_pin": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "binding": "Root-verified V40 fixed source inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "git": "43c9834f05390bca33a07d04361c0aecead8e662",
+      "source_inventory_pin": "43c9834f05390bca33a07d04361c0aecead8e662",
+      "binding": "Root-verified V40 fixed source inventory"
+    }
+  ],
+  "original_pin_invariants": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c"
+  },
+  "independent_reviews": {
+    "qa": "5bd786728407520d13c422e24c6ad2a461b1b6ff",
+    "callers": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6"
+  },
+  "qualification": "Static replay and scoped projections only; unchanged complete original native entrance must run at the new fixed source. No predecessor pass is inherited.",
+  "future_packages_installed": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "main_merged": false
+}

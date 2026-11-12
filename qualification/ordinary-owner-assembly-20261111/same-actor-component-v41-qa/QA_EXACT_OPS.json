@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "kind": "exact-qa-source-fixture-correction",
+  "source": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+    "original_log": {
+      "git": "027309c3a14784f1f21c1ae624c055bc096612b9",
+      "bytes": 105524,
+      "sha256": "c68dc5c2688bfca3d5376bc285ae01bb284ef7eaa5b0641c3a801d4042403c69"
+    },
+    "original_result": {
+      "tests": 221,
+      "failures": 13,
+      "errors": 25,
+      "executor_passed": 183,
+      "executor_failed": 38,
+      "status": "failed",
+      "timeout": false
+    }
+  },
+  "dependencies": {
+    "root_callers_packet": "1f0fa40921b88cd53ac7ab2f6f7859a5f3da8526",
+    "root_callers_post": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "independent_root_callers_review": "c5a3036ea621e116f6bb12590077b0ba8f9e07e6",
+    "reason": "The 25 errors are real missing-key schema failures, not test exceptions to suppress. The real sixth FinalUse caller must be declared in both independent inventories."
+  },
+  "path_count": 7,
+  "operation_count": 18,
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "pre": {
+        "git": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+        "bytes": 19493,
+        "sha256": "8a9c3a6e39e4c720af6e6cb9e3abbe5cf16a35981ef21d36765245976d1aeb61"
+      },
+      "post": {
+        "git": "1029add3438b0c5443894ffda39daf9380030fc5",
+        "bytes": 19573,
+        "sha256": "2b337a6b2699972f926441ecb6c04a98318364a70d55806e2c16f3f6da80cf90"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "        \"codex-rs/hepta-agentd/src/root_production_inputs.rs\",\n        \"codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs\"\n      ]\n    },\n    {\n      \"id\": \"final_use_claim\",",
+          "new_text": "        \"codex-rs/hepta-agentd/src/root_production_inputs.rs\",\n        \"codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs\",\n        \"codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs\"\n      ]\n    },\n    {\n      \"id\": \"final_use_claim\",",
+          "expected_matches": 1,
+          "reason": "Independent exact kernel caller inventory adds the already-existing concrete phase consumer open_state_dir_with_issuer_keys call; no pattern/checker change."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "pre": {
+        "git": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b"
+      },
+      "post": {
+        "git": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+        "bytes": 7656,
+        "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "\"scope\\n                            .validate_snapshot(&snapshot)\"",
+          "new_text": "\"scope\\n                                .validate_snapshot(&snapshot)\"",
+          "expected_matches": 1,
+          "reason": "Match the actual native-formatted fn restore guard (32 spaces); remove the same scope validation in the original negative fixture."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "pre": {
+        "git": "8d0de4f77b939c477376927021ded17e6e526dd8",
+        "bytes": 12239,
+        "sha256": "20764926d42c9bf8996b18a5e2619ef70765875569883b24023c30d1de5d481d"
+      },
+      "post": {
+        "git": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+        "bytes": 12257,
+        "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "\"scope\\n                            .validate_snapshot(&snapshot)\"",
+          "new_text": "\"scope\\n                                .validate_snapshot(&snapshot)\"",
+          "expected_matches": 1,
+          "reason": "Match the actual native-formatted fn restore guard (32 spaces); remove the same scope validation in the original negative fixture."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "(REGISTRATION, \"fn register_learning_checkpoint(\", \"profile.frozen_scope(&initial)?\")",
+          "new_text": "(REGISTRATION, \"fn reserve_original_learning_profile_in_phase(\", \"profile.frozen_scope(&initial)?\")",
+          "expected_matches": 1,
+          "reason": "Remove same frozen_scope check at its actual shared original owner helper; keep original rejection assertion."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "pre": {
+        "git": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+        "bytes": 11110,
+        "sha256": "4a19e37cc6d944a224f6f11c8e429d8e58d413981d827ecc9353d2b4c9ce6945"
+      },
+      "post": {
+        "git": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+        "bytes": 11309,
+        "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "STAGE = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\n",
+          "new_text": "STAGE = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nSAME_ACTOR = \"codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs\"\n",
+          "expected_matches": 1,
+          "reason": "Name the concrete existing phase training caller as a fixed independent path."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "            for path in (OWNER, STAGE, INPUTS)\n",
+          "new_text": "            for path in (OWNER, STAGE, INPUTS, SAME_ACTOR)\n",
+          "expected_matches": 1,
+          "reason": "Include real phase source in the unchanged receipt boundary and undeclared-caller negative checks."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "        for suffix in (\"create\", \"recover\", \"attest\", \"readback\"):\n",
+          "new_text": "        for suffix, expected in (\n            (\"create\", (INPUTS,)),\n            (\"recover\", (INPUTS,)),\n            (\"attest\", (STAGE, SAME_ACTOR)),\n            (\"readback\", (STAGE,)),\n        ):\n",
+          "expected_matches": 1,
+          "reason": "Keep four original cases and order; attest gains its actual phase caller, while readback retains its original sole caller."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "        ):\n            row = rows[\"learning_original_training_receipt_\" + suffix]\n            self.assertIn(row.identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])\n            self.assertEqual(row.product_callers, (STAGE,) if suffix in (\"attest\", \"readback\") else (INPUTS,))\n",
+          "new_text": "        ):\n            row = rows[\"learning_original_training_receipt_\" + suffix]\n            self.assertIn(row.identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])\n            self.assertEqual(row.product_callers, expected)\n",
+          "expected_matches": 1,
+          "reason": "Continue exact tuple equality against the independent fixed case table."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)\n",
+          "new_text": "            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, SAME_ACTOR)\n",
+          "expected_matches": 1,
+          "reason": "Include actual phase receiver declarations for execute/pair-binding and all original omission/unregistered-source mutations."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "            (\"cell_q24_original_training_execute\", (STAGE,)),\n            (\"cell_q24_original_training_pair_binding\", (STAGE, MODEL_MATERIAL)),\n",
+          "new_text": "            (\"cell_q24_original_training_execute\", (STAGE, SAME_ACTOR)),\n            (\"cell_q24_original_training_pair_binding\", (STAGE, MODEL_MATERIAL, SAME_ACTOR)),\n",
+          "expected_matches": 1,
+          "reason": "Append only actual phase training execute and dataset-scope caller; retain prior callers and order."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "pre": {
+        "git": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+        "bytes": 18820,
+        "sha256": "52a25d3505b4926946f6cda8fac2ab7f93a8a555fceb404cd941accbc4ab1e55"
+      },
+      "post": {
+        "git": "7015e686e71d88293ffaebb9577d33bfde41a933",
+        "bytes": 19100,
+        "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "    \"root_prepared_fresh_session\": (CLI,),\n",
+          "new_text": "    \"root_prepared_fresh_session\": (CLI, AGENT + \"authority_host_same_actor_q24_phase.rs\"),\n",
+          "expected_matches": 1,
+          "reason": "Add the actual fresh phase wrapper's original prepare call."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "    \"root_learning_original_scope_capture\": (SESSION,),\n",
+          "new_text": "    \"root_learning_original_scope_capture\": (SESSION, AGENT + \"authority_host_same_actor_q24_phase_worker.rs\"),\n",
+          "expected_matches": 1,
+          "reason": "Add the actual same-service phase worker's original scope sealing call."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "    \"root_original_registered_ready_serve\": (CLI,),\n",
+          "new_text": "    \"root_original_registered_ready_serve\": (CLI, AGENT + \"authority_host_same_actor_q24_host.rs\"),\n",
+          "expected_matches": 1,
+          "reason": "Add the concrete phase host serve_with_ready call."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,\n",
+          "new_text": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,\n        AGENT + \"authority_host_same_actor_q24_phase_worker.rs\",\n        AGENT + \"authority_host_same_actor_q24_phase.rs\",\n",
+          "expected_matches": 1,
+          "reason": "Append both actual private seal_bytes phase callers in the exact registered order."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "(\"fn open_registered_learning_checkpoint(\", \"StoreMode::Reopen\")",
+          "new_text": "(\"fn open_original_learning_profile_in_phase(\", \"StoreMode::Reopen\")",
+          "expected_matches": 1,
+          "reason": "Target real shared owner helper holding original open-only StoreMode::Reopen; old wrapper/None delegation remains protected."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "pre": {
+        "git": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+        "bytes": 4547,
+        "sha256": "6dc536c78a226a4baba0b48f96b348f1034402a61a3151b82613e769e5730355"
+      },
+      "post": {
+        "git": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+        "bytes": 4726,
+        "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "        AGENT + \"authority_host_generation_publication_session.rs\",\n",
+          "new_text": "        AGENT + \"authority_host_generation_publication_session.rs\",\n        AGENT + \"authority_host_generation_initial_phase.rs\",\n        AGENT + \"authority_host_same_actor_q24_phase_join.rs\",\n",
+          "expected_matches": 1,
+          "reason": "Add two actual original profile action phase callers without changing boundary/receiver."
+        },
+        {
+          "kind": "replace_exact",
+          "old_text": "        AGENT + \"cell_q24_publication_successor_current.rs\",\n",
+          "new_text": "        AGENT + \"cell_q24_publication_successor_current.rs\",\n        AGENT + \"cell_q24_publication_same_actor.rs\",\n",
+          "expected_matches": 1,
+          "reason": "Add actual phase publication original lane caller; omission/relocated-source negative checks automatically cover it."
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "pre": {
+        "git": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "post": {
+        "git": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+        "bytes": 5148,
+        "sha256": "e73bece8bb45bb203336c77125bc985ff57f6d5fe9053ad562c491d941fe165d"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact",
+          "old_text": "            \"self.live.cache.fence();\\n        self.worker.abort();\",\n            \"self.worker.abort();\",\n",
+          "new_text": "            \"self.live.cache.fence();\\n\"\n            \"        if let Some(phase) = &self.live.phase {\\n\"\n            \"            phase.close();\\n\"\n            \"        }\\n\"\n            \"        self.worker.abort();\",\n            \"if let Some(phase) = &self.live.phase {\\n\"\n            \"            phase.close();\\n\"\n            \"        }\\n\"\n            \"        self.worker.abort();\",\n",
+          "expected_matches": 1,
+          "reason": "Latent fixture mismatch hidden by the real setUp schema failure: preserve the actual phase.close branch while removing only the original Session cache fence before worker abort."
+        }
+      ]
+    }
+  ],
+  "limits": {
+    "rust_changed": false,
+    "checker_changed": false,
+    "typed_helper_changed": false,
+    "harness_changed": false,
+    "test_methods_added": 0,
+    "test_methods_removed": 0,
+    "executed": false,
+    "refs_changed": false,
+    "qualification_pass": false,
+    "ordinary_counts": "0/0/0 unchanged"
+  },
+  "explanation": "Only actual fixture locations/whitespace and finite explicit caller expectations are synchronized to frozen source. All original test methods, setup, rejection helpers, assert method order and omission/unregistered-source mutation logic remain. One additional latent Session fixture mismatch was identified statically behind RootAdmin setUp failure and preserves deletion of only the real cache fence."
+}
