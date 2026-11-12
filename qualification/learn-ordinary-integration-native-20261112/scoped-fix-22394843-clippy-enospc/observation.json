@@ -1,0 +1,256 @@
+{
+  "source": "22394843214c0480d56a8470bd819bb0d7b43140",
+  "tree": "c0ab9277feff37e3282a2b9a2959b82cb3b640ae",
+  "attempt1": {
+    "before": {
+      "sha": "22394843214c0480d56a8470bd819bb0d7b43140",
+      "tree": "c0ab9277feff37e3282a2b9a2959b82cb3b640ae",
+      "status": "",
+      "tracked_files": 15294,
+      "source_sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+    },
+    "source_path": "/workspace/scratch/ff41dfc0f7bf/hepta-fix-22394843-cloud",
+    "uid": 1000,
+    "executor": "74d784910ce8",
+    "scope": "Repository scoped clippy --fix --tests; static diagnostic, no native tests",
+    "state": "completed",
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "started_utc": "2026-11-12T13:31:27.993118+00:00",
+    "environment": {
+      "CARGO_TARGET_DIR": "/workspace/scratch/ff41dfc0f7bf/target-cloud-native",
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_HOME": "/workspace/scratch/ff41dfc0f7bf/tooling/cargo",
+      "RUSTUP_HOME": "/workspace/scratch/ff41dfc0f7bf/tooling/rustup",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+    },
+    "profile": "Original workspace dev/test configuration; no CARGO_PROFILE override",
+    "harness_sha256": "8a31e97faab5e559042312c510db0857e0d72766facb370713da3bcdcadee57e",
+    "exit_code": 1,
+    "elapsed_seconds": 0.23527457599993795,
+    "after": {
+      "sha": "22394843214c0480d56a8470bd819bb0d7b43140",
+      "tree": "c0ab9277feff37e3282a2b9a2959b82cb3b640ae",
+      "status": "",
+      "tracked_files": 15294,
+      "source_sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+    },
+    "finished_utc": "2026-11-12T13:31:28.763590+00:00",
+    "tests": 0,
+    "junit": [],
+    "source_unchanged": true,
+    "files": [
+      {
+        "path": "after-source.json",
+        "bytes": 2539239,
+        "sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+      },
+      {
+        "path": "automatic-fixes.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "before-source.json",
+        "bytes": 2539239,
+        "sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+      },
+      {
+        "path": "stderr.log",
+        "bytes": 249,
+        "sha256": "d13505cba51793d1791ac6a711dab0906238d32da4a0d4486ef8cb26fe13c1a4"
+      },
+      {
+        "path": "stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "attempt2": {
+    "before": {
+      "sha": "22394843214c0480d56a8470bd819bb0d7b43140",
+      "tree": "c0ab9277feff37e3282a2b9a2959b82cb3b640ae",
+      "status": "",
+      "tracked_files": 15294,
+      "source_sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+    },
+    "source_path": "/workspace/scratch/ff41dfc0f7bf/hepta-fix-22394843-cloud",
+    "uid": 1000,
+    "executor": "74d784910ce8",
+    "scope": "Repository scoped clippy --fix --tests; static diagnostic, no native tests",
+    "state": "completed",
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "started_utc": "2026-11-12T13:35:11.787571+00:00",
+    "environment": {
+      "CARGO_TARGET_DIR": "/workspace/scratch/ff41dfc0f7bf/target-cloud-native",
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_HOME": "/workspace/scratch/ff41dfc0f7bf/tooling/cargo",
+      "RUSTUP_HOME": "/workspace/scratch/ff41dfc0f7bf/tooling/rustup",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+    },
+    "profile": "Original workspace dev/test configuration; no CARGO_PROFILE override",
+    "harness_sha256": "9dab1343931a2587188d02f8f8e19113106c63af06a498406d5f96fa69d06554",
+    "exit_code": 101,
+    "elapsed_seconds": 637.8335917510012,
+    "after": {
+      "sha": "22394843214c0480d56a8470bd819bb0d7b43140",
+      "tree": "c0ab9277feff37e3282a2b9a2959b82cb3b640ae",
+      "status": "",
+      "tracked_files": 15294,
+      "source_sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+    },
+    "finished_utc": "2026-11-12T13:45:52.446122+00:00",
+    "tests": 0,
+    "junit": [],
+    "source_unchanged": true,
+    "files": [
+      {
+        "path": "after-source.json",
+        "bytes": 2539239,
+        "sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+      },
+      {
+        "path": "automatic-fixes.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "before-source.json",
+        "bytes": 2539239,
+        "sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+      },
+      {
+        "path": "stderr.log",
+        "bytes": 51759,
+        "sha256": "767bac8be38de595202ce4ab5bcd2616ad73d9a6b99bb8e1b33cdbbbda003809"
+      },
+      {
+        "path": "stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "source_manifest_storage": "All four before/after manifests verified byte-identical; one exact copy retained as identical-before-after-source.json",
+  "native_tests": 0,
+  "junit": 0,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 798763,
+    "sha256": "e932e3b9728c3b4105ec8fb1b395d63ea9c67e2dde31bc5308ccbd81d3933e04",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "identical-before-after-source.json",
+      "bytes": 2539239,
+      "sha256": "dd7e55646589925fa6a15701a86726c2eeb298a79ef024f2bee390eaa1aaf9a7"
+    },
+    {
+      "path": "attempt1-missing-clippy/automatic-fixes.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempt1-missing-clippy/run.json",
+      "bytes": 2545,
+      "sha256": "1ac1e2aae3fd9559932d59e7ec9108b8d32210f8ae99beef21418960305c75a6"
+    },
+    {
+      "path": "attempt1-missing-clippy/stderr.log",
+      "bytes": 249,
+      "sha256": "d13505cba51793d1791ac6a711dab0906238d32da4a0d4486ef8cb26fe13c1a4"
+    },
+    {
+      "path": "attempt1-missing-clippy/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempt2-enospc/automatic-fixes.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempt2-enospc/run.json",
+      "bytes": 2547,
+      "sha256": "e197249f66a8fa0b8f4a8b451147c7c922a5d1e8a86df28ed289658275370b20"
+    },
+    {
+      "path": "attempt2-enospc/stderr.log",
+      "bytes": 51759,
+      "sha256": "767bac8be38de595202ce4ab5bcd2616ad73d9a6b99bb8e1b33cdbbbda003809"
+    },
+    {
+      "path": "attempt2-enospc/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "run_22394843_scoped_fix.py",
+      "bytes": 3794,
+      "sha256": "8a31e97faab5e559042312c510db0857e0d72766facb370713da3bcdcadee57e"
+    },
+    {
+      "path": "run_22394843_scoped_fix_clippy2.py",
+      "bytes": 3802,
+      "sha256": "9dab1343931a2587188d02f8f8e19113106c63af06a498406d5f96fa69d06554"
+    },
+    {
+      "path": "clippy-install.log",
+      "bytes": 35,
+      "sha256": "08cc3e5ddf8fdac43e355fa0e3215ff51d62897f38c2b9748679f1984a32d562"
+    },
+    {
+      "path": "ci-owned-worktree-retirement-20261112.json",
+      "bytes": 1648,
+      "sha256": "a8982760cec97d280ea6addf9beb525d77ad655b2b6b0486d58490f0c503599d"
+    },
+    {
+      "path": "ci-root-d85-worktree-retirement-20261112.json",
+      "bytes": 394,
+      "sha256": "2db358c43cb8692095ae122887a2d6482be7d271b63bf4cb4d2dcae926d24cb8"
+    },
+    {
+      "path": "ci-completed-provider-binary-retirement-20261112.json",
+      "bytes": 722,
+      "sha256": "e2ae1264b41bb5ef7e07073d7d63249d1ea1f576160ea83f294011a4df97edff"
+    },
+    {
+      "path": "ci-completed-old-codegen-retirement-20261112.json",
+      "bytes": 1352,
+      "sha256": "d7888b24795361d03a611cfb5018205d417d3458d98f2e2564b35e6909132d97"
+    }
+  ]
+}

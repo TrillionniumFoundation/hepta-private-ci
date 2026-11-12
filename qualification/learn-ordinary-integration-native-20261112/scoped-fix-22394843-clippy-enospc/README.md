@@ -1,0 +1,7 @@
+# Actual scoped fix prerequisites and ENOSPC
+
+Both invocations used clean source 22394843, the three requested packages, locked/offline dependency resolution and the original repository profile without any CARGO_PROFILE override. The first stopped before compilation because the official 1.96 Clippy component was absent. After rustup installed that component, the second ran for 637.8336 seconds and failed while checking codex-apply-patch: creating the metadata temporary directory returned No space left on device (os error 28). This is an observed filesystem capacity failure, not a timeout, native test failure, completed type check or proof of correctness. Agentd type checking had not been reached.
+
+Both complete stdout/stderr files, command/environment/terminal metadata, drivers, installer log and narrow completed-work retirement records are retained. All four source manifests were byte-identical and are stored once with their original SHA-256. The automatic-fixes patches are empty. No tests ran and no JUnit was produced. Source remains unchanged.
+
+Only owned clean completed worktrees, one completed test executable and four old completed codegen rlibs were retired after preserving identities, sizes/hashes and checking no active process/open descriptor used them. Current metadata, dependencies, source and raw evidence were retained. The same large attempt is not being repeated. Complete-chain counts remain zero.
