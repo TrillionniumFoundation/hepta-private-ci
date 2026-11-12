@@ -134,8 +134,8 @@ impl HostAuthorityService {
                         )?;
                         let request: Request =
                             serde_json::from_slice(bytes).map_err(io::Error::other)?;
-                        if request.schema != 1
-                            || request.operation != PURPOSE
+                        if request.schema != factory.profile.wire_schema()
+                            || request.operation != factory.profile.purpose()
                             || request.binding != factory.profile.binding()
                             || request.request_id != next_request_id
                         {
@@ -166,7 +166,7 @@ impl HostAuthorityService {
                         if after != before {
                             factory
                                 .store
-                                .compare_and_set(OWNER, &before, &after)
+                                .compare_and_set(factory.profile.store_owner(), &before, &after)
                                 .map_err(io::Error::other)?;
                         }
                         if factory.current(config)? != after {
@@ -186,8 +186,8 @@ impl HostAuthorityService {
                             ));
                         }
                         serde_json::to_vec(&Response {
-                            schema: 1,
-                            operation: PURPOSE.into(),
+                            schema: factory.profile.wire_schema(),
+                            operation: factory.profile.purpose().into(),
                             request_id: request.request_id,
                             binding: request.binding,
                             reply,

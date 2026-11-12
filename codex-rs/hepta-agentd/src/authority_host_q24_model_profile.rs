@@ -11,6 +11,10 @@ use crate::HostAuthorityRegisteredIdentity;
 
 #[path = "authority_host_q24_model_profile_v2.rs"]
 pub(super) mod v2;
+#[path = "authority_host_q24_model_profile_variants.rs"]
+mod variants;
+pub(crate) use variants::LiveFactoryProfile;
+pub(crate) use variants::ReservedFactoryProfile;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -250,7 +254,7 @@ impl HostAuthorityQ24ModelFactoryProfileV1 {
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Q24ModelFactoryBootstrap {
-    pub(crate) profile: HostAuthorityQ24ModelFactoryProfileV1,
+    pub(crate) profile: LiveFactoryProfile,
     pub(crate) root: CognitiveCheckpointPeerLifetime,
     pub(crate) consumer: CognitiveCheckpointPeerLifetime,
     pub(crate) identity: HostAuthorityRegisteredIdentity,

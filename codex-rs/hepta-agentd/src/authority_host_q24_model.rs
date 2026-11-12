@@ -25,7 +25,9 @@ use crate::authority_host_config::HostAuthorityServiceConfig;
 mod profile;
 pub(crate) use profile::FilePin;
 pub use profile::HostAuthorityQ24ModelFactoryProfileV1;
+pub(crate) use profile::LiveFactoryProfile;
 pub(crate) use profile::Q24ModelFactoryBootstrap;
+pub(crate) use profile::ReservedFactoryProfile;
 
 #[path = "authority_host_q24_model_registration.rs"]
 mod registration;
@@ -59,13 +61,13 @@ pub struct HostAuthorityQ24ModelFactoryReservationV1 {
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct FactoryRecord {
-    pub(crate) profile: HostAuthorityQ24ModelFactoryProfileV1,
+    pub(crate) profile: ReservedFactoryProfile,
     pub(crate) epoch: u64,
     pub(crate) material: Option<String>,
 }
 
 pub(crate) struct RegisteredQ24ModelFactory {
-    pub(crate) profile: HostAuthorityQ24ModelFactoryProfileV1,
+    pub(crate) profile: LiveFactoryProfile,
     learning: HostAuthorityLearningProfileV1,
     reservation: HostAuthorityQ24ModelFactoryReservationV1,
     store: HostAuthorityFrontierStore<FactoryRecord>,

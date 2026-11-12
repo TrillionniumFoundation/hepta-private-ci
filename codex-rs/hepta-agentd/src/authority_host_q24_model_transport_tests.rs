@@ -6,7 +6,7 @@ use pretty_assertions::assert_eq;
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FactoryRecord, FactoryLease)> {
     let (directory, _, _, _, profile) = super::super::profile::tests::fixture()?;
     let record = FactoryRecord {
-        profile,
+        profile: ReservedFactoryProfile::LegacyV1(profile),
         epoch: 1,
         material: None,
     };

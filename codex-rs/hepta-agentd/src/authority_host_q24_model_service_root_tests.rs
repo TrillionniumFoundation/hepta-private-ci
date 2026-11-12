@@ -323,7 +323,10 @@ fn root_q24_factory_registers_transfers_binds_and_recovers_original_custody() ->
     )?;
     use codex_hepta_contracts::AuthorityFrontierStore;
     let bound = stored.load(FACTORY_OWNER)?;
-    assert_eq!(bound.profile, factory_profile);
+    assert_eq!(
+        bound.profile,
+        crate::authority_host_service::q24_model::ReservedFactoryProfile::LegacyV1(factory_profile)
+    );
     assert_eq!(
         (bound.epoch, bound.material),
         (2, Some(Digest32::of_bytes(MATERIAL).to_string()))
@@ -513,7 +516,7 @@ fn root_q24_model_factory_service_dedicated_uid_child() -> anyhow::Result<()> {
 
 async fn exchange(
     transport: &crate::root_observation_stream::RootObservationStream,
-    profile: &crate::HostAuthorityQ24ModelFactoryProfileV1,
+    profile: &crate::authority_host_service::q24_model::LiveFactoryProfile,
     request_id: u64,
     command: crate::authority_host_service::q24_model::Command,
 ) -> anyhow::Result<crate::authority_host_service::q24_model::Reply> {
