@@ -4510,7 +4510,7 @@ forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidence
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
-required = ["sources.open_original_source_pair", "experience.attest_experience()", "dataset\n                            .attest_dataset(&mut experience)", "dataset.read_dataset(&mut experience)", "files.open_original_training_pair", "OriginalCellQ24TrainingStageV1::from_original_owners", "FenceAggregateOnDrop", "fence.armed = false", "cancelled.load(Ordering::Acquire)", "runtime\n                .block_on(owners.factory.require_current())", "prepared.revalidate_source()", "Error::OwnerUnavailable", "Action::ReadProposal", "Action::ReadDecision"]
+required = ["sources.open_original_source_pair", "experience.attest_experience()", "dataset\n                            .attest_dataset(&mut experience)", "dataset.read_dataset(&mut experience)", "files.open_original_training_pair", "OriginalCellQ24TrainingStageV1::from_original_owners", "FenceAggregateOnDrop", "fence.armed = false", "cancelled.load(Ordering::Acquire)", "runtime\n                .block_on(AgentdRootQ24ModelFactoryV1::require_current(\n                    &mut owners.factory,\n                ))", "prepared.revalidate_source()", "Error::OwnerUnavailable", "Action::ReadProposal", "Action::ReadDecision"]
 forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "File::open", "OpenOptions", "AuthorityPosture::ALL", ".sign(", "AuthorityPosture::ALLOW", "unsafe"]
 
 [[protected_file.required_function_order]]

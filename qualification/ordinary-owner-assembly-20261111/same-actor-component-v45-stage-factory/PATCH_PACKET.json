@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "kind": "v44_actual_unresolved_stage_factory_receiver_minimal_fix",
+  "status": "FROZEN_UNEXECUTED_SOURCE_AND_ONE_RAW_GUARD_ONLY",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "actual_failure": {
+    "provenance": "Root-provided exact 194-byte original V44 caller-full stdout; reviewer did not use h or reread native output.",
+    "stdout": "FAIL_HEPTA_CALLER_PROOF: root_same_actor_context_current: codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs: unresolved possible OriginalSameActorRootContext::require_current receiver\n",
+    "exit": 1,
+    "elapsed_seconds": 2075.0150005470496,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "previous_qa": "Root reports actual V44 QA236/236 and caller-selftest0; fullcaller failed. No qualification is transferred to this candidate."
+  },
+  "fixed_tools": {
+    "typed_helper": {
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "changed": false
+    },
+    "checker": {
+      "blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "changed": false
+    }
+  },
+  "actual_type": {
+    "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+    "blob": "f15a3f5549a6eaf83c3759afab4366bf71938661",
+    "struct_field": "Q24StageOwners.factory: AgentdRootQ24ModelFactoryV1",
+    "method_signature": "pub(crate) async fn require_current(&mut self) -> Result<(), AgentdError>",
+    "source_binding": "in_lane holds actual owners.try_lock, then let owners: &mut Q24StageOwners = &mut locked;",
+    "correction": "Replace only the two actual nested-field dot calls by AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory). No new local owner, Arc clone, re-open, reborrow duration beyond the original block_on, reordered operation or new call."
+  },
+  "root_cause": {
+    "evidence": "Read full fixed typed helper. authority_fields retains only fields whose type is the target; _receiver_type traverses fields.get, so an unrelated nested Q24StageOwners.factory is unresolved for OriginalSameActorRootContext. The real explicit Factory UFCS is unambiguous and unrelated to that target.",
+    "local_dot_inventory": [
+      {
+        "site": "from_original_owners first factory call",
+        "receiver": "factory",
+        "actual_type": "AgentdRootQ24ModelFactoryV1",
+        "source": "explicit mut factory parameter",
+        "changed": false
+      },
+      {
+        "site": "from_original_owners second factory call",
+        "receiver": "factory",
+        "actual_type": "AgentdRootQ24ModelFactoryV1",
+        "source": "same explicit parameter",
+        "changed": false
+      },
+      {
+        "site": "install_published_generation",
+        "receiver": "self",
+        "actual_type": "OriginalCellQ24LearningStageOwnersV1",
+        "source": "enclosing inherent impl",
+        "changed": false
+      },
+      {
+        "site": "Q24StageState::in_lane pre-work",
+        "receiver": "owners.factory",
+        "actual_type": "AgentdRootQ24ModelFactoryV1",
+        "source": "actual Q24StageOwners field",
+        "changed": true
+      },
+      {
+        "site": "Q24StageState::in_lane post-work",
+        "receiver": "owners.factory",
+        "actual_type": "AgentdRootQ24ModelFactoryV1",
+        "source": "same actual field",
+        "changed": true
+      },
+      {
+        "site": "LearningIterationStageOwnerPortsV1::prepare_proposal",
+        "receiver": "self",
+        "actual_type": "OriginalCellQ24LearningStageOwnersV1",
+        "source": "enclosing trait impl for concrete Stage owner",
+        "changed": false
+      }
+    ],
+    "local_projection_limit": "This inventory is static interpretation of the original helper and real declarations, not execution of the original helper/checker or an all-repository authority-field index."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "preimage": {
+        "blob": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+        "bytes": 30586,
+        "sha256": "01d29a5327e8a559d7b3e0c2a8ebd8f71f14f5175fa226ddfebab5c4d0fa066e"
+      },
+      "postimage": {
+        "blob": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+        "bytes": 30730,
+        "sha256": "46e46a40d48f62e3f3fdff1856580650835602a6915fbe0e0d10d1279713eb8f"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "before": "            runtime\n                .block_on(owners.factory.require_current())\n                .map_err(unavailable)?;\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            let result = work(owners, &training, &runtime)?;",
+          "after": "            runtime\n                .block_on(AgentdRootQ24ModelFactoryV1::require_current(\n                    &mut owners.factory,\n                ))\n                .map_err(unavailable)?;\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            let result = work(owners, &training, &runtime)?;"
+        },
+        {
+          "op": "replace",
+          "before": "            let result = work(owners, &training, &runtime)?;\n            prepared.revalidate_source().map_err(unavailable)?;\n            runtime\n                .block_on(owners.factory.require_current())\n                .map_err(unavailable)?;",
+          "after": "            let result = work(owners, &training, &runtime)?;\n            prepared.revalidate_source().map_err(unavailable)?;\n            runtime\n                .block_on(AgentdRootQ24ModelFactoryV1::require_current(\n                    &mut owners.factory,\n                ))\n                .map_err(unavailable)?;"
+        }
+      ]
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage": {
+        "blob": "0a8e89e712c4a27f6fec8c75c774e2ca9f54b89a",
+        "bytes": 891735,
+        "sha256": "74e44e6c9b6c2351083cb72346aeb5094f4c1da27830b51f153da6c642342521"
+      },
+      "postimage": {
+        "blob": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+        "bytes": 891809,
+        "sha256": "561ee83c6451ea1f8e584f7c281fd56a3d7907b084c287eaae256044382308cd"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs\"\nrequired = [\"sources.open_original_source_pair\", \"experience.attest_experience()\", \"dataset\\n                            .attest_dataset(&mut experience)\", \"dataset.read_dataset(&mut experience)\", \"files.open_original_training_pair\", \"OriginalCellQ24TrainingStageV1::from_original_owners\", \"FenceAggregateOnDrop\", \"fence.armed = false\", \"cancelled.load(Ordering::Acquire)\", \"runtime\\n                .block_on(owners.factory.require_current())\", \"prepared.revalidate_source()\", \"Error::OwnerUnavailable\", \"Action::ReadProposal\", \"Action::ReadDecision\"]\nforbidden = [\"SigningKey::generate\", \"SigningKey::from_bytes\", \"LearningEvidenceVerifierV1::new\", \"File::open\", \"OpenOptions\", \"AuthorityPosture::ALL\", \".sign(\", \"AuthorityPosture::ALLOW\", \"unsafe\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_owners(\"\nsequence = [\"factory\\n            .require_learning_scope\", \"factory\\n            .require_local_policy\", \"factory.require_current().await\", \"sources.open_original_source_pair\", \"files.open_original_training_pair\", \"OriginalCellQ24TrainingStageV1::from_original_owners\"]\n\n\n[[protected_file.required_function_order]]\nfunction = \"fn install_evaluation(\"\nsequence = [\"owners.evaluation.is_some()\", \"trainer_source.require_original_owner(\", \"training.readback(&inner.dataset_cut)\", \"evaluation.require_training(\", \"evaluation.require_original_training_evidence(\", \"owners.evaluation = Some(evaluation)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn install_independent_evaluation(\"\nsequence = [\"owners.evaluation.is_some()\", \"trainer_source.require_original_owner(\", \"training.readback(&inner.dataset_cut)\", \".into_stage(\", \"evaluation.require_training(\", \"evaluation.require_original_training_evidence(\", \"owners.evaluation = Some(evaluation)\"]\n",
+          "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs\"\nrequired = [\"sources.open_original_source_pair\", \"experience.attest_experience()\", \"dataset\\n                            .attest_dataset(&mut experience)\", \"dataset.read_dataset(&mut experience)\", \"files.open_original_training_pair\", \"OriginalCellQ24TrainingStageV1::from_original_owners\", \"FenceAggregateOnDrop\", \"fence.armed = false\", \"cancelled.load(Ordering::Acquire)\", \"runtime\\n                .block_on(AgentdRootQ24ModelFactoryV1::require_current(\\n                    &mut owners.factory,\\n                ))\", \"prepared.revalidate_source()\", \"Error::OwnerUnavailable\", \"Action::ReadProposal\", \"Action::ReadDecision\"]\nforbidden = [\"SigningKey::generate\", \"SigningKey::from_bytes\", \"LearningEvidenceVerifierV1::new\", \"File::open\", \"OpenOptions\", \"AuthorityPosture::ALL\", \".sign(\", \"AuthorityPosture::ALLOW\", \"unsafe\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_owners(\"\nsequence = [\"factory\\n            .require_learning_scope\", \"factory\\n            .require_local_policy\", \"factory.require_current().await\", \"sources.open_original_source_pair\", \"files.open_original_training_pair\", \"OriginalCellQ24TrainingStageV1::from_original_owners\"]\n\n\n[[protected_file.required_function_order]]\nfunction = \"fn install_evaluation(\"\nsequence = [\"owners.evaluation.is_some()\", \"trainer_source.require_original_owner(\", \"training.readback(&inner.dataset_cut)\", \"evaluation.require_training(\", \"evaluation.require_original_training_evidence(\", \"owners.evaluation = Some(evaluation)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn install_independent_evaluation(\"\nsequence = [\"owners.evaluation.is_some()\", \"trainer_source.require_original_owner(\", \"training.readback(&inner.dataset_cut)\", \".into_stage(\", \"evaluation.require_training(\", \"evaluation.require_original_training_evidence(\", \"owners.evaluation = Some(evaluation)\"]\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 2,
+  "operation_count": 3,
+  "preserved": {
+    "source_erasing_only_two_UFCS_expression_changes_restores_original_full_bytes": true,
+    "original_try_lock_permit_cancelled_guard_pre_and_post_source_validation_work_result_and_error_propagation": true,
+    "block_on_calls": 2,
+    "new_calls": 0,
+    "raw_required": "One existing raw required expression is replaced by its full actual UFCS spelling, including &mut owners.factory and the complete closing call. All old required siblings, all function/file order arrays and all forbidden strings remain exact.",
+    "boundary_rows": 638,
+    "protected_rows": 440,
+    "all_boundary_rows_bytes_identical": true,
+    "all_other_439_protected_rows_bytes_identical": true,
+    "changed_protected_rows": 1,
+    "changed_raw_required_strings": 1,
+    "qa_changed": 0,
+    "original_checker_changed": false,
+    "typed_helper_changed": false,
+    "max_age_500ms_changed": false,
+    "original_request_started_changed": false
+  },
+  "bounded_existing_qa_inventory": [
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "blob": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+      "bytes": 11309,
+      "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "blob": "7015e686e71d88293ffaebb9577d33bfde41a933",
+      "bytes": 19100,
+      "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "blob": "83bb92cfca3d4724cb498730046bcfda3831631e",
+      "bytes": 6309,
+      "sha256": "7861208545a653bc9c02b619c66c2b34a07dca873db606dd1d416e8d7bde1e66",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+      "bytes": 11528,
+      "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "blob": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+      "bytes": 4726,
+      "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "blob": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+      "bytes": 12257,
+      "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "blob": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+      "bytes": 7656,
+      "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+      "blob": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+      "bytes": 9571,
+      "sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937",
+      "contains_old_member_expression": false,
+      "contains_modified_runtime_raw_marker": false
+    }
+  ],
+  "static_validation": {
+    "all_sources_and_dependency_methods_independently_git_read": true,
+    "final_two_posts_create_get_byte_equal": true,
+    "unique_forward_and_reverse_all_three_ops": true,
+    "full_original_source_projection_equal": true,
+    "all_boundary_tables_exact": true,
+    "existing_raw_required_new_expression_occurs_twice_in_real_source": true,
+    "wider_same_method_receiver_inventory": "Requested by Root as a separate static report only; no additional source modifications are part of this fixed two-site candidate."
+  },
+  "not_performed": {
+    "native": 0,
+    "h": 0,
+    "cargo": 0,
+    "formatter": 0,
+    "checker": 0,
+    "tests": 0,
+    "refs": 0
+  },
+  "next_step": "Independent static review, Root-only allowlist hash update for this CALLERS post, then the unchanged complete fixed-source qualification. No PASS is claimed here."
+}

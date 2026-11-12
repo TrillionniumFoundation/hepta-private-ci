@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "independent_v45_actual_stage_factory_receiver_review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_packet": "35a64e70a156a7a855ad4f2f5338f9c1035ea870",
+  "base": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "status": "NO_CONFIRMED_STATIC_BLOCKER_IN_TWO_RECEIVERS_AND_ONE_RAW_MARKER",
+  "verification": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "pre": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+      "post": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+      "operations": 2,
+      "forward_reverse_exact": true,
+      "pre_sha256": "01d29a5327e8a559d7b3e0c2a8ebd8f71f14f5175fa226ddfebab5c4d0fa066e",
+      "post_sha256": "46e46a40d48f62e3f3fdff1856580650835602a6915fbe0e0d10d1279713eb8f"
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": "0a8e89e712c4a27f6fec8c75c774e2ca9f54b89a",
+      "post": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "operations": 1,
+      "forward_reverse_exact": true,
+      "pre_sha256": "74e44e6c9b6c2351083cb72346aeb5094f4c1da27830b51f153da6c642342521",
+      "post_sha256": "561ee83c6451ea1f8e584f7c281fd56a3d7907b084c287eaae256044382308cd"
+    }
+  ],
+  "actual_type": {
+    "field": "Q24StageOwners.factory: AgentdRootQ24ModelFactoryV1",
+    "factory_blob": "f15a3f5549a6eaf83c3759afab4366bf71938661",
+    "signature": "pub(crate) async fn require_current(&mut self) -> Result<(), AgentdError>",
+    "receiver": "actual &mut Q24StageOwners inside the original owners.try_lock",
+    "change": "Same mutable field reborrow and same block_on call, made explicit with concrete Factory UFCS."
+  },
+  "observations": [
+    "All three operations reconstruct exact postimages and reverse to exact originals. No other source bytes changed.",
+    "Both calls remain before/after original work(owners,&training,&runtime). Original permit, locking, cancelled guards, prepared.revalidate_source, original error propagation and request/runtime budgets remain byte-identical.",
+    "One existing raw required expression is replaced with the complete concrete Factory call spelling. All other CALLERS bytes remain exact; no caller or boundary is added. Declared inventory remains 638 boundaries and 440 protected files.",
+    "This prevents the reported nested-field call from being interpreted as a possible unrelated Context receiver. It does not prove absence of every other whole-repository typed-helper ambiguity.",
+    "No helper/checker/parser/formatter/native/test execution or ref change was performed. The Root-reported actual V44 failure is provenance, not a log independently re-executed or reread by this reviewer.",
+    "This future Learning release work will layer its Stage module addition over this actual corrected preimage, not restore the older two member calls."
+  ],
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "not_performed": [
+    "h",
+    "PTY",
+    "native",
+    "cargo",
+    "formatter",
+    "original caller helper",
+    "checker",
+    "QA",
+    "CI",
+    "ref mutation"
+  ]
+}

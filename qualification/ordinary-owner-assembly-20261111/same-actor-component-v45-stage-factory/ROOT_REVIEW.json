@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "STATIC_REVIEW_ONLY_NATIVE_PENDING",
+  "base": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "base_tree": "f21843ca6d042b46f87df4ac1208e95752936291",
+  "source_operations": 2,
+  "metadata_operations": 1,
+  "allowlist_operations": 1,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "pre": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+      "post": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+      "bytes": 30730,
+      "sha256": "46e46a40d48f62e3f3fdff1856580650835602a6915fbe0e0d10d1279713eb8f",
+      "operations": 2,
+      "forward_reverse": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": "0a8e89e712c4a27f6fec8c75c774e2ca9f54b89a",
+      "post": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "bytes": 891809,
+      "sha256": "561ee83c6451ea1f8e584f7c281fd56a3d7907b084c287eaae256044382308cd",
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "pre": "ed5ca05adc8460b5bb795f71faaf0238175cf1be",
+      "post": "ea4df5b29dc52e42fd106713f2f53ffce76c2684",
+      "bytes": 12066,
+      "sha256": "e6188b2786d7326c8a96f4af02364555300160092475a94505b113f8efc983af",
+      "operations": 1,
+      "forward_reverse": true
+    }
+  ],
+  "invariants": [
+    "Concrete UFCS uses the same actual &mut owners.factory and original block_on, cancellation checks, work call and error propagation.",
+    "Only the matching raw required expression changes in CALLERS; every other byte, all boundary definitions and function-order guards stay exact.",
+    "Only the existing exact CALLERS file-size exception hash changes; no broad path or checker exception is introduced.",
+    "Original checker/helper/harness, 500ms request origin, deadlines, seven packages and Root17 remain unchanged.",
+    "No future 125-source checkpoint code is installed in this candidate."
+  ],
+  "independent_review": "7b8ed6ee3e51fdead91bef47939aa4a6f92d0225",
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ],
+  "native_executed": false
+}
