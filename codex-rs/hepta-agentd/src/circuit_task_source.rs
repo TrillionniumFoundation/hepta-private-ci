@@ -45,6 +45,8 @@ use crate::circuit_cell_scope_digest_v1;
 
 #[path = "circuit_task_source_codec.rs"]
 mod codec;
+#[cfg(target_os = "linux")]
+pub(crate) use codec::RootHistoricalTaskPublicationDataV1;
 #[path = "circuit_task_source_history.rs"]
 mod history;
 #[cfg(target_os = "linux")]

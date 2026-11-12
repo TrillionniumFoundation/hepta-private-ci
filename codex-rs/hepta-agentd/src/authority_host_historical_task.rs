@@ -15,6 +15,7 @@ use crate::authority_host_runtime::RootInitialRunStartFilesV1;
 use crate::authority_host_service::generation_initial::historical_source_handoff::RootHistoricalSourceHandoffV1;
 use crate::authority_host_service::generation_initial::run_start_retention::RootOriginalRunStartReadV1;
 use crate::authority_host_service::generation_initial::run_start_retention::RootRetainedRunStartDataV1;
+use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
 
 pub(crate) struct RootRetainedHistoricalCompleteTaskV1 {
     root: Arc<RootAuthorityDirectory>,
@@ -48,6 +49,7 @@ pub(crate) struct RootOriginalHistoricalTaskReadV1<'a, 'source, 'run_start, 'led
 pub(crate) struct RootOriginalHistoricalCompleteTaskObservationV1 {
     cut: Digest32,
     ledger: RootOriginalHistoricalLedgerObservationV1,
+    publication: RootHistoricalTaskPublicationDataV1,
 }
 
 impl RootRetainedHistoricalCompleteTaskV1 {
@@ -211,13 +213,27 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             ledger_digest.as_array(),
             source.source.publication().publication_digest().as_array(),
         ]);
+        let publication = RootHistoricalTaskPublicationDataV1::from_original_observation(
+            &source.source,
+            &source.cell,
+        )
+        .map_err(io::Error::other)?;
+        publication
+            .validate_against(
+                &RootOriginalHistoricalLedgerObservationV1::ledger_read_data(&ledger)?,
+            )
+            .map_err(io::Error::other)?;
         if Instant::now() >= self.end {
             return Err(io::Error::other(
                 "historical task expired during physical observation",
             ));
         }
         self.state = ReadState::Complete;
-        Ok(RootOriginalHistoricalCompleteTaskObservationV1 { cut, ledger })
+        Ok(RootOriginalHistoricalCompleteTaskObservationV1 {
+            cut,
+            ledger,
+            publication,
+        })
     }
 }
 
@@ -232,5 +248,11 @@ impl RootOriginalHistoricalCompleteTaskObservationV1 {
         &self,
     ) -> io::Result<crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1> {
         RootOriginalHistoricalLedgerObservationV1::ledger_read_data(&self.ledger)
+    }
+
+    /// Canonical Source and full Cell data observed in this same physical cut.
+    /// Only the actual Root runtime may seal it into the historical response.
+    pub(crate) fn publication_read_data(&self) -> RootHistoricalTaskPublicationDataV1 {
+        self.publication.clone()
     }
 }
