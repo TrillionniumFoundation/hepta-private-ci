@@ -31,7 +31,13 @@ def main():
     parser.add_argument("--expected-source", required=True)
     parser.add_argument("--prior-freeze", type=Path, required=True)
     parser.add_argument("--prior-freeze-sha256", required=True)
+    parser.add_argument("--expected-inventory-sha256")
     args = parser.parse_args()
+    if args.expected_inventory_sha256 is not None and (
+        len(args.expected_inventory_sha256) != 64
+        or any(c not in "0123456789abcdef" for c in args.expected_inventory_sha256)
+    ):
+        parser.error("Expected inventory pin must be a lowercase SHA256")
     code, root = args.repository.resolve(), args.output.resolve()
     head = subprocess.check_output(
         ["git", "-C", str(code), "rev-parse", "HEAD"], text=True
@@ -55,6 +61,7 @@ def main():
         "wrapper_sha256": pin(__file__),
         "prior_freeze_sha256": args.prior_freeze_sha256,
         "prior_incomplete_collection_retained": True,
+        "expected_source_inventory_sha256": args.expected_inventory_sha256,
         "study_id": "ctrl-real-policy-20261112-1333",
         "fit_per_field": 12,
         "calibration_per_field": 9,
@@ -121,6 +128,15 @@ def main():
                 8,
             ],
         )
+        inventory_pin = pin(root / "preparation/SOURCE_INVENTORY.json")
+        if (
+            args.expected_inventory_sha256 is not None
+            and inventory_pin != args.expected_inventory_sha256
+        ):
+            raise ValueError(
+                "Source inventory differs from the registered prior roster"
+            )
+        save(root / "SOURCE_INVENTORY_PIN.json", {"sha256": inventory_pin})
         prepared = read(root / "preparation/INPUT_PREPARED.json")
         prepared["collection_plan"]["action_budget_seconds"] = plan[
             "action_budget_seconds"

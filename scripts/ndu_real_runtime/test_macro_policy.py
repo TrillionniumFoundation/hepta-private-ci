@@ -3,6 +3,7 @@
 from dataclasses import replace
 import hashlib
 import json
+import math
 import unittest
 from unittest.mock import patch
 
@@ -99,6 +100,53 @@ class MacroPolicyTest(unittest.TestCase):
             self.choose(model)[1]["probabilities"],
             {"acquired": None, "selected_used": None, "effect_occurred": None},
         )
+
+    def test_constant_weighted_features_roundtrip_without_widening_envelope(self):
+        for groups in (
+            ["a"] * 3 + ["b"] * 3,
+            ["a"] * 6 + ["b"] * 5,
+            ["source" + str(i // 3) for i in range(72)],
+            ["a"] * 71 + ["b"],
+        ):
+            with self.subTest(rows=len(groups), sources=len(set(groups))):
+                self.train = [
+                    pair(source, f"train-{i}", 0.1) for i, source in enumerate(groups)
+                ]
+                self.cal = [
+                    pair("cal" + str(i), "cal" + str(i), 0.1) for i in range(10)
+                ]
+                for row in self.train + self.cal:
+                    row["state"]["remaining_seconds"] = 40.0
+                    for branch in row["branches"].values():
+                        branch["initial_public_state_sha256"] = digest(row["state"])
+                        branch["public_state_sha256"] = digest(row["state"])
+                model = self.fitted()
+                raw = model.to_bytes()
+                restored = load(raw, hashlib.sha256(raw).hexdigest(), context=CONTEXT)
+                expected = [0.1, 1.0, 0.0, 0.0, math.log1p(40.0)]
+                for field in ("minimum", "center", "maximum"):
+                    self.assertEqual(restored.data[field], expected)
+                self.assertEqual(restored.data["scale"], [1.0] * len(expected))
+                self.assertEqual(restored.to_bytes(), raw)
+                self.assertTrue(restored.data["calibration"]["complete"])
+                public = {**state(0.1), "remaining_seconds": 40.0}
+                self.assertEqual(
+                    self.choose(restored, "conditional", public)[0], "READ"
+                )
+                for index, direction in ((0, -math.inf), (4, math.inf)):
+                    changed = json.loads(raw)
+                    changed["center"][index] = math.nextafter(
+                        expected[index], direction
+                    )
+                    altered = json.dumps(changed, allow_nan=False).encode()
+                    with self.assertRaisesRegex(
+                        ValueError, "Invalid normalization or observed envelope"
+                    ):
+                        load(
+                            altered,
+                            hashlib.sha256(altered).hexdigest(),
+                            context=CONTEXT,
+                        )
 
     def test_unknown_cost_is_retained_and_never_zero(self):
         self.train.append(pair("a", "missing"))
