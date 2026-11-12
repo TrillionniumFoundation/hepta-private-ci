@@ -611,7 +611,9 @@ def _verify_function_order(
         function = item.get("function")
         sequence = item.get("sequence")
         if not isinstance(function, str) or not re.fullmatch(
-            r"fn [A-Za-z_]\w*\(", function
+            r"fn [A-Za-z_]\w*(?:<[A-Za-z_]\w*(?:: [A-Za-z_]\w*)?"
+            r"(?:, [A-Za-z_]\w*(?:: [A-Za-z_]\w*)?)*>)?\(",
+            function,
         ):
             raise VerificationFailure(f"{relative}: exact function marker required")
         if code.count(function) != 1:
@@ -785,17 +787,17 @@ def _self_test_typed_field_cache() -> None:
             encoding="utf-8",
         )
         manifest = (
-            'schema_version = 2\n'
+            "schema_version = 2\n"
             'plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"\n'
             'source_roots = ["src"]\n'
             'ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]\n'
-            '[authority]\nproduction = false\n'
-            '[privileged_inventory]\n'
+            "[authority]\nproduction = false\n"
+            "[privileged_inventory]\n"
             'required_boundary_ids = ["actual_run", "actual_inspect"]\n'
         )
         for method in ("run", "inspect"):
             manifest += (
-                '[[boundary]]\n'
+                "[[boundary]]\n"
                 f'id = "actual_{method}"\n'
                 f'symbol = "ActualAuthority::{method}"\n'
                 'definition_path = "src/owner.rs"\n'
