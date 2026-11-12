@@ -1,0 +1,27 @@
+{
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "a873017d258672c3ab4f5eacc4366a0871f23cdd"
+  ],
+  "cwd": "codex-rs",
+  "returncode": 0,
+  "source_after": {
+    ".github/workflows/hcsn-torch-cascade.yml": "14069dcd73f4fc454149b71679d3ff6124c7dbabe9237d53d250ead44e059a41",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/run_cascade_checks.py": "8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6",
+    "qualification/hcsn_joint_dde/test_torch_cascade.py": "fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb",
+    "qualification/hcsn_joint_dde/torch_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773"
+  },
+  "source_before": {
+    ".github/workflows/hcsn-torch-cascade.yml": "14069dcd73f4fc454149b71679d3ff6124c7dbabe9237d53d250ead44e059a41",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/run_cascade_checks.py": "8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6",
+    "qualification/hcsn_joint_dde/test_torch_cascade.py": "fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb",
+    "qualification/hcsn_joint_dde/torch_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773"
+  },
+  "stderr": "",
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "unchanged": true
+}

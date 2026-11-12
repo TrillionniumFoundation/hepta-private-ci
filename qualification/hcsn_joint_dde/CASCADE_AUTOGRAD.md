@@ -38,10 +38,44 @@ of undefined derivatives and resource overflow. The runner retains raw logs,
 all six executed source file identities before/after, runtime versions,
 test count, failures, timeout and process-only resources.
 
-The initial source stage has no test success claim. Native or hosted receipts
-must be read before qualifying these checks. Tests are synthetic numerical
+The source-only commit had no test success claim. The native execution below
+now supplies actual receipts. Tests are synthetic numerical
 validation, not new task data or network retraining. This does not establish
 graded-mesh AD, continuum derivative precision, rare-tail relative precision,
 observation-update differentiability, a recurrent network training replay,
 independent future task benefit, production authority or default-cell status.
 **Draft / HOLD_NO_GO.**
+
+## Observed native execution
+
+Exact source `19b7a99f6d63596dd77c34a1ed8e529e1c744750` ran on the configured
+`desktop` host using Python 3.12.3, Torch 2.8.0+cu128 (CPU execution only),
+NumPy 2.3.5 and SciPy 1.17.0. The retained terminal owner reports exit 0 and
+complete output. All **6/6 tests passed, no skips**. The six executed source
+identities before/after are unchanged and match the published objects.
+
+Across all compared fields, laws and query times, the largest discrepancy from
+the separate SciPy DDE is `1.6504300530406635e-11`. The full-output six-parameter
+gradcheck and the separately described projected initial-law/phase checks
+passed. A fixed nonuniform output projection has nonzero finite derivatives
+for all six physical parameters, including delay. This is a correctness probe,
+not a demonstration that optimizing these parameters improves a task.
+
+The test subprocess consumed 10.617 seconds wall, 7.711 seconds CPU and
+658,184 KiB peak RSS. These process-only numbers exclude setup, earlier work,
+CI, lifecycle, model training and energy. Actual neural optimizer calls = 0;
+independent future tasks = 0. Hosted CI on subsequent heads is separate.
+
+`evidence/native-cascade-20261112/attempt002/` retains the original launch and
+outcome, PREEXECUTION and RESULT, complete stdout/stderr, terminal receipt,
+readback SHA256 and formatter outcome. `attempt001` was only a source transfer
+whose acknowledgment timed out; file readback confirmed the transfer, and no
+numerical process or training was started by it. The first actual numerical
+execution is this `attempt002`, on the subsequently frozen reviewed source.
+
+A separate same-session mathematical reviewer checked the block convolution,
+uniform phase integrals and remaining-age identities. Its two findings were
+fixed before this tested source: learnable zero-time phase fronts and rates
+that overflow from otherwise finite parameters now reject. Mandatory scoped
+`just fmt` ran after native tests and changed no source bytes; tests were not
+rerun after formatting. Overall qualification remains **HOLD_NO_GO**.
