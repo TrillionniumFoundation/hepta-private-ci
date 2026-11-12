@@ -25,16 +25,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 for receipt in &snapshot.receipts {
                     owners.require_receipt(&inner, training, runtime, &snapshot, receipt)?;
                 }
-                let evaluation: &mut OriginalCellQ24EvaluationStageV1 = owners
-                    .evaluation
-                    .as_mut()
-                    .ok_or(Error::OwnerUnavailable("original B handoff"))?;
-                let before = evaluation.read_execution()?;
-                let manifest = before.plan().record().candidate.manifest.clone();
-                if evaluation.read_execution()? != before {
-                    return Err(Error::CommitUncertain);
-                }
-                Ok(manifest)
+                owners.original_evaluation_manifest(&inner, training, &snapshot)
             })
             .await
     }
@@ -69,21 +60,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 for receipt in &snapshot.receipts {
                     owners.require_receipt(&inner, training, runtime, &snapshot, receipt)?;
                 }
-                if let Some(expected) = &manifest {
-                    let evaluation: &mut OriginalCellQ24EvaluationStageV1 = owners
-                        .evaluation
-                        .as_mut()
-                        .ok_or(Error::OwnerUnavailable("original B handoff"))?;
-                    if &evaluation
-                        .read_execution()?
-                        .plan()
-                        .record()
-                        .candidate
-                        .manifest
+                if let Some(expected) = &manifest
+                    && &owners.original_evaluation_manifest(&inner, training, &snapshot)?
                         != expected
-                    {
-                        return Err(Error::WrongScope);
-                    }
+                {
+                    return Err(Error::WrongScope);
                 }
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
@@ -93,21 +74,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 for receipt in &snapshot.receipts {
                     owners.require_receipt(&inner, training, runtime, &snapshot, receipt)?;
                 }
-                if let Some(expected) = &manifest {
-                    let evaluation: &mut OriginalCellQ24EvaluationStageV1 = owners
-                        .evaluation
-                        .as_mut()
-                        .ok_or(Error::OwnerUnavailable("original B handoff"))?;
-                    if &evaluation
-                        .read_execution()?
-                        .plan()
-                        .record()
-                        .candidate
-                        .manifest
+                if let Some(expected) = &manifest
+                    && &owners.original_evaluation_manifest(&inner, training, &snapshot)?
                         != expected
-                    {
-                        return Err(Error::WrongScope);
-                    }
+                {
+                    return Err(Error::WrongScope);
                 }
                 Ok(value)
             })
