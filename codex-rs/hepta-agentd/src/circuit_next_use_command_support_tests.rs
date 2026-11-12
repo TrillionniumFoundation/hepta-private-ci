@@ -35,6 +35,7 @@ use crate::root_observation_stream::RootObservationStream;
 
 pub(crate) use training_transport::identity;
 pub(crate) use training_transport::pidfd;
+pub(crate) use super::evidence::serve_evidence_late_response;
 
 fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorityPeerChannel> {
     Ok(HostAuthorityPeerChannel::from_stream(

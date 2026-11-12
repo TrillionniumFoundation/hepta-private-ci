@@ -391,37 +391,86 @@ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -
     let server = next::serve(Arc::clone(&service.owner), channel);
     let completed = client.attest_completed_task().await?;
     let bytes = f.f.original.bytes()?;
+    let task_bytes = owner_bytes(&f.f.original.session)?;
+
+    // The legacy evidence lane remains bounded to 500 ms. Complete the real
+    // owner read, then hold only its ACK until this original client times out.
+    // No signature, snapshot or CURRENT response is synthesized by this gate.
     let (evidence, channel) = next::evidence_client(&context)?;
-    let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);
-    assert_eq!(
-        evidence
-            .readback(completed.snapshot(), completed.receipt())
-            .await?,
-        *completed.attestation(),
+    let (release, evidence_server) =
+        next::serve_evidence_late_response(Arc::clone(&service.owner), channel);
+    let started = std::time::Instant::now();
+    let legacy = evidence
+        .readback(completed.snapshot(), completed.receipt())
+        .await;
+    eprintln!(
+        "LEARN_C_LEGACY_BOUND elapsed_us={} result={:?}",
+        started.elapsed().as_micros(),
+        legacy.as_ref().map(|_| ()),
     );
+    assert!(matches!(
+        legacy,
+        Err(crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "original learning evidence owner"
+        ))
+    ));
+    release.send(())?;
+    // The server still awaits original Tokio I/O. Joining on the sole runtime
+    // thread would stop its reactor after the client's timeout.
+    let (original_responses, evidence_terminal) =
+        tokio::task::spawn_blocking(move || evidence_server.join())
+            .await?
+            .map_err(|_| anyhow::anyhow!("original bounded Observer evidence peer"))?;
+    assert_eq!(original_responses, 1);
+    eprintln!("LEARN_C_LEGACY_BOUND peer_terminal={evidence_terminal:?}");
+    assert!(matches!(
+        evidence_terminal,
+        Err(OriginalCircuitNextUseCommandErrorV1::Transport(
+            codex_hepta_contracts::HostIssuerTransportError::DeadlineElapsed
+                | codex_hepta_contracts::HostIssuerTransportError::Closed
+                | codex_hepta_contracts::HostIssuerTransportError::Unavailable
+        ))
+    ));
+    assert_eq!(f.f.original.bytes()?, bytes);
+    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);
+
+    // Root's actual stage adapter uses this already-held command capability.
+    // A fresh full read proves that a late legacy reply is not used as CURRENT.
+    let started = std::time::Instant::now();
+    let current = client.readback().await;
+    eprintln!(
+        "LEARN_C_COMMAND_CURRENT elapsed_us={} result={:?}",
+        started.elapsed().as_micros(),
+        current.as_ref().map(|_| ()),
+    );
+    let current = current?;
+    assert_eq!(current, completed);
+    assert_eq!(current.attestation(), completed.attestation());
+    assert_eq!(f.f.original.bytes()?, bytes);
+    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);
+
     f.f.original.version.withdraw()?;
-    assert!(
+    assert!(matches!(
         evidence
             .readback(completed.snapshot(), completed.receipt())
-            .await
-            .is_err()
-    );
+            .await,
+        Err(crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "original learning evidence owner"
+        ))
+    ));
     drop(evidence);
-    assert!(
-        evidence_server
-            .join()
-            .map_err(|_| anyhow::anyhow!("withdrawn Observer"))?
-            .is_err()
-    );
     assert!(matches!(
         client.readback().await,
         Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
     ));
     assert_eq!(f.f.original.bytes()?, bytes);
-    assert_eq!(finish_observer(client, server)?, 2);
+    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);
+    let commands = tokio::task::spawn_blocking(move || finish_observer(client, server)).await??;
+    // Execute, independent full CURRENT, then the actual withdrawal rejection.
+    assert_eq!(commands, 3);
     // The actual C publication rejects before another predecessor read.
     // The Selector channel is left unmodified, never replaced or retried.
-    assert!(service.finish(true, false)? > 0);
+    assert!(tokio::task::spawn_blocking(move || service.finish(true, false)).await?? > 0);
     f.finish(false).await?;
     Ok(())
 }
