@@ -3,6 +3,7 @@
 //! a new execution. The complete persistent acceptance must still be checked
 //! by the enclosing terminal/history operation before it returns any result.
 
+use std::cell::RefCell;
 use std::marker::PhantomData;
 use std::rc::Rc;
 
@@ -23,6 +24,8 @@ pub(crate) struct OriginalCompletedLearningContextV1<'a> {
     verifier: &'a LearningEvidenceVerifierV1,
     trust: &'a HistoricalLearningTrustPayloadV1,
     service: &'a HostAuthorityService,
+    original_task: &'a RootOriginalHistoricalCompleteTaskObservationV1,
+    current_signatures: RefCell<Vec<SignedLearningEvidenceV1>>,
     end: Instant,
     not_send: PhantomData<Rc<()>>,
 }
@@ -48,6 +51,12 @@ impl OriginalCompletedLearningContextV1<'_> {
     }
     pub(crate) fn current_verifier(&self) -> &LearningEvidenceVerifierV1 {
         self.verifier
+    }
+
+    pub(crate) fn original_task_publication(
+        &self,
+    ) -> crate::circuit_task::RootHistoricalTaskPublicationDataV1 {
+        RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(self.original_task)
     }
 
     pub(crate) fn require_original_publication_context(
@@ -91,7 +100,32 @@ impl OriginalCompletedLearningContextV1<'_> {
         }
         self.verifier
             .require_signer_binding(signed.role, &signer, self.current_unix_seconds()?)
-            .map_err(io::Error::other)
+            .map_err(io::Error::other)?;
+        let mut recorded = self
+            .current_signatures
+            .try_borrow_mut()
+            .map_err(|_| io::Error::other("completed-history signer borrow busy"))?;
+        if !recorded.iter().any(|previous| {
+            previous.principal_id == signed.principal_id && previous.role == signed.role
+        }) {
+            if recorded.len() == 16 {
+                return Err(io::Error::other("completed-history signer bound exceeded"));
+            }
+            recorded.push(signed.clone());
+        }
+        Ok(())
+    }
+
+    fn revalidate_recorded_signers(&self) -> io::Result<()> {
+        let signatures = self
+            .current_signatures
+            .try_borrow()
+            .map_err(|_| io::Error::other("completed-history signer borrow busy"))?
+            .clone();
+        for signed in signatures {
+            Self::require_current_signer(self, &signed)?;
+        }
+        Ok(())
     }
 }
 
@@ -152,11 +186,14 @@ impl HistoricalTaskReadRuntime {
                     verifier: activated.verifier(),
                     trust: &trust,
                     service,
+                    original_task: observed,
+                    current_signatures: RefCell::new(Vec::new()),
                     end,
                     not_send: PhantomData,
                 };
                 let value = action(&context);
                 RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
+                context.revalidate_recorded_signers()?;
                 self.metadata.require_metadata_unchanged()?;
                 require_end(end)?;
                 value

@@ -9500,7 +9500,7 @@ id = "root_historical_task_publication_data"
 symbol = "RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_historical_task.rs"
 definition_markers = ["fn publication_read_data(", "self.publication.clone()"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_historical_read.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_historical_read.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs", "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"]
 caller_markers = []
 receiver_type = "RootOriginalHistoricalCompleteTaskObservationV1"
 
@@ -14652,6 +14652,12 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
-required = ["not_send: PhantomData<Rc<()>>", "struct OriginalCompletedLearningContextV1", "initial: &initial", "scope,", "terminal: &terminal", "writer: &proof", "profile: &self.profile.binding", "verifier: activated.verifier()", "trust: &trust"]
+required = ["not_send: PhantomData<Rc<()>>", "original_task: observed", "current_signatures: RefCell::new(Vec::new())", "struct OriginalCompletedLearningContextV1", "initial: &initial", "scope,", "terminal: &terminal", "writer: &proof", "profile: &self.profile.binding", "verifier: activated.verifier()", "trust: &trust"]
 forbidden = ["unsafe impl", "derive(Clone", "derive(Deserialize", "SigningKey", "SystemTime", "LearningIterationCheckpointOwnerV1", "LearningOwnerJournalV1", "OriginalBExecution"]
-required_function_order = [{ function = "fn with_original_completed_context<T>(", sequence = ["require_end(end)?", "self.metadata.require_metadata_unchanged()?", "service.with_learning_profile(", "self.profile.require_original_context(", "expected != initial", "self.phase.load(Ordering::Acquire) != SERVING", "read_original_completed_scoped(", "ledger_read_data(observed)?", "RootHistoricalLearningTrustV1::read_original_payload(", "trust.activate_for_recipient(", "trust.require_activation_pin(", "let context = OriginalCompletedLearningContextV1 {", "not_send: PhantomData", "let value = action(&context);", "RootHistoricalLearningTrustV1::revalidate(", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "value", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "result"] }, { function = "fn require_current_signer(", sequence = ["self\n            .trust", "signed.principal_id.as_str()", "signers.next().is_some()", "signed.trust_digest != self.verifier.trust_digest()", "require_signer_binding(signed.role, &signer, self.current_unix_seconds()?)"] }, { function = "fn require_original_publication_context(", sequence = ["!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"] }]
+required_function_order = [{ function = "fn with_original_completed_context<T>(", sequence = ["require_end(end)?", "self.metadata.require_metadata_unchanged()?", "service.with_learning_profile(", "self.profile.require_original_context(", "expected != initial", "self.phase.load(Ordering::Acquire) != SERVING", "read_original_completed_scoped(", "ledger_read_data(observed)?", "RootHistoricalLearningTrustV1::read_original_payload(", "trust.activate_for_recipient(", "trust.require_activation_pin(", "let context = OriginalCompletedLearningContextV1 {", "not_send: PhantomData", "let value = action(&context);", "RootHistoricalLearningTrustV1::revalidate(", "context.revalidate_recorded_signers()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "value", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "result"] }, { function = "fn require_current_signer(", sequence = ["self\n            .trust", "signed.principal_id.as_str()", "signers.next().is_some()", "signed.trust_digest != self.verifier.trust_digest()", "require_signer_binding(signed.role, &signer, self.current_unix_seconds()?)"] }, { function = "fn require_original_publication_context(", sequence = ["!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn revalidate_recorded_signers(", sequence = ["self", ".current_signatures", ".try_borrow()", "for signed in signatures", "Self::require_current_signer(self, &signed)?"] }, { function = "fn original_task_publication(", sequence = ["RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(", "self.original_task"] }]
