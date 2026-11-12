@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="7" failures="2" errors="0" uuid="bbc7ba4d-834a-42dc-ac69-857af62f6aeb" timestamp="2026-11-11T23:36:32.899-05:00" time="22.055">
+    <testsuite name="codex-hepta-agentd" tests="7" disabled="0" errors="0" failures="2">
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:32.925-05:00" time="6.172">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:32.925-05:00" time="12.432">
+            <failure message="Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)" type="test failure with exit code 101">Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)</failure>
+            <system-out>
+running 1 test
+test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... FAILED
+
+failures:
+
+failures:
+    learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 12.41s
+
+</system-out>
+            <system-err>HEPTA_DEFERRED_TRAINING_EXECUTE elapsed_us=7879466 result=Ok(())
+HEPTA_DEFERRED_TRAINING_EVIDENCE client_us=502269 total_us=1061688 client=Err(&quot;OwnerUnavailable(\&quot;original learning evidence owner\&quot;)&quot;) server=Err(&quot;original Trainer transport: DeadlineElapsed&quot;)
+Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:39.110-05:00" time="6.747">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:45.372-05:00" time="3.532">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:45.858-05:00" time="4.469">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:48.904-05:00" time="5.776">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap&apos; (3421158) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:428:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap&apos; (3421158) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:428:5:
+assertion failed: live.read_current().await.is_err()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HEPTA_PUBLISHED_SERVER total_us=2369738 result=Ok(2)</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 5.75s
+
+</system-out>
+            <system-err>HEPTA_PUBLISHED_ORIGINAL_READ request_id=1 cut_receipts=3 owner_io_us=122359 total_handler_us=125883 bytes=767
+HEPTA_PUBLISHED_ORIGINAL_READ request_id=2 cut_receipts=3 owner_io_us=119185 total_handler_us=122787 bytes=767
+
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap&apos; (3421158) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:428:5:
+assertion failed: live.read_current().await.is_err()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HEPTA_PUBLISHED_SERVER total_us=2369738 result=Ok(2)
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T23:36:50.328-05:00" time="4.626">
+        </testcase>
+    </testsuite>
+</testsuites>

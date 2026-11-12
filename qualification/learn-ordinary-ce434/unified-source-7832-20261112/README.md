@@ -23,3 +23,14 @@ Prior 619/514 failures and all their raw logs remain in evidence commit `2d21656
 v13 is an old dcf7 seven-case crypto build diagnostic. Its frozen request, original immutable interim SDK read and exact private V8 input record are retained. Original helper build and verification returned 0; the seven-case native step was running at the read. Its first submission timed out; only identical frozen arguments/key were reconciled, and the actual response reported reused=false. No seven-case or current-head native pass is claimed.
 
 Issuer 4993, Model c849 and pending EvalMaterial/Proposal work are not part of 7832. All ordinary positive adoption, complete NoUpdate/fallback and real daemon/Root cold-restart acceptance counts remain **0**.
+
+
+## Final v13 diagnostic outcome (supersedes the earlier running observation)
+
+The original durable H job `1a1cdfd2c29-2564-1436` terminated with exit 1. The exact original seven-case `just test` execution on diagnostic source `dcf71113bf196b7001583d4ad8497c90a70a2241` ran all seven cases: five passed and two failed (native exit 100). This is not the current PR source and is not ordinary-task acceptance. The earlier interim SDK, frozen request, and reconciliation observations remain unchanged.
+
+`native-diagnostic-v13/final/` contains the complete original preparation and native result files, execution result, 64,927-byte raw log, JUnit, collection log, both complete immutable original SDK payloads, and the separate normalized terminal observation. All original file byte counts and SHA-256 values were checked before publication.
+
+One failure exposes an actual downstream dependency on the legacy 500ms Trainer evidence purpose after the real deferred Training command succeeded. The other is a negative fixture that did not cross the original inclusive expiration second. Source `bf1e7a79a3dbb2d1d927a51c487c69253e9e3d78` fixes that fixture and adds only the two diagnostic-motivated crypto package dev optimization overrides; neither fix is yet a native pass. Protocol lifetimes and dependency/lockfile contents are unchanged.
+
+The source-7832 full caller proof was still running at the last confirmed local observation. The executor then reported unavailable; no terminal result has been observed and no pass is claimed. Actual positive adoption, complete NoUpdate/fallback, and daemon-plus-Root cold restart remain zero.
