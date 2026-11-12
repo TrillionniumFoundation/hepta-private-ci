@@ -9,6 +9,9 @@ use super::*;
 use crate::AgentdIdentity;
 use crate::HostAuthorityRegisteredIdentity;
 
+#[path = "authority_host_q24_model_profile_v2.rs"]
+pub(super) mod v2;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct FilePin {
