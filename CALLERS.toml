@@ -10168,7 +10168,7 @@ id = "root_original_peer_absolute_end"
 symbol = "HostAuthorityPeerChannel::limit_original_end"
 definition_path = "codex-rs/hepta-contracts/src/authority_host_peer.rs"
 definition_markers = ["fn limit_original_end(", "OwnerChannel::limit_original_end(&mut self.owner, end)", "stream.shutdown(Shutdown::Both)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs", "codex-rs/hepta-agentd/src/authority_host_initial_peer_runtime.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs", "codex-rs/hepta-agentd/src/authority_host_initial_peer_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs"]
 caller_markers = []
 receiver_type = "HostAuthorityPeerChannel"
 
