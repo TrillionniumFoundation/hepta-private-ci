@@ -15,8 +15,12 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 22] = [
+#[path = "production_initial_q24_cli.rs"]
+mod initial_q24;
+
+const FLAGS: [&str; 23] = [
     "--root-production-profile",
+    "--q24-initial-deployment-fd",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
     "--root-q24-model-handoff-fd",
@@ -45,6 +49,7 @@ enum Profile {
     Android,
     Notes,
     Desktop,
+    InitialQ24,
 }
 
 pub(super) struct LaunchInputs {
@@ -65,6 +70,9 @@ pub(super) struct LaunchInputs {
 }
 
 pub(super) enum PrimaryInputs {
+    InitialQ24 {
+        deployment: Option<File>,
+    },
     Android {
         server: String,
         environment: String,
@@ -117,9 +125,10 @@ pub(super) fn parse(
         Some("android") => Profile::Android,
         Some("notes") => Profile::Notes,
         Some("desktop") => Profile::Desktop,
+        Some("q24-initial") => Profile::InitialQ24,
         _ => {
             return Err(invalid(
-                "original production profile must be android, notes or desktop",
+                "original production profile must be android, notes, desktop or q24-initial",
             ));
         }
     };
@@ -241,6 +250,28 @@ pub(super) fn parse(
             "Desktop and legacy Notes inputs cannot be combined",
         ));
     }
+    let initial_deployment = selected
+        .remove("--q24-initial-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    initial_q24::validate(
+        profile,
+        &ordinary,
+        initial_deployment,
+        initial_handoff,
+        &[
+            learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+            notes,
+            notes_deployment,
+            notes_listener,
+            notes_session,
+            desktop_handoff,
+            desktop_deployment,
+            desktop_session,
+        ],
+    )?;
     let lifetime = selected
         .remove("--root-production-lifetime-ms")
         .map(|value| number::<u64>(value, "original Root lifetime"))
@@ -261,6 +292,7 @@ pub(super) fn parse(
         q24_model_handoff,
         publication_handoff,
         initial_handoff,
+        initial_deployment,
         Some(control),
         Some(app_server),
         payload,
@@ -313,6 +345,12 @@ pub(super) fn parse(
     let control = take_descriptor(control)?;
     let app_server = take_descriptor(app_server)?;
     let primary = match profile {
+        Profile::InitialQ24 => PrimaryInputs::InitialQ24 {
+            deployment: Some(take_readonly_file(
+                initial_deployment
+                    .ok_or_else(|| invalid("validated Initial Q24 deployment is absent"))?,
+            )?),
+        },
         Profile::Android => {
             let (server, environment, payload, deadline) =
                 android.ok_or_else(|| invalid("validated Android inputs are absent"))?;
