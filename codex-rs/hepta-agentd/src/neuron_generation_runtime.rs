@@ -477,5 +477,9 @@ impl NeuronGenerationRuntimeBootstrapV2 {
 }
 
 #[cfg(test)]
+#[path = "neuron_generation_file_observation_test_support.rs"]
+mod file_observation;
+
+#[cfg(test)]
 #[path = "neuron_generation_runtime_tests.rs"]
 mod tests;

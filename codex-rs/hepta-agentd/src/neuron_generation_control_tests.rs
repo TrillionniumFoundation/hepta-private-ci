@@ -16,7 +16,7 @@ use codex_hepta_agent_protocol::MAX_GENERATION_CONTROL_INPUT_BYTES;
 use pretty_assertions::assert_eq;
 use tokio_util::sync::CancellationToken;
 
-use super::support::FileObserver;
+use super::super::file_observation::FileObserver;
 use super::support::Fixture;
 use super::support::host;
 use crate::AgentdClient;
