@@ -1,0 +1,45 @@
+{
+  "source": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "parent_tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+  "boundaries": 480,
+  "protected": 368,
+  "unchanged_metadata": true,
+  "unchanged_authority_callers_and_inventory": true,
+  "unchanged_protected_multiset_order_and_constraints": true,
+  "changed_rows": 31,
+  "changed_boundary_rows": 2,
+  "changed_protected_rows": 29,
+  "owned_protected_passed": 53,
+  "rust_and_scanner_delta": false,
+  "candidate_evaluation_row_unchanged": true,
+  "qualification_files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "tests": 6,
+      "sha256": "cf02867b1ab02c2518c95a3d0ae766947f52d3db2a906a1575c782d5c27d8c7a"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "tests": 8,
+      "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "tests": 8,
+      "sha256": "e3ff5842bf97007b16b2c425c9e721ba46cd937d8ca824ca630b9ed25d659f3b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "tests": 4,
+      "sha256": "42a699783b1756f8f787ff1f4a1d6fe464fa83cec0b8f4fffade97044abb702d"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "tests": 10,
+      "sha256": "b6bd89dc6c7354558776d583718596174fc6df23e781fab418aeb2ae416cb4a0"
+    }
+  ],
+  "representation_exception": "Shared completed-source caller marker uses common method spelling; exact receiver-call association remains in each actual caller function and is covered by replacement/separation mutations plus typed unexpected-caller rejection.",
+  "match_arm_braces": "Three GateAction match arms gained formatter braces; guard operands and effect order remain exact.",
+  "manifest_sha256": "78e5145a1a8318670d09c604eb8f7479eac075739006892d5519698488fe8dad"
+}

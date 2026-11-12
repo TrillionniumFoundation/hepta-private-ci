@@ -1,0 +1,25 @@
+{
+  "source": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+  "changes": [
+    {
+      "function": "fn local_inner(",
+      "field": "sequence",
+      "before": "GateActionV3::Current => ResidentStoreActionV3::RequireDispatch",
+      "after": "GateActionV3::Current => {\n                    ResidentStoreActionV3::RequireDispatch"
+    },
+    {
+      "function": "fn local_inner(",
+      "field": "sequence",
+      "before": "GateActionV3::Begin(stage) => ResidentStoreActionV3::Begin",
+      "after": "GateActionV3::Begin(stage) => {\n                    ResidentStoreActionV3::Begin"
+    },
+    {
+      "function": "fn local_inner(",
+      "field": "sequence",
+      "before": "GateActionV3::Checkpoint(next) => ResidentStoreActionV3::Checkpoint",
+      "after": "GateActionV3::Checkpoint(next) => {\n                    ResidentStoreActionV3::Checkpoint"
+    }
+  ],
+  "meaning": "The formatter wraps each match arm expression in braces; each original variant-to-ResidentStoreAction correspondence and order remains exact."
+}
