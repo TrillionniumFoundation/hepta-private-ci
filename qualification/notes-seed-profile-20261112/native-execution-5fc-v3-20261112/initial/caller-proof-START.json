@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "-B",
+    "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/source/scripts/hepta_ci_exec.py",
+    "--timeout-seconds",
+    "4800",
+    "--output",
+    "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/caller-proof.json",
+    "--",
+    "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "-B",
+    "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/source/scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "stage": "caller-proof",
+  "started_unix_ns": 1794486725775318768
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.act6243.root-caller-budget-fix-review.v1",
+  "parent": "7d31bf9677748330ae17efe964de48d98ba5e542",
+  "candidate": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "code_files_changed": 1,
+  "code_change": [
+    {
+      "line": 71,
+      "old": "          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 \\",
+      "new": "          python3 scripts/hepta_ci_exec.py --timeout-seconds 4800 \\"
+    }
+  ],
+  "driver_change": [
+    {
+      "line": 184,
+      "old": " ci(\"caller-proof\",[PYTHON,\"-B\",str(REPO/\"scripts/verify_hepta_callers.py\"),\"verify\"],120)",
+      "new": " ci(\"caller-proof\",[PYTHON,\"-B\",str(REPO/\"scripts/verify_hepta_callers.py\"),\"verify\"],4800)"
+    }
+  ],
+  "request_blob": "e2b70716644eef0896fda062fc56ef44c64bce34",
+  "request_sha256": "8e96c12b97a21d2c095191421ddc31da8577592b6156b251e7a7be41f0a99f0f",
+  "driver_sha256": "31e884b3a76ebb0fa6fca8450ee59cd58dbff0be6ad933f39c717bebbebecf71",
+  "request_differences": [
+    {
+      "path": "/args/3",
+      "from": "[12120 chars]",
+      "to": "[12121 chars]"
+    },
+    {
+      "path": "/stdin",
+      "from": "[4913 chars]",
+      "to": "[4913 chars]"
+    },
+    {
+      "path": "/idempotency_key",
+      "from": "neuro4-act6243-native-7d31-862531d-v2",
+      "to": "neuro4-act6243-native-5fc34e1ac0f1-862531d-v3"
+    }
+  ],
+  "plan_differences": [
+    {
+      "path": "/source_sha",
+      "from": "7d31bf9677748330ae17efe964de48d98ba5e542",
+      "to": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c"
+    },
+    {
+      "path": "/source_tree",
+      "from": "cedbad6b47e4ff8db4f87efc9169a4b5c13412be",
+      "to": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+    },
+    {
+      "path": "/output_root",
+      "from": "/home/qq/neuro-act6243-native-862531d11598/7d31bf967774-v2",
+      "to": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3"
+    },
+    {
+      "path": "/workflow_git_blob",
+      "from": "458340f1ccfd5893021bdc33f9f4be643f56fcea",
+      "to": "e63844c19ae4c258829f7f8ca933efc888b0935e"
+    },
+    {
+      "path": "/workflow_sha256",
+      "from": "f5dd8475568c8351dcc37b508b94797dc9b9d3e5fa3471a6257ad2d1f7ff71aa",
+      "to": "eff2224a930b5387c4909874628bf9740d0510b7f9621b18eab5de97bf53b273"
+    }
+  ],
+  "all_other_request_and_plan_fields_unchanged": true,
+  "budget_origin": "120 seconds was added by this work at8514. 4800 seconds is an engineering precedent from the separate620 dedicated caller workflow, not a same-source passed gate.",
+  "original_v2_timeout": {
+    "job": "1a1cfa11c7d-2564-1a72",
+    "source": "7d31bf9677748330ae17efe964de48d98ba5e542",
+    "elapsed_seconds": 120.05062907584943,
+    "exit_code": 124,
+    "returncode": -9,
+    "log_bytes": 0,
+    "build_started": false,
+    "rust_methods_executed": 0
+  },
+  "outer_wall_limit_seconds": 5400,
+  "cpu_quota_percent": 200,
+  "memory_max_bytes": 34359738368,
+  "test_retries": 0,
+  "new_source_not_yet_validated": true,
+  "owner_decision": null,
+  "qualification": "HOLD"
+}

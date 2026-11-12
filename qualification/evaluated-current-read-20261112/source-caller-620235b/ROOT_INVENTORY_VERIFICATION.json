@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.owner620.root-full-inventory-verification.v1",
+  "retrieval_commit": "10ba2e54cf6cf42cf11cb79ea23dbf0508348dbe",
+  "source": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "git_contents_base64_roundtrip": true,
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part000",
+      "bytes": 350000,
+      "sha256": "087bcf30a6945e0c80b203f372c4d582730482f1b86f6c39b30f91ff9de92e67",
+      "git_blob": "8e1db7d40688f802e891aad8bd31e4edc7243568",
+      "verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part001",
+      "bytes": 350000,
+      "sha256": "be69b066f08e1499626ac7182c5907c1e36a90e09ffce61a6c3038ae8108e17b",
+      "git_blob": "58b269551b27f85eee8c424843771e9e7f36568c",
+      "verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part002",
+      "bytes": 69626,
+      "sha256": "2622effe817585d66949268c2af1e44228a43d0bebf0306d19d3e684282d2429",
+      "git_blob": "24bad2b9ed4886f5a0639afcfb2bca393c9f55f0",
+      "verified": true
+    }
+  ],
+  "gzip_bytes": 769626,
+  "raw_bytes": 2704791,
+  "sha256": "b0c607c7db8b936e7629323e8688e4f836bee8b995024fcc26cacd1b41662f75",
+  "crc32": 2960947510,
+  "deflate_blocks": 37,
+  "unique_tracked_file_records": 14886,
+  "all_records_structurally_valid": true,
+  "original_before_after_records_byte_identical": true,
+  "original_before_after_gzip_bytes_identical_per_original_transfer": true,
+  "root_verified_both_records_name_same_original_gzip_sha": true,
+  "raw_inventory_matches_original_execution_record": true,
+  "scope": "Complete original tracked-file inventory losslessly preserved and hash-verified; root did not independently fetch and rehash every tracked source file body.",
+  "native_build_passed": false,
+  "qualification": "HOLD"
+}

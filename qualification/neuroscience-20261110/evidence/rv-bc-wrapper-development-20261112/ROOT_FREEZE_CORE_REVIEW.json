@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.rv.root-freeze-core-review.v1",
+  "freeze_raw_git_blob": "c46a6dec3a7da871a5dceae023ec0948a59d3a7e",
+  "freeze_raw_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "freeze_raw_bytes": 5296,
+  "source_report_git_blob": "7a1545248aa4a9e8d4f551c05db0abb03158609a",
+  "source_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+  "old_ids_count": 576,
+  "old_ids_sha256": "8ff28fd3c2ee71ff0d38824f6f94c1dc29cd1a2b583ea1b1eb769db4f618cd4c",
+  "old_ids_directly_recomputed_from_complete_report": true,
+  "new_ids": [
+    "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+    "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+    "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+    "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06"
+  ],
+  "new_ids_count": 4,
+  "new_old_intersection": [],
+  "new_ids_derivation_recomputed": true,
+  "registration_semantic_identity": true,
+  "plans_original_bytes_pending": false,
+  "actor_calls": 0,
+  "independent_new_sources": 0,
+  "owner_decision": null,
+  "qualification": "HOLD",
+  "original_nanosecond_raw_text_preserved": true,
+  "plans_and_deployments": [
+    {
+      "phase": "B",
+      "git_blob": "ac533b5f53103624c320d054c19f54e9011ca235",
+      "bytes": 26280,
+      "raw_sha256": "c36ecc23d73bba15695266e68b9181d40e3771a6a34c910402bf91204761138c",
+      "canonical_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5",
+      "canonical_method": "Original sorted-key JSON whitespace removed outside strings; numeric lexical forms (40.0) preserved",
+      "cohort_sha256": "96d170840eb9951c2b034a3d2ebd75f9037fc4749b54cf59d155b7a488d9917e",
+      "registered_cases_match": true,
+      "arms": 2,
+      "source_pins": 83,
+      "deployments": [
+        {
+          "policy": "tuned-fixed",
+          "original_path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B-tuned-fixed-deployment.json",
+          "git_blob": "d6ac98bc4cba598efcdd4e1a2646a84c4fccd0d2",
+          "bytes": 13254,
+          "sha256": "b31150f6a90ee244f924d8a2e183e350d8ba48a8d90df4c14e176f41cd31e758",
+          "embedded_checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+        },
+        {
+          "policy": "conditional",
+          "original_path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B-conditional-deployment.json",
+          "git_blob": "fbaee02f6bbd5ee37618474cbf948ec5f7e04ce2",
+          "bytes": 13254,
+          "sha256": "71677c4e1f0a4255a83d4d014ea0ca395d187c3c89498166110ec3cb3ed9d20d",
+          "embedded_checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+        }
+      ]
+    },
+    {
+      "phase": "C",
+      "git_blob": "e93329c5dc4fb88245aa86ba00da39235537822d",
+      "bytes": 26280,
+      "raw_sha256": "a7b05980e90456a9226a06cf14b62e1eb0dc24de75844f0c8db3ffcae78d83ac",
+      "canonical_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a",
+      "canonical_method": "Original sorted-key JSON whitespace removed outside strings; numeric lexical forms (40.0) preserved",
+      "cohort_sha256": "e01fc65e4b893fd72ab8838776c98ada5b09cb6018d83441752b0383b1eac172",
+      "registered_cases_match": true,
+      "arms": 2,
+      "source_pins": 83,
+      "deployments": [
+        {
+          "policy": "tuned-fixed",
+          "original_path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C-tuned-fixed-deployment.json",
+          "git_blob": "d6ac98bc4cba598efcdd4e1a2646a84c4fccd0d2",
+          "bytes": 13254,
+          "sha256": "b31150f6a90ee244f924d8a2e183e350d8ba48a8d90df4c14e176f41cd31e758",
+          "embedded_checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+        },
+        {
+          "policy": "conditional",
+          "original_path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C-conditional-deployment.json",
+          "git_blob": "fbaee02f6bbd5ee37618474cbf948ec5f7e04ce2",
+          "bytes": 13254,
+          "sha256": "71677c4e1f0a4255a83d4d014ea0ca395d187c3c89498166110ec3cb3ed9d20d",
+          "embedded_checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+        }
+      ]
+    }
+  ],
+  "embedded_original_checkpoint_verified": true,
+  "original_source_before_after_raw_equal": true,
+  "original_input_records": 96,
+  "original_source_sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+  "original_source_git_blob": "df266a985b186083129d42629a9c6828b5c121c7",
+  "all_plan_source_and_weights_control_exposure_training_pins_match": true,
+  "raw_source_record_numbers_preserved": true,
+  "original_sdk_snapshot_atomic": false
+}

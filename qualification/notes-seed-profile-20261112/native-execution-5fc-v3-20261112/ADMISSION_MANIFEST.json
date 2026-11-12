@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.act6243.native-v3-admission.evidence.v1",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "job_id": "1a1cfbdbae4-2564-1a9a",
+  "idempotency_key": "neuro4-act6243-native-5fc34e1ac0f1-862531d-v3",
+  "request_digest": "794221f1072dbc9d836a6fc603f98c0f895b1558cf81e7b4f1d9758216973170",
+  "initial_ack": "MCP_TIMEOUT_UNKNOWN",
+  "reconciliation": {
+    "reused": true,
+    "retried_launch": false,
+    "launch_state": "launched",
+    "status_at_ack": "running"
+  },
+  "change_scope": "Caller CI/driver execution budget 120→4800 only; source/workflow pins and independent output/key synchronized. Original checker, build, six tests, receipt, fmt, retries0,2threads,32GiB and5400s total unchanged.",
+  "stage_results": "NOT_YET_RETRIEVED_AT_ADMISSION",
+  "qualification": "HOLD",
+  "owner_decision": null,
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/REQUEST.json",
+      "representation": "Exact approved request original; matches immutable blob e2b70716644eef0896fda062fc56ef44c64bce34.",
+      "bytes": 18666,
+      "sha256": "8e96c12b97a21d2c095191421ddc31da8577592b6156b251e7a7be41f0a99f0f",
+      "blob": "e2b70716644eef0896fda062fc56ef44c64bce34"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/DRIVER.py",
+      "representation": "Exact approved driver embedded in request.",
+      "bytes": 12121,
+      "sha256": "31e884b3a76ebb0fa6fca8450ee59cd58dbff0be6ad933f39c717bebbebecf71",
+      "blob": "247f17bb782d2140d41133eeea17bbf8f7eb2973"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/PLAN.json",
+      "representation": "Exact approved stdin plan bytes from the approved request, not a reconstruction.",
+      "bytes": 4913,
+      "sha256": "d474f294ce527524ebacdd80b9a380c854f501220422e189ac68cfe55327b5ee",
+      "blob": "568ec74406636fa62e7a57addbf4c78480926731"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/FIRST_START_ERROR.txt",
+      "representation": "Original initial h start MCP error text; timeout is not a process result.",
+      "bytes": 123,
+      "sha256": "1ecaff253b64969266baca1a580b42f3238b03ccba0214e0d47a51df43541cd0",
+      "blob": "8c349c15f8f01df9fece93b21d9d428d1b5a202e"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/RECONCILE_ADMISSION_ORIGINAL.json",
+      "representation": "Original h process_start same-key reconciliation SDK text, including original exact integer fingerprint bytes.",
+      "bytes": 14415,
+      "sha256": "60abffc8abf211d40732a23fbd7e397f62b5bc2e2a3ab38786001cdae7c6040b",
+      "blob": "6a170b8907d5303beb7954f4dd7eabe9a49773c7"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/PRIOR_7D_JOBS_ORIGINAL.json",
+      "representation": "Original GitHub jobs response immediately preceding first dispatch.",
+      "bytes": 992,
+      "sha256": "4a943d64057b40fcd14b088098431165ade382324e56223ef4eabe858ca5dcf1",
+      "blob": "20226acf9507c2a7de4d0de06e1e33ca5db8fb4e"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/NEW_HEAD_JOBS_ORIGINAL.json",
+      "representation": "Original new5fc dedicated workflow jobs response immediately preceding first dispatch.",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6",
+      "blob": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/DISPATCH_INTENT.json",
+      "representation": "Local orchestration intent; not remote execution evidence.",
+      "bytes": 485,
+      "sha256": "6d0c860d6efb9343656027b5b5acc1918089d6d8ee9cc7ae6e74120b82bf46a8",
+      "blob": "67518183e348041fc933c739fc9c7869107c8053"
+    }
+  ]
+}
