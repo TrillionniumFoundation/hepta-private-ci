@@ -1,5 +1,7 @@
 # MEM12: unified native candidate and frozen causal execution checkpoint
 
+> Recovery update: the original run and all 1,420 indexed artifacts have now been recovered and independently checked. All 80 generations returned; all ten frozen primary scores remain 0/8. See [RECOVERED_RESULTS.md](RECOVERED_RESULTS.md). The checkpoint below preserves the earlier UNKNOWN observation and is not the current outcome.
+
 ## Decision
 
 **HOLD. The source composition, software controls and remote preparation are verified. The real campaign launch acknowledgement and its outcomes are UNKNOWN.**

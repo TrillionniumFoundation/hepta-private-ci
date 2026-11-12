@@ -1,0 +1,466 @@
+{
+  "common_A_writer_cost": {
+    "charged_once": true,
+    "wall_seconds": {
+      "missing_rows": 0,
+      "observed_rows": 8,
+      "observed_sum": 0.449167
+    }
+  },
+  "contrasts": {
+    "delete": {
+      "contrast": "on_bm25 minus delete",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "delivery_off": {
+      "contrast": "on_bm25 minus delivery_off",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "exact_kv": {
+      "contrast": "on_bm25 minus exact_kv",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "finite_icl": {
+      "contrast": "on_bm25 minus finite_icl",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "off": {
+      "contrast": "on_bm25 minus off",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "replace": {
+      "contrast": "on_bm25 minus replace",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "retention_off": {
+      "contrast": "on_bm25 minus retention_off",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "retrieval_off": {
+      "contrast": "on_bm25 minus retrieval_off",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    },
+    "uniform_replay": {
+      "contrast": "on_bm25 minus uniform_replay",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned_pairs": 8
+    }
+  },
+  "ended_at_unix_ns": 1794467275924816664,
+  "generated_sources": 8,
+  "known_returned_generations": 80,
+  "limitations": [
+    "generated single-template tasks; no natural-source generalization",
+    "deterministic A writer; new fixed text parser, not MEM5 public selector",
+    "research SQLite forks are not native owner recovery",
+    "same limits do not mean identical actual token or setup cost",
+    "missing-label bounds are not confidence intervals; no adoption threshold",
+    "energy, external effect recovery and original owner authentication unavailable"
+  ],
+  "measured_costs_by_arm": {
+    "delete": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 94
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 1092
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.92347050597891
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 37.154779198
+      }
+    },
+    "delivery_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 152
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 785
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.318651041947305
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.535368466
+      }
+    },
+    "exact_kv": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 80
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 938
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.20718430611305
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.426738275
+      }
+    },
+    "finite_icl": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 80
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 1094
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.27240379783325
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.492905804
+      }
+    },
+    "off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 152
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 785
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.37965256930329
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.579673246
+      }
+    },
+    "on_bm25": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 80
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 1094
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.27912919805385
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.495889789
+      }
+    },
+    "replace": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 80
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 1094
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.40964442817494
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.640295171
+      }
+    },
+    "retention_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 152
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 785
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.62188111571595
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.850918138
+      }
+    },
+    "retrieval_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 152
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 785
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.42232900368981
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 38.640511291
+      }
+    },
+    "uniform_replay": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 80
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 1093
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.49255629722029
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 8,
+        "observed_sum": 36.712446376
+      }
+    }
+  },
+  "native_owner_used": false,
+  "natural_task_benefit_established": false,
+  "observer_authenticated": false,
+  "outer_supervisor_deadline_seconds": 7200,
+  "panels": {
+    "delete": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "delivery_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "exact_kv": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "finite_icl": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "on_bm25": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "replace": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "retention_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "retrieval_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    },
+    "uniform_replay": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 8,
+      "scored": 8,
+      "statuses": {
+        "RETURNED": 8
+      },
+      "successes": 0
+    }
+  },
+  "parameter_consolidation_executed": false,
+  "planned_rows": 80,
+  "production_adoption": false,
+  "protocol_sha256": "f623a23197fe94b3d5434ffac1f02cb3d99398ca4c69aad18716dbeeef1b2d82",
+  "run_error": null,
+  "schema": "hepta.mem12.controlled-diagnostic-report.v1",
+  "scientific_acceptance": "HOLD",
+  "scored_controlled_rows": 80,
+  "shared_task_templates": 1,
+  "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+  "source_tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+  "started_at_unix_ns": 1794466900745037928,
+  "unsettled_generation_rows": 0
+}
