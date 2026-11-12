@@ -59,7 +59,7 @@ jobs:
       - name: Set up frozen Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.12.3"
+          python-version: "3.14.4"
       - name: Test frozen inputs and result denominators
         run: |
           python -m unittest discover -s qualification/hpca-neuroscience-20261110 -p 'test_base_output_diagnostic.py' -v 2>&1 | tee "$RUNNER_TEMP/hpca-base/tests.log"
