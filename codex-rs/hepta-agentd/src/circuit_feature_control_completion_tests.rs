@@ -50,7 +50,16 @@ async fn feature_socket_ack_timeout_recovers_original_completion_without_redispa
             .contains("original Feature authentication differs")
     );
     assert_eq!(owner_bytes(&f.session)?, committed);
-    f.finish().await
+    // This second lost response belongs to a rejected alias, not to the
+    // original successful Circuit. Its transport failure must remain visible
+    // at the joined control owner even though the first task stays committed.
+    let joined = f.finish().await.unwrap_err();
+    assert!(matches!(
+        joined.downcast_ref::<crate::AgentdError>(),
+        Some(crate::AgentdError::Io(error))
+            if matches!(error.kind(), std::io::ErrorKind::BrokenPipe | std::io::ErrorKind::ConnectionReset)
+    ));
+    Ok(())
 }
 
 #[tokio::test]
