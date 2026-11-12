@@ -1,0 +1,330 @@
+{
+  "format": "hepta-runtime-materials-restoration-and-blocker-placement-v1",
+  "frozen_source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "physical_files": 15188
+  },
+  "source_pr_ref_moved": false,
+  "qualification": false,
+  "actual_main_result": {
+    "job": "1a1d0e66ad6-2564-1bdd",
+    "status": "FAILED_PREPARATION",
+    "exit_code": 1,
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "started_at": "2026-11-12T17:55:26.336816+00:00",
+    "finished_at": "2026-11-12T17:55:36.675949+00:00",
+    "error": "active/unknown same-user build or formatter; no concurrent preparation",
+    "commands": [],
+    "downloads": [],
+    "depot_created": false,
+    "bootstrap_started": false,
+    "maintenance_started": false,
+    "cargo_or_tests_started": false
+  },
+  "current_followup_observation": {
+    "job": "1a1d0ea3ddd-2564-1be4",
+    "at": "2026-11-12T17:59:36.512456+00:00",
+    "cargo_pid": 1856522,
+    "cwd": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+    "cgroup_job": "1a1d0e549d0-2564-1bdc",
+    "state": "S",
+    "startticks_stable_during_probe": true,
+    "original_four_rustc_pids": "gone during/before this probe",
+    "identity_continuity_since_original_preflight_asserted": false,
+    "args_or_env_read": false,
+    "external_process_cancelled": false,
+    "main_retried": false
+  },
+  "source_evidence": {
+    "before_after_complete_equal": true,
+    "raw_bytes": 5611182,
+    "raw_sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "raw_git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "gzip_bytes": 1261366,
+    "gzip_sha256": "6c943069b08866066e1f202da187ac19790b3e675f1d7118adf6b0ed2cae6594",
+    "gzip_git_blob": "4ea5eef93f5211776b131f9be186c5c9cce5da12",
+    "new_H_large_payload_read": false,
+    "explanation": "Actual restoration before/after inventories were fully generated on native host and original manifests read back. They are byte-identical, including gzip and all five part pins, to Root's already recovered materialization inventory. No new large H payload transfer is claimed; Root may reuse its independently verified exact original bytes."
+  },
+  "review_references": [
+    "20a8229e70bc757e0d1b9222f96088ebb89d7b04",
+    "7614e2f74521baad7780a8d4573af257caa7dd49",
+    "d6ebc4aa8f0bb5d39276c8fdc3695f40706a2812",
+    "34ab2d6cfabc2caf8dd483398dbb0072635d1c4e"
+  ],
+  "files": [
+    {
+      "path": "control/driver-v1.unexecuted.py",
+      "bytes": 44146,
+      "sha256": "6bbbab7250c433569089d6aa66cff467eeba9fe21c17c5b8289d89ec62132f7c",
+      "git_blob": "30e5471e271fd70cdd0e0a85155992b5d7584aee"
+    },
+    {
+      "path": "control/driver-v2.unexecuted.py",
+      "bytes": 44672,
+      "sha256": "73453f98eb3c7b8cb6066097984f6a198b5fb6c19faa505ac4638c25c3d8df1e",
+      "git_blob": "fcf4acc9b6f37e2cfc70998bf5c23b3a70d6bae4"
+    },
+    {
+      "path": "control/driver.py",
+      "bytes": 44790,
+      "sha256": "289f3612e90b21ac3c7be70c8715178966a94f609c2275bbca7ffb036cd8da02",
+      "git_blob": "a584e49abfa57f55fda820e8d2296d9909838387"
+    },
+    {
+      "path": "control/WAITING_CONFIG_V3.json",
+      "bytes": 2485,
+      "sha256": "7adfce183255f69a4f80c72dfebbf0106e71f72f75194ee32252deacdadfe1c0",
+      "git_blob": "90ecd04ea79b3329ec1b30b7e0a22d2e19097bdd"
+    },
+    {
+      "path": "control/PLAN_V3.json",
+      "bytes": 15559,
+      "sha256": "5c91fc335081fe99809d18f911a43c6cee5fa6f567e13f8e092cf7c6b13a7dcc",
+      "git_blob": "06a828efe48623d94d488a6557af1d87a273ac66"
+    },
+    {
+      "path": "control/EXACT_LAUNCHER.py",
+      "bytes": 2790,
+      "sha256": "8f48292a0c5c067074e8e60db7837ac99700f1d1581a1f7eeaa44f34d93084ac",
+      "git_blob": "24498ec81c3dd8e8051af6a26037803d1fe5ccfd"
+    },
+    {
+      "path": "control/ACTUAL_PROCESS_INPUT.json",
+      "bytes": 3172,
+      "sha256": "2a52e647064a48962573b0791e463d4c6aec319a16e8df6745066b0ac0c4659b",
+      "git_blob": "14b7f021821db0ae53b2e5a6d9eeffa351c2641a"
+    },
+    {
+      "path": "control/STAGING_WRITER.py",
+      "bytes": 3305,
+      "sha256": "53dd3304402c56b7f8d579c4261bd1924de6f97e476e1e7af7260b29372843a9",
+      "git_blob": "f26fb1e4652371b6528c86241c31321f356ab9e4"
+    },
+    {
+      "path": "control/STAGING_PROCESS_INPUT.json",
+      "bytes": 186568,
+      "sha256": "22422115bc009bd79750f9fde9f29c44408d27baba2865bd40c1d7e0e8c3d2c4",
+      "git_blob": "48e15edb1ad7304b3da035c0c3e996b859e3324d"
+    },
+    {
+      "path": "five-pid-probe/ACTUAL_DRIVER.py",
+      "bytes": 2455,
+      "sha256": "c62d8a76bd7f9766a488810a5965266af3e546120a5102667c3ed279eb38e516",
+      "git_blob": "a182030ff8b95d3102139c3134ffd93492839237"
+    },
+    {
+      "path": "five-pid-probe/ACTUAL_PROCESS_INPUT.json",
+      "bytes": 2842,
+      "sha256": "f010d886f7221c772c652da1a502b2b957c2d01220f782aa209d4e77d6771612",
+      "git_blob": "4902cc505e24d1c539971ae51c8521286c22db97"
+    },
+    {
+      "path": "control/APPROVED_CONFIG.json",
+      "bytes": 2477,
+      "sha256": "5786a2439b1e0eb96468b5d414fda8fcf6a657bd3e17a5a6379a403e6fe552e6",
+      "git_blob": "e552c6b55bc0208d4b0f4577f3df3d763cda32d2",
+      "note": "Root exact approval, independently read and native byte readback verified."
+    },
+    {
+      "path": "control/DEPENDENCY_PLAN.original.json",
+      "bytes": 17795,
+      "sha256": "22b85535cbb1d079c8dd698d8827122b439c964672fce7d182726783a0fb2ec6",
+      "git_blob": "8936bfb0e0dbab9e471a158f1161567273798360",
+      "note": "Exact original immutable bytes; actual native create-only full readback."
+    },
+    {
+      "path": "control/MATERIALIZATION_RESULT.original.json",
+      "bytes": 69974,
+      "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+      "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb",
+      "note": "Exact original immutable bytes; actual native create-only full readback."
+    },
+    {
+      "path": "control/MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 913,
+      "sha256": "83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2",
+      "git_blob": "3e60d21bec849a19efb5d818b43152bfc72486fe",
+      "note": "Exact original immutable bytes; actual native create-only full readback."
+    },
+    {
+      "path": "control/MAINTENANCE_STARTED.original.json",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "note": "Exact original immutable bytes; actual native create-only full readback."
+    },
+    {
+      "path": "control/inventory-driver.original.py",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "note": "Exact original immutable bytes; actual native create-only full readback."
+    },
+    {
+      "path": "control-staging/CONTROL_STAGING.stdout.log",
+      "bytes": 2845,
+      "sha256": "b52b867bba1fcf0e1c0ee69b33a41c5b80d52c4ad1ffc53b1706274274afd599",
+      "git_blob": "9119b167266be0eb9923a7512e414627e208730d"
+    },
+    {
+      "path": "control-staging/CONTROL_STAGING.process-read.tool.json",
+      "bytes": 9602,
+      "sha256": "a59f03c91e88004adb95148045c6b589f10b6985d334d76d903cbcc1347a5c0f",
+      "git_blob": "28aba7394cc8d151bfdc68169135c2c3250ec2f4"
+    },
+    {
+      "path": "control-staging/CONTROL_STAGING.supervisor.tool.json",
+      "bytes": 954,
+      "sha256": "5f755df8b02426c93129a769614b3b8c5666c5880167c62b4f792d95fb479715",
+      "git_blob": "0895ea9e779aae6136fadc30ebea220fbff4beef"
+    },
+    {
+      "path": "control-staging/CONTROL_STAGING.admission.tool.json",
+      "bytes": 5078,
+      "sha256": "318aba0fb4dc177eae0d2162c78fad5d65ee7b973dcf1f5d8ac9be1e353a2e35",
+      "git_blob": "da5faada9d2532e0f8decfa13fb8c21f05edad2a"
+    },
+    {
+      "path": "control-staging/APPROVED_CONFIG.write.tool.json",
+      "bytes": 323,
+      "sha256": "5b5097b85a3c1b88189b2cba597080e6beff10fa1796931b125ef078a469b3b1",
+      "git_blob": "0744e9c7a96f0faec79d438b0950cec23a5c0c3b"
+    },
+    {
+      "path": "run/RESULT.json",
+      "bytes": 2535,
+      "sha256": "5f4b9d675b35872e9ad49fd14ab54e49cc5694ba4678f568caecd108525b8415",
+      "git_blob": "88be32de12e28d39b685a7812bff9e217d4a192a"
+    },
+    {
+      "path": "run/RESULT.read.tool.json",
+      "bytes": 3601,
+      "sha256": "f7eb164b401de3c6bed11449308588c156bdfe40ddd756cfa341d632f1b6bd84",
+      "git_blob": "ea1e834ac8987390c7ce9cc2efbff4ca31b9ac6a"
+    },
+    {
+      "path": "run/restoration.stdout.log",
+      "bytes": 590,
+      "sha256": "1eb7f324ce17d418cb18924fd56d5205d64a2d181e91528291b345fb50840bee",
+      "git_blob": "6e4993e69144ae8599082f09f0d8e7373b037a73"
+    },
+    {
+      "path": "run/restoration.process-read.tool.json",
+      "bytes": 2407,
+      "sha256": "8f41e0d1e00a88afaf69c3b03c64d518dc9d5c3bbd11cd20207fa2338072cff6",
+      "git_blob": "ec622c59022c95d6ffef41ab7c10d2862725d35d"
+    },
+    {
+      "path": "run/restoration.supervisor.tool.json",
+      "bytes": 949,
+      "sha256": "ddd34d857876eef47fbf018423ba8ae8e4485cf6db7ed4c87dc4a0ab52e0ddb9",
+      "git_blob": "6c8a73e247afa8aec5b62fb1e86a133d02050458"
+    },
+    {
+      "path": "run/restoration.admission.tool.json",
+      "bytes": 4436,
+      "sha256": "1e4d5824bc531204ccfa79dddda394b7e6570a8575ef2a85d43dc24d4feeb6be",
+      "git_blob": "f7d6613a31179391a4e7444c735ea23e2cb09924"
+    },
+    {
+      "path": "run/APPROVED_CONFIG.readback.tool.json",
+      "bytes": 3781,
+      "sha256": "f76994e18f8b63733204a7c3c8a67040344c3b3ab0c1bb14a94015f086709fff",
+      "git_blob": "34fc8469cc6e361465fe7b944ce1249f193ba959"
+    },
+    {
+      "path": "run/PROCESS_PREFLIGHT.json",
+      "bytes": 359,
+      "sha256": "8970768f195a15df006d1e0544f3dbf679abad8f26197f7387af70feb4824db7",
+      "git_blob": "f93f03b5b195ba56c196242b4cfc1f9d5b882215"
+    },
+    {
+      "path": "run/INHERITED_SAFE_ENVIRONMENT.json",
+      "bytes": 543,
+      "sha256": "216a75cf6f0448f4ef0172897cb2de93ce486c1b8038902e4b1b94b71cd2252a",
+      "git_blob": "0ca723903df4e03b127e3c8bc0d0648cdd9c955c"
+    },
+    {
+      "path": "run/ARTIFACTS.json",
+      "bytes": 9160,
+      "sha256": "87938d930ce5258b250fe0a5fbd1370773997276064590959be73ec181ec9794",
+      "git_blob": "a390606c914573ec2b8637a3afaf5540e2c13e70"
+    },
+    {
+      "path": "run/FAILURE_CONTEXT.read.tool.json",
+      "bytes": 13460,
+      "sha256": "9beb7e5c41e50543f6b74448f8346cc0dfdd836fc2dcaa1056fbedc8e90853fc",
+      "git_blob": "11980a468957f54f73208996605309b0c8849595"
+    },
+    {
+      "path": "run/SOURCE_GIT_STATE.before.json",
+      "bytes": 556,
+      "sha256": "a2dfc899247da41e66e2bd85f3420acbccaaeb05354e7af4592a0719c7c0d0a9",
+      "git_blob": "6da5c2c5338134a5b30957203f95aec531374182"
+    },
+    {
+      "path": "run/SOURCE_GIT_STATE.after.json",
+      "bytes": 556,
+      "sha256": "a2dfc899247da41e66e2bd85f3420acbccaaeb05354e7af4592a0719c7c0d0a9",
+      "git_blob": "6da5c2c5338134a5b30957203f95aec531374182"
+    },
+    {
+      "path": "run/COMMANDS.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "git_blob": "fe51488c7066f6687ef680d6bfaa4f7768ef205c"
+    },
+    {
+      "path": "run/DOWNLOADS.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "git_blob": "fe51488c7066f6687ef680d6bfaa4f7768ef205c"
+    },
+    {
+      "path": "run/INPUT_IDENTITIES.json",
+      "bytes": 5386,
+      "sha256": "ff8ea2acc3a1a742bc35f43f3825621e8733c19f4d6dea9a14efaba02c40e21b",
+      "git_blob": "af76f2fce42a61f52a0147e6aaf5a817833412e4"
+    },
+    {
+      "path": "run/EVENTS.jsonl",
+      "bytes": 339,
+      "sha256": "11e9f74c4f4dc97e076459ad62a55c9794e2c9af4a0e6f0cd997ed32a21d7294",
+      "git_blob": "59dfc8cb227dfa289b0c6f9fcb9c10f07767c652"
+    },
+    {
+      "path": "run/REMAINING_SMALL.read.tool.json",
+      "bytes": 10127,
+      "sha256": "439bbcbee176ef56f2d23d582c8fb94d4a792c887bdae341dfc9ab5e10578cb6",
+      "git_blob": "a42309eb6a77a9e62d1ccb31488809d60267ce8f"
+    },
+    {
+      "path": "five-pid-probe/five-pid-probe.stdout.json",
+      "bytes": 2363,
+      "sha256": "297fd73553e50c6bb3e01c49fba1f26d7a36b09a1978b3c98dfb486f8d205d05",
+      "git_blob": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea"
+    },
+    {
+      "path": "five-pid-probe/five-pid-probe.read.tool.json",
+      "bytes": 8159,
+      "sha256": "464d40f4482ccb8c870dd4cfde89238beced75d09194f2196fb430b41a9819d5",
+      "git_blob": "cd394b6b5e5209d7beca8f8a64502eb58c60a6c5"
+    },
+    {
+      "path": "five-pid-probe/five-pid-probe.supervisor.tool.json",
+      "bytes": 954,
+      "sha256": "4e164165280e78a6f59a2198f14643f8a7a124d10893540a1359c90216780597",
+      "git_blob": "025bf83ca62f1b32170f53fc4f544cbf0a2208a9"
+    },
+    {
+      "path": "five-pid-probe/five-pid-probe.admission.tool.json",
+      "bytes": 4132,
+      "sha256": "7e32c30d772b5ed2ce5a3f448a0a951c610897b236ec410a22413f5ae91b74f2",
+      "git_blob": "9b3421be1cf9ad929fe4d2fd6c8a403a6e41266d"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "actual_index_writer_identity": "Unknown; command timing and documented Git behavior support an inference, not direct observation.",
+  "all_stdout_bytes_matched_original_observed_hex_and_text": true,
+  "before_index_direct_native_read": false,
+  "before_index_recovery": "Exact complete hash anchored by the original independent before record; one zero-stat candidate, recomputed footer. Root independently compared every changed and invariant byte.",
+  "changed_stat_fields": 136632,
+  "compiler_errors": [
+    {
+      "code": "E0425",
+      "message": "cannot find function `recovered_peer` in module `training_ports`"
+    }
+  ],
+  "complete_fix_log": {
+    "bytes": 116897,
+    "git_blob": "e3595315f3e98e4232dfac34d82cbec9032b997c",
+    "sha256": "e30ead233ff190511d27e06d3465d25aa162bc1f075f50a6114102243b81af93"
+  },
+  "complete_supervisor_stdout": {
+    "bytes": 118168,
+    "git_blob": "b94991a16d66bea3f0d633bb49d0391af3ed5cbf",
+    "sha256": "869dd733aac2f9980ee3f1b03d594bd31d2326f8796f1f61df097b89f5125fb1"
+  },
+  "fix_after_inventory": {
+    "bytes": 5611182,
+    "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711"
+  },
+  "fix_log_fixed_version_chunks": [
+    [
+      0,
+      65536,
+      "2050:50138955:116897:1794509332216014003:1794509332216014003",
+      false
+    ],
+    [
+      65536,
+      116897,
+      "2050:50138955:116897:1794509332216014003:1794509332216014003",
+      true
+    ]
+  ],
+  "fmt": "NOT_RUN",
+  "format": "hepta-root-maintenance-terminal-and-index-review-v1",
+  "full_original_result": {
+    "bytes": 5114,
+    "git_blob": "30300f4cf4743e3fb80ccf404f7e7be4d8b81ac6",
+    "sha256": "c13be4e53eba55593d17a43ec9acdfb97060a55866eb52fc684700bf2df0236c"
+  },
+  "git_fields_changed": [
+    "index_sha256"
+  ],
+  "index_after": {
+    "bytes": 2072488,
+    "git_blob": "80bad59e9314c6e9a9161f23574303ee9ab1b2ad",
+    "sha256": "b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15"
+  },
+  "index_before": {
+    "bytes": 2072488,
+    "git_blob": "3c18e139aa23f5f2898b740941b70f20fbd824ab",
+    "sha256": "111345e57b5b7276c8fdb4e91302c7bafb6d7c8ca905f83dd1a6c72a28154a16"
+  },
+  "index_entry_count": 15188,
+  "known_fix_returncode": 101,
+  "maintenance_replayed": false,
+  "minimal_control_revision": "Set diff.autoRefreshIndex=false only for archive diff; retain original raw Git-state equality gate.",
+  "mode_oid_path_flags_stage_padding_and_all_extension_bytes_unchanged": true,
+  "native_git_version": "Unknown",
+  "native_job": "1a1d10d8ad0-2564-1bff",
+  "old_unknown_reclassified": false,
+  "only_nine_standard_stat_fields_and_final_sha1_differ": true,
+  "original_maintenance_result_status": "UNKNOWN",
+  "qualification": false,
+  "source_ref_updated": false,
+  "stdout_observation_intervals": [
+    {
+      "eof_at_observation": true,
+      "next_offset": 23284,
+      "offset": 10511,
+      "record": "MAINTENANCE_THIRD_READ.original.json",
+      "size_at_observation": 23284
+    },
+    {
+      "eof_at_observation": true,
+      "next_offset": 10511,
+      "offset": 4249,
+      "record": "MAINTENANCE_SECOND_READ.original.json",
+      "size_at_observation": 10511
+    },
+    {
+      "eof_at_observation": false,
+      "next_offset": 105204,
+      "offset": 88820,
+      "record": "maintenance_complete_stdout_read_88820.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": false,
+      "next_offset": 88820,
+      "offset": 72436,
+      "record": "maintenance_complete_stdout_read_72436.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": false,
+      "next_offset": 72436,
+      "offset": 56052,
+      "record": "maintenance_complete_stdout_read_56052.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": false,
+      "next_offset": 56052,
+      "offset": 39668,
+      "record": "maintenance_complete_stdout_read_39668.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": false,
+      "next_offset": 39668,
+      "offset": 23284,
+      "record": "maintenance_fourth_read_response.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": true,
+      "next_offset": 118168,
+      "offset": 101784,
+      "record": "TAIL_READ.original.json",
+      "size_at_observation": 118168
+    },
+    {
+      "eof_at_observation": true,
+      "next_offset": 4249,
+      "offset": 0,
+      "record": "82b21d3e1df3bf86bac888cc681b3fdbfb1d805a.response.json",
+      "size_at_observation": 4249
+    }
+  ],
+  "tests_dispatched": 0,
+  "zero_actual_source_postimages": true
+}

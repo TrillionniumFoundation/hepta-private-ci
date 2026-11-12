@@ -1,0 +1,2532 @@
+{"config_sha256": "82c5da47d2f051b7d5c32a1b64a58aa060265e6e027a5a39897a4972c1daf98b", "driver_sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce", "event": "fixed_original_maintenance_launcher_verified", "qualification": false}
+{"at":"2026-11-12T18:38:10.019581+00:00","event":"scoped_maintenance_preconditions_started"}
+{"at":"2026-11-12T18:38:17.320105+00:00","event":"maintenance_preflight_completed","physical_leaves":15188,"source_commit":"86dd56a930277e0d1aef3e475e35c2b5d60b43b7","source_tests_started":false,"source_tree":"383ab85c39ef9d848252ef5c25922d13d9fae6c6"}
+{"argv":["just","fix","-p","codex-hepta-intelligence-eval","-p","codex-hepta-agentd"],"at":"2026-11-12T18:38:22.103795+00:00","event":"original_maintenance_command_attempted","name":"fix","timeout_seconds":7200}
+cargo clippy --fix --tests --allow-dirty {args}
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling libc v0.2.191
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+    Checking cfg-if v1.0.5
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling serde_core v1.0.229
+    Checking memchr v2.8.3
+   Compiling zeroize_derive v1.5.0
+    Checking smallvec v1.16.3
+    Checking zeroize v1.9.1
+    Checking subtle v2.6.1
+    Checking typenum v1.20.1
+    Checking itoa v1.0.18
+    Checking log v0.4.34
+   Compiling version_check v0.9.5
+   Compiling parking_lot_core v0.9.12
+    Checking scopeguard v1.2.0
+   Compiling portable-atomic v1.15.0
+    Checking lock_api v0.4.14
+    Checking critical-section v1.2.0
+    Checking once_cell v1.21.4
+   Compiling autocfg v1.5.1
+    Checking parking_lot v0.12.5
+    Checking getrandom v0.2.17
+    Checking pin-project-lite v0.2.17
+   Compiling thiserror-impl v2.0.21
+    Checking rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling zmij v1.0.23
+   Compiling thiserror v2.0.21
+   Compiling shlex v2.0.1
+   Compiling jobserver v0.1.35
+   Compiling find-msvc-tools v0.1.14
+    Checking futures-core v0.3.34
+   Compiling cc v1.8.0
+   Compiling generic-array v0.14.7
+    Checking bytes v1.12.1
+    Checking rand_core v0.6.4
+    Checking bitflags v2.13.2
+    Checking crypto-common v0.1.7
+   Compiling displaydoc v0.2.7
+    Checking socket2 v0.6.5
+    Checking futures-sink v0.3.34
+   Compiling serde_json v1.0.154
+   Compiling tracing-attributes v0.1.31
+   Compiling synstructure v0.14.0
+    Checking mio v1.2.4
+    Checking errno v0.3.14
+   Compiling zerofrom-derive v0.1.8
+    Checking signal-hook-registry v1.4.8
+   Compiling num-traits v0.2.19
+   Compiling tokio-macros v2.7.2
+    Checking futures-io v0.3.34
+    Checking foldhash v0.2.0
+    Checking tokio v1.53.3
+    Checking tracing-core v0.1.36
+    Checking slab v0.4.12
+    Checking stable_deref_trait v1.2.1
+   Compiling yoke-derive v0.8.4
+    Checking futures-channel v0.3.34
+   Compiling futures-macro v0.3.34
+    Checking cpufeatures v0.2.17
+    Checking futures-task v0.3.34
+    Checking futures-util v0.3.34
+    Checking tracing v0.1.44
+    Checking hashbrown v0.17.1
+    Checking aho-corasick v1.1.5
+    Checking regex-syntax v0.8.11
+    Checking block-buffer v0.10.4
+   Compiling zerovec-derive v0.11.6
+    Checking digest v0.10.7
+    Checking regex-automata v0.4.18
+    Checking equivalent v1.0.3
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+   Compiling time-macros v0.2.32
+    Checking percent-encoding v2.3.2
+   Compiling pkg-config v0.3.34
+    Checking num_threads v0.1.8
+    Checking deranged v0.5.9
+    Checking powerfmt v0.2.1
+    Checking time v0.3.55
+    Checking indexmap v2.14.2
+   Compiling prettyplease v0.2.37
+   Compiling glob v0.3.4
+   Compiling rustc-hash v2.1.3
+   Compiling regex v1.13.1
+   Compiling clang-sys v1.9.1
+    Checking zerofrom v0.1.8
+    Checking tokio-util v0.7.20
+    Checking yoke v0.8.3
+    Checking hybrid-array v0.4.15
+    Checking either v1.19.0
+   Compiling minimal-lexical v0.2.1
+    Checking zerovec v0.11.8
+   Compiling nom v7.1.3
+    Checking form_urlencoded v1.2.2
+   Compiling libloading v0.8.9
+   Compiling cexpr v0.6.0
+    Checking http v1.5.0
+   Compiling semver v1.0.28
+   Compiling rustc_version v0.4.1
+    Checking tinystr v0.8.4
+   Compiling bindgen v0.73.2
+    Checking crypto-common v0.2.2
+    Checking cmov v0.5.4
+    Checking ctutils v0.4.6
+    Checking num-integer v0.1.47
+   Compiling cmake v0.1.58
+   Compiling icu_normalizer_data v2.3.0
+   Compiling dunce v1.0.5
+    Checking const-oid v0.10.2
+   Compiling fs_extra v1.3.0
+    Checking ryu v1.0.23
+   Compiling icu_properties_data v2.3.0
+    Checking ipnet v2.12.2
+    Checking fastrand v2.5.0
+    Checking cpufeatures v0.3.1
+   Compiling zerocopy v0.8.63
+    Checking http-body v1.1.0
+    Checking writeable v0.6.4
+   Compiling aws-lc-rs v1.18.2
+   Compiling aws-lc-sys v0.46.0
+    Checking block-buffer v0.12.1
+    Checking rustls-pki-types v1.15.1
+    Checking digest v0.11.3
+    Checking sha2 v0.10.9
+    Checking untrusted v0.7.1
+    Checking litemap v0.8.3
+    Checking icu_locale_core v2.3.0
+    Checking potential_utf v0.1.6
+    Checking zerotrie v0.2.5
+    Checking base64 v0.23.1
+   Compiling crossbeam-utils v0.8.23
+   Compiling getrandom v0.3.4
+    Checking icu_provider v2.3.1
+    Checking http-body-util v0.1.5
+   Compiling rustix v1.1.5
+    Checking sha1_smol v1.0.1
+    Checking utf8_iter v1.0.4
+    Checking icu_collections v2.3.0
+    Checking uuid v1.28.0
+    Checking bstr v1.13.1
+   Compiling httparse v1.10.1
+    Checking linux-raw-sys v0.12.1
+    Checking lazy_static v1.5.1
+    Checking httpdate v1.0.3
+   Compiling ring v0.17.14
+    Checking icu_properties v2.3.0
+    Checking icu_normalizer v2.3.0
+    Checking fnv v1.0.7
+    Checking openssl-probe v0.2.1
+    Checking idna_adapter v1.2.2
+    Checking untrusted v0.9.0
+   Compiling winnow v1.0.4
+   Compiling rustversion v1.0.23
+    Checking idna v1.1.0
+    Checking byteorder v1.5.0
+    Checking base64 v0.22.1
+    Checking try-lock v0.2.5
+    Checking atomic-waker v1.1.2
+   Compiling rustls v0.23.46
+   Compiling crc32fast v1.5.2
+    Checking want v0.3.2
+    Checking url v2.5.8
+    Checking sync_wrapper v1.0.2
+    Checking futures-executor v0.3.34
+    Checking tower-service v0.3.3
+    Checking tinyvec v1.13.3
+    Checking zlib-rs v0.6.8
+    Checking h2 v0.4.20
+    Checking hyper v1.12.0
+    Checking sha1 v0.10.7
+    Checking hyper-util v0.1.21
+   Compiling toml_parser v1.1.5+spec-1.1.0
+    Checking sha2 v0.11.1
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+    Checking psl-types v2.0.11
+   Compiling vcpkg v0.2.15
+    Checking hex v0.4.3
+    Checking tower-layer v0.3.3
+    Checking futures v0.3.34
+    Checking ppv-lite86 v0.2.21
+    Checking num-bigint v0.4.8
+    Checking tokio-stream v0.1.19
+    Checking tower v0.5.3
+    Checking rustls-native-certs v0.8.5
+    Checking webpki-roots v1.0.10
+   Compiling unicode-xid v0.2.6
+   Compiling anyhow v1.0.104
+    Checking sharded-slab v0.1.7
+    Checking matchers v0.2.0
+    Checking tracing-log v0.2.0
+    Checking tracing-serde v0.2.0
+    Checking thread_local v1.1.10
+    Checking nu-ansi-term v0.50.3
+    Checking jiff-core v0.1.1
+    Checking jiff v0.2.38
+    Checking tracing-subscriber v0.3.23
+    Checking chacha20 v0.10.2
+    Checking mime v0.3.17
+    Checking rand v0.10.3
+    Checking data-encoding v2.11.1
+   Compiling toml_edit v0.25.17+spec-1.1.0
+    Checking rand_core v0.9.5
+    Checking crossbeam-channel v0.5.17
+   Compiling ahash v0.8.12
+    Checking nibble_vec v0.1.0
+   Compiling async-trait v0.1.92
+    Checking konst_macro_rules v0.2.19
+    Checking konst v0.2.20
+    Checking rand_chacha v0.9.0
+   Compiling proc-macro-crate v3.5.0
+   Compiling const_format_proc_macros v0.2.34
+    Checking const_format v0.2.36
+   Compiling rama-macros v0.3.0
+    Checking rand v0.9.5
+    Checking rustls-webpki v0.103.16
+   Compiling openssl-sys v0.9.117
+    Checking wildcard v0.3.0
+    Checking spin v0.9.9
+    Checking smol_str v0.3.6
+   Compiling unicase v2.10.0
+    Checking allocator-api2 v0.2.21
+   Compiling crossbeam-epoch v0.9.21
+   Compiling mime_guess v2.0.5
+    Checking rama-utils v0.3.0
+   Compiling bytemuck_derive v1.12.1
+    Checking tokio-rustls v0.26.6
+    Checking hyper-rustls v0.27.10
+    Checking symlink v0.1.0
+    Checking tracing-appender v0.2.5
+    Checking bytemuck v1.25.2
+    Checking tokio-graceful v0.2.2
+    Checking asynk-strim v0.1.5
+    Checking csv-core v0.1.13
+    Checking simd-adler32 v0.3.10
+    Checking rama-error v0.3.0
+    Checking endian-type v0.2.0
+   Compiling strsim v0.11.1
+    Checking rama-core v0.3.0
+    Checking radix_trie v0.3.0
+    Checking csv v1.4.0
+    Checking psl v2.1.241
+    Checking serde_html_form v0.4.1
+    Checking itertools v0.15.0
+   Compiling synstructure v0.13.2
+   Compiling openssl v0.10.81
+   Compiling heck v0.5.0
+    Checking foreign-types-shared v0.1.1
+    Checking foreign-types v0.3.2
+   Compiling asn1-rs-derive v0.6.0
+    Checking rama-net v0.3.0
+    Checking hashbrown v0.16.1
+    Checking rusticata-macros v4.1.0
+   Compiling openssl-macros v0.1.1
+   Compiling asn1-rs-impl v0.2.0
+   Compiling ident_case v1.0.1
+    Checking adler2 v2.0.1
+    Checking regex-lite v0.1.9
+   Compiling native-tls v0.2.18
+    Checking asn1-rs v0.7.2
+   Compiling encoding_rs v0.8.42
+   Compiling cookie v0.18.2
+   Compiling crossbeam-deque v0.8.8
+   Compiling oid-registry v0.8.1
+    Checking arc-swap v1.9.2
+    Checking dyn-clone v1.0.20
+   Compiling syn v1.0.109
+    Checking core_detect v1.0.0
+    Checking simdutf8 v0.1.5
+   Compiling multiversion_no_op v1.0.0
+   Compiling rayon-core v1.13.0
+   Compiling litrs v1.0.1
+   Compiling document-features v0.2.12
+    Checking tokio-native-tls v0.3.1
+    Checking der-parser v10.0.0
+    Checking tower-http v0.6.11
+    Checking publicsuffix v2.3.0
+    Checking tempfile v3.27.0
+   Compiling serde_repr v0.1.21
+   Compiling serde_derive_internals v0.29.1
+   Compiling schemars v0.8.22
+    Checking parking v2.2.1
+    Checking event-listener v5.4.2
+    Checking cookie_store v0.22.1
+    Checking x509-parser v0.18.1
+   Compiling schemars_derive v0.8.22
+    Checking hyper-tls v0.6.0
+    Checking flume v0.12.0
+    Checking pem v4.0.0
+    Checking serde_urlencoded v0.7.1
+    Checking yasna v0.6.0
+   Compiling zstd-sys v2.1.2+zstd.1.5.7
+    Checking opentelemetry v0.31.0
+   Compiling termcolor v1.4.1
+    Checking crc-catalog v2.5.0
+    Checking option-ext v0.2.0
+   Compiling ref-cast v1.0.27
+    Checking dirs-sys v0.5.0
+    Checking crc v3.4.0
+   Compiling ts-rs-macros v11.1.0
+    Checking rcgen v0.14.10
+    Checking reqwest v0.12.28
+    Checking webpki-root-certs v1.0.10
+   Compiling ref-cast-impl v1.0.27
+    Checking utf8parse v0.2.2
+    Checking rama-crypto v0.3.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/rama-crypto-0.3.0-time-backport)
+    Checking ts-rs v11.1.0
+    Checking dirs v6.0.0
+    Checking miniz_oxide v0.9.1
+    Checking env_filter v2.0.0
+   Compiling heapless v0.7.17
+    Checking nom v8.0.0
+   Compiling dupe_derive v0.9.1
+    Checking anstyle v1.0.14
+   Compiling zstd-safe v8.2.0
+   Compiling typeid v1.0.3
+   Compiling cfg_aliases v0.1.1
+    Checking md5 v0.8.1
+    Checking same-file v1.0.6
+    Checking bumpalo v3.20.3
+    Checking iana-time-zone v0.1.65
+    Checking chrono v0.4.45
+    Checking rama-tls v0.3.0
+    Checking walkdir v2.5.0
+   Compiling nix v0.28.0
+    Checking codex-utils-absolute-path v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/absolute-path)
+    Checking env_logger v0.11.11
+    Checking flate2 v1.1.10
+    Checking miniz_oxide v0.8.9
+   Compiling darling_core v0.24.1
+    Checking hash32 v0.2.1
+   Compiling logos-codegen v0.15.1
+   Compiling blake3 v1.8.7
+    Checking arrayvec v0.7.8
+   Compiling linktime-proc-macro v0.2.3
+    Checking bit-vec v0.8.0
+    Checking unicode-segmentation v1.13.3
+    Checking atomic v0.5.3
+    Checking link-section v0.19.3
+   Compiling allocative v0.3.6
+   Compiling erased-serde v0.4.10
+    Checking ctor v1.0.13
+    Checking lock_free_hashtable v0.1.4
+    Checking bit-set v0.8.0
+   Compiling darling_macro v0.24.1
+    Checking quickcheck v1.1.0
+    Checking anstyle-parse v1.0.0
+    Checking event-listener-strategy v0.5.4
+    Checking rama-json v0.3.0
+    Checking sha1 v0.11.0
+    Checking itertools v0.14.0
+    Checking cobs v0.3.0
+   Compiling allocative_derive v0.3.6
+   Compiling strong_hash_derive v0.1.0
+    Checking colorchoice v1.0.5
+    Checking hashbrown v0.14.5
+   Compiling bindgen v0.72.1
+    Checking constant_time_eq v0.4.2
+   Compiling beef v0.5.2
+   Compiling rama-http-headers v0.3.0
+    Checking anstyle-query v1.1.5
+    Checking is_terminal_polyfill v1.70.2
+    Checking unicode-width v0.1.14
+    Checking anstream v1.0.0
+   Compiling convert_case v0.6.0
+    Checking dashmap v6.2.1
+    Checking sorted_vector_map v0.2.1
+    Checking strong_hash v0.1.0
+    Checking postcard v1.1.3
+    Checking rama-http-types v0.3.0
+    Checking zstd v0.14.3
+   Compiling darling v0.24.1
+    Checking fancy-regex v0.16.2
+    Checking static_interner v0.1.3
+    Checking dupe v0.9.1
+   Compiling Inflector v0.11.4
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/rustls-provider)
+   Compiling schemafy_core v0.5.2
+   Compiling itertools v0.13.0
+    Checking fxhash v0.2.1
+    Checking terminal_size v0.4.4
+    Checking prefix-trie v0.8.4
+    Checking triomphe v0.1.17
+   Compiling pagable_derive v0.4.2
+    Checking clap_lex v1.1.1
+    Checking urlencoding v2.1.3
+    Checking take_mut v0.2.2
+    Checking inventory v0.3.25
+    Checking sequence_trie v0.3.6
+    Checking static_assertions v1.1.0
+   Compiling starlark_map v0.14.2
+   Compiling shlex v1.3.0
+    Checking bitflags v1.3.2
+    Checking fluent-uri v0.1.4
+    Checking pagable v0.4.2
+    Checking clap_builder v4.6.7
+    Checking hickory-proto v0.26.3
+   Compiling schemafy_lib v0.5.2
+   Compiling logos-derive v0.15.1
+   Compiling derive_more-impl v1.0.0
+    Checking async-lock v3.4.2
+    Checking tracing-opentelemetry v0.32.1
+   Compiling clap_derive v4.6.7
+   Compiling memoffset v0.9.1
+    Checking gix-trace v0.1.21
+    Checking iri-string v0.7.14
+    Checking endian-type v0.1.2
+    Checking http-range-header v0.4.2
+    Checking tagptr v0.2.0
+   Compiling icu_locale_fallback_data v2.3.0
+   Compiling paste v1.0.15
+    Checking moka v0.12.16
+    Checking rama-http v0.3.0
+    Checking radix_trie v0.2.1
+    Checking derive_more v1.0.0
+    Checking clap v4.6.7
+    Checking codex-http-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/http-client)
+    Checking logos v0.15.1
+   Compiling schemafy v0.5.2
+   Compiling rama-dns v0.3.0
+    Checking hickory-net v0.26.3
+    Checking lsp-types v0.97.0
+    Checking annotate-snippets v0.9.2
+   Compiling derivative v2.2.0
+    Checking rama-tcp v0.3.0
+    Checking fdeflate v0.3.7
+    Checking tokio-test v0.4.6
+    Checking fd-lock v4.0.4
+    Checking gix-validate v0.11.4
+    Checking globset v0.4.20
+    Checking color_quant v1.1.0
+   Compiling starlark v0.14.2 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+   Compiling icu_decimal_data v2.3.0
+    Checking weezl v0.1.12
+    Checking quick-error v2.0.1
+    Checking indenter v0.3.4
+    Checking byteorder-lite v0.1.0
+    Checking zune-core v0.5.3
+    Checking pxfm v0.1.30
+    Checking resolv-conf v0.7.6
+    Checking home v0.5.12
+    Checking rustyline v14.0.0
+    Checking hickory-resolver v0.26.3
+    Checking moxcms v0.8.1
+    Checking zune-jpeg v0.5.15
+    Checking starlark_syntax v0.14.2
+    Checking image-webp v0.2.4
+    Checking display_container v0.9.0
+    Checking gif v0.14.2
+    Checking gix-path v0.12.6
+    Checking rama-http-core v0.3.0
+    Checking png v0.18.1
+   Compiling starlark_derive v0.14.2
+    Checking debugserver-types v0.5.0
+   Compiling serde_with_macros v3.24.0
+    Checking textwrap v0.11.0
+    Checking codex-utils-home-dir v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/home-dir)
+    Checking rama-udp v0.3.0
+    Checking rama-unix v0.3.0
+    Checking unicode-normalization v0.1.26
+    Checking lru v0.18.5
+    Checking erased-serde v0.3.31
+   Compiling enumflags2_derive v0.7.12
+    Checking maplit v1.0.2
+    Checking strsim v0.10.0
+    Checking cmp_any v0.8.1
+    Checking enumflags2 v0.7.12
+    Checking codex-utils-cache v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/cache)
+    Checking gix-utils v0.3.6
+    Checking rama-http-backend v0.3.0
+    Checking rama-socks5 v0.3.0
+    Checking serde_with v3.24.0
+    Checking icu_locale_fallback v2.3.0
+    Checking image v0.25.10
+    Checking rama-tls-rustls v0.3.0
+   Compiling strum_macros v0.27.2
+    Checking fixed_decimal v0.7.2
+    Checking multimap v0.10.1
+    Checking codex-execpolicy v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/execpolicy)
+    Checking icu_decimal v2.3.0
+    Checking strum v0.27.2
+    Checking codex-utils-image v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/image)
+    Checking codex-network-proxy v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/network-proxy)
+    Checking landlock v0.4.7
+    Checking codex-utils-path-uri v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/redacted-string)
+    Checking chardetng v0.1.17
+    Checking codex-utils-string v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/string)
+   Compiling strum_macros v0.28.0
+    Checking codex-async-utils v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/async-utils)
+    Checking quick-xml v0.41.0
+    Checking seccompiler v0.5.0
+    Checking wildmatch v2.6.1
+    Checking sys-locale v0.3.2
+    Checking prodash v31.0.1
+    Checking codex-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/protocol)
+   Compiling thiserror v1.0.69
+    Checking gix-features v0.48.1
+   Compiling thiserror-impl v1.0.69
+   Compiling heapless v0.8.0
+    Checking hash32 v0.3.1
+   Compiling faster-hex v0.10.1
+    Checking gix-error v0.2.5
+   Compiling curve25519-dalek v4.1.3
+    Checking sha1-checked v0.10.0
+   Compiling curve25519-dalek-derive v0.1.1
+    Checking gix-hash v0.25.1
+    Checking gix-date v0.15.6
+    Checking gix-actor v0.41.2
+    Checking gix-hashtable v0.15.2
+    Checking gix-object v0.60.0
+    Checking memmap2 v0.9.11
+    Checking gix-fs v0.21.2
+    Checking shell-words v1.1.1
+    Checking gix-chunk v0.7.3
+    Checking nonempty v0.12.0
+    Checking gix-tempfile v23.0.2
+    Checking gix-lock v23.0.1
+   Compiling prost-derive v0.14.4
+    Checking gix-commitgraph v0.37.1
+    Checking filedescriptor v0.8.3
+    Checking gix-quote v0.7.2
+    Checking gix-sec v0.14.2
+    Checking serial2 v0.2.38
+    Checking const-oid v0.9.6
+    Checking downcast-rs v1.2.1
+    Checking portable-pty v0.9.0
+    Checking der v0.7.10
+    Checking gix-revwalk v0.31.0
+    Checking gix-ref v0.63.0
+    Checking spki v0.7.3
+    Checking codex-utils-pty v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/pty)
+    Checking gix-command v0.9.2
+    Checking gix-packetline v0.21.5
+    Checking gix-glob v0.26.1
+    Checking gix-url v0.36.2
+    Checking clru v0.6.3
+    Checking gix-pack v0.70.0
+    Checking gix-transport v0.57.2
+    Checking pkcs8 v0.10.2
+    Checking gix-revision v0.45.0
+    Checking gix-shallow v0.12.1
+    Checking gix-config-value v0.18.1
+   Compiling pin-project-internal v1.1.13
+   Compiling maybe-async v0.2.11
+    Checking unicode-bom v2.0.3
+    Checking signature v2.2.0
+    Checking pin-project v1.1.13
+    Checking ed25519 v2.2.3
+    Checking gix-config v0.56.0
+    Checking gix-protocol v0.61.0
+    Checking gix-odb v0.80.0
+    Checking gix-refspec v0.41.0
+    Checking gix-discover v0.51.0
+    Checking gix-traverse v0.57.0
+    Checking codex-file-system v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/file-system)
+    Checking gix-diff v0.63.0
+    Checking headers-core v0.3.0
+   Compiling cfg_aliases v0.2.2
+    Checking headers v0.4.2
+    Checking gix v0.83.0
+    Checking ed25519-dalek v2.2.0
+    Checking inout v0.1.4
+    Checking similar v2.7.0
+    Checking utf-8 v0.7.6
+    Checking codex-git-utils v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/git-utils)
+    Checking tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+    Checking cipher v0.4.4
+    Checking hyper-timeout v0.5.2
+    Checking tonic v0.14.6
+    Checking tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+    Checking prost v0.14.4
+    Checking codex-websocket-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/websocket-client)
+   Compiling nix v0.31.3
+    Checking tonic-prost v0.14.6
+    Checking hmac v0.13.0
+    Checking universal-hash v0.5.1
+    Checking opaque-debug v0.3.1
+    Checking eventsource-stream v0.2.3
+    Checking concurrent-queue v2.5.0
+    Checking async-channel v2.5.0
+    Checking codex-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-client)
+    Checking cpubits v0.1.1
+    Checking codex-api v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-api)
+    Checking opentelemetry_sdk v0.31.0
+    Checking rand_chacha v0.3.1
+    Checking const-hex v1.19.3
+    Checking num-complex v0.4.6
+    Checking aead v0.5.2
+    Checking opentelemetry-proto v0.31.0
+    Checking rand v0.8.8
+    Checking opentelemetry-http v0.31.0
+   Compiling tree-sitter-language v0.1.9
+    Checking os_info v3.15.0
+    Checking opentelemetry-appender-tracing v0.31.1
+    Checking gethostname v1.1.0
+    Checking toml_datetime v0.7.5+spec-1.1.0
+    Checking opentelemetry-otlp v0.31.1
+    Checking vsimd v0.8.0
+    Checking toml_writer v1.1.3+spec-1.1.0
+    Checking outref v0.5.2
+    Checking winnow v0.7.15
+    Checking opentelemetry-semantic-conventions v0.31.0
+    Checking codex-otel v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/otel)
+    Checking base64-simd v0.8.0
+   Compiling unic-langid-impl v0.9.6
+    Checking bytes-utils v0.1.4
+    Checking serde_spanned v1.1.2
+    Checking aws-smithy-types v1.9.0
+    Checking toml v0.9.12+spec-1.1.0
+   Compiling unic-langid v0.9.6
+    Checking aws-smithy-async v1.3.1
+   Compiling aws-smithy-runtime-api-macros v1.1.0
+    Checking aws-smithy-runtime-api v1.19.1
+    Checking serde_path_to_error v0.1.20
+    Checking x25519-dalek v2.0.1
+    Checking block-padding v0.4.2
+   Compiling windows_x86_64_gnu v0.52.6
+    Checking inout v0.2.2
+    Checking codex-hepta-contracts v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-contracts)
+    Checking codex-utils-path v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling tree-sitter-bash v0.25.1
+   Compiling tree-sitter-powershell v0.26.4
+    Checking which v8.0.6
+    Checking cipher v0.5.2
+   Compiling rust-embed-utils v8.13.0
+    Checking streaming-iterator v0.1.9
+   Compiling toml v1.1.8+spec-1.1.0
+    Checking windows-targets v0.52.6
+   Compiling rust-embed-impl v8.13.0
+    Checking poly1305 v0.8.0
+   Compiling zbus_utils v6.0.0
+   Compiling toml v0.5.11
+   Compiling type-map v0.5.1
+   Compiling self_cell v1.3.0
+   Compiling self_cell v0.10.3
+   Compiling find-crate v0.6.3
+   Compiling intl-memoizer v0.5.3
+   Compiling zbus_macros v6.0.0
+    Checking codex-shell-command v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/shell-command)
+    Checking windows-result v0.2.0
+   Compiling i18n-config v0.4.8 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/i18n-config-0.4.8)
+    Checking aes v0.9.3
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+   Compiling fluent-syntax v0.11.1
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+    Checking codex-features v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/features)
+   Compiling fluent-langneg v0.13.1
+   Compiling intl_pluralrules v7.0.2
+    Checking toml_edit v0.24.1+spec-1.1.0
+    Checking codex-model-provider-info v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/model-provider-info)
+    Checking salsa20 v0.10.2
+    Checking num-rational v0.4.2
+   Compiling libsqlite3-sys v0.39.1
+    Checking zruntime v0.2.0
+    Checking num-iter v0.1.46
+    Checking hmac v0.12.1
+    Checking dns-lookup v3.0.1
+    Checking ordered-stream v0.2.0
+    Checking zcheapstr v1.1.0
+    Checking serde_ignored v0.1.14
+    Checking endi v1.1.1
+   Compiling rustc-hash v1.1.0
+   Compiling fluent-bundle v0.15.3
+    Checking zbus v6.0.0
+    Checking codex-config v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/config)
+    Checking num v0.4.3
+   Compiling i18n-embed-impl v0.8.4
+    Checking windows-strings v0.1.0
+    Checking cbc v0.2.1
+    Checking hkdf v0.13.0
+   Compiling windows-interface v0.58.0
+   Compiling windows-implement v0.58.0
+    Checking windows-core v0.58.0
+    Checking secret-service v6.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/secret-service-6.0.0)
+   Compiling fluent v0.16.1
+   Compiling rust-embed v8.13.0
+    Checking chacha20 v0.9.1
+    Checking keyring-core v1.0.0
+    Checking dirs-sys-next v0.1.2
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/windows-sandbox-rs)
+   Compiling proc-macro-error2 v2.0.1
+    Checking dirs-next v2.0.0
+    Checking zbus-secret-service-keyring-store v1.0.1 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1)
+   Compiling i18n-embed v0.15.4
+    Checking chacha20poly1305 v0.10.1
+   Compiling crossbeam-queue v0.3.14
+    Checking windows v0.58.0
+   Compiling hashlink v0.11.1
+    Checking hkdf v0.12.4
+    Checking pbkdf2 v0.12.2
+   Compiling futures-intrusive v0.5.0
+    Checking aws-smithy-schema v0.2.1
+    Checking polyval v0.6.2
+    Checking cookie-factory v0.3.3
+    Checking secrecy v0.10.3
+    Checking io_tee v0.1.1
+    Checking base64ct v1.8.3
+    Checking keccak v0.1.6
+    Checking base64 v0.21.7
+    Checking sha3 v0.10.9
+   Compiling sqlx-core v0.9.0
+    Checking age-core v0.11.0
+    Checking pem-rfc7468 v1.0.0
+    Checking ghash v0.5.1
+    Checking scrypt v0.11.0
+   Compiling i18n-embed-fl v0.9.4
+    Checking keyring v4.2.0
+   Compiling atoi v2.0.0
+    Checking aes v0.8.4
+    Checking ctr v0.9.2
+   Compiling thiserror-impl-no-std v2.0.2
+    Checking tungstenite v0.29.0
+    Checking kem v0.3.0-pre.0
+    Checking hybrid-array v0.2.3
+    Checking bech32 v0.9.1
+    Checking age v0.11.5
+    Checking ml-kem v0.2.3
+    Checking thiserror-no-std v2.0.2
+    Checking tokio-tungstenite v0.29.0
+    Checking aes-gcm v0.10.3
+   Compiling sqlx-sqlite v0.9.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/sqlx-sqlite-0.9.0)
+    Checking codex-keyring-store v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/keyring-store)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+    Checking codex-sandboxing v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/sandboxing)
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+    Checking der v0.8.2
+    Checking aws-smithy-http v0.64.2
+    Checking aws-credential-types v1.3.0
+    Checking crypto-bigint v0.7.10
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+    Checking axum-core v0.5.6
+   Compiling aws-types v1.6.0
+    Checking ff v0.14.0
+   Compiling dotenvy v0.15.7
+    Checking matchit v0.8.4
+    Checking axum v0.8.9
+   Compiling sqlx-macros-core v0.9.0
+    Checking codex-secrets v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/secrets)
+    Checking clatter v2.3.0
+    Checking codex-exec-server-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/exec-server-protocol)
+    Checking aws-smithy-http-client v1.5.1
+    Checking aws-smithy-schema v1.0.0
+    Checking aws-smithy-observability v0.3.0
+    Checking debugid v0.8.0
+    Checking aws-smithy-runtime v1.16.1
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking sentry-types v0.46.2
+    Checking codex-exec-server v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/exec-server)
+   Compiling sqlx-macros v0.9.0
+    Checking group v0.14.0
+    Checking aws-sigv4 v1.6.0
+    Checking spki v0.8.1
+    Checking crypto_secretbox v0.1.1
+    Checking simple_asn1 v0.6.4
+    Checking pem v3.0.6
+    Checking blake2 v0.10.6
+   Compiling object v0.37.3
+    Checking chunked_transfer v1.5.0
+    Checking base16ct v1.0.0
+    Checking ascii v1.1.0
+    Checking tiny_http v0.12.0
+    Checking sec1 v0.8.1
+    Checking crypto_box v0.9.1
+    Checking jsonwebtoken v9.3.1
+    Checking pkcs8 v0.11.0
+    Checking aws-runtime v1.10.0
+    Checking sqlx v0.9.0
+    Checking sentry-core v0.46.2
+    Checking aws-smithy-json v0.63.1
+    Checking codex-history v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/history)
+    Checking webbrowser v1.2.4
+    Checking gimli v0.32.3
+   Compiling foldhash v0.1.5
+    Checking codex-utils-template v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/template)
+   Compiling hashbrown v0.15.5
+    Checking addr2line v0.25.1
+    Checking codex-state v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/state)
+    Checking elliptic-curve v0.14.3
+    Checking codex-agent-identity v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/agent-identity)
+    Checking primefield v0.14.0
+    Checking codex-workload-identity v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/terminal-detection)
+   Compiling findshlibs v0.10.2
+   Compiling serde_derive_internals v0.30.0
+    Checking xmlparser v0.13.6
+    Checking rustc-demangle v0.1.28
+   Compiling fixedbitset v0.5.7
+   Compiling schemars_derive v1.2.3
+   Compiling petgraph v0.8.3
+    Checking backtrace v0.3.76
+    Checking aws-smithy-xml v0.62.1
+    Checking codex-login v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/login)
+   Compiling prost-types v0.14.4
+    Checking wnaf v0.14.1
+    Checking rfc6979 v0.6.0
+    Checking signature v3.0.0
+   Compiling sentry-contexts v0.46.2
+   Compiling rmcp v3.9.0
+   Compiling prost-build v0.14.4
+    Checking ecdsa v0.17.0
+    Checking primeorder v0.14.0
+    Checking aws-smithy-query v0.62.1
+    Checking sentry-backtrace v0.46.2
+    Checking schemars v1.2.3
+    Checking oauth2 v5.0.0
+    Checking process-wrap v10.0.1
+   Compiling sentry v0.46.2
+    Checking codex-utils-output-truncation v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/output-truncation)
+   Compiling rmcp-macros v3.9.0
+    Checking reqwest v0.13.5
+    Checking sse-stream v0.2.6
+    Checking codex-hepta-types v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-types)
+   Compiling tonic-build v0.14.6
+    Checking hostname v0.4.2
+    Checking uname v0.1.1
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.3.0
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.3.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.3.0
+   Compiling pastey v0.2.3
+   Compiling protoc-bin-vendored-win32 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.3.0
+   Compiling protoc-bin-vendored-linux-s390_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.3.0
+   Compiling protoc-bin-vendored v3.3.0
+   Compiling tonic-prost-build v0.14.3
+    Checking codex-install-context v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/install-context)
+    Checking sentry-panic v0.46.2
+    Checking sentry-debug-images v0.46.2
+    Checking aws-sdk-sts v1.119.0
+    Checking p256 v0.14.0
+    Checking aws-sdk-ssooidc v1.116.0
+    Checking aws-sdk-sso v1.114.0
+    Checking aws-sdk-signin v1.27.0
+    Checking codex-utils-plugins v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/plugins)
+    Checking codex-plugin v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/plugin)
+    Checking aws-config v1.12.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/code-mode-protocol)
+    Checking codex-collaboration-mode-templates v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/collaboration-mode-templates)
+    Checking codex-models-manager v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/feedback)
+    Checking codex-aws-auth v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/aws-auth)
+    Checking codex-response-debug-context v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/response-debug-context)
+    Checking codex-model-provider v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/model-provider)
+    Checking codex-connectors v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/connectors)
+    Checking codex-rmcp-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/rmcp-client)
+    Checking codex-code-mode v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/code-mode)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+    Checking codex-exec-server-test-support v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/exec-server/tests/support)
+    Checking codex-diagnostics v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/diagnostics)
+    Checking jsonptr v0.7.1
+    Checking codex-tools v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/tools)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+    Checking codex-mcp v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-mcp)
+    Checking symphonia-core v0.6.1
+    Checking nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+    Checking rayon v1.12.0
+    Checking codex-context-fragments v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/context-fragments)
+    Checking ignore v0.4.33
+   Compiling libm v0.2.16
+    Checking symphonia-metadata v0.6.1
+    Checking nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling noyalib v0.0.58
+    Checking runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+    Checking codex-file-search v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/file-search)
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/cargo-bin)
+    Checking codex-rollout v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/rollout)
+    Checking codex-extension-api v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/extension-api)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server-protocol-noop-macros)
+    Checking codex-app-server-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server-protocol)
+    Checking symphonia-common v0.6.1
+   Compiling darling_core v0.20.11
+   Compiling constant_time_eq v0.6.1
+   Compiling include_dir_macros v0.7.4
+   Compiling codex-skills v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/skills)
+    Checking include_dir v0.7.4
+   Compiling darling_macro v0.20.11
+    Checking noyalib-serde-yaml v0.0.58
+    Checking libbz2-rs-sys v0.2.5
+    Checking bzip2 v0.6.1
+   Compiling darling v0.20.11
+    Checking pbkdf2 v0.13.0
+    Checking zopfli v0.8.4
+   Compiling stop-words v0.9.0
+    Checking lzma-rust2 v0.22.0
+    Checking filetime v0.2.29
+    Checking deflate64 v0.1.12
+   Compiling pulldown-cmark v0.10.3
+    Checking ppmd-rust v1.5.0
+    Checking typed-path v0.12.3
+    Checking extended v0.1.0
+    Checking symphonia-format-riff v0.6.1
+    Checking zip v9.0.5
+    Checking tar v0.4.45
+   Compiling cached_proc_macro v0.25.0
+    Checking symphonia-format-ogg v0.6.1
+    Checking symphonia-format-mkv v0.6.1
+    Checking symphonia-format-isomp4 v0.6.1
+    Checking symphonia-bundle-mp3 v0.6.1
+    Checking codex-hooks v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hooks)
+    Checking web-time v1.1.0
+    Checking cached_proc_macro_types v0.1.1
+    Checking cached v0.56.0
+    Checking symphonia v0.6.1
+    Checking codex-apply-patch v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/shell-escalation)
+    Checking rust-stemmers v1.2.0
+    Checking deunicode v1.6.2
+    Checking bm25 v2.3.2
+    Checking codex-utils-audio v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/audio)
+    Checking codex-prompts v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/prompts)
+    Checking codex-analytics v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/analytics)
+    Checking codex-thread-store v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/thread-store)
+    Checking codex-core-plugins v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/skills)
+    Checking codex-rollout-trace v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/memories/read)
+    Checking whoami v1.6.1
+    Checking codex-utils-stream-parser v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/stream-parser)
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-cognitive-types)
+    Checking codex-core v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/core)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-paths v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-paths)
+   Compiling inotify-sys v0.1.8
+    Checking codex-hepta-kg v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-kg)
+    Checking codex-hepta-operations v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-operations)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-cognitive-read)
+    Checking codex-backend-openapi-models v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-backend-openapi-models)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/linux-sandbox)
+    Checking codex-backend-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/backend-client)
+    Checking inotify v0.11.5
+    Checking codex-hepta-memory-federation v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-memory-federation)
+    Checking codex-hepta-intuition v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-intuition)
+    Checking notify-types v2.1.0
+    Checking codex-process-hardening v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/process-hardening)
+    Checking is_ci v1.2.0
+    Checking notify v8.2.0
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-learning-ledger)
+    Checking codex-hepta-memory v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-memory)
+    Checking is-terminal v0.4.17
+    Checking codex-arg0 v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/arg0)
+    Checking supports-color v2.1.0
+    Checking supports-color v3.0.2
+    Checking codex-home v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/codex-home)
+    Checking codex-hepta-authbus v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-authbus)
+    Checking codex-uds v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/uds)
+    Checking constant_time_eq v0.3.1
+    Checking codex-hepta-evidence v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-evidence)
+    Checking owo-colors v4.4.0
+    Checking codex-memories-write v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/memories/write)
+    Checking codex-connectors-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/connectors)
+    Checking codex-utils-cli v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/cli)
+    Checking codex-chatgpt v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/chatgpt)
+    Checking codex-mcp-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/mcp)
+    Checking codex-external-agent-migration v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/external-agent-migration)
+    Checking codex-app-server-transport v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server-transport)
+    Checking codex-guardian-v2 v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/guardian-v2)
+    Checking codex-queue-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/queue)
+    Checking codex-image-generation-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/image-generation)
+    Checking codex-web-search-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/web-search)
+    Checking codex-cloud-config v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/cloud-config)
+    Checking codex-goal-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/goal)
+    Checking codex-memories-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/memories)
+    Checking codex-agent-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/agent)
+    Checking codex-history-notes-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/history-notes)
+    Checking codex-hepta-governance v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/hepta-memory)
+    Checking codex-file-watcher v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/file-watcher)
+    Checking codex-git-attribution v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/ext/hepta-prompt)
+    Checking codex-hepta-ndu v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-ndu)
+    Checking codex-hepta-wire v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-wire)
+    Checking codex-utils-json-to-toml v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/utils/json-to-toml)
+    Checking predicates-core v1.0.10
+    Checking codex-app-server v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-automation v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-automation)
+    Checking codex-hepta-fleet v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-fleet)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-infer-core)
+    Checking num_cpus v1.17.0
+   Compiling assert_cmd v2.2.2
+   Compiling dtor-proc-macro v0.0.6
+    Checking termtree v0.5.1
+    Checking deadpool-runtime v0.1.4
+    Checking difflib v0.4.0
+    Checking predicates v3.1.4
+    Checking deadpool v0.12.3
+    Checking predicates-tree v1.0.13
+    Checking dtor v0.1.1
+    Checking codex-hepta-neuron v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-neuron)
+    Checking codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-agent-protocol)
+    Checking codex-app-server-client v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server-client)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-control-plane)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-plasticity)
+    Checking codex-hepta-objective v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-objective)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-matrix-protocol v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-matrix-protocol)
+    Checking assert-json-diff v2.0.2
+    Checking wait-timeout v0.2.1
+   Compiling ctor-proc-macro v0.0.7
+    Checking ctor v0.6.3
+    Checking codex-hepta-supervisor v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-supervisor)
+    Checking wiremock v0.6.5
+    Checking codex-hepta-intelligence v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-intelligence)
+    Checking codex-hepta-codex-adapter v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-cognitive-store)
+    Checking codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-bellman-operator)
+    Checking diff v0.1.13
+    Checking yansi v1.0.1
+    Checking pretty_assertions v1.4.1
+    Checking core_test_support v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/core/tests/common)
+    Checking codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-agentd)
+    Checking app_test_support v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/app-server/tests/common)
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `selection` is never read
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:35:5
+   |
+34 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+   |            ---------------------------------------- field in this struct
+35 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+   |     ^^^^^^^^^
+
+warning: method `original_selection` is never used
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:54:19
+   |
+41 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+   | --------------------------------------------- method in this implementation
+...
+54 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+   |
+19 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+23 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+   |
+33 | / pub(super) enum ResidentAuthorizationV3 {
+34 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+   | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+36 | | }
+   | |_^ the entire enum is at least 480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+   = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+35 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+35 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+   |
+71 | / pub(super) enum ResidentStoreValueV3 {
+72 | |     Store(ResidentCheckpointV3),
+   | |     --------------------------- the largest variant contains at least 2576 bytes
+73 | |     Snapshot(ResidentSnapshotV3),
+   | |     ---------------------------- the second-largest variant contains at least 1312 bytes
+74 | |     Fresh(Option<FreshResidentCheckpointV3>),
+75 | |     Checked,
+76 | | }
+   | |_^ the entire enum is at least 2576 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+72 -     Store(ResidentCheckpointV3),
+72 +     Store(Box<ResidentCheckpointV3>),
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/authority_host_learning_resident_gate.rs:143:1
+    |
+143 | / enum GateActionV3 {
+144 | |     Current,
+145 | |     Begin(LearningIterationStageV1),
+    | |     ------------------------------- the second-largest variant contains at least 1 bytes
+146 | |     Checkpoint(LearningIterationSnapshotV1),
+    | |     --------------------------------------- the largest variant contains at least 1304 bytes
+147 | | }
+    | |_^ the entire enum is at least 1304 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+146 -     Checkpoint(LearningIterationSnapshotV1),
+146 +     Checkpoint(Box<LearningIterationSnapshotV1>),
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_runtime.rs:57:1
+   |
+57 | / enum ResidentStagesV3 {
+58 | |     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+   | |     -------------------------------------------------- the largest variant contains at least 156984 bytes
+59 | |     Installed(Arc<ResidentOriginalStageOwnersV3>),
+   | |     --------------------------------------------- the second-largest variant contains at least 8 bytes
+60 | | }
+   | |_^ the entire enum is at least 156984 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+58 -     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+58 +     Uninstalled(Box<Option<ResidentOriginalStageOwnersV3>>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_stages.rs:23:1
+   |
+23 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+24 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+   | |     ---------------------------------------------- the second-largest variant contains at least 60832 bytes
+25 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+   | |     ------------------------------------------------ the largest variant contains at least 156984 bytes
+26 | | }
+   | |_^ the entire enum is at least 156984 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+25 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+25 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+   |
+72 | / enum ClientOriginV3 {
+73 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+   | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+75 | | }
+   | |_^ the entire enum is at least 480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+   |
+77 | / enum ResidentExchangeV3 {
+78 | |     Observed(RootResidentLearningObservationV3),
+   | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+79 | |     Refused(Error),
+   | |     -------------- the second-largest variant contains at least 48 bytes
+80 | | }
+   | |_^ the entire enum is at least 1480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+78 -     Observed(RootResidentLearningObservationV3),
+78 +     Observed(Box<RootResidentLearningObservationV3>),
+   |
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+    |
+131 | /     pub fn recover_original_root_stream(
+132 | |         stream: UnixStream,
+133 | |         root: AgentdRootAuthorityPeer,
+134 | |         held_root_pidfd: OwnedFd,
+...   |
+140 | |         lifetime: Duration,
+141 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+    |
+159 | /     fn bind(
+160 | |         stream: UnixStream,
+161 | |         root: AgentdRootAuthorityPeer,
+162 | |         held_root_pidfd: OwnedFd,
+...   |
+168 | |         lifetime: Duration,
+169 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+   |
+20 | /     pub fn recover_original_model_root_stream(
+21 | |         stream: UnixStream,
+22 | |         root: AgentdRootAuthorityPeer,
+23 | |         held_root_pidfd: OwnedFd,
+...  |
+33 | |         lifetime: Duration,
+34 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_dataset.rs:193:5
+    |
+193 | /     fn read_current_at_clock(
+194 | |         &mut self,
+195 | |         initial: &LearningIterationSnapshotV1,
+196 | |         baseline: &LoadedCellQ24ModelV1,
+...   |
+201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+    | |________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_evaluated_learning_read.rs:30:1
+   |
+30 | / enum OriginalCut {
+31 | |     Selection(OriginalCircuitEvaluatedRetentionContextV1),
+   | |     ----------------------------------------------------- the second-largest variant contains at least 3536 bytes
+32 | |     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+   | |     --------------------------------------------------- the largest variant contains at least 5496 bytes
+33 | | }
+   | |_^ the entire enum is at least 5496 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+32 -     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+32 +     NextUse(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_learning_read_profile.rs:18:1
+   |
+18 | / pub(super) enum ReadProfile {
+19 | |     TrainingNoUpdate(OriginalCircuitLearningReadContextV1),
+   | |     ------------------------------------------------------ the second-largest variant contains at least 2496 bytes
+20 | |     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+   | |     -------------------------------------------------------- the largest variant contains at least 6016 bytes
+21 | | }
+   | |_^ the entire enum is at least 6016 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+20 -     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+20 +     Evaluated(Box<OriginalCircuitEvaluatedLearningReadContextV1>),
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_learning_completion_readiness.rs:108:1
+    |
+108 | / pub(super) enum Readiness {
+109 | |     NotReady,
+    | |     -------- the second-largest variant carries no data at all
+110 | |     Ready { read: original::OriginalRead },
+    | |     -------------------------------------- the largest variant contains at least 288 bytes
+111 | | }
+    | |_^ the entire enum is at least 288 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+110 -     Ready { read: original::OriginalRead },
+110 +     Ready { read: Box<original::OriginalRead> },
+    |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/circuit_retained_version_service.rs:73:5
+   |
+73 | /     pub async fn serve_original_ordinary(
+74 | |         self: Arc<Self>,
+75 | |         stream: UnixStream,
+76 | |         consumer: AgentdRootAuthorityPeer,
+...  |
+81 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+82 | |     ) -> Result<u64, Error> {
+   | |___________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_retained_version_prepared.rs:13:1
+   |
+13 | / pub(super) enum RetainedVersionPreparedV1 {
+14 | |     TrainingNoUpdate(PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
+   | |     -------------------------------------------------------------------------------------------------------------- the second-largest variant contains at least 19192 bytes
+15 | |     EvaluatedNoUpdate(PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
+   | |     -------------------------------------------------------------------------------------------------------------- the largest variant contains at least 25256 bytes
+16 | | }
+   | |_^ the entire enum is at least 25256 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+15 -     EvaluatedNoUpdate(PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
+15 +     EvaluatedNoUpdate(Box<PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_retained_version_host.rs:60:1
+   |
+60 | / enum InitialVersionEvidence {
+61 | |     TrainingNoUpdate,
+   | |     ---------------- the second-largest variant carries no data at all
+62 | |     EvaluatedNoUpdate(OriginalCellEvaluationCommandConnectionV1),
+   | |     ------------------------------------------------------------ the largest variant contains at least 2192 bytes
+63 | | }
+   | |_^ the entire enum is at least 2192 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+62 -     EvaluatedNoUpdate(OriginalCellEvaluationCommandConnectionV1),
+62 +     EvaluatedNoUpdate(Box<OriginalCellEvaluationCommandConnectionV1>),
+   |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_retained_version_host.rs:181:5
+    |
+181 | /     pub fn from_original_owners(
+182 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+183 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+184 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+...   |
+189 | |         lifetime: Duration,
+190 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/circuit_retained_version_host.rs:197:5
+    |
+197 | /     pub fn from_original_evaluated_owners(
+198 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+199 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+200 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+...   |
+206 | |         lifetime: Duration,
+207 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/circuit_retained_version_host.rs:213:5
+    |
+213 | /     fn from_original_profile(
+214 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+215 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+216 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+...   |
+222 | |         lifetime: Duration,
+223 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_feature_current.rs:124:1
+    |
+124 | /  enum Publication {
+125 | |      Initial(PublishedNeuronGenerationInitialV1),
+    | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+126 | |/     Update {
+127 | ||         original: PublishedNeuronGenerationUpdateV1,
+128 | ||         previous: PublishedCircuitFeatureCompletionV1,
+129 | ||     },
+    | ||_____- the largest variant contains at least 2744 bytes
+130 | |  }
+    | |__^ the entire enum is at least 2744 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+128 -         previous: PublishedCircuitFeatureCompletionV1,
+128 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+    |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+    |
+143 | /     pub(crate) fn require_original_member(
+144 | |         &self,
+145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+...   |
+151 | |         verifier: &LearningEvidenceVerifierV1,
+152 | |     ) -> Result<(), Error> {
+    | |__________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+   |
+48 | / pub(super) fn assemble(
+49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+50 | |     ledger: &LedgerWriter,
+51 | |     dataset: &DatasetSnapshotReceiptV3,
+...  |
+56 | |     current: u64,
+57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+   | |______________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+    |
+227 | /     fn read_episode(
+228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+229 | |         ledger: &LedgerWriter,
+230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+...   |
+236 | |         current: u64,
+237 | |     ) -> Result<Episode<'a>, Error> {
+    | |___________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+   --> hepta-agentd/src/circuit_task_source_codec.rs:508:36
+    |
+508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+    |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+    = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+
+warning: large size difference between variants
+  --> hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+   |
+17 | / pub(super) enum OriginalCommandEvidenceV1 {
+18 | |     Training(OriginalTrainingReadbackV1),
+   | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+19 | |     Selection(OriginalSelectionReadbackV1),
+   | |     -------------------------------------- the largest variant contains at least 15848 bytes
+20 | | }
+   | |_^ the entire enum is at least 15848 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+19 -     Selection(OriginalSelectionReadbackV1),
+19 +     Selection(Box<OriginalSelectionReadbackV1>),
+   |
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_no_update_stage_execute.rs:49:13
+   |
+49 |         let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+   = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_readback.rs:93:13
+   |
+93 |         let mut state = self
+   |             ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_readback.rs:98:13
+   |
+98 |         let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:128:13
+    |
+128 |         let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
+    |             ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:147:17
+    |
+147 |             let mut common = self
+    |                 ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:228:13
+    |
+228 |         let mut common = self
+    |             ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:134:17
+    |
+134 |             let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+    |                 ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:169:17
+    |
+169 |             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+    |                 ^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:247:13
+    |
+247 |         let mut common = self
+    |             ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs:95:13
+   |
+95 |         let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs:116:13
+    |
+116 |         let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
+    |             ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs:24:13
+   |
+24 |         let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_no_update_stage_owners.rs:124:21
+    |
+124 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+    |                     ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_no_update_stage_owners.rs:172:21
+    |
+172 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+    |                     ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+   |
+41 | / enum Origin {
+42 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+   | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+44 | | }
+   | |_^ the entire enum is at least 656 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+   |
+13 | / pub(super) enum Observed {
+14 | |     Missing,
+   | |     ------- the second-largest variant carries no data at all
+15 | |     Pending,
+16 | |     Completed(CellQ24ModelProposalReceiptV1),
+   | |     ---------------------------------------- the largest variant contains at least 384 bytes
+17 | | }
+   | |_^ the entire enum is at least 384 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+16 -     Completed(CellQ24ModelProposalReceiptV1),
+16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+   |
+
+warning: this `if` has identical blocks
+   --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+    |
+135 | /         {
+136 | |             wire::CommandResult::ReadbackRequired
+137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+    | |_________^
+    |
+note: same as this
+   --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+    |
+137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+    |  ____________________________________________________________________________________________________^
+138 | |             wire::CommandResult::ReadbackRequired
+139 | |         } else {
+    | |_________^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+    = note: `#[warn(clippy::if_same_then_else)]` on by default
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+    |
+ 96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+ 97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+    | |     ----------------------------------------------------------- the largest variant contains at least 37128 bytes
+ 98 | |     Starting,
+ 99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+    | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+100 | |     Fenced,
+101 | | }
+    | |_^ the entire enum is at least 37128 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+ 97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+ 97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+   |
+26 | / enum Origin {
+27 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+   | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+29 | | }
+   | |_^ the entire enum is at least 1336 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+   |
+61 | /     pub fn recover_from_original_stream(
+62 | |         stream: UnixStream,
+63 | |         peer: LearningIterationEvidencePeerV1,
+64 | |         original_owner_pidfd: OwnedFd,
+...  |
+69 | |         lifetime: Duration,
+70 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+   |
+82 | /     fn bind_original_stream(
+83 | |         stream: UnixStream,
+84 | |         peer: LearningIterationEvidencePeerV1,
+85 | |         original_owner_pidfd: OwnedFd,
+...  |
+90 | |         origin: Origin,
+91 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+    |
+141 | /  pub(super) enum CommandResult {
+142 | |/     Completed {
+143 | ||         snapshot: String,
+144 | ||         evidence: evidence_wire::Evidence,
+145 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+146 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+152 | |      Unavailable,
+153 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+144 -         evidence: evidence_wire::Evidence,
+144 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_training_command.rs:232:5
+    |
+232 | /     fn bind_original_stream(
+233 | |         stream: UnixStream,
+234 | |         peer: LearningIterationEvidencePeerV1,
+235 | |         original_owner_pidfd: OwnedFd,
+...   |
+240 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+241 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_evaluated_selection_command_service.rs:10:1
+   |
+10 | /  pub(super) enum OriginalPredecessors {
+11 | |      Legacy(LearningIterationEvidenceClientV1),
+   | |      ----------------------------------------- the largest variant contains at least 17464 bytes
+12 | |/     Evaluated {
+13 | ||         trainer: OriginalCellQ24TrainingCommandClientV1,
+14 | ||         evaluator: OriginalCellEvaluationCommandClientV1,
+15 | ||     },
+   | ||_____- the second-largest variant contains at least 7512 bytes
+16 | |  }
+   | |__^ the entire enum is at least 17464 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+11 -     Legacy(LearningIterationEvidenceClientV1),
+11 +     Legacy(Box<LearningIterationEvidenceClientV1>),
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+    |
+136 | /  pub(super) enum CommandResult {
+137 | |/     Completed {
+138 | ||         snapshot: String,
+139 | ||         evidence: evidence_wire::Evidence,
+140 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+141 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+147 | |      Unavailable,
+148 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+139 -         evidence: evidence_wire::Evidence,
+139 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/circuit_selection_command.rs:286:5
+    |
+286 | /     pub fn recover_from_original_stream(
+287 | |         stream: UnixStream,
+288 | |         peer: LearningIterationEvidencePeerV1,
+289 | |         original_owner_pidfd: OwnedFd,
+...   |
+296 | |         lifetime: Duration,
+297 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_selection_command.rs:321:5
+    |
+321 | /     fn bind_original_stream(
+322 | |         stream: UnixStream,
+323 | |         peer: LearningIterationEvidencePeerV1,
+324 | |         original_owner_pidfd: OwnedFd,
+...   |
+329 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+330 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_evaluated_next_use_command_service.rs:10:1
+   |
+10 | /  pub(super) enum OriginalPredecessors {
+11 | |      Legacy(LearningIterationEvidenceClientV1),
+   | |      ----------------------------------------- the largest variant contains at least 17464 bytes
+12 | |/     Evaluated {
+13 | ||         trainer: OriginalCellQ24TrainingCommandClientV1,
+14 | ||         evaluator: OriginalCellEvaluationCommandClientV1,
+15 | ||     },
+   | ||_____- the second-largest variant contains at least 7512 bytes
+16 | |  }
+   | |__^ the entire enum is at least 17464 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+11 -     Legacy(LearningIterationEvidenceClientV1),
+11 +     Legacy(Box<LearningIterationEvidenceClientV1>),
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+    |
+136 | /  pub(super) enum CommandResult {
+137 | |/     Completed {
+138 | ||         snapshot: String,
+139 | ||         evidence: evidence_wire::Evidence,
+140 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+141 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+147 | |      Unavailable,
+148 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+139 -         evidence: evidence_wire::Evidence,
+139 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (11/7)
+   --> hepta-agentd/src/circuit_next_use_command.rs:310:5
+    |
+310 | /     pub fn recover_from_original_stream(
+311 | |         stream: UnixStream,
+312 | |         peer: LearningIterationEvidencePeerV1,
+313 | |         original_owner_pidfd: OwnedFd,
+...   |
+321 | |         lifetime: Duration,
+322 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_next_use_command.rs:347:5
+    |
+347 | /     fn bind_original_stream(
+348 | |         stream: UnixStream,
+349 | |         peer: LearningIterationEvidencePeerV1,
+350 | |         original_owner_pidfd: OwnedFd,
+...   |
+355 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+356 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+    |
+119 | /     fn serve_role_commands(
+120 | |         &self,
+121 | |         role: Role,
+122 | |         stream: UnixStream,
+...   |
+127 | |         lifetime: Duration,
+128 | |     ) -> Result<u64, Error> {
+    | |___________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/cell_q24_material_command.rs:236:5
+    |
+236 | /     fn bind_original_stream(
+237 | |         stream: UnixStream,
+238 | |         peer: LearningIterationEvidencePeerV1,
+239 | |         original_owner_pidfd: OwnedFd,
+...   |
+245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+246 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+   |
+35 | /     pub fn from_original_stream(
+36 | |         stream: UnixStream,
+37 | |         peer: LearningIterationEvidencePeerV1,
+38 | |         original_owner_pidfd: OwnedFd,
+...  |
+43 | |         lifetime: Duration,
+44 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/artifact_original_head_client.rs:31:1
+   |
+31 | / enum Origin {
+32 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+   | |     --------------------------------------------- the largest variant contains at least 304 bytes
+34 | | }
+   | |_^ the entire enum is at least 304 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+   |
+20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+22 | |     dataset_cut: &LearningIterationSnapshotV1,
+23 | |     scope: Digest32,
+...  |
+28 | |     now: u64,
+29 | | ) -> Result<Admission, Error> {
+   | |_____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_source.rs:143:1
+    |
+143 | / enum OriginalMaterialSource {
+144 | |     Local(Box<dyn OriginalMaterialReadback>),
+    | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+145 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+    | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+146 | | }
+    | |_^ the entire enum is at least 3056 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+145 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+145 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:59:1
+   |
+59 | / pub(super) enum Profile {
+60 | |     Legacy,
+   | |     ------ the second-largest variant carries no data at all
+61 | |     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+   | |     ----------------------------------------------------- the largest variant contains at least 5496 bytes
+62 | | }
+   | |_^ the entire enum is at least 5496 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+61 -     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+61 +     Evaluated(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+   |
+
+warning: all variants have the same postfix: `Owner`
+   --> hepta-agentd/src/circuit_next_use_receipt_owner.rs:150:1
+    |
+150 | / enum ObservationLocation {
+151 | |     LocalOwner,
+152 | |     RemoteOwner,
+153 | |     EvaluatedOwner,
+154 | | }
+    | |_^
+    |
+    = help: remove the postfixes and use full paths to the variants instead of glob imports
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+    = note: `#[warn(clippy::enum_variant_names)]` on by default
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_evaluated_selection_receipt.rs:115:1
+    |
+115 | / pub(super) enum Profile {
+116 | |     TrainingNoUpdate,
+    | |     ---------------- the second-largest variant carries no data at all
+117 | |     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+    | |     ----------------------------------------------------- the largest variant contains at least 3536 bytes
+118 | | }
+    | |_^ the entire enum is at least 3536 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+117 -     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+117 +     Evaluated(Box<OriginalCircuitEvaluatedRetentionContextV1>),
+    |
+
+warning: all variants have the same postfix: `Owner`
+   --> hepta-agentd/src/circuit_selection_receipt_owner.rs:130:1
+    |
+130 | / enum ObservationLocation {
+131 | |     LocalOwner,
+132 | |     RemoteOwner,
+133 | |     EvaluatedOwner,
+134 | | }
+    | |_^
+    |
+    = help: remove the postfixes and use full paths to the variants instead of glob imports
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+
+warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+  --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:85:9
+   |
+85 |         drop(sources);
+   |         ^^^^^^^^^^^^^
+   |
+note: argument has type `neuron_cell_evaluation_qualification_owner::sources::OriginalCellEvaluationQualificationSourcesV1<'_, C, F, X>`
+  --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:85:14
+   |
+85 |         drop(sources);
+   |              ^^^^^^^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#drop_non_drop
+   = note: `#[warn(clippy::drop_non_drop)]` on by default
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+   |
+51 | /     pub fn from_original_stream(
+52 | |         stream: UnixStream,
+53 | |         peer: LearningIterationEvidencePeerV1,
+54 | |         original_owner_pidfd: OwnedFd,
+...  |
+60 | |         lifetime: Duration,
+61 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+   |
+76 | /     pub fn recover_from_original_stream(
+77 | |         stream: UnixStream,
+78 | |         peer: LearningIterationEvidencePeerV1,
+79 | |         original_owner_pidfd: OwnedFd,
+...  |
+85 | |         lifetime: Duration,
+86 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+    |
+101 | /     fn bind_initial(
+102 | |         stream: UnixStream,
+103 | |         peer: LearningIterationEvidencePeerV1,
+104 | |         original_owner_pidfd: OwnedFd,
+...   |
+111 | |         origin: Origin,
+112 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+   |
+47 | /     pub fn from_original_stream(
+48 | |         stream: UnixStream,
+49 | |         peer: LearningIterationEvidencePeerV1,
+50 | |         original_owner_pidfd: OwnedFd,
+...  |
+56 | |         lifetime: Duration,
+57 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+    |
+300 | / pub(super) fn publication(
+301 | |     member: &Member,
+302 | |     context: &Context,
+303 | |     bundle: &Bundle,
+...   |
+309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+310 | | ) -> Result<(), Error> {
+    | |______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: `codex-hepta-agentd` (lib) generated 78 warnings
+    Checking codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1/codex-rs/hepta-infer-worker-host)
+error[E0425]: cannot find function `recovered_peer` in module `training_ports`
+  --> hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs:82:46
+   |
+82 |     let (trainer, channel) = training_ports::recovered_peer(
+   |                                              ^^^^^^^^^^^^^^ not found in `training_ports`
+   |
+note: function `crate::learning_iteration_evidence_client::training_command::connection::recovered_peer` exists but is inaccessible
+  --> hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs:59:1
+   |
+59 | / pub(crate) fn recovered_peer(
+60 | |     material: OriginalCellQ24MaterialReceiptConfigV1,
+61 | |     expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>,
+62 | |     lifetime: Duration,
+...  |
+67 | |     pair(material, Origin::Recovered(expected), lifetime)
+68 | | }
+   | |_^ not accessible
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/circuit_credit_ledger_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/neuron_generation_runtime_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs:6:5
+  |
+6 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs:6:5
+  |
+6 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs:6:5
+  |
+6 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0425`.
+warning: `codex-hepta-agentd` (lib test) generated 5 warnings
+error: could not compile `codex-hepta-agentd` (lib test) due to 1 previous error; 5 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101
+{"at":"2026-11-12T18:49:03.929963+00:00","command_returncode":101,"command_returned":true,"event":"original_maintenance_command_terminal","name":"fix","status":"failed"}
+{"attempted_commands": ["fix"], "event": "scoped_maintenance_terminal", "out": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/run", "qualification": false, "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7", "status": "UNKNOWN", "test_commands_dispatched": 0}

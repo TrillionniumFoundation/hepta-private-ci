@@ -1,0 +1,120 @@
+{
+  "actual_admission_launcher_matched_reviewed_full_bytes": true,
+  "actual_named_process_observation": {
+    "allowed_exact_foreign_build": [],
+    "blocking": [],
+    "fixed_foreign_build_policy": {
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n",
+      "cwd_root": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+      "executables": {
+        "cargo": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustc": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "job": "1a1d0e549d0-2564-1bdc",
+      "original_failed_result_blob": "88be32de12e28d39b685a7812bff9e217d4a192a",
+      "original_probe_blob": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea",
+      "scope": "Only this exact foreign build may coexist with external material preparation; maintenance/test concurrency policy is unchanged.",
+      "uid": 1000
+    },
+    "observed": [],
+    "scope": "Same-user named-process identities only. No args/env, signals, foreign-task waits, or maintenance/test policy changes.",
+    "unknown": []
+  },
+  "finished_at": "2026-11-12T18:20:30.092085+00:00",
+  "foreign_exception_used": false,
+  "format": "hepta-runtime-restoration-v2-root-actual-review",
+  "immutable_inputs": 23,
+  "job_id": "1a1d0fcb212-2564-1bf4",
+  "limits": [
+    "This is dependency preparation, not maintenance, test qualification or actual learning-loop adoption.",
+    "Six original command raw logs are being separately recovered; this review verifies complete command records from the original RESULT.",
+    "Original maintenance global concurrency and live disk prerequisites remain to be checked by its original preflight.",
+    "The earlier failed operation and transport-error records remain retained."
+  ],
+  "maintenance_started": false,
+  "normal_complete_durable_terminal": {
+    "at_unix_ms": 1794507630134,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1d0fcb212-2564-1bf4",
+    "launch_nonce": "0e3cca933b91e3f5e5b076e4a504d568",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3368,
+        "stored": 3368
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_sdk_full_decoded_bytes_matched": true,
+  "proofs": {
+    "runtime-v2-admission": {
+      "bytes": 4471,
+      "git_blob": "a4d22fec236874997472954ba59ec19e3021d025",
+      "sha256": "9e6f1e7da9ddf7eb0c5b158da314c854a653dfacbd24cd49e2aaba22727318aa"
+    },
+    "runtime-v2-environment": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "runtime-v2-environment-read": {
+      "bytes": 29457,
+      "git_blob": "9cbf49047314a02f409b6c16be86bf7d1e941b2d",
+      "sha256": "ae10dcf5bc921ba5cac6152cf27a058893ff757d184f114d28695d71ae1ddddc"
+    },
+    "runtime-v2-result": {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    "runtime-v2-result-read": {
+      "bytes": 28966,
+      "git_blob": "1f3efb160a7192a0ad52ee6bd76d6dfd2697334e",
+      "sha256": "03ef72127e7c7f5b2cc89f63480c70ef9b2d01a8da467d8f7cd570e970f14404"
+    },
+    "runtime-v2-terminal": {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    }
+  },
+  "qualification": false,
+  "real_authorized_task_chain_qualified_outcomes": 0,
+  "same_fixed_versions_recovered_after_code_mode_store_loss": true,
+  "six_exact_fixed_download_records_verified": true,
+  "six_original_commands_normal_zero": true,
+  "started_at": "2026-11-12T18:19:46.221347+00:00",
+  "status": "ACTUAL_MATERIALS_PREPARATION_COMPLETE",
+  "tests_started": false,
+  "three_final_audits_verified": true,
+  "tools_materials": 16,
+  "unchanged_source_inventory": {
+    "bytes": 5611182,
+    "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711"
+  }
+}

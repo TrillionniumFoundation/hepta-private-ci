@@ -1,0 +1,192 @@
+{
+  "format": "hepta-original-scoped-maintenance-approval-v1",
+  "status": "WAITING_FOR_ROOT_REVIEW_ACTUAL_RUNTIME_PROOFS_FILLED",
+  "root_execution_approved": false,
+  "driver_sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce",
+  "driver_git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "parents": [
+    "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  ],
+  "fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "fix_seconds": 7200,
+  "fmt_seconds": 900,
+  "preflight_seconds": 600,
+  "record_seconds": 300,
+  "materialization": {
+    "job_id": "1a1d0c6996e-2564-1bc8",
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1/run-v2/RESULT.json",
+    "result": {
+      "bytes": 69974,
+      "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+      "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/MATERIALIZATION_SUPERVISOR.original.json",
+    "supervisor": {
+      "bytes": 913,
+      "sha256": "83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2",
+      "git_blob": "3e60d21bec849a19efb5d818b43152bfc72486fe"
+    }
+  },
+  "source_inventory": {
+    "bytes": 5611182,
+    "filesystem_entries": 15188,
+    "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "tracked_entries": 15188
+  },
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-final-native-target-v1",
+    "PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin:/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "UV_PROJECT_ENVIRONMENT": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment",
+    "UV_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/uv-cache",
+    "RUFF_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/ruff-cache",
+    "UV_OFFLINE": "true",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "tool_files": {
+    "git": {
+      "path": "/usr/bin/git",
+      "resolved": "/usr/bin/git",
+      "bytes": 4066232,
+      "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+      "mode": 493
+    },
+    "just": {
+      "path": "/home/qian-qi/.cargo/bin/just",
+      "resolved": "/home/qian-qi/.cargo/bin/just",
+      "bytes": 5347728,
+      "sha256": "b73359690704c2aaa0cdfb5b262e6fbf819a8be8cdea2d87565dd441dc7b3f8d",
+      "mode": 509
+    },
+    "python3": {
+      "path": "/usr/bin/python3",
+      "resolved": "/usr/bin/python3.12",
+      "bytes": 8020928,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "mode": 493
+    },
+    "rustup": {
+      "path": "/home/qian-qi/.cargo/bin/rustup",
+      "resolved": "/home/qian-qi/.cargo/bin/rustup",
+      "bytes": 21139856,
+      "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+      "mode": 493
+    },
+    "cargo": {
+      "path": "/home/qian-qi/.cargo/bin/cargo",
+      "resolved": "/home/qian-qi/.cargo/bin/rustup",
+      "bytes": 21139856,
+      "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+      "mode": 493
+    },
+    "uv": {
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "bytes": 59258456,
+      "sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438",
+      "mode": 448
+    }
+  },
+  "v8_files": {
+    "RUSTY_V8_ARCHIVE": {
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "mode": 384
+    },
+    "RUSTY_V8_SRC_BINDING_PATH": {
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "mode": 384
+    }
+  },
+  "formatter_tool_files": {
+    "python": {
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/python",
+      "resolved": "/usr/bin/python3.12",
+      "bytes": 8020928,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "mode": 493
+    },
+    "ruff": {
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+      "bytes": 27849024,
+      "sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+      "mode": 457
+    }
+  },
+  "create_target_if_absent": false,
+  "minimum_target_free_bytes": 34359738368,
+  "test_commands_authorized": false,
+  "remote_ref_updates_authorized": false,
+  "known_runtime_blockers": {
+    "bytes": 2479,
+    "sha256": "b28c6140b7cfb8a118f4a8e12ab8793b7a2426cfe05ebebb24dee7892f111b1b",
+    "git_blob": "33f5f7e4f7c40b2363924f866667ae4456e891bb"
+  },
+  "runtime_restoration": {
+    "job_id": "1a1d0fcb212-2564-1bf4",
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+    "result": {
+      "bytes": 21366,
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90",
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+    "supervisor": {
+      "bytes": 954,
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb",
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20"
+    },
+    "environment_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+    "environment": {
+      "bytes": 21724,
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+    }
+  },
+  "inherited_source_environment": {
+    "CODEX_REPO_ROOT": null,
+    "PYTHONPATH": null
+  },
+  "tool_identity_projection": [
+    "path",
+    "resolved",
+    "bytes",
+    "sha256",
+    "mode"
+  ],
+  "waiting_for_actual_records": "Actual runtime RESULT, ENVIRONMENT_READY and complete normal supervisor are filled from verified original bytes. Root/native review and a separately pinned approved config remain required. Original live source, tool, disk, environment and global process preflight have not been run by this fill operation.",
+  "formal_approved_config_created": false
+}

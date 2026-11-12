@@ -1,0 +1,25 @@
+{
+  "format": "hepta-static-runtime-preparation-root-v1-findings",
+  "driver": "30e5471e271fd70cdd0e0a85155992b5d7584aee",
+  "scope": "Full 867-line original driver read; original dependency plan and materialization identity verified; static preparation only.",
+  "status": "CHANGES_REQUESTED_BEFORE_EXECUTION",
+  "findings": [
+    {
+      "finding": "Shared parent directory ownership was unnecessarily required. New task-owned depot/target ownership remains required, while their shared parent needs real-directory and access checks.",
+      "original_lines": [
+        510,
+        513,
+        527
+      ],
+      "native_response": "Existing observation actually recorded /data uid 1000; nonetheless the requested narrower correct condition will replace the unnecessary ownership assumption."
+    },
+    {
+      "finding": "The outer preparation SIGALRM remains armed during the original execute_logged. Near the common deadline it may interrupt that helper's cleanup and original result retention.",
+      "requested_change": "Disable wrapper alarm while original execute_logged owns its min(remaining, per-command) process-group deadline and complete result/log retention; restore remaining operation timer afterward. Preserve Unknown where original terminal/completeness is unavailable."
+    }
+  ],
+  "peer_review": "d6ebc4aa8f0bb5d39276c8fdc3695f40706a2812",
+  "source_scope_and_budget": "Original maintenance 7200/900 and all test/gate budgets remain unchanged; this operation has separate 600+180/outer900 preparation bounds.",
+  "native_execution_started": false,
+  "qualification": false
+}

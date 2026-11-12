@@ -1,0 +1,41 @@
+{
+  "format": "hepta-runtime-restoration-peer-review-v3-addendum-v1",
+  "status": "STATIC_PEER_REVIEW_CLEARED_FOR_ROOT_AUTHORIZED_PREPARATION",
+  "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "reviewed_driver": {
+    "bytes": 44790,
+    "sha256": "289f3612e90b21ac3c7be70c8715178966a94f609c2275bbca7ffb036cd8da02",
+    "git_blob": "a584e49abfa57f55fda820e8d2296d9909838387"
+  },
+  "previous_driver": {
+    "bytes": 44672,
+    "sha256": "73453f98eb3c7b8cb6066097984f6a198b5fb6c19faa505ac4638c25c3d8df1e",
+    "git_blob": "fcf4acc9b6f37e2cfc70998bf5c23b3a70d6bae4"
+  },
+  "complete_peer_review": {
+    "bytes": 9056,
+    "sha256": "8251996f4e8c185ce98dd86e8869c9df88c123797e98a43037f042483e700c46",
+    "git_blob": "7614e2f74521baad7780a8d4573af257caa7dd49"
+  },
+  "verification": {
+    "full_github_text_readback": true,
+    "independent_bytes_sha256_git_blob": true,
+    "exact_v2_plus_two_annotations_equals_full_v3": true,
+    "annotations": [
+      "Initialize original_command_terminal='unknown_not_observed' in each attempted command row.",
+      "Set original_command_terminal='observed' only after execute_logged returns and its original result is stored."
+    ],
+    "all_other_bytes_unchanged": true,
+    "additional_blocking_findings": []
+  },
+  "limits": {
+    "native_execution_performed_by_this_reviewer": false,
+    "main_or_import_executed": false,
+    "preparation_success_claimed": false,
+    "test_or_maintenance_execution_claimed": false,
+    "source_or_refs_modified": false,
+    "qualification": false
+  },
+  "required_next_observation": "The one Root-approved native operation must retain its actual complete RESULT, ENVIRONMENT_READY, original command records, before/after source comparison, and independent normal supervisor outcome before later maintenance may be admitted."
+}

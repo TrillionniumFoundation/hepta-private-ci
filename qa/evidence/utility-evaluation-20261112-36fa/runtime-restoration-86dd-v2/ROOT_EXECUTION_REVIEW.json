@@ -1,0 +1,97 @@
+{
+  "format": "hepta-runtime-materials-restoration-v2-root-execution-review",
+  "reviewed_at": "2026-11-12 18:09:04 UTC",
+  "decision": "APPROVED_SINGLE_DISTINCT_MATERIAL_PREPARATION_OPERATION",
+  "basis": "The user already authorized completing this work and necessary reversible dependencies. The prior operation was a known failure before downloading/creating the depot/target. A read-only probe identified a specific other job in a different source directory. Only the separately reviewed material-preparation concurrency condition is changed; original maintenance/test concurrency gates remain intact.",
+  "source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "inventory": {
+      "bytes": 5611182,
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c"
+    }
+  },
+  "actual_prior_failure": {
+    "result": "88be32de12e28d39b685a7812bff9e217d4a192a",
+    "terminal": "6c8a73e247afa8aec5b62fb1e86a133d02050458",
+    "root_review": "436ab840d172202a3de19e367b789f57eac97564",
+    "zero_downloads": true,
+    "zero_uv_or_install_commands": true,
+    "depot_created": false,
+    "full_source_unchanged": true,
+    "inputs_unchanged": 23
+  },
+  "actual_foreign_probe": {
+    "result": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea",
+    "terminal": "025bf83ca62f1b32170f53fc4f544cbf0a2208a9",
+    "state_and_identity_at_probe_only": true,
+    "continuity_since_earlier_preflight_not_claimed": true
+  },
+  "reviewed_driver": {
+    "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56",
+    "bytes": 49448,
+    "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e"
+  },
+  "patch": "f6a94e6a08330b7a3172162ae5667617a6c58327",
+  "plan": "82ee60425d55653c86cd0bbf1708e09ee9106b7c",
+  "waiting": "9aa289393a1a86e0d72620a75b4e0ee245a4e819",
+  "static_review": {
+    "exact_independent_10_hunk_apply_equals_full_driver": true,
+    "top_level_definitions": 39,
+    "unchanged_full_definition_bytes": 37,
+    "only_changed_definitions": [
+      "active_processes",
+      "preflight"
+    ],
+    "main_download_install_source_and_input_audit_functions_unchanged": true,
+    "AST_compile_only": true,
+    "no_driver_main_run": true
+  },
+  "allowed_foreign_build": {
+    "uid": 1000,
+    "job": "1a1d0e549d0-2564-1bdc",
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n",
+    "cwd_root": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+    "executables": {
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustc": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+    },
+    "original_probe_blob": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea",
+    "original_failed_result_blob": "88be32de12e28d39b685a7812bff9e217d4a192a",
+    "scope": "Only this exact foreign build may coexist with external material preparation; maintenance/test concurrency policy is unchanged."
+  },
+  "rule_limits": [
+    "Only exact fixed cgroup plus current all-four UID=1000, cargo/rustc executable, and foreign cwd subtree can be admitted.",
+    "Two current snapshots require stable comm, startticks, UID tuple, cwd, exe and cgroup. Scheduling R/S state changes are recorded without being confused with identity.",
+    "All other matching current-user processes, changed identities and any read failure after a match remain blocking/Unknown.",
+    "Both new external depot and target must actually be absent before create-only mkdir; no old target or environment is reused.",
+    "Only fixed downloads, external normal UV environment and immutable tool reads occur; no Cargo build, maintenance or test is dispatched.",
+    "Full source, controls, exact assets, original frozen/offline check and actual normal complete terminal remain mandatory."
+  ],
+  "approved_config": {
+    "git_blob": "f2e4263898ecc064d2cf8e6f35c14e3ffad6f42b",
+    "bytes": 3304,
+    "sha256": "0885798995e84d79cc1b67e0298ac3577398557f2d96d1331dbe564fc95cbeb8",
+    "only_waiting_changes": [
+      "status",
+      "root_execution_approved"
+    ]
+  },
+  "exact_paths": {
+    "driver": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/driver-v4.py",
+    "config": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/APPROVED_CONFIG_V2.json",
+    "output": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2"
+  },
+  "plan_erratum": "The prior PLAN.staging_rule retains the old generic APPROVED_CONFIG.json wording; the new exact CONFIG/PLAN.config_path and this review require APPROVED_CONFIG_V2.json. The old driver, config and run stay unchanged.",
+  "unique_key": "hepta-utility-36fa-runtime-materials-restore-86dd-v2",
+  "operation_seconds": 600,
+  "final_seconds": 180,
+  "outer_seconds": 900,
+  "qualification": false,
+  "next_requirements": [
+    "Hash-verify the actual new config write and exact new launcher/typed input before this one launch.",
+    "Unknown admission is reconciled by the same typed request/key, never reexecuted under a new key.",
+    "Maintenance parser must require the exact actual new result-v2 format and all previous complete-success proofs; maintenance global concurrency guard remains unchanged."
+  ]
+}

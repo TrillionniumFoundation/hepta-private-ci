@@ -1,0 +1,48 @@
+{
+  "format": "hepta-runtime-restoration-root-static-review-v2",
+  "reviewed_at": "2026-11-12 17:50:07 UTC",
+  "driver": {
+    "git_blob": "fcf4acc9b6f37e2cfc70998bf5c23b3a70d6bae4",
+    "bytes": 44672,
+    "sha256": "73453f98eb3c7b8cb6066097984f6a198b5fb6c19faa505ac4638c25c3d8df1e"
+  },
+  "status": "ROOT_STATIC_REVIEW_COMPLETE_PENDING_PEER_AND_FINAL_EXECUTION_CONFIG",
+  "original_driver": "30e5471e271fd70cdd0e0a85155992b5d7584aee",
+  "plan": "f3dbc4e2c9e4a2076907e31215f40908594f1c16",
+  "waiting": "ccb81119d9cd94d7f44ef2f3b1aeeb446dc17576",
+  "actual_source_result": "456f749e7558e18df99172d9c9273cda890b8feb",
+  "actual_source_root_review": "35ba7c51786fcac49b44a6967e79865debec8d9e",
+  "ast_review": {
+    "definitions_before": 39,
+    "definitions_after": 39,
+    "unchanged": 37,
+    "changed": [
+      "run_command",
+      "preflight"
+    ],
+    "added": [],
+    "removed": [],
+    "all_other_top_level_and_constants_equal": true,
+    "compile_only": true,
+    "module_or_main_executed": false
+  },
+  "verified": [
+    "Entire v1 driver read, v2 exact full bytes and bounded diff verified.",
+    "Fixed six plan artifact objects exactly equal the original reviewed dependency plan; final environment exactly equals WAITING config.",
+    "Full original materialization destination inventory matches all approved source baseline fields.",
+    "Only named locked Ruff requirement is used; no direct wheel/URL provenance substitution.",
+    "Default HTTPS/proxy/CA policy preserved; exact byte/hash and safe UV executable extraction required.",
+    "Original helper owns each command deadline and cleanup; competing wrapper alarm disabled across original result/log retention.",
+    "Shared /data parent requires real-directory and write/search access; actual task-created directories retain owner checks.",
+    "Only new external depot/venv/caches/Cargo target and control evidence are written. No maintenance, Cargo build, test or ref mutation.",
+    "Actual original frozen/offline checks and UV-run version remain mandatory; neither source reasoning nor static preparation is installation success."
+  ],
+  "final_limits": [
+    "Whole-history fsck not claimed.",
+    "Original exact c0f focused/source gate failures persist.",
+    "All real authorized task-chain qualified outcomes remain zero.",
+    "No operation launched by this static review."
+  ],
+  "qualification": false,
+  "execution_authorized_by_this_record": false
+}

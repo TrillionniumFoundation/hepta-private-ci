@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.utility.runtime_dependency.uv_offline_bootstrap_review.v1",
+  "status": "selected_preparation_path_static_review_only",
+  "qualification": false,
+  "executed": false,
+  "baseline_preparation_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "baseline_preparation_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "original_plan_blob": "8936bfb0e0dbab9e471a158f1161567273798360",
+  "original_plan_disposition": "Retained unchanged. Its fresh-empty-cache offline-sync-plus-find-links idea is not selected. This supplement selects the named-requirement bootstrap below.",
+  "source_evidence": {
+    "git_blob_sha": "497fe5be950ea18f0d0a809678a63cf3a3a55137",
+    "bytes": 168526,
+    "sha256": "4895fc59dac89d832c3c2eca4bb47b3e304581e636e92338cd89093578648153",
+    "full_github_readback_equal": true
+  },
+  "review_scope": "Read-only review of fixed uv 0.11.3 official source, fixed Hepta scripts project and lock, and recorded runtime evidence. No H/native invocation, installation, download, source write or qualification was performed.",
+  "selected_preparation": {
+    "depot": "/data/hepta-utility-36fa-runtime-materials-86dd-v1",
+    "argv_templates": [
+      [
+        "<verified-uv-0.11.3>",
+        "venv",
+        "--python",
+        "/usr/bin/python3",
+        "<external-venv>"
+      ],
+      [
+        "<verified-uv-0.11.3>",
+        "pip",
+        "install",
+        "--offline",
+        "--no-index",
+        "--find-links",
+        "<exact-wheelhouse>",
+        "--python",
+        "<external-venv>/bin/python",
+        "ruff==0.15.13"
+      ],
+      [
+        "<verified-uv-0.11.3>",
+        "sync",
+        "--frozen",
+        "--project",
+        "scripts",
+        "--offline",
+        "--check"
+      ],
+      [
+        "<verified-uv-0.11.3>",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ]
+    ],
+    "working_directory": "The exact separately materialized preparation source. The scripts project, scripts/uv.lock and all tracked source must match the admitted complete inventory before and after.",
+    "environment": {
+      "UV_PROJECT_ENVIRONMENT": "<external-venv>",
+      "UV_CACHE_DIR": "<external-isolated-uv-cache>",
+      "UV_OFFLINE": "true",
+      "UV_PYTHON_DOWNLOADS": "never",
+      "RUFF_CACHE_DIR": "<external-isolated-ruff-cache>",
+      "PATH": "Prepend only verified uv binary directory to the preserved approved PATH."
+    },
+    "exact_wheel": {
+      "name": "ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 11434486,
+      "sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca",
+      "expected_project_lock_blob": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "expected_project_pyproject_blob": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+    },
+    "admission": [
+      "Verify the separately downloaded UV archive and checksum against original fixed pins before extracting or executing.",
+      "Use an isolated create-only depot, wheelhouse, venv and UV cache. Verify the wheelhouse contains only the admitted pinned Ruff wheel; fully hash it immediately before bootstrap and after.",
+      "Keep the requirement argument exactly ruff==0.15.13. An explicit wheel path or URL is not equivalent installed metadata.",
+      "Record real argv, safe environment, complete stdout/stderr, return code, timing, package metadata and direct_url.json presence/absence. Successful commands alone do not make this qualification.",
+      "Stop on any actual nonzero, timeout, missing original result, source mutation, mismatched artifact identity or unexpected installed package; retain the observed failure/Unknown.",
+      "Require the original frozen/offline sync --check to exit 0 in the same explicit UV_PROJECT_ENVIRONMENT before any original maintenance command.",
+      "Preserve the original maintenance UV invocation uv run --frozen --project scripts ruff format; do not replace it with bare ruff, --no-sync, a different lock or edited cache.",
+      "Do not claim the offline sync check freshly verifies the installed executable against the wheel hash. The driver owns the artifact-integrity and isolated-bootstrap evidence."
+    ]
+  },
+  "source_reasoning": [
+    {
+      "step": 1,
+      "file": "crates/uv-resolver/src/flat_index.rs",
+      "git_blob_sha": "46da6ddbf86f9b1d64c11e9dff067128d4002db2",
+      "lines": [
+        111,
+        146
+      ],
+      "finding": "A local find-links entry chosen for a named requirement is a RegistryBuiltWheel, preserving registry distribution kind even though its file location is local."
+    },
+    {
+      "step": 2,
+      "file": "crates/uv-distribution-types/src/cached.rs",
+      "git_blob_sha": "11f914ba2c586c904dc7294dfc864469e2f558e0",
+      "lines": [
+        42,
+        81,
+        160,
+        166
+      ],
+      "finding": "CachedDist::from_remote maps a Registry BuiltDist to CachedDist::Registry; parsed_url for that variant is None. Path/direct URL distributions use CachedDist::Url instead."
+    },
+    {
+      "step": 3,
+      "file": "crates/uv-installer/src/installer.rs",
+      "git_blob_sha": "477fa845849dd85ed1040c5d9d8cd942a8360ea9",
+      "lines": [
+        166,
+        193
+      ],
+      "finding": "The normal installer derives the optional DirectUrl exclusively from wheel.parsed_url()."
+    },
+    {
+      "step": 4,
+      "file": "crates/uv-distribution-types/src/installed.rs",
+      "git_blob_sha": "1f6a0f9d08a9aa4e43cccfad37f5e9165684328b",
+      "lines": [
+        169,
+        228
+      ],
+      "finding": "The installed .dist-info directory without direct_url.json is parsed as InstalledDistKind::Registry."
+    },
+    {
+      "step": 5,
+      "file": "crates/uv-installer/src/satisfies.rs",
+      "git_blob_sha": "a3d8c0c62ddbe4e2e4f141aa0f91e31497d5d3d3",
+      "lines": [
+        70,
+        97
+      ],
+      "finding": "Strict satisfaction for Registry sources requires Registry installed kind and the version specifier. It does not require the installed wheel to retain a matching registry index URL."
+    },
+    {
+      "step": 6,
+      "file": "crates/uv-installer/src/plan.rs",
+      "git_blob_sha": "8514bcb529ff2e01f1ec4feda1250bba81c402bf",
+      "lines": [
+        116,
+        171
+      ],
+      "finding": "An already-installed satisfying distribution continues before the registry cache lookup and remote preparation path."
+    },
+    {
+      "step": 7,
+      "file": "crates/uv/src/commands/project/sync.rs",
+      "git_blob_sha": "0fffb5b35bf0d458bfe3b215fc1332ff9943918d",
+      "lines": [
+        748,
+        861
+      ],
+      "finding": "The project uses the original locked resolution, filters virtual projects, and calls the original installer in Strict mode. A registry cache download is unnecessary when the intended Ruff environment is already satisfying."
+    }
+  ],
+  "rejected_assumption": {
+    "text": "A fresh empty UV cache plus a local find-links wheelhouse automatically makes frozen offline sync from a Registry lock install the local wheel.",
+    "why": "The lock's Registry source constructs its original absolute wheel URL and index. Sync builds the flat index separately but does not replace that locked resolution. Registry cache matching requires the original index and wheel filename; a miss retains the original remote dist and original URL. Local flat-index contents are therefore not a guaranteed substitute for the original locked Registry download path.",
+    "source_pins": [
+      {
+        "path": "crates/uv-resolver/src/lock/mod.rs",
+        "git_blob_sha": "4667530bafc7780d44fe23e7452c4f46b1abbe67"
+      },
+      {
+        "path": "crates/uv-resolver/src/lock/installable.rs",
+        "git_blob_sha": "83ac7f48aec2d51dfe41fc980f3faf2cc9fdad6e"
+      },
+      {
+        "path": "crates/uv-installer/src/plan.rs",
+        "git_blob_sha": "8514bcb529ff2e01f1ec4feda1250bba81c402bf"
+      },
+      {
+        "path": "crates/uv-distribution/src/distribution_database.rs",
+        "git_blob_sha": "528a2cc78502f92996aa9de42ed15b73ee65c93f"
+      }
+    ]
+  },
+  "remaining_unknowns": [
+    "Actual host Python version/compatible platform and actual isolated bootstrap outcome are not established by this source review.",
+    "Actual downloaded bytes, extracted UV binary, installed wheel contents and successful offline check require the native owner's real recorded execution.",
+    "Other Cargo/offline runtime material requirements remain outside this Python bootstrap conclusion.",
+    "Fallback preparation-only online frozen sync is authorized by Root if necessary, but is not selected or executed here; no silent fallback should erase the original offline attempt."
+  ]
+}

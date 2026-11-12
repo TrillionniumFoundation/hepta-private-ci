@@ -1,0 +1,336 @@
+{
+  "format": "hepta-runtime-materials-restoration-control-plan-v4",
+  "state": "SUCCESSOR_PREPARATION_REVIEW_ONLY_NO_NATIVE_EXECUTION",
+  "driver": {
+    "bytes": 49448,
+    "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e",
+    "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56"
+  },
+  "unique_idempotency_key": "hepta-utility-36fa-runtime-materials-restore-86dd-v2",
+  "source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "path": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "full_actual_baseline": {
+      "bytes": 5611182,
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c"
+    },
+    "materialization_result": "456f749e7558e18df99172d9c9273cda890b8feb",
+    "actual_supervisor": "3e60d21bec849a19efb5d818b43152bfc72486fe"
+  },
+  "control_root": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1",
+  "create_only_output": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2",
+  "staging_rule": "Prior driver.py/APPROVED_CONFIG.json/run remain untouched. Create only driver-v4.py and Root's final APPROVED_CONFIG_V2.json at the fixed paths. WAITING_CONFIG_V4.json is documentation only and must never occupy APPROVED_CONFIG_V2.json. New output is run-v2; reconcile only the exact new typed request/key.",
+  "references": {
+    "six_material_plan": "8936bfb0e0dbab9e471a158f1161567273798360",
+    "uv_registry_bootstrap_source_review": "34ab2d6cfabc2caf8dd483398dbb0072635d1c4e",
+    "uv_source_bundle": "497fe5be950ea18f0d0a809678a63cf3a3a55137"
+  },
+  "dependencies": [
+    {
+      "filename": "uv-x86_64-unknown-linux-gnu.tar.gz",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "bytes": 23914165,
+      "sha256": "c0f3236f146e55472663cfbcc9be3042a9f1092275bbe3fe2a56a6cbfd3da5ce",
+      "release_id": 304428942,
+      "asset_id": 386561626,
+      "release_tag": "0.11.3",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "uv-executable-archive",
+      "version": "0.11.3"
+    },
+    {
+      "filename": "uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+      "bytes": 101,
+      "sha256": "87b44e8a7b4ea30a8f515dedeb8ea5fddabeb9e45bc7586b738cc71cd7d2d59c",
+      "release_id": 304428942,
+      "asset_id": 386561630,
+      "release_tag": "0.11.3",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "uv-archive-checksum-text",
+      "version": "0.11.3",
+      "required_content": "Exactly the expected archive basename and SHA256; must be parsed after checksum payload's own digest passes"
+    },
+    {
+      "role": "ruff-locked-wheel",
+      "version": "0.15.13",
+      "filename": "ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 11434486,
+      "sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca",
+      "provenance": "Exact scripts/uv.lock 6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "payload_verified_here": false
+    },
+    {
+      "filename": "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "release_id": 361445880,
+      "asset_id": 493388485,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-sandbox-archive",
+      "version": "150.4.0"
+    },
+    {
+      "filename": "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "release_id": 361445880,
+      "asset_id": 493388480,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-sandbox-bindings",
+      "version": "150.4.0"
+    },
+    {
+      "filename": "rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "bytes": 262,
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+      "release_id": 361445880,
+      "asset_id": 493388476,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-pair-checksum-text",
+      "version": "150.4.0",
+      "required_content": "Exactly the pinned sandbox archive and binding basenames/hashes; original resolver requires exactly two checksum lines"
+    }
+  ],
+  "immutable_control_files": [
+    {
+      "filename": "driver-v4.py",
+      "bytes": 49448,
+      "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e",
+      "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56"
+    },
+    {
+      "filename": "DEPENDENCY_PLAN.original.json",
+      "bytes": 17795,
+      "sha256": "22b85535cbb1d079c8dd698d8827122b439c964672fce7d182726783a0fb2ec6",
+      "git_blob": "8936bfb0e0dbab9e471a158f1161567273798360"
+    },
+    {
+      "filename": "MATERIALIZATION_RESULT.original.json",
+      "bytes": 69974,
+      "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+      "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb"
+    },
+    {
+      "filename": "MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 913,
+      "sha256": "83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2",
+      "git_blob": "3e60d21bec849a19efb5d818b43152bfc72486fe"
+    },
+    {
+      "filename": "MAINTENANCE_STARTED.original.json",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+    },
+    {
+      "filename": "inventory-driver.original.py",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    }
+  ],
+  "source_loaded_original_helper": {
+    "path": "scripts/hepta_ci_exec.py",
+    "bytes": 12863,
+    "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+    "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "usage": "Only execute_logged for new bounded preparation commands; never run(), original tests or qualification."
+  },
+  "operation_sequence": [
+    "Root reviews this exact driver and freezes exact approved config; a hash-fixed create-only launcher preserves all input bytes, then runs one unique durable job.",
+    "Verify actual successful materialization original result/normal complete supervisor; verify all original control bytes, current full 15188 source bytes/index/head, and fifteen exact source dependency pins.",
+    "Observe only safe source environment values and proxy/CA presence; preserve proxy/CA values without recording them. Resolve and hash existing git/just/python3/rustup/cargo. Reject competing same-user build/formatter processes; no kill.",
+    "Require existing GNU x86_64 Python >=3.10, new absent owned /data depot, six GiB free; create only approved task-owned depot/subdirs and absent dedicated Cargo target. No old-source/cache deletion/repair.",
+    "Download the six original pinned public assets with default TLS/proxy trust, per-asset120s/global600s, exact byte cap and independent SHA256 plus full file readback. Retain every raw/partial file, error and sanitized redirect host/path. Never retain signed query strings.",
+    "Require exact checksum text sets, safe verified UV regular executable extraction and actual uv0.11.3. Require exact Ruff wheel metadata/name/version/no additional dependencies.",
+    "Create external venv with explicit existing Python. Install named locked Ruff requirement from only the already verified wheelhouse, offline/no-index. Preserve normal Registry provenance; no direct wheel URL, no hand-written cache or dist metadata.",
+    "Require original project uv sync --frozen --project scripts --offline --check to actually exit0, original uv run --frozen --project scripts ruff --version to actually report0.15.13, and another original check0. No no-sync/no-project bypass.",
+    "Under separate180s final audit, re-read full exact source and HEAD/index/config/refs, all original input bytes, all downloaded/restored tool files and final environment. Publish readiness only with every actual check verified; nonzero/timeout/incomplete remains failure/unknown."
+  ],
+  "exact_bootstrap_argv": [
+    [
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "venv",
+      "--python",
+      "/usr/bin/python3",
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment"
+    ],
+    [
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "pip",
+      "install",
+      "--offline",
+      "--no-index",
+      "--find-links",
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/wheelhouse",
+      "--python",
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/python",
+      "ruff==0.15.13"
+    ],
+    [
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "sync",
+      "--frozen",
+      "--project",
+      "scripts",
+      "--offline",
+      "--check"
+    ],
+    [
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "--version"
+    ],
+    [
+      "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+      "sync",
+      "--frozen",
+      "--project",
+      "scripts",
+      "--offline",
+      "--check"
+    ]
+  ],
+  "bootstrap_scope": "Each command cwd is the prepared repository; UV_PROJECT_ENVIRONMENT/cache/Ruff cache are exclusively external. Source bytes/lockfile must remain unchanged. No formatter, maintenance, Cargo build or tests run here.",
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-final-native-target-v1",
+    "PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin:/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "UV_PROJECT_ENVIRONMENT": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment",
+    "UV_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/uv-cache",
+    "RUFF_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/ruff-cache",
+    "UV_OFFLINE": "true",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "success": "MATERIALS_READY_FOR_MAINTENANCE_REVIEW plus normal exit0/full durable supervisor; this is dependency preparation, not canonical qualification or completed maintenance.",
+  "prior_proposal": "The earlier direct frozen sync+find-links proposal was not executed. Fixed UV source proves registry-lock caching may prevent that bootstrap; this reviewed named-registry installation has independent artifact hashes plus the actual original frozen/offline check.",
+  "limits": {
+    "operation_seconds": 600,
+    "final_evidence_seconds": 180,
+    "supervisor_outer_seconds": 900,
+    "per_download_seconds": 120,
+    "max_download_bytes": "exact expected bytes; one excess byte rejects",
+    "download_redirects": 5,
+    "max_tar_members": 256,
+    "max_tar_uncompressed_bytes": 268435456,
+    "max_uv_executable_bytes": 134217728,
+    "command_log_limit": 8388608,
+    "each_venv_install_or_check_seconds": 120,
+    "minimum_external_free_bytes": 6442450944
+  },
+  "unchanged_original_maintenance": {
+    "fix": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "fix_seconds": 7200,
+    "fmt": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fmt_seconds": 900,
+    "invoked_here": false
+  },
+  "recovery_and_failures": "No automatic retries, global installs/config/proxy edits, access-control changes, existing files replaced, source repair, obsolete-record rewriting or branch changes. Unknown admission reconciles only the exact same typed request/key. A failed prepared depot remains preserved; a successor needs an explicit new reviewed identity.",
+  "current_execution_claim": {
+    "successor_native_launches": 0,
+    "successor_downloads": 0,
+    "successor_installations": 0,
+    "maintenance": 0,
+    "tests": 0
+  },
+  "prior_unexecuted_driver": {
+    "bytes": 44146,
+    "sha256": "6bbbab7250c433569089d6aa66cff467eeba9fe21c17c5b8289d89ec62132f7c",
+    "git_blob": "30e5471e271fd70cdd0e0a85155992b5d7584aee"
+  },
+  "driver_diff": {
+    "bytes": 12049,
+    "sha256": "811095feeb1c4e80f9fe451f8021cf302c1765df37e9d76aeaab69b6333d3201",
+    "git_blob": "f6a94e6a08330b7a3172162ae5667617a6c58327"
+  },
+  "review_corrections": [
+    "/data parent must be an actual non-symlink directory with current-user write/search access; ownership is required only on newly created task directories.",
+    "The unchanged execute_logged owns each command-group deadline and cleanup. The wrapper alarm is disabled until the original child/log/JSON retention completes, then remaining global operation time is restored and checked."
+  ],
+  "related_reviews": {
+    "root_v1_review": "13b524dca8dfce0f4e14f6e4e4eea87b6a9ea7f7",
+    "six_assets_and_named_bootstrap_peer": "d6ebc4aa8f0bb5d39276c8fdc3695f40706a2812",
+    "materialization_root_actual_proof": "35ba7c51786fcac49b44a6967e79865debec8d9e"
+  },
+  "prior_unexecuted_v2_driver": {
+    "bytes": 44672,
+    "sha256": "73453f98eb3c7b8cb6066097984f6a198b5fb6c19faa505ac4638c25c3d8df1e",
+    "git_blob": "fcf4acc9b6f37e2cfc70998bf5c23b3a70d6bae4"
+  },
+  "final_recording_correction": "A command row begins original_command_terminal=unknown_not_observed; only after original execute_logged fully returns and execution fields are copied does it become observed. No synthesized returncode on exceptions.",
+  "driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/driver-v4.py",
+  "config_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/APPROVED_CONFIG_V2.json",
+  "prior_failed_execution": {
+    "job": "1a1d0e66ad6-2564-1bdd",
+    "result": "88be32de12e28d39b685a7812bff9e217d4a192a",
+    "supervisor": "6c8a73e247afa8aec5b62fb1e86a133d02050458",
+    "preserved_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run",
+    "depot_created": false,
+    "cargo_target_creation_not_reached": true,
+    "downloads": [],
+    "commands": []
+  },
+  "preparation_only_foreign_build_policy": {
+    "uid": 1000,
+    "job": "1a1d0e549d0-2564-1bdc",
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n",
+    "cwd_root": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+    "executables": {
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustc": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+    },
+    "original_probe_blob": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea",
+    "original_failed_result_blob": "88be32de12e28d39b685a7812bff9e217d4a192a",
+    "scope": "Only this exact foreign build may coexist with external material preparation; maintenance/test concurrency policy is unchanged."
+  },
+  "stable_identity_fields": [
+    "comm",
+    "startticks",
+    "uids",
+    "cwd",
+    "exe",
+    "cgroup"
+  ],
+  "concurrency_scope": "The original process observation remains; only the exact fixed foreign job can be recorded as allowed for this dependency-only preparation. All other same-user named processes, own source/depot/target locations, changed metadata, incomplete matching-process observations are blocking/unknown and reject. R/S scheduling changes are recorded but not treated as changed identity. FileNotFound after any matching process was identified is Unknown/reject, never silently 'gone'. Before a matching name was identified, a vanished /proc entry remains an unobserved entry as in the original scan.",
+  "external_directory_policy": "Both depot and Cargo target must be actually absent, with real write/searchable parent, before any directory creation. Both mkdir calls are create-only; any race or different existing path fails without overwrite or deletion."
+}

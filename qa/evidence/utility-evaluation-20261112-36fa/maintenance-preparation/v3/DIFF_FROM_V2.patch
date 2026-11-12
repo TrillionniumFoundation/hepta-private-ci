@@ -1,0 +1,11 @@
+--- driver-v2.py
++++ driver-v3.py
+@@ -406,7 +406,7 @@
+     observed=parse(raw);terminal=parse_supervisor(terminal_raw);environment=parse(environment_raw)
+     check(terminal.get("job_id")==proof.get("job_id") and isinstance(proof.get("job_id"),str)
+           and bool(proof["job_id"]),"actual runtime restoration job identity")
+-    check(observed.get("format")=="hepta-runtime-materials-restoration-result-v1"
++    check(observed.get("format")=="hepta-runtime-materials-restoration-result-v2"
+           and observed.get("status")=="MATERIALS_READY_FOR_MAINTENANCE_REVIEW"
+           and observed.get("source_repo")==str(REPO) and observed.get("source_commit")==HEAD
+           and observed.get("source_tree")==TREE and observed.get("parents")==PARENTS

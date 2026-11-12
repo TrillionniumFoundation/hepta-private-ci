@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.utility.index-stat-recovery.v1",
+  "qualification": false,
+  "created_at": "2026-11-12T19:16:15.634700+00:00",
+  "status": "EXACT_BEFORE_BYTES_RECONSTRUCTED",
+  "method": "One candidate: zero only nine documented stat uint32 fields per entry; preserve every other byte except recomputed trailing SHA1.",
+  "native_before_read_performed": false,
+  "native_git_version": "Unknown",
+  "actual_writer_identity": "Unknown; timestamp and official Git diff behavior support an inference only",
+  "original_maintenance_result_status": "UNKNOWN",
+  "original_fix_returncode": 101,
+  "original_fmt_status": "not_run",
+  "original_records_reclassified": false,
+  "source_edited": false,
+  "native_commands_run": false,
+  "gate_run": false,
+  "input_gzip_path": "/tmp/hepta-36fa-maintenance-terminal-20261112/index.actual.bin.gz",
+  "input_gzip": {
+    "bytes": 720274,
+    "sha256": "2affa928d31701597402ee6392e6ab6eb9cbdcb8ea65b8bc5119f7570b828002",
+    "git_blob_sha": "e44d92d6551380dfbd886170b703fdb09601afbb"
+  },
+  "input_after_index": {
+    "bytes": 2072488,
+    "sha256": "b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15",
+    "git_blob_sha": "80bad59e9314c6e9a9161f23574303ee9ab1b2ad"
+  },
+  "complete_inventory": {
+    "bytes": 5611182,
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "git_blob_sha": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c"
+  },
+  "index_header": {
+    "version": 2,
+    "entries": 15188
+  },
+  "actual_footer_sha1": "f15357305cf94ee2adddeb0187422cc3b360ef42",
+  "reconstructed_footer_sha1": "b614e550ec13cf7e1b9ebefc0d3e6dfff4a41d3f",
+  "reconstructed_candidate": {
+    "path": "index.before.exactly_recovered.bin",
+    "bytes": 2072488,
+    "sha256": "111345e57b5b7276c8fdb4e91302c7bafb6d7c8ca905f83dd1a6c72a28154a16",
+    "git_blob_sha": "3c18e139aa23f5f2898b740941b70f20fbd824ab"
+  },
+  "expected_before_sha256": "111345e57b5b7276c8fdb4e91302c7bafb6d7c8ca905f83dd1a6c72a28154a16",
+  "matches_independent_original_before_identity": true,
+  "changed_entries": 15188,
+  "nonzero_stat_fields_by_name": {
+    "ctime_seconds": 15188,
+    "ctime_nanoseconds": 15188,
+    "mtime_seconds": 15188,
+    "mtime_nanoseconds": 15188,
+    "device": 15188,
+    "inode": 15188,
+    "uid": 15188,
+    "gid": 15188,
+    "file_size": 15128
+  },
+  "flags_counts": [
+    {
+      "upper_flags_nibble": 0,
+      "extended_flags": null,
+      "entries": 15188
+    }
+  ],
+  "extensions": [
+    {
+      "signature_hex": "54524545",
+      "signature_ascii": "TREE",
+      "offset": 2003612,
+      "payload_bytes": 68848,
+      "complete_header_and_payload_identity": {
+        "bytes": 68856,
+        "sha256": "d328e62cf7818743ee1509cc446dba8a1331dee5b393b20c2e78408c254ed314",
+        "git_blob_sha": "b215398771c479a562d9aa226e8861b51ea6ab63"
+      }
+    }
+  ],
+  "all_extension_bytes_preserved": true,
+  "all_modes_oids_paths_stages_flags_and_padding_preserved": true,
+  "full_inventory_mode_oid_path_check": true,
+  "entry_audit": {
+    "path": "entry-stat-audit.json",
+    "bytes": 9095908,
+    "sha256": "01584586e1659144d892244d88605a5b710646d604564eef242edb0461cddbaa",
+    "git_blob_sha": "1bbd5708c541fdd8f24cc45da9167280278ef22d"
+  },
+  "documentation": [
+    "https://github.com/git/git/blob/v2.43.0/Documentation/gitformat-index.txt",
+    "https://github.com/git/git/blob/v2.43.0/Documentation/config/diff.txt",
+    "https://github.com/git/git/blob/v2.43.0/builtin/diff.c"
+  ]
+}

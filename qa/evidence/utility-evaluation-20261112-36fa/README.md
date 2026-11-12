@@ -1,16 +1,16 @@
 # Hepta utility evidence: current status and preserved limits
 
-Checkpoint prepared 2026-11-12 17:43 UTC. This directory contains 1,741 exact file paths. The immediately preceding 1,486-file checkpoint is preserved at commit `63f9f690307aca5a498c487cd7f9c6b7dc6baecc`; its [README](checkpoints/README_1486FILES_BEFORE_FRESH_MATERIALIZATION.md) and [PR body](checkpoints/PR6203_1486FILES_BEFORE_FRESH_MATERIALIZATION.md) are archived without edits.
+Checkpoint observation: **2026-11-12 19:24:00 UTC**. This checkpoint retains **2,049 evidence files**. All 1,741 previous paths are retained; only this current README is updated, and its previous exact bytes are archived at `checkpoints/README_1741FILES_BEFORE_RUNTIME_RESTORATION.md`. The previous exact PR body is archived alongside it. Different paths that reference the same original bytes are aliases, not independent observations.
 
-**Draft / HOLD. Published PR #6203 source remains `c0f78493f815780f68b9bf5e390a21314d79311f`, tree `313ee34febc8ccc54c611ab56286e289518c63cb`. Its focused native and source-closure gates failed. A new fixed candidate has now been independently materialized for maintenance, but has not run maintenance, compilation or qualification. Real authorized task-chain qualified outcomes remain zero.**
+**Draft / HOLD. Published PR #6203 source remains `c0f78493f815780f68b9bf5e390a21314d79311f`, tree `313ee34febc8ccc54c611ab56286e289518c63cb`. Its focused native and source-closure gates failed. The independently materialized 86dd candidate completed dependency preparation but its actual fix returned 101; fmt did not run and a separate final index audit left the overall RESULT Unknown. A one-line 9c4 repair is prepared and unexecuted. Real authorized task-chain qualified outcomes remain zero.**
 
 ## What changed since the previous checkpoint
 
-The next candidate `86dd56a930277e0d1aef3e475e35c2b5d60b43b7`, tree `383ab85c39ef9d848252ef5c25922d13d9fae6c6`, was actually materialized in a fresh independent repository. Its ordered parents are the unchanged published c0f, then fixed upstream a96. It has 15,188 physical leaves. This is a preparation success, not a new test PASS or source publication.
+The first actual dependency-preparation job ended with a known concurrency-preflight failure before downloads, installation or creation of the new external depot. Its complete original records, source/input conservation audits and later read-only process diagnostic are retained. A separately reviewed successor material-preparation control narrows admission for the specifically observed other job; its actual dispatch/result status is stated below.
 
-The original a96 validation's three large audits were recovered exactly from the pinned inputs, original serialization and independently observed original size/hash/Git identities. All 52 original base64 parts have been saved and fully read back. This recovers prior output; it is not a fresh native execution or full new native read.
+The dependency successor actually completed all six original commands and final audits. The actual maintenance attempt and its compiler failure are retained below, along with the separate index audit and exact subsequent diagnosis. The reviewed maintenance structure preserves the original commands and deadlines. Final source protections, QA and allowances still require actual formatted bytes.
 
-Fixed dependencies were identified from the frozen source and official release metadata: UV 0.11.3, Ruff 0.15.13 and V8 150.4.0. Their concrete recovery control is being prepared. Download, installation, offline-environment validation and maintenance remain unexecuted at this checkpoint.
+The previously completed independent 86dd materialization and exact recovery of the original a96 audits remain unchanged. No earlier PASS transfers to 86dd, and no real authorized task-chain qualification is added.
 
 ## Published exact-source gates: c0f
 
@@ -26,6 +26,8 @@ Fixed dependencies were identified from the frozen source and official release m
 | Whole source-gate job | **FAILED**, exit 1; caller PASS does not override source-closure failure |
 
 Actual jobs: native `1a1d0137095-2564-1b21`; source gates `1a1d01a6652-2564-1b2d`. No prior, preparation or partial PASS transfers to 86dd.
+
+At **18:19:17 UTC**, exact c0f hosted-CI reads returned zero check runs, check suites and workflow runs, with pending combined status and zero entries. This is a time-specific observation, not successful CI or a substitute for native qualification. [Original responses](hosted-ci/c0f-20261112-1819/OBSERVATION.json).
 
 The focused failures comprise 24 stack overflows, two actual 60-second per-test timeouts, one InvalidBinding and one OwnerUnavailable. The original 8 MiB stack and test deadlines are unchanged. One preserved failing ELF was stopped at its first SIGSEGV: caller use of 7,251,104 bytes plus a 2,284,152-byte reserve explains that chain's stack deficit. Four caller-local reserves account for 7,242,272 bytes; unavailable CFI was not invented. This does not diagnose every failed test.
 
@@ -83,19 +85,68 @@ Four retained native TREE prefixes independently anchor the recovered parts. A l
 
 See [recovery manifest](native-a96-canonical-validation-v1/recovery/RECOVERY_MANIFEST.json), [recovery notes](native-a96-canonical-validation-v1/recovery/README.md), [original encoded parts](next-profile/a96-canonical-independent-validation-v1/recovered-original-audits/), [TREE prefix records](native-a96-canonical-validation-v1/tree-audit-partial-reads/) and [OBJECT prefix records](native-a96-canonical-validation-v1/object-audit-prefix/).
 
+## Actual dependency preparation: preserved failure and successor
+
+Unique job `1a1d0e66ad6-2564-1bdd` actually ran at **17:55:26–17:55:36 UTC**, ending with **FAILED_PREPARATION / normal exit 1**, complete durable output and no timeout. Its concurrency preflight rejected an observed same-user build before any download, UV command, new depot creation, Cargo build or maintenance.
+
+The complete source inventory, Git state and all 23 fixed inputs remained unchanged. Root verified all 44 placement paths and the complete fixed-version RESULT. This is a known preparation failure, not Unknown execution and not an unsuccessful dependency installation. [Original RESULT](runtime-restoration-86dd-v1/run/RESULT.json) · [Root actual failure review](runtime-restoration-86dd-v1/ROOT_ACTUAL_FAILURE_REVIEW.json).
+
+The **17:59:36 UTC** read-only diagnostic observed a stable Cargo process under the distinct source directory and exact cgroup of job `1a1d0e549d0-2564-1bdc`; four prior rustc PID references had disappeared. It does not establish identity continuity since the original 17:55 preflight or termination of the whole foreign job.
+
+The reviewed successor only narrows the **material-preparation** process check for that exact observed foreign job, requiring stable current identity and distinct source paths. Other, changed, overlapping or unknown matching processes remain blocking. Original maintenance/test concurrency checks and all gate deadlines remain unchanged. No foreign process was controlled, and its arguments/environment/source contents were not read.
+
+### Dependency preparation v2: actual complete success
+
+The distinct job `1a1d0fcb212-2564-1bf4`, key `hepta-utility-36fa-runtime-materials-restore-86dd-v2`, was admitted at **18:19:44.018 UTC** and actually ran from **18:19:46.221347 to 18:20:30.092085 UTC**. Its normal complete supervisor terminal has exit **0**, durable 3,368-byte stdout, empty stderr, and no timeout, cancellation or truncation.
+
+All **six fixed downloads** matched their exact byte counts and SHA256 values. All **six original preparation commands** had observed complete exit-zero terminals, including named offline installation of `ruff==0.15.13`, both original frozen/offline sync checks and the original UV-run Ruff version command. The three final audits verified the unchanged full source inventory, all 23 immutable inputs and 16 material/tool identities. Actual CODEX_REPO_ROOT and PYTHONPATH were both observed as null; no missing field was filled with an invented null.
+
+The actual process-preparation observation had empty observed, allowed, blocking and unknown arrays. **The prepared foreign-job exception was not exercised by this operation.** This does not establish the foreign job's complete lifecycle or relax maintenance's current global concurrency check.
+
+Root independently checked the complete **21,366-byte RESULT**, **21,724-byte ENVIRONMENT_READY**, original same-job supervisor and exact admitted launcher. After a control-cache loss, the two existing files were reread at their previously observed immutable versions; both complete byte sequences, hashes and EOF matched. The recovery reads are retained as recovery reads, and no operation was reexecuted. The earlier configuration write and synchronous file-info transport timeouts also remain recorded; a complete durable file-info observation established the actual approved configuration identity before the unique launch.
+
+The six original command raw logs and all 39 small original records have since been fully retained. Root matched the three original multi-file reads, individual byte/hash identities and the complete 3,368-byte supervisor output; this closes the earlier review's pending-log retrieval without changing that historical review. [Full-originals addendum](runtime-restoration-86dd-v2/ROOT_FULL_ORIGINALS_AND_MAINTENANCE_START_REVIEW.json).
+
+This is **actual dependency-preparation success**. Cargo, maintenance, tests, source-ref updates and real task-chain qualification were not performed by this operation.
+
+[Original RESULT](runtime-restoration-86dd-v2/run/RESULT.json) · [actual environment](runtime-restoration-86dd-v2/run/ENVIRONMENT_READY.json) · [normal supervisor](runtime-restoration-86dd-v2/run/SUPERVISOR_TERMINAL.tool-result.json) · [Root complete actual review](runtime-restoration-86dd-v2/ROOT_ACTUAL_COMPLETE_REVIEW.json) · [configuration transport provenance](runtime-restoration-86dd-v2/config-observation/).
+
+The exact maintenance configuration was **Root approved**, Git blob `88e0e1c333b6f6f3e792977d9b8033128f3767ff` (8,286 bytes), binding the actual restored tools and three original proofs. It preserves the original commands, global concurrency guard and complete source/postimage recording. The Root-selected **32 GiB** target free-space prerequisite was part of the actual live preflight; it is not a historical frozen contract. The later failed maintenance result is reported separately below. [Final configuration review](maintenance-preparation/v3/ROOT_FINAL_EXECUTION_REVIEW.json).
+
+
+## Actual maintenance failure and exact index diagnosis
+
+The unique maintenance job `1a1d10d8ad0-2564-1bff` was admitted at **18:38:08.080 UTC** and ended with a normal, complete supervisor **exit 1 at 18:49:07.733 UTC**. The original scoped fix returned **101**, without timeout or output-limit truncation. Its complete **116,897-byte raw log** contains one compiler error: `E0425`, the existing `recovered_peer` helper was not exported through `training_ports` for the evaluated-version recovery test. **Fmt did not run; no test command was dispatched.**
+
+The complete post-fix source inventory still has all **15,188 leaves**, the same tree and the same `bca1a739...` inventory identity; its exact transition packet has **zero source postimages**. The final raw Git-state audit separately failed because the index SHA256 changed. The original overall RESULT therefore remains **Unknown**, alongside the known compiler failure. Neither result is reclassified as a pass.
+
+All original raw fix output and all **118,168 bytes of supervisor stdout** have been retained. Root independently matched the two fixed-version fix reads and all nine original supervisor-output intervals, including their hexadecimal and text representations. [Original RESULT](fresh-maintenance-86dd-v1/run/RESULT.json) · [fix terminal](fresh-maintenance-86dd-v1/run/fix.terminal.json) · [Root complete failure and index review](fresh-maintenance-86dd-v1/ROOT_MAINTENANCE_FAILURE_AND_INDEX_REVIEW.json).
+
+A separate authorized read-only retention job, `1a1d1241e8b-2564-1c0b`, copied the actual final index without running Git or changing source. Its full **2,072,488 bytes**, SHA256 `b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15`, were retrieved through eleven fixed-version chunks. One offline candidate cleared only the nine standard stat-cache fields and recomputed the trailing checksum. It exactly recovered the independently recorded original index SHA256 `111345e57b5b7276c8fdb4e91302c7bafb6d7c8ca905f83dd1a6c72a28154a16`, at the same length. All **15,188 modes, object IDs, paths, stages, flags, padding and the complete TREE extension** are unchanged. Root independently compared these bytes. This is exact recovery of the original index, **not a new native read of its historical bytes**.
+
+The actual writer and native Git version were not directly observed. The original archive `git diff` ran between the equal post-fix state and the changed final index; official Git documentation describes stat refresh as its default behavior. That supports an inference, not a fabricated writer observation. The narrow successor control sets `diff.autoRefreshIndex=false` only for archive diff and retains the strict raw Git-state equality gate. The old Unknown is retained.
+
+## Prepared one-line compiler repair
+
+New canonical preparation **`9c4a11f61d30e9cc352bf44d56c98909d202a55d`**, tree **`ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7`**, has the single parent 86dd. It adds only `pub(crate) use super::super::connection::recovered_peer;` in the existing test-only original training-ports module. The underlying recovered connection, original owner binding, recovered origin and assertions are unchanged. All **15,188 leaf modes and object identities** were independently compared; exactly that one source blob changed.
+
+Root verified the complete six-object import packet, including the canonical commit hash. The predicted post-advance inventory is **5,611,182 bytes**, SHA256 `c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d`. This is a prediction until matched by an actual forward source transition. At this checkpoint, the new source transition and successor maintenance have **not run**, and the published source branch remains c0f. Existing actual materialization and dependency proofs remain pinned to 86dd; a new source-advance proof must connect them to 9c4 without relabeling historical execution.
+
+[Canonical repair review](preparation/recovered-peer-increment-v1/ROOT_CANONICAL_REVIEW.json) · [complete source-advance packet](preparation/recovered-peer-increment-v1/SOURCE_ADVANCE_PACKET.json) · [minimal source diff](preparation/recovered-peer-increment-v1/ONE_LINE.patch).
+
 ## Maintenance prerequisites and remaining source work
 
 The actual runtime observation found the specified old Cargo target and V8 archive absent and did not resolve uv/ruff in the two observed PATH values. This is not a whole-machine absence claim. Cargo/just/rustup resolved in the task environment. No global tool installation, profile editing, source changes or recovery commands were run by that observation.
 
-The fixed plan pins six original artifact URLs, sizes and SHA256 values for UV 0.11.3, Ruff 0.15.13 and V8 150.4.0. Tools, project environment and caches will live in a new task-owned external depot. The old V8 locations are preserved. Proxy/CA/TLS controls remain intact.
+The fixed plan pins six original artifact URLs, sizes and SHA256 values for UV 0.11.3, Ruff 0.15.13 and V8 150.4.0. The completed v2 restoration placed tools, project environment and caches in the task-owned external depot. The old V8 locations are preserved. Proxy/CA/TLS controls remain intact.
 
-The first proposed fresh-cache offline sync plus find-links is **unexecuted and not assumed sufficient**: the original registry lock preserves its index/URL distribution. The selected recovery design instead uses a normal external UV venv, installs the exact named requirement `ruff==0.15.13` from the sole verified offline wheel, then requires the original frozen/offline sync check to return zero. The concrete native control and actual result are still required; no prepared CLI reasoning is a successful installation claim.
+The first proposed fresh-cache offline sync plus find-links is **unexecuted and not assumed sufficient**: the original registry lock preserves its index/URL distribution. The selected recovery design instead uses a normal external UV venv, installs the exact named requirement `ruff==0.15.13` from the sole verified offline wheel, then requires the original frozen/offline sync check to return zero. The first actual operation stopped before these steps. The distinct v2 operation subsequently completed all six original preparation commands and their final audits as documented above.
 
-Original scoped maintenance remains `just fix -p codex-hepta-intelligence-eval -p codex-hepta-agentd` with 7200 seconds, then `just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f` with 900 seconds. Failed or Unknown fix does not start fmt. The HOLD wrapper preserves complete before/after source inventories and all changed postimages. Its final environment must explicitly bind actually recovered tools/V8, external UV/Ruff paths and the observed CODEX_REPO_ROOT/PYTHONPATH; the archived first draft is not approved for launch.
+Original scoped maintenance remains `just fix -p codex-hepta-intelligence-eval -p codex-hepta-agentd` with 7200 seconds, then `just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f` with 900 seconds. Failed or Unknown fix does not start fmt. The HOLD wrapper preserves complete before/after source inventories and all changed postimages. Its reviewed v3 HOLD structure requires the complete actual restoration RESULT, normal supervisor and ENVIRONMENT_READY; actual tool/V8 identities; external UV/Ruff paths; observed CODEX_REPO_ROOT/PYTHONPATH; and current disk and global concurrency prerequisites. An observed null source-environment value is distinct from a missing observation. The exact maintenance configuration was approved from those complete actual proofs and subsequently ran as documented above; its failed fix did not start fmt. The result-v1 to result-v2 parser-format change establishes no execution result.
 
-Ten new protected rows, 39 existing protected updates, adversarial QA and final blob-size allowances remain incomplete pending actual formatted bytes. The current 86dd preparation contains structural registration, ordinary evaluated NoUpdate mechanisms, three reviewed Rust increments and two conservative literal prechecks before existing regexes. Its ten new ordinary tests have not compiled or run. No verifier collector, verdict, gate budget, test deadline or stack limit is relaxed.
+Ten new protected rows, 39 existing protected updates, adversarial QA and final blob-size allowances remain incomplete pending actual formatted bytes. The current 86dd preparation contains structural registration, ordinary evaluated NoUpdate mechanisms, three reviewed Rust increments and two conservative literal prechecks before existing regexes. Its ten new ordinary tests have not completed compilation or run. No verifier collector, verdict, gate budget, test deadline or stack limit is relaxed.
 
-See [dependency proposal and fixed sources](preparation/runtime-dependency-recovery-v1/), [maintenance HOLD structure](maintenance-preparation/v1/), [canonical 86dd preparation](next-profile/preparation86dd/) and [postformat protection preparation](next-profile/).
+See [dependency proposal and fixed sources](preparation/runtime-dependency-recovery-v1/), [maintenance HOLD history and current v3 structure](maintenance-preparation/), [canonical 86dd preparation](next-profile/preparation86dd/) and [postformat protection preparation](next-profile/).
 
 ## Utility and authority remain external
 

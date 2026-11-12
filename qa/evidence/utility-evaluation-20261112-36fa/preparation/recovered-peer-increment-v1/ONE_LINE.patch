@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
+index 36289de55d67d19d5ed710044efdf7012c08d3a3..1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
+@@ -1,6 +1,7 @@
+ //! Same-process adapters to the actual deferred Trainer. The initial channels
+ //! are created before Material/T completion and never return canned evidence.
+ use super::super::connection;
++pub(crate) use super::super::connection::recovered_peer;
+ use super::super::readonly;
+ use super::*;
+ use codex_hepta_contracts::HostAuthorityPeerChannel;

@@ -1,0 +1,64 @@
+--- /tmp/hepta-86dd-runtime-restore-v1/driver-v1.original.py	2026-11-12 12:48:11.373210298 -0500
++++ /tmp/hepta-86dd-runtime-restore-v1/driver.py	2026-11-12 12:46:33.731755629 -0500
+@@ -351,6 +351,9 @@
+     allowed = min(float(seconds), remaining())
+     row['effective_timeout_seconds'] = allowed
+     event('preparation_command_started', name=name, argv=argv, timeout_seconds=allowed)
++    # The unchanged helper owns this command group's deadline and cleanup.
++    # Do not interrupt its kill/wait/final log retention with a competing alarm.
++    signal.setitimer(signal.ITIMER_REAL, 0)
+     try:
+         with (OUT / (name + '.forwarded.log')).open('x', encoding='utf-8') as output:
+             with contextlib.redirect_stdout(output):
+@@ -363,15 +366,19 @@
+         row.update(error_type=type(error).__name__, error=str(error))
+         raise
+     finally:
+-        row['finished_at'] = now()
+-        for suffix in ('.log', '.forwarded.log'):
+-            path = OUT / (name + suffix)
+-            if path.exists():
+-                raw = regular_read(path, LOG_LIMIT * 4 + 1024, owned=True)
+-                artifacts.append({'name': path.name, 'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)})
+-        jrecord(name + '.json', row)
++        try:
++            row['finished_at'] = now()
++            for suffix in ('.log', '.forwarded.log'):
++                path = OUT / (name + suffix)
++                if path.exists():
++                    raw = regular_read(path, LOG_LIMIT * 4 + 1024, owned=True)
++                    artifacts.append({'name': path.name, 'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)})
++            jrecord(name + '.json', row)
++        finally:
++            signal.setitimer(signal.ITIMER_REAL, max(0.0, deadline - time.monotonic()))
+     check(execution['returncode'] == 0 and execution['timed_out'] is False
+           and execution['output_limit_exceeded'] is False, name + ' failed; original command record retained')
++    remaining()
+     return regular_read(OUT / (name + '.log'), LOG_LIMIT, owned=True)
+ 
+ 
+@@ -505,11 +512,12 @@
+         installed_tools[name] = file_identity(path, allow_symlink=True)
+         restored['tool_' + name] = installed_tools[name]
+     jrecord('EXISTING_TOOL_FILES.json', installed_tools)
+-    real_directory(DEPOT.parent, owned=True)
++    real_directory(DEPOT.parent)
++    check(os.access(DEPOT.parent, os.W_OK | os.X_OK), 'writable/searchable actual depot parent')
+     check(not os.path.lexists(DEPOT), 'new depot already exists; reconcile instead of overwrite/replay')
+     disk = shutil.disk_usage(DEPOT.parent)
+     check(disk.free >= 6 * 1024**3, 'at least 6 GiB actual external free space required')
+-    jrecord('DISK_PREFLIGHT.json', {'parent': real_directory(DEPOT.parent, owned=True),
++    jrecord('DISK_PREFLIGHT.json', {'parent': real_directory(DEPOT.parent),
+             'total': disk.total, 'used': disk.used, 'free': disk.free,
+             'minimum_free_bytes': 6 * 1024**3})
+     os.mkdir(DEPOT, 0o700)
+@@ -518,7 +526,8 @@
+         os.mkdir(DEPOT / name, 0o700)
+     target_created = False
+     if not os.path.lexists(TARGET):
+-        real_directory(TARGET.parent, owned=True)
++        real_directory(TARGET.parent)
++        check(os.access(TARGET.parent, os.W_OK | os.X_OK), 'writable/searchable actual target parent')
+         os.mkdir(TARGET, 0o700)
+         target_created = True
+     target = real_directory(TARGET, owned=True)

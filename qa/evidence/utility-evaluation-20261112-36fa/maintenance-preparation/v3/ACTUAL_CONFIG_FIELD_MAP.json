@@ -1,0 +1,161 @@
+{
+  "format": "hepta-maintenance-final-config-field-map-v1",
+  "status": "CONCRETE_WAITING_FOR_ROOT_REVIEW_NO_EXECUTION",
+  "driver": {
+    "git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+    "bytes": 54853,
+    "sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce"
+  },
+  "base_template": "2ceaebf0e09b4d7ad347dbc3a96c52a67cd426d9",
+  "filled_waiting": {
+    "bytes": 8316,
+    "sha256": "4b49929ceac547df0999bd879987e0596fbf0f9a2de46199fde50118c65b5ebb",
+    "git_blob": "cfd22a7deb883fb8674d8e221e23e07bf6ea8a2e"
+  },
+  "local_copy": "/tmp/hepta-36fa-checkpoint1867-recovery/maintenance-WAITING-cfd22a7d.json",
+  "actual_proofs": {
+    "result": {
+      "bytes": 21366,
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90",
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09"
+    },
+    "environment": {
+      "bytes": 21724,
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+    },
+    "supervisor": {
+      "bytes": 954,
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb",
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20"
+    }
+  },
+  "mapping": [
+    {
+      "destination": "runtime_restoration.job_id",
+      "source": "Original supervisor content[0].text -> parsed job_id",
+      "value": "1a1d0fcb212-2564-1bf4"
+    },
+    {
+      "destination": "runtime_restoration.result",
+      "source": "Exact original RESULT bytes",
+      "operation": "Independently compute bytes, SHA256 and Git blob; match native-pinned identity"
+    },
+    {
+      "destination": "runtime_restoration.environment",
+      "source": "Exact original ENVIRONMENT_READY bytes",
+      "operation": "Same three hashes; additionally match RESULT.environment_record"
+    },
+    {
+      "destination": "runtime_restoration.supervisor",
+      "source": "Exact original supervisor tool-envelope bytes",
+      "operation": "Preserve envelope identity, not only its embedded terminal body"
+    },
+    {
+      "destination": "environment",
+      "source": "ENVIRONMENT_READY.explicit_environment",
+      "operation": "All 17 keys exactly match the frozen template; no changes required"
+    },
+    {
+      "destination": "inherited_source_environment",
+      "source": "ENVIRONMENT_READY.inherited_source_environment",
+      "operation": "Copy both actually present keys; both values were observed null, not inferred from missing keys"
+    },
+    {
+      "destination": "tool_files[git,just,python3,rustup,cargo,uv]",
+      "source": "ENVIRONMENT_READY.tool_and_material_files[tool_<name>]",
+      "operation": "Project exactly path,resolved,bytes,sha256,mode"
+    },
+    {
+      "destination": "v8_files.RUSTY_V8_ARCHIVE",
+      "source": "ENVIRONMENT_READY.tool_and_material_files[v8-sandbox-archive]",
+      "operation": "Same five-field projection and exact original GNU sandbox path"
+    },
+    {
+      "destination": "v8_files.RUSTY_V8_SRC_BINDING_PATH",
+      "source": "ENVIRONMENT_READY.tool_and_material_files[v8-sandbox-bindings]",
+      "operation": "Same five-field projection"
+    },
+    {
+      "destination": "formatter_tool_files.python",
+      "source": "ENVIRONMENT_READY.tool_and_material_files.venv_python",
+      "operation": "Same five-field projection; actual resolved system Python retained"
+    },
+    {
+      "destination": "formatter_tool_files.ruff",
+      "source": "ENVIRONMENT_READY.tool_and_material_files.ruff",
+      "operation": "Same five-field projection; external venv path retained"
+    },
+    {
+      "destination": "minimum_target_free_bytes",
+      "source": "Root explicit instruction for this maintenance operation",
+      "value": 34359738368,
+      "operation": "32 GiB is a selected live precondition, not a historical cost contract or an observed free-space result"
+    },
+    {
+      "destination": "status",
+      "value": "WAITING_FOR_ROOT_REVIEW_ACTUAL_RUNTIME_PROOFS_FILLED"
+    },
+    {
+      "destination": "root_execution_approved / formal_approved_config_created",
+      "value": false,
+      "operation": "No automatic approval"
+    }
+  ],
+  "actual_document_checks": {
+    "all_three_full_texts_read_and_independently_hashed": true,
+    "actual_runtime_result_format": "hepta-runtime-materials-restoration-result-v2",
+    "actual_runtime_status": "MATERIALS_READY_FOR_MAINTENANCE_REVIEW",
+    "actual_supervisor": "succeeded / exit 0 / no timeout / no cancellation / output complete and durable / terminal publication confirmed / no stream truncation",
+    "six_original_names_argv_cwd_requested_budgets_verified": true,
+    "six_original_command_terminals": "all observed, returncode 0, timed_out=false, output_limit_exceeded=false",
+    "three_final_audits": "source, inputs, materials_environment all verified",
+    "original_source_inventory": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "input_count": 23,
+    "material_and_tool_count": 16,
+    "source_unchanged": true,
+    "runtime_process_observation_arrays": "observed / allowed_exact_foreign_build / blocking / unknown were all empty at that observation",
+    "remaining_null_fields": [
+      "inherited_source_environment.CODEX_REPO_ROOT",
+      "inherited_source_environment.PYTHONPATH"
+    ],
+    "no_missing_proof_or_tool_or_minimum_fields": true
+  },
+  "unmodified_controls": {
+    "fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fix_seconds": 7200,
+    "fmt_seconds": 900,
+    "preflight_seconds": 600,
+    "record_seconds": 300,
+    "original_global_maintenance_process_guard_preserved": true,
+    "no_foreign_preparation_exception_transferred_to_maintenance": true,
+    "no_source_or_ref_updates": true,
+    "no_new_helper_created_or_run": true
+  },
+  "live_preconditions_not_proven_by_config_filling": [
+    "Current complete source/index/HEAD/Git metadata and immutable control files must pass the original maintenance preflight.",
+    "Current tool/V8/venv bytes and inherited source environment must still match these actual recorded identities.",
+    "Actual target disk_free must be at least 34359738368 bytes; this fill did not observe current free space.",
+    "environment_preflight -> active_build_processes must find no matching same-UID build/formatter and no unreadable matching process; the runtime preparation exception does not apply.",
+    "The original stage process checks must still run immediately before fix and fmt.",
+    "Root/native must independently approve and pin the final config and launcher; this WAITING file cannot execute 057da."
+  ],
+  "qualification": false,
+  "maintenance_main_run": false,
+  "gates_run": false,
+  "H_calls": false,
+  "note": "The proposed additional filler helper was abandoned before publication or execution at Root's direction. This is a one-off deterministic field fill and review of actual immutable documents."
+}

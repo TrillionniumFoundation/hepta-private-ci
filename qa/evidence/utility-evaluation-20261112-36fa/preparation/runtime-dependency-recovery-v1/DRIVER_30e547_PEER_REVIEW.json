@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.utility.runtime_dependency.driver_peer_review.v1",
+  "status": "reviewed_no_blocking_finding_within_assigned_static_scope",
+  "qualification": false,
+  "executed_native_commands": 0,
+  "driver": {
+    "git_blob_sha": "30e5471e271fd70cdd0e0a85155992b5d7584aee",
+    "bytes": 44146,
+    "sha256": "6bbbab7250c433569089d6aa66cff467eeba9fe21c17c5b8289d89ec62132f7c",
+    "full_github_readback_equal": true
+  },
+  "scope": [
+    "Six fixed artifact URL/name/size/SHA identities and their exact external source origins.",
+    "Checksum payload hash-before-parse and exact basename/hash set comparison.",
+    "Normal UV named Registry requirement bootstrap into the explicit external venv.",
+    "Original frozen/offline sync check, original uv run Ruff version check, and second frozen/offline check.",
+    "Retention of qualification=false and no actual maintenance/test dispatch by this preparation driver."
+  ],
+  "source_basis": [
+    {
+      "kind": "original_dependency_plan",
+      "git_blob_sha": "8936bfb0e0dbab9e471a158f1161567273798360"
+    },
+    {
+      "kind": "uv_named_registry_bootstrap_static_review",
+      "git_blob_sha": "34ab2d6cfabc2caf8dd483398dbb0072635d1c4e"
+    },
+    {
+      "kind": "uv_official_source_evidence",
+      "git_blob_sha": "497fe5be950ea18f0d0a809678a63cf3a3a55137"
+    },
+    {
+      "kind": "official_uv_release_metadata",
+      "git_blob_sha": "3d7f970775fac2dc72a5b0eebc3b77ccb9a369cb"
+    },
+    {
+      "kind": "official_v8_release_metadata",
+      "git_blob_sha": "5afa7428f4ad8558f5a3a20d56eb06ae5e711046"
+    },
+    {
+      "kind": "fixed_project_lock",
+      "git_blob_sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026"
+    }
+  ],
+  "observations": [
+    {
+      "driver_lines": [
+        56,
+        60,
+        439,
+        444,
+        487,
+        489
+      ],
+      "finding": "The entire original dependency plan is byte/SHA256/Git-blob pinned before its six artifact roles are read. All fixed project source pins are checked against the admitted source."
+    },
+    {
+      "driver_lines": [
+        534,
+        616
+      ],
+      "finding": "Each download uses the pinned HTTPS URL and bounded bytes, checks actual status, optional Content-Length, total size and full SHA256, then reads the downloaded file back. Redirects preserve the actual request while logging only query-free destinations and retaining default TLS/proxy settings."
+    },
+    {
+      "driver_lines": [
+        619,
+        630,
+        715,
+        725
+      ],
+      "finding": "UV checksum payload and V8 checksum payload are themselves exact-hash downloaded. The parser requires lowercase 64-hex digests, canonical basenames, no duplicate entries and exact expected set equality: one UV archive and the original two V8 sandbox artifacts."
+    },
+    {
+      "driver_lines": [
+        633,
+        667
+      ],
+      "finding": "Only the unique regular UV ELF is extracted from the verified bounded archive. The real executable reports exactly version 0.11.3 before bootstrap."
+    },
+    {
+      "driver_lines": [
+        670,
+        685
+      ],
+      "finding": "The actual pinned Ruff wheel is opened for metadata inspection. Name ruff, version 0.15.13 and no Requires-Dist are required; original METADATA bytes are retained."
+    },
+    {
+      "driver_lines": [
+        688,
+        712
+      ],
+      "finding": "The source-reviewed named requirement is preserved exactly. The sequence is uv venv with explicit /usr/bin/python3; uv pip install --offline --no-index --find-links wheelhouse --python external-venv/bin/python ruff==0.15.13; original uv sync --frozen --project scripts --offline --check; original uv run --frozen --project scripts ruff --version; and another original frozen/offline check."
+    },
+    {
+      "driver_lines": [
+        464,
+        477,
+        699,
+        706
+      ],
+      "finding": "UV_PROJECT_ENVIRONMENT, UV_CACHE_DIR, RUFF_CACHE_DIR and UV_OFFLINE=true are explicit external values. UV_PYTHON_DOWNLOADS=never is set. No bare-Ruff maintenance substitution, --no-sync or direct-wheel requirement is introduced."
+    },
+    {
+      "driver_lines": [
+        347,
+        375,
+        733,
+        751,
+        819,
+        856
+      ],
+      "finding": "Each actual preparation command must have returncode 0, no timeout and no output limit. Final file identities and exact source/input comparisons are separately required. Any readiness remains preparation status only; qualification stays false."
+    }
+  ],
+  "artifact_pin_comparison": [
+    {
+      "role": "uv-executable-archive",
+      "pin_equal": true,
+      "release_id_equal": true,
+      "asset_id": 386561626
+    },
+    {
+      "role": "uv-archive-checksum-text",
+      "pin_equal": true,
+      "release_id_equal": true,
+      "asset_id": 386561630
+    },
+    {
+      "role": "ruff-locked-wheel",
+      "pin_equal": true,
+      "authority": "fixed scripts/uv.lock 6c0c3b..."
+    },
+    {
+      "role": "v8-sandbox-archive",
+      "pin_equal": true,
+      "release_id_equal": true,
+      "asset_id": 493388485
+    },
+    {
+      "role": "v8-sandbox-bindings",
+      "pin_equal": true,
+      "release_id_equal": true,
+      "asset_id": 493388480
+    },
+    {
+      "role": "v8-pair-checksum-text",
+      "pin_equal": true,
+      "release_id_equal": true,
+      "asset_id": 493388476
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "This is a static peer review of the assigned download/bootstrap scope, not a full security audit or a native runtime result.",
+    "Actual checksum text payloads and binary artifacts have not been downloaded or executed by this reviewer. Their exact published payload hashes are used to constrain the native operation.",
+    "Normal installed Registry satisfaction validates installed kind/version; the driver owns the independent artifact hash and isolated-bootstrap evidence. A sync --check result must not be described as re-hashing all installed executable bytes.",
+    "Actual current interpreter/platform/depot/free-space and command outcomes remain subject to the real driver checks.",
+    "The source remains PREPARATION/HOLD; all existing qualification failures and unrun gates are unaffected."
+  ]
+}

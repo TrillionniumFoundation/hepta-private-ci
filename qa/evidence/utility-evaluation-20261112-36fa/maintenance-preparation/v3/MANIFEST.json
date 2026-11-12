@@ -1,0 +1,43 @@
+{
+  "format": "hepta-maintenance-runtime-format-sync-v1",
+  "status": "HOLD_NO_RUNTIME_SUCCESS_PROOFS",
+  "before": {
+    "bytes": 54853,
+    "sha256": "fd2a78d56bf43a20e0dd6f34f0ad474980c9273b2c7888ebaecd12412d32a1a8",
+    "git_blob": "f288d78be78a0f036a862253dfcafbc5d48e1f80"
+  },
+  "after": {
+    "bytes": 54853,
+    "sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce",
+    "git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13"
+  },
+  "patch": {
+    "bytes": 755,
+    "sha256": "1d45ffa83e64efabd09d877761f581d3c9c668b4f2e7be32c8727eff64f249c4",
+    "git_blob": "bdb290338882486d9ef99a5ec31abbdf2d569f2c"
+  },
+  "exact_one_string_replacement": true,
+  "old_literal": "\"hepta-runtime-materials-restoration-result-v1\"",
+  "new_literal": "\"hepta-runtime-materials-restoration-result-v2\"",
+  "all_other_bytes_unchanged": true,
+  "changed_function": "validate_runtime_restoration",
+  "maintenance_global_concurrency_guard_text_unchanged": true,
+  "original_argv_and_7200_900_budgets_unchanged": true,
+  "source_snapshot_and_postimage_controls_unchanged": true,
+  "successful_runtime_result_and_actual_supervisor_and_environment_proofs_still_required": true,
+  "runtime_success_pins_filled": false,
+  "module_or_main_execution": false,
+  "source_or_ref_updates": false,
+  "based_on_runtime_driver": {
+    "bytes": 49448,
+    "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e",
+    "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56"
+  },
+  "peer_review": {
+    "bytes": 8007,
+    "sha256": "1eedc74e2138691b916fe428b66a9d189b78faed267b39b7cb8ae090e5e377a6",
+    "git_blob": "2d8e0cbcbc3bc0b6a629db925272204bc8cfa365"
+  },
+  "previous_control_manifest": "9a601df6e8802949dabcb998e97d15110a2bbce1",
+  "previous_control_peer": "f470f74f02f53ea9c1d43d9f5f926095ab0e7f65"
+}

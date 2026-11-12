@@ -1,0 +1,105 @@
+{
+  "format": "hepta-test-port-reexport-increment-manifest-v1",
+  "status": "PREPARATION_REVIEW_REQUIRED_NOT_COMPILED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "base_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 5133,
+        "sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+        "git_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3"
+      },
+      "after": {
+        "bytes": 5190,
+        "sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1",
+        "git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f"
+      }
+    }
+  ],
+  "reason": {
+    "actual_original_job": "1a1d10d8ad0-2564-1bff",
+    "compiler": "E0425",
+    "consumer": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs:82",
+    "missing_member": "training_ports::recovered_peer",
+    "fix_returncode": 101,
+    "fix_timed_out": false,
+    "fmt_not_run": true,
+    "test_commands_dispatched": 0,
+    "fix_after_change_count": 0,
+    "wrapper_terminal": "UNKNOWN",
+    "wrapper_terminal_reason": "Final Git state equality failed independently of the observed compiler error; this patch does not change the maintenance wrapper."
+  },
+  "evidence": {
+    "original_result": {
+      "bytes": 5114,
+      "sha256": "c13be4e53eba55593d17a43ec9acdfb97060a55866eb52fc684700bf2df0236c",
+      "git_blob": "30300f4cf4743e3fb80ccf404f7e7be4d8b81ac6"
+    },
+    "fix_terminal": {
+      "bytes": 1301,
+      "sha256": "64495ce23d552e617daed7bf3d3840ebb9958724a08ea91ec4deeaadf27f8027",
+      "git_blob": "d3777e7c9b18f23b1b0dd91ab5b787117cb348cb"
+    },
+    "execute_logged": {
+      "bytes": 218,
+      "sha256": "bd96d22a278f1794ab232fa1e1cca4babd68ee94d7a1553e2888999af39c1c79",
+      "git_blob": "4fdff8315d20baef15bb7dd1e2b9ffd7dd730356"
+    },
+    "original_stdout_tail_sdk": {
+      "bytes": 49899,
+      "sha256": "99f6a15145d5995edb2c63f86c7ebca9a821bd88c3503d8992ecc24cadc777b8",
+      "git_blob": "0465ef73024a068dedac52211e6be612f56f7cac"
+    },
+    "stdout_tail_verification": {
+      "offset": 101784,
+      "next_offset": 118168,
+      "bytes": 16384,
+      "hex_equals_utf8_text": true,
+      "scope": "Tail only, includes complete E0425 diagnostic. Full original command log not independently downloaded in this preparation."
+    }
+  },
+  "source_chain": {
+    "consumer_import": "learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports",
+    "crate_test_reexport": "learning_iteration_evidence_client.rs:312-313 #[cfg(test)] pub(crate) use training_command::original_bootstrap_test_ports",
+    "training_test_reexport": "cell_q24_training_command.rs:408-409 #[cfg(test)] pub(crate) use bootstrap::original_ports as original_bootstrap_test_ports",
+    "bootstrap_test_mount": "cell_q24_training_bootstrap.rs #[cfg(test)] #[path = \"cell_q24_training_bootstrap_original_ports_tests.rs\"] pub(crate) mod original_ports",
+    "existing_connection_test_reexport": "cell_q24_training_command_connection.rs #[cfg(test)] pub(crate) use tests::recovered_peer",
+    "original_helper": "cell_q24_training_command_connection_support_tests.rs:59-68 recovered_peer passes material, Origin::Recovered(expected), lifetime to existing pair"
+  },
+  "invariants": [
+    "Exactly one pub(crate) use line is added inside an existing module mounted only under cfg(test).",
+    "No production module visibility, constructor, wire, owner, custody, signature, Origin, deadline, stack, assertion, or test filter changes.",
+    "The existing real original owner service supplies replies; the increment does not manufacture a receipt or create a fake owner.",
+    "All original bytes are retained as an ordered subsequence; removal of the single inserted line reconstructs the exact canonical preimage."
+  ],
+  "verification": {
+    "actual_compiler_failure_read": true,
+    "source_bytes_git_sha_verified": true,
+    "original_stdout_tail_hex_matches_text": true,
+    "patch_structure_only": true,
+    "cargo": false,
+    "fmt": false,
+    "rust_execution": false,
+    "native_writes": false,
+    "ref_updates": false
+  },
+  "required_before_application": [
+    "Target file bytes and Git blob must equal canonical preimage 36289de55d67d19d5ed710044efdf7012c08d3a3.",
+    "Root must review this immutable preparation before native applies it.",
+    "Compile and maintenance must subsequently use the actual candidate source and preserve original budgets; no success is claimed by this preparation."
+  ],
+  "patch": {
+    "bytes": 798,
+    "sha256": "176e8fc47109209d8df40d78b8e42db37bde29456d80393baf0cc6b2cf0e2c6e",
+    "git_blob": "fe946583996e882ac1b87e44e791a98534c0a886"
+  },
+  "packet": {
+    "bytes": 11639,
+    "sha256": "68c4579c2650477384ccf994b45a92b3252e55b6231f877ad22e9e44c88736b1",
+    "git_blob": "a92a472eb5f797973b941abeb88ef08838c905e4"
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "format": "hepta-original-scoped-maintenance-control-preparation-v2",
+  "status": "HOLD_REQUIRES_ACTUAL_RUNTIME_RESTORATION_SUCCESS_AND_SEPARATE_ROOT_APPROVAL",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "previous": {
+    "driver": {
+      "bytes": 46877,
+      "sha256": "618fb1ab12dafb6c11da0efed59c96b93f841b3db6d306781a5688cb9cd6e71c",
+      "git_blob": "842cb1dbc262d09412ab4f1759f05f1115c60d86",
+      "lines": 869
+    },
+    "manifest": "d7b33eda30b83aff5305cc2783aeccfce756ced6"
+  },
+  "artifacts": [
+    {
+      "name": "driver-v2.py",
+      "bytes": 54853,
+      "sha256": "fd2a78d56bf43a20e0dd6f34f0ad474980c9273b2c7888ebaecd12412d32a1a8",
+      "git_blob": "f288d78be78a0f036a862253dfcafbc5d48e1f80",
+      "readback_equal": true
+    },
+    {
+      "name": "v1-to-v2.patch",
+      "bytes": 19367,
+      "sha256": "af6339a08abeb46d3d9b3702482d06b9719f9cc7cb0f14f7f7b2a0b28f1785c2",
+      "git_blob": "d11187016c15853c3b1398b8ec8b2531cac2d242",
+      "readback_equal": true
+    },
+    {
+      "name": "STATIC_CHECK.v2.json",
+      "bytes": 2827,
+      "sha256": "f9f7d8fcb3b350126fc9559291d0c1940387b38fa8bd5d2f37f96fdc4a94721c",
+      "git_blob": "80180c7a6415caaee197137f3429753e906d4080",
+      "readback_equal": true
+    },
+    {
+      "name": "WAITING_CONFIG.json",
+      "bytes": 4577,
+      "sha256": "cde37c103dbecb131b285239a55b05759b5b14d5a716fd9fd21d5160a633004f",
+      "git_blob": "644b637618f4ad7dbb0a5a6ac6810db63f145d19",
+      "readback_equal": true
+    },
+    {
+      "name": "CONTROL_PLAN.v2.md",
+      "bytes": 10731,
+      "sha256": "5f2a5307049100312a6ebe7bf6aa06f40e82e4f7ab1c4801912c8b9e9010e45d",
+      "git_blob": "9cd6cc46998e8b1d4e69a7f810f5b94292d7e7b3",
+      "readback_equal": true
+    }
+  ],
+  "source": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "parents": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "leaves": 15188
+  },
+  "actual_materialization": {
+    "result": {
+      "bytes": 69974,
+      "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+      "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb"
+    },
+    "terminal": {
+      "bytes": 913,
+      "sha256": "83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2",
+      "git_blob": "3e60d21bec849a19efb5d818b43152bfc72486fe"
+    },
+    "terminal_body": {
+      "bytes": 733,
+      "sha256": "3ae056ed635c9ad9ee95b9a5a94ffcc29c79d1d7ddb92051f3da18bf456f5018",
+      "git_blob": "ad0f0ca2b942f11d71ea113f2b452049719a8192"
+    },
+    "job_id": "1a1d0c6996e-2564-1bc8",
+    "actual_status": "MATERIALIZED_FOR_MAINTENANCE_ONLY",
+    "actual_exit_code": 0,
+    "actual_timed_out": false,
+    "actual_output_complete": true,
+    "actual_output_durable": true,
+    "actual_source_inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "tracked_entries": 15188
+    },
+    "actual_final_audits": "all five verified; exact original physical/.git and fixed lookup remained unchanged",
+    "not_a_maintenance_or_test_claim": true
+  },
+  "historical_environment": {
+    "bytes": 1154,
+    "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+    "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+    "recorded_key_count": 12,
+    "commands": [],
+    "CODEX_REPO_ROOT_recorded": false,
+    "PYTHONPATH_recorded": false
+  },
+  "original_entry_pins": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/format.py",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866"
+    }
+  ],
+  "scope_changes": [
+    "Separate immutable external controls and archived original source-entry bytes from the mutable source pathnames which original fix/fmt may legitimately change.",
+    "Load exact original execute_logged from its archived pinned bytes and check actual launch-entry files immediately before each original command.",
+    "Require actual complete runtime restoration RESULT, normal complete supervisor and the exact runtime-produced ENVIRONMENT_READY with all six original command terminals observed and successful.",
+    "Set the exact Root-authorized explicit 17-key environment only when the actual restoration record and configuration agree; observe CODEX_REPO_ROOT/PYTHONPATH without guessing.",
+    "Compare real tool/V8/venv files through an explicit five-field projection; record actual just version without adding an unsupported version requirement."
+  ],
+  "unchanged_control": {
+    "fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fix_seconds": 7200,
+    "fmt_seconds": 900,
+    "preflight_seconds": 600,
+    "record_seconds_total": 300,
+    "full_original_inventory": true,
+    "all_physical_postimages_including_untracked": true,
+    "original_command_raw_and_result": true,
+    "main_control_flow_exact_source_bytes_unchanged": true,
+    "original_execute_logged_call_ast_unchanged": true,
+    "source_git_metadata_immutable": true,
+    "no_clean_gate_run_wrapper": true,
+    "no_tests_dispatched": true,
+    "no_ref_updates": true
+  },
+  "runtime_success_proofs_in_this_package": null,
+  "runtime_scope": {
+    "depot": "/data/hepta-utility-36fa-runtime-materials-86dd-v1",
+    "cargo_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "actual_tool_pins_in_waiting": null,
+    "actual_inherited_source_environment_in_waiting": null,
+    "result_and_supervisor_and_environment_paths_configurable_only_in_separately_reviewed_approved_config": true,
+    "directory_recreation_by_maintenance": false,
+    "identity_projection": [
+      "path",
+      "resolved",
+      "bytes",
+      "sha256",
+      "mode"
+    ],
+    "preparation_driver_review": "7614e2f74521baad7780a8d4573af257caa7dd49",
+    "preparation_driver_v3_review": "4b949e980577a7aeafdc73ef2798080b4e8cbcd4",
+    "review_is_not_runtime_success": true
+  },
+  "postformat_handoff": {
+    "requires_actual_final_complete_inventory_and_exact_postimages": true,
+    "relevant_rust_paths": 46,
+    "extractor": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+    "does_not_execute_extractor": true,
+    "preformat_or_initial_bytes_are_not_formatted_pins": true,
+    "original_full_collector_not_changed_or_replaced": true,
+    "full_frozen_source_gates_remain_required": true
+  },
+  "static_check": {
+    "format": "hepta-maintenance-wrapper-static-review-v2",
+    "method": "AST parse and compile-to-code-object only; no driver module/import/main/function execution",
+    "old": {
+      "bytes": 46877,
+      "sha256": "618fb1ab12dafb6c11da0efed59c96b93f841b3db6d306781a5688cb9cd6e71c",
+      "git_blob": "842cb1dbc262d09412ab4f1759f05f1115c60d86"
+    },
+    "candidate": {
+      "bytes": 54853,
+      "sha256": "fd2a78d56bf43a20e0dd6f34f0ad474980c9273b2c7888ebaecd12412d32a1a8",
+      "git_blob": "f288d78be78a0f036a862253dfcafbc5d48e1f80"
+    },
+    "changed_existing_definitions": [
+      "environment_preflight",
+      "stage",
+      "initial_preflight",
+      "retain_terminal"
+    ],
+    "unchanged_original_definitions": [
+      "PreconditionError",
+      "IntegrityError",
+      "now",
+      "sha256",
+      "oid",
+      "check",
+      "nodup",
+      "parse",
+      "regular_read",
+      "jbytes",
+      "write",
+      "jwrite",
+      "gzrecord",
+      "event",
+      "pin_bytes",
+      "read_input",
+      "real_directory",
+      "external_directory",
+      "run_readonly",
+      "git",
+      "git_state",
+      "verify_original_inputs",
+      "load_module",
+      "parse_supervisor",
+      "validate_materialization",
+      "active_build_processes",
+      "installed_file_observation",
+      "metadata_inventory",
+      "actual_leaf_map",
+      "merkle",
+      "OriginalBlobReader",
+      "read_actual_leaf",
+      "archive_transition",
+      "capture_source",
+      "check_fmt_base",
+      "set_alarm",
+      "alarm_handler",
+      "bounded_record",
+      "validate_config",
+      "finalize_source",
+      "finalize_inputs",
+      "main"
+    ],
+    "unchanged_original_definition_source_bytes": true,
+    "new_definitions": [
+      "verify_stage_source_entries",
+      "project_runtime_file",
+      "validate_runtime_restoration"
+    ],
+    "removed_definitions": [],
+    "unchanged_constants": [
+      "FIX",
+      "FMT",
+      "FIX_SECONDS",
+      "FMT_SECONDS",
+      "MAXIMUM_LOG_BYTES",
+      "PREFLIGHT_SECONDS",
+      "RECORD_SECONDS",
+      "REPO",
+      "EVIDENCE",
+      "OUT",
+      "CONFIG",
+      "HEAD",
+      "TREE",
+      "C0F",
+      "C0F_TREE",
+      "A96",
+      "PARENTS",
+      "LEAVES",
+      "SOURCE_PINS",
+      "ORIGINAL_ENVIRONMENT",
+      "INVENTORY_PIN",
+      "HISTORICAL_ENV_PIN",
+      "TARGET"
+    ],
+    "original_execute_logged_call_ast_unchanged": true,
+    "main_control_flow_source_bytes_unchanged": true,
+    "fix_seconds": 7200,
+    "fmt_seconds": 900,
+    "actual_runtime_success_proofs_available": false,
+    "main_executions": 0,
+    "native_actions": 0,
+    "cargo_or_tests_run": false,
+    "scope": "Only explicit restored-runtime admission and immutable-control versus original-source-snapshot separation. Actual restoration proof values must be frozen after its observed successful terminal.",
+    "patch": {
+      "bytes": 19367,
+      "sha256": "af6339a08abeb46d3d9b3702482d06b9719f9cc7cb0f14f7f7b2a0b28f1785c2",
+      "git_blob": "d11187016c15853c3b1398b8ec8b2531cac2d242"
+    }
+  },
+  "formal_approved_config_created": false,
+  "native_execution_performed": false,
+  "driver_module_or_main_executed": false,
+  "qualification": false,
+  "source_or_refs_modified": false,
+  "all_artifact_blobs_full_text_readback_verified": true
+}

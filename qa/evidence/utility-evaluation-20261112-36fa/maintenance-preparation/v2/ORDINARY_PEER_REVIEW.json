@@ -1,0 +1,233 @@
+{
+  "schema": "hepta.utility.maintenance_v2.ordinary_path_peer_review.v1",
+  "status": "no_blocking_finding_in_assigned_static_scope",
+  "qualification": false,
+  "main_or_native_commands_executed": 0,
+  "source_or_refs_modified": false,
+  "inputs": {
+    "v1": {
+      "git_blob_sha": "842cb1dbc262d09412ab4f1759f05f1115c60d86",
+      "bytes": 46877,
+      "sha256": "618fb1ab12dafb6c11da0efed59c96b93f841b3db6d306781a5688cb9cd6e71c",
+      "full_github_readback_equal": true
+    },
+    "v2": {
+      "git_blob_sha": "f288d78be78a0f036a862253dfcafbc5d48e1f80",
+      "bytes": 54853,
+      "sha256": "fd2a78d56bf43a20e0dd6f34f0ad474980c9273b2c7888ebaecd12412d32a1a8",
+      "full_github_readback_equal": true
+    },
+    "patch": {
+      "git_blob_sha": "d11187016c15853c3b1398b8ec8b2531cac2d242",
+      "bytes": 19367,
+      "sha256": "af6339a08abeb46d3d9b3702482d06b9719f9cc7cb0f14f7f7b2a0b28f1785c2",
+      "full_github_readback_equal": true
+    },
+    "ast_report": {
+      "git_blob_sha": "80180c7a6415caaee197137f3429753e906d4080",
+      "bytes": 2827,
+      "sha256": "f9f7d8fcb3b350126fc9559291d0c1940387b38fa8bd5d2f37f96fdc4a94721c",
+      "full_github_readback_equal": true
+    }
+  },
+  "review_scope": [
+    "Original fix-then-fmt command order, argv and 7200/900-second budgets relative to the exact 842cb baseline.",
+    "Complete physical inventories, exact before/after bytes for source postimages, and stage/final retention.",
+    "Separation of mutable source entries from immutable archived control/helper bytes.",
+    "Actual runtime restoration proof and ENVIRONMENT_READY binding before maintenance.",
+    "Future f868 proposal extraction must use actual formatted physical bytes and preserve the original full collector contract."
+  ],
+  "independent_checks": {
+    "method": "Independent V8 exact unified-patch application and full critical-source-block comparisons. No Python driver execution/import/main/function or native action.",
+    "patch_hunks": 10,
+    "applied_postimage_equal": true,
+    "critical_original_definition_source_comparisons": [
+      {
+        "definition": "main",
+        "source_equal": true
+      },
+      {
+        "definition": "archive_transition",
+        "source_equal": true
+      },
+      {
+        "definition": "capture_source",
+        "source_equal": true
+      },
+      {
+        "definition": "actual_leaf_map",
+        "source_equal": true
+      },
+      {
+        "definition": "merkle",
+        "source_equal": true
+      },
+      {
+        "definition": "read_actual_leaf",
+        "source_equal": true
+      },
+      {
+        "definition": "finalize_source",
+        "source_equal": true
+      },
+      {
+        "definition": "verify_original_inputs",
+        "source_equal": true
+      },
+      {
+        "definition": "check_fmt_base",
+        "source_equal": true
+      }
+    ],
+    "original_constants": [
+      {
+        "name": "FIX",
+        "before": "FIX=[\"just\",\"fix\",\"-p\",\"codex-hepta-intelligence-eval\",\"-p\",\"codex-hepta-agentd\"]",
+        "after": "FIX=[\"just\",\"fix\",\"-p\",\"codex-hepta-intelligence-eval\",\"-p\",\"codex-hepta-agentd\"]",
+        "source_equal": true
+      },
+      {
+        "name": "FMT",
+        "before": "FMT=[\"just\",\"fmt\",\"--base\",C0F]",
+        "after": "FMT=[\"just\",\"fmt\",\"--base\",C0F]",
+        "source_equal": true
+      },
+      {
+        "name": "FIX_SECONDS",
+        "before": "FIX_SECONDS=7200",
+        "after": "FIX_SECONDS=7200",
+        "source_equal": true
+      },
+      {
+        "name": "FMT_SECONDS",
+        "before": "FMT_SECONDS=900",
+        "after": "FMT_SECONDS=900",
+        "source_equal": true
+      },
+      {
+        "name": "MAXIMUM_LOG_BYTES",
+        "before": "MAXIMUM_LOG_BYTES=64*1024*1024",
+        "after": "MAXIMUM_LOG_BYTES=64*1024*1024",
+        "source_equal": true
+      },
+      {
+        "name": "PREFLIGHT_SECONDS",
+        "before": "PREFLIGHT_SECONDS=600",
+        "after": "PREFLIGHT_SECONDS=600",
+        "source_equal": true
+      },
+      {
+        "name": "RECORD_SECONDS",
+        "before": "RECORD_SECONDS=300",
+        "after": "RECORD_SECONDS=300",
+        "source_equal": true
+      },
+      {
+        "name": "HEAD",
+        "before": "HEAD=\"86dd56a930277e0d1aef3e475e35c2b5d60b43b7\"",
+        "after": "HEAD=\"86dd56a930277e0d1aef3e475e35c2b5d60b43b7\"",
+        "source_equal": true
+      },
+      {
+        "name": "TREE",
+        "before": "TREE=\"383ab85c39ef9d848252ef5c25922d13d9fae6c6\"",
+        "after": "TREE=\"383ab85c39ef9d848252ef5c25922d13d9fae6c6\"",
+        "source_equal": true
+      },
+      {
+        "name": "LEAVES",
+        "before": "LEAVES=15188",
+        "after": "LEAVES=15188",
+        "source_equal": true
+      }
+    ],
+    "original_execute_logged_call_source_equal": true,
+    "source_or_control_modified": false,
+    "qualification": false
+  },
+  "findings": [],
+  "conclusions": [
+    {
+      "area": "Original entrypoints and failure sequencing",
+      "v2_lines": [
+        26,
+        32,
+        752,
+        807,
+        912,
+        972
+      ],
+      "observation": "FIX is exactly just fix -p codex-hepta-intelligence-eval -p codex-hepta-agentd with 7200 seconds. FMT is exactly just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f with 900 seconds, identical to the reviewed 842cb baseline. Main executes fmt only after fix completed normally and its complete source retention succeeded. The original execute_logged call is unchanged and alone owns each command deadline.",
+      "qualification_limit": "Earlier c0f qualification used e8 as its formatting comparison base; that historical command is not mislabeled as this candidate's c0f-base maintenance command. No command has executed in this review."
+    },
+    {
+      "area": "Complete postimages",
+      "v2_lines": [
+        575,
+        714,
+        875,
+        887
+      ],
+      "observation": "The unchanged archive_transition consumes the union of complete before/after inventory entries, including untracked or ignored physical files. Exact previous bytes come from retained prior postimages or an original Git blob whose identity is checked. Actual after bytes are checked against inventory length/SHA256/Git blob. Every change includes raw before/after base64, and both the complete inventory and all-physical-leaf Merkle are retained. A second complete inventory must equal the first after retention. Final retention compares the actual final source against the complete initial inventory.",
+      "qualification_limit": "Deletion is represented by the complete inventory and null raw after bytes. Git HEAD/index/config/refs and complete Git metadata remain separately checked; a formatter may legitimately change working source bytes. Retention failures stay Unknown and cannot produce completed-review-required status."
+    },
+    {
+      "area": "Source versus control identity",
+      "v2_lines": [
+        346,
+        357,
+        758,
+        766,
+        840,
+        854,
+        899,
+        901
+      ],
+      "observation": "All six original source entries are initially byte/SHA256/Git pinned and archived. Immutable input_pins now reference the archived snapshots, not the mutable repo path. The original execute helper is loaded from the archived original bytes. Immediately before each phase, only the actual required launch entry files are rechecked against their original pins. Subsequent formatter changes belong to complete postimages.",
+      "original_helper": {
+        "git_blob_sha": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "bytes": 12863,
+        "reviewed_relative_load_hazards": "The actual helper source contains no __file__, importlib, relative-import or sys.path reference that would make loading its original bytes from the external snapshot change its location-dependent behavior."
+      }
+    },
+    {
+      "area": "Actual restored runtime",
+      "v2_lines": [
+        400,
+        541
+      ],
+      "observation": "Runtime RESULT, complete successful supervisor terminal, and ENVIRONMENT_READY are separate exact bytes/SHA256/Git inputs. RESULT must identify the actual successful source/depot/target preparation, source unchanged, no maintenance/tests/qualification, all three final audits verified and all six original runtime commands normally terminal. ENVIRONMENT_READY is additionally matched to the actual producer RESULT record. The driver derives and checks the complete explicit restored environment, current tool and V8 bytes/path/mode identities, current external formatter environment and approved inherited source environment.",
+      "qualification_limit": "The draft does not contain actual restoration pins. It remains HOLD until those real records are available and Root admits an exact execution config. Current static review is not a substitute for that runtime result."
+    }
+  ],
+  "future_postformat_handoff": {
+    "extractor_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+    "matrix_blob": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+    "wait_template_blob": "432b443aacc5ab56cb248e1bc3c01d6d39e58748",
+    "requirements": [
+      "Use only actual successful fix and fmt original execution JSON: integer exit 0, timed_out false, and all required exact JSON values. HOLD drafts, materialization success and runtime readiness do not establish formatted-source readiness.",
+      "Root must first inspect the complete real final inventory and postimages. The initial preparation HEAD/tree 86dd/383 remains a baseline identity, not an assertion that final working bytes are unchanged.",
+      "Freeze the complete actual final physical inventory bytes/SHA256/Git, its actual source/status identity and all 46 formatted path pins. Read the actual final bytes for every selector; do not copy initial 86dd snapshot hashes into formatted_source_pins.",
+      "Create the reviewed actual-formatted-source contract and source-lock handoff separately. The maintenance draft itself neither authorizes extractor execution nor generates final markers.",
+      "The f868 extractor requires a non-WAITING Root-reviewed actual-formatted-source contract, an existing externally located source lock and complete before/after inventory equality.",
+      "Preserve original verifier/helper identities and exact structural CALLERS 569 boundaries/412 existing protected rows. Extraction remains 39 existing plus 10 new protection proposals for 46 paths, 17 literal constraints and 10 module mounts; it does not apply them or claim a gate.",
+      "Preserve source_roots exactly ('codex-rs',) and ignored_path_fragments exactly ('/tests/','/examples/','_tests.rs'). The 46-path scoped marker extraction does not replace the original complete Rust collector used for qualification and adversarial QA.",
+      "Final non-Rust migration must explicitly preserve each original attack/assertion and retain the approved full-collector QA migration. Only actual formatted preimages may drive exact marker/literal/allowlist updates."
+    ],
+    "identity_field_note": "The maintenance artifacts use the key git_blob; the f868 identities use git_blob_sha. Any later contract adapter must preserve the same exact Git identity while mapping this field name explicitly.",
+    "not_run": [
+      "maintenance",
+      "extractor_main",
+      "original_collector",
+      "source_closure",
+      "fullcaller",
+      "Rust_tests"
+    ]
+  },
+  "remaining_limits": [
+    "Review method was fixed-source reading plus exact in-memory patch application and critical full-source-block comparison. The independent reviewer did not execute or import either maintenance driver.",
+    "The producer's AST/compile-only report is retained as a supplied exact artifact; it is not mislabeled as independently executed by this reviewer.",
+    "Actual formatted postimages, complete final inventories and command terminals do not yet exist in this review. Final protections/QA/allowlist remain the designated sole writer's pending postformat work.",
+    "All prior c0f failures and preparation-only statuses remain unchanged."
+  ]
+}

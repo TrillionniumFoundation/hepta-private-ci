@@ -1,0 +1,23 @@
+{
+  "actual_fixed_input_writes_reported_verified_by_native_executor": true,
+  "decision": "APPROVED_SINGLE_EXACT_REQUEST",
+  "format": "hepta-original-maintenance-exact-launch-root-review",
+  "independent_exact_transform_from_prior_reviewed_launcher": true,
+  "launcher": {
+    "bytes": 2783,
+    "git_blob": "9891f75eda9ace90e45f293ebff2799f9ba0b037",
+    "sha256": "76a8e173afbc856812bd6f0b5512b3f96f3479b19584f4ebb91ab78aa2bb81e4"
+  },
+  "launcher_rechecks_all_driver_and_config_bytes_before_main": true,
+  "main_executed_by_root": false,
+  "native_action": "Dispatch this exact request once after the verified create-only input writes; reconcile any Unknown under this same key, never use a new key to replay.",
+  "no_env_override": true,
+  "original_commands_and_budgets_unchanged": true,
+  "outer_seconds": 9300,
+  "typed_input": {
+    "bytes": 3158,
+    "git_blob": "e149574c2fbea2543575502767fa14a5c4da33bb",
+    "sha256": "d9c6d604b3ee20e402d8044e7438a68d0e1a9145d2925393915a50e817ed1080"
+  },
+  "unique_key": "hepta-utility-36fa-fresh-maintenance-86dd-v1"
+}

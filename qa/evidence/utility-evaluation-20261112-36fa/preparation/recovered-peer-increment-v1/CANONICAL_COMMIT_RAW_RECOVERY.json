@@ -1,0 +1,9 @@
+[
+  {
+    "author_offset": "-0500",
+    "committer_offset": "-0500",
+    "suffix": "'\\n'",
+    "len": 745,
+    "raw": "tree ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7\nparent 86dd56a930277e0d1aef3e475e35c2b5d60b43b7\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794510474 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794510474 -0500\n\ntest(hepta): export recovered peer through original test ports\n\nExpose the existing cfg(test) recovered_peer helper through the original training ports used by evaluated-version recovery tests. Keep the existing connection, original owner binding, recovered origin and assertions unchanged.\n\nPreparation only. The prior fix compiler failure and separate final Git-state Unknown remain retained. No formatting, compilation, qualification or source-branch update is claimed for this commit.\n"
+  }
+]

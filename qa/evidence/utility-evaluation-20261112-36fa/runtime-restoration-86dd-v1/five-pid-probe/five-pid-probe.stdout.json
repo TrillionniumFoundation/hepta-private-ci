@@ -1,0 +1,64 @@
+{
+  "cargo_or_tests_started": false,
+  "clock_ticks_per_second": 100,
+  "finished_at": "2026-11-12T17:59:36.513197+00:00",
+  "format": "hepta-runtime-blocking-five-pids-readonly-probe-v1",
+  "main_restoration_retried": false,
+  "operator_uid": 1000,
+  "processes": [
+    {
+      "after": {
+        "ppid": 1856488,
+        "startticks": 158377933,
+        "state": "S"
+      },
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n",
+      "comm": "cargo",
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+      "exe": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "observation": "current_pid_metadata_only",
+      "observed_at": "2026-11-12T17:59:36.512502+00:00",
+      "original_comm": "cargo",
+      "pid_reference": 1856522,
+      "ppid": 1856488,
+      "startticks": 158377933,
+      "startticks_stable_during_probe": true,
+      "state": "S",
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ]
+    },
+    {
+      "observation": "pid_disappeared_during_or_before_probe",
+      "observed_at": "2026-11-12T17:59:36.513009+00:00",
+      "original_comm": "rustc",
+      "pid_reference": 1858250
+    },
+    {
+      "observation": "pid_disappeared_during_or_before_probe",
+      "observed_at": "2026-11-12T17:59:36.513072+00:00",
+      "original_comm": "rustc",
+      "pid_reference": 1858427
+    },
+    {
+      "observation": "pid_disappeared_during_or_before_probe",
+      "observed_at": "2026-11-12T17:59:36.513122+00:00",
+      "original_comm": "rustc",
+      "pid_reference": 1858461
+    },
+    {
+      "observation": "pid_disappeared_during_or_before_probe",
+      "observed_at": "2026-11-12T17:59:36.513163+00:00",
+      "original_comm": "rustc",
+      "pid_reference": 1858469
+    }
+  ],
+  "qualification": false,
+  "scope": "Only five previously observed PID references; no args/env, signals, external-task waits, source/material/cache reads or writes; earlier PID startticks were not captured, so identity continuity since the original preflight is not asserted.",
+  "source_failure_result_blob": "88be32de12e28d39b685a7812bff9e217d4a192a",
+  "source_process_preflight_blob": "f93f03b5b195ba56c196242b4cfc1f9d5b882215",
+  "started_at": "2026-11-12T17:59:36.512456+00:00"
+}

@@ -1,0 +1,112 @@
+{
+  "actual_source_environment_observed": {
+    "CODEX_REPO_ROOT": null,
+    "PYTHONPATH": null
+  },
+  "actual_waiting": {
+    "bytes": 8316,
+    "git_blob": "cfd22a7deb883fb8674d8e221e23e07bf6ea8a2e",
+    "sha256": "4b49929ceac547df0999bd879987e0596fbf0f9a2de46199fde50118c65b5ebb"
+  },
+  "aggregate_record_seconds": 300,
+  "all_tool_projections_match_actual_environment": true,
+  "approval_only_changed_fields": [
+    "status",
+    "root_execution_approved",
+    "formal_approved_config_created"
+  ],
+  "approved_config": {
+    "bytes": 8286,
+    "git_blob": "88e0e1c333b6f6f3e792977d9b8033128f3767ff",
+    "sha256": "82c5da47d2f051b7d5c32a1b64a58aa060265e6e027a5a39897a4972c1daf98b"
+  },
+  "authorization": "The user authorized completing this work, including necessary reversible preparation, scoped fix/fmt and exact-source validation. No new user permission is requested for this already-authorized maintenance.",
+  "decision": "APPROVED_SINGLE_ORIGINAL_SCOPED_MAINTENANCE_OPERATION",
+  "driver": {
+    "bytes": 54853,
+    "git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+    "sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce"
+  },
+  "explicit_environment_matches_actual_environment": true,
+  "foreign_material_only_exception_not_transferred": true,
+  "format": "hepta-maintenance-v3-root-final-review",
+  "live_preflight_required": [
+    "original global same-user build/formatter concurrency guard",
+    "actual whole source and Git state",
+    "actual fixed immutable inputs and runtime proofs",
+    "actual current tool file identities and versions",
+    "actual target ownership and available disk",
+    "actual inherited source environment"
+  ],
+  "minimum_target_free_bytes": 34359738368,
+  "next_native_requirements": [
+    "Create-only write exact approved configuration and verify its actual file identity.",
+    "Freeze exact launcher and typed request with this config/driver, original source path, unique key and outer envelope.",
+    "Root reviews exact launch request before the single launch; a transport Unknown is reconciled under the same key, never reexecuted with a new key."
+  ],
+  "original_commands": [
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "seconds": 7200
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "c0f78493f815780f68b9bf5e390a21314d79311f"
+      ],
+      "requires": "fix complete exit zero",
+      "seconds": 900
+    }
+  ],
+  "outer_scope": "9000 seconds of unchanged command/preflight/record budgets plus 300 seconds for launch/supervisor cleanup; no inner gate or command budget is extended.",
+  "outer_supervisor_seconds": 9300,
+  "preflight_seconds": 600,
+  "preserved_failures_and_unknowns": true,
+  "qualification": false,
+  "real_authorized_task_chain_qualified_outcomes": 0,
+  "remote_ref_updates_authorized": false,
+  "runtime_restoration": {
+    "environment": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "environment_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+    "job_id": "1a1d0fcb212-2564-1bf4",
+    "result": {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+    "supervisor": {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json"
+  },
+  "source_branch_head_remains": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_inventory": {
+    "bytes": 5611182,
+    "filesystem_entries": 15188,
+    "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "tracked_entries": 15188
+  },
+  "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "space_scope": "Root-selected 32 GiB preflight threshold for this fresh target, not a historical frozen contract or a current free-space observation. Original preflight must actually verify sufficient free bytes.",
+  "stage_behavior": "Original execute_logged implementation and cleanup remain unchanged; complete changed source postimages are retained; failure/Unknown fix prevents fmt.",
+  "tests_dispatched_by_this_approval": false,
+  "unique_key": "hepta-utility-36fa-fresh-maintenance-86dd-v1"
+}

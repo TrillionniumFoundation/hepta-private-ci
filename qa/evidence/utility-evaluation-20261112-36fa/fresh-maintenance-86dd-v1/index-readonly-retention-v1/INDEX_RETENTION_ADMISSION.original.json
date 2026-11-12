@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "import sys; source=sys.stdin.buffer.read(); exec(compile(source,'<hepta-index-readonly-retention-v1>','exec'),{'__name__':'__main__','_source':source})"
+    ],
+    "created_unix_ms": 1794510167691,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1d1241e8b-2564-1c0b",
+    "idempotency_key": "hepta-utility-36fa-maint86dd-current-index-retention-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1d1241e8b-2564-1c0b",
+    "request_digest": "738564daddead0d0ba98e120c2ee4d2e6ec78cf26cea2dec43af6db26c786091",
+    "request_fingerprint": 8324170377453031632,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1d1241e8b-2564-1c0b"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1d1241e8b-2564-1c0b"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

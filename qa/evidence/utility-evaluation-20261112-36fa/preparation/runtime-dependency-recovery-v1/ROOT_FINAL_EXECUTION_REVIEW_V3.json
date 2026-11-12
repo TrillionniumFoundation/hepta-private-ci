@@ -1,0 +1,72 @@
+{
+  "format": "hepta-runtime-restoration-root-final-execution-review-v3",
+  "reviewed_at": "2026-11-12 17:51:53 UTC",
+  "decision": "APPROVED_NECESSARY_REVERSIBLE_PREPARATION_ONLY",
+  "user_scope": "Existing 全量冲 instruction and ongoing exact-source work authorize dependency preparation; no new user permission is needed.",
+  "original_driver": "30e5471e271fd70cdd0e0a85155992b5d7584aee",
+  "v2_driver": "fcf4acc9b6f37e2cfc70998bf5c23b3a70d6bae4",
+  "final_driver": {
+    "git_blob": "a584e49abfa57f55fda820e8d2296d9909838387",
+    "bytes": 44790,
+    "sha256": "289f3612e90b21ac3c7be70c8715178966a94f609c2275bbca7ffb036cd8da02"
+  },
+  "final_waiting": "90ecd04ea79b3329ec1b30b7e0a22d2e19097bdd",
+  "final_plan": "06a828efe48623d94d488a6557af1d87a273ac66",
+  "root_reviews": [
+    "13b524dca8dfce0f4e14f6e4e4eea87b6a9ea7f7",
+    "bf3bcc5b1a3e20aee5947eec8b3f9fe5243ddd71"
+  ],
+  "asset_and_uv_provenance_peer": "d6ebc4aa8f0bb5d39276c8fdc3695f40706a2812",
+  "evaluation_peer": "Full v2 reviewed by evaluation_audit; no remaining blocker after explicit unknown original-command terminal metadata. Its immutable report is pending and is not assigned an invented identity.",
+  "final_delta": {
+    "v2_to_v3_exact_string_equality_after_only_two_field_insertions": true,
+    "default_original_command_terminal": "unknown_not_observed",
+    "after_original_execute_logged_returns": "observed",
+    "unknown_has_no_fabricated_returncode": true,
+    "control_flow_or_deadline_changed": false
+  },
+  "approved_config": {
+    "git_blob": "e552c6b55bc0208d4b0f4577f3df3d763cda32d2",
+    "bytes": 2477,
+    "sha256": "5786a2439b1e0eb96468b5d414fda8fcf6a657bd3e17a5a6379a403e6fe552e6",
+    "only_waiting_changes": [
+      "status",
+      "root_execution_approved"
+    ]
+  },
+  "exact_idempotency_key": "hepta-utility-36fa-runtime-materials-restore-86dd-v1",
+  "source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "path": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "complete_inventory": {
+      "bytes": 5611182,
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c"
+    }
+  },
+  "operation_scope": {
+    "depot": "/data/hepta-utility-36fa-runtime-materials-86dd-v1",
+    "cargo_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "operation_seconds": 600,
+    "final_seconds": 180,
+    "outer_seconds": 900,
+    "downloads": 6,
+    "normal_named_requirement": "ruff==0.15.13",
+    "original_frozen_offline_check_required": true,
+    "original_uv_run_version_required": true,
+    "source_before_after_equal_required": true,
+    "source_refs_changed": false,
+    "maintenance": false,
+    "cargo_build": false,
+    "tests": false,
+    "qualification": false
+  },
+  "launch_conditions": [
+    "Create-only stage exact driver/inputs/config and verify their byte identities; preserve any earlier staged version.",
+    "Use the single exact typed launch/key and reconcile that identity on Unknown admission; no automatic second execution.",
+    "Preserve original complete process terminal, results, all preparation command logs and actual environment-ready identities.",
+    "Fail closed if any asset, byte count, hash, original check, source/input equality or normal complete terminal is absent.",
+    "Do not alter inherited proxy/CA/TLS/access controls or use an alternate network path to bypass an explicit denial."
+  ]
+}

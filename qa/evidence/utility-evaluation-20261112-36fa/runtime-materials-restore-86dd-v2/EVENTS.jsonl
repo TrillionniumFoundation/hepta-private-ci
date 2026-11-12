@@ -1,0 +1,15 @@
+{"at":"2026-11-12T18:19:46.221876+00:00","event":"runtime_restoration_preconditions_started"}
+{"at":"2026-11-12T18:19:56.667732+00:00","cargo_target_created":true,"depot":"/data/hepta-utility-36fa-runtime-materials-86dd-v1","event":"restoration_preflight_complete","physical_files":15188,"source_commit":"86dd56a930277e0d1aef3e475e35c2b5d60b43b7"}
+{"at":"2026-11-12T18:19:56.673582+00:00","bytes":101,"event":"pinned_download_started","role":"uv-archive-checksum-text"}
+{"at":"2026-11-12T18:19:59.351976+00:00","bytes":23914165,"event":"pinned_download_started","role":"uv-executable-archive"}
+{"at":"2026-11-12T18:20:05.564619+00:00","bytes":11434486,"event":"pinned_download_started","role":"ruff-locked-wheel"}
+{"at":"2026-11-12T18:20:09.438879+00:00","bytes":262,"event":"pinned_download_started","role":"v8-pair-checksum-text"}
+{"at":"2026-11-12T18:20:12.141456+00:00","bytes":29366352,"event":"pinned_download_started","role":"v8-sandbox-archive"}
+{"at":"2026-11-12T18:20:18.593878+00:00","bytes":39884,"event":"pinned_download_started","role":"v8-sandbox-bindings"}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","--version"],"at":"2026-11-12T18:20:22.776341+00:00","event":"preparation_command_started","name":"uv-version","timeout_seconds":30.0}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","venv","--python","/usr/bin/python3","/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment"],"at":"2026-11-12T18:20:23.052807+00:00","event":"preparation_command_started","name":"uv-external-venv","timeout_seconds":120.0}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","pip","install","--offline","--no-index","--find-links","/data/hepta-utility-36fa-runtime-materials-86dd-v1/wheelhouse","--python","/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/python","ruff==0.15.13"],"at":"2026-11-12T18:20:23.216430+00:00","event":"preparation_command_started","name":"uv-locked-ruff-install","timeout_seconds":120.0}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","sync","--frozen","--project","scripts","--offline","--check"],"at":"2026-11-12T18:20:23.461588+00:00","event":"preparation_command_started","name":"uv-frozen-offline-check","timeout_seconds":120.0}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","run","--frozen","--project","scripts","ruff","--version"],"at":"2026-11-12T18:20:23.545191+00:00","event":"preparation_command_started","name":"original-uv-run-ruff-version","timeout_seconds":120.0}
+{"argv":["/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv","sync","--frozen","--project","scripts","--offline","--check"],"at":"2026-11-12T18:20:23.572274+00:00","event":"preparation_command_started","name":"uv-frozen-offline-final-check","timeout_seconds":120.0}
+{"at":"2026-11-12T18:20:30.092092+00:00","event":"runtime_restoration_terminal","out":"/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2","qualification":false,"source_unchanged":true,"status":"MATERIALS_READY_FOR_MAINTENANCE_REVIEW"}

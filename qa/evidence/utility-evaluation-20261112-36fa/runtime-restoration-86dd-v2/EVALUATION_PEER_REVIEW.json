@@ -1,0 +1,162 @@
+{
+  "format": "hepta-runtime-restoration-v4-isolation-peer-review-v1",
+  "status": "STATIC_PEER_REVIEW_CLEARED_FOR_ROOT_REVIEWED_PREPARATION",
+  "reviewed_driver": {
+    "bytes": 49448,
+    "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e",
+    "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56"
+  },
+  "exact_diff": {
+    "bytes": 12049,
+    "sha256": "811095feeb1c4e80f9fe451f8021cf302c1765df37e9d76aeaab69b6333d3201",
+    "git_blob": "f6a94e6a08330b7a3172162ae5667617a6c58327"
+  },
+  "diff_verification": {
+    "format": "hepta-runtime-restoration-v4-exact-peer-diff-v1",
+    "before": {
+      "bytes": 44790,
+      "sha256": "289f3612e90b21ac3c7be70c8715178966a94f609c2275bbca7ffb036cd8da02",
+      "git_blob": "a584e49abfa57f55fda820e8d2296d9909838387"
+    },
+    "after": {
+      "bytes": 49448,
+      "sha256": "1d2448596a1226c59724d5666f90f074e5fd39fac548ff62ba94efb6b5d6344e",
+      "git_blob": "b1d214e4fe3c036884f5c0bf99e1dc9d618a5d56"
+    },
+    "patch": {
+      "bytes": 12049,
+      "sha256": "811095feeb1c4e80f9fe451f8021cf302c1765df37e9d76aeaab69b6333d3201",
+      "git_blob": "f6a94e6a08330b7a3172162ae5667617a6c58327"
+    },
+    "exact_unified_hunks_applied": 10,
+    "whole_after_equal": true,
+    "top_level_definitions": 39,
+    "changed_existing_definitions": [
+      "active_processes",
+      "preflight"
+    ],
+    "added_definitions": [],
+    "removed_definitions": [],
+    "other_definition_text_identical": true,
+    "execution": false,
+    "source_or_ref_mutations": false
+  },
+  "reviewed_waiting_config": "9aa289393a1a86e0d72620a75b4e0ee245a4e819",
+  "reviewed_plan": "82ee60425d55653c86cd0bbf1708e09ee9106b7c",
+  "prior_complete_peer_review": "7614e2f74521baad7780a8d4573af257caa7dd49",
+  "prior_terminal_annotation_review": "4b949e980577a7aeafdc73ef2798080b4e8cbcd4",
+  "actual_inputs": {
+    "original_failure": {
+      "bytes": 2535,
+      "sha256": "5f4b9d675b35872e9ad49fd14ab54e49cc5694ba4678f568caecd108525b8415",
+      "git_blob": "88be32de12e28d39b685a7812bff9e217d4a192a"
+    },
+    "original_process_preflight": {
+      "bytes": 359,
+      "sha256": "8970768f195a15df006d1e0544f3dbf679abad8f26197f7387af70feb4824db7",
+      "git_blob": "f93f03b5b195ba56c196242b4cfc1f9d5b882215"
+    },
+    "five_pid_probe": {
+      "bytes": 2363,
+      "sha256": "297fd73553e50c6bb3e01c49fba1f26d7a36b09a1978b3c98dfb486f8d205d05",
+      "git_blob": "1920bec71be7ce926a7ed85e864a914e1f4ab0ea"
+    }
+  },
+  "observed_facts": {
+    "original_result_status": "FAILED_PREPARATION",
+    "original_error": "active/unknown same-user build or formatter; no concurrent preparation",
+    "original_result_source_unchanged": true,
+    "original_result_verified_input_count": 23,
+    "original_result_commands": [],
+    "original_result_downloads": [],
+    "original_result_depot_created": false,
+    "probe_current_cargo": {
+      "pid": 1856522,
+      "state": "S",
+      "startticks": 158377933,
+      "stable_during_this_probe": true,
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+      "exe": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n"
+    },
+    "four_rustc_pid_references_no_longer_observable": [
+      1858250,
+      1858427,
+      1858461,
+      1858469
+    ],
+    "does_not_establish_foreign_task_completed": true,
+    "continuity_from_original_preflight_not_asserted": "The earlier preflight did not record startticks. The later probe establishes stability only within its own two observations."
+  },
+  "source_review": {
+    "scope": "Only the Root-specified exact foreign build may coexist with dependency-material preparation. This review does not authorize concurrent maintenance or tests.",
+    "actual_classifier": "active_processes",
+    "fixed_foreign_uid": 1000,
+    "fixed_foreign_job": "1a1d0e549d0-2564-1bdc",
+    "exact_full_cgroup_string": true,
+    "exact_executable_by_comm": {
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustc": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+    },
+    "exact_cwd_root_and_descendants": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs",
+    "own_source_depot_target_cwd_explicitly_excluded": true,
+    "stable_fields": [
+      "comm",
+      "startticks",
+      "uids",
+      "cwd",
+      "exe",
+      "cgroup"
+    ],
+    "state_and_ppid_are_recorded_not_identity_predicates": true,
+    "uid_four_values_all_match_fixed_operator": true,
+    "no_unbounded_outside_cwd_allowance": true,
+    "no_permanent_pid_whitelist": "Current processes must satisfy the fixed job/UID/exe/cwd/cgroup policy and two stable snapshots. No identity continuity is inferred merely from an old PID reference.",
+    "unknown_handling": "Once a matching process name has been identified, any missing/incomplete metadata (including FileNotFoundError), malformed observation or changed identity is Unknown and blocks preparation. A process entry disappearing before any matching name was identified retains the original scan's skip behavior.",
+    "other_same_user_named_processes_block": true,
+    "other_user_observations_outside_original_current_uid_scope": true,
+    "no_args_or_environment_read": true,
+    "no_signals_or_foreign_task_waits": true,
+    "directories": "Both the depot and dedicated target must be absent before the first mkdir. Each mkdir is create-only; a race fails without replacement. New owned directories remain required.",
+    "original_source_before_after_and_final_audits_unchanged": true,
+    "six_fixed_dependency_inputs_unchanged": true,
+    "original_download_extraction_and_bootstrap_functions_text_unchanged": true,
+    "original_run_command_and_cleanup_text_unchanged": true,
+    "original_operation_seconds": 600,
+    "original_final_seconds": 180,
+    "outer_seconds": 900,
+    "no_cargo_or_maintenance_or_test_scope_added": true,
+    "v1_failure_preserved": true,
+    "output_directory": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2",
+    "config_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/APPROVED_CONFIG_V2.json",
+    "required_unique_key": "hepta-utility-36fa-runtime-materials-restore-86dd-v2"
+  },
+  "documentation_correction": {
+    "field": "PLAN.staging_rule",
+    "stale_name": "APPROVED_CONFIG.json",
+    "actual_required_create_only_name": "APPROVED_CONFIG_V2.json",
+    "actual_driver_and_plan_config_path_correct": true,
+    "resolution": "Root's final launcher must use the explicit V2 path. The original approved configuration and failed run remain untouched. This is a documentation clarification, not an additional driver edit."
+  },
+  "maintenance_compatibility": {
+    "existing_driver": "f288d78be78a0f036a862253dfcafbc5d48e1f80",
+    "required_followup": "Only the exact restoration RESULT format v1 -> v2 parser string must be synchronized. Keep actual complete success/terminal/tool proofs mandatory and the original global maintenance concurrency gate unchanged.",
+    "no_runtime_success_inherited_from_prior_failure": true
+  },
+  "limitations": {
+    "main_executed_by_this_reviewer": false,
+    "native_operations_performed": false,
+    "runtime_preparation_success_claimed": false,
+    "foreign_task_success_claimed": false,
+    "observation_is_not_continuous_process_monitoring": true,
+    "qualification": false,
+    "source_or_ref_updates": false
+  },
+  "conclusion": "No blocking issue found within the explicitly authorized material-preparation isolation change. Actual fresh source equality, process observations, directories, downloads, original offline checks and normal complete terminal still have to be observed in the one separately Root-approved native execution."
+}

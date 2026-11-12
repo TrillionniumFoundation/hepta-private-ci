@@ -1,0 +1,369 @@
+{
+  "schema": "hepta.utility.maintenance-dependency-recovery-plan.v1",
+  "status": "reviewable preparation only; no H command/download/install/Cargo/test launched by ordinary_path",
+  "source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "state": "PREPARATION/HOLD; actual fmt not yet admitted",
+    "pins": [
+      {
+        "path": "justfile",
+        "git_blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "path": "scripts/just-shell.py",
+        "git_blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "path": "scripts/format.py",
+        "git_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "bytes": 16599,
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "scripts/pyproject.toml",
+        "git_blob_sha": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+        "bytes": 177,
+        "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+      },
+      {
+        "path": "scripts/uv.lock",
+        "git_blob_sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+        "bytes": 6220,
+        "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "git_blob_sha": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      {
+        "path": "codex-rs/Cargo.toml",
+        "git_blob_sha": "fcd9d64bd64f5b8f8276ac72cd0a070b97deaeaa",
+        "bytes": 23385,
+        "sha256": "acc1d51df0364172c38a14421c03cbf4fee90bf9a251173b29c7098ea0a09678"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "git_blob_sha": "917d2492264a35bc9c0feaef41878d8825870866",
+        "bytes": 78,
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "git_blob_sha": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "bytes": 28133,
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      {
+        "path": ".github/workflows/repo-checks.yml",
+        "git_blob_sha": "3ff0f275c075617a49d5b257d318b74b100dad39",
+        "bytes": 4345,
+        "sha256": "9f06a9eb55ebaef65ec88893d3c341d151a28193002bca9f358437c93f7f311a"
+      },
+      {
+        "path": "scripts/hepta_ci_v8.py",
+        "git_blob_sha": "088b737c0cca7386161e06b254c794bf972380ad",
+        "bytes": 3153,
+        "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+      },
+      {
+        "path": "scripts/codex_package/v8.py",
+        "git_blob_sha": "e8788ec0f308038542807ec6adf014c157d65187",
+        "bytes": 6624,
+        "sha256": "8007703ea89e620342940d33f32a14dd593278e820f37433a42f783b2bd99d4e"
+      },
+      {
+        "path": "scripts/codex_package/targets.py",
+        "git_blob_sha": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985",
+        "bytes": 4738,
+        "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+      },
+      {
+        "path": "third_party/v8/README.md",
+        "git_blob_sha": "a22dbb98ca0a08e58089c70b5c6bc3ee9b1dfd01",
+        "bytes": 11082,
+        "sha256": "2fe61f1d177dff6771ded026494b3e98db8e4c2ab2ea102442fa63bdd4e28657"
+      },
+      {
+        "path": "third_party/v8/rusty_v8_150_4_0.sha256",
+        "git_blob_sha": "628ae7a9ac94eee0e0dd66c927964a0ad06544d7",
+        "bytes": 227,
+        "sha256": "4d9885b59f209e063c755acc917529bd23ec87c949f7fe205b2b56e73f649552"
+      }
+    ]
+  },
+  "current_observation": {
+    "runtime_blob": "33f5f7e4f7c40b2363924f866667ae4456e891bb",
+    "at": "2026-11-12T17:21:40.860458+00:00",
+    "metadata_only": true,
+    "current_target_path": "/data/hepta-utility-36fa-final-native-target-v1",
+    "current_target_present": false,
+    "historical_v8_archive_path_present": false,
+    "historical_binding_stat_bytes": 39884,
+    "historical_binding_current_content_hash": "Unknown; only stat observed",
+    "uv_and_ruff_resolution": "None on historical-seed PATH and current operator PATH only",
+    "safe_environment": {
+      "RUFF_CACHE_DIR": null,
+      "UV_CACHE_DIR": null,
+      "UV_OFFLINE": null,
+      "UV_PROJECT_ENVIRONMENT": null
+    },
+    "full_machine_tool_or_cache_scan": false,
+    "cargo_home_present": true,
+    "rustup_home_present": true,
+    "cargo_locked_cache_completeness": "Unknown"
+  },
+  "historical_crosscheck": {
+    "original_input_blob": "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+    "runtime_blob": "0dd826e7040f841ee2f8d056c190407cf4af2a49",
+    "target_runtime_blob": "68934b7a5b168585bec7116b4bec944f617d716e",
+    "environment_seed_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+    "actual_c0f_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "seed_b19_target": "/home/qian-qi/hepta-utility-36fa-target",
+    "explanation": "The c0f wrapper explicitly overrides CARGO_TARGET_DIR after reading the b19 environment seed. Current absence was observed at the actual /data c0f target, not inferred from the older /home target. No other target location was scanned."
+  },
+  "tool_contract": {
+    "rust_toolchain": "1.96.0",
+    "rust_components": [
+      "clippy",
+      "rustfmt",
+      "rust-src"
+    ],
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "uv": "0.11.3",
+    "ruff": "0.15.13",
+    "python_requires": ">=3.10",
+    "python_constraint_source": "scripts/pyproject.toml and scripts/uv.lock",
+    "python_version_current": "Unknown in the new metadata-only probe; record and check before bootstrap",
+    "scripts_project_type": "virtual project; sole locked package dependency Ruff",
+    "uv_action": "astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+    "uv_project_environment_single_project_only": true
+  },
+  "original_entrypoints": {
+    "just_fix_recipe": [
+      "cargo",
+      "clippy",
+      "--fix",
+      "--tests",
+      "--allow-dirty",
+      "<unchanged forwarded original args>"
+    ],
+    "just_fmt_recipe": [
+      "python3",
+      "../scripts/format.py",
+      "<unchanged forwarded original args>"
+    ],
+    "original_c0f_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "original_c0f_fix_budget_seconds": 7200,
+    "original_c0f_fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+    ],
+    "original_c0f_fmt_budget_seconds": 900,
+    "fixed_workflow_fix_argv": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "<original packages>"
+    ],
+    "fixed_workflow_fmt_budget_seconds": 600,
+    "scripts_formatter_subprocess_prefix": [
+      "uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format"
+    ],
+    "rule": "These are distinct recorded entrypoints. Restoration must not substitute one gate's argv/budget for another, change the approved new driver, invoke bare ruff instead of original uv run, or alter formatter file selection.",
+    "upcoming_driver_argv_owner": "Root/native_ci_audit; this plan does not invent or replace its maintenance argv"
+  },
+  "artifacts": [
+    {
+      "filename": "uv-x86_64-unknown-linux-gnu.tar.gz",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "bytes": 23914165,
+      "sha256": "c0f3236f146e55472663cfbcc9be3042a9f1092275bbe3fe2a56a6cbfd3da5ce",
+      "release_id": 304428942,
+      "asset_id": 386561626,
+      "release_tag": "0.11.3",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "uv-executable-archive",
+      "version": "0.11.3"
+    },
+    {
+      "filename": "uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+      "bytes": 101,
+      "sha256": "87b44e8a7b4ea30a8f515dedeb8ea5fddabeb9e45bc7586b738cc71cd7d2d59c",
+      "release_id": 304428942,
+      "asset_id": 386561630,
+      "release_tag": "0.11.3",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "uv-archive-checksum-text",
+      "version": "0.11.3",
+      "required_content": "Exactly the expected archive basename and SHA256; must be parsed after checksum payload's own digest passes"
+    },
+    {
+      "role": "ruff-locked-wheel",
+      "version": "0.15.13",
+      "filename": "ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 11434486,
+      "sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca",
+      "provenance": "Exact scripts/uv.lock 6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "payload_verified_here": false
+    },
+    {
+      "filename": "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "release_id": 361445880,
+      "asset_id": 493388485,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-sandbox-archive",
+      "version": "150.4.0"
+    },
+    {
+      "filename": "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "release_id": 361445880,
+      "asset_id": 493388480,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-sandbox-bindings",
+      "version": "150.4.0"
+    },
+    {
+      "filename": "rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "bytes": 262,
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+      "release_id": 361445880,
+      "asset_id": 493388476,
+      "release_tag": "rusty-v8-v150.4.0",
+      "provenance": "Official GitHub release API metadata; payload not downloaded by this audit",
+      "payload_verified_here": false,
+      "role": "v8-pair-checksum-text",
+      "version": "150.4.0",
+      "required_content": "Exactly the pinned sandbox archive and binding basenames/hashes; original resolver requires exactly two checksum lines"
+    }
+  ],
+  "reviewed_external_root_proposal": "/data/hepta-utility-36fa-runtime-materials-86dd-v1",
+  "execution_owner": "/root/native_ci_audit after Root review/authorization",
+  "minimal_restoration_sequence": [
+    "Verify the actual materialized 86dd source and exact justfile/format/pyproject/uv.lock/Cargo.lock pins without modifying them; preserve original source lock and complete source inventories.",
+    "Admit only a new task-owned external depot, or an exact previously recorded task-owned directory. No sudo, no global PATH/profile edits, no full-machine scan, no recreation of the old missing V8 path.",
+    "Download only these six fixed URLs under reviewed limits and existing proxy/CA/TLS policy. Record URL/redirect status/bytes/hash and retained original result. Existing files may only be reused after exact identity check, never overwritten on mismatch.",
+    "Verify UV archive and checksum text independently against API digests, parse checksum text to the exact archive basename/hash, then safely extract into the external tool directory. Require unique actual uv executable, no path escapes or link extraction, and record extracted executable identity/version.",
+    "Stage the single exact lock-selected Ruff wheel in an external wheelhouse. Bootstrap the scripts project's external virtual environment/cache before maintenance; use only this locked dependency and an existing >=3.10 interpreter, with Python auto-downloads disabled.",
+    "Before admission, require actual UV 0.11.3, Ruff 0.15.13, unchanged scripts lock/pyproject, and an actual successful frozen/offline environment synchronization check. The upstream exact CLI supports sync --check, --frozen, --offline, --python, and --find-links; proposed bootstrap must be reviewed and its real result retained.",
+    "Independently verify V8 archive, bindings and checksum text against all exact hashes and filenames. The old 39884-byte bindings may be reused only after a full current hash check; copy exact bytes into the new task-owned pair directory. Preserve an unequal old file as evidence.",
+    "Freeze explicit external runtime environment and actual artifact inventories. Only after dependency preparation succeeds may the original approved fix/fmt driver start. Maintenance remains offline for UV/Cargo and receives the original arguments, budgets, source scope, retries and assertions."
+  ],
+  "proposed_bootstrap_not_executed": {
+    "environment": {
+      "UV_CACHE_DIR": "<external-root>/uv-cache",
+      "UV_PROJECT_ENVIRONMENT": "<external-root>/scripts-project-environment",
+      "RUFF_CACHE_DIR": "<external-root>/ruff-cache",
+      "UV_PYTHON_DOWNLOADS": "never"
+    },
+    "possible_stage_only_argv": [
+      "<verified-uv>",
+      "sync",
+      "--frozen",
+      "--project",
+      "scripts",
+      "--offline",
+      "--find-links",
+      "<verified-wheelhouse>",
+      "--python",
+      "<existing-verified-python>=3.10"
+    ],
+    "admission_check_argv": [
+      "<verified-uv>",
+      "sync",
+      "--frozen",
+      "--project",
+      "scripts",
+      "--offline",
+      "--check"
+    ],
+    "cwd": "the same fixed repository root",
+    "limitations": "The proposed offline bootstrap has not executed; CLI availability is source-verified, successful lock-source/wheelhouse resolution remains to be observed. Any failure remains in preparation and cannot become maintenance PASS. Do not add --no-sync or skip project checks.",
+    "no_maintenance_argv_change": true
+  },
+  "final_environment_proposal": {
+    "PATH": "<external verified uv bin>:<unchanged original task PATH>",
+    "UV_OFFLINE": "true",
+    "UV_PROJECT_ENVIRONMENT": "<external-root>/scripts-project-environment",
+    "UV_CACHE_DIR": "<external-root>/uv-cache",
+    "RUFF_CACHE_DIR": "<external-root>/ruff-cache",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "RUSTY_V8_ARCHIVE": "<external-root>/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "<external-root>/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "retained": "Original CARGO_NET_OFFLINE, CARGO_HOME, RUSTUP_HOME/TOOLCHAIN, jobs/profile/stack settings, approved target path, PYTHONPATH/CODEX_REPO_ROOT and inherited proxy/CA policy; exact final values require native freeze"
+  },
+  "v8_boundary": {
+    "crate": "150.4.0",
+    "crate_checksum": "42a978ff11f15b24e5c05a7123cf2b68f41e763546699781a924ef4e2cf43a49",
+    "target": "x86_64-unknown-linux-gnu",
+    "profile": "ptrcomp_sandbox_release",
+    "release": "rusty-v8-v150.4.0",
+    "release_prerelease": true,
+    "resolver_blob": "e8788ec0f308038542807ec6adf014c157d65187",
+    "resolver_explicit_pair_behavior": "If both RUSTY_V8_* overrides are supplied, the original resolver returns without hashing them. Therefore the restoration/admission record must independently verify both exact contents; setting both variables alone is not integrity proof.",
+    "no_non_sandbox_substitution": true,
+    "no_source_build_fallback_claim": true
+  },
+  "checksum_fetch_observation": {
+    "mechanism": "GitHub connector text fetch of the two release browser_download_url checksum resources",
+    "result": "Both returned connector/API 404; complete tool responses retained",
+    "release_metadata_assets_present": true,
+    "payloads_downloaded": false,
+    "meaning": "No conclusion about actual release-asset availability or payload integrity; native authorized bounded retrieval must observe that."
+  },
+  "authorization_boundary": {
+    "new_h_processes": 0,
+    "new_binary_downloads": 0,
+    "installations": 0,
+    "source_or_ref_writes": 0,
+    "Cargo_or_tests": 0,
+    "no_new_qualification": true
+  },
+  "remaining_unknowns": [
+    "Actual native download and checksum-text parsing success",
+    "Current old binding content hash",
+    "Current installed Python version and GNU target ABI",
+    "Extracted UV executable hash and actual version",
+    "Successful frozen offline Ruff environment bootstrap and sync check",
+    "Other unobserved caches and the locked Cargo dependency closure",
+    "Actual upcoming fix/fmt result and formatted source identity"
+  ]
+}
