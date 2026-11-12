@@ -1,0 +1,109 @@
+{
+  "initial_native": {
+    "source": "09c8e09e875ffb2983bd3832686668794a0e97a8",
+    "tree": "196129c1801c426bdbd1820054e8c95937ca4532",
+    "tests": 154,
+    "passed": 152,
+    "failed": 2,
+    "skipped": 0,
+    "exit_code": 100,
+    "elapsed_seconds": 9.61844230099996,
+    "actual_failure": "two first-corruption assertions expected Holdout(Indeterminate) but readback returned Holdout(Store(Indeterminate)); restoration assertions were not reached"
+  },
+  "corrected_native": {
+    "source": "8c8e0e5a8571f13b49f462a7580e26c5d6ef4278",
+    "tree": "a970a3f9a769bead164351fe3144afa927778e7f",
+    "tests": 154,
+    "passed": 154,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "elapsed_seconds": 5.5396589069987385,
+    "change": "only exact first-read error expectations; subsequent original CAS expectations retained"
+  },
+  "source_qa": {
+    "source": "a803b7b16fa59abccb6f6a2774456c5c46521344",
+    "tree": "ca031a13fae4bbd67a6d1dba7b115c92a50cf0ba",
+    "tests": 18,
+    "passed": 18,
+    "exit_code": 0,
+    "caller_scope": "two named boundaries scanning all Rust sources; not complete caller scan"
+  },
+  "source_before_after_equal_clean": true,
+  "native_retries": 0,
+  "bundle_prerequisite": "8b83dbc88d2623c026c62509897c716e151517ae",
+  "authority_limit": "the runner remains generic over caller-provided CAS stores; this borrow proves continuity of the same supplied owner, not Root-registered physical custody or independent B authority",
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 51958,
+    "sha256": "71126bea14f1b8c8621acbb5de18b8295c61144d1279b7915d31a12da54c07bf",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "holdout-release-09c8e09e-native/junit-0.xml",
+      "bytes": 35614,
+      "sha256": "a768f3d4610ac2baab5faa98b12d589020915b62c0a03f8d00bb7133e80ae20a"
+    },
+    {
+      "path": "holdout-release-09c8e09e-native/native.log",
+      "bytes": 87246,
+      "sha256": "a92a9f729a5e057627ae337a9d1f74a30371e6039005b51911b4f91df90d1413"
+    },
+    {
+      "path": "holdout-release-09c8e09e-native/run.json",
+      "bytes": 37331,
+      "sha256": "b6742b527e5f8dc73bc9d9dd0964ed2007790237d0d6a277b5f3187ce4524c0e"
+    },
+    {
+      "path": "holdout-release-8c8e0e5a-native/junit-0.xml",
+      "bytes": 32140,
+      "sha256": "3ed7192d5d5fddc6c23fa9bc37a766194621d157ab7d0cc438ee2480764748f2"
+    },
+    {
+      "path": "holdout-release-8c8e0e5a-native/native.log",
+      "bytes": 85795,
+      "sha256": "6cf102c7e45c8623dd6448503b6b516237485b2b7dac4c88eda31e450b63b3f1"
+    },
+    {
+      "path": "holdout-release-8c8e0e5a-native/run.json",
+      "bytes": 37332,
+      "sha256": "5ed8f04557a5011f0042d82a64746590ca19d33b857b45cf931dc6e7dbb59c5d"
+    },
+    {
+      "path": "holdout-release-a803b7b1-source-qa/run.json",
+      "bytes": 957,
+      "sha256": "586b594c124d81655b48486a60eb5b03004ca09a1c25f347ab3ce95ca2f2879e"
+    },
+    {
+      "path": "holdout-release-a803b7b1-source-qa/source-qa.log",
+      "bytes": 3686,
+      "sha256": "2a09df53da69a6326d0060cc5ca8972a3d0f16afc8cbcf818e88d926dba7fc00"
+    },
+    {
+      "path": "run_holdout_release_native.py",
+      "bytes": 4265,
+      "sha256": "9b553827088e145ecd1b7bb5cadea63b23472e6985b532218c526cd43073ab74"
+    },
+    {
+      "path": "run_holdout_release8c_native.py",
+      "bytes": 4374,
+      "sha256": "51ed161ae00550e0955a8632964c8c7ef149090730ad5be47f73d355810a0650"
+    },
+    {
+      "path": "run_holdout_release_source_qa.py",
+      "bytes": 2038,
+      "sha256": "8327fe10f8b5211e5d1a86cebb4a71f965f56754b3f7aacda77d2edaea2307df"
+    },
+    {
+      "path": "holdout-release-a803b7b1-source.bundle",
+      "bytes": 12021,
+      "sha256": "60b541efc7e883d8d37b4828cca55d12b9d289bcd3a7559459400e2561b02e8b"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Original holdout release: actual failure and corrected native results
+
+The first exact source 09c8 executed all 154 intelligence-eval library cases: 152 passed and two failed. Both failures occurred at the first physical-corruption assertion because the expected error conflated a store read with a CAS failure. The actual read returned Holdout(Store(Indeterminate)). The subsequent byte-restoration assertions were not executed in that attempt. Its complete log and JUnit are retained.
+
+Source 8c8e changes only those two first-read expectations, preserving all checks, later error expectations and test scope. The same zero-retry full library run actually passed 154 of 154, zero skipped. All four new real-file release cases are present in the JUnit. They cover successful original release, refusal of receipt-only/replayed release, physical corruption inside the borrowed callback, a provider ignoring the borrow, and an indeterminate provider response that cannot consume/release again.
+
+Final guard source a803 adds two exact caller boundaries, three protected files and mutation tests. Its 18 targeted source cases passed, including the two actual caller sets scanned over all Rust sources. This is not a complete caller scan. Its only Rust change after the native source is an explicit limitation comment; the native result remains bound to 8c8e, not a803.
+
+The borrow is not production data admission. The runner accepts generic caller-supplied CAS stores, so even a matching namespace and journal receipt do not identify a Root-registered physical custodian. The production B host must privately retain its original actual file owner, fixed independent controller and authenticated signed input admission; it must not expose its provider to arbitrary runners. No independent B, CURRENT, C or complete cold-restart result is claimed. Complete-chain counts remain zero.
