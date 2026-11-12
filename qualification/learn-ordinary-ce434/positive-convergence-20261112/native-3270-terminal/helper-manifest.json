@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_sha": "3270e8e8d310e205b4e76eabdce164bd75fab311",
+  "source_sha_after": null,
+  "source_status_before": "",
+  "source_status_after": null,
+  "workspace": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 101,
+      "cargo_finished": false,
+      "complete": false
+    }
+  ],
+  "artifacts": {},
+  "complete": false,
+  "exit_code": 1,
+  "error": "RuntimeError: codex-hepta-infer-worker-host build exited 101; see raw logs"
+}
