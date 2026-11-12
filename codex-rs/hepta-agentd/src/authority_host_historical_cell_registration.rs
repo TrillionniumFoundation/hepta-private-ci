@@ -49,7 +49,8 @@ impl HostAuthorityService {
                             .map_err(io::Error::other)?
                             .observed_unix_ms,
                     )?;
-                    let files: OriginalCellFiles = files.into_initialized()?;
+                    let files: OriginalCellFiles =
+                        PreparedOriginalCellFiles::into_initialized(files)?;
                     files.require_original_cell_baseline()?;
                     let baseline = CellRecord {
                         schema: 1,

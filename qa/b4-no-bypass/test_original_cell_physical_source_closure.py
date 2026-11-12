@@ -31,6 +31,7 @@ def cell_armed_io(path, source):
         r"HostAuthorityFrontierStore::(?:initialize|open)\s*\("
         r"|\b(?:original\s*\.\s*)?store\s*\.\s*(?:load|compare_and_set)\s*\("
         r"|\bfiles\s*\.\s*require_original_cell_baseline\s*\("
+        r"|PreparedOriginalCellFiles::into_initialized\s*\("
     )
     positions = [m.start() for m in pattern.finditer(code)]
     if not positions:
@@ -40,6 +41,7 @@ def cell_armed_io(path, source):
         armed.inside(code, arm, [code.index("action(Some(&mut pending))?")])
     else:
         armed.inside(code, arm, [code.index("self.with_initial_publication_context(")])
+        armed.inside(code, "self.with_initial_publication_context(", positions)
 
 class OriginalCellSourceClosureTests(unittest.TestCase):
     @classmethod
@@ -116,6 +118,61 @@ class OriginalCellSourceClosureTests(unittest.TestCase):
                        "observed.decision.checkpoint_after != publication.checkpoint_digest()"):
             self.reject(path, "fn read_original_cell_data(", marker)
         self.reject(path, "fn observe_original_cell(", "before != after || physical != after")
+
+    def test_prepared_custody_preserves_original_descriptor_checks(self):
+        path = A + "authority_host_historical_cell_files.rs"
+        for marker in ("original_root()?", "uid == 0", "gid == 0",
+                       "witness_scope.scope_digest.is_zero()",
+                       "witness_scope.objective_digest.is_zero()",
+                       "inputs.witness_records == 0",
+                       "(3..=16).contains(&inputs.maximum_records)",
+                       "FilePin::readonly(&inputs.journal, uid, gid)?",
+                       "FilePin::readonly(&inputs.witness, uid, gid)?",
+                       "journal_pin.device, journal_pin.inode",
+                       "witness_pin.device, witness_pin.inode",
+                       "retained.require_descriptor_custody()?"):
+            with self.subTest(marker=marker):
+                self.reject(path, "fn retain_descriptors(", marker)
+        for marker in ("OriginalCellFiles::retain_descriptors(inputs, uid, gid)?",
+                       "files.inputs.journal.metadata()?.len() != 0",
+                       "files.require_descriptor_custody()?"):
+            self.reject(path, "fn retain_before_enrollment(", marker)
+        self.mutate(path, lambda s: s.replace("fn retain_descriptors(",
+                                             "pub(crate) fn retain_descriptors(", 1))
+
+    def test_historical_and_initialized_views_still_refuse_empty_witnesses(self):
+        path = A + "authority_host_historical_cell_files.rs"
+        self.reject(path, "fn retain_original_cell(", "retained.require_original_files()?")
+        for marker in ("original_root()?", "self.files.require_original_files()?"):
+            self.reject(path, "fn into_initialized(", marker)
+        self.reject(path, "fn require_original_files(", "self.inputs.witness.metadata()?.len() == 0")
+        self.reject(path, "fn require_original_files(", "self.require_descriptor_custody()")
+        for marker in ("FilePin::read(&self.inputs.journal, self.uid, self.gid)?",
+                       "FilePin::read(&self.inputs.witness, self.uid, self.gid)?"):
+            self.reject(path, "fn require_descriptor_custody(", marker)
+
+    def test_initialized_conversion_cannot_escape_original_root_context(self):
+        path = A + "authority_host_historical_cell_registration.rs"
+        self.reject(path, "fn register_original_initial_cell(",
+                    "PreparedOriginalCellFiles::into_initialized(files)?")
+        self.mutate(path, lambda s: s.replace(
+            "                self.with_initial_publication_context(",
+            "                let files = PreparedOriginalCellFiles::into_initialized(files)?;\n"
+            "                self.with_initial_publication_context(", 1))
+
+    def test_prepared_custody_and_initialized_conversion_have_closed_callers(self):
+        wanted = {"root_initial_cell_prepared_custody", "root_initial_cell_initialized_read"}
+        ignored = tuple(self.manifest["ignored_path_fragments"])
+        for boundary in PROOF._boundary_rows(self.manifest):
+            if boundary.identifier not in wanted:
+                continue
+            index = {p: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
+                (ROOT / p).read_text())) for p in boundary.product_callers}
+            PROOF._verify_boundary(ROOT, boundary, index, ignored)
+            index[A + "unregistered_initial_cell.rs"] = (
+                "fn product() { " + boundary.symbol + "(peer); }")
+            with self.assertRaises(PROOF.VerificationFailure):
+                PROOF._verify_boundary(ROOT, boundary, index, ignored)
 
     def test_cell_capture_retains_actual_original_identity_and_entire_context(self):
         path = A + "authority_host_historical_cell_pin.rs"
