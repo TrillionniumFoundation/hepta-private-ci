@@ -127,7 +127,7 @@ impl HostAuthorityService {
                 PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {
                     let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
-                        return Self::issue_generation_publication_grant(
+                        return HostAuthorityService::issue_generation_publication_grant(
                             self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
                         );
                     }
@@ -432,7 +432,7 @@ impl HostAuthorityService {
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })
             .map_err(|error| {
-                let _ = slot.refuse();
+                let _ = RegisteredGenerationPublication::refuse(slot);
                 io::Error::other(error)
             })?
         {}
