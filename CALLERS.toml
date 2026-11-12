@@ -7375,8 +7375,9 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_selection_command.rs"
-required = ["Mutex<Option<Channel>>","Mutex<Option<OriginalCircuitSelectionCommandReceiptV1>>","hepta.agentd.original-circuit-selection-command.v1\\0"]
-forbidden = ["SigningKey",".sign(","File::open","UnixStream::connect",".try_clone(",".commit_once(",".publish(",".compare_and_swap(","FrozenLearningScopeV2::freeze(","LearningEvidenceVerifierV1::new","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","unwrap_or","permit_all","if false","pub training:","pub training_evidence:","pub(crate) training:","pub(crate) training_evidence:","pub fn from_checkpoint(","pub(crate) fn from_checkpoint(","execution_requested = false"]
+required = ["Mutex<Option<Channel>>","Mutex<Option<OriginalCircuitSelectionCommandReceiptV1>>","hepta.agentd.original-circuit-selection-command.v1\\0","struct QueuedExecuteFence {","abandoned: Arc<AtomicBool>"]
+forbidden = ["SigningKey",".sign(","File::open","UnixStream::connect",".try_clone(",".commit_once(",".publish(",".compare_and_swap(","FrozenLearningScopeV2::freeze(","LearningEvidenceVerifierV1::new","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","unwrap_or","permit_all","if false","pub training:","pub training_evidence:","pub(crate) training:","pub(crate) training_evidence:","pub fn from_checkpoint(","pub(crate) fn from_checkpoint(","execution_requested = false","pub struct QueuedExecuteFence","pub(crate) struct QueuedExecuteFence","pub abandoned:","pub(crate) abandoned:"]
+required_order = [["impl Drop for QueuedExecuteFence","fn drop(","self.abandoned.store(","true, Ordering::Release"]]
 required_function_order = [
   {"function" ="fn from_original_training(","sequence" =["original: &OriginalCellQ24TrainingCommandReceiptV1","LearningIterationCoordinatorV1::from_snapshot(dataset)?","coordinator.next_stage() != Some(LearningIterationStageV1::Training)","coordinator.snapshot().receipts.len() != 2","coordinator.record(","original.receipt().clone()","Self::from_checkpoint(","original.attestation().clone()"]},
   {"function" ="fn from_checkpoint(","sequence" =["let context = Self","context.authenticate(now()?)?","Ok(context)"],"top_level" =["context.authenticate(now()?)?"]},
@@ -7388,9 +7389,10 @@ required_function_order = [
   {"function" ="fn execute_selection(","sequence" =["now()? >= self.context.training.request.envelope.expiry_unix_seconds","Error::DeadlineExceeded","self.exchange(wire::Action::Execute).await"]},
   {"function" ="fn readback(","sequence" =["self.exchange(wire::Action::Readback)",".await"]},
   {"function" ="fn receipt_attestation(","sequence" =["OriginalCircuitSelectionCommandClientV1::readback(self).await?","&original.receipt != expected","Ok(original.attestation)"]},
-  {"function" ="fn exchange(","sequence" =["let started_at = now()?","self.channel",".try_lock()","channel.execution_requested","Error::ReadbackRequired","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","self.context.authenticate(started_at)?","!(1..=128).contains(&request_id)","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(","let bytes = channel",".request(&encoded)","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","self.context.authenticate(current)?","wire::decode_completed(","previous != &original","*retained = Some(original.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"],"top_level" =["response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?"]},
+  {"function" ="fn exchange(","sequence" =["let started_at = now()?","self.channel",".try_lock()","channel.execution_requested","Error::ReadbackRequired","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","self.context.authenticate(started_at)?","!(1..=128).contains(&request_id)","request_id.checked_add(1)","wire::Request::new(","let abandoned = Arc::new(AtomicBool::new(","false","let queued_execute_fence = QueuedExecuteFence {","abandoned: Arc::clone(&abandoned)","tokio::task::spawn_blocking(","if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)","return Err(Error::Unavailable)","let bytes = channel",".request(&encoded)",".await",".map_err(|_| Error::CommitUncertain)??","drop(queued_execute_fence)","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","self.context.authenticate(current)?","wire::decode_completed(","previous != &original","*retained = Some(original.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"],"top_level" =["response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","let abandoned = Arc::new(AtomicBool::new(","let queued_execute_fence = QueuedExecuteFence {","drop(queued_execute_fence)"]},
   {"function" ="fn require_clock(","sequence" =["current < started_at","return Err(","Ok(())"]},
-  {"function" ="fn now(","sequence" =["SystemTime::now()",".duration_since(UNIX_EPOCH)",".as_secs()"]}
+  {"function" ="fn now(","sequence" =["SystemTime::now()",".duration_since(UNIX_EPOCH)",".as_secs()"]},
+  {"function" ="fn drop(","sequence" =["self.abandoned.store(","true, Ordering::Release"],"top_level" =["self.abandoned.store("]}
 ]
 
 
@@ -7668,8 +7670,9 @@ top_level = ["let initial = &self.config.material.initial;","digest(&request.bin
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_material_command.rs"
-required = ["channel: Mutex<Option<Channel>>","role: Role","retained: Mutex<Option<OriginalCellQ24MaterialCommandReceiptV1>>","original_context: Digest32"]
-forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","File::open","OpenOptions","UnixStream::connect","UnixListener","LearningOwnerJournalV1::create","LearningOwnerJournalV1::recover",".claim(",".complete(",".sign(","LedgerWriter::open","with_root_learning_stage_owners(","fit_or_readback(",".fit(","permit_all","if false","pub now:","pub role:","pub config:","pub original_context:","pub fn set_original_context","pub(crate) fn set_original_context","Deserialize","Serialize"]
+required = ["channel: Mutex<Option<Channel>>","role: Role","retained: Mutex<Option<OriginalCellQ24MaterialCommandReceiptV1>>","original_context: Digest32","struct QueuedExecuteFence {","abandoned: Arc<AtomicBool>"]
+forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","File::open","OpenOptions","UnixStream::connect","UnixListener","LearningOwnerJournalV1::create","LearningOwnerJournalV1::recover",".claim(",".complete(",".sign(","LedgerWriter::open","with_root_learning_stage_owners(","fit_or_readback(",".fit(","permit_all","if false","pub now:","pub role:","pub config:","pub original_context:","pub fn set_original_context","pub(crate) fn set_original_context","Deserialize","Serialize","pub struct QueuedExecuteFence","pub(crate) struct QueuedExecuteFence","pub abandoned:","pub(crate) abandoned:"]
+required_order = [["impl Drop for QueuedExecuteFence","fn drop(","self.abandoned.store(","true, Ordering::Release"]]
 
 [[protected_file.required_function_order]]
 function = "fn bind_original_stream("
@@ -7691,8 +7694,8 @@ top_level = ["let original =","Ok(original.attestation().clone())"]
 
 [[protected_file.required_function_order]]
 function = "fn exchange("
-sequence = ["let started_at = now()?","wire::context_binding(&self.config, started_at)?","self.channel.try_lock()","channel.execution_requested","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","wire::Request::new(","checked_add(1)","tokio::task::spawn_blocking(",".request(&encoded)","serde_json::from_slice(&bytes)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","fresh_now < started_at","wire::context_binding(&self.config, fresh_now)? != self.binding","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
-top_level = ["let started_at = now()?","let mut channel = {","let request =","let response:","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","\n        result\n"]
+sequence = ["let started_at = now()?","wire::context_binding(&self.config, started_at)?","self.channel.try_lock()","channel.execution_requested","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","wire::Request::new(","checked_add(1)","let abandoned = Arc::new(AtomicBool::new(","false","let queued_execute_fence = QueuedExecuteFence {","abandoned: Arc::clone(&abandoned)","tokio::task::spawn_blocking(","if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)","return Err(Error::Unavailable)",".request(&encoded)",".await",".map_err(|_| Error::CommitUncertain)??","drop(queued_execute_fence)","serde_json::from_slice(&bytes)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","fresh_now < started_at","wire::context_binding(&self.config, fresh_now)? != self.binding","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
+top_level = ["let started_at = now()?","let mut channel = {","let request =","let response:","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","\n        result\n","let abandoned = Arc::new(AtomicBool::new(","let queued_execute_fence = QueuedExecuteFence {","drop(queued_execute_fence)"]
 
 [[protected_file.required_function_order]]
 function = "fn now("
@@ -7722,6 +7725,10 @@ function = "fn attestation("
 sequence = ["&self.evidence[","self.evidence.len() - 1]"]
 top_level = ["&self.evidence["]
 
+[[protected_file.required_function_order]]
+function = "fn drop("
+sequence = ["self.abandoned.store(","true, Ordering::Release"]
+top_level = ["self.abandoned.store("]
 
 
 [[protected_file]]
@@ -8071,8 +8078,9 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_next_use_command.rs"
-required = ["selection: LearningIterationSnapshotV1","training_evidence: SignedLearningEvidenceV1","selection_evidence: SignedLearningEvidenceV1","channel: Mutex<Option<Channel>>","retained: Mutex<Option<OriginalCircuitNextUseCommandReceiptV1>>","hepta.agentd.original-circuit-next-use-command.v1"]
-forbidden = ["SigningKey","LearningEvidenceTrustV1","LearningEvidenceVerifierV1::new","File::open","UnixStream::connect","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","fit_or_readback(","evaluate_or_readback(","qualify_and_persist(",".compare_and_swap(",".publish(",".commit_once(",".claim(",".sign(","execute_circuit_task_record(","execute_cell_committed(","into_circuit_feature_task(","prepare_agentd_generation","permit_all","if false","Deref","into_inner","pub context:","pub channel:","pub retained:","pub fn from_checkpoint(","pub(crate) fn from_checkpoint(","pub fn from_bytes(","pub fn from_observation(","pub fn bind_original_stream("]
+required = ["selection: LearningIterationSnapshotV1","training_evidence: SignedLearningEvidenceV1","selection_evidence: SignedLearningEvidenceV1","channel: Mutex<Option<Channel>>","retained: Mutex<Option<OriginalCircuitNextUseCommandReceiptV1>>","hepta.agentd.original-circuit-next-use-command.v1","struct QueuedExecuteFence {","abandoned: Arc<AtomicBool>"]
+forbidden = ["SigningKey","LearningEvidenceTrustV1","LearningEvidenceVerifierV1::new","File::open","UnixStream::connect","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","fit_or_readback(","evaluate_or_readback(","qualify_and_persist(",".compare_and_swap(",".publish(",".commit_once(",".claim(",".sign(","execute_circuit_task_record(","execute_cell_committed(","into_circuit_feature_task(","prepare_agentd_generation","permit_all","if false","Deref","into_inner","pub context:","pub channel:","pub retained:","pub fn from_checkpoint(","pub(crate) fn from_checkpoint(","pub fn from_bytes(","pub fn from_observation(","pub fn bind_original_stream(","pub struct QueuedExecuteFence","pub(crate) struct QueuedExecuteFence","pub abandoned:","pub(crate) abandoned:"]
+required_order = [["impl Drop for QueuedExecuteFence","fn drop(","self.abandoned.store(","true, Ordering::Release"]]
 required_function_order = [
   {"function" ="fn from_original_selection(","sequence" =["original: &OriginalCircuitSelectionCommandReceiptV1","Self::from_checkpoint(","original.snapshot().clone()","original.training_attestation().clone()","original.attestation().clone()"]},
   {"function" ="fn from_checkpoint(","sequence" =["let context = Self","context.authenticate(now()?)?","Ok(context)"],"top_level" =["context.authenticate(now()?)?"]},
@@ -8084,9 +8092,10 @@ required_function_order = [
   {"function" ="fn attest_completed_task(","sequence" =["now()? >= self.context.selection.request.envelope.expiry_unix_seconds","Error::DeadlineExceeded","self.exchange(wire::Action::Execute).await"]},
   {"function" ="fn readback(","sequence" =["self.exchange(wire::Action::Readback)",".await"]},
   {"function" ="fn receipt_attestation(","sequence" =["OriginalCircuitNextUseCommandClientV1::readback(self).await?","&original.receipt != expected","Ok(original.attestation)"]},
-  {"function" ="fn exchange(","sequence" =["let started_at = now()?","self.channel",".try_lock()","channel.execution_requested","Error::ReadbackRequired","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","self.context.authenticate(started_at)?","!(1..=128).contains(&request_id)","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(","let bytes = channel",".request(&encoded)","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","self.context.authenticate(current)?","wire::decode_completed(","previous != &original","*retained = Some(original.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"],"top_level" =["response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?"]},
+  {"function" ="fn exchange(","sequence" =["let started_at = now()?","self.channel",".try_lock()","channel.execution_requested","Error::ReadbackRequired","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","self.context.authenticate(started_at)?","!(1..=128).contains(&request_id)","request_id.checked_add(1)","wire::Request::new(","let abandoned = Arc::new(AtomicBool::new(","false","let queued_execute_fence = QueuedExecuteFence {","abandoned: Arc::clone(&abandoned)","tokio::task::spawn_blocking(","if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)","return Err(Error::Unavailable)","let bytes = channel",".request(&encoded)",".await",".map_err(|_| Error::CommitUncertain)??","drop(queued_execute_fence)","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","self.context.authenticate(current)?","wire::decode_completed(","previous != &original","*retained = Some(original.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"],"top_level" =["response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let current = now()?","require_clock(started_at, current)?","let abandoned = Arc::new(AtomicBool::new(","let queued_execute_fence = QueuedExecuteFence {","drop(queued_execute_fence)"]},
   {"function" ="fn require_clock(","sequence" =["current < started_at","return Err(","Ok(())"]},
   {"function" ="fn now(","sequence" =["SystemTime::now()",".duration_since(UNIX_EPOCH)",".as_secs()"]},
+  {"function" ="fn drop(","sequence" =["self.abandoned.store(","true, Ordering::Release"],"top_level" =["self.abandoned.store("]}
 ]
 
 

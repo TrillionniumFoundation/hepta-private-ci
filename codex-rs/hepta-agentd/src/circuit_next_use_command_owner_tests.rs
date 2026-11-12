@@ -319,6 +319,8 @@ async fn q24_next_use_command_pins_both_original_signatures_before_dispatch() ->
     let service = ObserverService::start(&f, f.f.original.create_owner()?)?;
     let before = f.f.original.bytes()?;
     next::reject_wrong_context(&service.owner)?;
+    next::cancel_queued_execute(Arc::clone(&service.owner)).await?;
+    assert_eq!(f.f.original.bytes()?, before);
     for role in [
         LearningEvidenceRoleV1::Generator,
         LearningEvidenceRoleV1::Selector,

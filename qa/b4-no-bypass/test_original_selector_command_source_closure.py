@@ -134,6 +134,19 @@ class OriginalSelectorCommandClosureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.rejects(MAIN, "fn exchange(", marker)
+        # The async future owns this private Drop fence through the blocking
+        # await; a queued task must inspect the same flag before sending Execute.
+        for marker in (
+            "let queued_execute_fence = QueuedExecuteFence {",
+            "abandoned: Arc::clone(&abandoned)",
+            "if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)",
+            "drop(queued_execute_fence)",
+        ):
+            with self.subTest(queued_cancel=marker):
+                self.rejects(MAIN, "fn exchange(", marker)
+        self.rejects(MAIN, "fn drop(", "self.abandoned.store(")
+        self.rejects(MAIN, "fn drop(", "true, Ordering::Release",
+                     "false, Ordering::Release")
         self.rejects(MAIN, "fn receipt_attestation(",
                      "OriginalCircuitSelectionCommandClientV1::readback(self).await?")
 

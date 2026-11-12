@@ -172,3 +172,48 @@ fn renew_experience(
     ));
     Ok(())
 }
+
+/// Actual original Material service, with a deterministic occupied blocking pool.
+pub(super) async fn cancel_queued_execute(
+    fixture: &MaterialCommandFixture,
+    role: Role,
+) -> anyhow::Result<()> {
+    let (client, peer) = connected(
+        fixture, role, Mode::ExecuteOnce, /*expected*/ None, Effect::Original,
+    )?;
+    tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .max_blocking_threads(/*val*/ 1)
+            .build()?;
+        runtime.block_on(async move {
+            let (occupied, waiting) = tokio::sync::oneshot::channel();
+            let (release, blocked) = std::sync::mpsc::channel();
+            let blocker = tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
+                let _ = occupied.send(());
+                blocked.recv().map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
+                Ok(())
+            });
+            waiting.await?;
+            let mut request = Box::pin(client.execute());
+            let pending = std::future::poll_fn(|cx| {
+                std::task::Poll::Ready(
+                    std::future::Future::poll(request.as_mut(), cx).is_pending(),
+                )
+            })
+            .await;
+            // The only blocking worker is still occupied. Dropping this exact
+            // future must fence the queued original Execute before release.
+            drop(request);
+            release.send(())?;
+            blocker.await??;
+            assert!(pending, "the actual Execute was queued before cancellation");
+            assert!(matches!(client.readback().await, Err(Error::Unavailable)));
+            assert!(matches!(client.execute().await, Err(Error::Unavailable)));
+            assert_eq!(finish(client, peer)?, 0);
+            Ok(())
+        })
+    })
+    .await
+    .map_err(|_| anyhow::anyhow!("queued cancellation runtime"))?
+}

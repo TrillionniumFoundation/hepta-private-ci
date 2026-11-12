@@ -7,6 +7,8 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 
+use pretty_assertions::assert_eq;
+
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
@@ -231,4 +233,51 @@ pub(crate) fn reject_wrong_context<W: AnchorWitnessStore + Send + 'static>(
             .load(std::sync::atomic::Ordering::Acquire)
     );
     Ok(())
+}
+
+/// Cancel an actual original-client Execute while its sole worker is occupied.
+pub(crate) async fn cancel_queued_execute<W: AnchorWitnessStore + Send + 'static>(
+    owner: Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,
+) -> anyhow::Result<()> {
+    let (client, channel) = client(
+        owner.context.clone(), /*readback_only*/ false, /*retained*/ None,
+    )?;
+    let peer = serve(owner, channel);
+    tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .max_blocking_threads(/*val*/ 1)
+            .build()?;
+        runtime.block_on(async move {
+            let (occupied, waiting) = tokio::sync::oneshot::channel();
+            let (release, blocked) = std::sync::mpsc::channel();
+            let blocker = tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
+                let _ = occupied.send(());
+                blocked.recv().map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
+                Ok(())
+            });
+            waiting.await?;
+            let mut request = Box::pin(client.attest_completed_task());
+            let pending = std::future::poll_fn(|cx| {
+                std::task::Poll::Ready(
+                    std::future::Future::poll(request.as_mut(), cx).is_pending(),
+                )
+            })
+            .await;
+            // The only blocking worker is still occupied. Dropping this exact
+            // future must fence the queued original Execute before release.
+            drop(request);
+            release.send(())?;
+            blocker.await??;
+            assert!(pending, "the actual Execute was queued before cancellation");
+            assert!(matches!(client.readback().await, Err(Error::Unavailable)));
+            assert!(matches!(client.attest_completed_task().await, Err(Error::Unavailable)));
+            drop(client);
+            let frames = peer.join().map_err(|_| anyhow::anyhow!("queued original peer"))??;
+            assert_eq!(frames, 0);
+            Ok(())
+        })
+    })
+    .await
+    .map_err(|_| anyhow::anyhow!("queued cancellation runtime"))?
 }

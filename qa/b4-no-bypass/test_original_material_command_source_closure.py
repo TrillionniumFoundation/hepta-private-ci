@@ -223,6 +223,19 @@ class OriginalMaterialCommandClosureTests(unittest.TestCase):
                        "response.require_request(&request)?", "fresh_now < started_at",
                        "original != &completed", "channel.peer.check_peer_lifetime()?"):
             self.rejects(CLIENT, "fn exchange(", marker)
+        # The async future owns this private Drop fence through the blocking
+        # await; a queued task must inspect the same flag before sending Execute.
+        for marker in (
+            "let queued_execute_fence = QueuedExecuteFence {",
+            "abandoned: Arc::clone(&abandoned)",
+            "if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)",
+            "drop(queued_execute_fence)",
+        ):
+            with self.subTest(queued_cancel=marker):
+                self.rejects(CLIENT, "fn exchange(", marker)
+        self.rejects(CLIENT, "fn drop(", "self.abandoned.store(")
+        self.rejects(CLIENT, "fn drop(", "true, Ordering::Release",
+                     "false, Ordering::Release")
         self.rejects(CLIENT, "fn receipt_attestation(",
                      "OriginalCellQ24MaterialCommandClientV1::readback(self).await?")
         self.rejects(SERVICE, "fn command_response(", "fresh_now < started_at")
