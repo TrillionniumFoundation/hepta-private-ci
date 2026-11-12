@@ -512,7 +512,11 @@ def verify_source_evidence(metadata, root=None):
                 source[key] == metadata[key]
                 for key in ("kind", "source_uri", "source_group")
             )
-            and source["image"]["sha256"] == metadata["capture_sha256"],
+            and source["image"]["sha256"] == metadata["capture_sha256"]
+            and metadata["page_index"]
+            == (
+                None if source["document"] is None else source["document"]["page_index"]
+            ),
             "retained source configuration mismatch",
         )
         for role, config in (
@@ -533,5 +537,27 @@ def verify_source_evidence(metadata, root=None):
                 and source["ocr"]["language"] == metadata["ocr"]["language"]
                 and source["ocr"]["psm"] == metadata["ocr"]["psm"],
                 "retained OCR engine binding mismatch",
+            )
+        if "browser_receipt" in restored or "raw_dom" in restored:
+            from .browser_capture import validate_browser_config
+
+            require(
+                {"browser_receipt", "raw_dom", "dom"} <= set(restored),
+                "browser evidence is incomplete",
+            )
+            browser = json.loads(restored["browser_receipt"])
+            config = validate_browser_config(browser["config"])
+            require(
+                browser["schema"] == "perc1.browser-observation.v1"
+                and browser["config_sha256"] == sha(config)
+                and browser["selector"] == config["selector"]
+                and browser["screenshot_sha256"] == sha(restored["image"])
+                and browser["dom_sha256"] == sha(restored["raw_dom"])
+                and browser["text_sha256"] == sha(restored["dom"])
+                and browser["final_url"] == metadata["source_uri"]
+                and config["source_group"] == metadata["source_group"]
+                and browser["javascript_enabled"] is False
+                and browser["fresh_context"] is True,
+                "browser receipt/source binding mismatch",
             )
     return restored

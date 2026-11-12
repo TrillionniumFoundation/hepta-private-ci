@@ -338,6 +338,24 @@ class SourceCaptureTests(unittest.TestCase):
         legacy["schema"] = "perc1.owned-encoding.v1"
         self.assertEqual(decode_native_wire(legacy), original)
 
+    def test_document_page_cannot_be_relabelled_after_capture(self):
+        document = self.root / "original-document.bin"
+        document.write_bytes(b"controlled document identity; not a PDF parser test")
+        self.source["kind"] = "document_page"
+        self.source["document"] = {
+            "path": str(document),
+            "sha256": sha(document.read_bytes()),
+            "page_index": 3,
+        }
+        owned, metadata = self.retain(self.acquired())
+        changed = copy.deepcopy(metadata)
+        changed["page_index"] = 4
+        changed["evidence_sha256"] = sha(
+            {key: value for key, value in changed.items() if key != "evidence_sha256"}
+        )
+        with self.assertRaisesRegex(Invalid, "configuration mismatch"):
+            verify_source_evidence(changed, owned)
+
     @unittest.skipUnless(shutil.which("tesseract"), "actual Tesseract not installed")
     def test_actual_tesseract_retains_executed_output_without_correctness_claim(self):
         font = ImageFont.load_default()
