@@ -62,4 +62,7 @@ legal tensors establish software behavior, not trained-model quality, adoption,
 production activation, throughput or energy savings. The default main still
 constructs one worker per explicit descriptor. Automatic cross-Agent pooling,
 fair global scheduling, Joint tensor microbatching and production asset adoption
-are separate work. Per-event journal durability and full cold replay remain.
+are separate work. Resident RSS is not metered or reserved for its full lifetime
+by this slice, and no globally fair memory pool is introduced. Control journal
+native headroom is serialized journal/result capacity, not a resident RAM budget.
+Per-event journal durability and full cold replay remain.

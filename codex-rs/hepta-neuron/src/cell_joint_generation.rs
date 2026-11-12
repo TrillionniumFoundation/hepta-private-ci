@@ -247,7 +247,12 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        let payload = self.request_payload(manifest, request, self.resident.is_none(), None);
+        let payload = self.request_payload(
+            manifest,
+            request,
+            self.resident.is_none(),
+            /*resident_clock*/ None,
+        );
         let payload = match payload {
             Ok(value) => value,
             Err(CellGenerationErrorV2::Unavailable) => {

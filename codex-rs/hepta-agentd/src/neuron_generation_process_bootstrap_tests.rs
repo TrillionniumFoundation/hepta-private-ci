@@ -288,12 +288,12 @@ async fn compute(
 
 #[tokio::test]
 async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result() -> Result<()> {
-    reopen_original_result(false).await
+    reopen_original_result(/*resident*/ false).await
 }
 
 #[tokio::test]
 async fn actual_resident_joint_reopens_the_original_descriptor_owner_without_dispatch() -> Result<()> {
-    reopen_original_result(true).await
+    reopen_original_result(/*resident*/ true).await
 }
 
 async fn reopen_original_result(resident: bool) -> Result<()> {

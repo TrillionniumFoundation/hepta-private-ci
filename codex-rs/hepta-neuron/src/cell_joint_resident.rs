@@ -65,7 +65,7 @@ impl ResidentTransport {
         // another Cell owns the transport. Cancellation also covers contention.
         let mut state = loop {
             if let Some(status) = interrupted(&request, &mut last_clock)? {
-                return observation(status, started, Vec::new(), 0);
+                return observation(status, started, Vec::new(), /*communication_bytes*/ 0);
             }
             match self.state.try_lock() {
                 Ok(state) => break state,
@@ -96,14 +96,14 @@ impl ResidentTransport {
         request.payload = match prepare_payload(include_assets, last_clock) {
             Ok(payload) => payload,
             Err(CellGenerationErrorV2::Deadline) => {
-                return observation(ProcessStatus::Deadline, started, Vec::new(), 0);
+                return observation(ProcessStatus::Deadline, started, Vec::new(), /*communication_bytes*/ 0);
             }
             Err(error) => return Err(error),
         };
         // Artifact hashing and preparing the initial model packet can take
         // time. Recheck the live budget before starting any native process.
         if let Some(status) = interrupted(&request, &mut last_clock)? {
-            return observation(status, started, Vec::new(), 0);
+            return observation(status, started, Vec::new(), /*communication_bytes*/ 0);
         }
         state.manifest_digest = Some(manifest_digest);
         if state.session.is_none() {
@@ -128,7 +128,7 @@ impl ResidentTransport {
             // No frame entered the writer queue. A cancellation/clock failure
             // here must not poison another Cell's healthy cached model.
             return match result {
-                Ok((status, output)) => observation(status, started, output, 0),
+                Ok((status, output)) => observation(status, started, output, /*communication_bytes*/ 0),
                 Err(error) => Err(error),
             };
         }

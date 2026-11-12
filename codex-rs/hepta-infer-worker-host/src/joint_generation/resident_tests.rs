@@ -44,7 +44,7 @@ fn assert_same_content(actual: &[u8], expected: Response) -> Result<()> {
 #[test]
 fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()> {
     let fixture = Fixture::new()?;
-    let a = fixture.run(&[], &[], init(17))?;
+    let a = fixture.run(&[], &[], init(/*seed*/ 17))?;
     let advanced = fixture.run(&a.state, &[], Command::Advance(0))?;
     let committed = fixture.run(
         &advanced.state,
@@ -59,7 +59,7 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
         &fixture.public,
         &[],
         &[],
-        init(17),
+        init(/*seed*/ 17),
     ));
     input.extend(framed(&request(
         &[],
@@ -69,7 +69,7 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
         Command::Advance(0),
     )));
     // Another Cell begins from empty state after A already advanced.
-    input.extend(framed(&request(&[], &[], &[], &[], init(23))));
+    input.extend(framed(&request(&[], &[], &[], &[], init(/*seed*/ 23))));
     input.extend(framed(&request(
         &[],
         &[],
@@ -83,7 +83,7 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
     let mut output = Vec::new();
     serve(Cursor::new(input), &mut output)?;
     let mut output = Cursor::new(output);
-    for expected in [a, advanced, fixture.run(&[], &[], init(23))?, committed] {
+    for expected in [a, advanced, fixture.run(&[], &[], init(/*seed*/ 23))?, committed] {
         assert_same_content(
             &read_frame(&mut output)?.ok_or("missing response")?,
             expected,
@@ -96,7 +96,7 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
 #[test]
 fn resident_refuses_asset_replacement_and_missing_initial_assets() -> Result<()> {
     let fixture = Fixture::new()?;
-    let request = request(&fixture.weights, &fixture.public, &[], &[], init(17));
+    let request = request(&fixture.weights, &fixture.public, &[], &[], init(/*seed*/ 17));
     let mut input = framed(&request);
     input.extend(framed(&request));
     let mut output = Vec::new();
@@ -111,7 +111,7 @@ fn resident_refuses_asset_replacement_and_missing_initial_assets() -> Result<()>
                 &[],
                 &[],
                 &[],
-                init(17)
+                init(/*seed*/ 17)
             ))),
             Vec::new()
         )
@@ -151,7 +151,7 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
         budget_remaining: 999_000,
         task_digest: [7; 32],
     };
-    let first = request_observed(&fixture, &[], &[], init(17), &owner);
+    let first = request_observed(&fixture, &[], &[], init(/*seed*/ 17), &owner);
     let initial = crate::proposal::propose(&first)?;
     let commit = Command::Commit { modality: 3, units: 7 };
     let partial = crate::proposal::propose(&request_observed(
@@ -160,7 +160,7 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
     let mut other = owner.clone();
     other.task_digest = [8; 32];
     let second = crate::proposal::propose(&request_observed(
-        &fixture, &[], &[], init(23), &other,
+        &fixture, &[], &[], init(/*seed*/ 23), &other,
     ))?;
     let planned = crate::proposal::propose(&request_observed(
         &fixture, &partial.state, &partial.delta, Command::Auto(999_000), &owner,
@@ -169,7 +169,7 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
     input.extend(framed(&request_observed(
         &omitted, &initial.state, &[], commit, &owner,
     )));
-    input.extend(framed(&request_observed(&omitted, &[], &[], init(23), &other)));
+    input.extend(framed(&request_observed(&omitted, &[], &[], init(/*seed*/ 23), &other)));
     input.extend(framed(&request_observed(
         &omitted, &partial.state, &partial.delta, Command::Auto(999_000), &owner,
     )));

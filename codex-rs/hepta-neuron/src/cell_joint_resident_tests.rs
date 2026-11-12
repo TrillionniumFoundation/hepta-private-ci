@@ -255,7 +255,7 @@ fn resident_cancellation_after_dispatch_never_replays_the_exchange() -> TestResu
 
 #[test]
 fn resident_failure_keeps_cost_but_requires_a_new_owner_open() -> TestResult {
-    let mut harness = Harness::new(32, Arc::new(|| 10))?;
+    let mut harness = Harness::new(/*weights_bytes*/ 32, Arc::new(|| 10))?;
     resident(&mut harness)?;
     let proposal =
         harness
@@ -415,7 +415,7 @@ fn resident_refuses_another_manifest_without_discarding_the_original_cache() -> 
 
 #[test]
 fn resident_invalid_clock_keeps_the_operation_unresolved() -> TestResult {
-    let mut harness = Harness::new(16, Arc::new(|| 0))?;
+    let mut harness = Harness::new(/*weights_bytes*/ 16, Arc::new(|| 0))?;
     resident(&mut harness)?;
     assert_eq!(
         harness.worker.execute(
