@@ -95,6 +95,63 @@ jobs:
           path: ${{ runner.temp }}/mem7-records
           if-no-files-found: error
           retention-days: 14
+  causal-isolation:
+    name: Strict memory-on/off process boundary (no model)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Bind source and provision the namespace tool
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem9-isolation-records"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-before.txt"
+          git status --porcelain > "$records/worktree-before.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-before.txt"
+          uname -a > "$records/host.txt"
+          python --version >> "$records/host.txt"
+          sudo apt-get update 2>&1 | tee "$records/package-update.log"
+          sudo apt-get install --yes --no-install-recommends bubblewrap 2>&1 | tee "$records/package-install.log"
+          bwrap --version >> "$records/host.txt"
+      - name: Execute strict isolation and failure controls
+        env:
+          HEPTA_MEM9_REQUIRE_ISOLATION: "1"
+          HEPTA_MEM9_EVIDENCE_ROOT: ${{ runner.temp }}/mem9-isolation-records/attempts
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_isolation
+      - name: Retain final exact-source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem9-isolation-records"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-after.txt"
+          git status --porcelain > "$records/worktree-after.txt"
+          git diff --binary HEAD > "$records/source-rewrites.patch"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-after.txt"
+      - name: Retain actual namespace attempts and raw output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem9-isolation-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem9-isolation-records
+          if-no-files-found: error
+          retention-days: 30
   native-owner:
     name: Staged native episodic owner contracts
     runs-on: ubuntu-24.04
