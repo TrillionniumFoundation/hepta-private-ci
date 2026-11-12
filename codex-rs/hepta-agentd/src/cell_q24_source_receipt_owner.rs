@@ -130,23 +130,6 @@ pub struct OriginalCellQ24SourceReceiptOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
-    pub(crate) fn require_prepared(
-        &self,
-        prepared: &CellQ24PreparedLearningV1,
-        stage: OriginalCellQ24SourceStageV1,
-    ) -> Result<(), Error> {
-        if self.config.stage != stage
-            || self.prepared.initial() != prepared.initial()
-            || self.prepared.scope() != prepared.scope()
-            || !std::ptr::eq(self.prepared.as_ref(), prepared)
-        {
-            return Err(binding("original source handoff operation and stage"));
-        }
-        self.prepared.with_original_prepared_operation(|read| {
-            self.require_prepared_in_operation(prepared, stage, read)
-        })?
-    }
-
     pub fn create(
         file: File,
         witness: W,
