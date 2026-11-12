@@ -32,7 +32,7 @@ CALLERS = {
     "root_historical_task_publication_data": (route.PROVIDER, DERIVE),
     "root_historical_task_publication_read": (TASK,),
     "cell_q24_historical_dataset_task_capture": (A + "production_post_a_q24.rs",),
-    "cell_q24_historical_dataset_task_receipt": (),
+    "cell_q24_historical_dataset_task_receipt": (A + "cell_q24_dataset_historical_ledger.rs",),
 }
 
 

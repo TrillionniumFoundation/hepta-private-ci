@@ -41,6 +41,7 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
         "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs",
         "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_serve.rs",
+        "codex-rs/hepta-agentd/src/authority_host_initial_peer_runtime.rs",
     ),
 }
 

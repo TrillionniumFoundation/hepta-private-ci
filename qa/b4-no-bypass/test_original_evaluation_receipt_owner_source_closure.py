@@ -42,6 +42,7 @@ CALLERS = {
     "learning_original_evaluation_key": (
         AGENT + "neuron_cell_evaluation_owner.rs",
         OWNER,
+        AGENT + "authority_host_q24_evaluation_execution.rs",
     ),
 }
 
