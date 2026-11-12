@@ -1,0 +1,96 @@
+name: HCSN retained adjoint arithmetic
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_initial_adjoint/**
+      - qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz
+      - qualification/hcsn_joint_dde/model.py
+      - qualification/hcsn_boundary_audit/refractory_transport.py
+      - qualification/hcsn_boundary_audit/spatial_generator.py
+      - qualification/hcsn_graded/model.py
+      - qualification/hcsn_graded/spatial.py
+      - .github/workflows/hcsn-initial-adjoint-arithmetic.yml
+permissions:
+  contents: read
+jobs:
+  retained-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - name: Bind exact head and inspect retained arithmetic only
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, shutil, subprocess, sys, tarfile
+          from pathlib import Path
+          package = Path('qualification/hcsn_initial_adjoint')
+          output = Path(os.environ['RUNNER_TEMP'])/'adjoint-arithmetic'
+          output.mkdir()
+          inputs = output/'inputs'
+          inputs.mkdir()
+          sha = lambda path: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+          expected = json.loads((package/'EXPECTED.json').read_text())
+          formatting = json.loads((package/'evidence/FORMAT.json').read_text())
+          for name, digest in expected['source_sha256'].items():
+              wanted = formatting['files'][name]['published_sha256'] if name in formatting['files'] else digest
+              assert sha(name) == wanted, ('current source differs from retained qualification', name)
+          original = package/'evidence/LOCAL001-ORIGINALS.tar.gz'
+          baseline = Path('qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz')
+          review = package/'evidence/review001/INDEPENDENT-REVIEW-ORIGINALS.tar.gz'
+          assert sha(original) == 'b25571b3acbfd52e6a85d81d54acc0b48a731c0b31bed6a1ac3d6d69a86ff736'
+          assert sha(baseline) == '85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e'
+          assert sha(review) == '6e701cb4a8147533016d77f3ffb8839a6e90d1a0c41b6e04aec68cdca228d919'
+          inspector = package/'evidence/review001/inspect_retained.py'
+          with tarfile.open(review, 'r:gz') as archive:
+              assert len(archive.getmembers()) == 9
+              assert archive.extractfile('inspect_retained.py').read() == inspector.read_bytes()
+              assert archive.extractfile('GIT-FORMAT.json').read() == (package/'evidence/FORMAT.json').read_bytes()
+          shutil.copyfile(original, inputs/'GIT-LOCAL001-ORIGINALS.tar.gz')
+          shutil.copyfile(baseline, inputs/'GIT-BASELINE-ORIGINALS.tar.gz')
+          shutil.copyfile(package/'evidence/FORMAT.json', inputs/'GIT-FORMAT.json')
+          for name in ('solver', 'validate'):
+              shutil.copyfile(package/(name+'.py'), inputs/(name+'.published.py'))
+          names = sorted(set(expected['source_sha256']) | {str(inspector), str(original), str(baseline), str(review), str(package/'EXPECTED.json'), str(package/'evidence/FORMAT.json'), '.github/workflows/hcsn-initial-adjoint-arithmetic.yml'})
+          before = {name: sha(name) for name in names}
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert head == os.environ['CANDIDATE_COMMIT']
+          (output/'SOURCE-BEFORE.json').write_text(json.dumps(before, indent=2, sort_keys=True)+'\n')
+          command = [sys.executable, '-B', str(inspector), '--folder', str(inputs), '--output', str(output/'REVIEW.json')]
+          with (output/'inspector.stdout').open('wb') as stdout, (output/'inspector.stderr').open('wb') as stderr:
+              completed = subprocess.run(command, stdout=stdout, stderr=stderr)
+          after = {name: sha(name) for name in names}
+          (output/'SOURCE-AFTER.json').write_text(json.dumps(after, indent=2, sort_keys=True)+'\n')
+          receipt = dict(source_head=head, retained_input_head='06856b0bba5c26c8aa72dc15a4f2a6e34e253bc5', retained_candidate_tested_source='caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772', exit_code=completed.returncode, source_unchanged=before==after, checked_source_files=len(names), candidate_imports=0, adjoint_calls=0, forward_dde_calls=0, matrix_exponentials=0, static_solves=0, torch_calls=0, optimizer_updates=0)
+          if completed.returncode == 0:
+              result = json.loads((output/'REVIEW.json').read_text())
+              assert result['passed'] and result['compared_scalar_count'] == 345
+              assert result['review_new_candidate_imports_ode_adjoint_expm_static_torch_optimizer_calls'] == 0
+              receipt['retained_scalar_comparisons'] = result['compared_scalar_count']
+              receipt['review_sha256'] = sha(output/'REVIEW.json')
+          receipt['status'] = 'PASS' if completed.returncode == 0 and before == after else 'HOLD'
+          (output/'CI-RECEIPT.json').write_text(json.dumps(receipt, indent=2, sort_keys=True)+'\n')
+          print((output/'inspector.stdout').read_text())
+          print((output/'inspector.stderr').read_text(), file=sys.stderr)
+          print(json.dumps(receipt, sort_keys=True))
+          assert receipt['status'] == 'PASS'
+          PY
+      - run: git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retained-adjoint-arithmetic
+          path: ${{ runner.temp }}/adjoint-arithmetic
+          if-no-files-found: error

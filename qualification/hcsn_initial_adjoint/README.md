@@ -65,3 +65,11 @@ adapter and all version/metadata guards, larger-mesh resource/error gates,
 support/delay/physics/migration derivatives, full-network training and
 restoration, continuum finite-risk accuracy and independent task controls.
 No existing physical-only or #6241 qualification has been broadened.
+
+The `HCSN retained adjoint arithmetic` workflow runs the independent inspector
+on retained arrays and exact current-source/format identities. It binds its
+checked-out head separately from the historical numerical input identity,
+retains full inspector stdout/stderr and source-before/after records, and
+imports no candidate, Torch or SciPy solver. It performs zero new candidate
+ODE/adjoint/exponential/static/optimizer calls. This arithmetic check does not
+execute the still-open corruption or Torch guards.
