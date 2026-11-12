@@ -161,6 +161,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let independent_b_handoff = options.remove(std::ffi::OsStr::new(
             "--root-independent-b-evaluation-handoff-fd",
         ));
+        let independent_source_handoff = options.remove(std::ffi::OsStr::new(
+            "--root-independent-b-source-handoff-fd",
+        ));
         let post_a_publication_deployment = options
             .remove(std::ffi::OsStr::new("--post-a-publication-deployment"))
             .map(PathBuf::from);
@@ -251,6 +254,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Err("publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd".into());
         }
         if independent_b_deployment.is_some() != independent_b_handoff.is_some()
+            || independent_b_deployment.is_some() != independent_source_handoff.is_some()
             || independent_b_deployment.is_some() && post_a_deployment.is_none()
             || post_a_deployment.is_some()
                 && (independent_b_deployment.is_none()
@@ -279,6 +283,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
         let mut independent_b_handoff = independent_b_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let mut independent_source_handoff = independent_source_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -448,10 +456,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let independent_evaluation = match (
                         independent_b_deployment.as_deref(),
                         independent_b_handoff.take(),
+                        independent_source_handoff.take(),
                     ) {
-                        (Some(path), Some(handoff)) => {
-                            Some((path, std::os::unix::net::UnixDatagram::from(handoff)))
-                        }
+                        (Some(path), Some(handoff), Some(source)) => Some((
+                            path,
+                            std::os::unix::net::UnixDatagram::from(handoff),
+                            std::os::unix::net::UnixDatagram::from(source),
+                        )),
                         _ => {
                             return Err(
                                 "original independent B inputs are missing or already consumed"

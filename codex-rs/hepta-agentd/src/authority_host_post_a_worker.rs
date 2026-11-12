@@ -47,6 +47,7 @@ struct OriginalInputs {
     model_handoff: UnixDatagram,
     publication_handoff: Option<UnixDatagram>,
     independent_b_handoff: Option<UnixDatagram>,
+    independent_source_handoff: Option<UnixDatagram>,
     root_pidfd: OwnedFd,
     receiver: mpsc::Receiver<Submission>,
 }
@@ -67,6 +68,7 @@ pub(super) fn prepare(
     root_pidfd: OwnedFd,
     publication_handoff: Option<UnixDatagram>,
     independent_b_handoff: Option<UnixDatagram>,
+    independent_source_handoff: Option<UnixDatagram>,
 ) -> io::Result<(PostALearningSubmitter, PostALearningWorker)> {
     original_root()?;
     let gate = Arc::new(InstallationGate {
@@ -90,6 +92,7 @@ pub(super) fn prepare(
                 model_handoff,
                 publication_handoff,
                 independent_b_handoff,
+                independent_source_handoff,
                 root_pidfd,
                 receiver,
             })),
@@ -286,21 +289,24 @@ fn run_installation(
             "original post-A publication inputs differ",
         ));
     }
-    if independent_b.is_some() != inputs.independent_b_handoff.is_some() {
+    if independent_b.is_some() != inputs.independent_b_handoff.is_some()
+        || independent_b.is_some() != inputs.independent_source_handoff.is_some()
+    {
         return Err(io::Error::other(
             "original independent B installation inputs differ",
         ));
     }
     let bound = super::super::learning::BoundLearning::bind(learning, config, publication)?;
-    let (independent_b, independent_b_offer) = match independent_b {
-        Some(prepared) => {
+    let (independent_b, independent_b_offer, independent_source_offer) = match independent_b {
+        Some(mut prepared) => {
+            let source_offer = crate::authority_host_runtime::PreparedRootIndependentBEvaluationV1::take_original_source_offer(&mut prepared)?;
             let (runtime, offer) = crate::authority_host_runtime::PreparedRootIndependentBEvaluationV1::into_original_parts(prepared);
             let original = super::super::learning::BoundLearning::bind_original_independent_b(
                 &bound, runtime, config,
             )?;
-            (Some(original), Some(offer))
+            (Some(original), Some(offer), Some(source_offer))
         }
-        None => (None, None),
+        None => (None, None, None),
     };
     gate.require_original(end)?;
     owner_alive(owner, end)?;
@@ -311,6 +317,19 @@ fn run_installation(
             .map(|duration| duration.min(timeout))
             .ok_or_else(|| io::Error::other("original post-A handoff deadline elapsed"))
     };
+    if let (Some(handoff), Some(offer)) =
+        (inputs.independent_source_handoff, independent_source_offer)
+    {
+        crate::send_root_independent_b_source_handoff(
+            handoff,
+            offer,
+            &inputs.root_pidfd,
+            remaining()?,
+        )
+        .map_err(io::Error::other)?;
+        gate.require_original(end)?;
+        owner_alive(owner, end)?;
+    }
     crate::send_root_learning_handoff(
         inputs.learning_handoff,
         &learning_bootstrap,

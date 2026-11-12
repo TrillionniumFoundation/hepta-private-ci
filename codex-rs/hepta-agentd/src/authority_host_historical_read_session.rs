@@ -39,7 +39,7 @@ impl PreparedHostAuthoritySession {
         model_handoff: UnixDatagram,
         root_pidfd: OwnedFd,
         publication: Option<(&Path, UnixDatagram)>,
-        independent_evaluation: Option<(&Path, UnixDatagram)>,
+        independent_evaluation: Option<(&Path, UnixDatagram, UnixDatagram)>,
     ) -> io::Result<()> {
         original_root()?;
         if independent_evaluation.is_some() && publication.is_none() {
@@ -96,7 +96,7 @@ impl PreparedHostAuthoritySession {
                     self.config.peer_uid,
                     self.config.peer_gid,
                     publication.as_ref().map(|(path, _)| *path),
-                    independent_evaluation.as_ref().map(|(path, _)| *path),
+                    independent_evaluation.as_ref().map(|(path, _, _)| *path),
                 )?;
                 runtime.metadata.require_metadata_unchanged()?;
                 RootHistoricalLearningTrustV1::revalidate(
@@ -107,12 +107,17 @@ impl PreparedHostAuthoritySession {
                 Ok(plan)
             },
         )?;
+        let (independent_evaluation, independent_source) = match independent_evaluation {
+            Some((_, evaluation, source)) => (Some(evaluation), Some(source)),
+            None => (None, None),
+        };
         let (submitter, worker) = post_a_worker::prepare(
             learning_handoff,
             model_handoff,
             root_pidfd,
             publication.map(|(_, handoff)| handoff),
-            independent_evaluation.map(|(_, handoff)| handoff),
+            independent_evaluation,
+            independent_source,
         )?;
         runtime.post_a = Some(plan);
         runtime.post_a_worker = Some(worker);
