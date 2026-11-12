@@ -112,7 +112,7 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
 
     def test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape(self):
         for marker in (
-            "self.owner.admit(cancellation).await?",
+            "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?",
             "ResidentStagesV3::Uninstalled(slot)",
             "slot.take().ok_or(Error::CommitUncertain)?",
             "ResidentOriginalStageOwnersV3::install_fresh_resident_gate(",

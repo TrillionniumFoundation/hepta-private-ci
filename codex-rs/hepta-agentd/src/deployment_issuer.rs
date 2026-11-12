@@ -74,6 +74,7 @@ const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 mod original_grant;
 #[path = "deployment_learning_resident.rs"]
 mod learning_resident;
+pub(crate) use learning_resident::OriginalResidentGrantFenceV3;
 
 enum RevocationExpectation<'a> {
     Current,

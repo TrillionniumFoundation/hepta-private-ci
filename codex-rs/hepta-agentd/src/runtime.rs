@@ -489,7 +489,9 @@ pub async fn run_with_shutdown(
             })?;
             tasks.spawn_required(
                 "root-resident-learning-delivery",
-                delivery.run(store, Arc::clone(&state), cancellation.clone()),
+                crate::AgentdRootResidentDeliveryV3::run_original_resident_delivery(
+                    delivery, store, Arc::clone(&state), cancellation.clone(),
+                ),
             )?;
         }
         if let Some(owner) = terminal_learning {

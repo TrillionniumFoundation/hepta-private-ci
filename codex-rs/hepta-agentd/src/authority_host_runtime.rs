@@ -276,8 +276,9 @@ pub(super) fn open_registered_writer(
     } else {
         service
     };
-    Ok(service.retain_original_root_registry(Arc::new(leases))
-        .retain_original_resident_root(root))
+    Ok(HostAuthorityService::retain_original_resident_root(
+        service.retain_original_root_registry(Arc::new(leases)), root,
+    ))
 }
 
 /// Explicit root administration authorizes a new original registry writer

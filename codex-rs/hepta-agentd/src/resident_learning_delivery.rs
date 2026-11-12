@@ -73,7 +73,7 @@ struct EnrolledOriginalV3 {
 }
 
 impl AgentdRootResidentDeliveryV3 {
-    pub(crate) async fn run(
+    pub(crate) async fn run_original_resident_delivery(
         mut self,
         store: AutomationStore,
         state: Arc<AgentdState>,

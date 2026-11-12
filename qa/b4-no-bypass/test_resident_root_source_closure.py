@@ -249,7 +249,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn compose(", "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)"),
             ("fn run(", "self.admission_requested = true"),
             ("fn run(", "if result.is_err()"),
-            ("fn admit(", "self.owner.admit(cancellation).await?"),
+            ("fn admit(", "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?"),
             ("fn admit(", "slot.take().ok_or(Error::CommitUncertain)?"),
             ("fn admit(", "ResidentOriginalStageOwnersV3::install_fresh_resident_gate("),
             ("fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?"),

@@ -22,6 +22,7 @@ use super::store::FreshResidentCheckpointV3;
 use super::store::ResidentCheckpointV3;
 use super::store::ResidentSnapshotV3;
 use crate::DeploymentFinalUseIssuer;
+use crate::deployment_issuer::OriginalResidentGrantFenceV3;
 
 #[derive(Clone, Copy)]
 enum ResidentAccessV3 { Observe, Work }
@@ -144,7 +145,7 @@ impl ResidentRootAuthorityV3 {
         // issuer -> Root file CAS is the existing lock order; remote stages
         // run after all three fences have been released.
         verifier.with_dispatch_boundary(token, &binding, || {
-            let issuer = self.issuer.hold_original_resident_intent_v3(
+            let issuer: OriginalResidentGrantFenceV3<'_> = self.issuer.hold_original_resident_intent_v3(
                 intent, &expected, before,
             )?;
             let started = issuer.require_current()?;
@@ -165,7 +166,7 @@ impl ResidentRootAuthorityV3 {
                 ResidentStoreActionV3::Read(owner) =>
                     ResidentStoreValueV3::Snapshot(owner.read()?),
                 ResidentStoreActionV3::Admit(owner) =>
-                    ResidentStoreValueV3::Fresh(owner.admit()?),
+                    ResidentStoreValueV3::Fresh(ResidentCheckpointV3::admit(owner)?),
                 ResidentStoreActionV3::Begin(owner, fresh, predecessor, stage) => {
                     owner.begin_dispatch(fresh, predecessor, stage)?;
                     ResidentStoreValueV3::Checked

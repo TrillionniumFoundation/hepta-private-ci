@@ -194,7 +194,7 @@ impl RootResidentLearningRuntimeV3 {
         let initial = self.owner.authority.profile.initial.clone();
         // Empty recovery is not source evidence. Only fresh actual CAS admits
         // the original Experience handler, which checks its own live source.
-        let Some(continuation) = self.owner.admit(cancellation).await? else {
+        let Some(continuation) = ResidentRegisteredStateV3::admit(&self.owner, cancellation).await? else {
             return Ok((self.readback(cancellation).await?, None));
         };
         let ResidentStagesV3::Uninstalled(slot) = &mut self.stages else {
