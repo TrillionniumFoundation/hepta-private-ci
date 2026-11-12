@@ -33,21 +33,13 @@ class ActiveCaptureTests(unittest.TestCase):
         }
         self.weights, self.projection = sha("stub-weights"), {"stub": True}
         self.binding = {
-            **{
-                k: self.grant[k]
-                for k in ("owner_id", "generation", "source_frontier")
-            },
+            **{k: self.grant[k] for k in ("owner_id", "generation", "source_frontier")},
             "grant_sha256": sha(self.grant),
             "encoder_sha256": model_sha256(self.weights, self.projection),
         }
         self.task_sha = sha("original-task")
-        train = [
-            pair(f"train-{i}", "train", x)
-            for i, x in enumerate((-1.0, 0.0, 1.0))
-        ]
-        dev = [
-            pair(f"dev-{i}", "dev", x) for i, x in enumerate((-1.0, 0.0, 1.0))
-        ]
+        train = [pair(f"train-{i}", "train", x) for i, x in enumerate((-1.0, 0.0, 1.0))]
+        dev = [pair(f"dev-{i}", "dev", x) for i, x in enumerate((-1.0, 0.0, 1.0))]
         self.head = train_head(
             train,
             dev,
@@ -105,9 +97,7 @@ class ActiveCaptureTests(unittest.TestCase):
             },
         }
 
-    def run_choice(
-        self, operation_id, candidates=None, *, head=None, capture=None
-    ):
+    def run_choice(self, operation_id, candidates=None, *, head=None, capture=None):
         selected_head = self.head if head is None else head
         return observe(
             self.producer,
@@ -220,7 +210,9 @@ class ActiveCaptureTests(unittest.TestCase):
             after_reopen = self.run_choice("unknown")
         self.assertEqual(after_reopen["outcome"], "unknown")
         self.assertEqual(after_reopen["new_attempt_reservations"], 0)
-        self.assertEqual(read_decision(self.owner, "unknown")["selection"]["action"], "ACQUIRE")
+        self.assertEqual(
+            read_decision(self.owner, "unknown")["selection"]["action"], "ACQUIRE"
+        )
 
     def test_stop_refuses_an_existing_ordinary_capture_token(self):
         self.owner.execute("ordinary", {}, dispatch=lambda _: {"value": "observed"})
@@ -234,7 +226,9 @@ class ActiveCaptureTests(unittest.TestCase):
         result = self.run_choice("stop", [self.candidate(-1.0)])
         head_path = self.owner.root / "active-heads" / (sha(self.head) + ".json")
         head_bytes = head_path.read_bytes()
-        head_path.write_bytes(head_bytes.replace(b'"cost_value":0.1', b'"cost_value":0.2'))
+        head_path.write_bytes(
+            head_bytes.replace(b'"cost_value":0.1', b'"cost_value":0.2')
+        )
         with self.assertRaises(Invalid):
             read_decision(self.owner, "stop")
         head_path.write_bytes(head_bytes)
@@ -264,9 +258,7 @@ class ActiveCaptureTests(unittest.TestCase):
 
     def test_truncated_decision_refuses_new_dispatch(self):
         result = self.run_choice("stop", [self.candidate(-1.0)])
-        path = (
-            self.owner.root / "active-decisions" / (sha(b"stop") + ".json")
-        )
+        path = self.owner.root / "active-decisions" / (sha(b"stop") + ".json")
         path.write_bytes(path.read_bytes()[:12])
         with self.assertRaises(Invalid):
             self.run_choice("stop", [self.candidate(-1.0)])

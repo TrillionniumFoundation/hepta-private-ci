@@ -239,8 +239,16 @@ class OwnedProducer:
             "producer source/model changed",
         )
         require(callable(capture), "configured capture callback required")
-        decision_path = self.owner.root / "active-decisions" / (sha(operation_id.encode()) + ".json")
-        if decision_sha256 is not None or decision_path.exists() or decision_path.is_symlink():
+        decision_path = (
+            self.owner.root
+            / "active-decisions"
+            / (sha(operation_id.encode()) + ".json")
+        )
+        if (
+            decision_sha256 is not None
+            or decision_path.exists()
+            or decision_path.is_symlink()
+        ):
             from .active_capture import read_decision
 
             decision = read_decision(self.owner, operation_id)

@@ -35,16 +35,17 @@ def observed_prefix(owner, task_sha256, operation_ids):
     )
     for operation_id in operation_ids:
         identifier(operation_id)
-    require(
-        len(set(operation_ids)) == len(operation_ids), "duplicate prefix operation"
-    )
+    require(len(set(operation_ids)) == len(operation_ids), "duplicate prefix operation")
     receipts, latent = [], []
     for operation_id in operation_ids:
         receipt = owner.receipt(operation_id)
         require(receipt["status"] == "executed", "failed observation in actor prefix")
         receipts.append(receipt["receipt_sha256"])
         result = receipt["result"]
-        if result.get("schema") in ("perc1.owned-encoding.v1", "perc1.owned-encoding.v2"):
+        if result.get("schema") in (
+            "perc1.owned-encoding.v1",
+            "perc1.owned-encoding.v2",
+        ):
             if result["schema"] == "perc1.owned-encoding.v2":
                 decode_native_wire(result, source_root=owner.root)
             else:
@@ -86,6 +87,11 @@ def _retain(owner, kind, identity, value):
     directory = owner.root / kind
     directory.mkdir(exist_ok=True, mode=0o700)
     require(not directory.is_symlink(), "decision directory symlink refused")
+    parent = os.open(owner.root, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(parent)
+    finally:
+        os.close(parent)
     raw = canonical(value)
     require(len(raw) <= MAX_DECISION_BYTES, "decision exceeds retained bound")
     path = directory / (identity + ".json")
@@ -131,11 +137,14 @@ def _retain(owner, kind, identity, value):
 def _read(owner, kind, identity):
     directory = owner.root / kind
     require(not directory.is_symlink(), "decision directory symlink refused")
-    descriptor = os.open(directory / (identity + ".json"), os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    descriptor = os.open(
+        directory / (identity + ".json"), os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    )
     with os.fdopen(descriptor, "rb") as stream:
         info = os.fstat(stream.fileno())
         require(
-            stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+            stat.S_ISREG(info.st_mode)
+            and info.st_nlink == 1
             and 0 < info.st_size <= MAX_DECISION_BYTES,
             "invalid retained decision/head file",
         )
@@ -146,14 +155,18 @@ def _read(owner, kind, identity):
 
 
 def _selector_sha256():
-    return sha({
-        name: sha(Path(__file__).with_name(name + ".py").read_bytes())
-        for name in ("acquisition", "mlp_head")
-    })
+    return sha(
+        {
+            name: sha(Path(__file__).with_name(name + ".py").read_bytes())
+            for name in ("acquisition", "mlp_head")
+        }
+    )
 
 
 def _select(head, candidates, prefix, mode, seed):
-    require(type(candidates) is list and len(candidates) <= 256, "candidate count bound")
+    require(
+        type(candidates) is list and len(candidates) <= 256, "candidate count bound"
+    )
     require(len(canonical(candidates)) <= MAX_DECISION_BYTES, "candidate byte bound")
     offerings = []
     for candidate in candidates:
@@ -165,12 +178,17 @@ def _select(head, candidates, prefix, mode, seed):
         require(
             features["prefix_sha256"] == sha(prefix)
             and features["acquired_receipt_sha256s"] == prefix["receipt_sha256s"]
-            and (features["acquired_latent"] == [] or features["acquired_latent"] == prefix["latent_summary"]),
+            and (
+                features["acquired_latent"] == []
+                or features["acquired_latent"] == prefix["latent_summary"]
+            ),
             "candidate features include unretained or changed evidence",
         )
         offerings.append({k: candidate[k] for k in ("id", "upper_cost", "features")})
     selection = choose(head, offerings, mode=mode, seed=seed)
-    selected = next((c for c in candidates if c["id"] == selection["candidate_id"]), None)
+    selected = next(
+        (c for c in candidates if c["id"] == selection["candidate_id"]), None
+    )
     return selection, selected
 
 
@@ -192,16 +210,19 @@ def _check_operation(owner, decision):
 def read_decision(owner, operation_id):
     """Recheck a stored decision and original head/prefix without new effects.
 
-An ACQUIRE decision alone does not establish that dispatch completed. The owner
-receipt/status remains the separate authority for that local effect outcome.
-"""
+    An ACQUIRE decision alone does not establish that dispatch completed. The owner
+    receipt/status remains the separate authority for that local effect outcome.
+    """
     owner.status()  # Require an open, exclusively owned journal before sidecar I/O.
     identifier(operation_id)
     decision = _read(owner, "active-decisions", sha(operation_id.encode()))
-    exact(decision, (
-        "schema operation_id owner_binding_sha256 code_sha256 selector_code_sha256 "
-        "head_sha256 prefix catalog_sha256 catalog mode seed selection kind request quoted_microcredits"
-    ))
+    exact(
+        decision,
+        (
+            "schema operation_id owner_binding_sha256 code_sha256 selector_code_sha256 "
+            "head_sha256 prefix catalog_sha256 catalog mode seed selection kind request quoted_microcredits"
+        ),
+    )
     require(
         decision["schema"] == "perc1.active-capture-decision.v2"
         and decision["operation_id"] == operation_id
@@ -214,16 +235,23 @@ receipt/status remains the separate authority for that local effect outcome.
     require(sha(head) == decision["head_sha256"], "retained selector head changed")
     prefix = decision["prefix"]
     require(
-        observed_prefix(owner, prefix["task_sha256"], prefix["operation_ids"]) == prefix,
+        observed_prefix(owner, prefix["task_sha256"], prefix["operation_ids"])
+        == prefix,
         "retained actor prefix changed",
     )
-    require(sha(decision["catalog"]) == decision["catalog_sha256"], "retained catalog changed")
-    selection, selected = _select(head, decision["catalog"], prefix, decision["mode"], decision["seed"])
+    require(
+        sha(decision["catalog"]) == decision["catalog_sha256"],
+        "retained catalog changed",
+    )
+    selection, selected = _select(
+        head, decision["catalog"], prefix, decision["mode"], decision["seed"]
+    )
     require(
         selection == decision["selection"]
         and decision["kind"] == (selected["kind"] if selected else None)
         and decision["request"] == (selected["request"] if selected else None)
-        and decision["quoted_microcredits"] == (selected["upper_cost"] if selected else 0),
+        and decision["quoted_microcredits"]
+        == (selected["upper_cost"] if selected else 0),
         "retained decision does not match its frozen selector inputs",
     )
     _check_operation(owner, decision)
