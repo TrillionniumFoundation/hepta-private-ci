@@ -1,0 +1,177 @@
+{
+  "schema": "ctrl.macro-ci-observation.v1",
+  "observed_at_utc": "2026-11-12T01:29:58Z",
+  "observed_at_new_york": "2026-11-11T20:29:58-05:00",
+  "final_code_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+  "final_code_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+  "scope": "Exact committed stages; CPU contracts and native fixtures are not business policy efficacy",
+  "stages": [
+    {
+      "stage": 1,
+      "pr": 6050,
+      "source_sha": "10602cf3edb6fab0bb1fca21b329a41cc9e756f9",
+      "cpu_run_id": 43128919632,
+      "cpu_status": "success",
+      "native_run_id": null,
+      "native_status": "NOT_TRIGGERED"
+    },
+    {
+      "stage": 2,
+      "pr": 6052,
+      "source_sha": "389e4874a11c1de6a4ac57c8d9eb592de3de0d55",
+      "cpu_run_id": 43129296842,
+      "cpu_status": "success",
+      "native_run_id": null,
+      "native_status": "NOT_TRIGGERED"
+    },
+    {
+      "stage": 3,
+      "pr": 6055,
+      "source_sha": "e741bcded084f399be2c2779bb7ecc93da672daf",
+      "cpu_run_id": 43130870523,
+      "cpu_status": "pending",
+      "native_run_id": null,
+      "native_status": "NOT_TRIGGERED"
+    },
+    {
+      "stage": 4,
+      "pr": 6065,
+      "source_sha": "29d4b11a79ae38ea70d217045bdbe5751e2c4065",
+      "cpu_run_id": 43130973217,
+      "cpu_status": "success",
+      "native_run_id": null,
+      "native_status": "NOT_TRIGGERED"
+    },
+    {
+      "stage": 5,
+      "pr": 6067,
+      "source_sha": "aec98bc3fff943da5e63e88ed8209181489c769c",
+      "cpu_run_id": 43131165563,
+      "cpu_status": "queued",
+      "native_run_id": 43131165479,
+      "native_status": "queued"
+    },
+    {
+      "stage": 6,
+      "pr": 6070,
+      "source_sha": "fd03ce8798050ec67c644953013aeccadd8a0122",
+      "cpu_run_id": 43131802477,
+      "cpu_status": "queued",
+      "native_run_id": 43131802403,
+      "native_status": "queued"
+    },
+    {
+      "stage": 7,
+      "pr": 6071,
+      "source_sha": "24e3bc9f859c9032fd422384f3de843125144030",
+      "cpu_run_id": 43131904260,
+      "cpu_status": "queued",
+      "native_run_id": 43131904251,
+      "native_status": "queued"
+    },
+    {
+      "stage": 8,
+      "pr": 6077,
+      "source_sha": "b8cb4bdc200b00927a88a7edb2dd85b8844c9821",
+      "cpu_run_id": 43133639640,
+      "cpu_status": "queued",
+      "native_run_id": 43133639634,
+      "native_status": "queued"
+    },
+    {
+      "stage": 9,
+      "pr": 6078,
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "cpu_run_id": 43133891398,
+      "cpu_status": "queued",
+      "native_run_id": 43133891410,
+      "native_status": "queued"
+    }
+  ],
+  "raw_log_verified_cpu_runs": [
+    {
+      "stage": 1,
+      "run_id": 43128919632,
+      "job": "contracts",
+      "source_sha": "10602cf3edb6fab0bb1fca21b329a41cc9e756f9",
+      "tested_sha": "10602cf3edb6fab0bb1fca21b329a41cc9e756f9",
+      "tree": "549ed96e9239b030e9655d3e5d76ad4da831c815",
+      "passed_methods": 85,
+      "all_receipts_passed": true,
+      "new_suite": [
+        {
+          "module": "ndu_real_runtime.test_macro_realization",
+          "minimum": 13,
+          "passed": 13,
+          "log_sha256": "c8178988c064ede922999c170907d725e3a8487b02732c7acb0c75ca05769e68"
+        }
+      ],
+      "artifact_id": 13905357757,
+      "artifact_digest": "sha256:59e1c31f1b53cc26e10a3ab03679d02cbf83fe9d4fc090b608bc02e063dd2991",
+      "artifact_expires_at": "2026-12-12T01:06:00Z"
+    },
+    {
+      "stage": 2,
+      "run_id": 43129296842,
+      "job": "contracts",
+      "source_sha": "389e4874a11c1de6a4ac57c8d9eb592de3de0d55",
+      "tested_sha": "389e4874a11c1de6a4ac57c8d9eb592de3de0d55",
+      "tree": "06d665fc6a62445755deb763c77591b8622df3fe",
+      "passed_methods": 98,
+      "all_receipts_passed": true,
+      "new_suite": [
+        {
+          "module": "ndu_real_runtime.test_macro_realization",
+          "minimum": 13,
+          "passed": 13,
+          "log_sha256": "c211177cc5bba626330442c768f90d230e5035b2f84c49473d8dec3e48b2a5f6"
+        },
+        {
+          "module": "ndu_real_runtime.test_macro_cohort",
+          "minimum": 13,
+          "passed": 13,
+          "log_sha256": "303ef134701a001498b8791a6e25dbd030b633b83d88debdce6129bbecc1feca"
+        }
+      ],
+      "artifact_id": 13905493466,
+      "artifact_digest": "sha256:ad0f3a513a4e37605496d2fa06a6f6def5a91be3ae92d2f24357f9c75bff114e",
+      "artifact_expires_at": "2026-12-12T01:06:56Z"
+    },
+    {
+      "stage": 4,
+      "run_id": 43130973217,
+      "job": "contracts",
+      "source_sha": "29d4b11a79ae38ea70d217045bdbe5751e2c4065",
+      "tested_sha": "29d4b11a79ae38ea70d217045bdbe5751e2c4065",
+      "tree": "af2a4d7992c8b7cae0782af8df6a96f90004d80c",
+      "passed_methods": 122,
+      "all_receipts_passed": true,
+      "new_suite": [
+        {
+          "module": "ndu_real_runtime.test_macro_policy_checkpoint",
+          "minimum": 7,
+          "passed": 7,
+          "log_sha256": "513a77fd6c31eb74017ce5a3e0c7b3d3366b3e44c5bd949777812410b66942d2"
+        },
+        {
+          "module": "ndu_real_runtime.test_macro_policy",
+          "minimum": 17,
+          "passed": 17,
+          "log_sha256": "830e5f122631652df0a38f7530bc100e63dfcd8f18213f155d6f7db1e162c153"
+        }
+      ],
+      "artifact_id": 13907161051,
+      "artifact_digest": "sha256:a94da0567a72ef692c76f5c8db10370d93a96163ff077c24ca4842f5bb249ec3",
+      "artifact_expires_at": "2026-12-12T01:27:52Z"
+    }
+  ],
+  "local_native_qualification": "BLOCKED_BEFORE_ACTOR_EXECUTION",
+  "final_head_native_result": "PENDING_NO_SUCCESS_CLAIM",
+  "business_experiments_run": 0,
+  "policy_efficacy_evaluated": false,
+  "full_physical_cost_observed": false,
+  "production_update": "no-update",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "run_url_pattern": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/{run_id}",
+  "all_repository_ci_passed": false
+}

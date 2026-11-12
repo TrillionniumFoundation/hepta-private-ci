@@ -1,0 +1,289 @@
+{
+  "ci": {
+    "latest_stage_evidence": "CI_STATUS.json; exact-head statuses and original-log verification are recorded there",
+    "this_is_a_ci_result": false
+  },
+  "coverage_inventory": {
+    "arithmetic": "153 - earlier collector 6 + current collector 7 + converter 6",
+    "distinct_methods_latest_module_counts": 160,
+    "modules": 24,
+    "new_or_replaced_module_counts": {
+      "ndu_real_runtime.test_macro_training_pairs": 6,
+      "ndu_real_runtime.test_metacontrol_native_pairs": 7
+    },
+    "other_modules_rerun_for_this_record": false,
+    "single_160_method_run_performed": false
+  },
+  "earlier_cpu_batch": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "module_stdout_sha256": {
+      "ndu_real_runtime.test_candidate_coverage": "7afd1698be2aa7cf14218a312e2b94bbcb32d8bcdfb2c873fca1e97b98830baa",
+      "ndu_real_runtime.test_candidate_coverage_legacy": "3fab86f3221c096ac0838702129ee97d15385f6aaf35270e1429ccd7b4926443",
+      "ndu_real_runtime.test_candidate_expansion": "8acc2fa51d201d336bc58b77d8c4a5815c42e4256f559e8b72d3ac1e5d7356d2",
+      "ndu_real_runtime.test_candidate_gap_diagnostic": "7ca88faea6aa308fece29895d7cc1192d8bbc8f92cd0ec74714c8f8b97b755c2",
+      "ndu_real_runtime.test_content_audit": "925713d1bd34c78037b87301b56f70d83f65abb370e93b28ebbf9d2403a27e05",
+      "ndu_real_runtime.test_content_identity": "2ebda758cb9632d1f43174009807d6d91c15e62594be8a76ff1a2f038b2defa2",
+      "ndu_real_runtime.test_critic_context": "18fc1316dda1885b6d1be01d2a305a9698b162d96d02c5d925cf19feb817c105",
+      "ndu_real_runtime.test_macro_actor": "f5aba720a3fff6c6ad3550baf1c78e006f666e3b68948e2019add4e07adda823",
+      "ndu_real_runtime.test_macro_cohort": "b29f03d0c513d891c7273674e7ecaf146799fb1566e397ad233ec90e16ac348e",
+      "ndu_real_runtime.test_macro_execution": "7f5af689e13b8a47a9a18abb0e85b75e9d3baa4a10f3f8c8cb2cdd5205a4f10a",
+      "ndu_real_runtime.test_macro_execution_plan": "c7dbc96705cc51656eb214ddcedbe9b9db6094c09185e79e67386717bab22cf2",
+      "ndu_real_runtime.test_macro_policy": "ce6459d54d5f1d9f464e841088a383dd8066f530845874f8d50a104015d531c3",
+      "ndu_real_runtime.test_macro_policy_checkpoint": "6b624610d51836a54c86d6a2114c69248e28b4270fb76ec2e8b1ee42a0697713",
+      "ndu_real_runtime.test_macro_realization": "71bc5e28eff6e94159c0141c4ca3501d9ac42f585926238d66f683c872ae966c",
+      "ndu_real_runtime.test_macro_result_binding": "7935c636c116a245fdafed2ecefa2d75cd67ac617379fcbada5f1d24f485f394",
+      "ndu_real_runtime.test_macro_wire_delivery_admission": "5f75fd186dee951672175d278379b2c1d60f8ec02d2e699c4fa5443bb3a2be11",
+      "ndu_real_runtime.test_metacontrol": "37f62045f3b1b5187f212eedfbe28156c490a0082bb7ec1d802e9f3e2b670284",
+      "ndu_real_runtime.test_metacontrol_context": "2a71197f2c0664e8c2ee0027ef059b442e0844e72d4a85b48db799010d0d3719",
+      "ndu_real_runtime.test_metacontrol_macro_contract": "ec7b748bcc592aeffbd98e3fa1ac6005a07238efb6bc4bb7d22b75de4237535d",
+      "ndu_real_runtime.test_metacontrol_native_pairs": "3990c59a7dc39f7ad2a22ff6947463709a9cdab6ee10ca3c7c82d95340d1725e",
+      "ndu_real_runtime.test_metacontrol_reporting": "7a19a38312589834728a00b30848a44b636cf9a05a9f113016c56b90e0479d44",
+      "ndu_real_runtime.test_metacontrol_study": "b4194610e702d9ebb71dc3a944f6b5b01757ab2840d72d2afeaf21587845d6d4",
+      "ndu_real_runtime.test_metacontrol_value_gate": "21370c279b27562be1192ea01c3d8b2fe467ae0d5e3ec82c84868960f652572e"
+    },
+    "module_test_counts": {
+      "ndu_real_runtime.test_candidate_coverage": 12,
+      "ndu_real_runtime.test_candidate_coverage_legacy": 5,
+      "ndu_real_runtime.test_candidate_expansion": 7,
+      "ndu_real_runtime.test_candidate_gap_diagnostic": 8,
+      "ndu_real_runtime.test_content_audit": 7,
+      "ndu_real_runtime.test_content_identity": 3,
+      "ndu_real_runtime.test_critic_context": 1,
+      "ndu_real_runtime.test_macro_actor": 6,
+      "ndu_real_runtime.test_macro_cohort": 13,
+      "ndu_real_runtime.test_macro_execution": 5,
+      "ndu_real_runtime.test_macro_execution_plan": 3,
+      "ndu_real_runtime.test_macro_policy": 17,
+      "ndu_real_runtime.test_macro_policy_checkpoint": 7,
+      "ndu_real_runtime.test_macro_realization": 13,
+      "ndu_real_runtime.test_macro_result_binding": 4,
+      "ndu_real_runtime.test_macro_wire_delivery_admission": 2,
+      "ndu_real_runtime.test_metacontrol": 14,
+      "ndu_real_runtime.test_metacontrol_context": 5,
+      "ndu_real_runtime.test_metacontrol_macro_contract": 1,
+      "ndu_real_runtime.test_metacontrol_native_pairs": 6,
+      "ndu_real_runtime.test_metacontrol_reporting": 3,
+      "ndu_real_runtime.test_metacontrol_study": 7,
+      "ndu_real_runtime.test_metacontrol_value_gate": 4
+    },
+    "modules": 23,
+    "observed_tests": 153,
+    "result": {
+      "bytes": 5340,
+      "path": "/workspace/scratch/740a77dc1526/ctrl-local-contracts/RESULT.json",
+      "sha256": "638454edc892fe40a666ce642a4b99e6413f673f350e2fa8117ef4c9cef20901"
+    },
+    "skipped": 0,
+    "source_head_sha": null,
+    "source_identity_note": "Preserved RESULT and module logs do not contain commit identity; do not attribute this whole batch to final code head",
+    "unexpected_successes": 0
+  },
+  "environment": {
+    "applies_to": "this local targeted invocation environment; earlier batch runtime was not embedded in RESULT.json",
+    "ci_pillow_pin": "11.3.0",
+    "local_equals_ci_environment": false,
+    "observed": {
+      "executable": "/workspace/scratch/740a77dc1526/native-venv/bin/python",
+      "numpy": "2.3.5",
+      "pillow": "13.0.0",
+      "python": "3.12.14",
+      "torch": "2.5.1+cpu",
+      "torch_cuda_available": false
+    }
+  },
+  "local_native": {
+    "enforced_before_actor_exec": false,
+    "errno": 38,
+    "mandatory_landlock_abi": -1,
+    "module": "ndu_real_runtime.test_content_identity_native",
+    "native_pass_claimed": false,
+    "original_log": {
+      "bytes": 2183,
+      "path": "/workspace/scratch/740a77dc1526/baseline-native-integration.log",
+      "sha256": "2f0d550918c52ea62569b6b0ce2f63c7d112ce82d4a6e8c52991e0120b831607"
+    },
+    "setup_errors": 1,
+    "skipped": 0,
+    "status": "FAILED_IN_SETUP_BEFORE_TEST_METHODS",
+    "test_methods_executed": 0
+  },
+  "qualification": {
+    "decision": "HOLD / NoUpdate",
+    "full_cost_observed": false,
+    "learning_factorial_experiment_executed": false,
+    "native_owner_authenticated": false,
+    "new_independent_real_tasks": 0,
+    "policy_efficacy_proved": false,
+    "production_admission": false,
+    "six_policy_experiment_executed": false
+  },
+  "read_only_originals": {
+    "business_launch": "NOT_ATTEMPTED",
+    "bytes": 3048,
+    "copied_byte_for_byte_from": "/workspace/scratch/740a77dc1526/ctrl-readonly-reconcile-20261112/READ_ONLY_OBSERVATION_20261112.json",
+    "original_unknown_status": "UNCHANGED",
+    "path": "READ_ONLY_ORIGINALS.json",
+    "replay": "NOT_ATTEMPTED",
+    "sha256": "a9348d8642c9b88e9a9d549f32ee0bb3aa689fb6808fef7cf97eced01c05ebef"
+  },
+  "recorded_at_utc": "2026-11-12T01:28:48.644628+00:00",
+  "schema": "ctrl.macro-realization.local-validation.v1",
+  "source": {
+    "baseline_sha": "eabe2d8c1a23834bd0db39f683c33977b477fd9f",
+    "code_head_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+    "code_tree_sha": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+    "manifest_scope": "Only runtime code, tests and checkpoint fixture changed between baseline and code head; not the entire dependency closure",
+    "source_sha256": {
+      "scripts/ndu_real_runtime/actor.py": "cc86d6f0b20622eaf07b4941be0a92352b8e8ba4cd97bd48a0eff4e499d97c0c",
+      "scripts/ndu_real_runtime/episode.py": "aa789464bcfb5ff0857b56992285d28d4e4cbed6c9ccd28158d7899a787db8aa",
+      "scripts/ndu_real_runtime/macro_actor.py": "02ddfcb450e6db2d252565b1202a6285210e260343bd038dd644a435c8b2eb95",
+      "scripts/ndu_real_runtime/macro_checkpoint_fixture.json": "1cc45b43cbf0cbec9343762766053eb99638e8940aeb6c0080300d91a6d7cca1",
+      "scripts/ndu_real_runtime/macro_cohort.py": "d0f1991b8bd91eca91c351ecebfdc79c769aac1023cfa8abe5a73353e9bb7009",
+      "scripts/ndu_real_runtime/macro_execution.py": "ae8a1aa2aaf184504f50b575b5d9de29c943c011c61ebc93a9405cb12c35a4af",
+      "scripts/ndu_real_runtime/macro_execution_plan.py": "6ea407e2ac35fccebbb4179e50e4c9b7c0e22b2fdd9bdfa74472bc1b8f7d7506",
+      "scripts/ndu_real_runtime/macro_policy.py": "3d4a6a20be0787a9438140ba0b5466619f600eaf62eed6db6741ff27b00214dc",
+      "scripts/ndu_real_runtime/macro_policy_checkpoint.py": "829098d6eca3851ccc11eceaf7d8efdc468826f032a97ccb4ccc27c9654f371a",
+      "scripts/ndu_real_runtime/macro_realization.py": "bf216497b695edbc4cebb7f7c801ea7b11e6edb3b995c3123c99763e1ce840f1",
+      "scripts/ndu_real_runtime/macro_training_pairs.py": "6a0a0d70bb1c92ca6811a9db0643b33d5b035c6dbfcaa82159aa9f38b1badaef",
+      "scripts/ndu_real_runtime/metacontrol_native_pairs.py": "e4018d47b447727bf5508f8149ed20de469c995a59ce88ecf96298658f143631",
+      "scripts/ndu_real_runtime/test_macro_actor.py": "a7fe42c190a8d9e7290a07a6a10d9762403f15b0b0c282fabbf7453a66a85f8b",
+      "scripts/ndu_real_runtime/test_macro_cohort.py": "7c815a0397acc336cbb3a5d9027f365a36be3aaecff893cec5ed5ad5be920427",
+      "scripts/ndu_real_runtime/test_macro_execution.py": "46db764200d9825cf9273e391bb4d960ff8533e142e1c4051e463963f2ab5dd9",
+      "scripts/ndu_real_runtime/test_macro_execution_plan.py": "97521517fce6f83e131deb3dab3deb8af85d2a0a03b5f90aec17387918f18703",
+      "scripts/ndu_real_runtime/test_macro_native.py": "f57f9cbd33e4c86d58e5833fe932c6038b0fbc681d8b26efa4ae1e0181fc73e1",
+      "scripts/ndu_real_runtime/test_macro_policy.py": "95d6a4cf9ef92be96f8a1a05de474783d8fda0e2aa9f7cc66c6ec77eda5ee483",
+      "scripts/ndu_real_runtime/test_macro_policy_checkpoint.py": "bb14699402d8565bdf9c22c4dbb89e5d9eac62ce2e621c35b500ee3a37234d27",
+      "scripts/ndu_real_runtime/test_macro_realization.py": "c4c73162fa3394a027f1f91b88d2ed9406141b44cca79c17e62684d29f8fd8dc",
+      "scripts/ndu_real_runtime/test_macro_training_fixtures.py": "8e04a7508bf53c62f5bec29c9113ea06dae25ecc07723c21b98d9e0c9b61414d",
+      "scripts/ndu_real_runtime/test_macro_training_pairs.py": "771860dd484555bea281a19c0808d22c2c276af41c8d06345758d76e58885ef9",
+      "scripts/ndu_real_runtime/test_metacontrol_native_pairs.py": "65ddc70cb5ed090f5375858debee783e0076868f30000e25c975269d8853335d"
+    }
+  },
+  "targeted_cpu": {
+    "failures": 0,
+    "observed_tests": 13,
+    "records": [
+      {
+        "after": {
+          "commit": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+          "dirty": false,
+          "parents": [
+            "b8cb4bdc200b00927a88a7edb2dd85b8844c9821"
+          ],
+          "tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+          "dirty": false,
+          "parents": [
+            "b8cb4bdc200b00927a88a7edb2dd85b8844c9821"
+          ],
+          "tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f"
+        },
+        "command": [
+          "/workspace/scratch/740a77dc1526/native-venv/bin/python",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_metacontrol_native_pairs"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.335389166000823,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T01:24:10.197443+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 1452,
+        "log_file": "collector.json.b8b65edd58d64b71b76ce0342c7a1638.log",
+        "log_sha256": "74ce13bcd681ebdea0f4dde1f070704a9ff8341f92ed5050d9cea0a8b5155b9f",
+        "minimum_tests": 7,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 7,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+        "started_at": "2026-11-12T01:24:09.855483+00:00",
+        "status": "passed",
+        "tested_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+        "timed_out": false,
+        "working_directory": "/workspace/scratch/740a77dc1526/ctrl-work"
+      },
+      {
+        "after": {
+          "commit": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+          "dirty": false,
+          "parents": [
+            "b8cb4bdc200b00927a88a7edb2dd85b8844c9821"
+          ],
+          "tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+          "dirty": false,
+          "parents": [
+            "b8cb4bdc200b00927a88a7edb2dd85b8844c9821"
+          ],
+          "tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f"
+        },
+        "command": [
+          "/workspace/scratch/740a77dc1526/native-venv/bin/python",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_macro_training_pairs"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.8839090149995172,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T01:24:16.626350+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 1286,
+        "log_file": "converter.json.f9b83acfd1de4aa0b3c54ff3a63ffabf.log",
+        "log_sha256": "8fb9f7f2bd0413bf39581fd21a80da04cbac870f133660f8ffdd6b8536c73596",
+        "minimum_tests": 6,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 6,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+        "started_at": "2026-11-12T01:24:15.739325+00:00",
+        "status": "passed",
+        "tested_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+        "timed_out": false,
+        "working_directory": "/workspace/scratch/740a77dc1526/ctrl-work"
+      }
+    ],
+    "skipped": 0,
+    "stdout": {
+      "bytes": 2738,
+      "path": "TARGETED_TESTS.log",
+      "segments": [
+        {
+          "byte_offset": 0,
+          "bytes": 1452,
+          "module": "ndu_real_runtime.test_metacontrol_native_pairs",
+          "sha256": "74ce13bcd681ebdea0f4dde1f070704a9ff8341f92ed5050d9cea0a8b5155b9f"
+        },
+        {
+          "byte_offset": 1452,
+          "bytes": 1286,
+          "module": "ndu_real_runtime.test_macro_training_pairs",
+          "sha256": "8fb9f7f2bd0413bf39581fd21a80da04cbac870f133660f8ffdd6b8536c73596"
+        }
+      ],
+      "sha256": "a8224735dd65b391e1d36995540eaaa9119b500342b84b8dd99dadd2a51819ae"
+    },
+    "suite_count": 2
+  }
+}
