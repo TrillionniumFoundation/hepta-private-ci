@@ -151,6 +151,8 @@ class PostAInstallationSourceTests(unittest.TestCase):
                     bypass = "fn bypass() { post_a_worker::serve_optional(); }"
                 else:
                     bypass = f"fn bypass() {{ {method}(); }}"
+                if row.call_pattern:
+                    self.assertIsNotNone(re.search(row.call_pattern, bypass))
                 sources = dict(self.sources)
                 sources[A + "unregistered_post_a.rs"] = bypass
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
