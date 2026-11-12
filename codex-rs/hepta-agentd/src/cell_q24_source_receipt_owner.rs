@@ -139,7 +139,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let original = Arc::clone(&prepared);
         original.with_original_prepared_operation(|read| {
-            Self::open_original_source_in_operation(
+            OriginalCellQ24SourceReceiptOwnerV1::open_original_source_in_operation(
                 file,
                 witness,
                 prepared,
@@ -162,7 +162,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let original = Arc::clone(&prepared);
         original.with_original_prepared_operation(|read| {
-            Self::open_original_source_in_operation(
+            OriginalCellQ24SourceReceiptOwnerV1::open_original_source_in_operation(
                 file,
                 witness,
                 prepared,
