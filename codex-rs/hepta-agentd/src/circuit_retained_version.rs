@@ -1,6 +1,6 @@
 //! The original retained-version host and an attenuated ordinary LEARN client.
-//! This purpose prepares only strict TrainingNoUpdate. Separate original
-//! Artifact selection, Control CURRENT and FinalUse custody remain in the host.
+//! Explicit three-cut TrainingNoUpdate and four-cut evaluated retention use
+//! separate wire purposes. Artifact, CURRENT and FinalUse custody stay here.
 //! Root receives neither a grant nor files, keys or a task-execution capability.
 
 use std::time::SystemTime;
@@ -16,13 +16,21 @@ mod c_task;
 mod client;
 #[path = "circuit_retained_version_context.rs"]
 mod context;
+#[path = "circuit_evaluated_version_context.rs"]
+mod evaluated_context;
+#[path = "circuit_evaluated_version_wire.rs"]
+mod evaluated_wire;
 #[path = "circuit_retained_version_host.rs"]
 mod host;
+#[path = "circuit_retained_version_profile.rs"]
+mod profile;
 #[path = "circuit_retained_version_wire.rs"]
 mod wire;
 
 pub use c_task::OriginalCircuitRetainedTaskInputsV1;
 pub use client::OriginalCircuitRetainedVersionClientV1;
+pub use host::OriginalCircuitEvaluatedReadinessChannelV1;
+pub use host::OriginalCircuitEvaluatedVersionRecoveryV1;
 pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
 pub use host::OriginalCircuitRetainedVersionHostV1;
 pub use host::OriginalCircuitRetainedVersionRecoveryV1;
@@ -55,6 +63,20 @@ pub enum OriginalCircuitRetainedVersionErrorV1 {
     Material(#[from] crate::OriginalCellQ24MaterialCommandErrorV1),
     #[error("original Trainer: {0}")]
     Training(#[from] crate::OriginalCellQ24TrainingCommandErrorV1),
+    #[error("original independent Evaluator: {0}")]
+    Evaluation(#[from] crate::OriginalCellEvaluationCommandErrorV1),
+    #[error("original evaluated Selector receipt: {0}")]
+    Selection(#[from] crate::OriginalCircuitSelectionReceiptErrorV1),
+    #[error("original evaluated Observer receipt: {0}")]
+    NextUse(#[from] crate::OriginalCircuitNextUseReceiptErrorV1),
+    #[error("original evaluated Selector command: {0}")]
+    SelectionCommand(#[from] crate::OriginalCircuitEvaluatedSelectionCommandErrorV1),
+    #[error("original evaluated Observer command: {0}")]
+    NextUseCommand(#[from] crate::OriginalCircuitEvaluatedNextUseCommandErrorV1),
+    #[error("original evaluated task read: {0}")]
+    PublishedRead(#[from] crate::OriginalCircuitLearningReadErrorV1),
+    #[error("original Selector evidence read: {0}")]
+    SelectorRead(#[from] crate::LearningIterationRuntimeErrorV1),
     #[error("original Trainer connection: {0}")]
     Connection(#[from] crate::OriginalCellQ24TrainingCommandConnectionErrorV1),
     #[error("original task source: {0}")]

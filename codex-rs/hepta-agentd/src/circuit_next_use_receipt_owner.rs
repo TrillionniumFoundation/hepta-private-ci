@@ -83,6 +83,7 @@ mod evaluated;
 pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
 pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
 pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptV1;
+pub use evaluated::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
 use evaluated::Profile;
 
 /// Fixed original Selection cut and host-enrolled Observer. An immutable trust
@@ -134,13 +135,16 @@ trait NextUseSources {
         None
     }
     fn location(&self) -> ObservationLocation;
+    fn require_profile(&self, _profile: &Profile) -> Result<(), Error> {
+        Ok(())
+    }
     async fn observe(
         &self,
         config: &OriginalCircuitNextUseReceiptConfigV1,
     ) -> Result<LearningIterationObservationV1, Error>;
 }
 
-// Only the two concrete source implementations choose this private location.
+// Only the concrete original sources choose this private location.
 // The remote path brackets this Observer's journal with both live predecessor
 // owners. The existing local-owner protocol keeps its original read count.
 enum ObservationLocation {
@@ -465,6 +469,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("original Selection prefix").into());
         }
+        source.require_profile(&self.profile)?;
         let observation = source.observe(&self.config).await?;
         self.config.scope.validate_observation(&observation)?;
         Ok(observation)

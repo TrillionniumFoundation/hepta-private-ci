@@ -27,6 +27,8 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::circuit_feature_task_digest_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_evaluated_completion_readiness_service.rs"]
+mod evaluated_readiness;
 #[path = "circuit_learning_completion_readiness_service.rs"]
 mod readiness;
 
@@ -120,6 +122,25 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if wire::mode(self.context.legacy()?)? != wire::Mode::Selection {
             return Err(Error::Binding(
                 "retained Version Selection-only read purpose",
+            ));
+        }
+        self.serve_channel(channel)
+    }
+
+    /// Same original channel, with an explicitly evaluated four-cut purpose.
+    /// It does not admit five-cut completion or the legacy three-cut profile.
+    pub(crate) fn serve_original_evaluated_retained_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        let ReadProfile::Evaluated(context) = &self.context else {
+            return Err(Error::Binding(
+                "evaluated Version Selection-only read profile",
+            ));
+        };
+        if context.mode() != wire::Mode::Selection {
+            return Err(Error::Binding(
+                "evaluated Version Selection-only read purpose",
             ));
         }
         self.serve_channel(channel)

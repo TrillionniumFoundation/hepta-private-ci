@@ -113,6 +113,19 @@ pub(crate) fn model(
 pub(crate) fn candidate_page_model(
     root: &Path,
 ) -> anyhow::Result<(LoadedCellQ24ModelV1, CellCompatibilityBundleV1)> {
+    candidate_page_model_with_rows(root, /*rows*/ 8)
+}
+
+pub(crate) fn candidate_maximum_page_model(
+    root: &Path,
+) -> anyhow::Result<(LoadedCellQ24ModelV1, CellCompatibilityBundleV1)> {
+    candidate_page_model_with_rows(root, /*rows*/ 64)
+}
+
+fn candidate_page_model_with_rows(
+    root: &Path,
+    rows: u16,
+) -> anyhow::Result<(LoadedCellQ24ModelV1, CellCompatibilityBundleV1)> {
     let q = crate::cell_composed_q24::codec::Q;
     let matrix = |rows: u16, columns: u16, values: &[i64]| {
         let mut bytes = b"HQ24M001".to_vec();
@@ -131,14 +144,14 @@ pub(crate) fn candidate_page_model(
     let base: Vec<i64> = (0..64)
         .flat_map(|row| if row % 2 == 0 { [q, 0] } else { [0, q] })
         .collect();
-    let mut heads = vec![0; 8 * 64];
-    for row in 0..8 {
-        heads[row * 64] = if row < 4 { q } else { -q };
+    let mut heads = vec![0; usize::from(rows) * 64];
+    for row in 0..usize::from(rows) {
+        heads[row * 64] = if row < usize::from(rows) / 2 { q } else { -q };
     }
     let model = LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
         base: file("base", matrix(/*rows*/ 64, /*columns*/ 2, &base))?,
         encoder: file("encoder", matrix(/*rows*/ 2, /*columns*/ 2, &[q, 0, 0, q]))?,
-        heads: file("heads", matrix(/*rows*/ 8, /*columns*/ 64, &heads))?,
+        heads: file("heads", matrix(rows, /*columns*/ 64, &heads))?,
         organ_adapter: None,
         cell_adapter: None,
     })?;

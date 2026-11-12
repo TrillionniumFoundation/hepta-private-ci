@@ -171,7 +171,7 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
     def test_readback_cannot_initialize_recover_fit_sign_or_promote_missing(self):
         for path, function, marker in (
             (BOOTSTRAP, "fn candidate_material_response(", "request.require_initial(&self.config.material, request_id)?"),
-            (BOOTSTRAP, "fn candidate_material_response(", "session.require_request(&request)?"),
+            (BOOTSTRAP, "fn candidate_material_response(", "session.require_request(request)?"),
             (BOOTSTRAP, "fn candidate_material_response(", "if let Some(original) = self.ready()?"),
             (BOOTSTRAP, "fn candidate_material_response(", "OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response("),
             (BOOTSTRAP, "fn candidate_material_response(", "candidate_wire::MaterialResult::ReadbackRequired"),

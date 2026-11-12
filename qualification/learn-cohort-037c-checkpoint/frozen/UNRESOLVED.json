@@ -1,0 +1,30 @@
+{
+  "content_conflicts": [],
+  "pending": [
+    {
+      "id": "Root3-actual",
+      "status": "WAITING_FOR_ROOT_ACTUAL_FORMATTED_POSTIMAGES",
+      "impact": "Root20 QA expects progress and 75-to-66 postread source; neither prefmt product input is silently included."
+    },
+    {
+      "id": "VersionV4-actual",
+      "status": "WAITING_FOR_ROOT_ACTUAL_FORMATTED_POSTIMAGES",
+      "impact": "Profile typed progress and already-bound-read removal are absent until actual V4 is supplied."
+    },
+    {
+      "id": "Profile-final-QA4",
+      "status": "WAITING_FOR_PROFILE_FINAL_ACTUAL_INPUT_QA",
+      "impact": "Published-read, evaluated-retention, retained-version-issuer migrations and new Version suite not substituted by old design versions."
+    },
+    {
+      "id": "central-CALLERS-and-allowlist",
+      "status": "ROOT_OWNED_EXCLUDED",
+      "impact": "No global registry/allowlist is created or modified; source suites are not claimed to pass this assembly."
+    },
+    {
+      "id": "Training-v3",
+      "status": "EXCLUDED_AS_INSTRUCTED",
+      "impact": "Unfinished Training transaction changes are not part of this candidate."
+    }
+  ]
+}

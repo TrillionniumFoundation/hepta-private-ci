@@ -39,22 +39,37 @@ pub(super) async fn original_attestations(
         .receipts
         .iter()
         .any(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal);
-    if !has_model {
-        stages.validate_recovery(snapshot).await?;
-    }
-    let mut signatures = Vec::with_capacity(snapshot.receipts.len());
-    for receipt in snapshot
-        .receipts
-        .iter()
-        .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
-    {
-        let (_, now) = owner.read(cancellation).await?;
-        signatures.push(
-            stages
-                .receipt_attestation(snapshot, receipt, now / 1_000)
-                .await?,
-        );
-    }
+    // This private concrete route reads the entire evaluated prefix once for
+    // this checkpoint. All other profiles retain their original role protocol.
+    // No cached signature set can substitute for this invocation's original I/O.
+    owner.read(cancellation).await?;
+    let evaluated =
+        ResidentOriginalStageOwnersV3::read_original_evaluated_attestations(stages, snapshot)
+            .await?;
+    let signatures = if let Some(original) = evaluated {
+        if has_model {
+            return Err(Error::WrongScope);
+        }
+        original
+    } else {
+        if !has_model {
+            stages.validate_recovery(snapshot).await?;
+        }
+        let mut signatures = Vec::with_capacity(snapshot.receipts.len());
+        for receipt in snapshot
+            .receipts
+            .iter()
+            .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
+        {
+            let (_, now) = owner.read(cancellation).await?;
+            signatures.push(
+                stages
+                    .receipt_attestation(snapshot, receipt, now / 1_000)
+                    .await?,
+            );
+        }
+        signatures
+    };
     // Model has no LearningEvidence role. This last actual Model read performs
     // its own D/T/E before/after reads and final original journal CURRENT.
     let original_model = if has_model {

@@ -73,3 +73,40 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         self.completed_evaluated_selection(completed)
     }
 }
+
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W> {
+    /// Consume this exact S custody into evidence-only serving with the same
+    /// original task read client. No Cell owner or newly opened stream enters.
+    pub fn into_evaluated_remote_readback_owner(
+        self,
+        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+        live: std::sync::Arc<OriginalCircuitLearningReadClientV1>,
+        trainer: std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
+        evaluator: std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
+    ) -> Result<
+        crate::OriginalCircuitEvaluatedSelectionRemoteReadbackOwnerV1<W>,
+        crate::OriginalCircuitEvaluatedSelectionReadbackErrorV1,
+    > {
+        let Profile::Evaluated(context) = &self.profile else {
+            return Err(
+                crate::OriginalCircuitEvaluatedSelectionReadbackErrorV1::Binding(
+                    "original evaluated Selector profile",
+                ),
+            );
+        };
+        if context.receipt_context_binding()
+            != selection.original_context().receipt_context_binding()
+            || self.config.decision != *selection.original_context().snapshot()
+            || self.config.signer.principal.principal_id != selection.receipt().actor_id
+        {
+            return Err(
+                crate::OriginalCircuitEvaluatedSelectionReadbackErrorV1::Binding(
+                    "same original evaluated Selector custody",
+                ),
+            );
+        }
+        crate::OriginalCircuitEvaluatedSelectionRemoteReadbackOwnerV1::from_original_receipt_owner(
+            self, selection, live, trainer, evaluator,
+        )
+    }
+}

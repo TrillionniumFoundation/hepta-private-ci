@@ -1,0 +1,189 @@
+{
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "status": "ACTUAL_ONLY_INITIAL_ASSEMBLY_WITH_EXPLICIT_PENDING_LAYERS",
+  "layers": [
+    {
+      "name": "01-C14",
+      "kind": "actual_rustfmt",
+      "files": 14,
+      "pure_a96": true,
+      "exact_applies": 14,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/candidate-evaluated-c-remote-formatted-v1/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/candidate-evaluated-c-remote-formatted-v1/VERIFIED_MANIFEST.json",
+      "returncode": 0
+    },
+    {
+      "name": "02-S12",
+      "kind": "actual_rustfmt",
+      "files": 12,
+      "pure_a96": false,
+      "exact_applies": 12,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/candidate-evaluated-s-command-formatted-v1/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/candidate-evaluated-s-command-formatted-v1/VERIFIED_MANIFEST.json",
+      "returncode": 0
+    },
+    {
+      "name": "03-C11",
+      "kind": "actual_rustfmt",
+      "files": 11,
+      "pure_a96": false,
+      "exact_applies": 11,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/candidate-evaluated-c-command-formatted-v1/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/candidate-evaluated-c-command-formatted-v1/VERIFIED_MANIFEST.json",
+      "returncode": 0
+    },
+    {
+      "name": "04-Current13",
+      "kind": "actual_rustfmt",
+      "files": 13,
+      "pure_a96": true,
+      "exact_applies": 13,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/candidate-current-formatted-v1/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/candidate-current-formatted-v1/VERIFIED_MANIFEST.json",
+      "returncode": 0
+    },
+    {
+      "name": "05-Root12",
+      "kind": "actual_rustfmt",
+      "files": 12,
+      "pure_a96": true,
+      "exact_applies": 12,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-formatted-v1/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-formatted-v1/VERIFIED_MANIFEST.json",
+      "returncode": 0
+    },
+    {
+      "name": "06-RootUFCS-V2",
+      "kind": "actual_rustfmt",
+      "files": 1,
+      "pure_a96": false,
+      "exact_applies": 1,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-caller-formatted-v2/VERIFIED_POSTIMAGES.json",
+      "returncode": 0
+    },
+    {
+      "name": "07-Version40",
+      "kind": "actual_rustfmt",
+      "files": 40,
+      "pure_a96": true,
+      "exact_applies": 38,
+      "already_equal": 0,
+      "clean_merges": 1,
+      "explicit_fixture_module_unions": 1,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-formatted-v3/manifest.json",
+      "verified_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-formatted-v3/ROOT_POSTIMAGE_VERIFICATION.json",
+      "returncode": 0
+    },
+    {
+      "name": "08-Diagnostic5-00378",
+      "kind": "actual_rustfmt",
+      "files": 5,
+      "pure_a96": true,
+      "exact_applies": 5,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "manifest_path": "/workspace/scratch/037c0371c195/root-native-diagnostic-five-v3/VERIFIED_MANIFEST.json",
+      "returncode": 0,
+      "a96_preimage_proof": "/workspace/scratch/037c0371c195/root-native-diagnostic-five-v3/compare-4ab-a96.original.json"
+    },
+    {
+      "name": "09-FrozenQA7",
+      "kind": "frozen_python_source_qa",
+      "files": 7,
+      "pure_a96": true,
+      "exact_applies": 7,
+      "already_equal": 0,
+      "clean_merges": 0,
+      "explicit_fixture_module_unions": 0,
+      "conflicts": 0,
+      "not_executed_on_assembled_tree": true
+    }
+  ],
+  "paths_in_overlay": 105,
+  "changed_files": 105,
+  "changed_rust_files": 98,
+  "changed_qa_files": 7,
+  "unchanged_payload_paths": 0,
+  "clean_mechanical_merges": 1,
+  "explicit_fixture_module_unions": 1,
+  "unresolved_content_conflicts": 0,
+  "patch_roundtrip": {
+    "returncode": 0,
+    "exact_changed_files": 105,
+    "files_equal": true,
+    "no_offset_or_fuzz": true,
+    "stdout": {
+      "bytes": 8544,
+      "sha256": "c0f8b84039f75847f94f4d1cb7880b151a6391f5d1cfd912330f93b6049535da",
+      "blob": "ab6d1cccb55d644df30bab434569ba5665dcbda5"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "frozen_inputs_unchanged": true,
+  "all_rust_incoming_inputs_actual_formatted": true,
+  "mechanical_merge_outputs_separately_formatted": false,
+  "source_qa_executed_on_assembly": false,
+  "native_tests_run": false,
+  "fullcaller_run": false,
+  "global_registry_or_allowlist_written": false,
+  "ordinary_qualification": 0,
+  "pending": [
+    {
+      "id": "Root3-actual",
+      "status": "WAITING_FOR_ROOT_ACTUAL_FORMATTED_POSTIMAGES",
+      "impact": "Root20 QA expects progress and 75-to-66 postread source; neither prefmt product input is silently included."
+    },
+    {
+      "id": "VersionV4-actual",
+      "status": "WAITING_FOR_ROOT_ACTUAL_FORMATTED_POSTIMAGES",
+      "impact": "Profile typed progress and already-bound-read removal are absent until actual V4 is supplied."
+    },
+    {
+      "id": "Profile-final-QA4",
+      "status": "WAITING_FOR_PROFILE_FINAL_ACTUAL_INPUT_QA",
+      "impact": "Published-read, evaluated-retention, retained-version-issuer migrations and new Version suite not substituted by old design versions."
+    },
+    {
+      "id": "central-CALLERS-and-allowlist",
+      "status": "ROOT_OWNED_EXCLUDED",
+      "impact": "No global registry/allowlist is created or modified; source suites are not claimed to pass this assembly."
+    },
+    {
+      "id": "Training-v3",
+      "status": "EXCLUDED_AS_INSTRUCTED",
+      "impact": "Unfinished Training transaction changes are not part of this candidate."
+    }
+  ]
+}

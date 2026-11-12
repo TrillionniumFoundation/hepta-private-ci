@@ -106,9 +106,9 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         Ok(bytes)
     }
 
-    fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
+    pub(super) fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
         self.require_task_input_current()?;
-        let coordinator = wire::decision(self.context.legacy()?)?;
+        let coordinator = self.context.decision()?;
         let selection =
             PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
         self.require_original_selection(&selection)?;

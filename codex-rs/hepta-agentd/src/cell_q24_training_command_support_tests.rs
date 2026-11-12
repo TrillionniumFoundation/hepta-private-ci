@@ -305,6 +305,109 @@ pub(crate) fn retained_version_training_connection(
     ))
 }
 
+/// Same-UID transport only. Every read is served by the same actual SourceBound
+/// command owner; no expected receipt, new signature or response is supplied.
+pub(crate) fn original_version_training_readback_connection<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
+    material: crate::OriginalCellQ24MaterialReceiptConfigV1,
+    owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
+) -> anyhow::Result<(
+    crate::OriginalCellQ24TrainingCommandConnectionV1,
+    std::thread::JoinHandle<Result<u64, super::Error>>,
+)> {
+    let (connection, channel) =
+        super::super::connection::recovered_peer(material, None, Duration::from_secs(300))?;
+    let permit = Arc::clone(&owner.connections)
+        .try_acquire_owned()
+        .map_err(|_| super::Error::Busy)?;
+    let peer = std::thread::spawn(move || {
+        let _permit = permit;
+        let mut channel = channel;
+        owner.serve_command_channel(&mut channel)
+    });
+    Ok((connection, peer))
+}
+
+/// The same actual global owner semaphore, real evidence purpose and live
+/// Stage read. Only the same-process transport admission is a fixture.
+pub(crate) fn original_version_evidence_peer<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
+    owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<Result<u64, super::Error>>,
+)> {
+    let (client, mut channel) = evidence_client(&owner.context)?;
+    let permit = Arc::clone(&owner.connections)
+        .try_acquire_owned()
+        .map_err(|_| super::Error::Busy)?;
+    Ok((
+        client,
+        std::thread::spawn(move || {
+            let _permit = permit;
+            owner.serve_evidence_channel(&mut channel)
+        }),
+    ))
+}
+
+/// The Candidate purpose uses the same real page server and global permit as
+/// production. This does not serve a pinned or synthetic candidate response.
+pub(crate) fn original_version_candidate_peer<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
+    material: crate::OriginalCellQ24MaterialReceiptConfigV1,
+    owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
+) -> anyhow::Result<(
+    crate::OriginalCellQ24TrainingCommandConnectionV1,
+    std::thread::JoinHandle<Result<u64, super::Error>>,
+)> {
+    let (connection, mut channel) =
+        super::super::connection::recovered_peer(material, None, Duration::from_secs(300))?;
+    let permit = Arc::clone(&owner.connections)
+        .try_acquire_owned()
+        .map_err(|_| super::Error::Busy)?;
+    Ok((
+        connection,
+        std::thread::spawn(move || {
+            let _permit = permit;
+            owner.serve_candidate_material_channel(&mut channel)
+        }),
+    ))
+}
+
+/// Call the unmodified public serve entry. Its fifth admission must fail at
+/// the original shared semaphore, before the explicit same-process fixture
+/// could reach the production UID/process refusal.
+pub(crate) async fn original_version_fifth_connection_refuses<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
+    owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
+) -> anyhow::Result<()> {
+    let (_held, stream) = UnixStream::pair()?;
+    // SAFETY: observe this explicit fixture's own credentials.
+    let uid = unsafe { libc::geteuid() };
+    assert!(matches!(
+        owner
+            .serve_commands(
+                stream,
+                identity()?,
+                uid,
+                pidfd()?,
+                Duration::from_secs(30),
+                Duration::from_secs(300)
+            )
+            .await,
+        Err(super::Error::Busy)
+    ));
+    Ok(())
+}
+
 fn serve_retained_training_fixture(
     mut channel: HostAuthorityPeerChannel,
     context: OriginalCellQ24TrainingCommandContextV1,

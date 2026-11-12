@@ -11,6 +11,9 @@ use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::super::super::context::PublicationAccess;
 use super::super::Error;
+use super::super::evaluated_wire::VersionRequest;
+use super::super::profile::VersionCut;
+use super::super::profile::VersionPurpose;
 use super::super::wire;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
@@ -105,6 +108,58 @@ impl OriginalCircuitRetainedVersionHostV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<u64, Error> {
+        if self.purpose != VersionPurpose::TrainingNoUpdate {
+            return Err(Error::Binding(
+                "original three-cut Version Selection read purpose",
+            ));
+        }
+        self.serve_selection_readback(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
+        .await
+    }
+
+    /// The independent four-cut purpose consumes the already-delivered S read
+    /// stream before waiting for this same Version owner's actual C factory.
+    pub async fn serve_original_evaluated_selection_readback(
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
+        if self.purpose != VersionPurpose::Evaluated {
+            return Err(Error::Binding(
+                "original four-cut evaluated Version Selection read purpose",
+            ));
+        }
+        self.serve_selection_readback(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
+        .await
+    }
+
+    async fn serve_selection_readback(
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("same original published read bound"));
         }
@@ -132,12 +187,18 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 }
             };
             if let Some(reader) = reader {
+                let purpose = self.purpose;
                 return tokio::task::spawn_blocking(move || {
                     let _permit = permit;
-                    OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
-                        reader.as_ref(),
-                        &mut channel,
-                    )
+                    let served = match purpose {
+                        VersionPurpose::TrainingNoUpdate => OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
+                            reader.as_ref(), &mut channel,
+                        ),
+                        VersionPurpose::Evaluated => OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_retained_channel(
+                            reader.as_ref(), &mut channel,
+                        ),
+                    };
+                    served
                     .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
                 })
                 .await
@@ -166,20 +227,13 @@ impl OriginalCircuitRetainedVersionHostV1 {
     fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started = super::super::now()?;
         self.require_lifetime()?;
-        let request: wire::Request = serde_json::from_slice(bytes)?;
-        if request.schema != 1
-            || request.purpose != wire::OPERATION
-            || request.request_id != request_id
-            || !(1..=128).contains(&request_id)
-            || request.initial_binding != self.initial_binding.to_string()
-            || request.operation_id != self.material.initial.request.operation_id.to_string()
-        {
-            return Err(Error::Binding(
-                "same original Version initial purpose and operation",
-            ));
-        }
-        wire::digest(&request.binding)?;
-        wire::digest(&request.training_head)?;
+        let request = VersionRequest::decode(bytes, self.purpose)?;
+        request.require_initial(
+            self.purpose,
+            request_id,
+            self.initial_binding,
+            &self.material.initial,
+        )?;
         let (current, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
                 &self.material,
@@ -208,7 +262,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 (wire::OriginalResult::Uncertain, None)
             } else {
                 request.require_cut(state.cut.as_ref().ok_or(Error::Unavailable)?, request_id)?;
-                let original = match request.action {
+                let original = match request.action() {
                     wire::Action::Prepare => self.prepare_original(&mut state),
                     wire::Action::Readback => {
                         self.preparation_requested.store(true, Ordering::Release);
@@ -256,10 +310,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
 
     fn encode_response(
         &self,
-        request: wire::Request,
+        request: VersionRequest,
         result: wire::OriginalResult,
         started: u64,
-        pin: Option<super::super::context::OriginalVersionCut>,
+        pin: Option<VersionCut>,
     ) -> Result<Vec<u8>, Error> {
         let (binding, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
@@ -269,7 +323,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
             return Err(Error::Binding("original Version final clock"));
         }
         self.require_lifetime()?;
-        let bytes = serde_json::to_vec(&wire::Response { request, result })?;
+        let bytes = request.encode_response(result)?;
         if bytes.is_empty() || bytes.len() > 16_384 {
             return Err(Error::Binding("bounded original Version response"));
         }

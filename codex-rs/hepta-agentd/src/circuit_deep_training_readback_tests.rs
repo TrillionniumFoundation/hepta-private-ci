@@ -21,9 +21,29 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 mod original;
 use original::DeepFixture;
 
+#[derive(Clone, Copy)]
+enum OriginalReadbackCase {
+    Hot,
+    Cold,
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources()
 -> anyhow::Result<()> {
+    Box::pin(original_no_update_readback(OriginalReadbackCase::Cold)).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn q24_deep_original_no_update_selection_c_hot_readback_preserves_sources()
+-> anyhow::Result<()> {
+    Box::pin(original_no_update_readback(OriginalReadbackCase::Hot)).await
+}
+
+// Each case constructs all actual owners and executes A/T/S/C independently.
+// The cold identity is the original C Execute receipt; a prior hot read is
+// not an input to recovery. Both paths keep the complete source-byte checks.
+async fn original_no_update_readback(readback: OriginalReadbackCase) -> anyhow::Result<()> {
+    let hot = matches!(readback, OriginalReadbackCase::Hot);
     let started = std::time::Instant::now();
     let stage = |name: &str| {
         use std::io::Write as _;
@@ -135,9 +155,11 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
     stage("c_attestation_done");
     assert_eq!(saved.snapshot().receipts.len(), 5);
     let observer_bytes = f.receipt_bytes("observer")?;
-    stage("hot_readback_start");
-    assert_eq!(client.readback().await?, saved);
-    stage("hot_readback_done");
+    if hot {
+        stage("hot_readback_start");
+        assert_eq!(client.readback().await?, saved);
+        stage("hot_readback_done");
+    }
     assert_eq!(f.original_bytes()?, original_bytes);
     assert_eq!(f.receipt_bytes("selector")?, selector_bytes);
     assert_eq!(f.receipt_bytes("observer")?, observer_bytes);
@@ -147,7 +169,7 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         server
             .join()
             .map_err(|_| anyhow::anyhow!("actual C command"))??,
-        2
+        if hot { 2 } else { 1 }
     );
     drop(observer);
     stage("hot_publication_join");
@@ -155,112 +177,114 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         published_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual C publication"))??,
-        5
+        if hot { 5 } else { 3 }
     );
     stage("hot_selector_join");
     assert_eq!(
         selector_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual S readback for C"))??,
-        4
+        if hot { 4 } else { 2 }
     );
     stage("hot_trainer_join");
     assert_eq!(
         trainer_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual T readback for C"))??,
-        4
+        if hot { 4 } else { 2 }
     );
 
     stage("hot_owners_joined");
-    // Reopen only the same Observer files/witness. Its incoming T/S channels
-    // were already bound before Dataset/T, and cannot receive a fresh lifetime.
-    let original::InitialSelector {
-        connection: selector_read,
-        channel,
-    } = f.selector_for_cold_c.take().expect("initial S for cold C");
-    let selector_cold = selector_ports::serve(Arc::clone(&selector), channel);
-    let original::InitialTrainer {
-        connection: trainer,
-        server: trainer_cold,
-    } = f.trainer_for_cold_c.take().expect("initial T for cold C");
-    let (published, published_cold) = f.published(
-        selected.snapshot().clone(),
-        Some(selected.attestation().clone()),
-    )?;
-    stage("cold_reopen_start");
-    let recovered = Arc::new(
-        f.observer(&observer_config, /*create*/ false)?
-            .into_command_owner_from_original_readbacks(
-                published,
-                trainer,
-                selector_read,
-                f.dataset.clone(),
-                f.training.clone(),
-                selected,
-            )?,
-    );
-    stage("cold_reopen_done");
-    let (client, channel) =
-        next_command::client(context, /*readback_only*/ true, Some(saved.clone()))?;
-    let server = next_command::serve(Arc::clone(&recovered), channel);
-    stage("cold_readback_start");
-    assert_eq!(client.readback().await?, saved);
-    stage("cold_readback_done");
-    stage("cold_write_refusal_start");
-    assert!(matches!(
-        client.attest_completed_task().await,
-        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
-    ));
-    stage("cold_write_refusal_done");
-    assert_eq!(f.original_bytes()?, original_bytes);
-    assert_eq!(f.receipt_bytes("selector")?, selector_bytes);
-    assert_eq!(f.receipt_bytes("observer")?, observer_bytes);
-    drop(client);
-    stage("cold_command_join");
-    assert_eq!(
-        server
-            .join()
-            .map_err(|_| anyhow::anyhow!("cold original C command"))??,
-        1
-    );
-    drop(recovered);
-    stage("cold_publication_join");
-    assert_eq!(
-        published_cold
-            .join()
-            .map_err(|_| anyhow::anyhow!("cold C publication"))??,
-        2
-    );
-    stage("cold_selector_join");
-    assert_eq!(
-        selector_cold
-            .join()
-            .map_err(|_| anyhow::anyhow!("cold original S"))??,
-        2
-    );
-    stage("cold_trainer_join");
-    assert_eq!(
-        trainer_cold
-            .join()
-            .map_err(|_| anyhow::anyhow!("cold original T"))??,
-        2
-    );
-    stage("cold_owners_joined");
+    if !hot {
+        // Reopen only the same Observer files/witness. Its incoming T/S channels
+        // were already bound before Dataset/T, and cannot receive a fresh lifetime.
+        let original::InitialSelector {
+            connection: selector_read,
+            channel,
+        } = f.selector_for_cold_c.take().expect("initial S for cold C");
+        let selector_cold = selector_ports::serve(Arc::clone(&selector), channel);
+        let original::InitialTrainer {
+            connection: trainer,
+            server: trainer_cold,
+        } = f.trainer_for_cold_c.take().expect("initial T for cold C");
+        let (published, published_cold) = f.published(
+            selected.snapshot().clone(),
+            Some(selected.attestation().clone()),
+        )?;
+        stage("cold_reopen_start");
+        let recovered = Arc::new(
+            f.observer(&observer_config, /*create*/ false)?
+                .into_command_owner_from_original_readbacks(
+                    published,
+                    trainer,
+                    selector_read,
+                    f.dataset.clone(),
+                    f.training.clone(),
+                    selected,
+                )?,
+        );
+        stage("cold_reopen_done");
+        let (client, channel) =
+            next_command::client(context, /*readback_only*/ true, Some(saved.clone()))?;
+        let server = next_command::serve(Arc::clone(&recovered), channel);
+        stage("cold_readback_start");
+        assert_eq!(client.readback().await?, saved);
+        stage("cold_readback_done");
+        stage("cold_write_refusal_start");
+        assert!(matches!(
+            client.attest_completed_task().await,
+            Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
+        ));
+        stage("cold_write_refusal_done");
+        assert_eq!(f.original_bytes()?, original_bytes);
+        assert_eq!(f.receipt_bytes("selector")?, selector_bytes);
+        assert_eq!(f.receipt_bytes("observer")?, observer_bytes);
+        drop(client);
+        stage("cold_command_join");
+        assert_eq!(
+            server
+                .join()
+                .map_err(|_| anyhow::anyhow!("cold original C command"))??,
+            1
+        );
+        drop(recovered);
+        stage("cold_publication_join");
+        assert_eq!(
+            published_cold
+                .join()
+                .map_err(|_| anyhow::anyhow!("cold C publication"))??,
+            2
+        );
+        stage("cold_selector_join");
+        assert_eq!(
+            selector_cold
+                .join()
+                .map_err(|_| anyhow::anyhow!("cold original S"))??,
+            2
+        );
+        stage("cold_trainer_join");
+        assert_eq!(
+            trainer_cold
+                .join()
+                .map_err(|_| anyhow::anyhow!("cold original T"))??,
+            2
+        );
+        stage("cold_owners_joined");
+    }
     drop(selector);
     stage("selection_publication_join");
     assert_eq!(
         published_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S publication"))??,
-        15
+        11
     );
     stage("selection_trainer_join");
     assert_eq!(
         trainer_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S Trainer"))??,
-        14
+        10
     );
     stage("material_shutdown_start");
     let counts = f.finish().await?;
@@ -274,15 +298,16 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         counts[2], counts[3],
         "same original Experience/Dataset sessions"
     );
-    // The twenty real T readbacks each bracket native/Generator CURRENT with
-    // two live captures; each capture reads every original Material peer twice.
-    // Bootstrap/fit may add reads. Do not replace the actual lower bound with
-    // a cached receipt, accept a timeout, or pin an incidental exact total.
-    assert!(counts[1] >= 80);
+    // Each independent case has fourteen real T readbacks: two for S and
+    // six for each of its two C commands. Every T read still brackets native/
+    // Generator CURRENT with two live captures; each capture reads each
+    // original Material peer twice. Bootstrap/fit may add further reads.
+    assert!(counts[1] >= 56);
     assert!(counts[1..].iter().all(|count| *count < 128));
     eprintln!(
-        "HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=20 selector_reads=6 c_commands=3",
-        started.elapsed().as_millis()
+        "HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=14 selector_reads=4 c_commands=2 path={}",
+        started.elapsed().as_millis(),
+        if hot { "hot" } else { "cold" }
     );
     Ok(())
 }
