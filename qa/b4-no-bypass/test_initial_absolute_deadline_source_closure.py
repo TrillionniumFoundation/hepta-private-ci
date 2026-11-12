@@ -82,6 +82,26 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
         self.reject(filename, "fn wait(", "fds[0].revents != 0")
         self.reject(filename, "fn exchange(", "size > 16_384")
 
+    def test_poll_diagnostics_keep_original_deadline_errno_and_rejection_order(self):
+        filename = "root_generation_publication_stream.rs"
+        self.reject(filename, "fn exchange(",
+                    "let end = (Instant::now() + self.timeout).min(self.end)")
+        for marker in ("end.checked_duration_since(Instant::now())",
+                       "remaining.is_zero()", "if ready <= 0",
+                       "let poll_error = (ready < 0).then(io::Error::last_os_error)",
+                       "error.kind() == io::ErrorKind::Interrupted",
+                       "poll_error.as_ref().and_then(io::Error::raw_os_error)"):
+            with self.subTest(marker=marker):
+                self.reject(filename, "fn wait(", marker)
+        self.reject(filename, "fn wait(", "Instant::now() >= end")
+
+    def test_frame_context_preserves_the_actual_io_error_kind_and_errno(self):
+        filename = "root_generation_publication_stream.rs"
+        for marker in ("let kind = error.kind()", "let os_error = error.raw_os_error()",
+                       "io::Error::new(\n        kind,"):
+            with self.subTest(marker=marker):
+                self.reject(filename, "fn frame_error(", marker)
+
     def test_new_constructors_have_exact_actual_callers(self):
         boundaries = {r["id"]: r for r in self.manifest["boundary"]}
         self.assertEqual(boundaries["root_initial_original_connection_until"]["product_callers"], [])
