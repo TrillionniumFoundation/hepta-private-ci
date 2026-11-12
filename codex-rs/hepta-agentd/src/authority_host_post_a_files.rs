@@ -11,13 +11,14 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 
 use serde::Deserialize;
+use serde::Serialize;
 
 use super::super::generation_publication::deployment::files::OriginalFile;
 use crate::CellQ24ModelFilesV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::authority_host_service::generation_initial::original_root;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct PostAFileData {
     path: PathBuf,
