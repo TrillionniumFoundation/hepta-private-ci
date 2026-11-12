@@ -1,0 +1,51 @@
+{
+  "status": "NUMPY_DIRECTIONAL_PASS_NATIVE_TORCH_PENDING",
+  "base_commit": "a385c0fe6fafc513da8539799338182176a1a9f8",
+  "new_api": "Fixed physics/geometry/support initial active+phase probability and signed-content amplitudes; lower atom excluded.",
+  "budgets": {
+    "intervals_max": 32,
+    "phase_supports_max": 8,
+    "content_channels_max": 4,
+    "directions_per_forward": 16,
+    "basis_forwards_max": 3,
+    "operator_scalars_max": 7400
+  },
+  "numpy": {
+    "geometries": [
+      "uniform n7",
+      "graded n12"
+    ],
+    "directions_per_geometry": 5,
+    "fd_steps": [
+      0.0002,
+      0.0001
+    ],
+    "basis_forward_calls": 2,
+    "direct_forward_calls": 42,
+    "wall_seconds": 10.877126383999894,
+    "maximum_directional_abs_error": 4.187223831553233e-11,
+    "optimizer_updates": 0,
+    "warning": "SciPy BDF invalid subtraction retained; numerical outputs/FD gates finite and passed."
+  },
+  "source_archive": {
+    "size": 125877,
+    "sha256": "85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e",
+    "members": 12
+  },
+  "uniform_reference": {
+    "pr": 6150,
+    "tested_source": "19b7a99f6d63596dd77c34a1ed8e529e1c744750",
+    "evidence": "28196265803a81d69041ad6a106e581456f3e360",
+    "original_blob": "64b79ae441a98c351b0874d1a6cc5c8a327e0670",
+    "content_unmodified": true,
+    "new_execution_claim": false
+  },
+  "not_qualified": [
+    "native Torch VJP until actual execution",
+    "delay/support/migration/physics gradients in this API",
+    "cross-checkpoint/network AD",
+    "n512 scalability or adjoint",
+    "production or full training"
+  ],
+  "format": "Source-stage freeze; final formatting follows new native checks; no old source/model qualification inherited."
+}
