@@ -25,7 +25,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
         self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [AGENT + "production_post_a_q24.rs"])
         self.assertEqual(rows["root_historical_current_trust_read"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
         self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs", AGENT + "cell_q24_dataset_operation.rs", AGENT + "production_post_a_continuation.rs"])
-        self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs"])
+        self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs", AGENT + "root_completed_learning_history.rs"])
         self.assertEqual(rows["root_historical_recipient_trust_reply"]["product_callers"], [CLIENT])
 
     def test_capsule_uses_original_receipt_session_clock_cut_and_pin(self):
@@ -34,7 +34,8 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
                                 "OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", occurrence)
         self.check_markers(TRUST, "fn activate_current_learning_trust(", (
             "let clock = session.clock()", "RootHistoricalTaskReadClientV1::exchange(",
-            "HistoricalReadOperationV1::LearningTrust", "Reply::Task(_) | Reply::PostAFrozenLearning(_) => return Err(refused())",
+            "HistoricalReadOperationV1::LearningTrust", "Reply::Task(_)", "Reply::PostAFrozenLearning(_)",
+            "Reply::Acceptance(_)", "Reply::History(_) => return Err(refused())",
             "response.data_cut != self.data.data_cut.to_string()",
             "OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |_|",
             "clock.now_unix_ms()", "activate_for_recipient(&self.client.initial, now)?",
@@ -91,7 +92,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
         self.check_markers(CLIENT, "fn exchange(", (
             "self.lane.try_lock()", "held.take().ok_or_else(refused)?", "let request_id = lane.sequence",
             "!(1..=MAX_READS).contains(&request_id)", "purpose: operation.purpose().into()",
-            "lane.stream.exchange(&request)?", "require_complete_reply(&bytes, request_id, &self.profile)?",
+            "lane.stream.exchange(&request)?", "require_complete_reply(\n                    &bytes,\n                    request_id,\n                    &self.profile,\n                )?",
             "require_original_trust_reply(", "&self.learning_trust", "&self.initial",
             "request_id.checked_add(1)", "*held = Some(lane)", "if result.is_err()"))
 

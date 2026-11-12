@@ -31,10 +31,10 @@ ROOT_INPUTS = A + "root_production_inputs.rs"
 SESSION = A + "authority_host_session.rs"
 CALLERS = {
     "connection_capture": (ROOT_INPUTS,), "connection_take": (ROOT_INPUTS,),
-    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS, A + "root_historical_learning_trust_client.rs", A + "root_post_a_learning_client.rs"),
+    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS, A + "root_historical_learning_trust_client.rs", A + "root_post_a_learning_client.rs", A + "root_completed_learning_history.rs"),
     "same_session": (CLIENT,), "send": (CLI,), "receive": (LAUNCH, LATE),
     "connect": (LAUNCH, LATE), "from_stream": (INPUTS,),
-    "client_session": (LAUNCH, LATE), "observe": (A + "production_post_a_q24.rs",),
+    "client_session": (LAUNCH, LATE, A + "root_completed_learning_history.rs"), "observe": (A + "production_post_a_q24.rs",),
     "receipt_client": (A + "cell_q24_dataset_historical_task.rs", A + "root_historical_learning_trust_client.rs", A + "learning_iteration_historical_source.rs", A + "root_post_a_learning_client.rs"),
     "receipt_read": (A + "root_historical_learning_trust_client.rs", A + "root_historical_learning_operation.rs"), "enable": (CLI,), "seal": (CLI,), "provider": (PREPARED,),
     "exchange": (RUNTIME,), "cold_source": (PROVIDER,), "cold_cell": (PROVIDER,),
@@ -241,7 +241,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "self.lane.try_lock()", "held.take().ok_or_else(refused)?",
             "!(1..=MAX_READS).contains(&request_id)", "purpose: operation.purpose().into()",
             "profile: self.profile.clone()", "lane.stream.exchange(&request)?",
-            "require_complete_reply(&bytes, request_id, &self.profile)?", "request_id.checked_add(1)",
+            "require_complete_reply(\n                    &bytes,\n                    request_id,\n                    &self.profile,\n                )?", "request_id.checked_add(1)",
             "*held = Some(lane)", "held.take()",
         ))
         for occurrence in (0, 1):

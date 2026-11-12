@@ -34,7 +34,8 @@ class PostALearningClientSourceTests(unittest.TestCase):
                 self.reject_removal(CLIENT, "fn install_original_post_a_learning(", marker, occurrence)
         self.check_markers(CLIENT, "fn install_original_post_a_learning(", (
             "RootHistoricalTaskReadClientV1::exchange(", "HistoricalReadOperationV1::PostAFrozenLearning",
-            "Reply::Task(_) | Reply::LearningTrust(_) => return Err(refused())",
+            "Reply::Task(_)", "Reply::LearningTrust(_)", "Reply::Acceptance(_)",
+            "Reply::History(_) => return Err(refused())",
             "response.data_cut != self.data.data_cut.to_string()", "receipt: Arc::clone(self)",
             "&response.frozen_scope", "if result.is_err()", "self.client.fence()"))
 
