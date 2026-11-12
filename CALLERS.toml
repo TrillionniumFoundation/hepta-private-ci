@@ -5233,7 +5233,7 @@ receiver_type = "OriginalCellQ24RetainedArtifactForRootV1"
 id = "q24_root_current_connect"
 symbol = "OriginalCellQ24SelectedArtifactForRootV1::connect_current"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn connect_current(", "current.require_original_root_selection(", "self.original.require_current().await?"]
+definition_markers = ["fn connect_current(", "current.require_original_root_selection(", "OriginalDecision::require_current(&self.original).await?"]
 product_callers = []
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)connect_current\\s*\\("
@@ -7233,7 +7233,7 @@ required_function_order = [{ function = "fn enable_initial_source_capture_from_d
 path = "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs"
 required = ["struct SourceDeploymentData {","#[serde(deny_unknown_fields)]","source_journal: PathBuf,","source_witness: PathBuf,"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","FinalUseAuthority::new","prepare_forward_recovery","LearningIterationSnapshotV1","pub pin:","pub authority:","RetiredCheckpointPublisher","SignedFinalUseGrant","File::open","OpenOptions","#[derive(Clone","Deserialize for TaskFlowFence"]
-required_function_order = [{ function = "fn into_inputs(", sequence = ["self.definition.into_definition()?","self\n            .circuit\n            .programs","program.program_id == self.circuit.entry_program","CircuitCellBindingV1 {","node_id: program.entry_node.clone()","cell: definition.clone()","CircuitCellRegistryV1::new(self.circuit, vec![binding])","Ok(RootHistoricalSourceInputsV1 {","TaskFlowFence::new(","identity.agent_id.clone()","source: CircuitTaskSourceInputV1 {","scope: CellScopeV1 {","agent_id: identity.agent_id.clone()","lease_duration_ms: source.lease_duration_ms"] }]
+required_function_order = [{ function = "fn into_inputs(", sequence = ["self.definition.into_definition()?","self\n            .circuit\n            .programs","program.program_id == self.circuit.entry_program","CircuitCellBindingV1 {","node_id: program.entry_node.clone()","cell: definition.clone()","CircuitCellRegistryV1::new(self.circuit, vec![binding])","Ok(RootHistoricalSourceInputsV1 {","TaskFlowFence::new(","identity.agent_id.clone()","source: CircuitTaskSourceInputV1 {","scope: CellScopeV1 {","agent_id: StableId::new(identity.agent_id.as_str())","lease_duration_ms: source.lease_duration_ms"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_cell.rs"
