@@ -324,7 +324,14 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
     # review when independent evidence subsequently becomes available.
     last_review_generation: dict[str, int] = {}
     outputs = []
-    for ev in events:
+    # The seven-lineage update stream is also a forensic input. Bound raw
+    # one-shot iterators before an attacker can grow the receipt list without
+    # limit; reject at the first excess item, never read a further item.
+    for index, ev in enumerate(events):
+        if index >= 65_536:
+            raise ContractError("clock raw input exceeds size limit")
+        if type(ev) is not UpdateOpportunity:
+            raise ContractError("invalid update opportunity")
         if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
                 or ev.sequence < 0 or type(ev.candidate_generation) is not int
                 or ev.candidate_generation < 1
