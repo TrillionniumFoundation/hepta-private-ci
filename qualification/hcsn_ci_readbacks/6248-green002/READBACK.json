@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-continuous-adjoint-torch-green-readback-v1",
+  "original_outcome": "success/PASS",
+  "source_commit": "975a169df5f3a1dd51b81ddd51b0a338592a0e0f",
+  "run_id": 43217764472,
+  "job_id": 131181247635,
+  "artifact_id": 13943834079,
+  "original_zip_bytes": 254226,
+  "original_zip_sha256": "8bca916a6f5dc7b346905268d005fab838805b475e39df738cb5a053b8ffe9d8",
+  "original_zip_members": 6,
+  "original_crc_check": "All 6 passed in restored primary executor; no candidate/NumPy/Torch work by downloader.",
+  "arrays_bytes": 478571,
+  "arrays_sha256": "bf24a74bff6378d3d024d1542d2546b3d4adb334be5a4a5e40fe2a45b5fb5059",
+  "recorded_array_scalars": 37071,
+  "actual_calls": {
+    "adjoint_calls": 10,
+    "backward_attempts": 32,
+    "forward_basis_calls": 0,
+    "guard_rejections": 20,
+    "metadata_checks": 352,
+    "model_forward_calls": 166,
+    "optimizer_updates": 0
+  },
+  "forward_journal_records": 166,
+  "adjoint_backward_journal_records": 10,
+  "recorded_checks": 12,
+  "recorded_guard_rejections": 20,
+  "all_recorded_guards_rejected": true,
+  "source_files_freshly_rehashed": 10,
+  "source_unchanged": true,
+  "process_cost": {
+    "child_process_peak_rss_kib": 454140,
+    "exit_code": 0,
+    "full_child_process_cpu_seconds": 60.306656999999994,
+    "full_child_process_wall_seconds": 60.75993433400001,
+    "includes_python_torch_import_and_source_admission": true,
+    "optimizer_updates": 0,
+    "source_commit": "975a169df5f3a1dd51b81ddd51b0a338592a0e0f",
+    "wrapper_cpu_seconds": 0.00038318600000000064
+  },
+  "validation_wall_seconds": 58.241631329,
+  "validation_cpu_seconds": 58.208481387,
+  "runtime": {
+    "device": "cpu",
+    "executable": "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+    "numpy": "2.3.5",
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "python": "3.12.16 (main, Oct 26 2026, 02:50:49) [GCC 13.3.0]",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "torch_git": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+    "torch_interop_threads": 1,
+    "torch_threads": 1
+  },
+  "stderr_warning": {
+    "bytes": 190,
+    "preserved_verbatim": true,
+    "message": "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/scipy/integrate/_ivp/bdf.py:416: RuntimeWarning: invalid value encountered in subtract\n  D[order + 2] = d - D[order + 1]\n"
+  },
+  "qualification_flags": {
+    "adam_or_restore_qualified": false,
+    "discrete_bdf_program_reverse": false,
+    "full_network_qualified": false,
+    "n512_qualified": false,
+    "rare_tail_relative_qualified": false
+  },
+  "archiver_new_candidate_calls": 0,
+  "archiver_new_model_calls": 0,
+  "archiver_new_torch_calls": 0,
+  "archiver_new_adjoint_calls": 0,
+  "archiver_new_optimizer_calls": 0,
+  "workflow_rerun_requested": false,
+  "independent_math_audit_credit_claimed": false,
+  "prior_red_evidence": {
+    "commit": "b685ec948098461e101c40017b2aeed5126157e6",
+    "path": "qualification/hcsn_ci_readbacks/6248-red001",
+    "preserved": true
+  },
+  "admission": "HOLD_NO_GO",
+  "limits": [
+    "Archive integrity and reported counters/flags only; no VJP, guard or gradcheck rerun by the archiver.",
+    "Separate independent raw mathematical audit is not claimed by this archive.",
+    "Full-child process costs include Python/Torch imports and source admission; validation interval is nested, not additive.",
+    "Original Adam/restore, full-network, n512, rare-tail relative and discrete-BDF-reverse flags remain false."
+  ]
+}
