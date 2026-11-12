@@ -42,7 +42,7 @@ EXPECTED = {
     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),
-    "learning_source_bound_training_admission": (BOUND,),
+    "learning_source_bound_training_admission": (BOUND, MODEL),
     "learning_source_bound_training_live_check": (NATIVE, STAGE, MODEL),
     "learning_source_bound_training_work_deadline": (NATIVE,),
 }

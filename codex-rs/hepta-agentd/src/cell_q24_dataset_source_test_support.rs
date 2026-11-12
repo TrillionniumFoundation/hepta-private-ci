@@ -108,6 +108,50 @@ pub(crate) fn model(
     Ok((model, bundle))
 }
 
+/// Three real pages of heads; labels still come only from the independent
+/// terminal Outcome in the Material fixture, never from model inference.
+pub(crate) fn candidate_page_model(
+    root: &Path,
+) -> anyhow::Result<(LoadedCellQ24ModelV1, CellCompatibilityBundleV1)> {
+    let q = crate::cell_composed_q24::codec::Q;
+    let matrix = |rows: u16, columns: u16, values: &[i64]| {
+        let mut bytes = b"HQ24M001".to_vec();
+        bytes.extend_from_slice(&rows.to_le_bytes());
+        bytes.extend_from_slice(&columns.to_le_bytes());
+        for value in values {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+        bytes
+    };
+    let file = |name: &str, bytes: Vec<u8>| -> anyhow::Result<File> {
+        let path = root.join(name);
+        fs::write(&path, bytes)?;
+        Ok(File::open(path)?)
+    };
+    let base: Vec<i64> = (0..64)
+        .flat_map(|row| if row % 2 == 0 { [q, 0] } else { [0, q] })
+        .collect();
+    let mut heads = vec![0; 8 * 64];
+    for row in 0..8 {
+        heads[row * 64] = if row < 4 { q } else { -q };
+    }
+    let model = LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
+        base: file("base", matrix(/*rows*/ 64, /*columns*/ 2, &base))?,
+        encoder: file("encoder", matrix(/*rows*/ 2, /*columns*/ 2, &[q, 0, 0, q]))?,
+        heads: file("heads", matrix(/*rows*/ 8, /*columns*/ 64, &heads))?,
+        organ_adapter: None,
+        cell_adapter: None,
+    })?;
+    let bundle = CellCompatibilityBundleV1 {
+        artifact_id: cell::id("original-q24-page-baseline"),
+        generation: Generation::new(1)?,
+        components: model.components().clone(),
+        rollback_predecessor: None,
+        training_lineage: None,
+    };
+    Ok((model, bundle))
+}
+
 pub(crate) fn observation(values: [i64; 2]) -> Vec<u8> {
     let mut bytes = b"HQ24I001".to_vec();
     bytes.extend_from_slice(&2_u16.to_le_bytes());

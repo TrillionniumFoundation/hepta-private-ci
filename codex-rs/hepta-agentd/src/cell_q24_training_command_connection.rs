@@ -32,6 +32,8 @@ pub enum OriginalCellQ24TrainingCommandConnectionErrorV1 {
     Command(#[from] OriginalCellQ24TrainingCommandErrorV1),
     #[error("original Material cut: {0}")]
     Material(#[from] OriginalCellQ24MaterialCommandErrorV1),
+    #[error("original Candidate readback: {0}")]
+    Candidate(#[from] super::OriginalCellQ24CandidateReadbackErrorV1),
 }
 
 type Error = OriginalCellQ24TrainingCommandConnectionErrorV1;
@@ -133,6 +135,25 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
             initial_binding,
             origin,
         })
+    }
+
+    /// Bind a separately delivered Candidate readback purpose after actual D/T.
+    /// This consumes the original channel and its absolute deadline. It cannot
+    /// restore Execute, select another job, or initialize the Trainer host.
+    pub fn bind_original_candidate_material(
+        self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        training: super::OriginalCellQ24TrainingCommandReceiptV1,
+        baseline: std::sync::Arc<crate::LoadedCellQ24ModelV1>,
+    ) -> Result<super::OriginalCellQ24CandidateReadbackClientV1, Error> {
+        let material = self.material.clone();
+        let retained_dataset = dataset.clone();
+        let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(
+            self, dataset,
+        )?;
+        Ok(super::OriginalCellQ24CandidateReadbackClientV1::from_original_connection(
+            original, material, retained_dataset, training, baseline,
+        )?)
     }
 
     /// Consume the original connection after actual Material completion.

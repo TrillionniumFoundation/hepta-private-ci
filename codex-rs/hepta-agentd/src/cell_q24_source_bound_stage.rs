@@ -79,6 +79,16 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         OriginalCellQ24TrainingStageV1::readback(&self.original, dataset).await
     }
 
+    /// Bounded synchronous material read from the same original trainer lane.
+    /// This never fits, signs, creates a writer, or grants version adoption.
+    pub fn read_candidate_material(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+    ) -> Result<crate::OriginalCellQ24CandidateMaterialV1, Error> {
+        self.original.require_dataset(dataset)?;
+        OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)
+    }
+
     pub async fn receipt_attestation(
         &self,
         dataset: &LearningIterationSnapshotV1,

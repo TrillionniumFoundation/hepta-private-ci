@@ -27,7 +27,14 @@ pub(crate) struct MaterialCommandFixture {
 
 impl MaterialCommandFixture {
     pub(crate) async fn new() -> anyhow::Result<Self> {
-        let f = Fixture::new(/*expired_work*/ false).await?;
+        Self::from_fixture(Fixture::new(/*expired_work*/ false).await?)
+    }
+
+    pub(crate) async fn candidate_pages() -> anyhow::Result<Self> {
+        Self::from_fixture(Fixture::candidate_pages().await?)
+    }
+
+    fn from_fixture(f: Fixture) -> anyhow::Result<Self> {
         let owners = f.create()?;
         let ledger = Arc::new(Mutex::new(f.writer));
         let host = owners.into_command_owner(

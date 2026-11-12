@@ -104,12 +104,32 @@ pub(super) struct Fixture {
     _directory: tempfile::TempDir,
 }
 
+#[derive(Clone, Copy)]
+enum MaterialFixtureProfile {
+    NoUpdate,
+    CandidatePages,
+}
+
 impl Fixture {
     pub(super) async fn new(expired_work: bool) -> anyhow::Result<Self> {
+        Self::with_profile(expired_work, MaterialFixtureProfile::NoUpdate).await
+    }
+
+    async fn candidate_pages() -> anyhow::Result<Self> {
+        Self::with_profile(/*expired_work*/ false, MaterialFixtureProfile::CandidatePages).await
+    }
+
+    async fn with_profile(
+        expired_work: bool,
+        profile: MaterialFixtureProfile,
+    ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
         let at = binding::now()?;
-        let (baseline, bundle) = source::model(&root)?;
+        let (baseline, bundle) = match profile {
+            MaterialFixtureProfile::NoUpdate => source::model(&root)?,
+            MaterialFixtureProfile::CandidatePages => source::candidate_page_model(&root)?,
+        };
         let baseline = Arc::new(baseline);
         let generator = signer("generator", LearningEvidenceRoleV1::Generator, 1, at);
         let observer = signer("outcome-observer", LearningEvidenceRoleV1::Observer, 2, at);
@@ -217,7 +237,7 @@ impl Fixture {
         );
         writer.append_decision(Digest32::ZERO, decision, &signed_decision, at)?;
         // This actual run identity is chosen and its Decision committed before
-        // execution. The independent zero label below is explicit fixture data.
+        // execution. The independent terminal label below is explicit fixture data.
         let (identity, source) = source::completed(
             &root,
             &bundle,
@@ -232,7 +252,10 @@ impl Fixture {
             episode_id: id("episode"),
             observer: observer.principal,
             observed_at: Some(at - 10),
-            value: Some(FixedQ32::ZERO),
+            value: Some(match profile {
+                MaterialFixtureProfile::NoUpdate => FixedQ32::ZERO,
+                MaterialFixtureProfile::CandidatePages => FixedQ32::from_raw(2_i64 << 32),
+            }),
             unit_profile_digest: d("explicit-material-unit"),
             support_digest: d("explicit-terminal-outcome-support"),
             watermark: OutcomeWatermarkV1 {
@@ -257,6 +280,10 @@ impl Fixture {
             &bundle,
             writer.verifier().trust_digest(),
             if expired_work { at - 1 } else { at + 900 },
+            match profile {
+                MaterialFixtureProfile::NoUpdate => 1_024,
+                MaterialFixtureProfile::CandidatePages => 4_108,
+            },
         )?;
         let rule = CellQ24DatasetRuleV1 {
             head: CellQ24PrivateHeadV1::Prediction { index: 0 },
@@ -297,7 +324,10 @@ impl Fixture {
         };
         let optimizer = CellQ24SgdRuleV1 {
             epochs: 1,
-            learning_rate_q24: 1,
+            learning_rate_q24: match profile {
+                MaterialFixtureProfile::NoUpdate => 1,
+                MaterialFixtureProfile::CandidatePages => 1 << 20,
+            },
         };
         let update_rule = crate::cell_q24_single_head_update_rule_v1(
             &bundle,
@@ -465,6 +495,7 @@ fn initial(
     bundle: &CellCompatibilityBundleV1,
     trust: Digest32,
     deadline: u64,
+    maximum_artifact_bytes: u64,
 ) -> anyhow::Result<LearningIterationSnapshotV1> {
     let input = publication.input();
     Ok(LearningIterationCoordinatorV1::new(
@@ -495,7 +526,7 @@ fn initial(
                 maximum_dataset_bytes: 128,
                 maximum_training_steps: 16,
                 maximum_training_milliseconds: 1_000,
-                maximum_artifact_bytes: 1_024,
+                maximum_artifact_bytes,
             },
         },
         LearningIterationOwnersV1 {

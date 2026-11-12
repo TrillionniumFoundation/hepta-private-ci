@@ -252,6 +252,19 @@ NEXT_USE_COMMAND_CASES = tuple(
     )
 )
 
+CANDIDATE_MATERIAL_PREFIX = (
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::"
+    "candidate_material::"
+)
+CANDIDATE_MATERIAL_CASES = tuple(
+    CANDIDATE_MATERIAL_PREFIX + name
+    for name in (
+        "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+    )
+)
+
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -278,6 +291,7 @@ OWNER_GROUPS = (
     ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
     ("original_selector_command", PACKAGE, SELECTOR_COMMAND_CASES),
     ("original_next_use_command", PACKAGE, NEXT_USE_COMMAND_CASES),
+    ("original_candidate_material", PACKAGE, CANDIDATE_MATERIAL_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names

@@ -24,6 +24,9 @@ use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialCommandErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "cell_q24_training_bootstrap_candidate.rs"]
+mod candidate;
+
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>
 {

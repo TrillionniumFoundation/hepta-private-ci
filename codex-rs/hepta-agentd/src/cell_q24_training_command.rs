@@ -50,6 +50,13 @@ mod serving;
 mod wire;
 pub use serving::OriginalCellQ24TrainingCommandOwnerV1;
 
+#[path = "cell_q24_training_candidate_readback.rs"]
+mod candidate_readback;
+#[path = "cell_q24_training_candidate_wire.rs"]
+mod candidate_wire;
+pub use candidate_readback::OriginalCellQ24CandidateReadbackClientV1;
+pub use candidate_readback::OriginalCellQ24CandidateReadbackErrorV1;
+
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingCommandErrorV1 {
     #[error("original Trainer command binding: {0}")]
