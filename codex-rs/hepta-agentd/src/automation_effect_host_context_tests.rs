@@ -67,6 +67,7 @@ async fn host_recovery_keeps_original_target_across_signed_provider_reconfigurat
         "provider_operation_id_sha256": Sha256Digest::for_bytes(b"same-shape-operation").as_str(),
         "status": "completed"
     });
+    drop(host);
     let (changed, _, _) = open_http_effect_host(&fixture, &replacement, &scope)?;
     Mock::given(method("GET"))
         .respond_with(ResponseTemplate::new(200).set_body_json(ack.clone()))
@@ -102,6 +103,8 @@ async fn host_recovery_keeps_original_target_across_signed_provider_reconfigurat
             .expect("replacement requests")
             .is_empty()
     );
+    drop(changed);
+    let (host, _, _) = open_http_effect_host(&fixture, &original, &scope)?;
     Mock::given(method("GET"))
         .respond_with(ResponseTemplate::new(200).set_body_json(ack))
         .expect(1)
@@ -112,6 +115,8 @@ async fn host_recovery_keeps_original_target_across_signed_provider_reconfigurat
         AgentdAutomationEffectReconcileOutcome::Observed { receipt, .. }
             if receipt.final_outcome == Some(TaskFlowReconcileOutcome::Succeeded)
     ));
+    drop(host);
+    let (changed, _, _) = open_http_effect_host(&fixture, &replacement, &scope)?;
     assert!(matches!(
         changed.reconcile(&reopened, &intent.run_id, &intent.step_id, intent.attempt, now_ms + 8).await?,
         AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain: None }
