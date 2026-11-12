@@ -9432,7 +9432,7 @@ required_function_order = [
   { function = "fn new(", sequence = ["fn new(", "bytes.is_empty() || bytes.len() > 65_536", "bytes.strip_prefix(prefix)"], top_level = [] },
   { function = "fn blob(", sequence = ["fn blob(", "let length = self.u32()? as usize", "split_at_checked(length)", "self.0 = remaining", "Ok(value)"], top_level = [] },
   { function = "fn end(", sequence = ["fn end(", "if self.0.is_empty()", "Ok(())", "Err(Error::InvalidBinding)"], top_level = [] },
-  { function = "fn checkpoint_before(", sequence = ["self.checkpoint_before"], top_level = [] },
+  { function = "fn checkpoint_before(", sequence = ["&self", "self.checkpoint_before"], top_level = ["self.checkpoint_before"] },
 ]
 
 [[protected_file]]
