@@ -78,7 +78,7 @@ impl RootQ24ModelFactoryHandoffV1 {
             .observation
             .parent()
             .ok_or_else(|| refused("original Root socket parent missing"))?
-            .join("q24-model-proposal-factory-v1.sock");
+            .join(bundle.profile.socket_filename());
         if bundle.root != original.root
             || bundle.consumer != original.consumer
             || bundle.root.pid != self.root_pid

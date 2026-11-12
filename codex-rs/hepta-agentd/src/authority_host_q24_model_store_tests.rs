@@ -45,7 +45,7 @@ fn root_factory_record_reopens_bound_without_replacing_original_files() -> anyho
     assert_eq!(witness.current()?, None);
     drop(witness);
     let vacant = FactoryRecord {
-        profile: profile.clone(),
+        profile: ReservedFactoryProfile::LegacyV1(profile.clone()),
         epoch: 1,
         material: None,
     };
@@ -55,7 +55,7 @@ fn root_factory_record_reopens_bound_without_replacing_original_files() -> anyho
         vacant.clone(),
     )?;
     let bound = FactoryRecord {
-        profile: profile.clone(),
+        profile: ReservedFactoryProfile::LegacyV1(profile.clone()),
         epoch: 2,
         material: Some(Digest32::of_bytes(b"original-material").to_string()),
     };

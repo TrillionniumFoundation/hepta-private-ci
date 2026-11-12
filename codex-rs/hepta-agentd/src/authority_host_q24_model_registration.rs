@@ -117,7 +117,7 @@ impl HostAuthorityService {
                     RootAuthorityDirectory::open(&directory).map_err(io::Error::other)?,
                     OWNER.into(),
                     FactoryRecord {
-                        profile: profile.clone(),
+                        profile: ReservedFactoryProfile::LegacyV1(profile.clone()),
                         epoch: 1,
                         material: None,
                     },
@@ -186,7 +186,7 @@ impl HostAuthorityService {
                     domain,
                     policy_digest(&reservation)?,
                 )?;
-                if retained.profile != profile {
+                if retained.profile != ReservedFactoryProfile::LegacyV1(profile.clone()) {
                     return Err(io::Error::other(
                         "original factory profile or reserved file changed",
                     ));
@@ -199,7 +199,7 @@ impl HostAuthorityService {
                     .ok_or_else(|| io::Error::other("original Root lane parent required"))?
                     .join("q24-model-proposal-factory-v1.sock");
                 let factory = RegisteredQ24ModelFactory {
-                    profile,
+                    profile: LiveFactoryProfile::LegacyV1(profile),
                     learning: learning.clone(),
                     reservation,
                     store,
@@ -310,12 +310,25 @@ impl RegisteredQ24ModelFactory {
         // Reopen observed path identities as well: an unlinked/replaced owner
         // cannot remain valid merely because Root still holds its old inode.
         self.profile.require_observers(
-            &observe_file(&config.state_dir.join(DIRECTORY).join("proposal.journal"))?,
-            &observe_file(&witness_path(&self.reservation))?,
+            &observe_file(
+                &config
+                    .state_dir
+                    .join(self.profile.directory())
+                    .join("proposal.journal"),
+            )?,
+            &observe_file(
+                &self
+                    .reservation
+                    .witness_directory
+                    .join(self.profile.witness_filename()),
+            )?,
         )?;
-        let current = self.store.load(OWNER).map_err(io::Error::other)?;
+        let current = self
+            .store
+            .load(self.profile.store_owner())
+            .map_err(io::Error::other)?;
         current.validate()?;
-        if current.profile != self.profile {
+        if current.profile != self.profile.reserved() {
             return Err(io::Error::other(
                 "original factory reservation was replaced",
             ));

@@ -19,10 +19,9 @@ use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::CellQ24ModelProposalReceiptV1;
 use crate::CellQ24TrainingOwnerV1;
-use crate::HostAuthorityQ24ModelFactoryProfileV1;
 use crate::authority_host_service::q24_model::Command;
 use crate::authority_host_service::q24_model::FactoryLease;
-use crate::authority_host_service::q24_model::PURPOSE;
+use crate::authority_host_service::q24_model::LiveFactoryProfile;
 use crate::authority_host_service::q24_model::Reply;
 use crate::authority_host_service::q24_model::Request;
 use crate::authority_host_service::q24_model::Response;
@@ -35,7 +34,7 @@ use crate::root_observation_stream::RootObservationStream;
 pub struct AgentdRootQ24ModelFactoryV1 {
     transport: Option<RootObservationStream>,
     next_request_id: u64,
-    profile: HostAuthorityQ24ModelFactoryProfileV1,
+    profile: LiveFactoryProfile,
     initial: LearningIterationSnapshotV1,
     scope: FrozenLearningScopeV2,
     generation: Generation,
@@ -75,7 +74,7 @@ impl AgentdRootQ24ModelFactoryV1 {
 
     pub(crate) async fn from_original_handoff(
         transport: RootObservationStream,
-        profile: HostAuthorityQ24ModelFactoryProfileV1,
+        profile: LiveFactoryProfile,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         spawn_generation: u64,
@@ -83,13 +82,16 @@ impl AgentdRootQ24ModelFactoryV1 {
         witness: File,
     ) -> Result<Self, AgentdError> {
         profile.require_files(&journal, &witness)?;
+        let generation = profile
+            .witness_generation(spawn_generation)
+            .map_err(refused)?;
         let mut factory = Self {
             transport: Some(transport),
             next_request_id: 1,
             profile,
             initial,
             scope,
-            generation: Generation::new(spawn_generation).map_err(refused)?,
+            generation,
             files: Some((journal, witness)),
             owner: None,
             fenced: false,
@@ -226,7 +228,7 @@ impl AgentdRootQ24ModelFactoryV1 {
             let witness = FileAnchorWitnessStore::open(
                 witness_file,
                 JournalScope {
-                    scope_digest: self.profile.binding().parse().map_err(refused)?,
+                    scope_digest: self.profile.witness_binding().parse().map_err(refused)?,
                     objective_digest: self.initial.request.envelope.objective_digest,
                 },
                 self.generation,
@@ -300,15 +302,15 @@ impl AgentdRootQ24ModelFactoryV1 {
             .checked_add(1)
             .ok_or_else(|| refused("factory request sequence exhausted"))?;
         let request = Request {
-            schema: 1,
-            operation: PURPOSE.into(),
+            schema: self.profile.wire_schema(),
+            operation: self.profile.purpose().into(),
             request_id,
             binding: self.profile.binding().into(),
             command,
         };
         let response: Response = transport.read(&request).await.map_err(refused)?;
-        if response.schema != 1
-            || response.operation != PURPOSE
+        if response.schema != self.profile.wire_schema()
+            || response.operation != self.profile.purpose()
             || response.request_id != request_id
             || response.binding != self.profile.binding()
         {
