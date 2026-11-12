@@ -9,6 +9,8 @@ use std::io::Write;
 
 #[path = "cell_generation_unpublished_observer_tests.rs"]
 mod unpublished;
+#[path = "cell_generation_feature_observer_tests.rs"]
+mod feature;
 
 fn observer_config() -> CellGenerationObserverConfigV1 {
     CellGenerationObserverConfigV1 {
