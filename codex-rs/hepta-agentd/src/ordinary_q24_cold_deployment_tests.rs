@@ -130,7 +130,7 @@ impl<'a> OriginalColdPlan<'a> {
         super::root::write_json(&directory.join("original-daemon-deployment.json"), &before)?;
         super::root::write_json(&directory.join("cold-daemon-deployment.json"), &daemon)?;
         let sealed =
-            crate::authority_host_bootstrap_seal::seal_bytes(&serde_json::to_vec(&daemon)?)?;
+            super::fixture::seal_original_readonly_deployment(&serde_json::to_vec(&daemon)?)?;
         original.daemon.require_dead()?;
         original.root.require_dead()?;
         anyhow::ensure!(
