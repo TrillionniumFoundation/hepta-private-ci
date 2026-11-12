@@ -75,6 +75,7 @@ pub struct CellGenerationJournalObservedV1 {
     observation: CellGenerationObservationV1,
     drained: bool,
     genesis: bool,
+    feature_boundary_only: bool,
 }
 
 impl CellGenerationJournalObservedV1 {
@@ -181,6 +182,7 @@ impl CellGenerationJournalObserverV1 {
         let mut state = GenerationState::new(&self.config.generation)?;
         let mut head = None;
         let mut offset = HEADER_BYTES;
+        let mut feature_boundary_only = true;
         while offset < bytes.len() {
             if bytes.len() - offset < 4 {
                 return Err(CellGenerationErrorV2::Pending);
@@ -211,6 +213,9 @@ impl CellGenerationJournalObserverV1 {
             if serde_json::to_vec(&event).map_err(|_| CellGenerationErrorV2::Corrupt)? != payload {
                 return Err(CellGenerationErrorV2::Corrupt);
             }
+            if !matches!(&event, GenerationEvent::Drain) {
+                feature_boundary_only = false;
+            }
             state.apply(&self.config.generation, &event)?;
             head = Some(next);
             offset = end;
@@ -231,6 +236,7 @@ impl CellGenerationJournalObserverV1 {
             observation,
             drained: state.draining && state.pending.is_none() && state.outbox.is_none(),
             genesis: head.is_none() && length == HEADER_BYTES as u64,
+            feature_boundary_only,
         })
     }
 
@@ -284,3 +290,6 @@ fn unavailable(_: std::io::Error) -> CellGenerationErrorV2 {
 #[path = "cell_generation_unpublished_observer.rs"]
 mod unpublished;
 pub use unpublished::CellGenerationUnpublishedObserverV1;
+
+#[path = "cell_generation_feature_observer.rs"]
+mod feature;
