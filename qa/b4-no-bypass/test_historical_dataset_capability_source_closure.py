@@ -11,6 +11,8 @@ HISTORY = AGENT + "cell_q24_dataset_historical_ledger.rs"
 MATERIALIZER = AGENT + "cell_q24_dataset_materializer.rs"
 OPERATION = AGENT + "cell_q24_dataset_operation.rs"
 PREPARED = AGENT + "cell_q24_prepared_operation.rs"
+SOURCE = AGENT + "cell_q24_source_receipt_owner.rs"
+SIGNATURE = AGENT + "cell_q24_source_signature.rs"
 
 
 class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
@@ -90,6 +92,59 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.reject_removal(PREPARED, "fn read_validated_facts(",
                                 "self.revalidate_source()?", occurrence)
+
+    def test_source_owners_borrow_the_same_prepared_identity(self):
+        rows = {row["id"]: row for row in self.manifest["boundary"]}
+        self.assertEqual(rows["q24_original_source_receipt_signature"]["product_callers"], [SOURCE])
+        self.assertIn(SOURCE, rows["q24_original_prepared_operation"]["product_callers"])
+        self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"], [SOURCE])
+        self.check_markers(SOURCE, "fn require_prepared(", (
+            "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
+            "self.prepared.scope() != prepared.scope()", "!std::ptr::eq(self.prepared.as_ref(), prepared)",
+            "self.prepared.with_original_prepared_operation(",
+            "validate_config(&self.prepared, &self.config, &self.key, read)? != self.saved",
+            "validate_config(prepared, &self.config, &self.key, read)? != self.saved",
+            "original_facts != retained_facts",
+            "OriginalPreparedReadV1::require_prepared(read, &self.prepared)?",
+            "OriginalPreparedReadV1::require_prepared(read, prepared)?"))
+
+    def test_source_signing_stays_after_actual_claim_and_between_complete_reads(self):
+        self.check_markers(SOURCE, "fn attest_at(", (
+            "self.original_observation(read)?", "self.journal.read(&self.saved)",
+            "require_signer_binding(", "self.journal.commit_once(saved, ||",
+            "sign_original_source_receipt(", "learning_owner_evidence::encode(&payload, &signed)",
+            "self.authenticate_completed(prefix, &bytes, read)"))
+        for occurrence in (0, 1):
+            self.reject_removal(SOURCE, "fn attest_at(",
+                                "OriginalPreparedReadV1::require_prepared(read, prepared)", occurrence)
+        self.check_markers(SIGNATURE, "fn sign_original_source_receipt(", (
+            "config.verifier.require_signer_binding(",
+            ".checked_add(config.maximum_signature_lifetime_seconds)",
+            ".min(config.signer.principal.expires_at)",
+            "principal_id: config.signer.principal.principal_id.clone()",
+            "trust_digest: config.verifier.trust_digest()", "scope_digest: config.verifier.scope_digest()",
+            "objective_digest: config.verifier.objective_digest()",
+            "key.sign(&signed.signing_bytes()).to_bytes()", "config.verifier.verify("))
+
+    def test_dataset_still_reads_actual_experience_on_both_sides_of_work(self):
+        self.check_markers(SOURCE, "fn with_original_experience(", (
+            "experience.config.stage != OriginalCellQ24SourceStageV1::Experience",
+            "!Arc::ptr_eq(&self.prepared, &experience.prepared)",
+            "prepared.with_original_prepared_operation(",
+            "receipt.operation_id != initial.request.operation_id",
+            "receipt.predecessor != initial.head_digest", "receipt.actor_id != initial.owners.experience",
+            "facts.experience_evidence_digest()",
+            "receipt.observed_unix_seconds != before.attestation.issued_at",
+            "LearningEvidenceRoleV1::Observer", "operation(self, &before.snapshot, read)?"))
+        for occurrence in (0, 1):
+            self.reject_removal(SOURCE, "fn with_original_experience(",
+                                "experience.read_at(prepared.initial(), read)?", occurrence)
+        self.check_markers(SOURCE, "fn authenticate_completed(", (
+            "learning_owner_evidence::decode(bytes)?",
+            "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+            "verified.principal() != &self.config.signer.principal",
+            "verified.controller_id() != &self.config.signer.controller_id",
+            "self.journal.read(&self.saved)? != bytes"))
 
     def test_live_writer_identity_cannot_be_replaced_by_historical_bytes(self):
         self.check_markers(MATERIALIZER, "fn require_original_ledger_capability(", (
