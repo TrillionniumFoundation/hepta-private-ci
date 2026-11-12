@@ -1,0 +1,771 @@
+{
+  "adoption": "NoUpdate",
+  "arms": {
+    "fixed_region": {
+      "correct": 4,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 1.3410221829276439,
+        "process_cpu_ns": 1.3642462435927993,
+        "terminated_child_cpu_ns": 1.3005203813479767
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 6209380603,
+        "process_cpu_ns": 1408601612,
+        "terminated_child_cpu_ns": 4253084000
+      },
+      "unknown_quality": 1
+    },
+    "fixed_selection": {
+      "correct": 4,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 2.319275759432711,
+        "process_cpu_ns": 4.845163861413276,
+        "terminated_child_cpu_ns": 1.584325751751983
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 10739021395,
+        "process_cpu_ns": 5002693361,
+        "terminated_child_cpu_ns": 5181211000
+      },
+      "unknown_quality": 1
+    },
+    "full_ocr": {
+      "correct": 4,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 1.0,
+        "process_cpu_ns": 1.0,
+        "terminated_child_cpu_ns": 1.0
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 4630333996,
+        "process_cpu_ns": 1032512729,
+        "terminated_child_cpu_ns": 3270294000
+      },
+      "unknown_quality": 1
+    },
+    "learned": {
+      "correct": 1,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 1.987057835989419,
+        "process_cpu_ns": 4.64540370136202,
+        "terminated_child_cpu_ns": 1.1764449924074105
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 9200741450,
+        "process_cpu_ns": 4796438453,
+        "terminated_child_cpu_ns": 3847321000
+      },
+      "unknown_quality": 1
+    },
+    "public_feature_rule": {
+      "correct": 4,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 1.4048242685342562,
+        "process_cpu_ns": 1.2565534986251972,
+        "terminated_child_cpu_ns": 1.43824714230586
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 6504805569,
+        "process_cpu_ns": 1297407482,
+        "terminated_child_cpu_ns": 4703491000
+      },
+      "unknown_quality": 1
+    },
+    "random_region": {
+      "correct": 1,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 1.2663511986533595,
+        "process_cpu_ns": 1.1599116401789173,
+        "terminated_child_cpu_ns": 1.2915649174049795
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 5863629006,
+        "process_cpu_ns": 1197623533,
+        "terminated_child_cpu_ns": 4223797000
+      },
+      "unknown_quality": 1
+    },
+    "zero_visual": {
+      "correct": 4,
+      "cost_ratios_vs_full_ocr": {
+        "inclusive_wall_ns": 2.0010183414423395,
+        "process_cpu_ns": 4.493070178895587,
+        "terminated_child_cpu_ns": 1.283104821768318
+      },
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 12,
+        "FAILED": 0,
+        "UNKNOWN": 0
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 9265383253,
+        "process_cpu_ns": 4639152152,
+        "terminated_child_cpu_ns": 4196130000
+      },
+      "unknown_quality": 1
+    }
+  },
+  "comparisons": {
+    "fixed_selection_vs_fixed_region": {
+      "left": "fixed_selection",
+      "mean_quality_delta": null,
+      "right": "fixed_region",
+      "rows": [
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00000"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00001"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00002"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00003"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00004"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00005"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00006"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00007"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00008"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": null,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00009"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00010"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00011"
+        }
+      ],
+      "tasks": 12,
+      "unknown_pairs": 1
+    },
+    "learned_vs_fixed_selection": {
+      "left": "learned",
+      "mean_quality_delta": null,
+      "right": "fixed_selection",
+      "rows": [
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00000"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00001"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00002"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            false,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00003"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00004"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            false,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00005"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00006"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00007"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00008"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": null,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00009"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00010"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00011"
+        }
+      ],
+      "tasks": 12,
+      "unknown_pairs": 1
+    },
+    "learned_vs_zero_visual": {
+      "left": "learned",
+      "mean_quality_delta": null,
+      "right": "zero_visual",
+      "rows": [
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00000"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00001"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00002"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            false,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00003"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00004"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            false,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00005"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00006"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": 0.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00007"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00008"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": false,
+          "quality_delta": null,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00009"
+        },
+        {
+          "answer_equal": false,
+          "answers_present": [
+            true,
+            true
+          ],
+          "observations_equal": false,
+          "quality_delta": -1.0,
+          "selection_equal": false,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00010"
+        },
+        {
+          "answer_equal": true,
+          "answers_present": [
+            false,
+            false
+          ],
+          "observations_equal": true,
+          "quality_delta": 0.0,
+          "selection_equal": true,
+          "statuses": [
+            "COMPLETED",
+            "COMPLETED"
+          ],
+          "task_id": "cord-v2-test-00011"
+        }
+      ],
+      "tasks": 12,
+      "unknown_pairs": 1
+    }
+  },
+  "full_cost_qualified": false,
+  "inputs": {
+    "actor_done_sha256": "fef10706dd920849defc15079784b9714ff148881dc6ad88294121b8153b18a3",
+    "plan_sha256": "3a9b73b2d62ed18f594e043400b6fb820539707dc2cfef87fcca2a2371b32b3a",
+    "report_sha256": "7c7215f7e64cf43db61ac7e6c88ff1c7a792a532e77ac54df1bd6eaee7fd93a4"
+  },
+  "interpretation": {
+    "cost": "Ratios are measured invocation envelopes, never sums of nested phases. Learned also retains and cold-verifies its active decision; zero_visual timing does not isolate visual-input cost. Shared preparation, energy, billing and prior capture remain outside complete net-benefit accounting.",
+    "decoder": "All arms use OCR and fixed lexical rules. Neural decoder contribution and a learned-decoder ablation were not evaluated.",
+    "encoder_cost": "fixed_selection versus fixed_region holds observations and decoder fixed when per-task equality checks pass. Wall cost measures the encoder path, including model load, latent/wire retention and cold verification, not only neural compute.",
+    "fixed_selection": "Neural encoding and OCR decoder remain; the observation policy is fixed to the lower band. Learned-minus-fixed quality tests this policy choice on the frozen tasks.",
+    "quality": "Digit-string equality after punctuation and leading-zero removal; UNKNOWN remains null. Deltas are left minus right; means become null if any pair is unknown. No answers or OCR text are published.",
+    "zero_visual": "Same frozen head with visual inputs zeroed after real encoding; actual selected observation executes. This is an input intervention, not a separately retrained model without vision."
+  },
+  "measured_net_benefit": null,
+  "native_daemon_integrated": false,
+  "oracle": {
+    "classification": "oracle_upper_bound",
+    "fair_comparator": false,
+    "measured_net_benefit": null,
+    "report_sha256": "702ca11b6065976a179f1b13b643de2507d4a7bf5765bd18fadd47d853aba50c",
+    "summary": {
+      "correct": 5,
+      "quality_mean": null,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 11,
+        "FAILED": 0,
+        "UNKNOWN": 1
+      },
+      "tasks": 12,
+      "totals": {
+        "inclusive_wall_ns": 3067671122,
+        "process_cpu_ns": 1152664985,
+        "terminated_child_cpu_ns": null
+      },
+      "unknown_quality": 1
+    }
+  },
+  "schema": "perc1.cord-public-synthesis.v1",
+  "scientific_status": "HOLD",
+  "source_independence_verified": false,
+  "tasks": 12
+}
