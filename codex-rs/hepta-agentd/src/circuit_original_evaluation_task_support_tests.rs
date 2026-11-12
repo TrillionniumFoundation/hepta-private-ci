@@ -46,6 +46,21 @@ pub(crate) async fn original_evaluation_source(
     anyhow::ensure!(candidates.is_empty());
     let (mut circuit, mut bindings) = configuration();
     bindings[0].cell = definition.clone();
+    // Routes are positional too. Preserve each original route's outcome and
+    // edges while following the same complete candidate permutation.
+    let mut routes = std::mem::take(&mut bindings[0].routes);
+    bindings[0].routes = definition
+        .candidates
+        .iter()
+        .map(|candidate| {
+            let index = routes
+                .iter()
+                .position(|route| route.candidate_id == candidate.candidate_id)
+                .ok_or_else(|| anyhow::anyhow!("exact original fixture route identity"))?;
+            Ok(routes.remove(index))
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    anyhow::ensure!(routes.is_empty(), "all original fixture routes");
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
