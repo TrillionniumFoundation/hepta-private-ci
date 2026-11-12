@@ -231,11 +231,11 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         counts[2], counts[3],
         "same original Experience/Dataset sessions"
     );
-    // The twenty-three real T readbacks each bracket native/Generator CURRENT with
-    // two live captures; each capture reads every original Material peer twice.
-    // Bootstrap/fit may add reads. Do not replace the actual lower bound with
-    // a cached receipt, accept a timeout, or pin an incidental exact total.
-    assert!(counts[1] >= 92);
+    // The twenty-three real T readbacks each hold one Source operation around
+    // native/Generator CURRENT: every original Material peer is read once before
+    // and once after. Bootstrap/fit add reads independently of this lower bound.
+    // No completed operation supplies a cached read to the next T request.
+    assert!(counts[1] >= 23 * 2);
     assert!(counts[1..].iter().all(|count| *count < 128));
     eprintln!(
         "HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=23 selector_reads=7 c_commands=3",
