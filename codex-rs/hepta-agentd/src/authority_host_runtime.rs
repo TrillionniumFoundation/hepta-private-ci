@@ -60,6 +60,7 @@ pub use session::RootHistoricalSourceCaptureCapabilityV1;
 pub use session::RootHistoricalSourceCaptureReceiptV1;
 pub use session::RootIndependentBEvaluationOfferV1;
 pub(crate) use session::RootIndependentBEvaluationRuntimeV1;
+pub use session::RootIndependentBSourceOfferV1;
 pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
 pub(crate) use session::RootOriginalSuccessorFilesV1;

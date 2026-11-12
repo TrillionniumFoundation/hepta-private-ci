@@ -32,6 +32,7 @@ pub(crate) use q24_evaluation::OriginalRootIndependentBEvaluationFilesV1;
 pub(crate) use q24_evaluation::PreparedRootIndependentBEvaluationV1;
 pub use q24_evaluation::RootIndependentBEvaluationOfferV1;
 pub(crate) use q24_evaluation::RootIndependentBEvaluationRuntimeV1;
+pub use q24_evaluation::RootIndependentBSourceOfferV1;
 pub(crate) use q24_evaluation::serve_optional_until as serve_independent_b_until;
 
 #[path = "authority_host_generation_initial_session.rs"]
