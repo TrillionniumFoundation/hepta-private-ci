@@ -120,3 +120,7 @@ impl LedgerDeploymentData {
 pub(super) fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::GenerationFenced(format!("original Initial Ledger: {error}"))
 }
+
+#[cfg(test)]
+#[path = "production_initial_q24_ledger_data_tests.rs"]
+mod tests;
