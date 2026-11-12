@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.learn.a671.original-evaluation-provider-objective-preimage-repair.v1",
+  "parent": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "problem": {
+    "observed_by": "Root's actual a671 original native run, not a new run by this agent",
+    "actual_run": {
+      "expected_and_executed_native_cases": 201,
+      "failed_cases": 17,
+      "native_exit": 100,
+      "collector_exit": 1,
+      "seconds": 637.1568,
+      "native_json_bytes": 51057,
+      "native_json_sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+      "execution_log_bytes": 187839,
+      "execution_log_sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664"
+    },
+    "provider_error": "agentd protocol error: original Circuit source: Circuit task does not match its original admitted task",
+    "current_limit": "This audit directly reads fixed source pins. Root supplied the actual error and complete log hashes; this agent has not yet read the exported complete a671 native log.",
+    "exact_mismatch": "BFixture::execute starts from source_support::record(run), whose objective_semantic_bytes is b\"objective\", then replaces only record.snapshot.objective_digest with the actual A-derived frozen cohort objective. The full objective preimage remains that of the unrelated generic fixture.",
+    "exact_original_rejection": "DurableCircuitTaskSourceV1::build -> codec::request compares Digest32::of_bytes(&record.objective_semantic_bytes) with record.snapshot.objective_digest. It correctly returns InvalidBinding; agent_error preserves the original Circuit source prefix.",
+    "relation_to_prior_repair": "The earlier same-Admission fixture repair fixed the A objective identity used for preregistration. It did not populate the complete corresponding objective preimage in these independent B fixture records."
+  },
+  "repair": {
+    "file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+    "before": {
+      "sha": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+      "bytes": 14474,
+      "sha256": "667e4f7c03fd1dbd55964347a7ca3b64c939c5b2267749f3657c86ff603e93b3"
+    },
+    "after": {
+      "sha": "2be5923507a86c65555ce525b273d05a6d3243a2",
+      "bytes": 15086,
+      "sha256": "761c4ee65809f2c36fa8da6dd62d86b98cf2ddbdc39a992d7691ae1b4291184b"
+    },
+    "actual_preimage_origin": "PositiveFixture.previous is the opaque actual A CircuitTaskSourcePublicationV1. execute(&session, 1) obtains it only after actual ObjectiveStart returns circuit_succeeded and original source.read_run_publication validates its durable complete RunStart.",
+    "private_route": "populate borrows original.previous.original_record().objective_semantic_bytes. Its three existing self.execute calls receive the same complete slice: each history execution, each heldout baseline execution, and each heldout candidate execution.",
+    "application": "The existing private execute helper copies that exact complete byte slice into its own original fixture RunStart record before Source::create/build. Existing snapshot.objective_digest remains the frozen cohort value; the original production codec still independently verifies their equality.",
+    "no_synthetic_reconstruction": true,
+    "no_new_signature_or_grant": true,
+    "unchanged": "B run/episode/principal identities, independent source directories, model bundle/action selection, authentication fixture, observed/deadline times, outcomes, protocol bytes, temporal plans, roles, alpha, weights, confidence clusters, retention and all original assertions stay unchanged.",
+    "qualification_limit": "These are explicitly scoped mechanism fixtures with existing test RunStart/model/measurement custody. Carrying the common actual objective preimage neither grants evaluator-only production execution nor proves deployed B, eligibility, Version effects or ordinary acceptance."
+  },
+  "complete_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+      "bytes": 14474,
+      "sha256": "667e4f7c03fd1dbd55964347a7ca3b64c939c5b2267749f3657c86ff603e93b3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "35fbdac0b826f2de1b780ece31b64d34d29c379e",
+      "bytes": 14632,
+      "sha256": "60a79a3d433cc72f921cc458b5451d63a7124cda19c39f990490627e41cb6318"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+      "bytes": 3082,
+      "sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "bytes": 24531,
+      "sha256": "6b6d399f617b452fcbc14a974bef0ac72daa85da8d0d1d3165caf5f1bfee3fc9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "a9c9ed4d03ad8d923d9424f801d6dce5df1c37b9",
+      "bytes": 26976,
+      "sha256": "8230102e40723b63eee4e2ebce902258843fbfebb97a40119015dfdc59c561f3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "68cf423686f24d192d015b0c06e86eea530dfc81",
+      "bytes": 16039,
+      "sha256": "d5fee13397caa51a0f112962c46ad2a39426ac81c1fe65b70c7cee5e32edc232"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+      "bytes": 19107,
+      "sha256": "6fae0f458f10269dd44ac14128d314d851603d4abad2c6c3f8b7ef45a99a3904"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "bytes": 6682,
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "adb6faefaead13bee99f4a5186114484fea09083",
+      "bytes": 5159,
+      "sha256": "320bad8e06995b93a7fbef76215f86900019afc566c9cf68650a46a7cc6af5b6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+      "bytes": 8292,
+      "sha256": "c88e6d015bd93dcad0d8555d51b46695863094f79b0535183d469e8e0095dcb8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "bytes": 15839,
+      "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_published_tests.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "b1765932608e7e1ba911b515065ff03bd2229076",
+      "bytes": 11029,
+      "sha256": "c3c31cc1633d011eda8b9312db83040ff61eb1d034a32aa47ad20cc781679fef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_source_test_support.rs",
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "60491689bfdfdb2d4e9551bc6a91aa2d22c7259d",
+      "bytes": 7546,
+      "sha256": "b4c29e9752545345b5f5b16e601ce01097c4ad0800ae88df046d8da605309fb3"
+    }
+  ],
+  "exact_edits": [
+    {
+      "label": "borrow_the_original_admitted_objective_preimage",
+      "before": "        let rule = self.rule.clone();\n        let history_at = rule.history_start_unix_seconds + 10;",
+      "after": "        let rule = self.rule.clone();\n        let objective_semantic_bytes =\n            &original.previous.original_record().objective_semantic_bytes;\n        let history_at = rule.history_start_unix_seconds + 10;"
+    },
+    {
+      "label": "pass_same_complete_objective_to_actual_history_source",
+      "before": "            self.execute(input, baseline, index, history_at).await?;",
+      "after": "            self.execute(\n                input,\n                objective_semantic_bytes,\n                baseline,\n                index,\n                history_at,\n            )\n            .await?;"
+    },
+    {
+      "label": "pass_same_complete_objective_to_actual_baseline_source",
+      "before": "            self.execute(\n                input.clone(),\n                baseline,",
+      "after": "            self.execute(\n                input.clone(),\n                objective_semantic_bytes,\n                baseline,"
+    },
+    {
+      "label": "pass_same_complete_objective_to_actual_candidate_source",
+      "before": "            self.execute(\n                candidate_input,\n                candidate,",
+      "after": "            self.execute(\n                candidate_input,\n                objective_semantic_bytes,\n                candidate,"
+    },
+    {
+      "label": "private_fixture_execute_requires_full_preimage",
+      "before": "    async fn execute(\n        &mut self,\n        input: crate::CircuitTaskSourceInputV1,\n        bundle: Digest32,",
+      "after": "    async fn execute(\n        &mut self,\n        input: crate::CircuitTaskSourceInputV1,\n        objective_semantic_bytes: &[u8],\n        bundle: Digest32,"
+    },
+    {
+      "label": "keep_original_source_digest_and_preimage_consistent",
+      "before": "        let mut record = source_support::record(run.as_str());\n        record.snapshot.objective_digest = self.rule.objective_digest;",
+      "after": "        let mut record = source_support::record(run.as_str());\n        // B shares the actual admitted objective, including its full preimage.\n        // Its own fixture run, authentication and admission times stay separate.\n        record.objective_semantic_bytes = objective_semantic_bytes.to_vec();\n        record.snapshot.objective_digest = self.rule.objective_digest;"
+    }
+  ],
+  "checks": {
+    "forward_inverse_whole_source_byte_equality": true,
+    "existing_private_execute_call_sites_before": 3,
+    "existing_private_execute_call_sites_after": 3,
+    "original_provider_test_file_byte_identical_git_blob": "35fbdac0b826f2de1b780ece31b64d34d29c379e",
+    "prior_same_admission_support_byte_identical_git_blob": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+    "original_fixture_assertion_lines_byte_identical": true,
+    "assertion_lines": [
+      "        assert_eq!(self.sources.len(), 7);",
+      "        assert_eq!(publication.original_record().snapshot.run_id, run);",
+      "        assert_eq!("
+    ],
+    "modified_production_files": 0,
+    "new_tests": 0,
+    "removed_tests": 0,
+    "new_dependencies": 0,
+    "ordinary_acceptance": 0
+  },
+  "guard_and_inventory": {
+    "CALLERS_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "full_manifest_bytes": 1619553,
+    "changed_fixture_path_mentions": 0,
+    "CALLERS_changed": false,
+    "verifier_changed": false,
+    "source_QA_changed": false,
+    "inventory_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+    "inventory_changed": false,
+    "original_group": {
+      "name": "original_evaluation_provider",
+      "package": "codex-hepta-agentd",
+      "cases": [
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support"
+      ]
+    },
+    "note": "The independent missing-authority manifest repair is owned by the Model peer; this child preserves its a671 parent manifest and makes no caller or authority changes."
+  },
+  "validation": {
+    "full_fixed_ref_source_reads": true,
+    "pure_v8_exact_edit_replay": true,
+    "python": false,
+    "rust": false,
+    "native": false,
+    "h": false,
+    "actual_fixed_candidate_pass_claim": false
+  }
+}

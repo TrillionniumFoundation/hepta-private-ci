@@ -140,6 +140,8 @@ impl BFixture {
         let baseline = original.config.decision.request.selected_bundle.digest()?;
         let candidate = original.candidate.digest()?;
         let rule = self.rule.clone();
+        let objective_semantic_bytes =
+            &original.previous.original_record().objective_semantic_bytes;
         let history_at = rule.history_start_unix_seconds + 10;
         for (index, episode) in rule.history.iter().enumerate() {
             let principal = d(&format!("{}-history-principal-{index}", rule.plan_id));
@@ -152,7 +154,14 @@ impl BFixture {
                 index,
                 history_at,
             )?;
-            self.execute(input, baseline, index, history_at).await?;
+            self.execute(
+                input,
+                objective_semantic_bytes,
+                baseline,
+                index,
+                history_at,
+            )
+            .await?;
             let value = [
                 FixedQ32::ONE,
                 FixedQ32::ZERO,
@@ -181,6 +190,7 @@ impl BFixture {
             )?;
             self.execute(
                 input.clone(),
+                objective_semantic_bytes,
                 baseline,
                 /*selected_index*/ 0,
                 rule.candidate_plan.fold.evaluation_start,
@@ -190,6 +200,7 @@ impl BFixture {
             candidate_input.scope.run_id = target.candidate_run_id.clone();
             self.execute(
                 candidate_input,
+                objective_semantic_bytes,
                 candidate,
                 usize::from(changed_candidate_action),
                 rule.candidate_plan.fold.evaluation_start,
@@ -236,6 +247,7 @@ impl BFixture {
     async fn execute(
         &mut self,
         input: crate::CircuitTaskSourceInputV1,
+        objective_semantic_bytes: &[u8],
         bundle: Digest32,
         selected_index: usize,
         at: u64,
@@ -246,6 +258,9 @@ impl BFixture {
             .join(format!("original-source-{}", self.sources.len()));
         fs::create_dir(&root)?;
         let mut record = source_support::record(run.as_str());
+        // B shares the actual admitted objective, including its full preimage.
+        // Its own fixture run, authentication and admission times stay separate.
+        record.objective_semantic_bytes = objective_semantic_bytes.to_vec();
         record.snapshot.objective_digest = self.rule.objective_digest;
         record.admission.observed_at_unix_micros = at * 1_000_000;
         record.admission.deadline_unix_micros = (at + 1) * 1_000_000;
