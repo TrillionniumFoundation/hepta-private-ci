@@ -439,3 +439,11 @@ pub use read_only::LedgerReadOnlyCutV1;
 pub use read_only::LedgerReadOnlyObservationV1;
 #[cfg(unix)]
 pub use read_only::ReadOnlyLedgerViewV1;
+
+#[cfg(unix)]
+#[path = "durable_read_data.rs"]
+mod read_data;
+#[cfg(unix)]
+pub use read_data::decode_readonly_ledger_data_v1;
+#[cfg(unix)]
+pub use read_data::encode_readonly_ledger_data_v1;

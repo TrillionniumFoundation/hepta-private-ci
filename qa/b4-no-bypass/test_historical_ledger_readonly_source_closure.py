@@ -194,6 +194,30 @@ class HistoricalLedgerReadonlySourceTests(unittest.TestCase):
             "LearningLedger::resolve_active_dataset_records(&ledger, receipt)?", ".cloned()",
             "self.observe()? != before", "DurableLedgerError::Indeterminate.into()"))
 
+    def test_data_encoder_uses_the_original_header_frames_and_semantic_replay(self):
+        self.check_markers(LEDGER + "durable_read_data.rs", "fn encode_readonly_ledger_data_v1(", (
+            "validate_domain(binding, records.len())?", "LearningLedger::from_snapshot(",
+            ".map_err(DurableLedgerError::Semantic)?", "MAGIC.to_vec()", "binding.as_array()",
+            "Digest32::of_bytes(&bytes)", "encode_frame(record)?", "checked_add(frame.len())",
+            ".is_none_or(|size| size as u64 > MAX_BYTES)"))
+
+    def test_data_decoder_rejects_inexact_images_tail_and_changed_ordinary_semantics(self):
+        self.check_markers(LEDGER + "durable_read_data.rs", "fn decode_readonly_ledger_data_v1(", (
+            "validate_recovery(recovery, max_records)?",
+            "expected.frontier.segment.is_some() || expected.frontier.sealed",
+            "bytes.len() as u64 != expected.ledger_length", "bytes.len() as u64 > MAX_BYTES",
+            "Digest32::of_bytes(bytes) != expected.ledger_digest", "replay_reader(",
+            "cursor != length", "core.records().len() as u64 != expected.frontier.anchor.sequence",
+            "encode_readonly_ledger_data_v1(expected.binding, snapshot.records())? != bytes"))
+
+    def test_data_snapshot_lookup_validates_receipt_and_replays_a_fresh_active_index(self):
+        self.check_markers(LEDGER + "dataset_records.rs", "fn read_dataset_records(", (
+            "self.records().len() > 4096", "receipt.snapshot.source_record_digests.len() > 4096",
+            "verify_dataset_snapshot_receipt_v3(receipt, now)?",
+            "LearningLedger::from_snapshot(self.clone())?",
+            "LearningLedger::require_active_dataset_sources(&ledger, receipt)?",
+            "LearningLedger::resolve_active_dataset_records(&ledger, receipt)?", ".cloned()"))
+
 
 if __name__ == "__main__":
     unittest.main()
