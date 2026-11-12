@@ -1,0 +1,719 @@
+{
+  "schema": "hepta.git-text-readback.v1",
+  "observed_at_utc": "2026-11-12 17:02:05 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": "01651139cf72fa3e310357c7637b38d05958b5d7",
+  "readback_commit": "bb5ad8eca7b8071e73612cc7b4240d1dcb1df3fa",
+  "readback_tree": "ca6fd12de6d65f29657486bcbdff3d77021941c3",
+  "scope": "Qualification-only evidence; no implementation or owner/actor/deployment changes.",
+  "all_verified": true,
+  "text_files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/ROOT_READBACK.json",
+      "git_blob": "dc437e53624cb0d8116331bc81183c90348e699e",
+      "bytes": 5373,
+      "sha256": "3777f67d14329246abec4c752043dd437806bef8878609a675641be2bc804724",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/blocking-jobs-1614.original.json",
+      "git_blob": "5edf7e808cedaf41ee52ca13cca55e4f4ef8ecf9",
+      "bytes": 78269,
+      "sha256": "759b91cbb32b1291abf0a8c47818025946a61d14ae21b2e246c25536ae57127e",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/daemon-jobs-1614.original.json",
+      "git_blob": "cda0242f259121234ce87cb797d4fedf7d94afd8",
+      "bytes": 5342,
+      "sha256": "df6b9079936604d54c56a05d7607251d253bd4ea04cb7038b87eba3725a3a4d0",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/ROOT_READBACK.json",
+      "git_blob": "8b4fbef5bf59cfaab34f1f17b6fedafcc11cf8cd",
+      "bytes": 5479,
+      "sha256": "f9363990e5d5a362c825e6ea356f390d69ef5d80b089baa934a884522067e149",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/daemon-jobs-1621.original.json",
+      "git_blob": "af7f83017a0385ad8eefb5cc3f14cb16ccae1e09",
+      "bytes": 5970,
+      "sha256": "4d4ca0b31f6bd848780d0aaf2f4bcebff0ea05f4dc037440ee244bc771509bb6",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part00",
+      "git_blob": "6db29d58f88e8c43e479abde8063dc88beadda00",
+      "bytes": 350000,
+      "sha256": "e56b623e2d409f1495089281060a6ffd8004c1805d30b2847a366dbc8d87939b",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part01",
+      "git_blob": "2187ef869baa425109257b947ad0e46dea689e80",
+      "bytes": 350000,
+      "sha256": "492d9f416c0dcb9c614ab7bc546c50fe4d520cc70d11faa1c9d99dbd0b6a717c",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part02",
+      "git_blob": "40ca0a5154bda4ed8f4d83790a05f23f43d1a00a",
+      "bytes": 159515,
+      "sha256": "077140888f8b833f1be94d478fd3e36ae1a0973706b030e2389d648bb4d89f30",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.PANIC_EXCERPTS.json",
+      "git_blob": "156d65cef6fc3a3952e32269b0cdda744bfb08f3",
+      "bytes": 18433,
+      "sha256": "50016974c47728d54cee63a5f5471d2f6cf37f2cee58135de598ff514955fb62",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part00",
+      "git_blob": "2c50e35e90f0d01592281a7ff38f3ee71b768688",
+      "bytes": 350000,
+      "sha256": "ae7ce55862ab266f2aaa4d9143a3dc539c260930813bde481842dc82f9ced1ef",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part01",
+      "git_blob": "5dd3f6c9a7d13bc64428317bab2d702e915c3fa0",
+      "bytes": 148556,
+      "sha256": "4f41a16e4c69aee9855a2a3053440bc186ac74c8ef4ea883deef955a9fed7972",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.PANIC_EXCERPTS.json",
+      "git_blob": "8e3d48970933917ab9314048d4e085fd2c49ca31",
+      "bytes": 7683,
+      "sha256": "35ba4042ad015cba871693652c158270b6d3098190c8adcd3f4c71a876921492",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/MANIFEST.json",
+      "git_blob": "30ac7086af53d08dfcf5cf89eabeb5e5791083b3",
+      "bytes": 5962,
+      "sha256": "40e5ef6aba882c7b06279fcd6410d04806926e0835883e233c96a841c86d6618",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/blocking-jobs-1624.original.json",
+      "git_blob": "e40ec53fdb7dff1d70721f7846be4d3f71f33a5a",
+      "bytes": 80918,
+      "sha256": "c36f7f183b44060763193617dc015ede9aceb70885a58295afe98ada43cf8132",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/ROOT_REPAIR_REVIEW.json",
+      "git_blob": "248c33c74e9825fd3e4febe4617c352294a045b1",
+      "bytes": 4690,
+      "sha256": "01809bf67ef6b1392dc673cd9727d9195f45df981db80a92751b6fc5c9b04b5b",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/original.job.log.part00",
+      "git_blob": "1a184c7e68b17451630b620520e227b2e256bc9b",
+      "bytes": 350000,
+      "sha256": "8121722dfd7b45702658fca60fb891603d98205e4c0d1cb0b9e83a9adea52042",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/original.job.log.part01",
+      "git_blob": "035dbf26ba3d12fdd47ba9581eb1a5f3fdbae068",
+      "bytes": 26573,
+      "sha256": "7a2852278f1964968ab71cf1a82ebb251de5a195187c76b946328c1546c4874a",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/record0.original.json",
+      "git_blob": "a5eee31aa60d002900a90e52048cb1641ed235c7",
+      "bytes": 5044,
+      "sha256": "470b2ef3f98a1130da79cedf90558fcca8fff5a16aba72eeb3b30f2449827e5f",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/record1.original.json",
+      "git_blob": "b85de568169ca86827be0f05e6fc69a3d45aaf23",
+      "bytes": 10629,
+      "sha256": "1a7fe21f98e52310747da73946bf71b6b0380ede4d46b4f8293040124340d4c0",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/jobs.original.json",
+      "git_blob": "470cd67ca579171affe76bafb6ec920339bdf9ec",
+      "bytes": 4222,
+      "sha256": "44e4486c0a803b9d81ffbdaec98b4c97f449e217dd037b1a95a222a6aa57d69e",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/MANIFEST.json",
+      "git_blob": "34ae40dc414da1041a70f0225d7737cd343ae1da",
+      "bytes": 2051,
+      "sha256": "7fd1f028855a0d39053a97a24a725d95a26a011d420bae1534d644bf97c6f310",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/execution-commit.root.original.json",
+      "git_blob": "bf4f7fe2db271af2d5be5bbbbc3530a02de741b7",
+      "bytes": 2798,
+      "sha256": "06e4818b620804d18517ff93b1d39c369403689349a24f7d8188469d9c61f36c",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/daemon-jobs-1636.original.json",
+      "git_blob": "8c59e285a21a800181bd29acf6ad7d734a9d68be",
+      "bytes": 6013,
+      "sha256": "b2cdf68ac089dbb6243c8093f6e414e333e4970c68ff078d1688531419fefbc0",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-016511.md",
+      "git_blob": "8d1d05f4c560bc949d1bb587a2bfd4c833e8287f",
+      "bytes": 23625,
+      "sha256": "5074143b24f079011a034c302f6ae22e0d4d75a5257d28558cfc98087e1cf18e",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_EVIDENCE-016511.json",
+      "git_blob": "8e7ebd940871ba28a99d2d5dc4c6c86ba0147399",
+      "bytes": 64439,
+      "sha256": "a3d06ad1fe09e06160d207a97c91db647ddcbb706ee60e92ef5605ec8447b3b9",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_README-016511.md",
+      "git_blob": "273e24d28a17b513eb368b67aacab4814bdb5d44",
+      "bytes": 5743,
+      "sha256": "7b7e221ddfc28459f605a270581bbbe174376308e0add7a9b7c54ae8979c6b47",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-016511.json",
+      "git_blob": "0a168a4808b8596dbee56b57b54c850e341d865c",
+      "bytes": 304595,
+      "sha256": "855ddc3cb2b01bc6ac4692525ceb60019766d5a5b863dbc9679b96e6fada6a4f",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "git_blob": "726ca719dcd45bef431418cd955a60b6fdfdc743",
+      "bytes": 77794,
+      "sha256": "641185f8bb56c542a10e72ab4c6227bdc30f01d0306822e3693c722b08830fac",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "git_blob": "d5cb50ccefc482be61f4da7ee3350152bc50c836",
+      "bytes": 28724,
+      "sha256": "ad1e1fc31b935a8cb7180b4ca99860461b00d7c83a2162a47a99a26281221e1e",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
+      "git_blob": "8142bb1388735c55bcdd188b8a8a83641ea3ce0d",
+      "bytes": 7280,
+      "sha256": "0c8d12e59bf720aa850eff36b0d67dbf16e755ee129e63e7fe0dc1cf5cf6bfc7",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/ROOT_FULL_LOG_VERIFICATION.json",
+      "git_blob": "c0377fd2d464fab212b51c5bc74de9e717e68ade",
+      "bytes": 10379,
+      "sha256": "b5b030a9a832922967526fad46567785122540b6fe71afd8ed8c04faad655424",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/ordinary.execution.original.json",
+      "git_blob": "30cb7f0116f9b753b4b7ad5e239270fb260a6a89",
+      "bytes": 1634,
+      "sha256": "9d0c9929cefa15736e1440efdfd249a7d887fa1379581e30d2e65d6e0d58a26c",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/ordinary.junit-collection.original.json",
+      "git_blob": "6c58a151f311dcd678a67c457417ebe388068721",
+      "bytes": 1079,
+      "sha256": "52a014bd2f2495f9ace29411c37f3c6b478cd7655a03b42fa7bf7ed155c3e910",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+      "git_blob": "ed8cd45fad85774066fe85be6c169232483d79e5",
+      "bytes": 297533,
+      "sha256": "419b8467408b93beaabb5701e9e5a78930f3d2c2e5b47148719d23c072fc4918",
+      "exact": true
+    }
+  ],
+  "imported_blobs": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/MANIFEST.json",
+      "git_blob": "a6d6f35bf6a39f50410f6c5739632fdb7d678614",
+      "bytes": 17273,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/blocking-jobs.original.json",
+      "git_blob": "87ff3ddbf18c27afffa769ebb45d719d3a0b661f",
+      "bytes": 77404,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/clippy.job.log.part00",
+      "git_blob": "88c6813bc4ec6b41f92f17724ec289416a054c4c",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/clippy.job.log.part01",
+      "git_blob": "d6cdff17ea7193c30afa475cc0014669657800b2",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/clippy.job.log.part02",
+      "git_blob": "777f963389c4eeb3f97b7cfb568b6af0cf938d31",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/clippy.job.log.part03",
+      "git_blob": "2e94ee3fe4f589a92a53f53f8f378a5dfc4a7d08",
+      "bytes": 174183,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/execution-commit.original.json",
+      "git_blob": "bf4f7fe2db271af2d5be5bbbbc3530a02de741b7",
+      "bytes": 2798,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/fence.job.log.part00",
+      "git_blob": "42dec017a64346231714973a82373074b05902f3",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/fence.job.log.part01",
+      "git_blob": "0f7319a97b405fe76b585667d3a79635b272fcc5",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/fence.job.log.part02",
+      "git_blob": "fce8403d3ad673fdde48e63eec57f69d72721462",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/fence.job.log.part03",
+      "git_blob": "586759bf291fc930756ccc2d6ccb42e6d5fd9d27",
+      "bytes": 350000,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass/fence.job.log.part04",
+      "git_blob": "0d7075e3ecfe45bea343e90a0206b96e5e3a62e9",
+      "bytes": 335202,
+      "source_tree": "c64a622d618aabb0d1734edefc2cb6a21fee3544",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/MANIFEST.json",
+      "git_blob": "2ffdb720c28de123dbea2b22fdded792db18bfb6",
+      "bytes": 8174,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/PARTIAL_METHOD_OBSERVATIONS.json",
+      "git_blob": "4910a412e2f553ed9956448d1bb4a8eef2b7c698",
+      "bytes": 19662,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/check-runs.original.json",
+      "git_blob": "18f3b86317e398b9146796ceee71f265ae225e9e",
+      "bytes": 169549,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/gnu.job.log.part00",
+      "git_blob": "eeaa56fd507a9f64578f469d66c450f9f1213b41",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/gnu.job.log.part01",
+      "git_blob": "e34e4da3d93408ab112a32fda762e87bf6436c2b",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/gnu.job.log.part02",
+      "git_blob": "3e010ffced1f0080d14a3871ddb13ef0d215c3f0",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/gnu.job.log.part03",
+      "git_blob": "c58ff561b6fc1bdfcca7295662a2bbe7e8375a84",
+      "bytes": 149859,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/musl.job.log.part00",
+      "git_blob": "5b6a7e88517c3e69593c3729d62988a113824906",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/musl.job.log.part01",
+      "git_blob": "ee6726eb2d139fd5e8756c67b1e58aabdcce9e72",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/musl.job.log.part02",
+      "git_blob": "01d1b9770a1871ea32fe45720f954b81d17a1d9e",
+      "bytes": 350000,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-bazel-timeout/musl.job.log.part03",
+      "git_blob": "240c5067e825e3d022e50183306adef4565689bb",
+      "bytes": 134809,
+      "source_tree": "855ce34f5adccf86a15fc9c26ca642ce2aa58371",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/FAILURE_INDEX.json",
+      "git_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+      "bytes": 31490,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
+      "git_blob": "b81b0f3318f970567e70738e75cc45f9d77cc100",
+      "bytes": 16585,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/jobs.original.json",
+      "git_blob": "c2c7197f5145013b5cd99a02e6dab73e84199482",
+      "bytes": 6619,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part00",
+      "git_blob": "48a896a0c3a61b2033a33cef72584e6c4a402d9a",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part01",
+      "git_blob": "69f546e4bc5250d17032afa38a9826a853b8d3ff",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part02",
+      "git_blob": "1a334c0354fbdcb5d5227767f87288ccca26c3a3",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part03",
+      "git_blob": "002ee9656fd434ee6752a62012c34cd25dbfb148",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part04",
+      "git_blob": "f9867e5795006428ea188951a36e98651218684b",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part05",
+      "git_blob": "0751174e4f4ddbb700213ac9c3468ef4f7cc52e8",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part06",
+      "git_blob": "74e78b30e770b71759a3c4ec83b04a2378eec976",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part07",
+      "git_blob": "e2fa639701931c0045cdb5a30219d6b99849d06e",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part08",
+      "git_blob": "5f43e7c16dbe94bda7210ea36762b2530e72856d",
+      "bytes": 349999,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part09",
+      "git_blob": "55e75ace46f6c7ee97c7629e48fdbf9ebfae4f15",
+      "bytes": 350000,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part10",
+      "git_blob": "3e31c4a39c31065b193aaaca3c623059b97cae60",
+      "bytes": 245972,
+      "source_tree": "8b125e8952a46714ff8e12533ebbacf1bb0be536",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
+      "git_blob": "0cdc83f5f2be7dd688c95b44b810d23ad15b222f",
+      "bytes": 9456,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part00",
+      "git_blob": "d063debe1ae28c0c5d09ed439c08ad0130d8f58f",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part01",
+      "git_blob": "00a4d35c3a0be3e6b9dbf857ea9d1ead81d2f6f2",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part02",
+      "git_blob": "2740500a5be331b3b809c391416d70e8a5d55dd4",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part03",
+      "git_blob": "7ddf2daafd5d6668875dc1251ba5dfb0197c7248",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part04",
+      "git_blob": "33c8d608dc2c51d67f4c50482022f19f332bab91",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part05",
+      "git_blob": "a1a25bc922353e5f735d678da206839110f17192",
+      "bytes": 350000,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part06",
+      "git_blob": "acecbc2585b809c3ebd5cac9c9f6ab38996018bb",
+      "bytes": 45300,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/jobs.original.json",
+      "git_blob": "da6a10658291529fa9b7084641cf9bb01cf1c746",
+      "bytes": 6294,
+      "source_tree": "c11f3136df21d0d07401a973e11919134a45ff8b",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-static-review/INDEPENDENT_REVIEW.json",
+      "git_blob": "46d6c32cbdeca65a99ecb9cd2348316b5dc7645c",
+      "bytes": 6871,
+      "source_tree": "d089b8eb2eedc6e6b6f1753911a6622f7f18478f",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-static-review/MANIFEST.json",
+      "git_blob": "1101c5d8f6781f0d41a3f7a16f0b26e1f2485d69",
+      "bytes": 620,
+      "source_tree": "d089b8eb2eedc6e6b6f1753911a6622f7f18478f",
+      "staged_path_exact": true,
+      "full_original_blob_independently_verified": true
+    }
+  ],
+  "full_original_logs": [
+    {
+      "name": "Fence",
+      "parts": 5,
+      "bytes": 1735202,
+      "sha256": "4543e5ec05e4fa78742f57739e983f75be4fe00b7b95a07af97e5e5ada227804",
+      "exact_original": true
+    },
+    {
+      "name": "GNU Clippy",
+      "parts": 4,
+      "bytes": 1224183,
+      "sha256": "4a830975daf60038819900caf1b38bfa7b8cd59371c195848465cbc84026296d",
+      "exact_original": true
+    },
+    {
+      "name": "GNU Bazel",
+      "parts": 4,
+      "bytes": 1199859,
+      "sha256": "3ea31954ec5bdd264a286413135650db7f1571329703f96147c5fc1a9771febe",
+      "exact_original": true
+    },
+    {
+      "name": "musl Bazel",
+      "parts": 4,
+      "bytes": 1184809,
+      "sha256": "8844c93d9e587c8b12558a4e14ec8b38d896b4c95d308c0727255f8c3ff4e76d",
+      "exact_original": true
+    },
+    {
+      "name": "Windows shard 3",
+      "parts": 3,
+      "bytes": 859515,
+      "sha256": "76bc57cb5bbfeb8a57c74629779a10456cebf3b4e11dbabc6e90b20bd3a35d6d",
+      "exact_original": true
+    },
+    {
+      "name": "Windows shard 1",
+      "parts": 2,
+      "bytes": 498556,
+      "sha256": "c333cb3674a8e70752ca2a610cd858bb19facde465fbfead61d0feb8054a1cd3",
+      "exact_original": true
+    },
+    {
+      "name": "Windows private-state",
+      "parts": 2,
+      "bytes": 376573,
+      "sha256": "3156c97691ae5f18928a90579808effdfff642df5016e859cbf353804a6d63a9",
+      "exact_original": true
+    },
+    {
+      "name": "9fac native",
+      "parts": 11,
+      "bytes": 3745971,
+      "sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+      "exact_original": true
+    },
+    {
+      "name": "9fac caller",
+      "parts": 7,
+      "bytes": 2145300,
+      "sha256": "edae7bf327161cfc19fcd391a682708fafab14e1365186e0408e5319c7f801b4",
+      "exact_original": true
+    }
+  ],
+  "canonical_verified": [
+    "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+    "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+    "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+    "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md"
+  ],
+  "original_execution_and_junit_records": {
+    "stored_without_numeric_reserialization": true,
+    "storage_newline_added": true,
+    "original_9fac_xml_or_whole_zip_separately_retrieved": false
+  },
+  "limitations": [
+    "All prior original failures and UNKNOWN records remain unchanged.",
+    "Native source 9fac: 1726 PASS,11 FAIL,1 TIMEOUT of1738; Root/scoped maintenance not run.",
+    "No source result transfer to unexecuted repair candidates.",
+    "All12 full scientific/authority gates remain OPEN; owner_decision=null; HOLD."
+  ],
+  "proof_commit_note": "This proof records the independently read staged evidence. A following proof-only commit updates this record, canonical verification status and manifest; its changed blobs are separately checked before branch update."
+}
