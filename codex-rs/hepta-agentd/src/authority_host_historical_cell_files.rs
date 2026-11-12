@@ -16,6 +16,10 @@ use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
 use codex_hepta_neuron::observe_original_file_anchor_v1;
 use codex_hepta_neuron::observe_original_guarded_cell_v1;
 
+#[cfg(test)]
+#[path = "authority_host_historical_cell_files_tests.rs"]
+mod tests;
+
 pub(crate) struct RootHistoricalCellInputsV1 {
     pub(crate) journal: File,
     pub(crate) witness: File,
