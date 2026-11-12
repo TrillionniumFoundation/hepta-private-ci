@@ -279,3 +279,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         Ok(bytes)
     }
 }
+
+#[cfg(test)]
+#[path = "circuit_retained_version_issuer_host_tests.rs"]
+mod issuer_fixture;

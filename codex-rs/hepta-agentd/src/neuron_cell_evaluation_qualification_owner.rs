@@ -270,7 +270,6 @@ pub use panel::OriginalCellEvaluationCommandErrorV1;
 pub use panel::OriginalCellEvaluationCommandReceiptV1;
 pub use panel::OriginalCellEvaluationHostV1;
 
-pub(crate) use panel::OriginalCellEvaluationModelInputV1;
 pub use panel::OriginalCellEvaluationModelMaterialClientV1;
 pub use panel::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use panel::OriginalCellEvaluationModelMaterialV1;

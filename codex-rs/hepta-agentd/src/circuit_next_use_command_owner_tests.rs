@@ -383,7 +383,7 @@ async fn q24_next_use_command_pins_both_original_signatures_before_dispatch() ->
 #[tokio::test]
 async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -> anyhow::Result<()>
 {
-    let mut f = CompletionFixture::ready(None).await?;
+    let f = CompletionFixture::ready(None).await?;
     f.complete_c().await?;
     let context = f.context()?;
     let service = ObserverService::start(&f, f.f.original.create_owner()?)?;

@@ -13,6 +13,8 @@ use std::sync::atomic::AtomicBool;
 
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_types::Generation;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 use super::*;
 use crate::OriginalCellEvaluationCommandClientV1;

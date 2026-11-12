@@ -97,6 +97,20 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         self.assertEqual(self.boundaries["root_learning_original_stage_assembly"].product_callers, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
+    def test_model_readback_edge_does_not_admit_an_unregistered_model_lane(self):
+        row = self.boundaries["learning_source_bound_training_stage_readback"]
+        sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
+            (ROOT / path).read_text())) for path in (
+                row.definition_path, *row.product_callers,
+            )}
+        PROOF._verify_boundary(ROOT, row, sources, ())
+        sources[AGENT + "cell_q24_model_unregistered_lane.rs"] = (
+            "fn unexpected(owner: &SourceBoundCellQ24TrainingStageV1) { "
+            "SourceBoundCellQ24TrainingStageV1::readback(owner); }"
+        )
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+            PROOF._verify_boundary(ROOT, row, sources, ())
+
     def test_live_material_and_full_original_signatures_cannot_be_detached(self):
         checks = (
             ("fn current_material(", "self.read_original_evidence(config).await?"),

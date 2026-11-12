@@ -54,7 +54,10 @@ pub(crate) fn identity() -> anyhow::Result<AgentdRootAuthorityPeer> {
     })
 }
 
-fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorityPeerChannel> {
+pub(crate) fn channel(
+    stream: UnixStream,
+    timeout: Duration,
+) -> anyhow::Result<HostAuthorityPeerChannel> {
     Ok(HostAuthorityPeerChannel::from_stream(
         stream,
         HostAuthorityPeerPolicy {

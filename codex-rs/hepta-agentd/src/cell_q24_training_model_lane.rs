@@ -241,14 +241,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             Error::CommitUncertain
         })?;
         #[cfg(target_os = "linux")]
-        if source_bound {
-            if owners
+        if source_bound
+            && owners
                 .require_retained_attestation_current(&current)
                 .is_err()
-            {
-                owners.source_fenced = true;
-                return Err(Error::CommitUncertain);
-            }
+        {
+            owners.source_fenced = true;
+            return Err(Error::CommitUncertain);
         }
         if current.receipt != original.receipt || current.attestation != original.attestation {
             #[cfg(target_os = "linux")]

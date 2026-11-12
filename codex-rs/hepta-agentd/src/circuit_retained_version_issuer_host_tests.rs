@@ -1,19 +1,19 @@
 //! Private fixture access to the actual command and one issuer worker.
 //! No fixture constructs a host phase or bypasses its original current reads.
-use super::super::wire;
+use super::wire;
 use super::*;
 
 impl OriginalCircuitRetainedVersionHostV1 {
     pub(crate) async fn prepare_original_version_fixture(
         self: Arc<Self>,
-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
         self.original_version_fixture_request(wire::Action::Prepare)
             .await
     }
 
     pub(crate) async fn read_original_version_fixture(
         self: Arc<Self>,
-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
         self.original_version_fixture_request(wire::Action::Readback)
             .await
     }
@@ -21,7 +21,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
     async fn original_version_fixture_request(
         self: Arc<Self>,
         action: wire::Action,
-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
         tokio::task::spawn_blocking(move || {
             let (request, pin) = {
                 let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;

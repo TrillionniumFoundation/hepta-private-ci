@@ -5,6 +5,7 @@
 use super::*;
 use codex_hepta_learning_ledger::LedgerEvent;
 use material::evaluation_provider::DecisionBinding;
+use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_b_refuses_validly_signed_decision_for_another_policy_or_publication()

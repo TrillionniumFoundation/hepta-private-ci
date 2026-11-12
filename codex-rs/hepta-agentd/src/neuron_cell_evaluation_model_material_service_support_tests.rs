@@ -84,11 +84,11 @@ impl OriginalCellEvaluationHostV1 {
             if !exchanged? {
                 return Ok(request_id - 1);
             }
-            if request_id == 1 {
-                if let Some((ready, release)) = pause.take() {
-                    ready.send(())?;
-                    release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
-                }
+            if request_id == 1
+                && let Some((ready, release)) = pause.take()
+            {
+                ready.send(())?;
+                release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
             }
         }
         anyhow::bail!("original material session exhausted");

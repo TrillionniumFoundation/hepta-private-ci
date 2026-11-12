@@ -3,6 +3,7 @@
 //! explicit fixtures; these are source-binding checks, not ordinary A/B runs.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn signed_ledger_facts_cannot_substitute_another_source_profile_or_policy()
