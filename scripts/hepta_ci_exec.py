@@ -84,6 +84,7 @@ def execute_logged(
     *,
     maximum_bytes: int = 64 * 1024 * 1024,
     timeout_seconds: float = 3600,
+    pass_fds: tuple[int, ...] = (),
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
@@ -112,6 +113,7 @@ def execute_logged(
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             start_new_session=True,
+            pass_fds=pass_fds,
         )
         assert process.stdout is not None
         descriptor = process.stdout.fileno()
