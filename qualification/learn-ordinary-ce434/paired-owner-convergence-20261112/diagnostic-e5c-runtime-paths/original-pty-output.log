@@ -1,0 +1,199 @@
+{
+  "schema": "learn.original-e5c-runtime-paths.v1",
+  "read_only": true,
+  "uid": 1000,
+  "source_before": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+  "source_clean_before": true,
+  "paths": [
+    {
+      "path": "/data",
+      "metadata": {
+        "device": 2067,
+        "inode": 2,
+        "mode": "0o40755",
+        "uid": 1000,
+        "nlink": 701,
+        "bytes": 221184,
+        "mtime_ns": 1794488462559949592,
+        "ctime_ns": 1794488462559949592
+      },
+      "filesystem": {
+        "total": 983023263744,
+        "used": 752192290816,
+        "free": 190819368960
+      },
+      "state": "observed"
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1",
+      "metadata": {
+        "device": 2067,
+        "inode": 40370256,
+        "mode": "0o40700",
+        "uid": 1000,
+        "nlink": 3,
+        "bytes": 4096,
+        "mtime_ns": 1794488264015897476,
+        "ctime_ns": 1794488264015897476
+      },
+      "filesystem": {
+        "total": 983023263744,
+        "used": 752192290816,
+        "free": 190819368960
+      },
+      "state": "observed"
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+      "state": "read-failed",
+      "error_type": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins",
+      "metadata": {
+        "device": 2067,
+        "inode": 40370257,
+        "mode": "0o40700",
+        "uid": 1000,
+        "nlink": 2,
+        "bytes": 4096,
+        "mtime_ns": 1794482968900938652,
+        "ctime_ns": 1794482968900938652
+      },
+      "filesystem": {
+        "total": 983023263744,
+        "used": 752192290816,
+        "free": 190819368960
+      },
+      "state": "observed"
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "metadata": {
+        "device": 2067,
+        "inode": 40370259,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1,
+        "bytes": 29366352,
+        "mtime_ns": 1794482968685022065,
+        "ctime_ns": 1794482968900015792
+      },
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "stable": true,
+      "state": "observed"
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "metadata": {
+        "device": 2067,
+        "inode": 40370261,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1,
+        "bytes": 39884,
+        "mtime_ns": 1794482968901013685,
+        "ctime_ns": 1794482968909814746
+      },
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "stable": true,
+      "state": "observed"
+    },
+    {
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v2",
+      "state": "read-failed",
+      "error_type": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/manifest.json",
+      "metadata": {
+        "device": 2050,
+        "inode": 53403300,
+        "mode": "0o100600",
+        "uid": 1000,
+        "nlink": 1,
+        "bytes": 1793,
+        "mtime_ns": 1794407188237328225,
+        "ctime_ns": 1794407188237328225
+      },
+      "sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+      "stable": true,
+      "state": "observed"
+    },
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "metadata": {
+        "device": 2050,
+        "inode": 53403298,
+        "mode": "0o100444",
+        "uid": 1000,
+        "nlink": 1,
+        "bytes": 39884,
+        "mtime_ns": 1794407188228394734,
+        "ctime_ns": 1794407188234328328
+      },
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "stable": true,
+      "state": "observed"
+    },
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json",
+      "metadata": {
+        "device": 2050,
+        "inode": 16170427,
+        "mode": "0o100600",
+        "uid": 1000,
+        "nlink": 1,
+        "bytes": 3326,
+        "mtime_ns": 1794482969070017344,
+        "ctime_ns": 1794482969138126846
+      },
+      "sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+      "stable": true,
+      "state": "observed"
+    },
+    {
+      "path": "/home/qian-qi/.cargo/registry",
+      "metadata": {
+        "device": 2050,
+        "inode": 51642958,
+        "mode": "0o40775",
+        "uid": 1000,
+        "nlink": 5,
+        "bytes": 4096,
+        "mtime_ns": 1793696001603296804,
+        "ctime_ns": 1793696001603296804
+      },
+      "filesystem": {
+        "total": 982240026624,
+        "used": 948250001408,
+        "free": 13991751680
+      },
+      "state": "observed"
+    },
+    {
+      "path": "/home/qian-qi/.cargo/git",
+      "metadata": {
+        "device": 2050,
+        "inode": 53125010,
+        "mode": "0o40775",
+        "uid": 1000,
+        "nlink": 4,
+        "bytes": 4096,
+        "mtime_ns": 1790955684289396310,
+        "ctime_ns": 1790955684289396310
+      },
+      "filesystem": {
+        "total": 982240026624,
+        "used": 948250001408,
+        "free": 13991751680
+      },
+      "state": "observed"
+    }
+  ],
+  "source_after": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_clean_after": true
+}
