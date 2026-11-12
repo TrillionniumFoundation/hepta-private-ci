@@ -8,6 +8,8 @@ use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeContextDelivery;
+use super::NativeContextRequest;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -46,7 +48,39 @@ impl AppServerModelDriver {
             control,
             admission,
             prompt,
-            context_query,
+            NativeContextRequest {
+                query: context_query,
+                delivery: NativeContextDelivery::Attach,
+            },
+            /*intelligence*/ None,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Retrieve and finally revalidate the same owner context, choosing whether
+    /// its explicit attachment reaches the model. Withhold is not memory-off:
+    /// the host must independently isolate other memory/history/tool paths.
+    /// The intervention is part of durable admission, so a request ID cannot
+    /// switch delivery policy on retry. Existing Attach request identities stay
+    /// compatible with `run` and retained journals.
+    pub async fn run_with_context_delivery(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: String,
+        delivery: NativeContextDelivery,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            NativeContextRequest {
+                query: Some(context_query),
+                delivery,
+            },
             /*intelligence*/ None,
             cancellation,
         )
@@ -68,7 +102,10 @@ impl AppServerModelDriver {
             control,
             admission,
             prompt,
-            context_query,
+            NativeContextRequest {
+                query: context_query,
+                delivery: NativeContextDelivery::Attach,
+            },
             Some(&intelligence),
             cancellation,
         )
@@ -80,31 +117,46 @@ impl AppServerModelDriver {
         control: &mut DurableInferenceControl,
         admission: NativeAdmission,
         prompt: String,
-        context_query: Option<String>,
+        context_request: NativeContextRequest,
         intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }
-        if context_query
+        if context_request
+            .query
             .as_ref()
             .is_some_and(|query| query.is_empty() || query.len() > 2048)
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+        if context_request.delivery == NativeContextDelivery::Withhold
+            && context_request.query.is_none()
+        {
+            return Err("withheld delivery requires an explicit retrieval query".into());
+        }
+        let original_digest = native_source_payload_digest(
+            &prompt,
+            &context_request.query,
+            &self.config.agentd_socket,
+            self.config.timeout.as_millis(),
+            intelligence,
+        )?;
+        let payload_digest = match context_request.delivery {
+            NativeContextDelivery::Attach => original_digest,
+            NativeContextDelivery::Withhold => digest(&serde_json::to_vec(&(
+                "hepta.native-context-intervention.v1",
+                "delivery_off",
+                original_digest,
+            ))?),
+        };
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
             worker_generation: self.config.generation,
             model: self.config.model.clone(),
-            payload_digest: native_source_payload_digest(
-                &prompt,
-                &context_query,
-                &self.config.agentd_socket,
-                self.config.timeout.as_millis(),
-                intelligence,
-            )?,
+            payload_digest,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
@@ -164,7 +216,7 @@ impl AppServerModelDriver {
                 control,
                 &request_id,
                 prompt,
-                context_query,
+                context_request,
                 intelligence,
                 cancellation,
             )

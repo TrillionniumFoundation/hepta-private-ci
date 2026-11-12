@@ -461,6 +461,24 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 
+    /// Recheck every native slot in the retained source mapping without
+    /// importing a snapshot or mutating the original writer's canonical cut.
+    pub(crate) async fn revalidate_episodic_receipt(
+        &self,
+        access: &CognitiveAccess,
+        scope: &codex_hepta_cognitive_store::CognitiveScope,
+        receipt: &codex_hepta_memory::EpisodicImportReceipt,
+    ) -> Result<(), AgentdError> {
+        let mutation = self.mutation.as_ref().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .revalidate_episodic_receipt(access, scope, receipt)
+            .await?)
+    }
+
     pub async fn remember_with_kg(
         &self,
         access: &CognitiveAccess,
