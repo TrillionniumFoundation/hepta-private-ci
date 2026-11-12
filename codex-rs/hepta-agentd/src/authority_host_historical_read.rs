@@ -36,6 +36,8 @@ use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
 #[path = "authority_host_historical_learning_trust.rs"]
 mod learning_trust;
+#[path = "authority_host_post_a_files.rs"]
+mod post_a_files;
 #[path = "authority_host_historical_read_session.rs"]
 mod prepared;
 #[path = "authority_host_historical_read_runtime.rs"]
