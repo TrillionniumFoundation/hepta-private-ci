@@ -1,0 +1,267 @@
+{
+  "schema": "hepta.verify9.source-binding.v1",
+  "base_commit": "4b6ce81c8ebe26844a54b8458cee054025ba36ac",
+  "base_tree": "a4d42a24768270ac421ef9db70e8ee1f7aba4576",
+  "execution_scope": "Retained local/desktop Python source capsule, plus separately recorded exact published-head macOS CI; no native product qualification.",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "executed_source_archive": {
+    "bytes": 231089,
+    "sha256": "d6918313ccaa037bddaa109de38751ae5869b5c10110c5f09f2f725c3d8f5c93",
+    "member_count": 73
+  },
+  "executed_source_archive_path": "EXECUTED_SOURCES.zip",
+  "executed_source_files": 73,
+  "complete_source_manifest": {
+    "archive": "LOCAL_VALIDATION_ORIGINALS.zip",
+    "member": "validation-final/SOURCE_MANIFEST.json",
+    "sha256": "16be4f83eabbc9d3f0bf3a2d6b9fcb6683a601cd1d7b28e93a642dca73e66446"
+  },
+  "validation_receipt": {
+    "archive": "LOCAL_VALIDATION_ORIGINALS.zip",
+    "member": "validation-final/RESULT.json",
+    "sha256": "99ecd4c4f72b3264d3e39a519e26b14b865e70879490a5c9f2492efdf0be2eee"
+  },
+  "commands": [
+    {
+      "name": "package-tests",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/verification_cell_verify1",
+        "-t",
+        ".",
+        "-v"
+      ],
+      "exit_code": 0,
+      "parent_elapsed_ns": 23575905062,
+      "log_sha256": "9efc26fedf37661ffdb7affbe16a59405db9653078b80c8c5955bc1cc4c6e54c",
+      "log_bytes": 63276,
+      "logged_methods": 314,
+      "unique_logged_methods": 314
+    },
+    {
+      "name": "original-observation-audit",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.verification_cell_verify1.observation_audit",
+        "--input",
+        "/workspace/scratch/f00a393be514/original/observation-run",
+        "--output",
+        "/workspace/scratch/456fa5e702a7/validation-final/original-observation-audit.json"
+      ],
+      "exit_code": 0,
+      "parent_elapsed_ns": 119290718,
+      "log_sha256": "328f1832a98e069823be051c50c330748a311ef0dab34cb399ad32b58e6f4fda",
+      "log_bytes": 28
+    },
+    {
+      "name": "original-attribution",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.verification_cell_verify1.observation_attribution",
+        "--input",
+        "/workspace/scratch/f00a393be514/original/observation-run",
+        "--output",
+        "/workspace/scratch/456fa5e702a7/validation-final/original-attribution.json"
+      ],
+      "exit_code": 0,
+      "parent_elapsed_ns": 140180141,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "name": "provider-replay",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.verification_cell_verify1.github_observations",
+        "--plan",
+        "/workspace/scratch/456fa5e702a7/ci-review/PROVIDER_PLAN.json",
+        "--envelopes",
+        "/workspace/scratch/456fa5e702a7/ci-review/ALL_ENVELOPES_THROUGH_32.jsonl",
+        "--output",
+        "/workspace/scratch/456fa5e702a7/validation-final/provider-report.json"
+      ],
+      "exit_code": 0,
+      "parent_elapsed_ns": 48192858,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    }
+  ],
+  "source_bytes_unchanged_during_execution": true,
+  "formatted_postimages": {
+    "experiments/verification_cell_verify1/cost_ledger.py": {
+      "executed_sha256": "e605de8d60c214c36631dc5abb89f00f95b0b3fbd441af6456e5b267651f114f",
+      "formatted_sha256": "0044c7515792ef14dd3ff511240ad41addd90a2591f054f587cb4683ac28f42a",
+      "ast_sha256": "5b0472e3eece2f635df68ad1cf81d2be9d7a07b4fee124692d1ce17dba605d65",
+      "ast_unchanged": true,
+      "lines": 257
+    },
+    "experiments/verification_cell_verify1/test_cost_ledger.py": {
+      "executed_sha256": "b1169322ecf9a7d9b959744d1d4fb759cc666fc1fb01a6c42bd6824727d101ab",
+      "formatted_sha256": "b1169322ecf9a7d9b959744d1d4fb759cc666fc1fb01a6c42bd6824727d101ab",
+      "ast_sha256": "f75069c6cb6659b9a6333969432dd17bfe40f28fe7fe45ff9ae0d8cfc9362c8c",
+      "ast_unchanged": true,
+      "lines": 188
+    },
+    "experiments/verification_cell_verify1/check_opportunities.py": {
+      "executed_sha256": "b063dcfe05d97fcf62a24d0f882e497a577439509360bc5a3ab2b88a9c5c5241",
+      "formatted_sha256": "e8ac32220c8f66a28c3b746e58c7a7c8f10ce26c0ab16eb754b13df63e0ccdc5",
+      "ast_sha256": "eb73ff0c546846a53ee762fd957b9fde1753169ce3f42fdcacf7f89434125651",
+      "ast_unchanged": true,
+      "lines": 636
+    },
+    "experiments/verification_cell_verify1/test_check_opportunities.py": {
+      "executed_sha256": "acaf47f0a061160d6b173be96b4318ca2b04ffa5dee171f0eb6ab22e1eeb227a",
+      "formatted_sha256": "91547a3431023b4d47ed2297059c9a3dd372c6bd82b738643a03238d9d917b5b",
+      "ast_sha256": "28ede9354b3a4f04328035203dcc60696679337bc343e8bde96318465683f51a",
+      "ast_unchanged": true,
+      "lines": 410
+    },
+    "experiments/verification_cell_verify1/policy_costs.py": {
+      "executed_sha256": "eb3efb957208b1051d2efe0e82d29d1c41152013a53563a501f675e6ed3f96e6",
+      "formatted_sha256": "ca545b5541c21f28504f568e00cd38902f109c2f7b99385960b7de6691d8369a",
+      "ast_sha256": "5d0ca1dcb7ff5ad3e74a583e4abeedb01284a11eaeeb96a22884e1140054a2a7",
+      "ast_unchanged": true,
+      "lines": 75
+    },
+    "experiments/verification_cell_verify1/policy_metrics.py": {
+      "executed_sha256": "7ea7d6645597965dc1c65472ea89a41b7835e38ab19d4ccab519d2c7acfa0bf1",
+      "formatted_sha256": "4c8e088a761d331f0f1f8dc62d3f4c6db2f08e5ee3a888df950b34926fb47ef1",
+      "ast_sha256": "8d3ed8fbb715f2a886ccbdcbe44ce83410bdd3ea560f672811007573d98245cb",
+      "ast_unchanged": true,
+      "lines": 134
+    },
+    "experiments/verification_cell_verify1/test_policy_metrics.py": {
+      "executed_sha256": "1c2f89d4b96ad3debc4787ee4e6934bf53b1d21757722f9e72fb9920b88e74fa",
+      "formatted_sha256": "6a180801b427d7f9da8c0f256514819959d2f7a1c3a75f78c3f908031d430531",
+      "ast_sha256": "27d69533d171bcafa75e893a8a957dd5f69a9ed38a4269a9c151f30a7ec33a35",
+      "ast_unchanged": true,
+      "lines": 94
+    },
+    "experiments/verification_cell_verify1/policy_evaluation.py": {
+      "executed_sha256": "906ccf4cde35c643aeabbfc91523af0d993ee4fa224c70eb6548844ea06192bc",
+      "formatted_sha256": "97cefb8369b145371345e348388c62b3ddc31e89ae60b1463fa3dad5a51445a5",
+      "ast_sha256": "9c2aabf6aa81ce63b42fea110ac7ec8423e4a794c8c6e9ecccaa8e8c02cb1d7a",
+      "ast_unchanged": true,
+      "lines": 298
+    },
+    "experiments/verification_cell_verify1/test_policy_evaluation.py": {
+      "executed_sha256": "91e2ca762af63918bbab057229dc8fc2e0b756183d77665ee3f92f15d85d293f",
+      "formatted_sha256": "1624f38902d4706e054be73f7c08e8ac6193f1f2585c9f23a36333f9a12e4435",
+      "ast_sha256": "b2fdca9aff1cdc8d27a7feb8ccff1d1e77bb5d54f2ce9281d8ae2075df61e766",
+      "ast_unchanged": true,
+      "lines": 420
+    }
+  },
+  "all_formatted_postimages_match_worktree_at_packet_creation": true,
+  "local_tests_rerun_after_format": false,
+  "formatting_receipt": {
+    "archive": "LOCAL_VALIDATION_ORIGINALS.zip",
+    "member": "validation-final/FORMATTING.json",
+    "sha256": "0c55380cf7572b62ce2f42cd0c9dbfda7b9ee61aad7100560e44d91441af86f4"
+  },
+  "exact_published_commit_ci_qualification": true,
+  "native_product_qualification": false,
+  "source_scope_warning": "Local/desktop AST equality alone is not a byte-identical published run. The separate macOS job checked out the exact published head and passed; remaining required jobs are pending.",
+  "desktop_validation": {
+    "archive": "DESKTOP_ORIGINALS.zip",
+    "archive_bytes": 131203,
+    "archive_sha256": "86464622af4ddd6368629b8d5873be194d2922d51c0baad9b191d2a24081bb38",
+    "job_id": "1a1ce77f66a-2564-16a3",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "result": {
+      "schema": "hepta.verify9.desktop-validation.v1",
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "capsule_sha256": "216b2e3714e7c59f322171ac708b8a5a9dbbb2fc5cde0b01853445200aa4eddb",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "experiments.verification_cell_verify1.test_cost_ledger",
+        "experiments.verification_cell_verify1.test_check_opportunities",
+        "experiments.verification_cell_verify1.test_policy_metrics",
+        "experiments.verification_cell_verify1.test_policy_evaluation",
+        "-v"
+      ],
+      "exit_code": 0,
+      "parent_elapsed_ns": 15966864406,
+      "log_bytes": 7960,
+      "log_sha256": "af9420ab56bc8eca0ad4ada97f6e6304927155cc3c2fe03cf8daf986c2e17d5b",
+      "logged_methods": 37,
+      "unique_logged_methods": 37,
+      "source_bytes_unchanged": true,
+      "source_files": {
+        "experiments/verification_cell_verify1/treatment.py": "be94372ec3cce2b2f537c2b462d98bb3d82aeda53335484c75de4db84615a6da",
+        "experiments/verification_cell_verify1/policy_evaluation.py": "906ccf4cde35c643aeabbfc91523af0d993ee4fa224c70eb6548844ea06192bc",
+        "experiments/verification_cell_verify1/contracts.py": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+        "experiments/verification_cell_verify1/shadow_risk.py": "6612e5dd3df06453ce78e854663276280a158f6273c01b9b3d8924b6c982e6d7",
+        "experiments/verification_cell_verify1/prospective.py": "bd0a52eb9ec3ca847ed6768eff9c3af70d7b83b6888c1c2eee89c95a25ec8ef6",
+        "experiments/verification_cell_verify1/policy_metrics.py": "7ea7d6645597965dc1c65472ea89a41b7835e38ab19d4ccab519d2c7acfa0bf1",
+        "experiments/verification_cell_verify1/policy_costs.py": "eb3efb957208b1051d2efe0e82d29d1c41152013a53563a501f675e6ed3f96e6",
+        "experiments/verification_cell_verify1/test_cost_ledger.py": "b1169322ecf9a7d9b959744d1d4fb759cc666fc1fb01a6c42bd6824727d101ab",
+        "experiments/verification_cell_verify1/test_check_opportunities.py": "acaf47f0a061160d6b173be96b4318ca2b04ffa5dee171f0eb6ab22e1eeb227a",
+        "experiments/verification_cell_verify1/__init__.py": "34501e640bd290f92ece01aa58b12eb587ec88589f3c6bd62ebb000704c92913",
+        "experiments/verification_cell_verify1/check_voi.py": "9f2aca296a682aa8855683ee24e41d803e850a34260ec99eeccee2eb0fb5c61c",
+        "experiments/verification_cell_verify1/test_policy_metrics.py": "1c2f89d4b96ad3debc4787ee4e6934bf53b1d21757722f9e72fb9920b88e74fa",
+        "experiments/verification_cell_verify1/shadow_schedule.py": "606183879bcf9553250936f01f72a65cab4227d17c71dc5836a4da5a6d98adf2",
+        "experiments/verification_cell_verify1/checker_effects.py": "4972dd6b6fb7bff39117efd719f155ce35a602656ce303399aa0248bb131d952",
+        "experiments/verification_cell_verify1/test_policy_evaluation.py": "91e2ca762af63918bbab057229dc8fc2e0b756183d77665ee3f92f15d85d293f",
+        "experiments/verification_cell_verify1/cost_ledger.py": "e605de8d60c214c36631dc5abb89f00f95b0b3fbd441af6456e5b267651f114f",
+        "experiments/verification_cell_verify1/check_opportunities.py": "b063dcfe05d97fcf62a24d0f882e497a577439509360bc5a3ab2b88a9c5c5241",
+        "experiments/verification_cell_verify1/test_treatment.py": "99dec3e432af6217919681d4f7d17e1915d35a06548216ca8c6fcfdbdc1dd876"
+      },
+      "new_independent_business_tasks": 0,
+      "full_physical_cost_complete": false
+    },
+    "all_18_source_hashes_match_local_executed_capsule": true,
+    "test_method_relationship": "37 methods are a subset of the 314 local unique methods; do not add them",
+    "source_scope": "same retained executed Python capsule; not final formatted-byte or new-head GitHub CI qualification"
+  },
+  "published_code": {
+    "head": "58035205857c154530ba249cb3494cfe739e1875",
+    "tree": "365f354cc71e5d83133b5b9679a103f657d92502",
+    "all_11_postimages_read_back_byte_for_byte": true,
+    "details": "PUBLISHED_CODE.json",
+    "readback_is_execution": false
+  },
+  "executed_source_files_count_scope": "73 files retained in the exact source capsule used for validation; not a dynamic coverage claim that every file executed.",
+  "exact_published_commit_ci_qualification_scope": "macOS Python engineering job only; see published_head_ci; full required CI remains incomplete.",
+  "all_required_ci_complete": false,
+  "published_head_ci": {
+    "head": "58035205857c154530ba249cb3494cfe739e1875",
+    "run_id": 43169903848,
+    "attempt": 1,
+    "job_id": 131020438882,
+    "platform": "macos-15",
+    "status": "completed",
+    "conclusion": "success",
+    "unique_test_methods": 314,
+    "unittest_seconds": 16.392,
+    "log_bytes_utf8": 110040,
+    "log_sha256": "ea17eef47d534c115325132211289fee1529f0b48d015eacebaa529b253cc5a8",
+    "archive": "NEW_HEAD_CI_ORIGINALS.zip",
+    "other_eight_jobs_at_capture": "queued, runner_id=0",
+    "full_required_ci_complete": false,
+    "native_product_qualification": false
+  }
+}

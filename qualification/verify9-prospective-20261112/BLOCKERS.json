@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.verify9.blockers.v1",
+  "base_commit": "4b6ce81c8ebe26844a54b8458cee054025ba36ac",
+  "all_blockers_closed": false,
+  "scientific_admission": "HOLD",
+  "learning_decision": "NoUpdate",
+  "production_authority": "NONE",
+  "new_independent_business_tasks": 0,
+  "observed_engineering_result": {
+    "scope": "Retained local/desktop Python source capsule plus exact published-head macOS engineering job",
+    "unique_test_methods": 314,
+    "test_process_exit_code": 0,
+    "original_data_cli_count": 3,
+    "all_original_data_cli_exit_codes_zero": true,
+    "formatted_files_with_unchanged_ast": 9,
+    "tests_rerun_after_format": false,
+    "native_product_qualification": false,
+    "exact_published_commit_ci_qualification": true,
+    "desktop_component_validation": {
+      "unique_test_methods": 37,
+      "exit_code": 0,
+      "subset_of_local_314": true,
+      "source_files": 18,
+      "all_hashes_match_local_executed_capsule": true,
+      "output_complete": true,
+      "output_durable": true,
+      "no_log_truncation": true,
+      "scope": "retained Python component sources only; not new-head GitHub CI or ordinary native business qualification"
+    },
+    "exact_published_commit_ci_qualification_scope": "macOS Python engineering job only; full required CI incomplete",
+    "published_head_ci": {
+      "head": "58035205857c154530ba249cb3494cfe739e1875",
+      "run_id": 43169903848,
+      "attempt": 1,
+      "job_id": 131020438882,
+      "platform": "macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "unique_test_methods": 314,
+      "unittest_seconds": 16.392,
+      "log_bytes_utf8": 110040,
+      "log_sha256": "ea17eef47d534c115325132211289fee1529f0b48d015eacebaa529b253cc5a8",
+      "archive": "NEW_HEAD_CI_ORIGINALS.zip",
+      "other_eight_jobs_at_capture": "queued, runner_id=0",
+      "full_required_ci_complete": false,
+      "native_product_qualification": false
+    }
+  },
+  "open_gates": [
+    {
+      "id": "VERIFY9_EXACT_SOURCE_CI",
+      "status": "OPEN",
+      "requirement": "Original required platform/blocking/architecture results for the final published source.",
+      "retained_evidence": "Final code head 58035205857c154530ba249cb3494cfe739e1875, macOS run43169903848/attempt1/job131020438882 passed314 unique methods. Other eight observed jobs (Windows/Ubuntu/blocking/architecture/v8 metadata) remain queued with runner_id=0 at capture. Older head results are not inherited."
+    },
+    {
+      "id": "VERIFY9_PROVIDER_TERMINALS",
+      "status": "OPEN",
+      "requirement": "Natural terminal receipts for the exact frozen repository/head/run/attempt/job roster without denominator changes or reruns.",
+      "retained_evidence": {
+        "planned_jobs": 12,
+        "known_provider_labels": 0,
+        "unknown_provider_labels": 12,
+        "observations": 32,
+        "acquisition_cost": null
+      }
+    },
+    {
+      "id": "VERIFY9_ORDINARY_OBSERVATIONS",
+      "status": "OPEN",
+      "requirement": "Original ordinary-business predecision observations with complete shared free information and actual authorized native producer integration.",
+      "retained_evidence": "Notes/Calculator source seams audited only; no new native exporter, deployment or ordinary observation qualification."
+    },
+    {
+      "id": "VERIFY9_INDEPENDENT_TRUTH",
+      "status": "OPEN",
+      "requirement": "Independent terminal adjudication and current evaluator identity/version/custody for all dispositions, including reject and Unknown.",
+      "retained_evidence": "No independent business tasks; fixture labels and same-provider CI properties do not satisfy this gate."
+    },
+    {
+      "id": "VERIFY9_PHYSICAL_COST",
+      "status": "OPEN",
+      "requirement": "Complete measured physical lifetime costs, including training, failed/pending work, energy and original exclusive attribution.",
+      "retained_evidence": "Known costs are consistency-checked; missing resources remain null. A complete caller roster is not proof of physical coverage."
+    },
+    {
+      "id": "VERIFY9_PROSPECTIVE_COMPARISON",
+      "status": "OPEN",
+      "requirement": "Feasible prospective randomized extra-check opportunities, shared full free information and genuine policy execution with independently held design evidence.",
+      "retained_evidence": "Local draw-intent/consumption controls pass; trusted cross-journal chronology and random-source custody remain unproved."
+    },
+    {
+      "id": "VERIFY9_HELDOUT_CALIBRATION",
+      "status": "OPEN",
+      "requirement": "Independent held-out source calibration after the changed model/input/measurement contract.",
+      "retained_evidence": "Fixed-bin metrics and denominators implemented; software fixtures are not held-out business qualification."
+    },
+    {
+      "id": "VERIFY9_NET_BENEFIT",
+      "status": "OPEN",
+      "requirement": "Fair executed policy comparison of false acceptance, appropriately adjudicated false rejection, Unknown, calibration, full costs and terminal utility.",
+      "retained_evidence": "Paid information remains 1/120 in supplied original train/cal/confirm and 0 under shift; causal paid-check benefit remains unestablished."
+    }
+  ],
+  "retained_negative_history": [
+    {
+      "id": "MUTATED_NEGATIVE_COST",
+      "before": "CPU -1000 accepted, declared receipt utility -999",
+      "after": "same controlled corruption refused",
+      "source": "REVIEW_ORIGINALS.zip:negative_cost_*_archived.json"
+    },
+    {
+      "id": "PENDING_OPERATION_UTILITY",
+      "before": -2.3333333333333335,
+      "after": null,
+      "scope": "controlled SQLite fixture with one start and zero completions",
+      "source": "REVIEW_ORIGINALS.zip:pending_operation_*_archived.json"
+    },
+    {
+      "id": "INITIAL_POLICY_FIXTURE_FAILURE",
+      "passed": 8,
+      "failed": 1,
+      "reason": "Roster-only deletion hit earlier receipt-length refusal; corrected control deletes matching receipt and roster to exercise frozen-digest refusal.",
+      "source": "LOCAL_VALIDATION_ORIGINALS.zip:metrics-validation/initial-tests.log"
+    }
+  ],
+  "crash_evidence": {
+    "original_sqlite_files_retained": false,
+    "reconstruction_claimed": false,
+    "available": "exact source, original test stdout and child returncode -9; temporary databases cleaned up by unittest"
+  }
+}
