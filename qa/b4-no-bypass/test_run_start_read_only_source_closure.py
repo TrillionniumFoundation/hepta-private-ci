@@ -47,9 +47,8 @@ class RunStartReadOnlySourceClosureTests(unittest.TestCase):
 
     def verify(self, root):
         PROOF._verify_protected_files(root, {"protected_file": self.rows})
-        # The unchanged global checker deliberately accepts only nongeneric
-        # function markers. Apply its order primitive to this exact, uniquely
-        # located generic body as an additional scoped proof, never normalize it
+        # Keep the additional exact-body proof for this generic observation.
+        # Apply the same order primitive to its uniquely located body, never normalize it
         # into a different function or allow another helper to supply its gates.
         source = (root / READER).read_text()
         code, start, end = function_bounds(source, GENERIC)
@@ -115,8 +114,22 @@ class RunStartReadOnlySourceClosureTests(unittest.TestCase):
             "metadata.dev()", "metadata.ino()", "metadata.mtime_nsec()", "metadata.ctime_nsec()",
         ))
         self.rejects_removal(READER, "fn read_image(", (
-            "if (before.device, before.inode) != self.identity", "if before.length > MAX_FILE_BYTES",
-            ".read_exact_at(&mut bytes,", "if file_stamp(&self.file)? != before",
+            "read_physical_image(&self.file)?", "if (before.device, before.inode) != self.identity",
+        ))
+        self.rejects_removal(READER, "fn read_physical_image(", (
+            "let before = file_stamp(file)?", "if before.length > MAX_FILE_BYTES",
+            ".read_exact_at(&mut bytes,", "if file_stamp(file)? != before",
+        ))
+
+    def test_original_registration_prefix_requires_complete_stable_physical_bytes(self):
+        self.rejects_removal(READER, "fn observe_original_run_start_prefix_v1(", (
+            "validate_domain(journal_binding, max_records)?",
+            "let (before, bytes) = read_physical_image(file)?", "if !bytes.is_empty()",
+            "let replay = replay_reader(", "&mut io::Cursor::new(&bytes)",
+            "if replay.valid_length != replay.observed_length",
+            "let (after, confirmed) = read_physical_image(file)?",
+            "if before != after || bytes != confirmed", "length: before.length",
+            "digest: Digest32::of_bytes(&bytes)",
         ))
 
     def test_external_profile_anchor_and_same_image_prefix_do_not_mint_ack(self):
@@ -149,7 +162,13 @@ class RunStartReadOnlySourceClosureTests(unittest.TestCase):
 
     def test_comments_cannot_supply_a_removed_physical_gate(self):
         needle = "if before != after || bytes != confirmed"
-        self.check_mutation(READER, lambda source: source.replace(needle, "if false", 1) + "\n// " + needle)
+        for function in (GENERIC, "fn observe_original_run_start_prefix_v1("):
+            with self.subTest(function=function):
+                def remove(source):
+                    _, start, end = function_bounds(source, function)
+                    offset = source.index(needle, start, end + 1)
+                    return source[:offset] + "if false" + source[offset + len(needle):] + "\n// " + needle
+                self.check_mutation(READER, remove)
 
     def test_unrelated_function_cannot_supply_generic_observation_gates(self):
         def move(source):
