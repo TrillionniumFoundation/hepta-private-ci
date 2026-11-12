@@ -1,0 +1,355 @@
+{
+  "schema": "hepta.evaluated-current-read.compiler-failure.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6213,
+  "observed_at_utc": "2026-11-12 08:51:50 UTC",
+  "source": {
+    "commit": "60606b89dd30f78de94b583524131446d45ca49a",
+    "tree": "177df716b8578216efd502aed91e5672ac979ee0",
+    "parent_commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+    "workflow_path": ".github/workflows/hepta-windows-private-state-native.yml",
+    "checkout_binding_log_lines": [
+      {
+        "line": 37,
+        "text": "2026-11-12T08:13:39.4222114Z   ref: 60606b89dd30f78de94b583524131446d45ca49a"
+      },
+      {
+        "line": 93,
+        "text": "2026-11-12T08:13:43.2098518Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 60606b89dd30f78de94b583524131446d45ca49a"
+      },
+      {
+        "line": 104,
+        "text": "2026-11-12T08:13:49.5518210Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force 60606b89dd30f78de94b583524131446d45ca49a"
+      },
+      {
+        "line": 206,
+        "text": "2026-11-12T08:13:54.5474608Z 60606b89dd30f78de94b583524131446d45ca49a"
+      },
+      {
+        "line": 293,
+        "text": "2026-11-12T08:14:03.0870143Z ##[group]Run if ((git rev-parse HEAD).Trim() -ne \"60606b89dd30f78de94b583524131446d45ca49a\") { throw \"unqualified head SHA\" }"
+      },
+      {
+        "line": 316,
+        "text": "2026-11-12T08:14:24.2621928Z rustc 1.96.0 (ac68faa20 2026-05-25)"
+      }
+    ],
+    "native_junit_record_source_sha": "60606b89dd30f78de94b583524131446d45ca49a",
+    "native_junit_record_source_tree": "177df716b8578216efd502aed91e5672ac979ee0"
+  },
+  "workflow_run": {
+    "id": 43179184825,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "60606b89dd30f78de94b583524131446d45ca49a",
+    "created_at": "2026-11-12T07:58:16Z",
+    "updated_at": "2026-11-12T08:32:37Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43179184825"
+  },
+  "job_snapshot": {
+    "id": 131050705734,
+    "run_id": 43179184825,
+    "workflow_name": "Hepta Windows private-state native (security qualification only)",
+    "head_branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43179184825",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAegzsTRg",
+    "head_sha": "60606b89dd30f78de94b583524131446d45ca49a",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/131050705734",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43179184825/job/131050705734",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-11-12T07:58:17Z",
+    "started_at": "2026-11-12T08:13:34Z",
+    "completed_at": "2026-11-12T08:32:37Z",
+    "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-12T08:13:35Z",
+        "completed_at": "2026-11-12T08:13:38Z"
+      },
+      {
+        "name": "Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-12T08:13:38Z",
+        "completed_at": "2026-11-12T08:13:56Z"
+      },
+      {
+        "name": "Install repository test runners",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-12T08:13:56Z",
+        "completed_at": "2026-11-12T08:14:03Z"
+      },
+      {
+        "name": "Verify exact source identity and pinned native compiler",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-12T08:14:03Z",
+        "completed_at": "2026-11-12T08:14:24Z"
+      },
+      {
+        "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-12T08:14:24Z",
+        "completed_at": "2026-11-12T08:15:12Z"
+      },
+      {
+        "name": "Exercise actual Prompt Registry Windows durable owner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-12T08:15:12Z",
+        "completed_at": "2026-11-12T08:15:32Z"
+      },
+      {
+        "name": "Exercise signed final-use and authority-lease durable stores",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-12T08:15:32Z",
+        "completed_at": "2026-11-12T08:16:00Z"
+      },
+      {
+        "name": "Validate Agentd Prompt Runtime integration and reopened state",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 8,
+        "started_at": "2026-11-12T08:16:00Z",
+        "completed_at": "2026-11-12T08:32:08Z"
+      },
+      {
+        "name": "Enforce source-level Rust formatting for durable owners",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-11-12T08:32:08Z",
+        "completed_at": "2026-11-12T08:32:08Z"
+      },
+      {
+        "name": "Prove directory acquisition rejects both original native attacks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-11-12T08:32:08Z",
+        "completed_at": "2026-11-12T08:32:08Z"
+      },
+      {
+        "name": "Exercise exact Windows LEARN file and CURRENT regressions",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 11,
+        "started_at": "2026-11-12T08:32:08Z",
+        "completed_at": "2026-11-12T08:32:30Z"
+      },
+      {
+        "name": "Confirm no generated or modified tracked source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-11-12T08:32:30Z",
+        "completed_at": "2026-11-12T08:32:31Z"
+      },
+      {
+        "name": "Preserve exact source and all acquisition qualification logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-11-12T08:32:31Z",
+        "completed_at": "2026-11-12T08:32:31Z"
+      },
+      {
+        "name": "Retain native LEARN logs, exact case coverage and original JUnit",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-11-12T08:32:31Z",
+        "completed_at": "2026-11-12T08:32:32Z"
+      },
+      {
+        "name": "Post Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-11-12T08:32:32Z",
+        "completed_at": "2026-11-12T08:32:35Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 29,
+        "started_at": "2026-11-12T08:32:35Z",
+        "completed_at": "2026-11-12T08:32:35Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131050705734",
+    "labels": [
+      "windows-latest"
+    ],
+    "runner_id": 1000123103,
+    "runner_name": "GitHub Actions 1000123103",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "raw_job_log": {
+    "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+    "git_blob_sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+    "bytes": 329389,
+    "sha256": "a3e0a7e0b460d6ee76a2998e1dddfa4b0c667bcba6257dab35e683e7e623611a",
+    "utf8_bom": true,
+    "crlf_count": 4263,
+    "lf_count": 4263,
+    "last_character_code": 10,
+    "representation": "Unmodified decoded GitHub job log text, re-encoded as UTF-8 without newline or BOM normalization.",
+    "retrieval_api": "github_fetch_workflow_job_logs",
+    "retrieval_job_id": 131050705734,
+    "preservation": "Complete original decoded text. No excerpt reconstruction, redaction changes, newline conversion, BOM removal, or appended status updates."
+  },
+  "compiler_failure": {
+    "code": "E0659",
+    "message": "`assert_eq` is ambiguous",
+    "crate": "codex-hepta-agentd",
+    "target": "lib test",
+    "file": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+    "distinct_source_locations": [
+      {
+        "line": 37,
+        "column": 9
+      },
+      {
+        "line": 111,
+        "column": 9
+      },
+      {
+        "line": 112,
+        "column": 9
+      },
+      {
+        "line": 176,
+        "column": 9
+      },
+      {
+        "line": 177,
+        "column": 9
+      },
+      {
+        "line": 226,
+        "column": 9
+      },
+      {
+        "line": 246,
+        "column": 9
+      },
+      {
+        "line": 259,
+        "column": 9
+      },
+      {
+        "line": 260,
+        "column": 9
+      },
+      {
+        "line": 268,
+        "column": 9
+      },
+      {
+        "line": 269,
+        "column": 9
+      },
+      {
+        "line": 270,
+        "column": 9
+      }
+    ],
+    "diagnostic_occurrences": 24,
+    "distinct_source_error_count": 12,
+    "failed_compile_steps": [
+      8,
+      11
+    ],
+    "compile_exit_code": 101,
+    "just_recipe_exit_code": 1,
+    "reason": "The glob import use super::* introduces an assert_eq macro that conflicts with the outer prelude macro during resolution.",
+    "diagnostic_log_ranges": [
+      {
+        "first_line": 3058,
+        "last_line": 3330
+      },
+      {
+        "first_line": 3893,
+        "last_line": 4166
+      }
+    ],
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "platform": "Windows-2025Server-10.0.26100-SP0"
+  },
+  "windows_learn_coverage": {
+    "expected_test_count": 36,
+    "observed_passed_tests": 0,
+    "observed_failed_tests": 0,
+    "junit_collection_status": "rejected",
+    "junit_collection_error": "[Errno 2] No such file or directory: 'D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\target\\\\nextest\\\\local\\\\junit.xml'",
+    "execution_sha256": "6cdbea69c7869fab43e29d4e188901c98fd713a4dcf61a580bfaf5ffba85b6b4",
+    "interpretation": "Compilation failed before test execution. The 36 requested Windows LEARN cases are unexecuted; they are not 36 failing tests."
+  },
+  "minimal_fix": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+    "original_blob_sha": "f38405227b85a01c77dacbbfdf242bf635fdea21",
+    "proposed_blob_sha": "e8833bb13ef4ed90ec74899335257925495708a1",
+    "proposed_sha256": "d49a70dadf80670a157b47c4ac24e37defb4b11cd6b676a3590029cb66ecb850",
+    "proposed_utf8_bytes": 13213,
+    "insertion": "use pretty_assertions::assert_eq;\n\n",
+    "insertion_before": "use super::*;",
+    "added_lines": 2,
+    "removed_lines": 0,
+    "assertions_changed": false,
+    "production_logic_changed": false,
+    "test_filters_or_required_counts_changed": false,
+    "parent_file_blob_sha": "f38405227b85a01c77dacbbfdf242bf635fdea21",
+    "head_file_blob_sha": "f38405227b85a01c77dacbbfdf242bf635fdea21",
+    "parent_source_comparison": "Exact parent and failed-head blobs are identical. This is source identity evidence only; parent compilation was not executed in this audit."
+  },
+  "validation_limits": {
+    "local_formatting": "not_run: execution environment unavailable",
+    "local_native_tests": "not_run: execution environment unavailable",
+    "proposed_fix_compilation": "not_run: awaiting publication and actual CI",
+    "evaluated_retained_current_positive": "not_executed_in_this_windows_job",
+    "earlier_windows_successes": "Earlier platform checks passed in this job. They do not qualify the new evaluated CURRENT path.",
+    "source_guards_and_prior_fmt": "Not re-executed for this minimal import fix.",
+    "linux_owner_workflow_run_id": 43179184471,
+    "linux_owner_jobs_snapshot": [
+      {
+        "id": 131050704039,
+        "name": "native",
+        "status": "queued",
+        "conclusion": null,
+        "run_id": 43179184471,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 131050704265,
+        "name": "caller-proof",
+        "status": "queued",
+        "conclusion": null,
+        "run_id": 43179184471,
+        "logs_url": null,
+        "steps": null
+      }
+    ],
+    "conclusion": "The recorded head has an actual compiler blocker. The import is a proposed minimal fix; native qualification remains open."
+  }
+}

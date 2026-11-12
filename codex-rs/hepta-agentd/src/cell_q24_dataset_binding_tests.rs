@@ -2,6 +2,8 @@
 //! when appended directly without the experience intake. Keys and outcomes are
 //! explicit fixtures; these are source-binding checks, not ordinary A/B runs.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[tokio::test]
