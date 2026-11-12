@@ -21,12 +21,17 @@ jobs:
           persist-credentials: false
       - name: Annotate locations with typos
         uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
+      - name: Verify immutable captured PRED source
+        run: |
+          sha256sum --check --strict <<'EOF'
+          b7d55a1998a5126a203c193ffc0c40b6def280c8f7d1cb0275e7c1eea8593022  qualification/pred-owner-decision-20261110-9e31/SERVICE_SOURCE_PROBE.py.txt
+          EOF
       - name: Codespell
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
-          # Original CI diagnostics and a binary ZIP fragment are immutable evidence.
-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006
+          # Original diagnostics, a ZIP fragment and the hash-checked probe are immutable evidence.
+          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/pred-owner-decision-20261110-9e31/SERVICE_SOURCE_PROBE.py.txt
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
