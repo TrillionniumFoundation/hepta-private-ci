@@ -66,6 +66,10 @@ pub use durable::LedgerReadOnlyObservationV1;
 pub use durable::LedgerRecovery;
 #[cfg(unix)]
 pub use durable::ReadOnlyLedgerViewV1;
+#[cfg(unix)]
+pub use durable::decode_readonly_ledger_data_v1;
+#[cfg(unix)]
+pub use durable::encode_readonly_ledger_data_v1;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;

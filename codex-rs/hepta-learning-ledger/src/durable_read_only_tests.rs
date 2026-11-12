@@ -20,6 +20,8 @@ use crate::OutcomeObservation;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
+#[path = "durable_read_data_tests.rs"]
+mod data;
 #[path = "durable_read_only_dataset_tests.rs"]
 mod dataset;
 

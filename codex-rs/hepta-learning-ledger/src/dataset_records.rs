@@ -5,7 +5,35 @@
 use crate::DatasetSnapshotReceiptV3;
 use crate::LearningLedger;
 use crate::LedgerRecord;
+use crate::LedgerSnapshot;
 use crate::ProductionLedgerError;
+use crate::verify_dataset_snapshot_receipt_v3;
+
+impl LedgerSnapshot {
+    /// Pure data lookup through a freshly replayed index. Only the actual owner
+    /// can establish this snapshot's current source and authorization; callers
+    /// must verify the Evaluator signature separately before materializing it.
+    pub fn read_dataset_records(
+        &self,
+        receipt: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<Vec<LedgerRecord>, ProductionLedgerError> {
+        if self.records().len() > 4096 || receipt.snapshot.source_record_digests.len() > 4096 {
+            return Err(ProductionLedgerError::Binding(
+                "dataset materialization bound",
+            ));
+        }
+        verify_dataset_snapshot_receipt_v3(receipt, now)?;
+        let ledger = LearningLedger::from_snapshot(self.clone())?;
+        LearningLedger::require_active_dataset_sources(&ledger, receipt)?;
+        Ok(
+            LearningLedger::resolve_active_dataset_records(&ledger, receipt)?
+                .into_iter()
+                .cloned()
+                .collect(),
+        )
+    }
+}
 
 impl LearningLedger {
     pub(crate) fn require_active_dataset_sources(
