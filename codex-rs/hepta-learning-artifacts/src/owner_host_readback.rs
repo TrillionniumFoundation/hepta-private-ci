@@ -8,6 +8,7 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs;
+use std::fs::File;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -19,6 +20,14 @@ use super::ArtifactOwnerHostError;
 use super::ArtifactOwnerPublicationCheckpointV1;
 use super::LearningArtifactOwnerHost;
 use super::MAX_HEAD_RECORDS;
+use super::MAX_SMALL_RECORD_BYTES;
+use super::VerifiedCurrentArtifactHeadV1;
+use super::decode_checkpoint;
+use super::phase_code;
+use super::read_small_record;
+use crate::ArtifactPublicationPhaseV1;
+use crate::RegistrySnapshotReceipt;
+use crate::read_registry_snapshot;
 use crate::RegistryHeadRequirementV1;
 use crate::VerifiedCurrentRegistryViewV1;
 
@@ -88,16 +97,6 @@ impl LearningArtifactOwnerHost {
         if expected_intent_digest.is_zero() {
             return Err(OriginalArtifactPublicationReadbackErrorV1::InvalidExpectation);
         }
-        for (index, entry) in fs::read_dir(self.root.join("transactions"))
-            .map_err(ArtifactOwnerHostError::from)?
-            .take(MAX_READBACK_TRANSACTION_RECORDS + 1)
-            .enumerate()
-        {
-            let _ = entry.map_err(ArtifactOwnerHostError::from)?;
-            if index >= MAX_READBACK_TRANSACTION_RECORDS {
-                return Err(ArtifactOwnerHostError::Capacity.into());
-            }
-        }
         let before = self.recover_publication(operation_id)?
             .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
         if before.checkpoint.operation_id != *operation_id
@@ -109,8 +108,8 @@ impl LearningArtifactOwnerHost {
         }
         let head_before = self.discover_current_head(started)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
-        let current_before = self.current_registry_view(started)?;
-        let current_after = self.current_registry_view(started)?;
+        let current_before = self.current_registry_view_bounded(started)?;
+        let current_after = self.current_registry_view_bounded(started)?;
         let head_after = self.discover_current_head(started)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let after = self.recover_publication(operation_id)?
@@ -154,6 +153,80 @@ impl LearningArtifactOwnerHost {
             observed_unix_millis: fresh,
         })
     }
+
+    fn current_registry_view_bounded(
+        &self,
+        at: u64,
+    ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
+        let current = self.discover_current_head(at)?
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
+        let receipt = self.current_registry_receipt_bounded(&current)?;
+        let registry = read_registry_snapshot(
+            File::open(self.registry_snapshot_path(receipt))?, receipt,
+        )?;
+        if registry.snapshot().head_digest != current.signed.witness.head_digest {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        Ok(VerifiedCurrentRegistryViewV1::new(
+            receipt, registry, current.witness_digest, current.trust_digest,
+        ))
+    }
+
+    fn current_registry_receipt_bounded(
+        &self,
+        current: &VerifiedCurrentArtifactHeadV1,
+    ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
+        let mut matched: Option<RegistrySnapshotReceipt> = None;
+        // This is the actual decoding scan, not an earlier directory count.
+        // A concurrent directory growth can never enlarge this iterator's bound.
+        for (index, entry) in fs::read_dir(self.root.join("transactions"))?
+            .take(MAX_READBACK_TRANSACTION_RECORDS + 1)
+            .enumerate()
+        {
+            if index >= MAX_READBACK_TRANSACTION_RECORDS {
+                return Err(ArtifactOwnerHostError::Capacity);
+            }
+            let entry = entry?;
+            let metadata = fs::symlink_metadata(entry.path())?;
+            if metadata.file_type().is_symlink() || !metadata.is_file() {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
+                continue;
+            }
+            let checkpoint = decode_checkpoint(
+                &read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?,
+            )?;
+            if phase_code(checkpoint.phase)
+                < phase_code(ArtifactPublicationPhaseV1::RegistryDurable)
+            {
+                continue;
+            }
+            let Some(registry_receipt) = checkpoint.registry_receipt else {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            };
+            if registry_receipt.head_digest != current.signed.witness.head_digest
+                || registry_receipt.binding != current.signed.binding
+            {
+                continue;
+            }
+            if let Some(witness_receipt) = checkpoint.witness_receipt
+                && (witness_receipt.witness_digest != current.witness_digest
+                    || witness_receipt.binding != current.signed.binding)
+            {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            }
+            match matched {
+                Some(existing) if existing != registry_receipt => {
+                    return Err(ArtifactOwnerHostError::IdentityConflict);
+                }
+                Some(_) => {}
+                None => matched = Some(registry_receipt),
+            }
+        }
+        matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
+    }
+
 }
 
 fn now_unix_millis() -> Result<u64, OriginalArtifactPublicationReadbackErrorV1> {
