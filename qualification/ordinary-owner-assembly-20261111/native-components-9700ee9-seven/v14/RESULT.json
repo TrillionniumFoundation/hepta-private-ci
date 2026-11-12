@@ -1,0 +1,388 @@
+{
+  "schema": "hepta.fixed-source-failure-evidence.v1",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "source_sha": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+  "source_tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1",
+  "native_attempt": "ordinary-9700ee9-seven-final-v14",
+  "session": "dpty-73be81b43c1e4b86493e3229da3a3af2d4f39691f158a920bf0541207c7880ac",
+  "status": "failed",
+  "terminal_exit": 1,
+  "terminal_complete": true,
+  "failure": "RuntimeError: original executor did not retain equal clean source identity",
+  "reached_steps": [
+    {
+      "elapsed_seconds": 0.03298214403912425,
+      "exit_code": 0,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.8169407050590962,
+      "exit_code": 0,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/isolated-clone.launch.log",
+        "sha256": "374257f20cb51ef96d8f4a5fd67186a66cc7391770db11a29108b76a4ab0484f"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 23.562613695161417,
+      "exit_code": 0,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fetch-exact-source.launch.log",
+        "sha256": "a7b3247ad7cb37d16c6c4d0152c6ccea4343a7d39473c53768e43ba3dce9d21c"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.5751506448723376,
+      "exit_code": 0,
+      "log": {
+        "bytes": 204,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/checkout-exact-source.launch.log",
+        "sha256": "e456187913e1d657c90d102a402c5f754e5237203a1eea9237c3f7c8701a9bd3"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.0044857230968773365,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.3154105709400028,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1504,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/operator-toolchain.launch.log",
+        "sha256": "ed175d3992b517ba57aa0f74eb9e08dc3fbe3decaa58db0f736e2a83eb1c1472"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 3.5193773868959397,
+      "exit_code": 1,
+      "log": {
+        "bytes": 1382,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fmt-before.launch.log",
+        "sha256": "44b9c0ebd82bd2c8d5ea0edb3a673e78f0b05e6ae2bb28a09ff657e33dfc91e4"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "all_actual_execution_records": [
+    {
+      "name": "operator-toolchain.execution.json",
+      "data": {
+        "after": {
+          "commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+          "dirty": false,
+          "parents": [
+            "74660e96711cdee0d04ff484e7c54d5ce8710116"
+          ],
+          "tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+          "dirty": false,
+          "parents": [
+            "74660e96711cdee0d04ff484e7c54d5ce8710116"
+          ],
+          "tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1"
+        },
+        "command": [
+          "/home/qq/.cargo/bin/rustc",
+          "-Vv"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.2654489418491721,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T15:55:56.670638+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 196,
+        "log_file": "operator-toolchain.execution.json.1b1ffc9f7c174f6b924fb64c26a41e9b.log",
+        "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+        "started_at": "2026-11-12T15:55:56.403941+00:00",
+        "status": "passed",
+        "tested_sha": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/source/codex-rs"
+      }
+    },
+    {
+      "name": "fmt-before.execution.json",
+      "data": {
+        "after": {
+          "commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+          "dirty": true,
+          "parents": [
+            "74660e96711cdee0d04ff484e7c54d5ce8710116"
+          ],
+          "tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+          "dirty": false,
+          "parents": [
+            "74660e96711cdee0d04ff484e7c54d5ce8710116"
+          ],
+          "tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1"
+        },
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 3.465003683930263,
+        "error": "source identity or bytes changed during execution",
+        "exit_code": 1,
+        "finished_at": "2026-11-12T15:56:00.220294+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 0,
+        "log_file": "fmt-before.execution.json.c555777dcd5449309a4ad07369ec9111.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+        "started_at": "2026-11-12T15:55:56.753904+00:00",
+        "status": "failed",
+        "tested_sha": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/source"
+      }
+    }
+  ],
+  "diagnosis": {
+    "stage": "fmt-before",
+    "formatter_child_exit": 0,
+    "original_executor_exit": 1,
+    "reason": "source identity or bytes changed during execution",
+    "actual_changed_paths": [
+      "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+    ],
+    "actual_format_patch": {
+      "blob": "0c3d61d3df8e07c605d0a65e3e77e7727469a0b1",
+      "bytes": 6757,
+      "sha256": "67da5b50e603b560bb224203c398a1d79ebf520225f551cc37b3c025680074ec"
+    },
+    "source_qualification_pass": false
+  },
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"9700ee930c123ba58f7ee4b1241c136ac8a84ba9\", \"status\": \" M codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs\\\\n M codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs\\\\n M codex-rs/hepta-agentd/src/final_use_issuer.rs\\\\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs\\\\n M codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs\\\\n M codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs\\\\n\", \"tree\": \"d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "final_source": {
+    "head": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+    "status": " M codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs\n M codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs\n M codex-rs/hepta-agentd/src/final_use_issuer.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs\n M codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs\n M codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs\n",
+    "tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1"
+  },
+  "source_checkers_unchanged": true,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "predecessor_results_used": false,
+  "native_retries": 0,
+  "main_merged": false,
+  "not_reached": [
+    "fix-seven-crates",
+    "fmt-after",
+    "bins-check",
+    "four-QA-entrances",
+    "caller-self-test",
+    "caller-full-verify",
+    "same-source-helper",
+    "ordinary-seven-package-native",
+    "Root17-UID0-native"
+  ],
+  "acquisition": {
+    "terminal": {
+      "bytes": 3305,
+      "sha256": "9ecdc4c0bc691db0c31d3f91448164a972a1a24e017dcdbbbd21717640eb090c",
+      "complete": true,
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 3305,
+        "bytes_stored": 3305,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794498930313,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 1666178,
+        "pid": 1666181,
+        "state": "exited"
+      },
+      "source": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+      "attempt": "ordinary-9700ee9-seven-final-v14",
+      "session": "dpty-73be81b43c1e4b86493e3229da3a3af2d4f39691f158a920bf0541207c7880ac"
+    },
+    "progress": {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/progress.json",
+      "bytes": 17741,
+      "sha256": "1fb79c41a7c5a327d3c235a77be4b0cc0254a85c49495d76e8f198f14842d73d",
+      "version": "66306:77249960:17741:1794498960355840774:1794498960357193063",
+      "complete": true
+    },
+    "reached_log_and_execution_files": [
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3",
+        "size": 47,
+        "version": "66306:77249882:47:1794498930365264344:1794498930365264344"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/isolated-clone.launch.log",
+        "sha256": "374257f20cb51ef96d8f4a5fd67186a66cc7391770db11a29108b76a4ab0484f",
+        "size": 105,
+        "version": "66306:77249883:105:1794498930399263130:1794498930399263130"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fetch-exact-source.launch.log",
+        "sha256": "a7b3247ad7cb37d16c6c4d0152c6ccea4343a7d39473c53768e43ba3dce9d21c",
+        "size": 142,
+        "version": "66306:77249902:142:1794498954777392428:1794498954777392428"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/checkout-exact-source.launch.log",
+        "sha256": "e456187913e1d657c90d102a402c5f754e5237203a1eea9237c3f7c8701a9bd3",
+        "size": 204,
+        "version": "66306:77249908:204:1794498955310840838:1794498955310840838"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "66306:77249906:0:1794498955361778402:1794498955361778402"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/operator-toolchain.launch.log",
+        "sha256": "ed175d3992b517ba57aa0f74eb9e08dc3fbe3decaa58db0f736e2a83eb1c1472",
+        "size": 1504,
+        "version": "66306:77249944:1504:1794498956671324761:1794498956671324761"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fmt-before.launch.log",
+        "sha256": "44b9c0ebd82bd2c8d5ea0edb3a673e78f0b05e6ae2bb28a09ff657e33dfc91e4",
+        "size": 1382,
+        "version": "66306:77249950:1382:1794498960221197923:1794498960221197923"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/operator-toolchain.execution.json",
+        "sha256": "c57c1cdc55ef385c2e503f771a14810705d9f8319ced90080a533add120aaec1",
+        "size": 1440,
+        "version": "66306:77249952:1440:1794498956670880882:1794498956670880882"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fmt-before.execution.json",
+        "sha256": "fa13875194ff08a7578c2900469b512125221881b9417feabe0516922445f58d",
+        "size": 1524,
+        "version": "66306:77249956:1524:1794498960220569737:1794498960221197923"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/final-source-identity.json",
+        "sha256": "9d83c1f45709fb7c98320806a6eec5783276a7fc931f8233b282a8a65718c3a0",
+        "size": 531,
+        "version": "66306:77249953:531:1794498960266396230:1794498960267196279"
+      }
+    ],
+    "command_stdout_files": [
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/operator-toolchain.execution.json.1b1ffc9f7c174f6b924fb64c26a41e9b.log",
+        "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+        "size": 196,
+        "version": "66306:77249909:196:1794498956649325548:1794498956649325548"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-9700ee9-seven-final-v14/records/fmt-before.execution.json.c555777dcd5449309a4ad07369ec9111.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "66306:77249955:0:1794498956771321189:1794498956771321189"
+      }
+    ],
+    "all_reached_files_directly_read_complete": true
+  }
+}

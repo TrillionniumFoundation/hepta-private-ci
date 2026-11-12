@@ -1,0 +1,116 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs b/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
+index 56e2d21b216df32a38b569099aa6f3e10626e3f9..d2a74c75dfa0296aa136469e7814d978ae08d8b8 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
+@@ -35,7 +35,9 @@ impl HostAuthorityService {
+         original_root()?;
+         let mut enrolled_result = None;
+         self.with_initial_publication_context(config, registration, owner, |proof| {
+-            let _admission = phase.map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane).transpose()?;
++            let _admission = phase
++                .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
++                .transpose()?;
+             let profile_owner = format!(
+                 "generation-initial/{}",
+                 crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)
+diff --git a/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs b/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
+index 40fcc184c79929df6d149c6b86d02460da225dd9..dccb655313b50b96202d7e73cd0619efd34d2a34 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
+@@ -199,7 +199,10 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
+         &self,
+         request_json: &[u8],
+     ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+-        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
++        let mut phase_close = self
++            .phase
++            .as_ref()
++            .map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+diff --git a/codex-rs/hepta-agentd/src/final_use_issuer.rs b/codex-rs/hepta-agentd/src/final_use_issuer.rs
+index 51a5b676de866752fe10ba2e3dc8ad338997d71f..e353e6e94be8689f33d54783dab91dd1751eab33 100644
+--- a/codex-rs/hepta-agentd/src/final_use_issuer.rs
++++ b/codex-rs/hepta-agentd/src/final_use_issuer.rs
+@@ -135,7 +135,10 @@ impl AgentdUnixFinalUseGrantProvider {
+         &self,
+         binding: &FinalUseBinding,
+     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
+-        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
++        let mut phase_close = self
++            .phase
++            .as_ref()
++            .map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+@@ -167,7 +170,10 @@ impl AgentdUnixFinalUseGrantProvider {
+         &self,
+         exchange: impl FnOnce(&mut UnixStream, Instant) -> Result<T, AgentdFinalUseIssuerError>,
+     ) -> Result<T, AgentdFinalUseIssuerError> {
+-        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
++        let mut phase_close = self
++            .phase
++            .as_ref()
++            .map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs b/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
+index 730aab00499c1c84c337926e97b3d9695696f3cc..c15095f1e98667efae9c366a8221d58d0a95a09d 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
+@@ -300,9 +300,10 @@ impl AgentdLearningCheckpointClientV1 {
+             // A Conflict keeps its original error value. Only the old None
+             // profile may reuse that lane; this phase closes on every error.
+             if result.is_ok()
+-                && let Some(closing) = &mut phase_closing {
+-                    closing.disarm();
+-                }
++                && let Some(closing) = &mut phase_closing
++            {
++                closing.disarm();
++            }
+             result
+         } else {
+             Err(unavailable())
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
+index 95f849829f59292003b06cf12c9bf297c6b11a52..7912206162ae660e7c88b92a64ee6a5e585c4efe 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
+@@ -135,8 +135,7 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
+         })?;
+         let phase = tokio::task::block_in_place(|| {
+             let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+-            let phase =
+-                receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
++            let phase = receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
+             receiver.remaining()?;
+             Ok::<_, AgentdError>(phase)
+         })?;
+@@ -178,9 +177,7 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
+             ));
+         }
+         let connection =
+-            crate::AgentdRootProductionInputs::take_generation_publication_connection(
+-                &mut root,
+-            )?;
++            crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?;
+         let initial = initial
+             .connect_original_same_actor_initial(
+                 connection,
+diff --git a/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs b/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
+index bea124de062c301c6b39d20c79ba288a87480751..1a80dd7743ed25557a32ba05b06953e6b777248c 100644
+--- a/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
++++ b/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
+@@ -73,8 +73,7 @@ impl OriginalScopedPublicationTicket {
+     pub(crate) async fn connect_original_current(
+         mut self,
+         timeout: Duration,
+-    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>
+-    {
++    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {
+         OriginalSameActorRootContext::require_current(&self.context)?;
+         let connection = self
+             .context

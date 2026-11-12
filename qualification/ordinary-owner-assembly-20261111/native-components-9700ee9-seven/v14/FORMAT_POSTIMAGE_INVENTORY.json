@@ -1,0 +1,105 @@
+{
+  "source": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+  "patch": {
+    "blob": "0c3d61d3df8e07c605d0a65e3e77e7727469a0b1",
+    "bytes": 6757,
+    "sha256": "67da5b50e603b560bb224203c398a1d79ebf520225f551cc37b3c025680074ec"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "pre": {
+        "blob": "56e2d21b216df32a38b569099aa6f3e10626e3f9",
+        "bytes": 10856,
+        "sha256": "4c66977eccef265fc539a72e1165671a80afeeb5f12e724da13721ac32eeac9d"
+      },
+      "post": {
+        "blob": "d2a74c75dfa0296aa136469e7814d978ae08d8b8",
+        "bytes": 10890,
+        "sha256": "dee61492b77ce2d04ec9029c1b3969419a91aae03b61ff15fa0228904c7ba4b2"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "blob": "40fcc184c79929df6d149c6b86d02460da225dd9",
+        "bytes": 13780,
+        "sha256": "05af7b72a09b5ec407d634487d1d15574f85da7824321388a5cf67662e705eae"
+      },
+      "post": {
+        "blob": "dccb655313b50b96202d7e73cd0619efd34d2a34",
+        "bytes": 13819,
+        "sha256": "13bccb8c9e2dfcca156b6585ad6c967162edb0ff92b9bcf521f3fc773e2d2c2f"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "blob": "51a5b676de866752fe10ba2e3dc8ad338997d71f",
+        "bytes": 13304,
+        "sha256": "b000a76de905b36473e4ab980be55e52632d8a9918b60e515e36dcd562ebb78f"
+      },
+      "post": {
+        "blob": "e353e6e94be8689f33d54783dab91dd1751eab33",
+        "bytes": 13382,
+        "sha256": "f6353cdf645ff0766aae9822e020febb3f44e8cb42db45007003bacd1d4e996c"
+      },
+      "hunks": 2,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "pre": {
+        "blob": "730aab00499c1c84c337926e97b3d9695696f3cc",
+        "bytes": 15019,
+        "sha256": "b6310d8c1b79629825d9f9925208e5b91ae5465bbcdcad01d3a272ee5f8e74da"
+      },
+      "post": {
+        "blob": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+        "bytes": 15023,
+        "sha256": "61e8bae856e7a8a5e337efdade1834a80c1253c9a6a02c20a7ae669245f6b767"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "pre": {
+        "blob": "95f849829f59292003b06cf12c9bf297c6b11a52",
+        "bytes": 11445,
+        "sha256": "8cdb57c97a89895825867502fd1284255cc241d99bfe2392e38bc805845a82ef"
+      },
+      "post": {
+        "blob": "7912206162ae660e7c88b92a64ee6a5e585c4efe",
+        "bytes": 11398,
+        "sha256": "ca02cf3ce37fc3adc777e1335d213d304e28599c91b594892c48bfccb8a4a9ed"
+      },
+      "hunks": 2,
+      "classification": "whitespace_plus_one_optional_trailing_call_argument_comma_removal"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "pre": {
+        "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+        "bytes": 15763,
+        "sha256": "e2dd8a301533efc7e5ffc87a3c891269bc52f955f322474954adc4257de15f7f"
+      },
+      "post": {
+        "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+        "bytes": 15759,
+        "sha256": "acf76f678d611bc6ede72cf8f78a1b05ebaf3edda3f1e2c091805575a58a8250"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    }
+  ],
+  "exact_forward_reverse": true,
+  "classification": "ACTUAL_NATIVE_FORMAT_POSTIMAGES_NOT_QUALIFICATION",
+  "literal_comment_changes": 0,
+  "token_changes": "Only one optional trailing comma after &mut root in the same typed take_generation_publication_connection call is removed; all other changes are whitespace.",
+  "local_strict_check": "Initial whitespace-only assertion rejected the optional comma. No external mutation preceded correction of the classification."
+}
