@@ -44,6 +44,8 @@ pub enum CellQ24DatasetErrorV1 {
     Ledger(#[from] ProductionLedgerError),
     #[error("original Q24 Dataset authentication: {0}")]
     Authentication(#[from] SignedEvidenceError),
+    #[error("original Root historical Dataset: {0}")]
+    Historical(#[from] std::io::Error),
 }
 
 type Error = CellQ24DatasetErrorV1;
@@ -126,6 +128,9 @@ trait OriginalTask: Send + Sync {
 }
 
 #[cfg(target_os = "linux")]
+#[path = "cell_q24_dataset_historical_ledger.rs"]
+mod historical_ledger;
+#[cfg(target_os = "linux")]
 #[path = "cell_q24_dataset_historical_task.rs"]
 mod historical_task;
 
@@ -199,8 +204,22 @@ impl CellQ24DatasetTaskV1 {
     }
 }
 
+#[derive(Clone)]
+pub(crate) enum OriginalDatasetLedgerV1 {
+    Live(Arc<Mutex<LedgerWriter>>),
+    #[cfg(target_os = "linux")]
+    Historical(Arc<HistoricalDatasetLedgerV1>),
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) struct HistoricalDatasetLedgerV1 {
+    receipt: Arc<crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1>,
+    trust: Arc<crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1>,
+    tasks: Vec<CellQ24DatasetTaskV1>,
+}
+
 pub(super) struct OriginalDataset {
-    ledger: Arc<Mutex<LedgerWriter>>,
+    ledger: OriginalDatasetLedgerV1,
     frozen: LedgerSnapshot,
     receipt: DatasetSnapshotReceiptV3,
     evidence: SignedLearningEvidenceV1,
@@ -218,7 +237,12 @@ impl CellQ24TrainingBatchV1 {
             .source
             .as_ref()
             .ok_or(Error::Binding("original Dataset capability missing"))?;
-        if !Arc::ptr_eq(&source.ledger, ledger) {
+        let OriginalDatasetLedgerV1::Live(original) = &source.ledger else {
+            return Err(Error::Binding(
+                "historical Dataset has no original Ledger writer",
+            ));
+        };
+        if !Arc::ptr_eq(original, ledger) {
             return Err(Error::Binding(
                 "original Dataset and producer Ledger differ",
             ));
@@ -238,7 +262,7 @@ impl CellQ24TrainingBatchV1 {
         tasks: Vec<CellQ24DatasetTaskV1>,
     ) -> Result<Self, Error> {
         let source = Arc::new(OriginalDataset {
-            ledger,
+            ledger: OriginalDatasetLedgerV1::Live(ledger),
             frozen,
             receipt,
             evidence,
@@ -268,6 +292,17 @@ impl OriginalDataset {
     }
 
     fn materialize(&self) -> Result<CellQ24TrainingBatchV1, Error> {
+        match &self.ledger {
+            OriginalDatasetLedgerV1::Live(ledger) => self.materialize_live(ledger),
+            #[cfg(target_os = "linux")]
+            OriginalDatasetLedgerV1::Historical(ledger) => self.materialize_historical(ledger),
+        }
+    }
+
+    fn materialize_live(
+        &self,
+        original: &Arc<Mutex<LedgerWriter>>,
+    ) -> Result<CellQ24TrainingBatchV1, Error> {
         let profile = self.projection.inclusion_policy_digest()?;
         if !(1..=256).contains(&self.tasks.len())
             || self.frozen.records().len() > 4096
@@ -279,10 +314,7 @@ impl OriginalDataset {
             return Err(Error::Binding("bounded complete Dataset and projection"));
         }
         let observed_at = now()?;
-        let ledger = self
-            .ledger
-            .lock()
-            .map_err(|_| Error::Binding("ledger lock"))?;
+        let ledger = original.lock().map_err(|_| Error::Binding("ledger lock"))?;
         let frontier = ledger.witness_frontier()?;
         if frontier.anchor.sequence > 4096 {
             return Err(Error::Binding("bounded original ledger"));
