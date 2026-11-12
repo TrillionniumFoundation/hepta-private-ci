@@ -1,11 +1,15 @@
 """Manufactured frozen-policy regressions, not prospective policy evidence."""
 
+import base64
+from copy import deepcopy
 from dataclasses import replace
 import hashlib
 import json
 import math
+from pathlib import Path
 import unittest
 from unittest.mock import patch
+import zlib
 
 from .critic_context import CriticContext, CriticContextError, context_digest
 from .macro_policy import ACTION_SHA256, METHODS, fit, load, source_sha256
@@ -147,6 +151,49 @@ class MacroPolicyTest(unittest.TestCase):
                             hashlib.sha256(altered).hexdigest(),
                             context=CONTEXT,
                         )
+
+    def test_original_public_states_survive_fit_and_strict_cold_load(self):
+        # Original 72 public inputs/groups; outcomes remain manufactured fixtures.
+        fixture = json.loads(
+            Path(__file__)
+            .with_name("test_macro_policy_normalization_fixture.json")
+            .read_bytes()
+        )
+        raw = zlib.decompress(base64.b64decode(fixture["data"]))
+        self.assertEqual(len(raw), 54038)
+        self.assertEqual(
+            hashlib.sha256(raw).hexdigest(),
+            "426ff918e7cf38defddecfbb4b92acb8e506dbda247da2b7534a4f7c615cc90f",
+        )
+        original = json.loads(raw)
+
+        def public_pair(source, name, public):
+            row = pair(source, name)
+            row["state"] = deepcopy(public)
+            for branch in row["branches"].values():
+                branch["initial_public_state_sha256"] = digest(public)
+                branch["public_state_sha256"] = digest(public)
+            return row
+
+        self.train = [
+            public_pair(group, f"original-{i}", public)
+            for i, (group, public) in enumerate(
+                zip(original["source_groups"], original["states"], strict=True)
+            )
+        ]
+        self.cal = [
+            public_pair(f"fixture-cal-{i}", f"cal-{i}", public)
+            for i, public in enumerate(original["states"][:10])
+        ]
+        model = self.fitted()
+        self.assertEqual(model.data["counts"]["fit_known_value"], 72)
+        self.assertEqual(len(model.data["fit_sources"]), 24)
+        self.assertEqual(model.data["center"][-1], model.data["minimum"][-1])
+        self.assertEqual(model.data["minimum"][-1], model.data["maximum"][-1])
+        self.assertEqual(
+            load(model.to_bytes(), model.sha256, context=CONTEXT).to_bytes(),
+            model.to_bytes(),
+        )
 
     def test_unknown_cost_is_retained_and_never_zero(self):
         self.train.append(pair("a", "missing"))
