@@ -62,6 +62,14 @@ impl OriginalCInputFiles {
         )?;
         let mut source = super::super::material::source(successor.identity.agent_id.as_str())?;
         source.scope.run_id = StableId::new(super::inputs::C_RUN)?;
+        // A used [1, 1/4]. C is a separate, explicitly supplied ordinary
+        // input [1, 1/2], fixed before Training or the decision is available.
+        // The original encoder still validates these canonical HQ24I001 bytes.
+        source.observation = b"HQ24I001".to_vec();
+        source.observation.extend_from_slice(&2_u16.to_le_bytes());
+        for value in [1_i64 << 24, 1_i64 << 23] {
+            source.observation.extend_from_slice(&value.to_le_bytes());
+        }
         source.source_frontier = actual_replay_frontier;
         source.objective_digest = objective.objective;
         source.monotonic_micros = super::fixture::monotonic_micros()?;
@@ -108,6 +116,25 @@ impl OriginalCInputFiles {
             "inference_capacity": 4,
             "worker_generation": 1
         })
+    }
+
+    pub(super) fn business_files(&self) -> Vec<std::path::PathBuf> {
+        [
+            &self.source_configuration,
+            &self.target_configuration,
+            &self.signed_ingress,
+            &self.source_journal,
+            &self.source_witness,
+            &self.cell_journal,
+            &self.cell_witness,
+            &self.inference,
+            &self.generation_journal,
+            &self.generation_witness,
+            &self.publication_material,
+        ]
+        .into_iter()
+        .map(|file| file.path.clone())
+        .collect()
     }
 
     pub(super) fn daemon_task_data(&self) -> Value {
