@@ -158,7 +158,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                                 OriginalQ24StageOperationV1::from_original_receipt_read(
                                     &inner, owners, runtime, training, read,
                                 )?;
-                            let result = (|| {
+                            let result: Result<(), Error> = (|| {
                                 for receipt in &inner.dataset_cut.receipts {
                                     operation.authenticate_receipt(&expected, receipt)?;
                                 }
@@ -186,7 +186,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                             OriginalQ24StageOperationV1::from_original_receipt_read(
                                 &inner, owners, runtime, training, read,
                             )?;
-                        let checked = (|| {
+                        let checked: Result<(), Error> = (|| {
                             for receipt in &inner.dataset_cut.receipts {
                                 operation.authenticate_receipt(&expected, receipt)?;
                             }
