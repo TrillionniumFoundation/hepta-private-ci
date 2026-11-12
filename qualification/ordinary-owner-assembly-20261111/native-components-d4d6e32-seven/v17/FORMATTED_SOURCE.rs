@@ -1,0 +1,263 @@
+//! Phase-only entry to the same original concrete E/D/Training owners.
+//! Default aggregate constructors and their ordinary lane remain unchanged.
+
+use super::*;
+use crate::OriginalCellQ24LearningInputsV1;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
+
+impl OriginalCellQ24LearningStageOwnersV1 {
+    pub(crate) async fn from_original_same_actor_inputs(
+        original: OriginalCellQ24LearningInputsV1,
+        mut factory: AgentdRootQ24ModelFactoryV1,
+        phase: Arc<OriginalSameActorLearningWork>,
+    ) -> Result<Arc<Self>, Error> {
+        let mut closing = phase.original_failure_scope();
+        phase.require_original_prepared(&original.prepared)?;
+        AgentdRootQ24ModelFactoryV1::require_current(&mut factory)
+            .await
+            .map_err(unavailable)?;
+        phase.require_original_work_entry()?;
+        let runtime = Handle::current();
+        let prepared = Arc::clone(&original.prepared);
+        let for_work = Arc::clone(&phase);
+        let job = {
+            let admission = phase.reserve_original_blocking()?;
+            let handle = tokio::task::spawn_blocking(move || {
+                let mut closing = for_work.original_failure_scope();
+                for_work.require_original_prepared(&original.prepared)?;
+                CellQ24PreparedLearningV1::revalidate_source(&original.prepared)
+                    .map_err(unavailable)?;
+                for_work.require_original_work_entry()?;
+                let local_files: crate::OriginalCellQ24LocalDecisionFilesV1 = original.local;
+                let local: OriginalCellQ24LocalDecisionOwnerV1<FileAnchorWitnessStore> =
+                    local_files.open_original_local_decision(
+                        &original.prepared,
+                        original.verifier.clone(),
+                        &factory,
+                    )?;
+                factory
+                    .require_learning_scope(original.prepared.initial(), original.prepared.scope())
+                    .map_err(unavailable)?;
+                factory
+                    .require_local_policy(local.policy_digest())
+                    .map_err(unavailable)?;
+                runtime
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut factory))
+                    .map_err(unavailable)?;
+                local
+                    .require_context(original.prepared.initial(), original.prepared.scope())
+                    .map_err(unavailable)?;
+                CellQ24PreparedLearningV1::revalidate_source(&original.prepared)
+                    .map_err(unavailable)?;
+                for_work.require_original_work_entry()?;
+                let sources: crate::OriginalCellQ24SourceInputsV1 = original.sources;
+                let (experience, dataset) = sources.open_original_source_pair(
+                    Arc::clone(&original.prepared),
+                    original.verifier,
+                    original.mode,
+                )?;
+                let mut experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> =
+                    experience;
+                let mut dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> =
+                    dataset;
+                for_work.require_original_work_entry()?;
+                let completed = match original.mode {
+                    OriginalCellQ24LearningOpenV1::Create => {
+                        experience.attest_experience().map_err(unavailable)?;
+                        for_work.require_original_work_entry()?;
+                        dataset
+                            .attest_dataset(&mut experience)
+                            .map_err(unavailable)?
+                    }
+                    OriginalCellQ24LearningOpenV1::Recover => {
+                        dataset.read_dataset(&mut experience).map_err(unavailable)?
+                    }
+                };
+                let cut = completed.snapshot().clone();
+                for_work.require_original_work_entry()?;
+                let files: OriginalCellQ24TrainingInputsV1 = original.training;
+                let (training, receipts) = files.open_original_training_pair(
+                    &original.prepared,
+                    cut.clone(),
+                    original.mode,
+                )?;
+                CellQ24PreparedLearningV1::revalidate_source(&original.prepared)
+                    .map_err(unavailable)?;
+                for_work.require_original_work_entry()?;
+                closing.disarm();
+                Ok::<_, Error>((experience, dataset, cut, training, receipts, local, factory))
+            });
+            admission.retain_original_handle(handle)
+        };
+        let (experience, dataset, dataset_cut, training, receipts, local, mut factory) =
+            phase.receive_original_job(job).await??;
+        let training = OriginalCellQ24TrainingStageV1::from_original_same_actor_owners(
+            training,
+            receipts,
+            Arc::clone(&phase),
+        )
+        .await
+        .map_err(unavailable)?;
+        CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
+        AgentdRootQ24ModelFactoryV1::require_current(&mut factory)
+            .await
+            .map_err(unavailable)?;
+        phase.require_original_prepared(&prepared)?;
+        let aggregate = Arc::new(Self {
+            inner: Arc::new(Q24StageState {
+                prepared,
+                dataset_cut,
+                training: Arc::new(training),
+                owners: Arc::new(Mutex::new(Q24StageOwners {
+                    experience,
+                    dataset,
+                    factory,
+                    local,
+                    evaluation: None,
+                    generation: None,
+                })),
+                lane: Arc::new(Semaphore::new(1)),
+                cancelled: Arc::new(AtomicBool::new(false)),
+                successor: std::sync::OnceLock::new(),
+                same_actor_work: Some(Arc::clone(&phase)),
+            }),
+        });
+        closing.disarm();
+        Ok(aggregate)
+    }
+
+    pub(crate) fn require_original_same_actor_work(
+        &self,
+        phase: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<(), Error> {
+        let original = self.inner.same_actor_work.as_ref().ok_or_else(|| {
+            phase.gate().close();
+            Error::WrongScope
+        })?;
+        if !Arc::ptr_eq(original, phase) {
+            original.gate().close();
+            phase.gate().close();
+            return Err(Error::WrongScope);
+        }
+        original.require_original_prepared(&self.inner.prepared)
+    }
+
+    pub(super) async fn open_original_same_actor_generation(
+        &self,
+        original: crate::OriginalCellQ24GenerationHandoffV1,
+        phase: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<
+        (
+            OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
+            OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
+        ),
+        Error,
+    > {
+        let mut closing = phase.original_failure_scope();
+        self.require_original_same_actor_work(phase)?;
+        let prepared = Arc::clone(&self.inner.prepared);
+        let for_work = Arc::clone(phase);
+        let job = {
+            let admission = phase.reserve_original_blocking()?;
+            let handle = tokio::task::spawn_blocking(move || {
+                let mut closing = for_work.original_failure_scope();
+                CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
+                for_work.require_original_prepared(&prepared)?;
+                let owners = original.into_receipt_owners(&prepared)?;
+                CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
+                for_work.require_original_work_entry()?;
+                closing.disarm();
+                Ok::<_, Error>(owners)
+            });
+            admission.retain_original_handle(handle)
+        };
+        let result = phase.receive_original_job(job).await??;
+        closing.disarm();
+        Ok(result)
+    }
+}
+
+impl Q24StageState {
+    pub(super) fn require_original_phase_entry(&self) -> Result<(), Error> {
+        if let Some(phase) = &self.same_actor_work {
+            phase.require_original_prepared(&self.prepared)?;
+        }
+        Ok(())
+    }
+
+    pub(super) async fn in_original_same_actor_lane<T: Send + 'static>(
+        &self,
+        phase: &Arc<OriginalSameActorLearningWork>,
+        work: impl FnOnce(
+            &mut Q24StageOwners,
+            &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+            &Handle,
+        ) -> Result<T, Error>
+        + Send
+        + 'static,
+    ) -> Result<T, Error> {
+        let mut closing = phase.original_failure_scope();
+        phase.require_original_prepared(&self.prepared)?;
+        if self.cancelled.load(Ordering::Acquire) {
+            return Err(Error::CommitUncertain);
+        }
+        let permit = Arc::clone(&self.lane)
+            .try_acquire_owned()
+            .map_err(|_| Error::CommitUncertain)?;
+        let mut fence = FenceAggregateOnDrop {
+            cancelled: Arc::clone(&self.cancelled),
+            armed: true,
+        };
+        let owners = Arc::clone(&self.owners);
+        let training = Arc::clone(&self.training);
+        let prepared = Arc::clone(&self.prepared);
+        let cancelled = Arc::clone(&self.cancelled);
+        let runtime = Handle::current();
+        let for_work = Arc::clone(phase);
+        let job = {
+            let admission = phase.reserve_original_blocking()?;
+            let handle = tokio::task::spawn_blocking(move || {
+                let _permit = permit;
+                let mut closing = for_work.original_failure_scope();
+                for_work.require_original_prepared(&prepared)?;
+                if cancelled.load(Ordering::Acquire) {
+                    return Err(Error::CommitUncertain);
+                }
+                let mut locked = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
+                let owners: &mut Q24StageOwners = &mut locked;
+                CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
+                runtime
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(
+                        &mut owners.factory,
+                    ))
+                    .map_err(unavailable)?;
+                if cancelled.load(Ordering::Acquire) {
+                    return Err(Error::CommitUncertain);
+                }
+                // This is inside the original blocking closure, after its real
+                // owner lock and potentially waiting source/Root validation.
+                for_work.require_original_work_entry()?;
+                let result = work(owners, &training, &runtime)?;
+                CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
+                runtime
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(
+                        &mut owners.factory,
+                    ))
+                    .map_err(unavailable)?;
+                if cancelled.load(Ordering::Acquire) {
+                    return Err(Error::CommitUncertain);
+                }
+                for_work.require_original_work_entry()?;
+                closing.disarm();
+                Ok(result)
+            });
+            admission.retain_original_handle(handle)
+        };
+        let result = phase.receive_original_job(job).await?;
+        fence.armed = false;
+        if result.is_ok() {
+            closing.disarm();
+        }
+        result
+    }
+}

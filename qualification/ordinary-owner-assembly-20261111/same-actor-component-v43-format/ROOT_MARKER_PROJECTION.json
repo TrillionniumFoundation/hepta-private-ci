@@ -1,0 +1,143 @@
+{
+  "scope": "Bounded masked JavaScript order projection; original checker/helper not run.",
+  "boundary_count": 638,
+  "all_boundaries_unchanged": true,
+  "protected_rows_changed": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "changed": true
+    }
+  ],
+  "projection": {
+    "required": [
+      "OriginalCellQ24LearningInputsV1",
+      "same_actor_work: Some(Arc::clone(&phase))",
+      "evaluation: None",
+      "generation: None",
+      "let owners: &mut Q24StageOwners = &mut locked"
+    ],
+    "orders": [
+      [
+        8378,
+        8828,
+        8889,
+        9045,
+        9140,
+        9584,
+        9645,
+        9699,
+        9806,
+        9873,
+        10016,
+        10151,
+        10274,
+        10461,
+        10745,
+        10802,
+        10867,
+        10990,
+        11177,
+        11303,
+        11360,
+        11433,
+        11506,
+        11554,
+        11583,
+        11615,
+        11651
+      ]
+    ],
+    "function_orders": [
+      {
+        "function": "fn from_original_same_actor_inputs(",
+        "start": 347,
+        "end": 6085,
+        "positions": [
+          250,
+          290,
+          352,
+          474,
+          699,
+          760,
+          883,
+          956,
+          1081,
+          1325,
+          1564,
+          1732,
+          1865,
+          2021,
+          2154,
+          2279,
+          2450,
+          2901,
+          2974,
+          3016,
+          3083,
+          3161,
+          3262,
+          3388,
+          3456,
+          3629,
+          3793,
+          4097,
+          4154,
+          4295,
+          4448,
+          4512,
+          4805,
+          4927,
+          5615,
+          5694,
+          5720
+        ]
+      },
+      {
+        "function": "fn require_original_same_actor_work(",
+        "start": 6103,
+        "end": 6624,
+        "positions": [
+          156,
+          220,
+          254,
+          296,
+          340,
+          377,
+          411,
+          460
+        ]
+      },
+      {
+        "function": "fn open_original_same_actor_generation(",
+        "start": 6648,
+        "end": 8107,
+        "positions": [
+          411,
+          451,
+          645,
+          706,
+          829,
+          924,
+          1001,
+          1059,
+          1154,
+          1211,
+          1296,
+          1369,
+          1418,
+          1444
+        ]
+      },
+      {
+        "function": "fn require_original_phase_entry(",
+        "start": 8148,
+        "end": 8354,
+        "positions": [
+          70,
+          127,
+          195
+        ]
+      }
+    ]
+  }
+}

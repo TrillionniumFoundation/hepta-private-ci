@@ -1,0 +1,382 @@
+{
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"d4d6e32b1e8c1f976c035c0f9581d903622d9e77\", \"status\": \" M codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\\\\n\", \"tree\": \"4ebe145be1b87f84d8a515a7eefb324e44cc2916\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "current_stage": "finished-or-awaiting-original",
+  "errors": [
+    "cleanup final-physical-source: RuntimeError('fixed source is not clean: {\"head\": \"d4d6e32b1e8c1f976c035c0f9581d903622d9e77\", \"status\": \" M codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\\\\n\", \"tree\": \"4ebe145be1b87f84d8a515a7eefb324e44cc2916\"}')"
+  ],
+  "execution_records": [
+    {
+      "name": "operator-toolchain",
+      "passed": true,
+      "record": {
+        "bytes": 1440,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/operator-toolchain.execution.json",
+        "sha256": "ca0b8f4413f54d626e4031398f07c51155fa28fc0da0556314a2599c139e9280"
+      },
+      "required_uid": 1000
+    }
+  ],
+  "expected_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+  ],
+  "external_tools_after": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "failure": "RuntimeError: original executor did not retain equal clean source identity",
+  "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "maintenance_patch": {
+    "bytes": 1615,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/maintenance.patch",
+    "sha256": "ebff5a6ffffa44a0fb35f8eab5ce84e021e30d026be64cf466ca1998c100bf98"
+  },
+  "operator_euid": 1000,
+  "operator_gid": 1000,
+  "operator_uid": 1000,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "ordinary_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-fleet"
+  ],
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+  "root_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-contracts"
+  ],
+  "schema": "hepta.final-ordinary-root-native.v2",
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source",
+  "source_sha": "d4d6e32b1e8c1f976c035c0f9581d903622d9e77",
+  "source_tree": "4ebe145be1b87f84d8a515a7eefb324e44cc2916",
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.03299227193929255,
+      "exit_code": 0,
+      "launcher_pid": 1767494,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.8194397501647472,
+      "exit_code": 0,
+      "launcher_pid": 1767520,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/isolated-clone.launch.log",
+        "sha256": "de882c75df8568ed4705f3709fc31c499ad015d95e87f505e0e47f2c95ed858c"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 14.227438986068591,
+      "exit_code": 0,
+      "launcher_pid": 1767574,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fetch-exact-source.launch.log",
+        "sha256": "c25225d619a137d8a247c4d581f1577e4577ee79628962f721a5c38e2f27c2d4"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source",
+        "checkout",
+        "--detach",
+        "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.5758248048368841,
+      "exit_code": 0,
+      "launcher_pid": 1767621,
+      "log": {
+        "bytes": 202,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/checkout-exact-source.launch.log",
+        "sha256": "bb71e9c5e7b741280f45a1f0d383a23157e5e2882c6fb9a607dde03030b8978a"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source",
+        "merge-base",
+        "--is-ancestor",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+        "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.004320865031331778,
+      "exit_code": 0,
+      "launcher_pid": 1767622,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "60",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/operator-toolchain.execution.json",
+        "--",
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source/codex-rs",
+      "elapsed_seconds": 0.41613373812288046,
+      "exit_code": 0,
+      "launcher_pid": 1767673,
+      "log": {
+        "bytes": 1504,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/operator-toolchain.launch.log",
+        "sha256": "0575886893d4fcc762d7a5fe1ba9957f35d1517fe66eadf269cc8eae8cc20e5a"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fmt-before.execution.json",
+        "--",
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/source",
+      "elapsed_seconds": 3.525171450106427,
+      "exit_code": 1,
+      "launcher_pid": 1767779,
+      "log": {
+        "bytes": 1383,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fmt-before.launch.log",
+        "sha256": "8910e436b9e8d38add7bb4884bf7e9469e7fd909f1e0d42937bfd7e83137f363"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 741, in <module>\n    recorded(\"fmt-before\", [\"just\",\"fmt\",\"--base\",BASE], timeout=600)\n    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 482, in recorded\n    record, passed, log = read_execution(output, command, must_pass=False)\n                          ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 300, in read_execution\n    raise RuntimeError(\"original executor did not retain equal clean source identity\")\nRuntimeError: original executor did not retain equal clean source identity\n"
+}

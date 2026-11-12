@@ -227,7 +227,9 @@ impl Q24StageState {
                 let owners: &mut Q24StageOwners = &mut locked;
                 CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
                 runtime
-                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(
+                        &mut owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
@@ -238,7 +240,9 @@ impl Q24StageState {
                 let result = work(owners, &training, &runtime)?;
                 CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
                 runtime
-                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(
+                        &mut owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);

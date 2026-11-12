@@ -1,0 +1,81 @@
+{
+  "launches": [
+    {
+      "name": "original-rust-idle-preflight",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/original-rust-idle-preflight.launch.log",
+      "bytes": 47,
+      "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+    },
+    {
+      "name": "isolated-clone",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/isolated-clone.launch.log",
+      "bytes": 105,
+      "sha256": "de882c75df8568ed4705f3709fc31c499ad015d95e87f505e0e47f2c95ed858c"
+    },
+    {
+      "name": "fetch-exact-source",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fetch-exact-source.launch.log",
+      "bytes": 142,
+      "sha256": "c25225d619a137d8a247c4d581f1577e4577ee79628962f721a5c38e2f27c2d4"
+    },
+    {
+      "name": "checkout-exact-source",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/checkout-exact-source.launch.log",
+      "bytes": 202,
+      "sha256": "bb71e9c5e7b741280f45a1f0d383a23157e5e2882c6fb9a607dde03030b8978a"
+    },
+    {
+      "name": "format-base-ancestry",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/format-base-ancestry.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "operator-toolchain",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/operator-toolchain.launch.log",
+      "bytes": 1504,
+      "sha256": "0575886893d4fcc762d7a5fe1ba9957f35d1517fe66eadf269cc8eae8cc20e5a"
+    },
+    {
+      "name": "fmt-before",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fmt-before.launch.log",
+      "bytes": 1383,
+      "sha256": "8910e436b9e8d38add7bb4884bf7e9469e7fd909f1e0d42937bfd7e83137f363"
+    }
+  ],
+  "executions": [
+    {
+      "name": "operator-toolchain",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/operator-toolchain.execution.json",
+      "bytes": 1440,
+      "sha256": "ca0b8f4413f54d626e4031398f07c51155fa28fc0da0556314a2599c139e9280"
+    },
+    {
+      "name": "fmt-before",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d4d6e32-seven-final-v17/records/fmt-before.execution.json",
+      "bytes": 1525,
+      "sha256": "83c1288889e060ac3a46e381075146c31058d8786442cda84959731c2eed77c4"
+    }
+  ],
+  "command_stdout": [
+    {
+      "name": "operator-toolchain",
+      "path": "operator-toolchain.execution.json.b3d2263210454fd488a7532529c10756.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "recovered_from_complete_original_launcher_tee": true,
+      "direct_separate_stdout_file_read": false,
+      "record_footer_equal": true
+    },
+    {
+      "name": "fmt-before",
+      "path": "fmt-before.execution.json.3ee0fc3707d1493ca2dcc0022f5f5b2d.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "recovered_from_complete_original_launcher_tee": true,
+      "direct_separate_stdout_file_read": false,
+      "record_footer_equal": true
+    }
+  ],
+  "acquisition": "Complete original launcher tee; exact byte count/hash and separate execution footer comparison. No separate child stdout read claimed."
+}

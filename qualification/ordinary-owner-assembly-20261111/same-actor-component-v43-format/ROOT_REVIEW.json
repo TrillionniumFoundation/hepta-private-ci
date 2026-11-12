@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.same-actor-component-v43-root-review.v1",
+  "source_parent": "d4d6e32b1e8c1f976c035c0f9581d903622d9e77",
+  "source_parent_tree": "4ebe145be1b87f84d8a515a7eefb324e44cc2916",
+  "actual_original_formatter_source": "ordinary-d4d6e32-seven-final-v17",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "pre": {
+        "blob": "9d7fc1bc55daf72ad25652222b5adcfd26b7f72c",
+        "bytes": 11572,
+        "sha256": "9e076a8e56fa41505a4e455a46134bdfce72cc3e5639b35cc67e81de2b33a9d3"
+      },
+      "post": {
+        "blob": "1e5270f82571964dcf3817b26f48a9550bd1e9d8",
+        "bytes": 11666,
+        "sha256": "882f72179ed6176693ccfec2b08afb0473b619355a9c35e888c38899b81b1b7b"
+      }
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "037b66f9c836509a75ad009a441381410cbfafdb",
+        "bytes": 891637,
+        "sha256": "be92133562d6c4db4960aca803936bfc247d249cb1230a2b2c971642f5825a2a"
+      },
+      "post": {
+        "blob": "0a8e89e712c4a27f6fec8c75c774e2ca9f54b89a",
+        "bytes": 891735,
+        "sha256": "74e44e6c9b6c2351083cb72346aeb5094f4c1da27830b51f153da6c642342521"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "pre": {
+        "blob": "aecfeffe81112959020ab8358a501e35c6a76c99",
+        "bytes": 12066,
+        "sha256": "c183b7409b566591c44e4fbaeababc5ad8b65681ea3b673b8b5bfff37e3b9711"
+      },
+      "post": {
+        "blob": "ed5ca05adc8460b5bb795f71faaf0238175cf1be",
+        "bytes": 12066,
+        "sha256": "4b99eb61885ffc0beec4b945efd8768739e87e2245553fd56f4357290525e1da"
+      }
+    }
+  ],
+  "proof": "The actual retained Rust after-file equals the V42 file with exactly two original formatter replacements, forward and reverse. Both still call the same Factory with &mut owners.factory, in the same .block_on and original .map_err position. Only whitespace and each single-argument trailing comma differ.",
+  "metadata": "Two existing full-literal guards reflect those exact layouts. All 638 boundary definitions, caller lists and privileged inventory are unchanged. Existing allowlist receives only the exact new CALLERS digest.",
+  "actual_predecessor_status": "V42 formatting failed source cleanliness; no compilation or test pass reached. Full original evidence is included with this candidate.",
+  "qualification": "Only bounded JavaScript order/hash/replay proofs so far. New unchanged complete original native entrance required at V43. No inherited PASS.",
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "future_packages_installed": false,
+  "main_merged": false
+}
