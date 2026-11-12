@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-source-tree-successor-parent-red-ledger-v1",
+  "parent_pr": 6259,
+  "parent_head": "000e667ad7a92eae0ad314929cb4293d6bb994d6",
+  "records": [
+    {
+      "identity": "hcsn-original-visit897-source-migration-static-clear-20261112-c06d",
+      "idempotency_key": "hcsn-original-visit897-source-migration-static-clear-001",
+      "host": "desktop",
+      "job_id": "1a1d086d1a2-2564-1b95",
+      "terminal_state": "failed",
+      "exit_code": 2,
+      "failure_stage": "format_before_inspector",
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0,
+      "retained_status": "RED_STOP_NO_READMISSION"
+    },
+    {
+      "identity": "hcsn-original-visit897-source-migration-vjp-n128-stage1",
+      "host": "github-hosted",
+      "run_id": 43263814418,
+      "job_id": 131341874598,
+      "failure_stage": "source_bind_before_numerical_step",
+      "missing_path": "qualification/hcsn_initial_law/migration.py",
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0,
+      "retained_status": "RED_SOURCE_BIND_MISSING_FILE"
+    }
+  ],
+  "successor_inherits_qualification": false,
+  "historical_unknowns_unchanged": true
+}
