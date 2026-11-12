@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "source_head": "98a54391bdf85807467209e9b7256829e2533727",
+  "source_tree": "03d2272e475771bbcd8b8cdf7be25f1ac3acfa02",
+  "source_before": {
+    "head": "98a54391bdf85807467209e9b7256829e2533727",
+    "tree": "03d2272e475771bbcd8b8cdf7be25f1ac3acfa02",
+    "status": "",
+    "source_files": 8046,
+    "source_digest": "4c6bd36bd478987bce1459663a970eb1dd34768e02b5522525dc6e2ee7a2379e"
+  },
+  "source_after": {
+    "head": "98a54391bdf85807467209e9b7256829e2533727",
+    "tree": "03d2272e475771bbcd8b8cdf7be25f1ac3acfa02",
+    "status": "",
+    "source_files": 8046,
+    "source_digest": "4c6bd36bd478987bce1459663a970eb1dd34768e02b5522525dc6e2ee7a2379e"
+  },
+  "same_source": true,
+  "source_qa": {
+    "tests": 110,
+    "passed": 110,
+    "exit_code": 0
+  },
+  "protected": {
+    "checked": 709,
+    "status": "PASS"
+  },
+  "selected_boundaries": {
+    "count": 31,
+    "passed": 30,
+    "failures": [
+      {
+        "id": "root_generation_connection_live_session",
+        "status": "FAIL",
+        "error": "VerificationFailure: root_generation_connection_live_session: codex-rs/hepta-agentd/src/root_independent_b_connection.rs: unresolved possible RootGenerationPublicationConnectionV1::require_original_publication_session receiver"
+      }
+    ]
+  },
+  "rust_files_scanned": 6737,
+  "elapsed_seconds": 158.55982613563538,
+  "native": "NOT_RUN_BY_THIS_AGENT",
+  "scope_note": "Frozen source QA and selected boundary checks only. Failure retained; B connection typed receiver remains unresolved. No whole pipeline acceptance.",
+  "files": [
+    {
+      "path": "final-guard-semantic-audit.json",
+      "bytes": 30205,
+      "sha256": "6abd32e842b8d6e8464aa2d3ba90779157140e8b576277e4896bdf8e588ff964"
+    },
+    {
+      "path": "first-migrated-protected.json",
+      "bytes": 3415,
+      "sha256": "d2cebdc4df8365ff9d9b5d6f4c3c97fde8e7fe1996271145639ed6dba582c715"
+    },
+    {
+      "path": "first-ready-negative-qa.json",
+      "bytes": 20455,
+      "sha256": "f0d2319a43912440f994c6e078a847105243731af40eea7ba07cecfd1c1936f1"
+    },
+    {
+      "path": "first-ready-negative-qa.log",
+      "bytes": 37978,
+      "sha256": "2db0a90d60d7165fa7258a8818844187e4a0ffcd8fa4e957e1b534cb481475d9"
+    },
+    {
+      "path": "first-source-qa.log",
+      "bytes": 48400,
+      "sha256": "be324a5febe55b0f1079d45be028785bab1529556c58e3dd2b9c47f337c1545d"
+    },
+    {
+      "path": "first-source-qa.log.json",
+      "bytes": 670,
+      "sha256": "3fc5e7f20cbc89df7d8b6280d44c77ff5310f3d0dcf0a9631343ae5ebe7ffd80"
+    },
+    {
+      "path": "frozen-4b351b86/boundary-progress.json",
+      "bytes": 15400,
+      "sha256": "83f44160be2647852f91e17bed8dabd72431efd2f5b70ee9a57937cfaeca7804"
+    },
+    {
+      "path": "frozen-4b351b86/result.json",
+      "bytes": 18689,
+      "sha256": "5ccd3823965de8caa1682b33d7fad5c0f20c56e70af64559d4d39a4a7e52b087"
+    },
+    {
+      "path": "frozen-4b351b86/source-qa.log",
+      "bytes": 20787,
+      "sha256": "2dc3840defcee55bc507deeb5894f3db3e3fd9ce34d72636830a115e29f22f2e"
+    },
+    {
+      "path": "frozen-a8ef901e/result.json",
+      "bytes": 1615,
+      "sha256": "50a38c9e85620033923d9cb9564ad8da99b5f16988ee2d74009cc3e54a097c00"
+    },
+    {
+      "path": "frozen-a8ef901e/source-qa.log",
+      "bytes": 20579,
+      "sha256": "692502a4c891d3f56cac00e60972ed800ffa16666599bc3e6711af11712176fd"
+    },
+    {
+      "path": "frozen-driver-4b351b86.py",
+      "bytes": 4347,
+      "sha256": "dcb69ed1b1952442090cd5d0bdb054d3ffffef6ccdc296a29984b7217c4af213"
+    },
+    {
+      "path": "frozen-driver-final.py",
+      "bytes": 4392,
+      "sha256": "cbdbfd2e245bad66ea9d0991abdc858af76ba46e0780e4f238ece296eb05ec4d"
+    },
+    {
+      "path": "frozen-driver.py",
+      "bytes": 4347,
+      "sha256": "cf9c44edff3565805cb62b75b0158cc9f2658e9c4a4360dfbee4172b5ac3ba48"
+    },
+    {
+      "path": "frozen-final-ready/boundary-progress.json",
+      "bytes": 16039,
+      "sha256": "0c6afcc1cb0d351d0e65090658595ce78af05ba0b3bdb32ac7bc3fb79e8a93a0"
+    },
+    {
+      "path": "frozen-final-ready/result.json",
+      "bytes": 19439,
+      "sha256": "3c845b43454857c0019ba4c943edfdecba0c3bb769e72094483aaee14eb63977"
+    },
+    {
+      "path": "frozen-final-ready/source-qa.log",
+      "bytes": 23346,
+      "sha256": "c8d2912a7120460e3492211d8e449137b9e661d25c28bcf46d226d7766060056"
+    },
+    {
+      "path": "guard-semantic-audit.json",
+      "bytes": 20459,
+      "sha256": "a7b6a135856493fe9066a0820efefed7aa8fe3ae5b9adeb8409f0da193195e62"
+    },
+    {
+      "path": "migrate-guards.py",
+      "bytes": 21183,
+      "sha256": "af5a69789528bf9bb682c411c67d0f6db893557dc7fbc0ea3ced093ffa549754"
+    },
+    {
+      "path": "second-migrated-protected.json",
+      "bytes": 972,
+      "sha256": "b785f7f25f183ccb039fdc262353d0acb2f87ec12b2126fb26a5f7154dc1f69c"
+    },
+    {
+      "path": "third-migrated-protected.json",
+      "bytes": 34,
+      "sha256": "f1b01900ca5c81d082b545a26eeca0cb98e175321118976367f8ee29f7872258"
+    }
+  ]
+}
