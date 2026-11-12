@@ -1,0 +1,302 @@
+{
+  "status": "VERIFIED_ACTUAL_FORMATTED_POSTIMAGES",
+  "verified_at": "2026-11-12T16:04:18.411101+00:00",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "actual_manifest": {
+    "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/manifest.json",
+    "bytes": 11385,
+    "sha256": "7b742744cfd292553bf0f0286fbefc178542355910f1e9290825ed604ed16c77",
+    "blob": "51e161ec9a6cd848d75625f18a9b3f3f89dd7857"
+  },
+  "actual_archive": {
+    "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/complete-postimages.json.gz",
+    "bytes": 29526,
+    "sha256": "d5feb190422009022a9a1f091359f35042e54127b53212d83eba8cc289d11ef3",
+    "blob": "c38b09598c84510fa6f5110a3010aa3e9762efcd"
+  },
+  "actual_rustfmt_returncode": 0,
+  "actual_rustfmt_raw_log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 12544,
+        "sha256": "dd8223075f6154c01cc1becab7ae5d1598a41bf5b3608d2e2ae614df2a8d7479",
+        "blob": "cc560a9a3792c672001dfedfda8a16061cbe14a5"
+      },
+      "before": {
+        "bytes": 12613,
+        "sha256": "9c3ee1620dcb545ed65f8d3efbca7a602b2db202aeb31aec0699b343f1da4d28",
+        "blob": "d98bd3c606763e0b3b7af6f4ac43c43f15caa732"
+      },
+      "after": {
+        "bytes": 12613,
+        "sha256": "9c3ee1620dcb545ed65f8d3efbca7a602b2db202aeb31aec0699b343f1da4d28",
+        "blob": "d98bd3c606763e0b3b7af6f4ac43c43f15caa732"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 12136,
+        "sha256": "9f86e375f6af5a369cc2d8536e7dcdc381e42ee0f66ff3057d7951d65171f6c4",
+        "blob": "9dd91ec0e81aff907a7760cdcee880226945993d"
+      },
+      "before": {
+        "bytes": 11405,
+        "sha256": "d4bfc8c6e850ffc037deab60a3f0f5b004c75c48a0567e70cccda34d38733970",
+        "blob": "31010e80d331c7f32b84afb7c2b4f2edc63affb2"
+      },
+      "after": {
+        "bytes": 11405,
+        "sha256": "d4bfc8c6e850ffc037deab60a3f0f5b004c75c48a0567e70cccda34d38733970",
+        "blob": "31010e80d331c7f32b84afb7c2b4f2edc63affb2"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 17052,
+        "sha256": "29e350fb4365bb1b3cd8c7e1b29a6b97eddfcfd169ef0e3177c3c366ba86b2d2",
+        "blob": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8"
+      },
+      "before": {
+        "bytes": 17192,
+        "sha256": "5093a9718644ccd84029c5c6d64b24cdf1536698ffda3824a74bdc5499b44b50",
+        "blob": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3"
+      },
+      "after": {
+        "bytes": 17192,
+        "sha256": "5093a9718644ccd84029c5c6d64b24cdf1536698ffda3824a74bdc5499b44b50",
+        "blob": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 5629,
+        "sha256": "a9bff38e9ce5dda6f4792379402d840427d622cb66733e4535e90d4e664b61e9",
+        "blob": "189e494e4b216109bd81ad0a5acaafe907053a80"
+      },
+      "before": {
+        "bytes": 5695,
+        "sha256": "17ff6575d665e148c6e4f510a4a4c35dc326a7e0a163742d19acafb2d11d2c47",
+        "blob": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6"
+      },
+      "after": {
+        "bytes": 5695,
+        "sha256": "17ff6575d665e148c6e4f510a4a4c35dc326a7e0a163742d19acafb2d11d2c47",
+        "blob": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 2204,
+        "sha256": "2d5639f8c1f6f8a800180651b3ae0203fbc815772dcc60dc41657975957a32e2",
+        "blob": "e5a6d46996d1b871c12c5052cce850c80e12d3c0"
+      },
+      "after": {
+        "bytes": 2475,
+        "sha256": "c4e9d6d0c4d73816eed06b2a62ad442495518c666c56bd8d4572312dd7e1abc4",
+        "blob": "5d36c0856b08864b129434f3c15a67bd54fbc7cf"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 4050,
+        "sha256": "43d1cd566cd1278f064000b042efa9e8e0a0434a980b271342fc54cb01ca6550",
+        "blob": "37e385693e3a71883e38200299429d622a752e02"
+      },
+      "after": {
+        "bytes": 4209,
+        "sha256": "0d6c3602f4096e42fb3171b577c36efcc11e1826a9488c3e88f0cba293c4f8da",
+        "blob": "c0b38e367ca375bfe4382b275130b3781c5ff48b"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 6590,
+        "sha256": "0362dde229678585ea8594cd92c70f5811177d241097f8577d79ddd25db55635",
+        "blob": "3499bd39560df27a9e9dccb86d12861963b6edc2"
+      },
+      "after": {
+        "bytes": 7220,
+        "sha256": "c562908d496d29c893cd552e2e3cbe36e6785b0041254144b1a3742af73959bc",
+        "blob": "68b40418df15eada032a272d9732b38daa83e4a9"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 12077,
+        "sha256": "66e9e7efdac815b070fb37d8469a7231f2459f245fe89b48646a63caf7c62d6f",
+        "blob": "0a92d3c7593d98fa39e7d7ce4e009605836aeb18"
+      },
+      "after": {
+        "bytes": 13639,
+        "sha256": "a23bdba0165bb3580e0cd64e250c3f8b64e025ab5d712d3e979c91480250a88e",
+        "blob": "8d8ae79f45148a7ca0aac0478d1c4e3b18ab6a16"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs",
+      "actual_archive_bytes_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "origin": "exact a96 plus isolated original Source readonly transaction v3; no native qualification",
+      "base": {
+        "bytes": 14395,
+        "sha256": "02acc8cf7be792f4d9ec6030dd0653e9d262a2d77b0961f5d4b1b7fc83baeba1",
+        "blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4"
+      },
+      "before": {
+        "bytes": 14702,
+        "sha256": "b8aa1030f9106c3cea02e4d40d4053104032d65fe64e536815c150a123f6c3bc",
+        "blob": "2cdf18c555acf11301570d8a555b9f6a37e604bb"
+      },
+      "after": {
+        "bytes": 14702,
+        "sha256": "b8aa1030f9106c3cea02e4d40d4053104032d65fe64e536815c150a123f6c3bc",
+        "blob": "2cdf18c555acf11301570d8a555b9f6a37e604bb"
+      },
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "actual_archive_bytes_verified": true
+    }
+  ],
+  "roundtrips": [
+    {
+      "patch": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-prefmt.patch",
+        "bytes": 31938,
+        "sha256": "b42bc2d27b9c3fc62c8afecc9203056dff7caec3d0ec640a3600cb9c7616419e",
+        "blob": "73d4ca4856b0b3111eaa01f6c6d0f68ced73dd44"
+      },
+      "returncode": 0,
+      "command": [
+        "patch",
+        "--batch",
+        "--forward",
+        "--fuzz=0",
+        "-p1",
+        "-i",
+        "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-prefmt.patch"
+      ],
+      "cwd": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/roundtrips/training-readonly-prefmt",
+      "raw_log": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-prefmt.patch.roundtrip.raw.log",
+        "bytes": 665,
+        "sha256": "9d4869662df3769c41c37f514cc8fd67d54327e60c26f5a4d48f05a49d976014",
+        "blob": "25b2feb7171cffee16b58585ba532d3c37425f62"
+      },
+      "all_output_bytes_equal": true,
+      "offset_or_fuzz": false
+    },
+    {
+      "patch": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-formatted.patch",
+        "bytes": 34788,
+        "sha256": "c7f1c2ffbe3a4b2f2880b811f4dbec9b1b487fd74a284804624b20954b3ce248",
+        "blob": "a23a1269ad8d2725a63bac176e8f245b6f54f838"
+      },
+      "returncode": 0,
+      "command": [
+        "patch",
+        "--batch",
+        "--forward",
+        "--fuzz=0",
+        "-p1",
+        "-i",
+        "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-formatted.patch"
+      ],
+      "cwd": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/roundtrips/training-readonly-formatted",
+      "raw_log": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/training-readonly-formatted.patch.roundtrip.raw.log",
+        "bytes": 665,
+        "sha256": "9d4869662df3769c41c37f514cc8fd67d54327e60c26f5a4d48f05a49d976014",
+        "blob": "25b2feb7171cffee16b58585ba532d3c37425f62"
+      },
+      "all_output_bytes_equal": true,
+      "offset_or_fuzz": false
+    },
+    {
+      "patch": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/format-only.patch",
+        "bytes": 30510,
+        "sha256": "4e1f0f60a126f6e29085ccc026fb4acee3e709bf1bf2b5bb412d9d4b401e4c99",
+        "blob": "642feef6a9fc96edb51b90acdb87d79a1b376b6c"
+      },
+      "returncode": 0,
+      "command": [
+        "patch",
+        "--batch",
+        "--forward",
+        "--fuzz=0",
+        "-p1",
+        "-i",
+        "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/format-only.patch"
+      ],
+      "cwd": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/roundtrips/format-only",
+      "raw_log": {
+        "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/format-only.patch.roundtrip.raw.log",
+        "bytes": 309,
+        "sha256": "bfc5e0725e8e296ab9ad5021663bcd0644d5241f610f85afac42104252227c1c",
+        "blob": "8c2d7d3d486eb23f335066e66f31aff084ecb1b4"
+      },
+      "all_output_bytes_equal": true,
+      "offset_or_fuzz": false
+    }
+  ],
+  "native_tests_run": false,
+  "ordinary_qualification": false,
+  "no_input_mutation": true,
+  "prefmt_patch_ordering": "frozen local v3 patch uses declared nine-file order; actual formatter sorts paths; both exact base/before rows verified, actual sorted patch hash reproduced"
+}

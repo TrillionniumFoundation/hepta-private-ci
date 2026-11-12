@@ -1,0 +1,97 @@
+{
+  "schema": "learn-training-original-manifests-and-current-plan-recovery-v1",
+  "status": "EXACT_ORIGINALS_RECOVERED_NATIVE_UNRUN",
+  "source_base": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "training_actual_product_checkpoint": "6c19310a69497ff313dcc08081f7860b6008ef96",
+  "training_original_guard_checkpoint": "34bbe04044ae724fcf8f7bd8596e2ef1a6463563",
+  "files": [
+    {
+      "path": "qualification/learn-training-037c-checkpoint/actual-format/manifest.original.json",
+      "bytes": 11385,
+      "sha256": "7b742744cfd292553bf0f0286fbefc178542355910f1e9290825ed604ed16c77",
+      "blob": "51e161ec9a6cd848d75625f18a9b3f3f89dd7857"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/actual-format/VERIFIED_MANIFEST.original.json",
+      "bytes": 13577,
+      "sha256": "4d483fbc303794ac0aab81408e80d0492cb05a666e2684b68a31c1fc3fa6cbf3",
+      "blob": "9a6916347b55ef822995b94753bc30b9ef8daf02"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/current-protocol/CALLERS-DELTA.original.json",
+      "bytes": 72732,
+      "sha256": "3557f035138daa7566d2fde7d4d883bf4a856011dab8112ee6cba2dd885eabd8",
+      "blob": "123a6dd96f848aa609cd395fa381136c159a22bc"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/current-protocol/DELIVERY.original.json",
+      "bytes": 15271,
+      "sha256": "04e579270c6987fd8ad8b83d4eca7ff1c4d3b3ed2037bb24cdc290fa27fec352",
+      "blob": "f21699eb4fb10697f9881b376f4d909a44023efb"
+    }
+  ],
+  "physical_training_postimages_reverified": [
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs",
+      "bytes": 12613,
+      "sha256": "9c3ee1620dcb545ed65f8d3efbca7a602b2db202aeb31aec0699b343f1da4d28",
+      "blob": "d98bd3c606763e0b3b7af6f4ac43c43f15caa732"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "bytes": 11405,
+      "sha256": "d4bfc8c6e850ffc037deab60a3f0f5b004c75c48a0567e70cccda34d38733970",
+      "blob": "31010e80d331c7f32b84afb7c2b4f2edc63affb2"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "bytes": 17192,
+      "sha256": "5093a9718644ccd84029c5c6d64b24cdf1536698ffda3824a74bdc5499b44b50",
+      "blob": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "bytes": 5695,
+      "sha256": "17ff6575d665e148c6e4f510a4a4c35dc326a7e0a163742d19acafb2d11d2c47",
+      "blob": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "bytes": 2475,
+      "sha256": "c4e9d6d0c4d73816eed06b2a62ad442495518c666c56bd8d4572312dd7e1abc4",
+      "blob": "5d36c0856b08864b129434f3c15a67bd54fbc7cf"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "bytes": 4209,
+      "sha256": "0d6c3602f4096e42fb3171b577c36efcc11e1826a9488c3e88f0cba293c4f8da",
+      "blob": "c0b38e367ca375bfe4382b275130b3781c5ff48b"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "bytes": 7220,
+      "sha256": "c562908d496d29c893cd552e2e3cbe36e6785b0041254144b1a3742af73959bc",
+      "blob": "68b40418df15eada032a272d9732b38daa83e4a9"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs",
+      "bytes": 13639,
+      "sha256": "a23bdba0165bb3580e0cd64e250c3f8b64e025ab5d712d3e979c91480250a88e",
+      "blob": "8d8ae79f45148a7ca0aac0478d1c4e3b18ab6a16"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/postimages/codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "bytes": 14702,
+      "sha256": "b8aa1030f9106c3cea02e4d40d4053104032d65fe64e536815c150a123f6c3bc",
+      "blob": "2cdf18c555acf11301570d8a555b9f6a37e604bb"
+    }
+  ],
+  "original_pass_status": "The preserved original source results keep their original partial-mirror scopes. No new source/native tests were run during recovery.",
+  "unstarted_second_h_readback": {
+    "operation_id": "02f17d1395618e1fbff14a61c56c4e885216139cc278a26a8a814a4c9458eef1",
+    "state": "NEVER_REQUESTED_BY_THIS_AGENT_RECOVERY_PLAN_CANCELED_AFTER_PRIMARY_RECOVERY"
+  },
+  "global_callers_modified": false,
+  "main_pr_updated": false,
+  "ordinary_NoUpdate_qualification_count": 0
+}
