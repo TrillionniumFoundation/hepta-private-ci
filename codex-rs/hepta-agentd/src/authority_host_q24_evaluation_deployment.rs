@@ -155,8 +155,10 @@ impl OriginalBInputs {
                 .open(&data.observed_statement, OriginalBFileAccess::ReadOnly)?,
             policy_statement: tracker
                 .open(&data.policy_statement, OriginalBFileAccess::ReadOnly)?,
-            realized_plan_statement: tracker
-                .open(&data.realized_plan_statement, OriginalBFileAccess::ReadOnly)?,
+            realized_plan_statement: tracker.open(
+                &data.realized_plan_statement,
+                OriginalBFileAccess::OwnerWriter,
+            )?,
             evaluator_key: tracker.open(&data.evaluator_key, OriginalBFileAccess::ReadOnly)?,
             candidate,
             fixed_expert,

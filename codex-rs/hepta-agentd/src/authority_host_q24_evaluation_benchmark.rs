@@ -35,6 +35,9 @@ pub(super) fn prepare_original_cells(
     protocol: &OriginalBProtocolData,
     end: Instant,
 ) -> io::Result<()> {
+    if enrollment.cell_images.is_some() {
+        return restore_original_cells(files, enrollment, training, protocol);
+    }
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(training.clone())
         .map_err(io::Error::other)?;
     let candidate = coordinator
@@ -74,29 +77,6 @@ pub(super) fn prepare_original_cells(
         })
         .map_err(io::Error::other)?;
     files.candidate.config.generation = config;
-    if let Some(expected) = &enrollment.cell_images {
-        // Recovery is physical observation only. No missing output is created.
-        if physical_images(files)? != *expected {
-            return Err(io::Error::other("original B component history differs"));
-        }
-        files
-            .candidate
-            .journal
-            .relinquish_writer_for_observation()?;
-        files
-            .candidate
-            .witness
-            .relinquish_writer_for_observation()?;
-        files
-            .fixed_expert
-            .journal
-            .relinquish_writer_for_observation()?;
-        files
-            .fixed_expert
-            .witness
-            .relinquish_writer_for_observation()?;
-        return require_original_cells(files, enrollment, training, protocol);
-    }
     if enrollment.realized_plan.is_some()
         || enrollment.completed_receipt.is_some()
         || enrollment.heads.is_some()
@@ -148,6 +128,53 @@ pub(super) fn prepare_original_cells(
         end,
     )?;
     enrollment.cell_images = Some(physical_images(files)?);
+    require_original_cells(files, enrollment, training, protocol)
+}
+
+pub(super) fn restore_original_cells(
+    files: &mut OriginalBInputs,
+    enrollment: &OriginalBEnrollment,
+    training: &LearningIterationSnapshotV1,
+    protocol: &OriginalBProtocolData,
+) -> io::Result<()> {
+    let expected = enrollment
+        .cell_images
+        .as_ref()
+        .ok_or_else(|| io::Error::other("original B components were never prepared"))?;
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(training.clone())
+        .map_err(io::Error::other)?;
+    let candidate = coordinator
+        .candidate()
+        .ok_or_else(|| io::Error::other("original B candidate missing"))?;
+    let heads = files
+        .candidate_data
+        .require_digest(candidate.components.heads, 32_780)?;
+    let (_, config) = files.model.candidate(
+        &files.fixed_expert.config.generation,
+        &training.request.selected_bundle,
+        candidate,
+        &heads,
+    )?;
+    files.candidate.config.generation = config;
+    if physical_images(files)? != *expected {
+        return Err(io::Error::other("original B component history differs"));
+    }
+    files
+        .candidate
+        .journal
+        .relinquish_writer_for_observation()?;
+    files
+        .candidate
+        .witness
+        .relinquish_writer_for_observation()?;
+    files
+        .fixed_expert
+        .journal
+        .relinquish_writer_for_observation()?;
+    files
+        .fixed_expert
+        .witness
+        .relinquish_writer_for_observation()?;
     require_original_cells(files, enrollment, training, protocol)
 }
 
