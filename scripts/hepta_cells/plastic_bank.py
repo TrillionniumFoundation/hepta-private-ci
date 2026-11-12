@@ -26,9 +26,7 @@ class PlasticBank:
     """Task-specific readouts with explicit canonical parameter ownership."""
 
     def __init__(self, arm, width, rank, task_ids, seed=0):
-        if arm not in ARMS or any(
-            type(v) is not int or v < 1 for v in (width, rank)
-        ):
+        if arm not in ARMS or any(type(v) is not int or v < 1 for v in (width, rank)):
             raise ValueError("known arm and positive dimensions required")
         if width > 1024 or rank > 128 or not 1 <= len(task_ids) <= 32:
             raise ValueError("small-study resource bound exceeded")
@@ -48,9 +46,7 @@ class PlasticBank:
         self.second = np.zeros((len(task_ids), rank, 1))
         self.bias = np.zeros((len(task_ids), 1))
         self.steps = np.zeros(len(task_ids), dtype=np.int64)
-        self.objective = LocalObjective(
-            "mse", 1, "retained-observed-task-success"
-        )
+        self.objective = LocalObjective("mse", 1, "retained-observed-task-success")
 
     def _index(self, task_id):
         if task_id not in self.config["task_ids"]:
@@ -67,9 +63,7 @@ class PlasticBank:
         return _digest(
             "hepta.plastic-bank.v1",
             json.dumps(self.config, sort_keys=True),
-            *(a.tobytes() for a in (
-                self.first, self.second, self.bias, self.steps
-            )),
+            *(a.tobytes() for a in (self.first, self.second, self.bias, self.steps)),
         )
 
     def resources(self):
@@ -87,15 +81,18 @@ class PlasticBank:
             peak_resident_bytes=None,
         )
 
-    def propose(
-        self, task_id, features, targets, *, updates=1, learning_rate=0.03
-    ):
+    def propose(self, task_id, features, targets, *, updates=1, learning_rate=0.03):
         """Fit an isolated SGD candidate and retain failed-attempt costs."""
         wall, cpu = time.perf_counter_ns(), time.process_time_ns()
         receipt = dict(
-            status="started", parent=self.digest, task_id=task_id,
-            completed_updates=0, attempted_updates=0,
-            parameter_scalar_updates=0, forward_mac=0, gradient_mac=0,
+            status="started",
+            parent=self.digest,
+            task_id=task_id,
+            completed_updates=0,
+            attempted_updates=0,
+            parameter_scalar_updates=0,
+            forward_mac=0,
+            gradient_mac=0,
             losses=[],
             arithmetic_scope=(
                 "attempted dense linear MAC including recomputed xW; "
@@ -116,8 +113,10 @@ class PlasticBank:
                 raise ValueError("positive finite learning rate required")
             x = np.asarray(features, dtype=np.float64)
             if (
-                x.ndim != 2 or x.shape[1] != self.config["width"]
-                or not 1 <= len(x) <= 4096 or not np.isfinite(x).all()
+                x.ndim != 2
+                or x.shape[1] != self.config["width"]
+                or not 1 <= len(x) <= 4096
+                or not np.isfinite(x).all()
             ):
                 raise ValueError("finite bounded feature batch required")
             y = self.objective.targets(targets, len(x))
@@ -125,19 +124,16 @@ class PlasticBank:
             owner = task if self.config["arm"] == "independent" else 0
             receipt.update(
                 dataset_sha256=_digest(x.tobytes(), y.tobytes()),
-                items=len(x), learning_rate=learning_rate,
+                items=len(x),
+                learning_rate=learning_rate,
             )
             for _ in range(updates):
                 if candidate.steps[task] == np.iinfo(np.int64).max:
                     raise ValueError("training step limit reached")
                 head = candidate.head(task_id)
                 receipt["attempted_updates"] += 1
-                receipt["forward_mac"] += len(x) * (
-                    head.first.size + head.second.size
-                )
-                loss, gradient = self.objective.loss_and_gradient(
-                    head.predict(x), y
-                )
+                receipt["forward_mac"] += len(x) * (head.first.size + head.second.size)
+                loss, gradient = self.objective.loss_and_gradient(head.predict(x), y)
                 if not np.isfinite(loss) or not np.isfinite(gradient).all():
                     raise FloatingPointError("nonfinite loss or gradient")
                 receipt["forward_mac"] += len(x) * head.first.size
@@ -146,9 +142,7 @@ class PlasticBank:
                     candidate.second[task] -= (
                         learning_rate * (x @ head.first).T @ gradient
                     )
-                    candidate.bias[task] -= (
-                        learning_rate * gradient.sum(axis=0)
-                    )
+                    candidate.bias[task] -= learning_rate * gradient.sum(axis=0)
                     touched = head.second.size + head.bias.size
                 else:
                     receipt["gradient_mac"] += len(x) * (
@@ -160,9 +154,8 @@ class PlasticBank:
                     candidate.bias[task] = new.bias
                     touched = sum(a.size for a in head.arrays)
                 if not all(
-                    np.isfinite(a).all() for a in (
-                        candidate.first, candidate.second, candidate.bias
-                    )
+                    np.isfinite(a).all()
+                    for a in (candidate.first, candidate.second, candidate.bias)
                 ):
                     raise FloatingPointError("nonfinite candidate")
                 candidate.steps[task] += 1
@@ -171,13 +164,12 @@ class PlasticBank:
                 receipt["losses"].append(loss)
             receipt.update(
                 status="completed_candidate_only",
-                candidate=candidate.digest, resources=candidate.resources(),
+                candidate=candidate.digest,
+                resources=candidate.resources(),
             )
             return candidate, receipt
         except Exception as error:
-            receipt.update(
-                status="failed", error=f"{type(error).__name__}: {error}"
-            )
+            receipt.update(status="failed", error=f"{type(error).__name__}: {error}")
             error.receipt = receipt
             raise
         finally:
@@ -189,16 +181,21 @@ class PlasticBank:
     def checkpoint(self, path, *, cursor, plan_sha256):
         """Save full plain-SGD state and a frozen curriculum cursor."""
         if (
-            type(cursor) is not int or not 0 <= cursor < 2**63
+            type(cursor) is not int
+            or not 0 <= cursor < 2**63
             or not isinstance(plan_sha256, str)
             or not re.fullmatch(r"[0-9a-f]{64}", plan_sha256)
         ):
             raise ValueError("explicit plan identity and valid cursor required")
         buffer = io.BytesIO()
         np.savez_compressed(
-            buffer, config=np.asarray(json.dumps(self.config, sort_keys=True)),
-            first=self.first, second=self.second, bias=self.bias,
-            steps=self.steps, cursor=np.asarray(cursor),
+            buffer,
+            config=np.asarray(json.dumps(self.config, sort_keys=True)),
+            first=self.first,
+            second=self.second,
+            bias=self.bias,
+            steps=self.steps,
+            cursor=np.asarray(cursor),
             plan_sha256=np.asarray(plan_sha256),
         )
         raw = buffer.getvalue()
@@ -222,11 +219,17 @@ class PlasticBank:
                 raise ValueError("expanded checkpoint exceeds bound")
         with np.load(io.BytesIO(raw), allow_pickle=False) as data:
             keys = {
-                "config", "first", "second", "bias", "steps", "cursor",
+                "config",
+                "first",
+                "second",
+                "bias",
+                "steps",
+                "cursor",
                 "plan_sha256",
             }
             if (
-                set(data.files) != keys or len(data.files) != len(keys)
+                set(data.files) != keys
+                or len(data.files) != len(keys)
                 or str(data["plan_sha256"]) != plan_sha256
             ):
                 raise ValueError("checkpoint schema or plan differs")
@@ -244,7 +247,8 @@ class PlasticBank:
                 setattr(bank, name, value.copy())
             cursor = data["cursor"]
             if (
-                cursor.shape != () or cursor.dtype.kind not in "iu"
+                cursor.shape != ()
+                or cursor.dtype.kind not in "iu"
                 or not 0 <= int(cursor) < 2**63
             ):
                 raise ValueError("invalid curriculum cursor")

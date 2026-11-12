@@ -19,8 +19,13 @@ def learner(arm="routed", **kwargs):
     return ReadoutCredit(
         LocalHead(np.array([[0.2, -0.1, 0.3], [0.1, 0.2, -0.2]]), np.zeros(3)),
         LocalObjective("mse", 3, "three-known-cell-outcomes"),
-        cell_ids=("a", "b", "c"), owner_id="owner", version="v1",
-        clock_id="monotonic:boot1", arm=arm, tau_us=10, learning_rate=0.1,
+        cell_ids=("a", "b", "c"),
+        owner_id="owner",
+        version="v1",
+        clock_id="monotonic:boot1",
+        arm=arm,
+        tau_us=10,
+        learning_rate=0.1,
         **kwargs,
     )
 
@@ -30,8 +35,13 @@ def decision(model, name="one", at=2, x=(1.0, 2.0), mask=(True, True, True)):
 
 
 def request(model, row, now=12):
-    return dict(decision_sha256=row["decision_sha256"], binding=model.binding,
-                outcome_us=now-1, available_us=now, now_us=now)
+    return dict(
+        decision_sha256=row["decision_sha256"],
+        binding=model.binding,
+        outcome_us=now - 1,
+        available_us=now,
+        now_us=now,
+    )
 
 
 class ReadoutCreditTests(unittest.TestCase):
@@ -76,7 +86,9 @@ class ReadoutCreditTests(unittest.TestCase):
         x, target = np.array([[2, -1]]), np.array([[0, 1, 2]])
         _, grad = model.objective.loss_and_gradient(model.head.predict(x), target)
         expected = model.head.gradient_step(x, grad, 0.1)
-        updated, report = model.feedback("two", target[0], **request(model, second, now=15))
+        updated, report = model.feedback(
+            "two", target[0], **request(model, second, now=15)
+        )
         self.assertEqual(updated.head.digest, expected.digest)
         self.assertEqual(report["work"]["replay_forward_mac"], 6)
 
@@ -137,11 +149,18 @@ class ReadoutCreditTests(unittest.TestCase):
 
     def test_long_idle_underflows_trace_without_nan_and_zero_delay_keeps_it(self):
         model, row = decision(learner())
-        updated, report = model.feedback("one", [1, 2, 3], **request(model, row, now=10**9))
+        updated, report = model.feedback(
+            "one", [1, 2, 3], **request(model, row, now=10**9)
+        )
         self.assertEqual(report["decay"], 0.0)
         self.assertEqual(updated.head.digest, model.head.digest)
-        kwargs = dict(decision_sha256=row["decision_sha256"], binding=model.binding,
-                      outcome_us=2, available_us=2, now_us=2)
+        kwargs = dict(
+            decision_sha256=row["decision_sha256"],
+            binding=model.binding,
+            outcome_us=2,
+            available_us=2,
+            now_us=2,
+        )
         _, report = model.feedback("one", [1, 2, 3], **kwargs)
         self.assertEqual(report["decay"], 1.0)
 
@@ -154,12 +173,19 @@ class ReadoutCreditTests(unittest.TestCase):
                 path = Path(directory) / f"{arm}.json"
                 pin = model.checkpoint(path)
                 restored = ReadoutCredit.restore_checkpoint(
-                    path, expected_sha256=pin, expected_contract=model.contract)
+                    path, expected_sha256=pin, expected_contract=model.contract
+                )
                 self.assertEqual(restored.record(), model.record())
-                expected, _ = model.feedback("two", [2, 1, 0], **request(model, second, 15))
-                actual, _ = restored.feedback("two", [2, 1, 0], **request(restored, second, 15))
-                self.assertEqual((actual.head.digest, actual.updates, actual.record()["rng"]),
-                                 (expected.head.digest, expected.updates, expected.record()["rng"]))
+                expected, _ = model.feedback(
+                    "two", [2, 1, 0], **request(model, second, 15)
+                )
+                actual, _ = restored.feedback(
+                    "two", [2, 1, 0], **request(restored, second, 15)
+                )
+                self.assertEqual(
+                    (actual.head.digest, actual.updates, actual.record()["rng"]),
+                    (expected.head.digest, expected.updates, expected.record()["rng"]),
+                )
 
     def test_fresh_process_preserves_rng_and_next_update(self):
         model, first = decision(learner("shuffled"))
@@ -178,12 +204,26 @@ m=ReadoutCredit.restore_checkpoint(v['path'], expected_sha256=v['pin'], expected
 c,r=m.feedback('two',[2,1,0],**v['kwargs'])
 print(json.dumps({'head':c.head.digest,'rng':c.record()['rng'],'permutation':r['permutation']}))
 """
-            result = subprocess.run([sys.executable, "-c", script], text=True,
-                                    cwd=Path(__file__).resolve().parent,
-                                    input=json.dumps(dict(path=str(path), pin=pin, contract=model.contract, kwargs=kwargs)),
-                                    capture_output=True, check=True)
-        self.assertEqual(json.loads(result.stdout), dict(head=expected.head.digest,
-                          rng=expected.record()["rng"], permutation=report["permutation"]))
+            result = subprocess.run(
+                [sys.executable, "-c", script],
+                text=True,
+                cwd=Path(__file__).resolve().parent,
+                input=json.dumps(
+                    dict(
+                        path=str(path), pin=pin, contract=model.contract, kwargs=kwargs
+                    )
+                ),
+                capture_output=True,
+                check=True,
+            )
+        self.assertEqual(
+            json.loads(result.stdout),
+            dict(
+                head=expected.head.digest,
+                rng=expected.record()["rng"],
+                permutation=report["permutation"],
+            ),
+        )
 
     def test_corrupt_bytes_and_cross_version_checkpoint_refused(self):
         model, _ = decision(learner())
@@ -193,10 +233,14 @@ print(json.dumps({'head':c.head.digest,'rng':c.record()['rng'],'permutation':r['
             changed = model.contract
             changed["version"] = "v2"
             with self.assertRaisesRegex(ValueError, "migration unsupported"):
-                ReadoutCredit.restore_checkpoint(path, expected_sha256=pin, expected_contract=changed)
-            path.write_bytes(path.read_bytes()+b" ")
+                ReadoutCredit.restore_checkpoint(
+                    path, expected_sha256=pin, expected_contract=changed
+                )
+            path.write_bytes(path.read_bytes() + b" ")
             with self.assertRaisesRegex(ValueError, "pin mismatch"):
-                ReadoutCredit.restore_checkpoint(path, expected_sha256=pin, expected_contract=model.contract)
+                ReadoutCredit.restore_checkpoint(
+                    path, expected_sha256=pin, expected_contract=model.contract
+                )
             self.assertNotEqual(hashlib.sha256(path.read_bytes()).hexdigest(), pin)
 
 
