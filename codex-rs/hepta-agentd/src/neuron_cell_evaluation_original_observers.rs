@@ -8,23 +8,23 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_neuron::CellBackendManifestV2;
 use codex_hepta_neuron::CellCostOutcomeV2;
-use codex_hepta_neuron::CellGenerationJournalObserverV1;
+use codex_hepta_neuron::CellGenerationUnpublishedObserverV1;
 
 use super::*;
 
 pub(crate) struct OriginalCellEvaluationObserversV1 {
-    candidate: CellGenerationJournalObserverV1,
+    candidate: CellGenerationUnpublishedObserverV1,
     candidate_manifest: CellBackendManifestV2,
-    fixed_expert: CellGenerationJournalObserverV1,
+    fixed_expert: CellGenerationUnpublishedObserverV1,
     fixed_manifest: CellBackendManifestV2,
     poisoned: AtomicBool,
 }
 
 impl OriginalCellEvaluationObserversV1 {
     pub(crate) fn from_original_observers(
-        candidate: CellGenerationJournalObserverV1,
+        candidate: CellGenerationUnpublishedObserverV1,
         candidate_manifest: CellBackendManifestV2,
-        fixed_expert: CellGenerationJournalObserverV1,
+        fixed_expert: CellGenerationUnpublishedObserverV1,
         fixed_manifest: CellBackendManifestV2,
     ) -> Result<Self, CellEvaluationErrorV1> {
         if candidate.files_binding() == fixed_expert.files_binding()

@@ -9,8 +9,8 @@ use std::path::PathBuf;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_neuron::CellGenerationConfigV2;
-use codex_hepta_neuron::CellGenerationJournalObserverV1;
 use codex_hepta_neuron::CellGenerationObserverConfigV1;
+use codex_hepta_neuron::CellGenerationUnpublishedObserverV1;
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -39,7 +39,8 @@ struct Deployment {
     policy_statement: PathBuf,
     realized_plan_statement: PathBuf,
     evaluator_key: PathBuf,
-    candidate: CellFilesData,
+    candidate: JournalFilesData,
+    model: super::model_data::ModelData,
     fixed_expert: CellFilesData,
     holdout: PathBuf,
     executions: PathBuf,
@@ -76,9 +77,9 @@ pub(super) struct OriginalBJournalFiles {
 }
 
 pub(super) struct OriginalBCellFiles {
-    journal: OriginalBFile,
-    witness: OriginalBFile,
-    config: CellGenerationObserverConfigV1,
+    pub(super) journal: OriginalBFile,
+    pub(super) witness: OriginalBFile,
+    pub(super) config: CellGenerationObserverConfigV1,
 }
 
 pub(super) struct OriginalBInputs {
@@ -97,6 +98,7 @@ pub(super) struct OriginalBInputs {
     pub(super) realized_plan_statement: OriginalBFile,
     pub(super) evaluator_key: OriginalBFile,
     pub(super) candidate: OriginalBCellFiles,
+    pub(super) model: super::model_data::OriginalBModelFiles,
     pub(super) fixed_expert: OriginalBCellFiles,
     pub(super) holdout: OriginalBFile,
     pub(super) executions: OriginalBFile,
@@ -131,6 +133,13 @@ impl OriginalBInputs {
             tracker.open(&data.protocol_statement, OriginalBFileAccess::ReadOnly)?;
         let protocol_statement_digest =
             Digest32::of_bytes(&protocol_statement.read_stable(65_536)?);
+        let fixed_expert = data.fixed_expert.open(&mut tracker)?;
+        let candidate = OriginalBCellFiles {
+            journal: tracker.open(&data.candidate.journal, OriginalBFileAccess::OwnerWriter)?,
+            witness: tracker.open(&data.candidate.witness, OriginalBFileAccess::OwnerWriter)?,
+            config: fixed_expert.config.clone(),
+        };
+        let model = data.model.open(&mut tracker)?;
         let inputs = Self {
             deployment,
             deployment_digest: Digest32::of_bytes(&bytes),
@@ -149,8 +158,9 @@ impl OriginalBInputs {
             realized_plan_statement: tracker
                 .open(&data.realized_plan_statement, OriginalBFileAccess::ReadOnly)?,
             evaluator_key: tracker.open(&data.evaluator_key, OriginalBFileAccess::ReadOnly)?,
-            candidate: data.candidate.open(&mut tracker)?,
-            fixed_expert: data.fixed_expert.open(&mut tracker)?,
+            candidate,
+            fixed_expert,
+            model,
             holdout: tracker.open(&data.holdout, OriginalBFileAccess::OwnerWriter)?,
             executions: tracker.open(&data.executions, OriginalBFileAccess::OwnerWriter)?,
             execution_signature: data.execution_signature.open(&mut tracker)?,
@@ -196,6 +206,10 @@ impl OriginalBInputs {
         for file in [
             &self.source,
             &self.candidate_data,
+            &self.candidate.journal,
+            &self.candidate.witness,
+            &self.fixed_expert.journal,
+            &self.fixed_expert.witness,
             &self.observed_statement,
             &self.policy_statement,
             &self.realized_plan_statement,
@@ -244,8 +258,8 @@ impl OriginalBInputs {
         Ok(())
     }
 
-    fn all_files(&self) -> [&OriginalBFile; 24] {
-        [
+    fn all_files(&self) -> Vec<&OriginalBFile> {
+        let mut files = vec![
             &self.deployment,
             &self.protocol_file,
             &self.trust_file,
@@ -270,15 +284,17 @@ impl OriginalBInputs {
             &self.publication.witness,
             &self.receipt.journal,
             &self.receipt.witness,
-        ]
+        ];
+        files.extend(self.model.all_files());
+        files
     }
 }
 
 impl CellFilesData {
     fn open(self, tracker: &mut OriginalBFiles) -> io::Result<OriginalBCellFiles> {
         Ok(OriginalBCellFiles {
-            journal: tracker.open(&self.journal, OriginalBFileAccess::ReadOnly)?,
-            witness: tracker.open(&self.witness, OriginalBFileAccess::ReadOnly)?,
+            journal: tracker.open(&self.journal, OriginalBFileAccess::OwnerWriter)?,
+            witness: tracker.open(&self.witness, OriginalBFileAccess::OwnerWriter)?,
             config: CellGenerationObserverConfigV1 {
                 generation: self.original,
                 journal_records: self.journal_records,
@@ -305,8 +321,8 @@ impl OriginalBCellFiles {
         Ok(OriginalBCellReadGuard { journal, witness })
     }
 
-    pub(super) fn observer(&self) -> io::Result<CellGenerationJournalObserverV1> {
-        CellGenerationJournalObserverV1::from_original_files(
+    pub(super) fn observer(&self) -> io::Result<CellGenerationUnpublishedObserverV1> {
+        CellGenerationUnpublishedObserverV1::from_original_files(
             self.journal.original_readonly()?,
             self.witness.original_readonly()?,
             self.config.clone(),
