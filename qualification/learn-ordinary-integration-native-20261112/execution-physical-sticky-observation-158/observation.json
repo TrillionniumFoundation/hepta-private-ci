@@ -1,0 +1,75 @@
+{
+  "native_source": "5f50942feb6923376d0bedda9d1c3ef88e6dd336",
+  "native_tree": "45aafa728393b40f4ef0aebed1827a0ee5bc8093",
+  "source_before_after_equal_clean": true,
+  "scope": "full intelligence-eval library only; not Agentd B conversion or a Root independent evaluation",
+  "passed": 158,
+  "failed": 0,
+  "skipped": 0,
+  "retries": 0,
+  "elapsed_seconds": 22.880548217999603,
+  "uid": 1000,
+  "guards_source": "5389fad96efd8f6226cc8d84ab65731166ee8894",
+  "guards_tree": "8d0a736be6335b9918d7c396ebdd3c4adc03b2fa",
+  "source_qa": {
+    "execution_physical": 9,
+    "existing_historical_readback": 8,
+    "failed": 0,
+    "full_caller": false
+  },
+  "same_handle_refusal": true,
+  "cross_process_persistent_refusal": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 42530,
+    "sha256": "a3b5c7d370e7321adb7f6676fd2e24e6d296eafeea3a249e27da190cbb6ec69e",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "native/junit-0.xml",
+      "bytes": 33078,
+      "sha256": "7b3f71837ad3d2e68ea7724712db61bedde4ec2034c3400418c322e3280bcf45"
+    },
+    {
+      "path": "native/native.log",
+      "bytes": 88918,
+      "sha256": "3860ab0af4029b5a368f8ae892f394f64790d10a47de743696de85c5eb126c25"
+    },
+    {
+      "path": "native/run.json",
+      "bytes": 38371,
+      "sha256": "68ce2a57b2fd7ce68976dd2b6dfe1897ae670efbffc7deeef7ec66f6cc5b6a18"
+    },
+    {
+      "path": "source/run.json",
+      "bytes": 1275,
+      "sha256": "5455d4fae2b351e658c7938b9db691183e674e2fc11c4652f3892430cea696f5"
+    },
+    {
+      "path": "source/source-0.log",
+      "bytes": 1871,
+      "sha256": "314cfd0ac071a8df459a7a58234f36d99207905dcf33cc07660c54ffcdaf9f86"
+    },
+    {
+      "path": "source/source-1.log",
+      "bytes": 1670,
+      "sha256": "515bae1dcfd8d58e38bb581c6576e84ba0aadbe82b476abf55c8060a80ae2d5f"
+    },
+    {
+      "path": "run_execution_physical_native.py",
+      "bytes": 4369,
+      "sha256": "914cfa2687638f81ac5431f69851188f644aebf47e909645ba408667d16827f2"
+    },
+    {
+      "path": "source/source-5389fad9.bundle",
+      "bytes": 20371,
+      "sha256": "7724f4afdc64f2dc8527498b90600f3ecb2709579657e1647f85941b7d22a546"
+    }
+  ]
+}

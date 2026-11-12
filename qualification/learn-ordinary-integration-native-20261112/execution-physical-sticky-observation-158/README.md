@@ -1,0 +1,7 @@
+# Physical execution journal observations
+
+A live original execution writer previously admitted its cached records after only comparing file length. The source repair now checks two bounded complete physical images against the same HEPTEX01 parser and retained binding, history anchor, bytes digest and records before every claim, completion and readback, including idempotent completion. Append compares the exact post-sync image before clearing the handle poison. The read-only exact-cut reader shares the same grammar and retains its shared-lock and no-write restrictions.
+
+On clean 5f50942f, the real intelligence-eval library command completed 158 tests with zero failures, skips or retries. Four added real-file cases each first establish a valid read, then corrupt actual bytes, assert the first operation refuses, restore the old bytes and assert the second operation still refuses. One explicitly drops the old owner and successfully recovers the restored original; this proves same-handle refusal, not a persistent cross-process fence.
+
+The 5389fad9 guard-only successor retained every previous readonly grammar check in the shared parser and added writer ordering controls. Nine new plus eight existing source tests passed; this is not the full caller scan. The complete native log, 158-case JUnit, driver, source QA logs and actual source bundle are retained with per-member hashes. The bundle also includes the unrelated pending B data codec and the actual Root backend Arc prerequisite; no Agentd B test or whole-chain result is inferred from this EVAL-only run.
