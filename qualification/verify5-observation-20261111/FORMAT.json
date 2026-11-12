@@ -1,0 +1,117 @@
+{
+  "before": {
+    "experiments/verification_cell_verify1/checker_dispatch.py": {
+      "sha256": "868276dd9eb1e3670c31b39af0f16d5372daf77fb87afd56e1331aaf90c663ed",
+      "ast_sha256": "6b1313cb7af5257f9ca6bdead69a8e8b5d62967405ffca6b8a9bbc8feef9cc3a"
+    },
+    "experiments/verification_cell_verify1/test_checker_dispatch.py": {
+      "sha256": "c240cb09c83f61d1d30503a6645babb88aa892141e5aa796feb22fc549df4d82",
+      "ast_sha256": "e46c6b9546934119d387d4458aa81dc3b68c15ea2054c2eebedb53629913706b"
+    },
+    "experiments/verification_cell_verify1/observation_diagnostics.py": {
+      "sha256": "4aa12519d138d8679569d032d248033af08575aaa7c2f51c4231bdb98ff6de87",
+      "ast_sha256": "ca98aa6349153187a6f9d603e54eb9086e4e469c2a76a48520ae5587701ef43d"
+    },
+    "experiments/verification_cell_verify1/test_observation_diagnostics.py": {
+      "sha256": "c3ceefc8977e0a4ff19206fa7b15ecc812b2476155798ebebf368c39804b9321",
+      "ast_sha256": "6629388099d1f60ded6320eeae7938ab42dfc7b04ea674eb9ba2fba54e6cd15e"
+    },
+    "experiments/verification_cell_verify1/observation_smoke.py": {
+      "sha256": "902e945add66fc62fd49e07a24ec3c7e2250475bdb0836b638a21eb91d6cb53d",
+      "ast_sha256": "ec690f3db8c6b2d81b5d630e661079a9a569685fb5dce758c0efe8b24a2c4c5a"
+    },
+    "experiments/verification_cell_verify1/test_observation_smoke.py": {
+      "sha256": "5c6926107f9ec2641b4a888adad37ea5059697100fb22764b064f41c2c65a900",
+      "ast_sha256": "bfa233141ce3b8c39c406cd04664bc34b98af8628395cb2d5c780306ae274e53"
+    }
+  },
+  "after": {
+    "experiments/verification_cell_verify1/checker_dispatch.py": {
+      "sha256": "868276dd9eb1e3670c31b39af0f16d5372daf77fb87afd56e1331aaf90c663ed",
+      "ast_sha256": "6b1313cb7af5257f9ca6bdead69a8e8b5d62967405ffca6b8a9bbc8feef9cc3a"
+    },
+    "experiments/verification_cell_verify1/test_checker_dispatch.py": {
+      "sha256": "c240cb09c83f61d1d30503a6645babb88aa892141e5aa796feb22fc549df4d82",
+      "ast_sha256": "e46c6b9546934119d387d4458aa81dc3b68c15ea2054c2eebedb53629913706b"
+    },
+    "experiments/verification_cell_verify1/observation_diagnostics.py": {
+      "sha256": "3c11844a1021e9684e2ee0f4fb66e36ac13fdd6a5e47f760aa2986083de3c578",
+      "ast_sha256": "ca98aa6349153187a6f9d603e54eb9086e4e469c2a76a48520ae5587701ef43d"
+    },
+    "experiments/verification_cell_verify1/test_observation_diagnostics.py": {
+      "sha256": "13f9c51d30e651a87c9ffbc16debe7476a4d2bd82758024537cdae7822dcdb12",
+      "ast_sha256": "6629388099d1f60ded6320eeae7938ab42dfc7b04ea674eb9ba2fba54e6cd15e"
+    },
+    "experiments/verification_cell_verify1/observation_smoke.py": {
+      "sha256": "00798ab30c7c72385efa5133fd8d2d7424fbbc710da5ff89df7e4eb1c3c97116",
+      "ast_sha256": "ec690f3db8c6b2d81b5d630e661079a9a569685fb5dce758c0efe8b24a2c4c5a"
+    },
+    "experiments/verification_cell_verify1/test_observation_smoke.py": {
+      "sha256": "f2c049649c0afd990fec09df02ffe2f5b2cada98a0fdbbfc2b530f9a548dc1d9",
+      "ast_sha256": "bfa233141ce3b8c39c406cd04664bc34b98af8628395cb2d5c780306ae274e53"
+    }
+  },
+  "ast_unchanged": true,
+  "commands": [
+    {
+      "name": "just-fmt",
+      "argv": [
+        "/workspace/scratch/1f3ba4601505/tools/just-1.51.0/just",
+        "fmt"
+      ],
+      "started_at_utc": "2026-11-12T00:40:16.665099+00:00",
+      "elapsed_wall_seconds": 0.22443930499957787,
+      "exit_code": 0,
+      "output": "No changed files need formatting. Use --all for a full repository check.\n"
+    },
+    {
+      "name": "ruff-format",
+      "argv": [
+        "/home/agent/.cache/uv/archive-v0/pWxp7-carAtRuVjS/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "experiments/verification_cell_verify1/checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/observation_diagnostics.py",
+        "experiments/verification_cell_verify1/test_observation_diagnostics.py",
+        "experiments/verification_cell_verify1/observation_smoke.py",
+        "experiments/verification_cell_verify1/test_observation_smoke.py"
+      ],
+      "started_at_utc": "2026-11-12T00:40:16.889591+00:00",
+      "elapsed_wall_seconds": 0.0385727910006608,
+      "exit_code": 0,
+      "output": "4 files reformatted, 2 files left unchanged\n"
+    },
+    {
+      "name": "ruff-lint",
+      "argv": [
+        "/home/agent/.cache/uv/archive-v0/pWxp7-carAtRuVjS/ruff-0.15.13.data/scripts/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/observation_diagnostics.py",
+        "experiments/verification_cell_verify1/test_observation_diagnostics.py",
+        "experiments/verification_cell_verify1/observation_smoke.py",
+        "experiments/verification_cell_verify1/test_observation_smoke.py"
+      ],
+      "started_at_utc": "2026-11-12T00:40:16.928223+00:00",
+      "elapsed_wall_seconds": 0.016654543999720772,
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at_utc": "2026-11-12T00:40:16.944930+00:00",
+      "elapsed_wall_seconds": 0.009775478999472398,
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "tests_rerun_after_final_format": false
+}

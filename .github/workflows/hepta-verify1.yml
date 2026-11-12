@@ -59,6 +59,7 @@ jobs:
           printf 'VERIFY1_RECORDS=%s/verify1-records\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'VERIFY1_OUTPUT=%s/verify1-experiment\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'VERIFY2_DISPATCH_OUTPUT=%s/verify2-dispatch\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'VERIFY5_OBSERVATION_OUTPUT=%s/verify5-observation\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - name: Bind source and execute counterexamples
         run: |
           set -euo pipefail
@@ -78,6 +79,11 @@ jobs:
           set -euo pipefail
           python -B -m experiments.verification_cell_verify1.dispatch_smoke --output "$VERIFY2_DISPATCH_OUTPUT" 2>&1 | tee "$VERIFY1_RECORDS/dispatch.log"
           git diff --exit-code
+      - name: Run paid observations and four policy controls
+        run: |
+          set -euo pipefail
+          python -B -m experiments.verification_cell_verify1.observation_smoke --output "$VERIFY5_OBSERVATION_OUTPUT" 2>&1 | tee "$VERIFY1_RECORDS/observation.log"
+          git diff --exit-code
       - name: Preserve all receipts including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -87,4 +93,5 @@ jobs:
             ${{ runner.temp }}/verify1-records
             ${{ runner.temp }}/verify1-experiment
             ${{ runner.temp }}/verify2-dispatch
+            ${{ runner.temp }}/verify5-observation
           if-no-files-found: error
