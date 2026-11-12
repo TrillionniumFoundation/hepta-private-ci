@@ -150,9 +150,14 @@ impl HostAuthorityService {
                         let before = read_current(slot, current.as_ref())?;
                         let mut after = before.clone();
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} | Command::RetainRunStart { .. } => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {
@@ -216,9 +221,14 @@ impl HostAuthorityService {
                         // are known. The original initializer itself rejects any
                         // existing CURRENT; absence is never inferred from an error.
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} | Command::RetainRunStart { .. } => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {}
@@ -292,9 +302,14 @@ impl HostAuthorityService {
                             .observed_unix_ms;
                         slot.require_selection(after_time)?;
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} | Command::RetainRunStart { .. } => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {
