@@ -125,7 +125,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.evaluation.try_take()?;
+        let lane = lane_lease.state_mut()?;
         if lane.failed {
             return Err(Error::CommitUncertain);
         }
@@ -144,11 +145,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         )
         .await?;
         let (dataset, training) = {
-            let mut common = self
-                .common
-                .continuation
-                .try_lock()
-                .map_err(|_| Error::QueueFull)?;
+            let mut common_lease = self.common.continuation.try_take()?;
+            let common = common_lease.state_mut()?;
             common.read_prefix(&self.common, &training_cut).await?;
             (
                 common
@@ -225,11 +223,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::CommitUncertain);
         }
-        let mut common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let mut common_lease = self.common.continuation.try_take()?;
+        let common = common_lease.state_mut()?;
         common.read_prefix(&self.common, &training_cut).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
@@ -248,7 +243,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // validation of the complete original E/D/T/Evaluation signatures.
         let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
+        auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;
         let current_training = common
             .original_training
             .as_ref()

@@ -157,7 +157,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             "before_dispatch?",
             "let after_dispatch =",
             "if after_dispatch.is_err()",
-            "self.await_completed_c(snapshot, &mut state).await?",
+            "self.await_completed_c(snapshot, state).await?",
             "RootResidentLearningEffectGateV3::training_cancellation(gate)",
             "OriginalCellQ24TrainingCommandClientV1::execute_training(trainer, dispatch)",
             "ready.as_ref() != Some(&value.receipt().observation)",

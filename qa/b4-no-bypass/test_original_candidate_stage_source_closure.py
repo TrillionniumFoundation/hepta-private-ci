@@ -174,7 +174,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             "material.attestation() != training.attestation()",
             "let fresh = auth::require_material(",
             "auth::require_clock(started_at, fresh)?",
-            "auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?",
+            "auth::verify_prefix(&self.common.material, snapshot, state, fresh)?",
             "material.receipt() != current.receipt()",
             "material.attestation() != current.attestation()",
             "auth::verify_receipt(",

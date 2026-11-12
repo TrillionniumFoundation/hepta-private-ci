@@ -423,12 +423,26 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         command_now()?,
     )?;
     assert_ne!(renewed.attestation(), run.training.attestation());
+    let original_end = run.training.attestation().expires_at;
+    let after_original_end = original_end
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("fixture evidence expiry overflow"))?;
+    // Signed evidence includes its final second; the next second is expired.
     assert!(
         wire::authenticate_receipt(
             &context,
             run.training.receipt().clone(),
             run.training.attestation().clone(),
-            run.training.attestation().expires_at,
+            original_end,
+        )
+        .is_ok()
+    );
+    assert!(
+        wire::authenticate_receipt(
+            &context,
+            run.training.receipt().clone(),
+            run.training.attestation().clone(),
+            after_original_end,
         )
         .is_err()
     );
@@ -437,7 +451,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             &context,
             renewed.receipt().clone(),
             renewed.attestation().clone(),
-            run.training.attestation().expires_at,
+            after_original_end,
         )
         .is_ok()
     );

@@ -8,6 +8,7 @@ use std::time::Instant;
 use super::super::Error;
 use super::super::Origin;
 use super::super::OriginalCellQ24NoUpdateStageOwnersV1;
+use super::super::lane::ResidentLane;
 use super::Continuation;
 use crate::OriginalCellQ24MaterialCommandClientV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
@@ -26,7 +27,7 @@ fn material_only(
         initial_binding,
         origin,
         end: Instant::now() + Duration::from_secs(300),
-        continuation: tokio::sync::Mutex::new(Continuation {
+        continuation: ResidentLane::new(Continuation {
             experience,
             dataset,
             trainer_initial: None,
@@ -71,6 +72,6 @@ pub(crate) fn recovered_candidate_clients(
     trainer: crate::OriginalCellQ24TrainingCommandClientV1,
 ) -> Result<OriginalCellQ24NoUpdateStageOwnersV1, Error> {
     let mut owners = material_only(material, experience, dataset, Origin::Recovered)?;
-    owners.continuation.get_mut().trainer = Some(trainer);
+    owners.continuation.get_mut()?.trainer = Some(trainer);
     Ok(owners)
 }

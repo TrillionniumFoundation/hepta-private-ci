@@ -110,7 +110,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         {
-            let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            let mut lane_lease = self.model.try_take()?;
+            let lane = lane_lease.state_mut()?;
             if lane.failed {
                 return Err(Error::CommitUncertain);
             }
@@ -131,7 +132,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             .await?;
         }
         let actual = {
-            let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            let mut lane_lease = self.model.try_take()?;
+            let lane = lane_lease.state_mut()?;
             if lane.client.is_none() {
                 let connection = lane.initial.take().ok_or(Error::CommitUncertain)?;
                 lane.client = Some(
@@ -166,7 +168,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::CommitUncertain);
         }
         let current = {
-            let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            let mut lane_lease = self.model.try_take()?;
+            let lane = lane_lease.state_mut()?;
             let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
             OriginalCellQ24ModelCommandClientV1::readback(client)
                 .await
@@ -199,11 +202,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
                 return Err(Error::CommitUncertain);
             }
         }
-        let common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let mut common_lease = self.common.continuation.try_take()?;
+        let common = common_lease.state_mut()?;
         if common.original_dataset.as_ref() != Some(&after.0)
             || common.original_training.as_ref() != Some(&after.1)
         {
@@ -211,14 +211,15 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         }
         let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
         auth::require_clock(started, fresh)?;
-        auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
+        auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;
         self.verify_original_evaluation(snapshot, &training_cut, &after.1, &after.2, fresh)?;
         self.common
             .material
             .scope
             .validate_snapshot(current.snapshot())?;
         self.require_live_deadline()?;
-        let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.model.try_take()?;
+        let lane = lane_lease.state_mut()?;
         if lane
             .retained
             .as_ref()
@@ -244,11 +245,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Error,
     > {
         let evaluation = self.read_original_evaluation(evaluation_cut).await?;
-        let mut common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let mut common_lease = self.common.continuation.try_take()?;
+        let common = common_lease.state_mut()?;
         common.read_prefix(&self.common, training_cut).await?;
         let dataset = common
             .original_dataset

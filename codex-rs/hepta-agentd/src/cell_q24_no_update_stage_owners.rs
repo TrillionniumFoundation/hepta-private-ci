@@ -12,7 +12,6 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
-use tokio::sync::Mutex;
 
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationRuntimeErrorV1;
@@ -27,6 +26,8 @@ mod auth;
 mod execution;
 #[path = "cell_q24_no_update_stage_inputs.rs"]
 mod inputs;
+#[path = "cell_q24_resident_lane.rs"]
+mod lane;
 #[path = "cell_q24_no_update_stage_state.rs"]
 mod state;
 
@@ -38,6 +39,7 @@ pub use candidate::OriginalCellQ24CandidateStageStreamsV1;
 pub use inputs::OriginalCellQ24NoUpdatePeerStreamV1;
 pub use inputs::OriginalCellQ24NoUpdateStageStreamsV1;
 pub use inputs::OriginalCellQ24NoUpdateTaskStreamV1;
+use lane::ResidentLane;
 use state::Continuation;
 
 type Error = LearningIterationRuntimeErrorV1;
@@ -55,7 +57,7 @@ pub struct OriginalCellQ24NoUpdateStageOwnersV1 {
     initial_binding: Digest32,
     origin: Origin,
     end: Instant,
-    continuation: Mutex<Continuation>,
+    continuation: ResidentLane<Continuation>,
     root: Option<Arc<RootResidentLearningEffectGateV3>>,
 }
 
@@ -121,11 +123,12 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
             tokio::time::timeout_at(self.end.into(), async {
                 let started_at = auth::now()?;
                 auth::require_snapshot(&self.material, snapshot)?;
-                let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+                let mut state_lease = self.continuation.try_take()?;
+                let state = state_lease.state_mut()?;
                 state.read_prefix(self, snapshot).await?;
                 let fresh = auth::require_material(&self.material, self.initial_binding)?;
                 auth::require_clock(started_at, fresh)?;
-                auth::verify_prefix(&self.material, snapshot, &state, fresh)
+                auth::verify_prefix(&self.material, snapshot, state, fresh)
             })
             .await
             .map_err(|_| Error::CommitUncertain)?
@@ -169,7 +172,8 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
             tokio::time::timeout_at(self.end.into(), async {
                 let started_at = auth::now()?;
                 auth::require_snapshot(&self.material, snapshot)?;
-                let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+                let mut state_lease = self.continuation.try_take()?;
+                let state = state_lease.state_mut()?;
                 let signature = state.read_attestation(self, snapshot, receipt).await?;
                 let fresh = auth::require_material(&self.material, self.initial_binding)?;
                 auth::require_clock(started_at, fresh)?;

@@ -20,11 +20,11 @@ use codex_hepta_types::Generation;
 
 pub(super) struct HostFixture {
     pub(super) host: Option<Arc<OriginalCellEvaluationHostV1>>,
-    pub(super) original: PositiveFixture,
-    pub(super) primary_b: BFixture,
-    pub(super) retention_b: BFixture,
-    primary: PanelMemberFixture,
-    retention: PanelMemberFixture,
+    pub(super) original: Box<PositiveFixture>,
+    pub(super) primary_b: Box<BFixture>,
+    pub(super) retention_b: Box<BFixture>,
+    primary: Box<PanelMemberFixture>,
+    retention: Box<PanelMemberFixture>,
     pub(super) config: OriginalCellEvaluationReceiptConfigV1,
     pub(super) at: u64,
     directory: tempfile::TempDir,
@@ -32,12 +32,12 @@ pub(super) struct HostFixture {
 pub(super) type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 
 impl HostFixture {
-    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
         Self::from_panel(panel, pending_claim)
     }
 
-    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+    pub(super) async fn before_adoption() -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed_for_publication(
             TrainingPeer::Original,
             PublicationMode::RetainOriginalA,
@@ -46,7 +46,7 @@ impl HostFixture {
         Self::from_panel(panel, /*pending_claim*/ false)
     }
 
-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
+    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Box<Self>> {
         let PanelFixture {
             panel,
             original,
@@ -70,7 +70,7 @@ impl HostFixture {
             },
         };
         let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
-        let mut fixture = Self {
+        let mut fixture = Box::new(Self {
             host: None,
             original,
             primary_b,
@@ -80,7 +80,7 @@ impl HostFixture {
             config,
             at,
             directory,
-        };
+        });
         let (file, witness) = fixture.files(/*create*/ true)?;
         let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
             file,
@@ -91,7 +91,7 @@ impl HostFixture {
         if pending_claim {
             evaluator.fixture_pending_original_host()?;
         }
-        let mut host = evaluator.into_original_evaluation_host(panel)?;
+        let mut host = evaluator.into_original_evaluation_host(*panel)?;
         host.fixture_original_clock(at)?;
         fixture.host = Some(Arc::new(host));
         Ok(fixture)
@@ -175,7 +175,7 @@ impl HostFixture {
         let counts = [self.primary.finish()?, self.retention.finish()?];
         drop(self.primary_b);
         drop(self.retention_b);
-        self.original.finish().await?;
+        Box::pin(self.original.finish()).await?;
         Ok(counts)
     }
 }

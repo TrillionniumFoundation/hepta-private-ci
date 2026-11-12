@@ -59,7 +59,7 @@ impl PanelMemberFixture {
         evaluator: &TrustedLearningSignerV1,
         verifier: LearningEvidenceVerifierV1,
         retention_receipt_digests: Vec<Digest32>,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Box<Self>> {
         let ProviderPlanFixture {
             mut fixture,
             plan,
@@ -233,7 +233,9 @@ impl PanelMemberFixture {
             trainer: Arc::new(trainer),
             cohort,
         };
-        Ok(Self {
+        // Return the real completed aggregate behind one pointer. An enclosing
+        // async Panel/Host must not copy both complete member owners inline.
+        Ok(Box::new(Self {
             member: Some(member),
             qualification,
             config,
@@ -241,7 +243,7 @@ impl PanelMemberFixture {
             thread: Some(thread),
             _execution_signer: execution_signer,
             directory: fixture.directory,
-        })
+        }))
     }
 
     pub(crate) fn take_original_member(&mut self) -> Member {

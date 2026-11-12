@@ -46,6 +46,25 @@ pub(crate) async fn original_evaluation_source(
     anyhow::ensure!(candidates.is_empty());
     let (mut circuit, mut bindings) = configuration();
     bindings[0].cell = definition.clone();
+    // Routes carry the original outcomes and edge IDs for each candidate.
+    // Reorder those complete objects with the definition; keeping the old route
+    // positions would correctly fail the registry before publishing any Source.
+    let route_count = bindings[0].routes.len();
+    let mut routes = std::mem::take(&mut bindings[0].routes)
+        .into_iter()
+        .map(|route| (route.candidate_id.clone(), route))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    anyhow::ensure!(routes.len() == route_count);
+    bindings[0].routes = definition
+        .candidates
+        .iter()
+        .map(|candidate| {
+            routes
+                .remove(&candidate.candidate_id)
+                .ok_or_else(|| anyhow::anyhow!("complete original fixture route order"))
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    anyhow::ensure!(routes.is_empty());
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;

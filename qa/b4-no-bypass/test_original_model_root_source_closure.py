@@ -218,7 +218,7 @@ class OriginalModelRootClosureTests(unittest.TestCase):
             "common.original_dataset.as_ref() != Some(&after.0)",
             "common.original_training.as_ref() != Some(&after.1)",
             "auth::require_clock(started, fresh)?",
-            "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?",
+            "auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?",
             "self.verify_original_evaluation(snapshot, &training_cut, &after.1, &after.2, fresh)?",
             "lane.retained = Some(current.clone())", "lane.failed = false",
         ):

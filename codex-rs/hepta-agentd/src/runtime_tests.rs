@@ -643,7 +643,8 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
-    let expires_at = minted_at.as_secs() + 1;
+    // Leave a full preparation window after converting to whole lease seconds.
+    let expires_at = (minted_at + Duration::from_secs(10)).as_secs() + 1;
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -768,7 +769,23 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(binding);
     drop(executor);
     drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    timeout(Duration::from_secs(15), async {
+        loop {
+            let observed_at = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_else(|error| {
+                    panic!("{}: {error:?}", expiry_stage("observe seeded lease expiry"))
+                });
+            if observed_at.as_secs() >= expires_at {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(50)).await;
+        }
+    })
+    .await
+    .unwrap_or_else(|error| {
+        panic!("{}: {error:?}", expiry_stage("wait for seeded lease expiry"))
+    });
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),

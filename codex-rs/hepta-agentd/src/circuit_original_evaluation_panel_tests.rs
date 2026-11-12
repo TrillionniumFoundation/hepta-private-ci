@@ -25,12 +25,12 @@ enum TrainingPeer {
 }
 
 struct PanelFixture {
-    panel: Panel,
-    original: PositiveFixture,
-    primary_b: BFixture,
-    retention_b: BFixture,
-    primary: PanelMemberFixture,
-    retention: PanelMemberFixture,
+    panel: Box<Panel>,
+    original: Box<PositiveFixture>,
+    primary_b: Box<BFixture>,
+    retention_b: Box<BFixture>,
+    primary: Box<PanelMemberFixture>,
+    retention: Box<PanelMemberFixture>,
     at: u64,
 }
 
@@ -39,7 +39,7 @@ async fn completed_member(
     original: &PositiveFixture,
     registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
     retention_receipt_digests: Vec<Digest32>,
-) -> anyhow::Result<PanelMemberFixture> {
+) -> anyhow::Result<Box<PanelMemberFixture>> {
     b.populate(
         original,
         ObservationMode::Complete,
@@ -86,8 +86,13 @@ impl PanelFixture {
         peer: TrainingPeer,
         publication: PublicationMode,
     ) -> anyhow::Result<Self> {
-        let (original, mut primary_b, mut retention_b, registration) =
+        let (original, primary_b, retention_b, registration) =
             Box::pin(preregistered_for_publication(publication)).await?;
+        // Pinning child futures does not move their large owned outputs out of
+        // this parent. Keep each original owner aggregate on the heap as well.
+        let original = Box::new(original);
+        let mut primary_b = Box::new(primary_b);
+        let mut retention_b = Box::new(retention_b);
         assert_eq!(primary_b.at, retention_b.at);
         let at = primary_b.at;
         // Actual retention completes first. Only its original publication
@@ -112,11 +117,11 @@ impl PanelFixture {
             assert_ne!(renewed, retention.config.training_evidence);
             retention.renewed_training_peer(renewed)?;
         }
-        let panel = Panel::from_original_owners(
+        let panel = Box::new(Panel::from_original_owners(
             registration,
             primary.take_original_member(),
             vec![retention.take_original_member()],
-        )?;
+        )?);
         Ok(Self {
             panel,
             original,
@@ -148,7 +153,7 @@ impl PanelFixture {
         let counts = [self.primary.finish()?, self.retention.finish()?];
         drop(self.primary_b);
         drop(self.retention_b);
-        self.original.finish().await?;
+        Box::pin(self.original.finish()).await?;
         Ok(counts)
     }
 }
