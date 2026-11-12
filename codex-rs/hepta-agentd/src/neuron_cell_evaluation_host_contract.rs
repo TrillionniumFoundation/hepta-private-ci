@@ -259,3 +259,7 @@ pub(super) fn authenticate_receipt(
         training_evidence: context.training_evidence.clone(),
     })
 }
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_host_root_support_tests.rs"]
+mod root_model_support;

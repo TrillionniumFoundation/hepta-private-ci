@@ -83,7 +83,7 @@ impl PublicationFixture {
             Trainer::recover_original_stage(
                 Arc::clone(&host.original.stage),
                 trainer_context.clone(),
-                Arc::new(AtomicBool::new(false)),
+                Arc::new(AtomicBool::new(/*v*/ false)),
             )
             .await?,
         );

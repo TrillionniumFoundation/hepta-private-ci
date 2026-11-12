@@ -92,12 +92,21 @@ fn append_with_clock<W: AnchorWitnessStore>(
     let outcome = &request.outcome;
     let publication = source.read_run_publication(identity, &decision.record_id)?;
     let input = publication.input();
-    let admitted_at = publication.original_record().admission.observed_at_unix_micros.div_ceil(1_000_000);
+    let admitted_at = publication
+        .original_record()
+        .admission
+        .observed_at_unix_micros
+        .div_ceil(1_000_000);
     let policy = CircuitTaskSourcePublicationV1::original_policy(&publication)?;
-    let mut candidates = policy.entries().iter().map(|p| p.candidate_id.clone()).collect::<Vec<_>>();
+    let mut candidates = policy
+        .entries()
+        .iter()
+        .map(|p| p.candidate_id.clone())
+        .collect::<Vec<_>>();
     candidates.sort();
-    if decision.record_id != circuit_learning_run_id_v1(ledger, &identity.agent_id, &decision.episode_id)
-        .map_err(|_| Error::Binding("original ledger/agent/episode run"))?
+    if decision.record_id
+        != circuit_learning_run_id_v1(ledger, &identity.agent_id, &decision.episode_id)
+            .map_err(|_| Error::Binding("original ledger/agent/episode run"))?
         || decision.record_id != input.scope.run_id
         || decision.objective_digest != input.objective_digest
         || decision.objective_digest != ledger.verifier().objective_digest()
@@ -117,9 +126,14 @@ fn append_with_clock<W: AnchorWitnessStore>(
         || outcome.value.is_none()
         || admitted_at == 0
         || outcome.observed_at.is_some_and(|at| at < admitted_at)
-        || outcome.watermark.finalized_at.is_some_and(|at| at < outcome.watermark.latest_observable_at)
+        || outcome
+            .watermark
+            .finalized_at
+            .is_some_and(|at| at < outcome.watermark.latest_observable_at)
     {
-        return Err(Error::Binding("original policy and measured terminal outcome"));
+        return Err(Error::Binding(
+            "original policy and measured terminal outcome",
+        ));
     }
     // Authenticate BOTH messages and their independent custody before the first
     // write. append_* repeats its own current production checks; this preflight
@@ -146,11 +160,12 @@ fn append_with_clock<W: AnchorWitnessStore>(
     validate_authenticated_outcome(generator.principal(), outcome, observed_at)
         .map_err(|_| Error::Binding("original terminal measurement"))?;
     let before = ledger.read_current_durable_snapshot()?;
-    if before.records().iter().any(|record| matches!(&record.event,
+    if before.records().iter().any(|record| {
+        matches!(&record.event,
         LedgerEvent::AuthenticatedOutcomeV2(value)
             if value.episode_id == request.outcome.episode_id
-                && value.record_id != request.outcome.record_id))
-    {
+                && value.record_id != request.outcome.record_id)
+    }) {
         return Err(Error::Binding("original terminal outcome was superseded"));
     }
     if source.read_run_publication(identity, &decision.record_id)? != publication {
@@ -169,7 +184,10 @@ fn append_with_clock<W: AnchorWitnessStore>(
     if source.read_run_publication(identity, &request.decision.record_id)? != publication {
         return Err(Error::Binding("original source changed after Decision"));
     }
-    ledger.verify_active_decision_binding(&request.decision.record_id, &request.decision.episode_id)?;
+    ledger.verify_active_decision_binding(
+        &request.decision.record_id,
+        &request.decision.episode_id,
+    )?;
     let before_outcome = clock()?;
     if before_outcome < before_decision {
         return Err(Error::Binding("system clock moved backwards"));
@@ -181,15 +199,19 @@ fn append_with_clock<W: AnchorWitnessStore>(
         before_outcome,
     )?;
     let after = ledger.read_current_durable_snapshot()?;
-    ledger.verify_active_decision_binding(&request.decision.record_id, &request.decision.episode_id)?;
+    ledger.verify_active_decision_binding(
+        &request.decision.record_id,
+        &request.decision.episode_id,
+    )?;
     let active = LearningLedger::from_snapshot(after)
         .map_err(|_| Error::Binding("original active episode"))?;
-    if !active.active_records().iter().any(|record| matches!(&record.event,
+    if !active.active_records().iter().any(|record| {
+        matches!(&record.event,
         LedgerEvent::AuthenticatedOutcomeV2(value)
             if value.record_id == request.outcome.record_id
                 && value.outcome_id == request.outcome.outcome_id
-                && value.episode_id == request.outcome.episode_id))
-    {
+                && value.episode_id == request.outcome.episode_id)
+    }) {
         return Err(Error::Binding("original terminal outcome is inactive"));
     }
     if source.read_run_publication(identity, &request.decision.record_id)? != publication {
@@ -216,7 +238,9 @@ fn append_with_clock<W: AnchorWitnessStore>(
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|time| time.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|time| time.as_secs())
         .map_err(|_| Error::Binding("system clock before Unix epoch"))
 }
 

@@ -23,13 +23,11 @@ use super::OriginalCellEvaluationCommandClientV1;
 type Thread = std::thread::JoinHandle<anyhow::Result<u64>>;
 
 fn pidfd() -> anyhow::Result<OwnedFd> {
-    // SAFETY: pidfd_open has no pointer arguments; this requests our own PID.
-    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, libc::getpid(), 0) };
-    if raw < 0 {
-        return Err(std::io::Error::last_os_error().into());
-    }
-    // SAFETY: the successful syscall returned one new descriptor owned here.
-    Ok(unsafe { OwnedFd::from_raw_fd(raw as i32) })
+    // SAFETY: pidfd_open observes this process and returns a new descriptor.
+    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    anyhow::ensure!(raw >= 0, "{}", std::io::Error::last_os_error());
+    // SAFETY: successful pidfd_open returned a new, unowned descriptor.
+    Ok(unsafe { OwnedFd::from_raw_fd(i32::try_from(raw)?) })
 }
 
 fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
@@ -37,6 +35,7 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
         stream,
         HostAuthorityPeerPolicy {
             peer: HostIssuerPeer {
+                // SAFETY: geteuid reads only this test process's kernel credential.
                 uid: unsafe { libc::geteuid() },
                 pid: std::process::id(),
             },

@@ -34,11 +34,12 @@ READERS = (
 FUNCTIONS = {
     "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
     "fn attest_source(", "fn readback_source(", "fn predecessors(",
+    "fn finish_original_readback(", "fn decode_completed(",
     "fn authenticate_completed(", "fn authenticate_predecessors(",
     "fn receipt(", "fn require_new_attestation(", "fn sign_original(", "fn now(",
     "fn attest_original_completion(", "fn attest_original_remote_completion(",
     "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
-    "fn read_remote_next_use(", "fn remote_predecessors(",
+    "fn read_remote_next_use(",
     "fn original_command_profile(", "fn into_command_owner(",
 }
 
@@ -129,7 +130,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             self.mutate_function(function, statement, "if false { " + statement + " }")
         for function, marker in (
             ("fn prepare(", "self.config.scope.validate_snapshot(source.snapshot())?;"),
-            ("fn authenticate_completed(", "let current = now()?;"),
+            ("fn finish_original_readback(", "let current = now()?;"),
         ):
             self.mutate_function(function, marker, "if false { " + marker + " }")
 
@@ -151,15 +152,17 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
     def test_new_attestation_deadline_and_readback_window_are_distinct(self):
         self.mutate_function(
             "fn attest_source(",
-            "self.authenticate_completed(&source, &observed, &bytes, started_at, true)",
-            "self.authenticate_completed(&source, &observed, &bytes, started_at, false)",
+            "&source, &observed, &bytes, started_at, /*new_attestation*/ true,",
+            "&source, &observed, &bytes, started_at, /*new_attestation*/ false,",
         )
         for marker in (
             "if current < started_at", "if new_attestation",
             "require_new_attestation(&self.config, started_at, current)?",
-            "receipt(&self.config, observed, signed.issued_at)?",
         ):
             self.mutate_function("fn authenticate_completed(", marker)
+        self.mutate_function(
+            "fn decode_completed(", "receipt(&self.config, observed, signed.issued_at)?"
+        )
         marker = "current >= config.selection.request.envelope.expiry_unix_seconds"
         self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"))
         self.mutate_function("fn now(", "SystemTime::now()")

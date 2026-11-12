@@ -280,3 +280,6 @@ impl crate::OriginalCellEvaluationHostV1 {
         Ok(())
     }
 }
+
+#[path = "circuit_original_evaluation_model_material_tests.rs"]
+mod model_material;

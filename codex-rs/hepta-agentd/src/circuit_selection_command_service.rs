@@ -34,6 +34,9 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 #[path = "circuit_selection_command_evidence.rs"]
 mod evidence;
 
+#[path = "circuit_selection_command_readback_service.rs"]
+mod readonly;
+
 pub struct OriginalCircuitSelectionCommandOwnerV1<W: AnchorWitnessStore> {
     owner: Mutex<OriginalCircuitSelectionReceiptOwnerV1<W>>,
     live: OriginalCircuitLearningReadClientV1,

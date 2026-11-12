@@ -203,17 +203,30 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             self.rejects(SERVICE, "fn response(", marker)
 
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
-        for path, function, verifier in (
-            (SELECTOR, "fn read_remote_selection(", "authenticate_training"),
-            (OBSERVER, "fn read_remote_next_use(", "authenticate_predecessors"),
+        for path, function, predecessor, verifier in (
+            (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
+            (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
         ):
             for marker in (
                 "live.require_original_context(",
                 "live.read_current().await?",
-                f"{verifier}(config, &before, now()?)?",
-                f"{verifier}(config, &after, now()?)?",
             ):
                 self.rejects(path, function, marker)
+            for marker in (
+                "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+                f"self.{predecessor}(&source).await?",
+                f"{verifier}(&self.config, &before, now()?)?",
+                "let bytes = self.journal.read(&self.saved)?;",
+            ):
+                self.rejects(path, "fn readback_source(", marker)
+            for marker in (
+                "if self.prepare(source).await? != *observed",
+                f"self.{predecessor}(source).await?",
+                "if self.journal.read(&self.saved)? != bytes",
+                "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
+            ):
+                self.rejects(path, "fn finish_original_readback(", marker)
+            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, evidence, current)?")
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",

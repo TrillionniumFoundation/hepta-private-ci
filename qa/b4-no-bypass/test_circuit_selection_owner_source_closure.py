@@ -98,9 +98,9 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             ("fn authenticate_training(", "if evidence != &config.training_evidence"),
             ("fn validate_config(", "&config.training_evidence.signature"),
             ("fn training_evidence(", "training_receipt(&self.config)?"),
-            ("fn authenticate_completed(", "if self.prepare(source).await? != *observed"),
-            ("fn authenticate_completed(", "if self.journal.read(&self.saved)? != bytes"),
-            ("fn authenticate_completed(", "signed.issued_at"),
+            ("fn finish_original_readback(", "if self.prepare(source).await? != *observed"),
+            ("fn finish_original_readback(", "if self.journal.read(&self.saved)? != bytes"),
+            ("fn decode_completed(", "signed.issued_at"),
         ):
             self.rejects(function, marker)
 

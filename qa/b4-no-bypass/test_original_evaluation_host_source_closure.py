@@ -246,7 +246,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
             "verify_signed_actor_separation(&previous.1, current, now)",
         ):
-            self.rejects(AUTH, "fn verify_attestations(", marker)
+            self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
         for path, addition in (
             (HOST, "fn bypass() { SigningKey::generate(); }"),
             (COMMAND, "fn reconnect() { UnixStream::connect(); }"),

@@ -576,6 +576,10 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
+    Digest32::of_bytes(&product_qualification_commitment_bytes(receipt))
+}
+
+fn product_qualification_commitment_bytes(receipt: &ProductQualificationReceiptV1) -> Vec<u8> {
     let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
@@ -615,7 +619,7 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
     push_ids(&mut bytes, &receipt.snapshot_ids);
     bytes.push(u8::from(receipt.authority.grants_any()));
     bytes.push(u8::from(receipt.decision.decision.authority.grants_any()));
-    Digest32::of_bytes(&bytes)
+    bytes
 }
 
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
@@ -844,6 +848,12 @@ fn product_evaluation_seal(
 fn product_plan_seal(
     plan: &ProductFrozenEvaluationPlanV1,
 ) -> Result<Digest32, ProductEvaluationError> {
+    Ok(Digest32::of_bytes(&product_plan_commitment_bytes(plan)?))
+}
+
+fn product_plan_commitment_bytes(
+    plan: &ProductFrozenEvaluationPlanV1,
+) -> Result<Vec<u8>, ProductEvaluationError> {
     let mut bytes = b"hepta.intelligence-eval.product-frozen-plan.v1".to_vec();
     for digest in [
         plan.frozen_plan.plan_digest,
@@ -888,7 +898,7 @@ fn product_plan_seal(
         push_id(&mut bytes, &source.metric_id);
         bytes.push(source.source.tag());
     }
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }
 
 fn bound_estimand_digest(
@@ -897,6 +907,20 @@ fn bound_estimand_digest(
     baseline_plan: Digest32,
     sources: &[ProductMetricSourceContractV1],
 ) -> Result<Digest32, ProductEvaluationError> {
+    Ok(Digest32::of_bytes(&product_estimand_commitment_bytes(
+        base,
+        candidate_plan,
+        baseline_plan,
+        sources,
+    )?))
+}
+
+fn product_estimand_commitment_bytes(
+    base: Digest32,
+    candidate_plan: Digest32,
+    baseline_plan: Digest32,
+    sources: &[ProductMetricSourceContractV1],
+) -> Result<Vec<u8>, ProductEvaluationError> {
     if base.is_zero() || candidate_plan.is_zero() || baseline_plan.is_zero() {
         return Err(ProductEvaluationError::Binding("estimand source"));
     }
@@ -908,7 +932,7 @@ fn bound_estimand_digest(
         push_id(&mut bytes, &source.metric_id);
         bytes.push(source.source.tag());
     }
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }
 
 fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), ProductEvaluationError> {
@@ -1011,3 +1035,7 @@ mod tests;
 pub(crate) mod execution;
 #[path = "product_execution_codec.rs"]
 mod execution_codec;
+
+#[path = "product_material_commitments.rs"]
+mod material_commitments;
+pub use material_commitments::OriginalProductQualificationCommitmentsV1;

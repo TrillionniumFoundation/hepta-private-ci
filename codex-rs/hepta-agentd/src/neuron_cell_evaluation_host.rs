@@ -25,6 +25,8 @@ mod command;
 mod contract;
 #[path = "neuron_cell_evaluation_host_service.rs"]
 mod service;
+#[path = "neuron_cell_evaluation_host_training_readback.rs"]
+mod training_readback;
 #[path = "neuron_cell_evaluation_host_wire.rs"]
 mod wire;
 
@@ -285,3 +287,10 @@ fn require_clock(started_at: u64, current: u64) -> Result<(), Error> {
     }
     Ok(())
 }
+
+#[path = "neuron_cell_evaluation_model_material.rs"]
+mod model_material;
+pub(crate) use model_material::OriginalCellEvaluationModelInputV1;
+pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
+pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
+pub use model_material::OriginalCellEvaluationModelMaterialV1;

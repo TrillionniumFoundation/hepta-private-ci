@@ -122,7 +122,7 @@ impl ObserverService {
         })
     }
 
-    fn finish(self, published_failed: bool, selector_failed: bool) -> anyhow::Result<()> {
+    fn finish(self, published_failed: bool, selector_failed: bool) -> anyhow::Result<usize> {
         drop(self.owner);
         let published = self
             .published
@@ -138,8 +138,7 @@ impl ObserverService {
             .trainer
             .join()
             .map_err(|_| anyhow::anyhow!("original Trainer fixture thread"))??;
-        anyhow::ensure!(reads > 0, "the original Trainer was actually read");
-        Ok(())
+        Ok(reads)
     }
 }
 
@@ -202,7 +201,7 @@ async fn q24_next_use_command_attests_actual_different_c_and_shares_dispatch() -
     assert_eq!(owner_bytes(&f.f.original.session)?, task_before);
     assert_eq!(finish_observer(client, server)?, 3);
     assert_eq!(finish_observer(second, second_server)?, 2);
-    service.finish(false, false)?;
+    assert!(service.finish(false, false)? > 0);
     f.finish(false).await?;
     Ok(())
 }
@@ -229,7 +228,7 @@ async fn q24_next_use_command_lost_ack_recovers_exact_original_signature_readonl
         .join()
         .map_err(|_| anyhow::anyhow!("lost original C ACK"))??;
     let bytes = f.f.original.bytes()?;
-    service.finish(false, false)?;
+    assert!(service.finish(false, false)? > 0);
 
     let recovered = ObserverService::start(&f, f.f.original.recover_owner()?)?;
     let (fresh, channel) = next::client(context, false, None)?;
@@ -260,7 +259,7 @@ async fn q24_next_use_command_lost_ack_recovers_exact_original_signature_readonl
     assert_eq!(f.f.original.bytes()?, bytes);
     assert_eq!(finish_observer(fresh, fresh_server)?, 2);
     assert_eq!(finish_observer(cold, cold_server)?, 2);
-    recovered.finish(false, false)?;
+    assert!(recovered.finish(false, false)? > 0);
     f.finish(false).await?;
     Ok(())
 }
@@ -286,7 +285,8 @@ async fn q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission() 
     assert_eq!(f.f.original.bytes()?, before);
     assert_eq!(owner_bytes(&f.f.original.session)?, task_before);
     assert_eq!(finish_observer(client, server)?, 1);
-    service.finish(true, false)?;
+    // The original C publication rejects before either predecessor is read.
+    assert_eq!(service.finish(true, false)?, 0);
 
     // The ordinary task machinery, outside the Observer, now really runs C.
     // Restoring the original owner cannot convert the failed dispatch into
@@ -305,7 +305,7 @@ async fn q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission() 
     ));
     assert_eq!(f.f.original.bytes()?, before);
     assert_eq!(finish_observer(client, server)?, 2);
-    recovered.finish(false, false)?;
+    assert!(recovered.finish(false, false)? > 0);
     f.finish(false).await?;
     Ok(())
 }
@@ -375,7 +375,7 @@ async fn q24_next_use_command_pins_both_original_signatures_before_dispatch() ->
     client.attest_completed_task().await?;
     assert_ne!(f.f.original.bytes()?, before);
     assert_eq!(finish_observer(client, server)?, 1);
-    service.finish(false, false)?;
+    assert!(service.finish(false, false)? > 0);
     f.finish(false).await?;
     Ok(())
 }
@@ -419,10 +419,10 @@ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -
     ));
     assert_eq!(f.f.original.bytes()?, bytes);
     assert_eq!(finish_observer(client, server)?, 2);
-    // The Selector peer detects withdrawal first, before the C publication
-    // peer is reread. Both are still actual original owner channels.
-    service.finish(false, true)?;
-    f.finish(true).await?;
+    // The actual C publication rejects before another predecessor read.
+    // The Selector channel is left unmodified, never replaced or retried.
+    assert!(service.finish(true, false)? > 0);
+    f.finish(false).await?;
     Ok(())
 }
 
@@ -512,7 +512,7 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     ));
     assert_eq!(f.f.original.bytes()?, bytes);
     assert_eq!(finish_observer(client, server)?, 1);
-    service.finish(false, false)?;
+    assert!(service.finish(false, false)? > 0);
     f.finish(false).await?;
     Ok(())
 }

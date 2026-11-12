@@ -8,6 +8,8 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -31,6 +33,13 @@ use crate::WithdrawalBoundArtifactAdmissionV3;
 
 #[path = "owner_service_readback.rs"]
 mod readback;
+
+#[path = "owner_service_preparation.rs"]
+mod preparation;
+
+pub use preparation::OriginalArtifactPreparationErrorV1;
+pub use preparation::OriginalArtifactPreparedPublicationV1;
+pub use preparation::OriginalArtifactPublicationContextV1;
 
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
@@ -59,6 +68,9 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    original_preparation_instance: Arc<()>,
+    original_preparation_fenced: AtomicBool,
+    original_preparation_active: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -113,6 +125,9 @@ impl LearningArtifactOwnerService {
             registry,
             storage_binding: config.storage_binding,
             recovery_required,
+            original_preparation_instance: Arc::new(()),
+            original_preparation_fenced: AtomicBool::new(false),
+            original_preparation_active: false,
         })
     }
 
@@ -170,6 +185,16 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        // The new split protocol has already consumed this instance's write
+        // entrance. Only its private fresh continuation may finish it; the
+        // legacy reconciliation method must not bypass a lost continuation.
+        if self.original_preparation_active {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                self.recovery_required
+                    .clone()
+                    .ok_or(LearningArtifactOwnerServiceError::UnexpectedPhase)?,
+            ));
+        }
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {

@@ -16,6 +16,7 @@ pub struct OriginalProductEvaluationExecutionEvidenceV1 {
     evaluator: AuthenticatedPrincipalV1,
     objective_digest: Digest32,
     payload: Vec<u8>,
+    record: Vec<u8>,
     attestation: SignedLearningEvidenceV1,
 }
 
@@ -28,6 +29,14 @@ impl OriginalProductEvaluationExecutionEvidenceV1 {
     }
     pub fn attestation(&self) -> &SignedLearningEvidenceV1 {
         &self.attestation
+    }
+    /// Exact original bytes, for a closed readonly host's evidence export.
+    /// This creates no execution, signature or deserializable owner capability.
+    pub fn signing_payload(&self) -> &[u8] {
+        &self.payload
+    }
+    pub fn original_record(&self) -> &[u8] {
+        &self.record
     }
     pub const fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
@@ -85,6 +94,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let (attestation, body) = execution_codec::decode_envelope(&bytes)?;
         let original = OriginalProductEvaluationExecutionEvidenceV1 {
             payload: signing_payload(&key, body),
+            record: bytes.clone(),
             key,
             record_digest: Digest32::of_bytes(&bytes),
             evaluator: request.evaluator.clone(),

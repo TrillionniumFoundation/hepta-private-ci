@@ -159,7 +159,7 @@ impl LearningArtifactOwnerHost {
         })
     }
 
-    fn current_registry_view_bounded(
+    pub(super) fn current_registry_view_bounded(
         &self,
         at: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
