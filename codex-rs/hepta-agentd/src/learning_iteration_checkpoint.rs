@@ -390,6 +390,10 @@ mod test_support;
 mod tests;
 
 #[cfg(all(test, target_os = "linux"))]
+#[path = "ordinary_q24_checkpoint_observer_tests.rs"]
+pub(crate) mod ordinary_observer;
+
+#[cfg(all(test, target_os = "linux"))]
 #[path = "authority_host_learning_test_support.rs"]
 pub(crate) mod learning_test_support;
 
