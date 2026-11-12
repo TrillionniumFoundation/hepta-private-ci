@@ -13,7 +13,38 @@ pub(crate) struct OriginalCompletedLearningHistoryV1 {
     data: OriginalQ24CompletedHistoryDataV1,
 }
 
+/// Retains only the already authenticated client and its exact recipient.
+/// Consuming this value does not supply a terminal record: the Root still
+/// independently observes and verifies all original completion evidence.
+pub(crate) struct OriginalCompletedLearningAcceptanceV1 {
+    client: Arc<RootHistoricalTaskReadClientV1>,
+    identity: AgentdIdentity,
+}
+
 impl RootHistoricalTaskReadClientV1 {
+    pub(crate) fn retain_original_completed_acceptance(
+        self: &Arc<Self>,
+        session: &AgentdRootAuthoritySession,
+        identity: &AgentdIdentity,
+    ) -> Result<OriginalCompletedLearningAcceptanceV1, AgentdError> {
+        let mut fence = FenceReadOnDrop {
+            client: self,
+            armed: true,
+        };
+        RootHistoricalTaskReadClientV1::require_same_original_session(self, session)?;
+        self.require_completed_identity(identity)?;
+        if self.completed_attempted.load(Ordering::Acquire) {
+            return Err(AgentdError::Io(refused()));
+        }
+        RootHistoricalTaskReadClientV1::require_same_original_session(self, session)?;
+        self.require_completed_identity(identity)?;
+        fence.armed = false;
+        Ok(OriginalCompletedLearningAcceptanceV1 {
+            client: Arc::clone(self),
+            identity: identity.clone(),
+        })
+    }
+
     /// First acceptance is an explicit one-shot request on the existing lane.
     /// An uncertain response never permits another attempt by this client.
     pub(crate) fn accept_original_completed_learning(
@@ -26,6 +57,21 @@ impl RootHistoricalTaskReadClientV1 {
             armed: true,
         };
         RootHistoricalTaskReadClientV1::require_same_original_session(self, session)?;
+        let result = RootHistoricalTaskReadClientV1::accept_completed_once(self, identity);
+        let identity_after = self.require_completed_identity(identity);
+        let session_after =
+            RootHistoricalTaskReadClientV1::require_same_original_session(self, session);
+        identity_after?;
+        session_after?;
+        let response = result?;
+        fence.armed = false;
+        Ok(response)
+    }
+
+    fn accept_completed_once(
+        &self,
+        identity: &AgentdIdentity,
+    ) -> Result<CompletedLearningAcceptanceResponseV1, AgentdError> {
         self.require_completed_identity(identity)?;
         if self.completed_attempted.swap(true, Ordering::AcqRel) {
             return Err(AgentdError::Io(refused()));
@@ -46,14 +92,9 @@ impl RootHistoricalTaskReadClientV1 {
             }
             Ok(response)
         })();
-        let identity_after = self.require_completed_identity(identity);
-        let session_after =
-            RootHistoricalTaskReadClientV1::require_same_original_session(self, session);
-        identity_after?;
-        session_after?;
-        let response = result?;
-        fence.armed = false;
-        Ok(response)
+        let after = self.require_completed_identity(identity);
+        after?;
+        Ok(result?)
     }
 
     pub(crate) fn read_original_completed_history(
@@ -145,6 +186,19 @@ impl RootHistoricalTaskReadClientV1 {
         let after = self.require_completed_identity(identity);
         after?;
         let response = result?;
+        fence.armed = false;
+        Ok(response)
+    }
+}
+
+impl OriginalCompletedLearningAcceptanceV1 {
+    pub(crate) fn accept(self) -> Result<CompletedLearningAcceptanceResponseV1, AgentdError> {
+        let mut fence = FenceReadOnDrop {
+            client: &self.client,
+            armed: true,
+        };
+        let response =
+            RootHistoricalTaskReadClientV1::accept_completed_once(&self.client, &self.identity)?;
         fence.armed = false;
         Ok(response)
     }
