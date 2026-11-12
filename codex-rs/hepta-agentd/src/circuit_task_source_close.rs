@@ -35,7 +35,7 @@ impl OriginalCircuitSourceCloseV1 {
                 let owner = Arc::try_unwrap(source.0).map_err(|_| {
                     AgentdError::Protocol("original source journal is still retained".into())
                 })?;
-                let mut owner = owner.into_inner().map_err(|_| {
+                let owner = owner.into_inner().map_err(|_| {
                     AgentdError::Protocol("original source journal mutex is poisoned".into())
                 })?;
                 owner.require_current().map_err(agent_error)?;
