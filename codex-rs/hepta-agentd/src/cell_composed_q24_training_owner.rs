@@ -116,7 +116,14 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         batch: CellQ24TrainingBatchV1,
         rule: CellQ24SgdRuleV1,
     ) -> Result<Self, Error> {
-        Self::create_with_source(file, witness, plan, batch, rule, &OriginalQ24OwnerReadV1)
+        CellQ24TrainingOwnerV1::create_with_source(
+            file,
+            witness,
+            plan,
+            batch,
+            rule,
+            &OriginalQ24OwnerReadV1,
+        )
     }
 
     /// Open only the original journal/witness. A valid suffix after a lost
@@ -128,7 +135,14 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         batch: CellQ24TrainingBatchV1,
         rule: CellQ24SgdRuleV1,
     ) -> Result<Self, Error> {
-        Self::recover_with_source(file, witness, plan, batch, rule, &OriginalQ24OwnerReadV1)
+        CellQ24TrainingOwnerV1::recover_with_source(
+            file,
+            witness,
+            plan,
+            batch,
+            rule,
+            &OriginalQ24OwnerReadV1,
+        )
     }
 
     /// The durable claim and its independent witness precede all computation.
