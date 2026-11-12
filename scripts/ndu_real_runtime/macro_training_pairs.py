@@ -309,6 +309,17 @@ def _branch(root, pair, macro, summary, plan, profiles, reads):
             "bytes": len(public),
             "sha256": sha(public),
         }
+    initial_public_input = None
+    try:
+        initial = reads.raw(directory, "initial-public-input.json", 131072)
+    except FileNotFoundError:
+        pass
+    else:
+        initial_public_input = {
+            "path": "initial-public-input.json",
+            "bytes": len(initial),
+            "sha256": sha(initial),
+        }
     observed = macro_realization.observe_realization(
         directory,
         result,
@@ -318,6 +329,7 @@ def _branch(root, pair, macro, summary, plan, profiles, reads):
         plan["config"],
         expected_source_sha256=digest(macro_realization.source_manifest()),
         public_input=public_input,
+        initial_public_input=initial_public_input,
     )
     for name, identity in observed["artifact_sha256s"].items():
         if sha(reads.raw(directory, name)) != identity:

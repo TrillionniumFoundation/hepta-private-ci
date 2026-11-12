@@ -560,7 +560,9 @@ def run():
         }
         if args.training_exploration or macro_control is not None:
             result.update(
-                candidate_features=features.tolist(), candidate_metadata=candidates
+                candidate_features=features.tolist(),
+                candidate_metadata=candidates,
+                selected_candidate_index=selected_index,
             )
         print(json.dumps(result, separators=(",", ":"), allow_nan=False), flush=True)
         if action == "STOP":

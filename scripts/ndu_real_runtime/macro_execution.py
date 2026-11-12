@@ -151,6 +151,7 @@ def _admit(plan, branch, result, registered, profile, elapsed):
         config=config,
         expected_source_sha256=plan["observer_sha256"],
         public_input=pin,
+        initial_public_input=common.binding(branch / "macro-public-00.json", branch),
     )
     macro_realization.observe_realization(**kwargs)
     score = result["score_components"]
