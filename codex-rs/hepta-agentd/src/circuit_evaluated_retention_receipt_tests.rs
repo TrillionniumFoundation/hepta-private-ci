@@ -413,3 +413,6 @@ async fn evaluated_selector_refuses_either_original_owner_after_signed_completio
 
 #[path = "circuit_evaluated_next_use_receipt_tests.rs"]
 mod next_use_tests;
+
+#[path = "circuit_evaluated_selection_remote_tests.rs"]
+mod remote_tests;

@@ -259,9 +259,9 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             self.rejects(READINESS, "fn read_current(", marker)
         self.rejects(READINESS, "fn require_context(", "self.purpose != PURPOSE")
         for marker in (
-            "request.require_context(&self.context, self.binding, request_id)?",
+            "request.require_context(self.context.legacy()?, self.binding, request_id)?",
             "self.read_original_readiness()?",
-            "fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding",
+            "fresh < started_at\n            || wire::context_binding(self.context.legacy()?, fresh)? != self.binding",
         ):
             self.rejects(READINESS_OWNER, "fn readiness_response(", marker)
 

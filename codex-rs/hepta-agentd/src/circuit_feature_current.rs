@@ -50,6 +50,7 @@ mod retirement;
 mod retained_publication;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
+pub use learning_read::OriginalCircuitEvaluatedLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
 pub use learning_read::OriginalCircuitLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadErrorV1;

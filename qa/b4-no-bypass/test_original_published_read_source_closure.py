@@ -30,7 +30,7 @@ SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
     "learning_original_published_read_client_create": (),
-    "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
+    "learning_original_published_read_client_current": (SELECTOR, OBSERVER, AGENT + "circuit_evaluated_selection_remote.rs"),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
     "learning_original_published_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
     "learning_original_published_read_owner_serve": (),
@@ -162,8 +162,8 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "channel.next_request_id > 128",
             "channel.peer.request(&bytes)?",
             "response.require_request(&request)?",
-            "response.read.decode(&self.context)?",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.decode(response.read)?",
+            "self.context.binding(fresh)? != self.binding",
             "retained.as_ref().is_some_and(|prior| prior != &current)",
             "channel.peer.check_peer_lifetime()?",
         ):
@@ -194,9 +194,9 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
         for marker in (
-            "request.require_context(&self.context, self.binding, request_id)?",
+            "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.binding(fresh)? != self.binding",
             "wire::OriginalRead::from_original(read)?",
             "bytes.is_empty() || bytes.len() > 16_384",
         ):
@@ -251,11 +251,11 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         for marker in (
             "digest(&bundle)? != baseline",
             "source_publication.is_none()",
-            "state_partition.run_id == context.prefix.request.source_run_id",
+            "state_partition.run_id == prefix.request.source_run_id",
             "*candidate_bundle == baseline && *selection_digest == selection",
-            "context.scope.validate_observation(&observation)?",
+            "scope.validate_observation(&observation)?",
         ):
-            self.rejects(WIRE, "fn decode(", marker)
+            self.rejects(WIRE, "fn decode_original(", marker)
         self.rejects(WIRE, "fn digest(", "digest.is_zero() || digest.to_string() != text")
         for path in (MAIN, SERVICE, WIRE):
             source = (ROOT / path).read_text()

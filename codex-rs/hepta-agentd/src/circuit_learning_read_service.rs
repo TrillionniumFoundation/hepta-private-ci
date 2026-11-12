@@ -17,6 +17,7 @@ use super::Error;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
 use super::now;
+use super::profile::ReadProfile;
 use super::require_timing;
 use super::wire;
 use crate::AgentdIdentity;
@@ -33,7 +34,7 @@ pub struct OriginalCircuitLearningReadOwnerV1<C: AnchorWitnessStore, S: AnchorWi
     cell: PublishedCircuitCellOwnerV1<C>,
     source: CircuitTaskSourceReadbackV1<S>,
     identity: AgentdIdentity,
-    context: Context,
+    context: ReadProfile,
     binding: Digest32,
     connections: Semaphore,
 }
@@ -45,8 +46,22 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         identity: AgentdIdentity,
         context: Context,
     ) -> Result<Self, Error> {
+        Self::from_original_profile(
+            cell,
+            source,
+            identity,
+            ReadProfile::TrainingNoUpdate(context),
+        )
+    }
+
+    pub(super) fn from_original_profile(
+        cell: PublishedCircuitCellOwnerV1<C>,
+        source: CircuitTaskSourceReadbackV1<S>,
+        identity: AgentdIdentity,
+        context: ReadProfile,
+    ) -> Result<Self, Error> {
         let started_at = now()?;
-        let binding = wire::context_binding(&context, started_at)?;
+        let binding = context.binding(started_at)?;
         let owner = Self {
             cell,
             source,
@@ -56,13 +71,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             connections: Semaphore::new(4),
         };
         owner.require_task_input_current()?;
-        let coordinator = wire::decision(&owner.context)?;
+        let coordinator = owner.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &owner.cell;
         let observed = cell.read_learning_selection(&coordinator)?;
         owner.require_original_selection(&observed)?;
         owner.require_task_input_current()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&owner.context, fresh)? != binding {
+        if fresh < started_at || owner.context.binding(fresh)? != binding {
             return Err(Error::Binding("original published bootstrap clock"));
         }
         Ok(owner)
@@ -102,7 +117,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         &self,
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
-        if wire::mode(&self.context)? != wire::Mode::Selection {
+        if wire::mode(self.context.legacy()?)? != wire::Mode::Selection {
             return Err(Error::Binding(
                 "retained Version Selection-only read purpose",
             ));
@@ -134,13 +149,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
-        request.require_context(&self.context, self.binding, request_id)?;
-        if wire::context_binding(&self.context, started_at)? != self.binding {
+        self.context
+            .require_request(&request, self.binding, request_id)?;
+        if self.context.binding(started_at)? != self.binding {
             return Err(Error::Binding("same original published context"));
         }
         let read = self.read_original()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
+        if fresh < started_at || self.context.binding(fresh)? != self.binding {
             return Err(Error::Binding("original read window after owner I/O"));
         }
         // read_original returned owned data; no Cell/Source mutex is held here.
@@ -155,7 +171,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     fn require_task_input_current(&self) -> Result<(), Error> {
         self.cell.task.require_current()?;
         let input = self.cell.task.source();
-        let request = &self.context.prefix.request;
+        let request = &self.context.prefix().request;
         if self.identity.agent_id.as_str() != request.agent_id.as_str()
             || input.scope.agent_id != request.agent_id
             || input.scope.cell_id != request.cell_id
@@ -174,10 +190,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         &self,
         observed: &codex_hepta_learning_artifacts::LearningIterationObservationV1,
     ) -> Result<(), Error> {
-        self.context.scope.validate_observation(observed)?;
-        if wire::mode(&self.context)? == wire::Mode::NextUse
-            && self.context.prefix.receipts[3].observation != *observed
-        {
+        self.context.scope().validate_observation(observed)?;
+        if self.context.mode()? == wire::Mode::NextUse && self.context.selection()? != observed {
             return Err(Error::Binding("original Selector receipt and publication"));
         }
         Ok(())
@@ -185,7 +199,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
 
     fn read_original(&self) -> Result<Readback, Error> {
         self.require_task_input_current()?;
-        let coordinator = wire::decision(&self.context)?;
+        let coordinator = self.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
         let selection = cell.read_learning_selection(&coordinator)?;
         self.require_original_selection(&selection)?;
@@ -195,14 +209,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let publication = original.publication_digest()?;
         let source_input =
             circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
-        let (observation, source_publication) = match wire::mode(&self.context)? {
+        let (observation, source_publication) = match self.context.mode()? {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
                 let before = self
                     .source
                     .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
                 let prefix =
-                    LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
+                    LearningIterationCoordinatorV1::from_snapshot(self.context.prefix().clone())?;
                 let observed =
                     cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
                 if self
