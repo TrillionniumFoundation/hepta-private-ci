@@ -11,7 +11,7 @@ impl HostAuthorityService {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         publisher: &OwnedFd,
-        files: OriginalCellFiles,
+        files: PreparedOriginalCellFiles,
         end: std::time::Instant,
     ) -> io::Result<RegisteredOriginalCellCaptureV1> {
         original_root()?;
@@ -49,6 +49,7 @@ impl HostAuthorityService {
                             .map_err(io::Error::other)?
                             .observed_unix_ms,
                     )?;
+                    let files: OriginalCellFiles = files.into_initialized()?;
                     files.require_original_cell_baseline()?;
                     let baseline = CellRecord {
                         schema: 1,
@@ -93,7 +94,7 @@ impl HostAuthorityService {
                             .map_err(io::Error::other)?
                             .observed_unix_ms,
                     )?;
-                    retained = Some((store, baseline));
+                    retained = Some((store, baseline, files));
                     Ok(())
                 })?;
                 if std::time::Instant::now() >= end {
@@ -104,7 +105,7 @@ impl HostAuthorityService {
                 Ok(())
             },
         )?;
-        let (store, baseline) =
+        let (store, baseline, files) =
             retained.ok_or_else(|| io::Error::other("original Cell enrollment result missing"))?;
         Ok(RegisteredOriginalCellCaptureV1 {
             files,
