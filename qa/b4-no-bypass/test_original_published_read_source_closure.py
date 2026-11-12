@@ -262,6 +262,12 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
                 "let bytes = self.journal.read(&self.saved)?;",
             ):
                 self.rejects(path, "fn readback_source(", marker)
+            for replacement in ("ObservationLocation::RemoteOwner", "ObservationLocation::EvaluatedOwner"):
+                self.rejects(
+                    path, "fn readback_source(",
+                    "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                    replacement,
+                )
             for marker in (
                 "if self.prepare(source).await? != *observed",
                 f"self.{predecessor}(source).await?",

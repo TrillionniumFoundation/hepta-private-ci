@@ -1,0 +1,120 @@
+import gzip,hashlib,json,os,pathlib,subprocess,sys,time
+from datetime import datetime,timezone
+from urllib.parse import urlsplit
+cfg=json.loads(sys.argv[1]);repo=pathlib.Path(cfg["checkout"]);out=pathlib.Path(cfg["evidence"]);out.mkdir(parents=True,exist_ok=False)
+result={"schema_version":1,"source_sha":cfg["sha"],"source_tree":cfg["tree"],"status":"preparing","started_at":datetime.now(timezone.utc).isoformat(),"stages":[],"ordinary_native_started":False,"helper_build_started":False,"root_qualification_attempted":False,"sudo_or_escalation_attempted":False,"maintenance":"not_run_in_this_ordinary_attempt"}
+def save(name,value):
+ data=(json.dumps(value,indent=2,sort_keys=True)+"\n").encode();(out/name).write_bytes(data);return {"path":name,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+def emit(value):print(json.dumps(value,sort_keys=True),flush=True)
+def git(*args):return subprocess.check_output(["git","-C",str(repo),*args],stderr=subprocess.PIPE).decode().strip()
+def simple(command,name,cwd=None,timeout=600,env=None):
+ with (out/name).open("xb") as log:p=subprocess.run(command,cwd=cwd,stdout=log,stderr=subprocess.STDOUT,timeout=timeout,env=env,check=False)
+ if p.returncode:raise RuntimeError(name+" failed with exit "+str(p.returncode))
+def snapshot(label):
+ names=subprocess.check_output(["git","-C",str(repo),"ls-files","-z"]).split(b"\0");rows=[]
+ for raw in names:
+  if not raw:continue
+  name=os.fsdecode(raw);path=repo/name;data=os.fsencode(os.readlink(path)) if path.is_symlink() else path.read_bytes()
+  rows.append({"path":name,"bytes":len(data),"mode":"120000" if path.is_symlink() else ("100755" if path.stat().st_mode&0o111 else "100644"),"sha256":hashlib.sha256(data).hexdigest()})
+ encoded=json.dumps(rows,sort_keys=True,separators=(",",":")).encode();compressed=gzip.compress(encoded,mtime=0);(out/(label+".files.json.gz")).write_bytes(compressed)
+ identity={"head":git("rev-parse","HEAD"),"tree":git("rev-parse","HEAD^{tree}"),"status":git("status","--porcelain=v1","--untracked-files=all"),"files":len(rows),"inventory_sha256":hashlib.sha256(encoded).hexdigest(),"inventory_compressed_bytes":len(compressed),"inventory_compressed_sha256":hashlib.sha256(compressed).hexdigest()}
+ save(label+".json",identity);return identity
+def wait_record(path,deadline):
+ while time.monotonic()<deadline:
+  try:
+   value=json.loads(path.read_bytes())
+   if value.get("status") not in ("running","preparing"):return value
+  except (FileNotFoundError,json.JSONDecodeError):pass
+  time.sleep(1)
+ raise RuntimeError("prerequisite record did not complete: "+str(path))
+exit_code=2;before=None;env=None
+try:
+ if os.geteuid()==0:raise RuntimeError("ordinary native attempt requires a non-Root uid")
+ result["uid"]=os.getuid();result["euid"]=os.geteuid()
+ gates={};deadline=time.monotonic()+900
+ for name in ["source-closure","owner-evidence-parser"]:
+  record=wait_record(pathlib.Path(cfg["source_gates"])/(name+".json"),deadline)
+  if record.get("status")!="passed" or record.get("exit_code")!=0 or record.get("source_sha")!=cfg["sha"] or record.get("tested_sha")!=cfg["sha"] or record.get("before")!=record.get("after") or record["after"]["dirty"] or record["after"]["commit"]!=cfg["sha"] or record["after"]["tree"]!=cfg["tree"] or record.get("observed_passed_tests",0)<1 or record.get("observed_failed_tests")!=0:raise RuntimeError("source prerequisite is not the exact completed passing gate: "+name)
+  gates[name]=record
+ result["source_gate_records"]=gates;save("source-gates.json",gates);emit({"phase":"source_gates_verified","source":cfg["sha"],"counts":{name:r["observed_passed_tests"] for name,r in gates.items()}})
+ proto=wait_record(pathlib.Path(cfg["protoc_record"]),deadline)
+ if proto.get("status")!="prepared" or proto.get("exit_code")!=0 or proto.get("protoc",{}).get("version_exit_code")!=0:raise RuntimeError("protoc completion did not pass")
+ result["protoc"]=proto["protoc"];save("protoc-prerequisite.json",proto)
+ for tool in cfg["tools"]:
+  path=pathlib.Path(tool["path"]);data=path.read_bytes()
+  if len(data)!=tool["bytes"] or hashlib.sha256(data).hexdigest()!=tool["sha256"]:raise RuntimeError("prepared tool bytes changed: "+str(path))
+ if repo.exists():raise RuntimeError("new native checkout already exists")
+ simple(["git","clone","--no-checkout","--no-hardlinks","--no-tags",cfg["object_source"],str(repo)],"clone.log")
+ present=subprocess.run(["git","-C",str(repo),"cat-file","-e",cfg["sha"]+"^{commit}"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False).returncode==0
+ if not present:
+  origin=subprocess.check_output(["git","-C",cfg["object_source"],"remote","get-url","origin"],stderr=subprocess.PIPE).decode().strip();parsed=urlsplit(origin)
+  if parsed.username is not None or parsed.password is not None:raise RuntimeError("origin contains URL credentials")
+  if parsed.scheme not in ("https","ssh") and not origin.startswith("git@"):raise RuntimeError("unsupported configured source transport")
+  simple(["git","-C",str(repo),"fetch","--no-tags",origin,cfg["sha"]],"fetch-source.log")
+ simple(["git","-C",str(repo),"checkout","--detach",cfg["sha"]],"checkout.log")
+ if git("hash-object","AGENTS.md")!="faa57cc0db48123e1011f1eb47692cd3bbbcfc3a":raise RuntimeError("repository rules differ from read rules")
+ before=snapshot("source-before")
+ qa_before=json.loads((pathlib.Path(cfg["source_gates"])/"source-before.json").read_bytes())
+ if before["head"]!=cfg["sha"] or before["tree"]!=cfg["tree"] or before["status"] or before["inventory_sha256"]!=qa_before["inventory_sha256"]:raise RuntimeError("native source bytes differ from qualified source gate")
+ env=os.environ.copy();toolbin="/home/qq/neuro-owner-tools-862531d11598/v1/bin";rustbin="/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin";pybin=str(pathlib.Path(sys.executable).parent);protobin=str(pathlib.Path(proto["protoc"]["path"]).parent)
+ env["PATH"]=os.pathsep.join([protobin,toolbin,pybin,rustbin,"/home/qq/.cargo/bin",env.get("PATH","")])
+ env.update(SOURCE_SHA=cfg["sha"],TESTED_SHA=cfg["sha"],HEPTA_CI_LANE="source-head",PYTHONDONTWRITEBYTECODE="1",PYTHONPATH=str(repo/"scripts")+os.pathsep+str(repo),CODEX_REPO_ROOT=str(repo),RUSTUP_TOOLCHAIN="1.96.0",RUSTC=rustbin+"/rustc",RUSTDOC=rustbin+"/rustdoc",CARGO_TARGET_DIR=cfg["target"],CARGO_INCREMENTAL="0",CARGO_BUILD_JOBS="2",CARGO_PROFILE_TEST_DEBUG="0",CARGO_PROFILE_DEV_DEBUG="0",LIBCLANG_PATH="/usr/lib/x86_64-linux-gnu",PROTOC=proto["protoc"]["path"],PROTOC_INCLUDE=str(pathlib.Path(proto["protoc"]["path"]).parent.parent/"include"),GITHUB_ENV=str(out/"v8.env"))
+ for name in ["RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"]:env.pop(name,None)
+ pathlib.Path(cfg["target"]).mkdir(parents=True,exist_ok=False)
+ result["environment"]={name:env[name] for name in ["PATH","SOURCE_SHA","TESTED_SHA","HEPTA_CI_LANE","RUSTUP_TOOLCHAIN","RUSTC","RUSTDOC","CARGO_TARGET_DIR","CARGO_INCREMENTAL","CARGO_BUILD_JOBS","CARGO_PROFILE_TEST_DEBUG","CARGO_PROFILE_DEV_DEBUG","LIBCLANG_PATH","PROTOC","PROTOC_INCLUDE"]}
+ save("native-environment.json",result["environment"])
+ def stage(name,command,timeout,minimum=0,cwd=None,require_success=True):
+  record_path=out/(name+".json");launch=[sys.executable,"-B",str(repo/"scripts/hepta_ci_exec.py"),"--timeout-seconds",str(timeout),"--minimum-tests",str(minimum),"--output",str(record_path),"--",*command]
+  save(name+"-launch.json",{"command":launch,"source_sha":cfg["sha"],"cwd":str(cwd or repo),"uid":os.geteuid()})
+  with (out/(name+".runner.log")).open("xb") as log:p=subprocess.run(launch,cwd=cwd or repo,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=timeout+90,check=False)
+  record=json.loads(record_path.read_bytes()) if record_path.exists() else {"status":"record_missing","exit_code":p.returncode}
+  result["stages"].append({"name":name,"runner_exit_code":p.returncode,"record":record});save("RESULT.json",result);emit({"phase":name,"source":cfg["sha"],"status":record["status"],"exit_code":p.returncode,"passed":record.get("observed_passed_tests"),"failed":record.get("observed_failed_tests"),"raw_log":record.get("log_file")})
+  if require_success and (p.returncode or record["status"]!="passed"):raise RuntimeError(name+" failed; original logs retained")
+  return p.returncode,record
+ stage("resolve-v8",[sys.executable,"-B","scripts/hepta_ci_v8.py"],600)
+ for line in (out/"v8.env").read_text().splitlines():
+  key,value=line.split("=",1)
+  if key not in ("RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH") or not value:raise RuntimeError("unexpected V8 export")
+  env[key]=value
+ if not all(env.get(key) for key in ["RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"]):raise RuntimeError("verified V8 pair was not exported")
+ save("v8-environment.json",{key:env[key] for key in ["RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"]})
+ stage("locked-native-fetch",["cargo","fetch","--locked","--target","x86_64-unknown-linux-gnu"],1800,cwd=repo/"codex-rs")
+ result["helper_build_started"]=True;save("RESULT.json",result)
+ helpers=[sys.executable,"-B","scripts/hepta_cell_test_helpers.py","--package","codex-hepta-infer-worker-host","--output-dir",str(out/"helpers")]
+ stage("same-source-helper-build",helpers,3600)
+ helper_manifest=json.loads((out/"helpers/manifest.json").read_bytes())
+ if helper_manifest.get("source_sha")!=cfg["sha"] or helper_manifest.get("source_sha_after")!=cfg["sha"] or helper_manifest.get("complete") is not True:raise RuntimeError("helper manifest is not the exact source")
+ env.update(json.loads((out/"helpers/env.json").read_bytes()))
+ stage("helper-verify-before",helpers+["--verify-only"],120)
+ report=repo/"codex-rs/target/nextest/local/junit.xml"
+ if report.exists():report.rename(out/"prior-junit-excluded.xml")
+ packages=["-p","codex-hepta-agentd","-p","codex-hepta-learning-ledger","-p","codex-hepta-learning-artifacts","-p","codex-hepta-intelligence-eval","-p","codex-hepta-neuron"]
+ command=["just","test","--locked","--offline",*packages,"--lib","--test-threads","2","--retries","0","--status-level","pass","--success-output","final","--failure-output","final"]
+ result["ordinary_native_started"]=True;save("RESULT.json",result)
+ code,ordinary=stage("ordinary",command,7200,minimum=1,require_success=False)
+ sys.path.insert(0,str(repo/"scripts"));from hepta_ci_junit import collect
+ collected=collect(out/"ordinary.json",report,out/"ordinary.xml")
+ result["junit_collection_exit_code"]=collected
+ if code or ordinary["status"]!="passed" or collected:raise RuntimeError("ordinary suite or original JUnit collection failed")
+ from hepta_c_observer_coverage import assess_retained_original_observer_coverage
+ coverage=assess_retained_original_observer_coverage(out/"ordinary.json",out/"ordinary.xml");save("original-learning-owner-coverage.json",{"source_sha":cfg["sha"],**coverage})
+ if not coverage["exact_pass_coverage"]:raise RuntimeError("original owner coverage is incomplete")
+ import xml.etree.ElementTree as ET
+ name="evaluated_retained_current_reads_fresh_and_cold_original_owners"
+ cases=[case for case in ET.parse(out/"ordinary.xml").iter("testcase") if case.attrib.get("name","")==name or case.attrib.get("name","").endswith("::"+name)]
+ positive={"source_sha":cfg["sha"],"requested":name,"observed":[dict(c.attrib) for c in cases],"exact_one_pass":len(cases)==1 and all(c.find(tag) is None for c in cases for tag in ["skipped","failure","error"])}
+ save("evaluated-current-positive-coverage.json",positive)
+ if not positive["exact_one_pass"]:raise RuntimeError("new CURRENT positive is not exactly one observed native pass")
+ stage("helper-verify-after",helpers+["--verify-only"],120)
+ after=snapshot("source-after");result["source_before"]=before;result["source_after"]=after;result["source_unchanged"]=before==after
+ if before!=after:raise RuntimeError("source bytes changed during ordinary native execution")
+ result["status"]="ordinary_native_passed";exit_code=0
+except Exception as error:
+ result["status"]="failed";result["error_type"]=type(error).__name__;result["error"]=str(error) if isinstance(error,RuntimeError) else type(error).__name__+"; inspect retained stage logs";exit_code=1
+finally:
+ if repo.is_dir():
+  try:result["final_source"]=snapshot("source-final")
+  except Exception as error:result["final_source_error"]=type(error).__name__
+ result["exit_code"]=exit_code;result["finished_at"]=datetime.now(timezone.utc).isoformat();result["evidence_files"]=[{"path":str(p.relative_to(out)),"bytes":p.stat().st_size} for p in sorted(out.rglob("*")) if p.is_file() and not p.is_relative_to(out/"helpers/bin")]
+ save("RESULT.json",result);emit(result)
+raise SystemExit(exit_code)
