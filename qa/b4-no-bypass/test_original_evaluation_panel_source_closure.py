@@ -87,9 +87,11 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "retention.is_empty() || retention.len() > MAX_RETENTION_TASKS",
             "task.task_digest.is_zero()",
+            "task.cohort_rule_digest.is_zero()",
             "!plans.insert(task.plan_id.clone())",
             "!tasks.insert(task.task_digest)",
             "bytes.extend_from_slice(task.task_digest.as_array())",
+            "bytes.extend_from_slice(task.cohort_rule_digest.as_array())",
             "profile: Digest32::of_bytes(&bytes)",
         ):
             self.rejects(CONTRACT, "fn new(", marker)

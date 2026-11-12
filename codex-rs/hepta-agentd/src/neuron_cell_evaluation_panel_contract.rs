@@ -24,6 +24,7 @@ pub(super) const MAX_RETENTION_TASKS: usize = 16;
 pub struct OriginalCellEvaluationPanelTaskV1 {
     pub plan_id: StableId,
     pub task_digest: Digest32,
+    pub cohort_rule_digest: Digest32,
 }
 
 /// No deserializer or membership setter exists. The canonical profile can be
@@ -50,6 +51,7 @@ impl OriginalCellEvaluationPanelRegistrationV1 {
         bytes.extend_from_slice(&(retention.len() as u64).to_be_bytes());
         for task in std::iter::once(&primary).chain(retention.iter()) {
             if task.task_digest.is_zero()
+                || task.cohort_rule_digest.is_zero()
                 || !plans.insert(task.plan_id.clone())
                 || !tasks.insert(task.task_digest)
             {
@@ -59,6 +61,7 @@ impl OriginalCellEvaluationPanelRegistrationV1 {
             bytes.extend_from_slice(&(name.len() as u64).to_be_bytes());
             bytes.extend_from_slice(name);
             bytes.extend_from_slice(task.task_digest.as_array());
+            bytes.extend_from_slice(task.cohort_rule_digest.as_array());
         }
         Ok(Self {
             primary,

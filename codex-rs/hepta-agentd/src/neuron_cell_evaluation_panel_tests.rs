@@ -13,6 +13,7 @@ fn task(plan: &str, input: &str) -> Task {
     Task {
         plan_id: StableId::new(plan).expect("test plan identity"),
         task_digest: Digest32::of_bytes(input.as_bytes()),
+        cohort_rule_digest: Digest32::of_bytes(format!("fixed-cohort-rule:{plan}:{input}").as_bytes()),
     }
 }
 
@@ -43,6 +44,12 @@ fn original_panel_registration_commits_full_nonempty_membership_before_any_resul
     .expect("a different original profile");
     assert_ne!(registered.evaluation_profile(), changed_input.evaluation_profile());
     assert_ne!(registered.evaluation_profile(), changed_plan.evaluation_profile());
+    let mut changed_rule = second.clone();
+    changed_rule.cohort_rule_digest = Digest32::of_bytes(b"changed-window-or-cluster-policy");
+    let changed_rule = Registration::new(registered.primary().clone(), vec![
+        registered.retention()[0].clone(), changed_rule,
+    ]).expect("a different frozen cohort rule");
+    assert_ne!(registered.evaluation_profile(), changed_rule.evaluation_profile());
     assert_ne!(registered.evaluation_profile(), Digest32::ZERO);
 }
 
@@ -57,7 +64,8 @@ fn original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks() {
         vec![retained.clone(), retained.clone()],
         vec![retained.clone(), task("another-plan", "old-capability-A-input")],
         vec![retained.clone(), task("retention-A", "different-input")],
-        vec![Task { plan_id: retained.plan_id.clone(), task_digest: Digest32::ZERO }],
+        vec![Task { task_digest: Digest32::ZERO, ..retained.clone() }],
+        vec![Task { cohort_rule_digest: Digest32::ZERO, ..retained.clone() }],
         (0..17)
             .map(|index| task(&format!("retention-{index}"), &format!("input-{index}")))
             .collect(),
