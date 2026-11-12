@@ -17,6 +17,13 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 
 CASES = (
+    ("root_independent_b_connection", "fn capture_original_b_connection(", (
+        "RootGenerationPublicationConnectionV1::require_original_publication_session(self)?",
+        "original: self.original.clone()", "identity: self.identity.clone()",
+        "authority: self.authority.clone()", "verifier: Arc::clone(&self.verifier)",
+        "RootGenerationPublicationConnectionV1::require_original_publication_session(&original)?",
+        "Ok(OriginalRootBEvaluationConnectionV1 { original })",
+    )),
     ("authority_host_q24_evaluation_record", "fn register<T>(", (
         "phase: Phase::Registering", "HostAuthorityFrontierStore::initialize(",
         "let (enrollment, result) = action()?", "Instant::now() >= end",
