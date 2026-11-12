@@ -244,3 +244,7 @@ impl HostAuthorityService {
         Ok(raw)
     }
 }
+
+#[cfg(test)]
+#[path = "authority_host_publication_grant_wire_tests.rs"]
+mod tests;

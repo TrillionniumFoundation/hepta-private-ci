@@ -153,4 +153,4 @@ impl ReservedPublicationProfile {
 
 #[cfg(test)]
 #[path = "authority_host_publication_profile_versions_tests.rs"]
-mod tests;
+pub(super) mod tests;

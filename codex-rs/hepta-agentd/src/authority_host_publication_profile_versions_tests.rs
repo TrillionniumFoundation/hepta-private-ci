@@ -8,7 +8,7 @@ use super::*;
 use crate::neuron_generation_current::test_support::RECORDS;
 use crate::neuron_generation_current::test_support::config;
 
-fn profile(version: PublicationVersion) -> anyhow::Result<PublicationProfile> {
+pub(in super::super) fn profile(version: PublicationVersion) -> anyhow::Result<PublicationProfile> {
     let previous_config = config()?;
     let mut target_config = previous_config.clone();
     target_config
