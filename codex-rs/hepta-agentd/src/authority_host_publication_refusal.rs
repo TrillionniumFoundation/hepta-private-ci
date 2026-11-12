@@ -317,3 +317,7 @@ pub(super) fn require_end(end: Instant) -> io::Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "authority_host_publication_refusal_tests.rs"]
+mod tests;
