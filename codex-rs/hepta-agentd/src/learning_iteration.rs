@@ -170,6 +170,9 @@ mod successor;
 pub(crate) use successor::OriginalQ24SuccessorContext;
 
 #[cfg(target_os = "linux")]
+#[path = "learning_iteration_historical_context.rs"]
+pub(crate) mod historical_context;
+#[cfg(target_os = "linux")]
 #[path = "learning_iteration_historical_source.rs"]
 pub(crate) mod historical_source;
 

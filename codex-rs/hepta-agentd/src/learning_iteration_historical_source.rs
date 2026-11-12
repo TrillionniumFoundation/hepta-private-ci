@@ -25,6 +25,23 @@ pub(crate) struct RegisteredHistoricalLearningSourceV1 {
 }
 
 impl RegisteredHistoricalLearningSourceV1 {
+    pub(crate) fn require_original_stage_operation(
+        &self,
+        identity: &AgentdIdentity,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<(), AgentdError> {
+        if identity != &self.identity || Instant::now() >= self.end {
+            return Err(refused("original historical stage owner or end differs"));
+        }
+        self.prepared
+            .require_historical_source_in_operation(&self.receipt, read)
+            .map_err(refused)?;
+        if Instant::now() >= self.end {
+            return Err(refused("original historical stage deadline"));
+        }
+        Ok(())
+    }
+
     pub(crate) fn capture_original_historical_source(
         receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
         prepared: Arc<CellQ24PreparedLearningV1>,

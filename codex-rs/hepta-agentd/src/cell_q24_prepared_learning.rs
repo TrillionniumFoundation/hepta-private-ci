@@ -3,6 +3,19 @@
 use super::*;
 
 impl CellQ24PreparedLearningV1 {
+    pub(crate) fn require_historical_source_in_operation(
+        &self,
+        receipt: &Arc<crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1>,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<(), Error> {
+        self.batch
+            .require_original_historical_dataset_receipt(receipt)?;
+        if receipt.initial_snapshot() != &self.initial {
+            return Err(Error::Binding("different original historical initial"));
+        }
+        OriginalPreparedReadV1::require_prepared(read, self)
+    }
+
     pub(crate) fn require_original_historical_source(
         &self,
         receipt: &Arc<crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1>,
