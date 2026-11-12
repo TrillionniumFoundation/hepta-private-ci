@@ -22,10 +22,11 @@ INPUTS = A + "root_generation_publication_inputs.rs"
 PREPARE = A + "authority_host_original_publication_route.rs"
 SESSION = A + "authority_host_generation_publication_session.rs"
 POST_A = A + "authority_host_post_a_learning.rs"
+REFUSAL = A + "authority_host_publication_refusal.rs"
 CALLERS = {
-    "root_publication_fixed_version": (OWNER, SERVER, CLIENT, INPUTS),
+    "root_publication_fixed_version": (OWNER, SERVER, CLIENT, INPUTS, REFUSAL),
     "root_publication_reserved_origin": (ENROLL,),
-    "root_publication_reserved_version": (ENROLL,),
+    "root_publication_reserved_version": (ENROLL, REFUSAL),
     "root_publication_current_live_profile": (ENROLL, OWNER),
 }
 
@@ -62,7 +63,7 @@ def require_structure(path, source):
             if name == "DurablePublicationProfileV2" and re.search(r"\bpub\b", fields):
                 raise PROOF.VerificationFailure("durable origin fields stay private")
     if path == ENROLL:
-        body, _ = route.function(source, "fn enroll_generation_publication(")
+        body, _ = route.function(source, "fn enroll_armed_generation_publication(")
         begin, end = route.original.span(body, "|initial, proof| {")
         for marker in ("writer: proof", "neuron_generation_process_identity_digest_v1(&self.identity)",
                        "ReservedPublicationProfile::require_live_profile(",
@@ -151,7 +152,7 @@ class PublicationV2SourceTests(unittest.TestCase):
                 f"expected.{field} = live.{field}.clone();\n                expected.binding = expected.digest()?;", 1))
 
     def test_actual_root_context_precedes_new_live_description(self):
-        self.check(ENROLL, "enroll_generation_publication", ("self.with_learning_profile(", "record.fenced", "version == PublicationVersion::LegacyV1 && original.writer != proof",
+        self.check(ENROLL, "enroll_armed_generation_publication", ("self.with_learning_profile(", "record.fenced", "version == PublicationVersion::LegacyV1 && original.writer != proof",
             "writer: proof", "neuron_generation_process_identity_digest_v1(&self.identity)", "ReservedPublicationProfile::require_live_profile(",
             "fence_record(&store, &profile_owner)?", "(store, record.profile)", "ReservedPublicationProfile::retain_original(profile.clone())?"))
         self.mutate(ENROLL, lambda s: s.replace("Some((store, record)) => {", "Some((store, record)) => { HostAuthorityFrontierStore::initialize(root);", 1))

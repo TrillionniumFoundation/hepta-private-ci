@@ -153,7 +153,7 @@ impl RegisteredGenerationPublication {
     pub(crate) fn refuse(&self) -> io::Result<()> {
         // This is called only outside an inspection, on uncertain enrollment
         // delivery. Refuse independently before trying to decode the primary.
-        self.refusal.refuse()?;
+        PublicationRefusal::refuse(&self.refusal)?;
         fence_record(&self.profile_store, &self.profile_owner)
     }
 

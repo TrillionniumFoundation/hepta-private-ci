@@ -7,6 +7,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::atomic::AtomicBool;
 
 use super::*;
+use crate::authority_host_service::generation_publication::RegisteredGenerationPublication;
 
 pub(in super::super) struct BoundPublication {
     runtime: PublicationRuntime,
@@ -186,7 +187,7 @@ fn serve_optional_with_end(
                         Ok(())
                     })();
                     if let Err(error) = acknowledged {
-                        slot.refuse()?;
+                        RegisteredGenerationPublication::refuse(&slot)?;
                         return Err(error);
                     }
                     slot
