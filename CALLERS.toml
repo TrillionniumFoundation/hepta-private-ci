@@ -4710,9 +4710,9 @@ required_function_order = [{ function = "fn send_once_with_original_end(", seque
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/control.rs"
-required = ["CONNECTION_CAPACITY: usize = 32", "try_acquire_owned()", "let _permit = permit", "ControlConnection::<P>::serve_connection(stream, state).await", "state.circuit_task_enabled()", "crate::AgentdMethod::ObjectiveStart", "frames::read_frame(reader).await?", "frames::write_frame(&mut writer, &bytes).await?"]
+required = ["CONNECTION_CAPACITY: usize = 32", "try_acquire_owned()", "let _permit = permit", "ControlConnection::<P>::serve_connection(stream, state).await", "state.circuit_task_enabled()", "crate::AgentdMethod::ObjectiveStart", "frames::read_frame(reader).await?", "match frames::write_frame(&mut writer, &bytes).await"]
 forbidden = ["timeout(IO_TIMEOUT, serve_connection", "permit_all", "authority_granted: true"]
-required_function_order = [{ function = "fn serve_connection(", sequence = ["frames::read_frame", "serde_json::from_slice", "state.circuit_task_enabled()", "crate::AgentdMethod::ObjectiveStart", "if circuit_admission", "P::response(&state, request).await", "timeout(IO_TIMEOUT, P::response(&state, request))", "serde_json::to_vec", "MAX_CONTROL_FRAME_BYTES", "frames::write_frame"] }]
+required_function_order = [{ function = "fn serve_connection(", sequence = ["frames::read_frame", "serde_json::from_slice", "request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION", "state.circuit_task_enabled()", "crate::AgentdMethod::ObjectiveStart", "if circuit_admission", "P::response(&state, request).await", "timeout(IO_TIMEOUT, P::response(&state, request))", "serde_json::to_vec", "MAX_CONTROL_FRAME_BYTES", "let completed_circuit = circuit_admission", "matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)", "if receipt.disposition", ".eq(\"circuit_succeeded\")", "match frames::write_frame(&mut writer, &bytes).await", "Err(AgentdError::Io(error))", "if completed_circuit", "ErrorKind::BrokenPipe | ErrorKind::ConnectionReset", "result => result"], literal_calls = [".eq(\"circuit_succeeded\")"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/control_frames.rs"
