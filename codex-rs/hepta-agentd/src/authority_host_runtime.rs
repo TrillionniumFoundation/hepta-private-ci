@@ -48,6 +48,7 @@ pub use session::PreparedHostAuthoritySession;
 pub(crate) use session::PreparedPublicationData;
 pub(crate) use session::PreparedRootIndependentBEvaluationV1;
 pub(crate) use session::PublicationInputData;
+#[cfg(test)]
 pub(crate) use session::RootCompletedLearningAcceptanceDataV1;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
@@ -67,6 +68,7 @@ pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
 pub(crate) use session::RootOriginalSuccessorFilesV1;
 pub(crate) use session::RootSuccessorTaskCutV1;
+#[cfg(test)]
 pub(crate) use session::completed_learning_acceptance_owner;
 pub(crate) use session::publication_data;
 pub(crate) use session::serve_independent_b_until;
