@@ -141,7 +141,7 @@ impl PostALearningRuntime {
                     end,
                 )?;
                 if self.register {
-                    service.reserve_q24_model_factory_for_profile(
+                    service.reserve_q24_model_factory_v2_for_profile(
                         config,
                         registration,
                         owner,
@@ -151,12 +151,13 @@ impl PostALearningRuntime {
                     )?;
                 }
                 require_end(end)?;
-                let mut factory = service.open_q24_model_factory(
+                let mut factory = service.open_q24_model_factory_v2(
                     config,
                     registration,
                     owner,
                     &learning.profile,
                     &self.reservation_path,
+                    end,
                 )?;
                 let learning_bootstrap =
                     service.seal_learning_checkpoint(config, registration, owner, &learning)?;
