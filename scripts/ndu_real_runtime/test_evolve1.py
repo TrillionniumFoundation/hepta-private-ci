@@ -105,6 +105,16 @@ def remap_identifiers(value, aliases):
     return aliases.get(value, value) if isinstance(value, str) else value
 
 
+def retained_fixture():
+    block, records = transfer_fixture()
+    final = block["registry"]["finals"]["lineage-0/S0/parent"]
+    final.update(attempt_id=None, candidate_bundle=pin("S0"))
+    records[("heldout_final", final["evaluation_reference"])]["candidate_bundle"] = pin(
+        "S0"
+    )
+    return block, records
+
+
 class EvolveTransferChecks(unittest.TestCase):
     def assess(self, block, records, **options):
         return summarize_transfer(
@@ -188,15 +198,118 @@ class EvolveTransferChecks(unittest.TestCase):
                         self.assess(block, records)
 
     def test_noupdate_never_becomes_improvement_from_noisy_positive_score(self):
-        block, records = transfer_fixture()
-        final = block["registry"]["finals"]["lineage-0/S0/parent"]
-        final.update(attempt_id=None, candidate_bundle=pin("S0"))
-        records[("heldout_final", final["evaluation_reference"])][
-            "candidate_bundle"
-        ] = pin("S0")
+        block, records = retained_fixture()
         cell = self.assess(block, records)["cells"]["S0-I0"]
-        self.assertEqual((cell["registered_runs"], cell["qualified_runs"]), (1, 0))
+        self.assertEqual(
+            (cell["registered_runs"], cell["qualified_runs"], cell["unresolved_runs"]),
+            (1, 0, 0),
+        )
         self.assertEqual(cell["effect_criterion_not_met_runs"], 1)
+
+    def test_unconfirmed_retained_final_remains_unresolved(self):
+        for missing in (
+            "final",
+            "acceptance",
+            "sealed",
+            "attempt",
+            "terminal",
+            "rollback",
+            "validity_unknown",
+            "all_attempts",
+        ):
+            with self.subTest(missing=missing):
+                block, records = retained_fixture()
+                run_id = "lineage-0/S0/parent"
+                final = block["registry"]["finals"][run_id]
+                if missing == "final":
+                    del records[("heldout_final", final["evaluation_reference"])]
+                elif missing == "acceptance":
+                    del records[
+                        ("acceptance", block["attempts"][0]["evaluation_reference"])
+                    ]
+                elif missing == "sealed":
+                    block["registry"]["sealed"] = False
+                elif missing == "attempt":
+                    block["attempts"].pop(0)
+                elif missing == "terminal":
+                    block["attempts"][0]["terminal_status"] = "UNKNOWN"
+                elif missing == "rollback":
+                    block["attempts"][0]["rolled_back"] = None
+                elif missing == "validity_unknown":
+                    block["attempts"][0].update(
+                        validity="UNKNOWN", evaluation_reference=None
+                    )
+                else:
+                    block["registry"]["entries"] = [
+                        row
+                        for row in block["registry"]["entries"]
+                        if row["run_id"] != run_id
+                    ]
+                    block["attempts"] = [
+                        row for row in block["attempts"] if row["run_id"] != run_id
+                    ]
+                report = self.assess(block, records)
+                observed = report["lineages"]["lineage-0"]["observed_runs"][run_id]
+                self.assertEqual(
+                    (
+                        observed["qualified"],
+                        observed["effect_criterion_met"],
+                        observed["reason"],
+                    ),
+                    (None, None, "UNRESOLVED_EVIDENCE"),
+                )
+                cell = report["cells"]["S0-I0"]
+                self.assertEqual(
+                    (
+                        cell["registered_runs"],
+                        cell["unresolved_runs"],
+                        cell["improvement_probability_bounds"],
+                    ),
+                    (1, 1, [0.0, 1.0]),
+                )
+                self.assertEqual(report["status"], "HOLD_INCOMPLETE_EVIDENCE")
+
+    def test_retained_final_requires_both_original_evaluation_ports(self):
+        block, records = retained_fixture()
+        for ports in (
+            {},
+            {"read_evaluation": lambda kind, ref: records.get((kind, ref))},
+            {
+                "verify_evaluation": lambda _kind, record, owner: (
+                    record["actor_id"] == owner
+                )
+            },
+        ):
+            with self.subTest(ports=list(ports)):
+                report = summarize_transfer(
+                    [block], minimum_gain=0.1, maximum_retention_loss=0.05, **ports
+                )
+                cell = report["cells"]["S0-I0"]
+                self.assertEqual(
+                    (cell["unresolved_runs"], cell["effect_criterion_unknown_runs"]),
+                    (1, 1),
+                )
+
+    def test_retained_final_rejects_unauthenticated_or_misbound_receipts(self):
+        for field, value, code in (
+            ("actor_id", "not-the-evaluator", "E_EVALUATION_AUTHENTICATION_REJECTED"),
+            (
+                "selection_digest",
+                pin("unrelated-selection"),
+                "E_HOLDOUT_BEFORE_SELECTION_OR_LEAKAGE",
+            ),
+            (
+                "selection_committed_unix_seconds",
+                20,
+                "E_HOLDOUT_BEFORE_SELECTION_OR_LEAKAGE",
+            ),
+        ):
+            with self.subTest(field=field):
+                block, records = retained_fixture()
+                final = block["registry"]["finals"]["lineage-0/S0/parent"]
+                records[("heldout_final", final["evaluation_reference"])][field] = value
+                with self.assertRaisesRegex(ACEValidationError, code):
+                    self.assess(block, records)
 
     def test_zero_success_has_no_zero_or_finite_cost_per_improvement(self):
         block, records = transfer_fixture()
