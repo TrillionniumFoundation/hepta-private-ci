@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/usr/bin/git",
+    "--no-replace-objects",
+    "-C",
+    "/data/root-provider-context-20261112-df05-v10-sourceprep/journal",
+    "-c",
+    "core.sparseCheckout=false",
+    "-c",
+    "core.sparseCheckoutCone=false",
+    "-c",
+    "core.ignorestat=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "worktree",
+    "add",
+    "-b",
+    "fix/hepta-provider-context-host-failure-v13-20261112-df05",
+    "/data/root-provider-context-20261112-df05-v13-failure-seal/source",
+    "52ff33898e12c56ce3e11d16398b1e662a57730e"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 4015327905,
+  "log": "checkout.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "021848e76829d6e84c9d2e5d42156010e81b611d",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "021848e76829d6e84c9d2e5d42156010e81b611d",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "021848e76829d6e84c9d2e5d42156010e81b611d",
+      "source_tree": "f21b752a79955745457b229bdc8d01a2e601672f",
+      "tracked_entries": 10907,
+      "tracked_bytes": 133193973,
+      "complete_map_sha256": "e16cc717bd45bb0587b5fd89be8863e3a767e49ae1702b3adc44db5475da3037",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "021848e76829d6e84c9d2e5d42156010e81b611d",
+      "source_tree": "f21b752a79955745457b229bdc8d01a2e601672f",
+      "tracked_entries": 10907,
+      "tracked_bytes": 133193973,
+      "complete_map_sha256": "e16cc717bd45bb0587b5fd89be8863e3a767e49ae1702b3adc44db5475da3037",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "log_bytes": 1038,
+  "log_sha256": "22bab7b6a309803414510d6f5f1fcf3d82a9a7e06f2c629ae874912b3cc979af"
+}
