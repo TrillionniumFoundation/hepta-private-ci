@@ -29,6 +29,7 @@ use crate::OriginalCellQ24MaterialSourceErrorV1;
 use crate::OriginalCellQ24TrainingReceiptErrorV1;
 use crate::OriginalCellQ24TrainingSourceErrorV1;
 use crate::OriginalCellQ24TrainingStageErrorV1;
+use crate::OriginalCircuitOnPolicyPanelPolicyV2;
 
 #[path = "cell_q24_training_bootstrap_build.rs"]
 mod build;
@@ -72,6 +73,38 @@ pub struct OriginalCellQ24TrainingBootstrapConfigV1 {
     pub maximum_signature_lifetime_seconds: u64,
 }
 
+/// Explicit panel metadata retained by the original Trainer bootstrap.
+/// The declaration neither supplies host custody nor extends a signature window.
+#[derive(Clone)]
+pub struct OriginalCellQ24TrainingBootstrapConfigV2 {
+    original: OriginalCellQ24TrainingBootstrapConfigV1,
+    panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,
+}
+
+impl OriginalCellQ24TrainingBootstrapConfigV2 {
+    pub fn from_original(
+        original: OriginalCellQ24TrainingBootstrapConfigV1,
+        panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,
+    ) -> Result<Self, Error> {
+        require_panel_initial(&original, Some(panel.as_ref()))?;
+        Ok(Self { original, panel })
+    }
+}
+
+fn require_panel_initial(
+    config: &OriginalCellQ24TrainingBootstrapConfigV1,
+    panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>,
+) -> Result<(), Error> {
+    if let Some(panel) = panel {
+        OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(
+            panel,
+            &config.material.initial,
+        )
+        .map_err(|_| Error::Binding("original Trainer on-policy panel declaration"))?;
+    }
+    Ok(())
+}
+
 /// One original host transfer. Every connection was bound when supplied;
 // neither delayed bootstrap nor cold recovery opens a path or restarts a peer.
 pub struct OriginalCellQ24TrainingBootstrapCustodyV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore>
@@ -102,6 +135,7 @@ enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
 
 pub struct OriginalCellQ24TrainingBootstrapOwnerV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
     config: OriginalCellQ24TrainingBootstrapConfigV1,
+    panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>,
     dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>,
     state: Mutex<State<TW, RW>>,
     origin: Origin,
@@ -125,7 +159,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: OriginalCellQ24DatasetCommandReadbackV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<Self, Error> {
-        Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)
+        Self::bind_original_custody(
+            custody,
+            config,
+            dataset,
+            cancellation,
+            Origin::Fresh,
+            /*panel*/ None,
+        )
     }
 
     /// Cold bootstrap is permanently readback-only. Native recovery keeps its
@@ -137,7 +178,50 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: OriginalCellQ24DatasetCommandReadbackV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<Self, Error> {
-        Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)
+        Self::bind_original_custody(
+            custody,
+            config,
+            dataset,
+            cancellation,
+            Origin::Recovered,
+            /*panel*/ None,
+        )
+    }
+
+    /// Bind this declaration to the same original custody and initial peers.
+    pub fn from_original_custody_v2(
+        custody: OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>,
+        config: OriginalCellQ24TrainingBootstrapConfigV2,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        cancellation: Arc<AtomicBool>,
+    ) -> Result<Self, Error> {
+        let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;
+        Self::bind_original_custody(
+            custody,
+            original,
+            dataset,
+            cancellation,
+            Origin::Fresh,
+            Some(panel),
+        )
+    }
+
+    /// Recover only the same original owners with the explicit retained policy.
+    pub fn recover_original_custody_v2(
+        custody: OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>,
+        config: OriginalCellQ24TrainingBootstrapConfigV2,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        cancellation: Arc<AtomicBool>,
+    ) -> Result<Self, Error> {
+        let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;
+        Self::bind_original_custody(
+            custody,
+            original,
+            dataset,
+            cancellation,
+            Origin::Recovered,
+            Some(panel),
+        )
     }
 
     fn bind_original_custody(
@@ -146,7 +230,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: OriginalCellQ24DatasetCommandReadbackV1,
         cancellation: Arc<AtomicBool>,
         origin: Origin,
+        panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>,
     ) -> Result<Self, Error> {
+        require_panel_initial(&config, panel.as_deref())?;
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(
             &dataset,
             &config.material,
@@ -173,6 +259,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         Ok(Self {
             config,
+            panel,
             dataset: Arc::new(dataset),
             state: Mutex::new(State::Awaiting(custody)),
             origin,

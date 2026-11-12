@@ -1,0 +1,2142 @@
+{
+  "schema": "hepta.learn.original-panel-material-training-bootstrap.v2",
+  "baseline": {
+    "commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17",
+    "manifest_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1"
+  },
+  "ownership": {
+    "production_files": [
+      "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+    ],
+    "shared_exports_owned_by": "learn_evaluator_budget",
+    "policy_type_owned_by": "learn_evaluator_budget",
+    "no_h_execution": true
+  },
+  "intent": "Bind an explicit immutable V2 panel declaration to existing original Material and Trainer custody before their journal effects; preserve V1/Shared literal and signature contracts.",
+  "semantics": [
+    "V1 MaterialReceiptConfig and TrainingBootstrapConfig public fields are unchanged; V2 is a separate private-field immutable metadata wrapper.",
+    "Material V2 validates the original config/keys and whole panel before delegating to the original journal create/recover. The original constructor repeats its unchanged validation. The owned local result receives the same panel before return, with no await or external borrow in between.",
+    "Material V1 constructors retain None under Linux cfg. Original attest_experience and read_experience recheck a retained V2 panel before original journal access; Dataset and paired readback use the same original read_experience path.",
+    "Trainer V2 consumes the same original custody and original prebound peers, retaining the supplied declaration. V1 passes explicit None with the exact AGENTS /*panel*/ argument comment.",
+    "Actual Dataset context is authenticated through the original opaque readback, then the retained panel validates both initial and actual Dataset snapshots.",
+    "After the blocking queue, actual Source current and Dataset signature/context checks still occur before panel initial/training checks, original clock/deadline/Generator checks, and both original writer branches.",
+    "All signed payload formats, original owner keys/witnesses/files, transport purposes, peer/pidfd/deadlines, fence states, origin branches and native limits are unchanged.",
+    "Arc only retains immutable metadata within an owner. No Arc identity is used as cross-host evidence, and no new signature bit claims that an owner parsed a policy."
+  ],
+  "platform": {
+    "material_v2": "Linux cfg on import/type/field/calls; existing non-Linux V1 body semantics retained",
+    "training": "already Linux-only via learning_iteration_evidence_client",
+    "policy_contract": "E-owned Linux-only Clone + Send + Sync immutable private fields, no Deserialize"
+  },
+  "required_external_interfaces": {
+    "type": "OriginalCircuitOnPolicyPanelPolicyV2",
+    "methods": [
+      "pub(crate) fn require_original_panel_initial(&self, initial: &LearningIterationSnapshotV1) -> Result<(), OriginalCircuitEvaluationProviderErrorV1>",
+      "pub(crate) fn require_original_panel_training(&self, snapshot: &LearningIterationSnapshotV1) -> Result<(), OriginalCircuitEvaluationProviderErrorV1>"
+    ],
+    "actual_callers": {
+      "require_original_panel_initial": [
+        "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+      ],
+      "require_original_panel_training": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+      ]
+    },
+    "not_a_standalone_compilable_candidate_until_policy_and_exports_are_merged": true
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "sha": "07f1d1dbc946c4b8de33d3bc76acd8e9c3ca48db",
+      "bytes": 23727,
+      "before": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "api_full_equal": true,
+      "independent_git_sha": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "sha": "880e0b27608fd6e363d9680ed0d59d2585cf6946",
+      "bytes": 15043,
+      "before": "c9c80876c1d5e8c589bbf1663a67f36c87f1937b",
+      "api_full_equal": true,
+      "independent_git_sha": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "sha": "3e99100057e9aa685e1bb407a6e4e950048a52a1",
+      "bytes": 10659,
+      "before": "35bf372850718a41f245c996ee91a71c184bed89",
+      "api_full_equal": true,
+      "independent_git_sha": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "sha": "edc2e5cfaf7fe36ef89b9f71b47c25d71700edd1",
+      "bytes": 10741,
+      "before": "826f48120730196081bb7e0bcd6427d30763579e",
+      "api_full_equal": true,
+      "independent_git_sha": true
+    }
+  ],
+  "source_exact_reverse_audit": [
+    {
+      "path": "cell_q24_material_receipt_owner.rs",
+      "exact_original_restored": true
+    },
+    {
+      "path": "cell_q24_material_receipt_binding.rs",
+      "exact_original_restored": true
+    },
+    {
+      "path": "cell_q24_training_bootstrap.rs",
+      "exact_original_restored": true
+    },
+    {
+      "path": "cell_q24_training_bootstrap_build.rs",
+      "exact_original_restored": true
+    }
+  ],
+  "original_payload_and_functions": {
+    "material_config_v1_text_equal": true,
+    "training_config_v1_text_equal": true,
+    "original_material_create_recover_changes_only_cfg_none": true,
+    "signed_receipt_payload_files_changed": [],
+    "production_mutations": [
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material Linux Arc import"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material Linux Policy import"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material V2 wrapper"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material retained private metadata"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material original FreshCreate None"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material original Recovered None"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material V2 create delegation"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material V2 recover delegation"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material attest metadata recheck"
+      },
+      {
+        "path": "cell_q24_material_receipt_owner.rs",
+        "label": "material original reads metadata recheck"
+      },
+      {
+        "path": "cell_q24_material_receipt_binding.rs",
+        "label": "material bounded initial policy validation"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training Policy import"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training V2 wrapper and metadata validator"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training retained private metadata"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training old Fresh None"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training old Recovered None"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training V2 custody methods"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training common bind metadata input"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "training common bind retain"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "training build initial helper"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "training build Policy import"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "training fresh actual D policy check"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "training writer same retained metadata"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "training queued writer policy before effects"
+      },
+      {
+        "path": "cell_q24_material_receipt_binding.rs",
+        "label": "unique private Policy method require_initial"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "unique private Policy method require_initial"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "unique private Policy method require_initial"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "unique private Policy method require_training"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "unique private Policy method require_training"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "format unique Policy UFCS"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_build.rs",
+        "label": "format unique Policy UFCS"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "AGENTS exact panel literal comment Fresh"
+      },
+      {
+        "path": "cell_q24_training_bootstrap.rs",
+        "label": "AGENTS exact panel literal comment Recovered"
+      }
+    ],
+    "runtime_native_validation_performed": false
+  },
+  "protected_replacements": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+        "required": [
+          "pub(super) fn validate_config(",
+          "pub(super) fn verify_original(",
+          "pub(super) fn read_material("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "fit_or_readback(",
+          ".fit(",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn now(",
+            "sequence": [
+              "SystemTime::now()",
+              ".duration_since(UNIX_EPOCH)",
+              ".as_secs()"
+            ]
+          },
+          {
+            "function": "fn fresh_time(",
+            "sequence": [
+              "let fresh = now()?",
+              "if fresh < started_at",
+              "return Err(",
+              "Ok(fresh)"
+            ]
+          },
+          {
+            "function": "fn new_work_time(",
+            "sequence": [
+              "fresh_time(started_at)?",
+              "fresh >= config.initial.request.envelope.expiry_unix_seconds",
+              "return Err(",
+              "require_freeze_window(config, fresh)?",
+              "Ok(fresh)"
+            ]
+          },
+          {
+            "function": "fn require_freeze_window(",
+            "sequence": [
+              "at < config.freeze_evidence.issued_at",
+              "at >= config.freeze_evidence.expires_at",
+              "return Err(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn validate_config(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(",
+              "config.scope.validate_snapshot(",
+              "config.rule.inclusion_policy_digest(",
+              "LearningIterationStageV1::Experience",
+              "!config.initial.receipts.is_empty()",
+              "config.initial.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "config.freeze_plan.inclusion_policy_digest != policy",
+              "config.freeze_evidence.role != LearningEvidenceRoleV1::Evaluator",
+              "config.freeze_evidence.trust_digest != config.verifier.trust_digest()",
+              "config.experience_signer.principal.principal_id != config.initial.owners.experience",
+              "config.dataset_signer.principal.principal_id != config.initial.owners.dataset",
+              "experience_key.verifying_key().to_bytes() != config.experience_signer.verifying_key",
+              "dataset_key.verifying_key().to_bytes() != config.dataset_signer.verifying_key",
+              "require_freeze_window(config, at)?",
+              "require_signer_binding(",
+              "config.freeze_evidence.signing_bytes()",
+              "freeze.extend_from_slice(&config.freeze_evidence.signature)",
+              "config.initial.head_digest.as_array()",
+              "config.scope.binding().as_array()",
+              "Digest32::of_bytes(&freeze).as_array()",
+              "config.verifier.trust_digest().as_array()",
+              "config.maximum_signature_lifetime_seconds.to_be_bytes()",
+              "ProductEvaluationExecutionKeyV1"
+            ]
+          },
+          {
+            "function": "fn validate_snapshot(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(",
+              "config.scope.validate_snapshot(snapshot)?",
+              "snapshot.request != config.initial.request",
+              "snapshot.owners != config.initial.owners",
+              "return Err(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn read_material(",
+            "sequence": [
+              "CellQ24DatasetReaderV1::new(",
+              "if completed_receipt_readback",
+              "reader.read_current_for_original_receipt(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "reader.read_current(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "Ok(material)"
+            ]
+          },
+          {
+            "function": "fn verify_freeze(",
+            "sequence": [
+              "ledger\n        .freeze_dataset(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "if &receipt != material.receipt()",
+              "ledger\n        .read_dataset_records(&receipt, at)",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_same_material(",
+            "sequence": [
+              "before.provenance_digest() != after.provenance_digest()",
+              "before.receipt() != after.receipt()",
+              "before.batch().encoded() != after.batch().encoded()",
+              "LearningOriginalOwnerErrorV1::CommitUncertain",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn receipt(",
+            "sequence": [
+              "match experience",
+              "config.initial.clone()",
+              "material.experience_observation()",
+              "experience.observation != material.experience_observation()",
+              "experience.evidence_digest != material.provenance_digest()",
+              "experience_prefix(config, experience)?",
+              "material.dataset_observation()",
+              "config.initial.owners.dataset",
+              "LearningIterationReceiptV1",
+              "predecessor: prefix.head_digest",
+              "evidence_digest: material.provenance_digest()",
+              "coordinator.record(receipt.clone(), at)?",
+              "config.scope.validate_snapshot(coordinator.snapshot())?",
+              "Ok(receipt)"
+            ]
+          },
+          {
+            "function": "fn dataset_saved(",
+            "sequence": [
+              "learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?",
+              "experience.attestation.signing_bytes()",
+              "signature.extend_from_slice(&experience.attestation.signature)",
+              "ProductEvaluationExecutionKeyV1",
+              "binding.as_array()",
+              "Digest32::of_bytes(&payload).as_array()",
+              "Digest32::of_bytes(&signature).as_array()"
+            ]
+          },
+          {
+            "function": "fn expires_at(",
+            "sequence": [
+              "issued_at\n        .checked_add(",
+              "config.maximum_signature_lifetime_seconds",
+              ".min(signer.principal.expires_at)",
+              ".min(config.freeze_evidence.expires_at)"
+            ]
+          },
+          {
+            "function": "fn signed_bytes(",
+            "sequence": [
+              "receipt.observed_unix_seconds",
+              "require_freeze_window(config, issued_at)?",
+              "require_signer_binding(",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)",
+              "SignedLearningEvidenceV1",
+              "role: LearningEvidenceRoleV1::Observer",
+              "expires_at: expires_at(config, signer, issued_at)?",
+              "key.sign(&signed.signing_bytes()).to_bytes()",
+              "config.verifier.verify(",
+              "learning_owner_evidence::encode(&payload, &signed)"
+            ]
+          },
+          {
+            "function": "fn verify_original(",
+            "sequence": [
+              "require_freeze_window(config, at)?",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "config\n            .verifier\n            .verify(",
+              "verified.principal() != &signer.principal",
+              "verified.controller_id() != &signer.controller_id",
+              "signed.evidence_id != evidence_id(binding)?",
+              "signed.issued_at != receipt.observed_unix_seconds",
+              "signed.expires_at != expires_at(config, signer, signed.issued_at)?",
+              "signed.principal_id != receipt.actor_id",
+              "return Err(",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+        "required": [
+          "pub(super) fn validate_config(",
+          "pub(super) fn verify_original(",
+          "pub(super) fn read_material("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "fit_or_readback(",
+          ".fit(",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "Arc::ptr_eq",
+          "Deserialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn now(",
+            "sequence": [
+              "SystemTime::now()",
+              ".duration_since(UNIX_EPOCH)",
+              ".as_secs()"
+            ]
+          },
+          {
+            "function": "fn fresh_time(",
+            "sequence": [
+              "let fresh = now()?",
+              "if fresh < started_at",
+              "return Err(",
+              "Ok(fresh)"
+            ]
+          },
+          {
+            "function": "fn new_work_time(",
+            "sequence": [
+              "fresh_time(started_at)?",
+              "fresh >= config.initial.request.envelope.expiry_unix_seconds",
+              "return Err(",
+              "require_freeze_window(config, fresh)?",
+              "Ok(fresh)"
+            ]
+          },
+          {
+            "function": "fn require_freeze_window(",
+            "sequence": [
+              "at < config.freeze_evidence.issued_at",
+              "at >= config.freeze_evidence.expires_at",
+              "return Err(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn validate_config(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(",
+              "config.scope.validate_snapshot(",
+              "config.rule.inclusion_policy_digest(",
+              "LearningIterationStageV1::Experience",
+              "!config.initial.receipts.is_empty()",
+              "config.initial.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "config.freeze_plan.inclusion_policy_digest != policy",
+              "config.freeze_evidence.role != LearningEvidenceRoleV1::Evaluator",
+              "config.freeze_evidence.trust_digest != config.verifier.trust_digest()",
+              "config.experience_signer.principal.principal_id != config.initial.owners.experience",
+              "config.dataset_signer.principal.principal_id != config.initial.owners.dataset",
+              "experience_key.verifying_key().to_bytes() != config.experience_signer.verifying_key",
+              "dataset_key.verifying_key().to_bytes() != config.dataset_signer.verifying_key",
+              "require_freeze_window(config, at)?",
+              "require_signer_binding(",
+              "config.freeze_evidence.signing_bytes()",
+              "freeze.extend_from_slice(&config.freeze_evidence.signature)",
+              "config.initial.head_digest.as_array()",
+              "config.scope.binding().as_array()",
+              "Digest32::of_bytes(&freeze).as_array()",
+              "config.verifier.trust_digest().as_array()",
+              "config.maximum_signature_lifetime_seconds.to_be_bytes()",
+              "ProductEvaluationExecutionKeyV1"
+            ]
+          },
+          {
+            "function": "fn validate_snapshot(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(",
+              "config.scope.validate_snapshot(snapshot)?",
+              "snapshot.request != config.initial.request",
+              "snapshot.owners != config.initial.owners",
+              "return Err(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn read_material(",
+            "sequence": [
+              "CellQ24DatasetReaderV1::new(",
+              "if completed_receipt_readback",
+              "reader.read_current_for_original_receipt(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "reader.read_current(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "Ok(material)"
+            ]
+          },
+          {
+            "function": "fn verify_freeze(",
+            "sequence": [
+              "ledger\n        .freeze_dataset(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence",
+              "if &receipt != material.receipt()",
+              "ledger\n        .read_dataset_records(&receipt, at)",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_same_material(",
+            "sequence": [
+              "before.provenance_digest() != after.provenance_digest()",
+              "before.receipt() != after.receipt()",
+              "before.batch().encoded() != after.batch().encoded()",
+              "LearningOriginalOwnerErrorV1::CommitUncertain",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn receipt(",
+            "sequence": [
+              "match experience",
+              "config.initial.clone()",
+              "material.experience_observation()",
+              "experience.observation != material.experience_observation()",
+              "experience.evidence_digest != material.provenance_digest()",
+              "experience_prefix(config, experience)?",
+              "material.dataset_observation()",
+              "config.initial.owners.dataset",
+              "LearningIterationReceiptV1",
+              "predecessor: prefix.head_digest",
+              "evidence_digest: material.provenance_digest()",
+              "coordinator.record(receipt.clone(), at)?",
+              "config.scope.validate_snapshot(coordinator.snapshot())?",
+              "Ok(receipt)"
+            ]
+          },
+          {
+            "function": "fn dataset_saved(",
+            "sequence": [
+              "learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?",
+              "experience.attestation.signing_bytes()",
+              "signature.extend_from_slice(&experience.attestation.signature)",
+              "ProductEvaluationExecutionKeyV1",
+              "binding.as_array()",
+              "Digest32::of_bytes(&payload).as_array()",
+              "Digest32::of_bytes(&signature).as_array()"
+            ]
+          },
+          {
+            "function": "fn expires_at(",
+            "sequence": [
+              "issued_at\n        .checked_add(",
+              "config.maximum_signature_lifetime_seconds",
+              ".min(signer.principal.expires_at)",
+              ".min(config.freeze_evidence.expires_at)"
+            ]
+          },
+          {
+            "function": "fn signed_bytes(",
+            "sequence": [
+              "receipt.observed_unix_seconds",
+              "require_freeze_window(config, issued_at)?",
+              "require_signer_binding(",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)",
+              "SignedLearningEvidenceV1",
+              "role: LearningEvidenceRoleV1::Observer",
+              "expires_at: expires_at(config, signer, issued_at)?",
+              "key.sign(&signed.signing_bytes()).to_bytes()",
+              "config.verifier.verify(",
+              "learning_owner_evidence::encode(&payload, &signed)"
+            ]
+          },
+          {
+            "function": "fn verify_original(",
+            "sequence": [
+              "require_freeze_window(config, at)?",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "config\n            .verifier\n            .verify(",
+              "verified.principal() != &signer.principal",
+              "verified.controller_id() != &signer.controller_id",
+              "signed.evidence_id != evidence_id(binding)?",
+              "signed.issued_at != receipt.observed_unix_seconds",
+              "signed.expires_at != expires_at(config, signer, signed.issued_at)?",
+              "signed.principal_id != receipt.actor_id",
+              "return Err(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_panel_initial(",
+            "sequence": [
+              "config: &OriginalCellQ24MaterialReceiptConfigV1",
+              "panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>",
+              "if let Some(panel) = panel {",
+              "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(panel, &config.initial)",
+              ".map_err(|_| invalid(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if let Some(panel) = panel {",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs\"\nrequired = [\"pub(super) fn validate_config(\",\"pub(super) fn verify_original(\",\"pub(super) fn read_material(\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"LearningEvidenceVerifierV1::new\",\"LearningEvidenceTrustV1\",\"File::open\",\"UnixStream::connect\",\"with_root_learning_stage_owners(\",\"LearningIterationStageOwnerPortsV1 for\",\"fit_or_readback(\",\".fit(\",\"unwrap_or\",\"permit_all\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn now(\"\nsequence = [\"SystemTime::now()\",\".duration_since(UNIX_EPOCH)\",\".as_secs()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn fresh_time(\"\nsequence = [\"let fresh = now()?\",\"if fresh < started_at\",\"return Err(\",\"Ok(fresh)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn new_work_time(\"\nsequence = [\"fresh_time(started_at)?\",\"fresh >= config.initial.request.envelope.expiry_unix_seconds\",\"return Err(\",\"require_freeze_window(config, fresh)?\",\"Ok(fresh)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_freeze_window(\"\nsequence = [\"at < config.freeze_evidence.issued_at\",\"at >= config.freeze_evidence.expires_at\",\"return Err(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn validate_config(\"\nsequence = [\"LearningIterationCoordinatorV1::from_snapshot(\",\"config.scope.validate_snapshot(\",\"config.rule.inclusion_policy_digest(\",\"LearningIterationStageV1::Experience\",\"!config.initial.receipts.is_empty()\",\"config.initial.owners.evidence_trust_digest != config.verifier.trust_digest()\",\"config.freeze_plan.inclusion_policy_digest != policy\",\"config.freeze_evidence.role != LearningEvidenceRoleV1::Evaluator\",\"config.freeze_evidence.trust_digest != config.verifier.trust_digest()\",\"config.experience_signer.principal.principal_id != config.initial.owners.experience\",\"config.dataset_signer.principal.principal_id != config.initial.owners.dataset\",\"experience_key.verifying_key().to_bytes() != config.experience_signer.verifying_key\",\"dataset_key.verifying_key().to_bytes() != config.dataset_signer.verifying_key\",\"require_freeze_window(config, at)?\",\"require_signer_binding(\",\"config.freeze_evidence.signing_bytes()\",\"freeze.extend_from_slice(&config.freeze_evidence.signature)\",\"config.initial.head_digest.as_array()\",\"config.scope.binding().as_array()\",\"Digest32::of_bytes(&freeze).as_array()\",\"config.verifier.trust_digest().as_array()\",\"config.maximum_signature_lifetime_seconds.to_be_bytes()\",\"ProductEvaluationExecutionKeyV1\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn validate_snapshot(\"\nsequence = [\"LearningIterationCoordinatorV1::from_snapshot(\",\"config.scope.validate_snapshot(snapshot)?\",\"snapshot.request != config.initial.request\",\"snapshot.owners != config.initial.owners\",\"return Err(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_material(\"\nsequence = [\"CellQ24DatasetReaderV1::new(\",\"if completed_receipt_readback\",\"reader.read_current_for_original_receipt(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"reader.read_current(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"Ok(material)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn verify_freeze(\"\nsequence = [\"ledger\\n        .freeze_dataset(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"if &receipt != material.receipt()\",\"ledger\\n        .read_dataset_records(&receipt, at)\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_material(\"\nsequence = [\"before.provenance_digest() != after.provenance_digest()\",\"before.receipt() != after.receipt()\",\"before.batch().encoded() != after.batch().encoded()\",\"LearningOriginalOwnerErrorV1::CommitUncertain\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn receipt(\"\nsequence = [\"match experience\",\"config.initial.clone()\",\"material.experience_observation()\",\"experience.observation != material.experience_observation()\",\"experience.evidence_digest != material.provenance_digest()\",\"experience_prefix(config, experience)?\",\"material.dataset_observation()\",\"config.initial.owners.dataset\",\"LearningIterationReceiptV1\",\"predecessor: prefix.head_digest\",\"evidence_digest: material.provenance_digest()\",\"coordinator.record(receipt.clone(), at)?\",\"config.scope.validate_snapshot(coordinator.snapshot())?\",\"Ok(receipt)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn dataset_saved(\"\nsequence = [\"learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?\",\"experience.attestation.signing_bytes()\",\"signature.extend_from_slice(&experience.attestation.signature)\",\"ProductEvaluationExecutionKeyV1\",\"binding.as_array()\",\"Digest32::of_bytes(&payload).as_array()\",\"Digest32::of_bytes(&signature).as_array()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn expires_at(\"\nsequence = [\"issued_at\\n        .checked_add(\",\"config.maximum_signature_lifetime_seconds\",\".min(signer.principal.expires_at)\",\".min(config.freeze_evidence.expires_at)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn signed_bytes(\"\nsequence = [\"receipt.observed_unix_seconds\",\"require_freeze_window(config, issued_at)?\",\"require_signer_binding(\",\"learning_iteration_receipt_signing_bytes_v1(receipt)\",\"SignedLearningEvidenceV1\",\"role: LearningEvidenceRoleV1::Observer\",\"expires_at: expires_at(config, signer, issued_at)?\",\"key.sign(&signed.signing_bytes()).to_bytes()\",\"config.verifier.verify(\",\"learning_owner_evidence::encode(&payload, &signed)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn verify_original(\"\nsequence = [\"require_freeze_window(config, at)?\",\"learning_iteration_receipt_signing_bytes_v1(receipt)?\",\"config\\n            .verifier\\n            .verify(\",\"verified.principal() != &signer.principal\",\"verified.controller_id() != &signer.controller_id\",\"signed.evidence_id != evidence_id(binding)?\",\"signed.issued_at != receipt.observed_unix_seconds\",\"signed.expires_at != expires_at(config, signer, signed.issued_at)?\",\"signed.principal_id != receipt.actor_id\",\"return Err(\",\"Ok(())\"]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs\"\nrequired = [\"pub(super) fn validate_config(\",\"pub(super) fn verify_original(\",\"pub(super) fn read_material(\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"LearningEvidenceVerifierV1::new\",\"LearningEvidenceTrustV1\",\"File::open\",\"UnixStream::connect\",\"with_root_learning_stage_owners(\",\"LearningIterationStageOwnerPortsV1 for\",\"fit_or_readback(\",\".fit(\",\"unwrap_or\",\"permit_all\",\"if false\",\"Arc::ptr_eq\",\"Deserialize\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn now(\"\nsequence = [\"SystemTime::now()\",\".duration_since(UNIX_EPOCH)\",\".as_secs()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn fresh_time(\"\nsequence = [\"let fresh = now()?\",\"if fresh < started_at\",\"return Err(\",\"Ok(fresh)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn new_work_time(\"\nsequence = [\"fresh_time(started_at)?\",\"fresh >= config.initial.request.envelope.expiry_unix_seconds\",\"return Err(\",\"require_freeze_window(config, fresh)?\",\"Ok(fresh)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_freeze_window(\"\nsequence = [\"at < config.freeze_evidence.issued_at\",\"at >= config.freeze_evidence.expires_at\",\"return Err(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn validate_config(\"\nsequence = [\"LearningIterationCoordinatorV1::from_snapshot(\",\"config.scope.validate_snapshot(\",\"config.rule.inclusion_policy_digest(\",\"LearningIterationStageV1::Experience\",\"!config.initial.receipts.is_empty()\",\"config.initial.owners.evidence_trust_digest != config.verifier.trust_digest()\",\"config.freeze_plan.inclusion_policy_digest != policy\",\"config.freeze_evidence.role != LearningEvidenceRoleV1::Evaluator\",\"config.freeze_evidence.trust_digest != config.verifier.trust_digest()\",\"config.experience_signer.principal.principal_id != config.initial.owners.experience\",\"config.dataset_signer.principal.principal_id != config.initial.owners.dataset\",\"experience_key.verifying_key().to_bytes() != config.experience_signer.verifying_key\",\"dataset_key.verifying_key().to_bytes() != config.dataset_signer.verifying_key\",\"require_freeze_window(config, at)?\",\"require_signer_binding(\",\"config.freeze_evidence.signing_bytes()\",\"freeze.extend_from_slice(&config.freeze_evidence.signature)\",\"config.initial.head_digest.as_array()\",\"config.scope.binding().as_array()\",\"Digest32::of_bytes(&freeze).as_array()\",\"config.verifier.trust_digest().as_array()\",\"config.maximum_signature_lifetime_seconds.to_be_bytes()\",\"ProductEvaluationExecutionKeyV1\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn validate_snapshot(\"\nsequence = [\"LearningIterationCoordinatorV1::from_snapshot(\",\"config.scope.validate_snapshot(snapshot)?\",\"snapshot.request != config.initial.request\",\"snapshot.owners != config.initial.owners\",\"return Err(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_material(\"\nsequence = [\"CellQ24DatasetReaderV1::new(\",\"if completed_receipt_readback\",\"reader.read_current_for_original_receipt(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"reader.read_current(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"Ok(material)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn verify_freeze(\"\nsequence = [\"ledger\\n        .freeze_dataset(\",\"config.freeze_plan.clone()\",\"&config.freeze_evidence\",\"if &receipt != material.receipt()\",\"ledger\\n        .read_dataset_records(&receipt, at)\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_material(\"\nsequence = [\"before.provenance_digest() != after.provenance_digest()\",\"before.receipt() != after.receipt()\",\"before.batch().encoded() != after.batch().encoded()\",\"LearningOriginalOwnerErrorV1::CommitUncertain\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn receipt(\"\nsequence = [\"match experience\",\"config.initial.clone()\",\"material.experience_observation()\",\"experience.observation != material.experience_observation()\",\"experience.evidence_digest != material.provenance_digest()\",\"experience_prefix(config, experience)?\",\"material.dataset_observation()\",\"config.initial.owners.dataset\",\"LearningIterationReceiptV1\",\"predecessor: prefix.head_digest\",\"evidence_digest: material.provenance_digest()\",\"coordinator.record(receipt.clone(), at)?\",\"config.scope.validate_snapshot(coordinator.snapshot())?\",\"Ok(receipt)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn dataset_saved(\"\nsequence = [\"learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?\",\"experience.attestation.signing_bytes()\",\"signature.extend_from_slice(&experience.attestation.signature)\",\"ProductEvaluationExecutionKeyV1\",\"binding.as_array()\",\"Digest32::of_bytes(&payload).as_array()\",\"Digest32::of_bytes(&signature).as_array()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn expires_at(\"\nsequence = [\"issued_at\\n        .checked_add(\",\"config.maximum_signature_lifetime_seconds\",\".min(signer.principal.expires_at)\",\".min(config.freeze_evidence.expires_at)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn signed_bytes(\"\nsequence = [\"receipt.observed_unix_seconds\",\"require_freeze_window(config, issued_at)?\",\"require_signer_binding(\",\"learning_iteration_receipt_signing_bytes_v1(receipt)\",\"SignedLearningEvidenceV1\",\"role: LearningEvidenceRoleV1::Observer\",\"expires_at: expires_at(config, signer, issued_at)?\",\"key.sign(&signed.signing_bytes()).to_bytes()\",\"config.verifier.verify(\",\"learning_owner_evidence::encode(&payload, &signed)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn verify_original(\"\nsequence = [\"require_freeze_window(config, at)?\",\"learning_iteration_receipt_signing_bytes_v1(receipt)?\",\"config\\n            .verifier\\n            .verify(\",\"verified.principal() != &signer.principal\",\"verified.controller_id() != &signer.controller_id\",\"signed.evidence_id != evidence_id(binding)?\",\"signed.issued_at != receipt.observed_unix_seconds\",\"signed.expires_at != expires_at(config, signer, signed.issued_at)?\",\"signed.principal_id != receipt.actor_id\",\"return Err(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_panel_initial(\"\nsequence = [\"config: &OriginalCellQ24MaterialReceiptConfigV1\",\"panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>\",\"if let Some(panel) = panel {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(panel, &config.initial)\",\".map_err(|_| invalid(\",\"Ok(())\"]\ntop_level = [\"if let Some(panel) = panel {\",\"Ok(())\"]\n\n"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "required_order": [
+          [
+            "mod binding;",
+            "mod paired_readback;"
+          ],
+          [
+            "fn into_evidence_readback_owner<",
+            "self,",
+            "source: CircuitTaskSourceReadbackV1<SW>",
+            "ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>",
+            "let config = self.config.clone();",
+            "OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(",
+            "self, config, source, identity, ledger, baseline,",
+            "fn attest_experience("
+          ],
+          [
+            "fn into_command_owner<",
+            "self,",
+            "source: CircuitTaskSourceReadbackV1<SW>",
+            "ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>",
+            "let allow_new_commands =",
+            "self.command_origin",
+            "OriginalMaterialCommandOriginV1::FreshCreate",
+            "let config = self.config.clone();",
+            "OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(",
+            "self,",
+            "config,",
+            "source,",
+            "identity,",
+            "ledger,",
+            "baseline,",
+            "allow_new_commands,",
+            "fn attest_experience("
+          ]
+        ],
+        "required": [
+          "pub struct OriginalCellQ24MaterialReceiptOwnersV1",
+          "pub experience_signer: TrustedLearningSignerV1",
+          "pub dataset_signer: TrustedLearningSignerV1",
+          "pub ledger: &'a mut LedgerWriter"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "fit_or_readback(",
+          ".fit(",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn create(",
+            "sequence": [
+              "binding::validate_config(",
+              "LearningOwnerJournalV1::create(",
+              "files.experience",
+              "experience_saved.binding_digest",
+              "LearningOwnerJournalV1::create(",
+              "files.dataset",
+              "dataset_binding",
+              "Ok(Self",
+              "command_origin: OriginalMaterialCommandOriginV1::FreshCreate"
+            ]
+          },
+          {
+            "function": "fn recover(",
+            "sequence": [
+              "binding::validate_config(",
+              "LearningOwnerJournalV1::recover(",
+              "files.experience",
+              "experience_saved.binding_digest",
+              "LearningOwnerJournalV1::recover(",
+              "files.dataset",
+              "dataset_binding",
+              "Ok(Self",
+              "command_origin: OriginalMaterialCommandOriginV1::Recovered"
+            ]
+          },
+          {
+            "function": "fn attest_experience(",
+            "sequence": [
+              "binding::now()?",
+              "binding::validate_snapshot(",
+              "self.experience.read(&self.experience_saved)",
+              "Ok(bytes)",
+              "self.authenticate_experience(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "sources.snapshot != &self.config.initial",
+              "binding::require_new_work(",
+              "binding::read_material(&self.config, &mut sources, false)?",
+              "binding::require_new_work(",
+              "self.experience.commit_once(",
+              "binding::new_work_time(",
+              "binding::verify_freeze(",
+              "binding::receipt(",
+              "binding::signed_bytes(",
+              "self.authenticate_experience(",
+              "binding::require_same_material(",
+              "binding::require_new_work(",
+              "Ok(completed)"
+            ]
+          },
+          {
+            "function": "fn readback_experience(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(&mut sources, started_at)"
+            ]
+          },
+          {
+            "function": "fn attest_dataset(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(",
+              "binding::dataset_saved(",
+              "self.dataset.read(&saved)",
+              "Ok(bytes)",
+              "self.authenticate_dataset(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "binding::experience_prefix(",
+              "binding::require_new_work(",
+              "self.dataset.commit_once(",
+              "binding::new_work_time(",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "binding::receipt(",
+              "binding::signed_bytes(",
+              "self.authenticate_dataset(",
+              "binding::require_new_work(",
+              "Ok(completed)"
+            ]
+          },
+          {
+            "function": "fn readback_dataset(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(",
+              "binding::dataset_saved(",
+              "self.dataset.read(&saved)?",
+              "self.authenticate_dataset("
+            ]
+          },
+          {
+            "function": "fn read_experience(",
+            "sequence": [
+              "binding::validate_snapshot(",
+              "self.experience.read(&self.experience_saved)?",
+              "self.authenticate_experience("
+            ]
+          },
+          {
+            "function": "fn authenticate_experience(",
+            "sequence": [
+              "binding::validate_snapshot(",
+              "learning_owner_evidence::decode(bytes)?",
+              "binding::read_material(&self.config, sources, true)?",
+              "binding::receipt(",
+              "attestation.issued_at",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "binding::require_snapshot_receipt(",
+              "self.experience.read(&self.experience_saved)? != bytes",
+              "binding::fresh_time(started_at)?",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "Ok(OriginalCellQ24MaterialCompletionV1"
+            ]
+          },
+          {
+            "function": "fn authenticate_dataset(",
+            "sequence": [
+              "learning_owner_evidence::decode(bytes)?",
+              "self.read_experience(",
+              "experience.receipt != original_experience.receipt",
+              "experience.attestation != original_experience.attestation",
+              "binding::dataset_saved(",
+              "binding::require_same_material(",
+              "binding::receipt(",
+              "attestation.issued_at",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "binding::require_snapshot_receipt(",
+              "learning_owner_evidence::encode(",
+              "self.dataset.read(saved)? != bytes",
+              "self.experience.read(&self.experience_saved)? != original_experience_bytes",
+              "binding::fresh_time(started_at)?",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "binding::verify_original(",
+              "Ok(OriginalCellQ24MaterialCompletionV1"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "required_order": [
+          [
+            "mod binding;",
+            "mod paired_readback;"
+          ],
+          [
+            "fn into_evidence_readback_owner<",
+            "self,",
+            "source: CircuitTaskSourceReadbackV1<SW>",
+            "ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>",
+            "let config = self.config.clone();",
+            "OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(",
+            "self, config, source, identity, ledger, baseline,",
+            "fn attest_experience("
+          ],
+          [
+            "fn into_command_owner<",
+            "self,",
+            "source: CircuitTaskSourceReadbackV1<SW>",
+            "ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>",
+            "let allow_new_commands =",
+            "self.command_origin",
+            "OriginalMaterialCommandOriginV1::FreshCreate",
+            "let config = self.config.clone();",
+            "OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(",
+            "self,",
+            "config,",
+            "source,",
+            "identity,",
+            "ledger,",
+            "baseline,",
+            "allow_new_commands,",
+            "fn attest_experience("
+          ],
+          [
+            "pub struct OriginalCellQ24MaterialReceiptConfigV2 {",
+            "original: OriginalCellQ24MaterialReceiptConfigV1,",
+            "panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,",
+            "impl OriginalCellQ24MaterialReceiptConfigV2 {"
+          ]
+        ],
+        "required": [
+          "pub struct OriginalCellQ24MaterialReceiptOwnersV1",
+          "pub experience_signer: TrustedLearningSignerV1",
+          "pub dataset_signer: TrustedLearningSignerV1",
+          "pub ledger: &'a mut LedgerWriter",
+          "pub struct OriginalCellQ24MaterialReceiptConfigV2",
+          "panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "fit_or_readback(",
+          ".fit(",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "Arc::ptr_eq",
+          "Deserialize",
+          "pub panel:",
+          "pub original:"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn create(",
+            "sequence": [
+              "binding::validate_config(",
+              "LearningOwnerJournalV1::create(",
+              "files.experience",
+              "experience_saved.binding_digest",
+              "LearningOwnerJournalV1::create(",
+              "files.dataset",
+              "dataset_binding",
+              "Ok(Self",
+              "panel: None,",
+              "command_origin: OriginalMaterialCommandOriginV1::FreshCreate"
+            ]
+          },
+          {
+            "function": "fn recover(",
+            "sequence": [
+              "binding::validate_config(",
+              "LearningOwnerJournalV1::recover(",
+              "files.experience",
+              "experience_saved.binding_digest",
+              "LearningOwnerJournalV1::recover(",
+              "files.dataset",
+              "dataset_binding",
+              "Ok(Self",
+              "panel: None,",
+              "command_origin: OriginalMaterialCommandOriginV1::Recovered"
+            ]
+          },
+          {
+            "function": "fn attest_experience(",
+            "sequence": [
+              "binding::now()?",
+              "binding::validate_snapshot(",
+              "binding::require_panel_initial(&self.config, self.panel.as_deref())?;",
+              "self.experience.read(&self.experience_saved)",
+              "Ok(bytes)",
+              "self.authenticate_experience(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "sources.snapshot != &self.config.initial",
+              "binding::require_new_work(",
+              "binding::read_material(&self.config, &mut sources, false)?",
+              "binding::require_new_work(",
+              "self.experience.commit_once(",
+              "binding::new_work_time(",
+              "binding::verify_freeze(",
+              "binding::receipt(",
+              "binding::signed_bytes(",
+              "self.authenticate_experience(",
+              "binding::require_same_material(",
+              "binding::require_new_work(",
+              "Ok(completed)"
+            ],
+            "top_level": [
+              "binding::require_panel_initial(&self.config, self.panel.as_deref())?;"
+            ]
+          },
+          {
+            "function": "fn readback_experience(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(&mut sources, started_at)"
+            ]
+          },
+          {
+            "function": "fn attest_dataset(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(",
+              "binding::dataset_saved(",
+              "self.dataset.read(&saved)",
+              "Ok(bytes)",
+              "self.authenticate_dataset(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "binding::experience_prefix(",
+              "binding::require_new_work(",
+              "self.dataset.commit_once(",
+              "binding::new_work_time(",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "binding::receipt(",
+              "binding::signed_bytes(",
+              "self.authenticate_dataset(",
+              "binding::require_new_work(",
+              "Ok(completed)"
+            ]
+          },
+          {
+            "function": "fn readback_dataset(",
+            "sequence": [
+              "binding::now()?",
+              "self.read_experience(",
+              "binding::dataset_saved(",
+              "self.dataset.read(&saved)?",
+              "self.authenticate_dataset("
+            ]
+          },
+          {
+            "function": "fn read_experience(",
+            "sequence": [
+              "binding::validate_snapshot(",
+              "binding::require_panel_initial(&self.config, self.panel.as_deref())?;",
+              "self.experience.read(&self.experience_saved)?",
+              "self.authenticate_experience("
+            ],
+            "top_level": [
+              "binding::require_panel_initial(&self.config, self.panel.as_deref())?;"
+            ]
+          },
+          {
+            "function": "fn authenticate_experience(",
+            "sequence": [
+              "binding::validate_snapshot(",
+              "learning_owner_evidence::decode(bytes)?",
+              "binding::read_material(&self.config, sources, true)?",
+              "binding::receipt(",
+              "attestation.issued_at",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "binding::require_snapshot_receipt(",
+              "self.experience.read(&self.experience_saved)? != bytes",
+              "binding::fresh_time(started_at)?",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "Ok(OriginalCellQ24MaterialCompletionV1"
+            ]
+          },
+          {
+            "function": "fn authenticate_dataset(",
+            "sequence": [
+              "learning_owner_evidence::decode(bytes)?",
+              "self.read_experience(",
+              "experience.receipt != original_experience.receipt",
+              "experience.attestation != original_experience.attestation",
+              "binding::dataset_saved(",
+              "binding::require_same_material(",
+              "binding::receipt(",
+              "attestation.issued_at",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "binding::require_snapshot_receipt(",
+              "learning_owner_evidence::encode(",
+              "self.dataset.read(saved)? != bytes",
+              "self.experience.read(&self.experience_saved)? != original_experience_bytes",
+              "binding::fresh_time(started_at)?",
+              "binding::verify_freeze(",
+              "binding::verify_original(",
+              "binding::verify_original(",
+              "Ok(OriginalCellQ24MaterialCompletionV1"
+            ]
+          },
+          {
+            "function": "fn from_original(",
+            "sequence": [
+              "original: OriginalCellQ24MaterialReceiptConfigV1",
+              "panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>",
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "Ok(Self { original, panel })"
+            ],
+            "top_level": [
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "Ok(Self { original, panel })"
+            ]
+          },
+          {
+            "function": "fn create_v2(",
+            "sequence": [
+              "config: OriginalCellQ24MaterialReceiptConfigV2",
+              "let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;",
+              "binding::validate_config(&original, &experience_key, &dataset_key)?;",
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "let mut owner = Self::create(files, original, experience_key, dataset_key)?;",
+              "owner.panel = Some(panel);",
+              "Ok(owner)"
+            ],
+            "top_level": [
+              "binding::validate_config(&original, &experience_key, &dataset_key)?;",
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "let mut owner = Self::create(files, original, experience_key, dataset_key)?;",
+              "owner.panel = Some(panel);",
+              "Ok(owner)"
+            ]
+          },
+          {
+            "function": "fn recover_v2(",
+            "sequence": [
+              "config: OriginalCellQ24MaterialReceiptConfigV2",
+              "let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;",
+              "binding::validate_config(&original, &experience_key, &dataset_key)?;",
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "let mut owner = Self::recover(files, original, experience_key, dataset_key)?;",
+              "owner.panel = Some(panel);",
+              "Ok(owner)"
+            ],
+            "top_level": [
+              "binding::validate_config(&original, &experience_key, &dataset_key)?;",
+              "binding::require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "let mut owner = Self::recover(files, original, experience_key, dataset_key)?;",
+              "owner.panel = Some(panel);",
+              "Ok(owner)"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\nrequired_order = [[\"mod binding;\",\"mod paired_readback;\"],[\"fn into_evidence_readback_owner<\",\"self,\",\"source: CircuitTaskSourceReadbackV1<SW>\",\"ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>\",\"let config = self.config.clone();\",\"OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(\",\"self, config, source, identity, ledger, baseline,\",\"fn attest_experience(\"],[\"fn into_command_owner<\",\"self,\",\"source: CircuitTaskSourceReadbackV1<SW>\",\"ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>\",\"let allow_new_commands =\",\"self.command_origin\",\"OriginalMaterialCommandOriginV1::FreshCreate\",\"let config = self.config.clone();\",\"OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(\",\"self,\",\"config,\",\"source,\",\"identity,\",\"ledger,\",\"baseline,\",\"allow_new_commands,\",\"fn attest_experience(\"]]\nrequired = [\"pub struct OriginalCellQ24MaterialReceiptOwnersV1\",\"pub experience_signer: TrustedLearningSignerV1\",\"pub dataset_signer: TrustedLearningSignerV1\",\"pub ledger: &'a mut LedgerWriter\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"LearningEvidenceVerifierV1::new\",\"LearningEvidenceTrustV1\",\"File::open\",\"UnixStream::connect\",\"with_root_learning_stage_owners(\",\"LearningIterationStageOwnerPortsV1 for\",\"fit_or_readback(\",\".fit(\",\"unwrap_or\",\"permit_all\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn create(\"\nsequence = [\"binding::validate_config(\",\"LearningOwnerJournalV1::create(\",\"files.experience\",\"experience_saved.binding_digest\",\"LearningOwnerJournalV1::create(\",\"files.dataset\",\"dataset_binding\",\"Ok(Self\",\"command_origin: OriginalMaterialCommandOriginV1::FreshCreate\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover(\"\nsequence = [\"binding::validate_config(\",\"LearningOwnerJournalV1::recover(\",\"files.experience\",\"experience_saved.binding_digest\",\"LearningOwnerJournalV1::recover(\",\"files.dataset\",\"dataset_binding\",\"Ok(Self\",\"command_origin: OriginalMaterialCommandOriginV1::Recovered\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn attest_experience(\"\nsequence = [\"binding::now()?\",\"binding::validate_snapshot(\",\"self.experience.read(&self.experience_saved)\",\"Ok(bytes)\",\"self.authenticate_experience(\",\"ProductEvaluationExecutionStoreErrorV1::Missing\",\"sources.snapshot != &self.config.initial\",\"binding::require_new_work(\",\"binding::read_material(&self.config, &mut sources, false)?\",\"binding::require_new_work(\",\"self.experience.commit_once(\",\"binding::new_work_time(\",\"binding::verify_freeze(\",\"binding::receipt(\",\"binding::signed_bytes(\",\"self.authenticate_experience(\",\"binding::require_same_material(\",\"binding::require_new_work(\",\"Ok(completed)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback_experience(\"\nsequence = [\"binding::now()?\",\"self.read_experience(&mut sources, started_at)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn attest_dataset(\"\nsequence = [\"binding::now()?\",\"self.read_experience(\",\"binding::dataset_saved(\",\"self.dataset.read(&saved)\",\"Ok(bytes)\",\"self.authenticate_dataset(\",\"ProductEvaluationExecutionStoreErrorV1::Missing\",\"binding::experience_prefix(\",\"binding::require_new_work(\",\"self.dataset.commit_once(\",\"binding::new_work_time(\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"binding::receipt(\",\"binding::signed_bytes(\",\"self.authenticate_dataset(\",\"binding::require_new_work(\",\"Ok(completed)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback_dataset(\"\nsequence = [\"binding::now()?\",\"self.read_experience(\",\"binding::dataset_saved(\",\"self.dataset.read(&saved)?\",\"self.authenticate_dataset(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_experience(\"\nsequence = [\"binding::validate_snapshot(\",\"self.experience.read(&self.experience_saved)?\",\"self.authenticate_experience(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn authenticate_experience(\"\nsequence = [\"binding::validate_snapshot(\",\"learning_owner_evidence::decode(bytes)?\",\"binding::read_material(&self.config, sources, true)?\",\"binding::receipt(\",\"attestation.issued_at\",\"payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\",\"binding::require_snapshot_receipt(\",\"self.experience.read(&self.experience_saved)? != bytes\",\"binding::fresh_time(started_at)?\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"Ok(OriginalCellQ24MaterialCompletionV1\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn authenticate_dataset(\"\nsequence = [\"learning_owner_evidence::decode(bytes)?\",\"self.read_experience(\",\"experience.receipt != original_experience.receipt\",\"experience.attestation != original_experience.attestation\",\"binding::dataset_saved(\",\"binding::require_same_material(\",\"binding::receipt(\",\"attestation.issued_at\",\"payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\",\"binding::require_snapshot_receipt(\",\"learning_owner_evidence::encode(\",\"self.dataset.read(saved)? != bytes\",\"self.experience.read(&self.experience_saved)? != original_experience_bytes\",\"binding::fresh_time(started_at)?\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"binding::verify_original(\",\"Ok(OriginalCellQ24MaterialCompletionV1\"]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\nrequired_order = [[\"mod binding;\",\"mod paired_readback;\"],[\"fn into_evidence_readback_owner<\",\"self,\",\"source: CircuitTaskSourceReadbackV1<SW>\",\"ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>\",\"let config = self.config.clone();\",\"OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(\",\"self, config, source, identity, ledger, baseline,\",\"fn attest_experience(\"],[\"fn into_command_owner<\",\"self,\",\"source: CircuitTaskSourceReadbackV1<SW>\",\"ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>\",\"let allow_new_commands =\",\"self.command_origin\",\"OriginalMaterialCommandOriginV1::FreshCreate\",\"let config = self.config.clone();\",\"OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(\",\"self,\",\"config,\",\"source,\",\"identity,\",\"ledger,\",\"baseline,\",\"allow_new_commands,\",\"fn attest_experience(\"],[\"pub struct OriginalCellQ24MaterialReceiptConfigV2 {\",\"original: OriginalCellQ24MaterialReceiptConfigV1,\",\"panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,\",\"impl OriginalCellQ24MaterialReceiptConfigV2 {\"]]\nrequired = [\"pub struct OriginalCellQ24MaterialReceiptOwnersV1\",\"pub experience_signer: TrustedLearningSignerV1\",\"pub dataset_signer: TrustedLearningSignerV1\",\"pub ledger: &'a mut LedgerWriter\",\"pub struct OriginalCellQ24MaterialReceiptConfigV2\",\"panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"LearningEvidenceVerifierV1::new\",\"LearningEvidenceTrustV1\",\"File::open\",\"UnixStream::connect\",\"with_root_learning_stage_owners(\",\"LearningIterationStageOwnerPortsV1 for\",\"fit_or_readback(\",\".fit(\",\"unwrap_or\",\"permit_all\",\"if false\",\"Arc::ptr_eq\",\"Deserialize\",\"pub panel:\",\"pub original:\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn create(\"\nsequence = [\"binding::validate_config(\",\"LearningOwnerJournalV1::create(\",\"files.experience\",\"experience_saved.binding_digest\",\"LearningOwnerJournalV1::create(\",\"files.dataset\",\"dataset_binding\",\"Ok(Self\",\"panel: None,\",\"command_origin: OriginalMaterialCommandOriginV1::FreshCreate\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover(\"\nsequence = [\"binding::validate_config(\",\"LearningOwnerJournalV1::recover(\",\"files.experience\",\"experience_saved.binding_digest\",\"LearningOwnerJournalV1::recover(\",\"files.dataset\",\"dataset_binding\",\"Ok(Self\",\"panel: None,\",\"command_origin: OriginalMaterialCommandOriginV1::Recovered\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn attest_experience(\"\nsequence = [\"binding::now()?\",\"binding::validate_snapshot(\",\"binding::require_panel_initial(&self.config, self.panel.as_deref())?;\",\"self.experience.read(&self.experience_saved)\",\"Ok(bytes)\",\"self.authenticate_experience(\",\"ProductEvaluationExecutionStoreErrorV1::Missing\",\"sources.snapshot != &self.config.initial\",\"binding::require_new_work(\",\"binding::read_material(&self.config, &mut sources, false)?\",\"binding::require_new_work(\",\"self.experience.commit_once(\",\"binding::new_work_time(\",\"binding::verify_freeze(\",\"binding::receipt(\",\"binding::signed_bytes(\",\"self.authenticate_experience(\",\"binding::require_same_material(\",\"binding::require_new_work(\",\"Ok(completed)\"]\ntop_level = [\"binding::require_panel_initial(&self.config, self.panel.as_deref())?;\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback_experience(\"\nsequence = [\"binding::now()?\",\"self.read_experience(&mut sources, started_at)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn attest_dataset(\"\nsequence = [\"binding::now()?\",\"self.read_experience(\",\"binding::dataset_saved(\",\"self.dataset.read(&saved)\",\"Ok(bytes)\",\"self.authenticate_dataset(\",\"ProductEvaluationExecutionStoreErrorV1::Missing\",\"binding::experience_prefix(\",\"binding::require_new_work(\",\"self.dataset.commit_once(\",\"binding::new_work_time(\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"binding::receipt(\",\"binding::signed_bytes(\",\"self.authenticate_dataset(\",\"binding::require_new_work(\",\"Ok(completed)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback_dataset(\"\nsequence = [\"binding::now()?\",\"self.read_experience(\",\"binding::dataset_saved(\",\"self.dataset.read(&saved)?\",\"self.authenticate_dataset(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_experience(\"\nsequence = [\"binding::validate_snapshot(\",\"binding::require_panel_initial(&self.config, self.panel.as_deref())?;\",\"self.experience.read(&self.experience_saved)?\",\"self.authenticate_experience(\"]\ntop_level = [\"binding::require_panel_initial(&self.config, self.panel.as_deref())?;\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn authenticate_experience(\"\nsequence = [\"binding::validate_snapshot(\",\"learning_owner_evidence::decode(bytes)?\",\"binding::read_material(&self.config, sources, true)?\",\"binding::receipt(\",\"attestation.issued_at\",\"payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\",\"binding::require_snapshot_receipt(\",\"self.experience.read(&self.experience_saved)? != bytes\",\"binding::fresh_time(started_at)?\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"Ok(OriginalCellQ24MaterialCompletionV1\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn authenticate_dataset(\"\nsequence = [\"learning_owner_evidence::decode(bytes)?\",\"self.read_experience(\",\"experience.receipt != original_experience.receipt\",\"experience.attestation != original_experience.attestation\",\"binding::dataset_saved(\",\"binding::require_same_material(\",\"binding::receipt(\",\"attestation.issued_at\",\"payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\",\"binding::require_snapshot_receipt(\",\"learning_owner_evidence::encode(\",\"self.dataset.read(saved)? != bytes\",\"self.experience.read(&self.experience_saved)? != original_experience_bytes\",\"binding::fresh_time(started_at)?\",\"binding::verify_freeze(\",\"binding::verify_original(\",\"binding::verify_original(\",\"Ok(OriginalCellQ24MaterialCompletionV1\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original(\"\nsequence = [\"original: OriginalCellQ24MaterialReceiptConfigV1\",\"panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>\",\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"Ok(Self { original, panel })\"]\ntop_level = [\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"Ok(Self { original, panel })\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn create_v2(\"\nsequence = [\"config: OriginalCellQ24MaterialReceiptConfigV2\",\"let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;\",\"binding::validate_config(&original, &experience_key, &dataset_key)?;\",\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"let mut owner = Self::create(files, original, experience_key, dataset_key)?;\",\"owner.panel = Some(panel);\",\"Ok(owner)\"]\ntop_level = [\"binding::validate_config(&original, &experience_key, &dataset_key)?;\",\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"let mut owner = Self::create(files, original, experience_key, dataset_key)?;\",\"owner.panel = Some(panel);\",\"Ok(owner)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_v2(\"\nsequence = [\"config: OriginalCellQ24MaterialReceiptConfigV2\",\"let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;\",\"binding::validate_config(&original, &experience_key, &dataset_key)?;\",\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"let mut owner = Self::recover(files, original, experience_key, dataset_key)?;\",\"owner.panel = Some(panel);\",\"Ok(owner)\"]\ntop_level = [\"binding::validate_config(&original, &experience_key, &dataset_key)?;\",\"binding::require_panel_initial(&original, Some(panel.as_ref()))?;\",\"let mut owner = Self::recover(files, original, experience_key, dataset_key)?;\",\"owner.panel = Some(panel);\",\"Ok(owner)\"]\n\n"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "required": [
+          "enum Origin {",
+          "Fresh,",
+          "Recovered,",
+          "enum State<",
+          "Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)",
+          "Starting,",
+          "Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)",
+          "Fenced,",
+          "dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "state: Mutex<State<TW, RW>>",
+          "bootstrap_lane: Semaphore",
+          "connections: Arc<Semaphore>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "pub state:",
+          "pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "pub config:",
+          "pub generator_key: SigningKey =",
+          "fn reset",
+          "pub fn ready",
+          "DatasetV1",
+          "Q24Batch",
+          "Vec<i64>",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_custody(",
+            "sequence": [
+              "fn from_original_custody(",
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"
+            ],
+            "top_level": [
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"
+            ]
+          },
+          {
+            "function": "fn recover_original_custody(",
+            "sequence": [
+              "fn recover_original_custody(",
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"
+            ],
+            "top_level": [
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"
+            ]
+          },
+          {
+            "function": "fn bind_original_custody(",
+            "sequence": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&dataset",
+              "&config.material",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "&custody.material_source",
+              "&config.material.initial",
+              "&config.material.scope",
+              "&custody.baseline",
+              "let at = now()?;",
+              "custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key",
+              "config.generator.principal.principal_id != config.material.initial.owners.trainer",
+              "!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)",
+              "custody.baseline.components()",
+              "!= &config.material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&config.generator",
+              "at",
+              "Ok(Self {",
+              "dataset: Arc::new(dataset)",
+              "state: Mutex::new(State::Awaiting(custody))",
+              "runtime: Handle::current()",
+              "bootstrap_lane: Semaphore::new(1)",
+              "connections: Arc::new(Semaphore::new(4))"
+            ],
+            "top_level": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "let at = now()?;",
+              "Ok(Self {"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "required": [
+          "enum Origin {",
+          "Fresh,",
+          "Recovered,",
+          "enum State<",
+          "Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)",
+          "Starting,",
+          "Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)",
+          "Fenced,",
+          "dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "state: Mutex<State<TW, RW>>",
+          "bootstrap_lane: Semaphore",
+          "connections: Arc<Semaphore>",
+          "pub struct OriginalCellQ24TrainingBootstrapConfigV2",
+          "panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "pub state:",
+          "pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "pub config:",
+          "pub generator_key: SigningKey =",
+          "fn reset",
+          "pub fn ready",
+          "DatasetV1",
+          "Q24Batch",
+          "Vec<i64>",
+          "dyn Fn",
+          "impl Fn",
+          "Arc::ptr_eq",
+          "Deserialize",
+          "pub panel:",
+          "pub original:"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_custody(",
+            "sequence": [
+              "fn from_original_custody(",
+              "Self::bind_original_custody(",
+              "custody,",
+              "config,",
+              "dataset,",
+              "cancellation,",
+              "Origin::Fresh,",
+              "None,"
+            ],
+            "top_level": [
+              "Self::bind_original_custody("
+            ]
+          },
+          {
+            "function": "fn recover_original_custody(",
+            "sequence": [
+              "fn recover_original_custody(",
+              "Self::bind_original_custody(",
+              "custody,",
+              "config,",
+              "dataset,",
+              "cancellation,",
+              "Origin::Recovered,",
+              "None,"
+            ],
+            "top_level": [
+              "Self::bind_original_custody("
+            ]
+          },
+          {
+            "function": "fn bind_original_custody(",
+            "sequence": [
+              "panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>",
+              "require_panel_initial(&config, panel.as_deref())?;",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&dataset",
+              "&config.material",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "&custody.material_source",
+              "&config.material.initial",
+              "&config.material.scope",
+              "&custody.baseline",
+              "let at = now()?;",
+              "custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key",
+              "config.generator.principal.principal_id != config.material.initial.owners.trainer",
+              "!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)",
+              "custody.baseline.components()",
+              "!= &config.material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&config.generator",
+              "at",
+              "Ok(Self {",
+              "panel,",
+              "dataset: Arc::new(dataset)",
+              "state: Mutex::new(State::Awaiting(custody))",
+              "runtime: Handle::current()",
+              "bootstrap_lane: Semaphore::new(1)",
+              "connections: Arc::new(Semaphore::new(4))"
+            ],
+            "top_level": [
+              "require_panel_initial(&config, panel.as_deref())?;",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "let at = now()?;",
+              "Ok(Self {"
+            ]
+          },
+          {
+            "function": "fn from_original(",
+            "sequence": [
+              "original: OriginalCellQ24TrainingBootstrapConfigV1",
+              "panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>",
+              "require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "Ok(Self { original, panel })"
+            ],
+            "top_level": [
+              "require_panel_initial(&original, Some(panel.as_ref()))?;",
+              "Ok(Self { original, panel })"
+            ]
+          },
+          {
+            "function": "fn require_panel_initial(",
+            "sequence": [
+              "config: &OriginalCellQ24TrainingBootstrapConfigV1",
+              "panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>",
+              "if let Some(panel) = panel {",
+              "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(",
+              "panel,",
+              "&config.material.initial,",
+              ".map_err(|_| Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if let Some(panel) = panel {",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn from_original_custody_v2(",
+            "sequence": [
+              "config: OriginalCellQ24TrainingBootstrapConfigV2",
+              "let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;",
+              "Self::bind_original_custody(",
+              "custody,",
+              "original,",
+              "dataset,",
+              "cancellation,",
+              "Origin::Fresh,",
+              "Some(panel),"
+            ],
+            "top_level": [
+              "let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;",
+              "Self::bind_original_custody("
+            ]
+          },
+          {
+            "function": "fn recover_original_custody_v2(",
+            "sequence": [
+              "config: OriginalCellQ24TrainingBootstrapConfigV2",
+              "let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;",
+              "Self::bind_original_custody(",
+              "custody,",
+              "original,",
+              "dataset,",
+              "cancellation,",
+              "Origin::Recovered,",
+              "Some(panel),"
+            ],
+            "top_level": [
+              "let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;",
+              "Self::bind_original_custody("
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "pub struct OriginalCellQ24TrainingBootstrapConfigV2 {",
+            "original: OriginalCellQ24TrainingBootstrapConfigV1,",
+            "panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,",
+            "impl OriginalCellQ24TrainingBootstrapConfigV2 {"
+          ]
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\nrequired = [\"enum Origin {\",\"Fresh,\",\"Recovered,\",\"enum State<\",\"Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)\",\"Starting,\",\"Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)\",\"Fenced,\",\"dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>\",\"state: Mutex<State<TW, RW>>\",\"bootstrap_lane: Semaphore\",\"connections: Arc<Semaphore>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"UnixStream::connect\",\"File::open\",\"OpenOptions\",\".claim(\",\".complete(\",\"permit_all\",\"if false\",\"unwrap_or\",\"pub state:\",\"pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>\",\"pub config:\",\"pub generator_key: SigningKey =\",\"fn reset\",\"pub fn ready\",\"DatasetV1\",\"Q24Batch\",\"Vec<i64>\",\"dyn Fn\",\"impl Fn\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_custody(\"\nsequence = [\"fn from_original_custody(\",\"Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)\"]\ntop_level = [\"Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_original_custody(\"\nsequence = [\"fn recover_original_custody(\",\"Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)\"]\ntop_level = [\"Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn bind_original_custody(\"\nsequence = [\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&dataset\",\"&config.material\",\"OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(\",\"&custody.material_source\",\"&config.material.initial\",\"&config.material.scope\",\"&custody.baseline\",\"let at = now()?;\",\"custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key\",\"config.generator.principal.principal_id != config.material.initial.owners.trainer\",\"!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)\",\"custody.baseline.components()\",\"!= &config.material.initial.request.selected_bundle.components\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&config.generator\",\"at\",\"Ok(Self {\",\"dataset: Arc::new(dataset)\",\"state: Mutex::new(State::Awaiting(custody))\",\"runtime: Handle::current()\",\"bootstrap_lane: Semaphore::new(1)\",\"connections: Arc::new(Semaphore::new(4))\"]\ntop_level = [\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(\",\"let at = now()?;\",\"Ok(Self {\"]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\nrequired = [\"enum Origin {\",\"Fresh,\",\"Recovered,\",\"enum State<\",\"Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)\",\"Starting,\",\"Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)\",\"Fenced,\",\"dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>\",\"state: Mutex<State<TW, RW>>\",\"bootstrap_lane: Semaphore\",\"connections: Arc<Semaphore>\",\"pub struct OriginalCellQ24TrainingBootstrapConfigV2\",\"panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"UnixStream::connect\",\"File::open\",\"OpenOptions\",\".claim(\",\".complete(\",\"permit_all\",\"if false\",\"unwrap_or\",\"pub state:\",\"pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>\",\"pub config:\",\"pub generator_key: SigningKey =\",\"fn reset\",\"pub fn ready\",\"DatasetV1\",\"Q24Batch\",\"Vec<i64>\",\"dyn Fn\",\"impl Fn\",\"Arc::ptr_eq\",\"Deserialize\",\"pub panel:\",\"pub original:\"]\nrequired_order = [[\"pub struct OriginalCellQ24TrainingBootstrapConfigV2 {\",\"original: OriginalCellQ24TrainingBootstrapConfigV1,\",\"panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,\",\"impl OriginalCellQ24TrainingBootstrapConfigV2 {\"]]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_custody(\"\nsequence = [\"fn from_original_custody(\",\"Self::bind_original_custody(\",\"custody,\",\"config,\",\"dataset,\",\"cancellation,\",\"Origin::Fresh,\",\"None,\"]\ntop_level = [\"Self::bind_original_custody(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_original_custody(\"\nsequence = [\"fn recover_original_custody(\",\"Self::bind_original_custody(\",\"custody,\",\"config,\",\"dataset,\",\"cancellation,\",\"Origin::Recovered,\",\"None,\"]\ntop_level = [\"Self::bind_original_custody(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn bind_original_custody(\"\nsequence = [\"panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>\",\"require_panel_initial(&config, panel.as_deref())?;\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&dataset\",\"&config.material\",\"OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(\",\"&custody.material_source\",\"&config.material.initial\",\"&config.material.scope\",\"&custody.baseline\",\"let at = now()?;\",\"custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key\",\"config.generator.principal.principal_id != config.material.initial.owners.trainer\",\"!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)\",\"custody.baseline.components()\",\"!= &config.material.initial.request.selected_bundle.components\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&config.generator\",\"at\",\"Ok(Self {\",\"panel,\",\"dataset: Arc::new(dataset)\",\"state: Mutex::new(State::Awaiting(custody))\",\"runtime: Handle::current()\",\"bootstrap_lane: Semaphore::new(1)\",\"connections: Arc::new(Semaphore::new(4))\"]\ntop_level = [\"require_panel_initial(&config, panel.as_deref())?;\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(\",\"let at = now()?;\",\"Ok(Self {\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original(\"\nsequence = [\"original: OriginalCellQ24TrainingBootstrapConfigV1\",\"panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>\",\"require_panel_initial(&original, Some(panel.as_ref()))?;\",\"Ok(Self { original, panel })\"]\ntop_level = [\"require_panel_initial(&original, Some(panel.as_ref()))?;\",\"Ok(Self { original, panel })\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_panel_initial(\"\nsequence = [\"config: &OriginalCellQ24TrainingBootstrapConfigV1\",\"panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>\",\"if let Some(panel) = panel {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(\",\"panel,\",\"&config.material.initial,\",\".map_err(|_| Error::Binding(\",\"Ok(())\"]\ntop_level = [\"if let Some(panel) = panel {\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_custody_v2(\"\nsequence = [\"config: OriginalCellQ24TrainingBootstrapConfigV2\",\"let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;\",\"Self::bind_original_custody(\",\"custody,\",\"original,\",\"dataset,\",\"cancellation,\",\"Origin::Fresh,\",\"Some(panel),\"]\ntop_level = [\"let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;\",\"Self::bind_original_custody(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_original_custody_v2(\"\nsequence = [\"config: OriginalCellQ24TrainingBootstrapConfigV2\",\"let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;\",\"Self::bind_original_custody(\",\"custody,\",\"original,\",\"dataset,\",\"cancellation,\",\"Origin::Recovered,\",\"Some(panel),\"]\ntop_level = [\"let OriginalCellQ24TrainingBootstrapConfigV2 { original, panel } = config;\",\"Self::bind_original_custody(\"]\n\n"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+        "required": [
+          "impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>",
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "FrozenLearningScopeV2::freeze",
+          "freeze_learning",
+          "clone_from_original",
+          "State::Awaiting",
+          "create_dir",
+          "std::fs::",
+          "serde_json::from",
+          "Vec<i64>",
+          "Q24Batch",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn actual_context(",
+            "sequence": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())",
+              "snapshot.request != initial.request",
+              "snapshot.owners != initial.owners",
+              "snapshot.receipts.len() != 2",
+              "cut.attestations().len() != 2",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "return Err(Error::Binding(",
+              "let context = OriginalCellQ24TrainingCommandContextV1 {",
+              "dataset: snapshot.clone()",
+              "scope: self.config.material.scope.clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ],
+            "top_level": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ]
+          },
+          {
+            "function": "fn require_fresh_cut(",
+            "sequence": [
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&self.dataset",
+              "cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&self.dataset",
+              "&self.config.material",
+              "at < started_at",
+              "matches!(self.origin, Origin::Fresh)",
+              "at",
+              ">= self",
+              ".config",
+              ".material",
+              ".initial",
+              ".request",
+              ".envelope",
+              ".expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&self.config.generator",
+              "at",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn build_original_owner(",
+            "sequence": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "dataset: cut.snapshot().clone()",
+              "scope: self.config.material.scope.clone()",
+              "rule: self.config.material.rule",
+              "optimizer: self.config.optimizer",
+              "freeze_plan: self.config.material.freeze_plan.clone()",
+              "freeze_evidence: self.config.material.freeze_evidence.clone()",
+              "experience_evidence: cut.attestations()[0].clone()",
+              "dataset_evidence: cut.attestations()[1].clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(",
+              "material_source",
+              "source_config.clone()",
+              "capture_original_remote_cell_q24_training_source_v1(",
+              "OriginalCellQ24RemoteTrainingSourceOwnersV1 {",
+              "material",
+              "baseline",
+              "experience",
+              "dataset",
+              "source_config",
+              ".await?",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "let signing = OriginalCellQ24TrainingSigningConfigV1 {",
+              "dataset: context.dataset.clone()",
+              "scope: context.scope.clone()",
+              "signer: self.config.generator.clone()",
+              "verifier: context.verifier.clone()",
+              "maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds",
+              "let origin = self.origin;",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "tokio::task::spawn_blocking(move || {",
+              "OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?",
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&original_dataset",
+              "&original_cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&original_dataset",
+              "&material_config",
+              "at < started_at",
+              "matches!(origin, Origin::Fresh)",
+              "at >= material_config.initial.request.envelope.expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&signing.signer",
+              "at",
+              "let native = match origin {",
+              "Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "let receipts = match origin {",
+              "Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Ok::<_, Error>((native, receipts))",
+              ".await",
+              ".map_err(|_| Error::Uncertain)??",
+              "OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)",
+              "SourceBoundCellQ24TrainingStageV1::from_original_stage(original)",
+              "let owner = match self.origin {",
+              "Origin::Fresh => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "Origin::Recovered => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "Ok(Arc::new(owner))"
+            ],
+            "top_level": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "let origin = self.origin;",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "let owner = match self.origin {",
+              "Ok(Arc::new(owner))"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+        "required": [
+          "impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>",
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "FrozenLearningScopeV2::freeze",
+          "freeze_learning",
+          "clone_from_original",
+          "State::Awaiting",
+          "create_dir",
+          "std::fs::",
+          "serde_json::from",
+          "Vec<i64>",
+          "Q24Batch",
+          "dyn Fn",
+          "impl Fn",
+          "Arc::ptr_eq",
+          "Deserialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn actual_context(",
+            "sequence": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())",
+              "snapshot.request != initial.request",
+              "snapshot.owners != initial.owners",
+              "snapshot.receipts.len() != 2",
+              "cut.attestations().len() != 2",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "return Err(Error::Binding(",
+              "let context = OriginalCellQ24TrainingCommandContextV1 {",
+              "dataset: snapshot.clone()",
+              "scope: self.config.material.scope.clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ],
+            "top_level": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ]
+          },
+          {
+            "function": "fn require_fresh_cut(",
+            "sequence": [
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&self.dataset",
+              "cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&self.dataset",
+              "&self.config.material",
+              "require_panel_initial(&self.config, self.panel.as_deref())?;",
+              "if let Some(panel) = self.panel.as_deref() {",
+              "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+              "panel,",
+              "cut.snapshot(),",
+              ".map_err(|_| Error::Binding(",
+              "at < started_at",
+              "matches!(self.origin, Origin::Fresh)",
+              "at",
+              ">= self",
+              ".config",
+              ".material",
+              ".initial",
+              ".request",
+              ".envelope",
+              ".expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&self.config.generator",
+              "at",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "Ok(())",
+              "require_panel_initial(&self.config, self.panel.as_deref())?;",
+              "if let Some(panel) = self.panel.as_deref() {"
+            ]
+          },
+          {
+            "function": "fn build_original_owner(",
+            "sequence": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "dataset: cut.snapshot().clone()",
+              "scope: self.config.material.scope.clone()",
+              "rule: self.config.material.rule",
+              "optimizer: self.config.optimizer",
+              "freeze_plan: self.config.material.freeze_plan.clone()",
+              "freeze_evidence: self.config.material.freeze_evidence.clone()",
+              "experience_evidence: cut.attestations()[0].clone()",
+              "dataset_evidence: cut.attestations()[1].clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(",
+              "material_source",
+              "source_config.clone()",
+              "capture_original_remote_cell_q24_training_source_v1(",
+              "OriginalCellQ24RemoteTrainingSourceOwnersV1 {",
+              "material",
+              "baseline",
+              "experience",
+              "dataset",
+              "source_config",
+              ".await?",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "let signing = OriginalCellQ24TrainingSigningConfigV1 {",
+              "dataset: context.dataset.clone()",
+              "scope: context.scope.clone()",
+              "signer: self.config.generator.clone()",
+              "verifier: context.verifier.clone()",
+              "maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds",
+              "let origin = self.origin;",
+              "let panel = self.panel.clone();",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "tokio::task::spawn_blocking(move || {",
+              "OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?",
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&original_dataset",
+              "&original_cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&original_dataset",
+              "&material_config",
+              "if let Some(panel) = panel.as_deref() {",
+              "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(",
+              "panel,",
+              "&material_config.initial,",
+              ".map_err(|_| Error::Binding(",
+              "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+              "panel,",
+              "original_cut.snapshot(),",
+              ".map_err(|_| Error::Binding(",
+              "at < started_at",
+              "matches!(origin, Origin::Fresh)",
+              "at >= material_config.initial.request.envelope.expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&signing.signer",
+              "at",
+              "let native = match origin {",
+              "Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "let receipts = match origin {",
+              "Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Ok::<_, Error>((native, receipts))",
+              ".await",
+              ".map_err(|_| Error::Uncertain)??",
+              "OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)",
+              "SourceBoundCellQ24TrainingStageV1::from_original_stage(original)",
+              "let owner = match self.origin {",
+              "Origin::Fresh => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "Origin::Recovered => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "Ok(Arc::new(owner))"
+            ],
+            "top_level": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "let origin = self.origin;",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "let owner = match self.origin {",
+              "Ok(Arc::new(owner))",
+              "let panel = self.panel.clone();"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"\nrequired = [\"impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>\",\"OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"UnixStream::connect\",\"File::open\",\"OpenOptions\",\".claim(\",\".complete(\",\"permit_all\",\"if false\",\"unwrap_or\",\"FrozenLearningScopeV2::freeze\",\"freeze_learning\",\"clone_from_original\",\"State::Awaiting\",\"create_dir\",\"std::fs::\",\"serde_json::from\",\"Vec<i64>\",\"Q24Batch\",\"dyn Fn\",\"impl Fn\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn actual_context(\"\nsequence = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())\",\"snapshot.request != initial.request\",\"snapshot.owners != initial.owners\",\"snapshot.receipts.len() != 2\",\"cut.attestations().len() != 2\",\"coordinator.next_stage() != Some(LearningIterationStageV1::Training)\",\"return Err(Error::Binding(\",\"let context = OriginalCellQ24TrainingCommandContextV1 {\",\"dataset: snapshot.clone()\",\"scope: self.config.material.scope.clone()\",\"verifier: self.config.material.verifier.clone()\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\ntop_level = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh_cut(\"\nsequence = [\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&self.dataset\",\"cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&self.dataset\",\"&self.config.material\",\"at < started_at\",\"matches!(self.origin, Origin::Fresh)\",\"at\",\">= self\",\".config\",\".material\",\".initial\",\".request\",\".envelope\",\".expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&self.config.generator\",\"at\",\"Ok(())\"]\ntop_level = [\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn build_original_owner(\"\nsequence = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"dataset: cut.snapshot().clone()\",\"scope: self.config.material.scope.clone()\",\"rule: self.config.material.rule\",\"optimizer: self.config.optimizer\",\"freeze_plan: self.config.material.freeze_plan.clone()\",\"freeze_evidence: self.config.material.freeze_evidence.clone()\",\"experience_evidence: cut.attestations()[0].clone()\",\"dataset_evidence: cut.attestations()[1].clone()\",\"verifier: self.config.material.verifier.clone()\",\"OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(\",\"material_source\",\"source_config.clone()\",\"capture_original_remote_cell_q24_training_source_v1(\",\"OriginalCellQ24RemoteTrainingSourceOwnersV1 {\",\"material\",\"baseline\",\"experience\",\"dataset\",\"source_config\",\".await?\",\"self.require_fresh_cut(&cut, started_at)?\",\"let signing = OriginalCellQ24TrainingSigningConfigV1 {\",\"dataset: context.dataset.clone()\",\"scope: context.scope.clone()\",\"signer: self.config.generator.clone()\",\"verifier: context.verifier.clone()\",\"maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds\",\"let origin = self.origin;\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"tokio::task::spawn_blocking(move || {\",\"OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?\",\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&original_dataset\",\"&original_cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&original_dataset\",\"&material_config\",\"at < started_at\",\"matches!(origin, Origin::Fresh)\",\"at >= material_config.initial.request.envelope.expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&signing.signer\",\"at\",\"let native = match origin {\",\"Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"let receipts = match origin {\",\"Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Ok::<_, Error>((native, receipts))\",\".await\",\".map_err(|_| Error::Uncertain)??\",\"OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)\",\"SourceBoundCellQ24TrainingStageV1::from_original_stage(original)\",\"let owner = match self.origin {\",\"Origin::Fresh => {\",\"OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"Origin::Recovered => {\",\"OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"self.require_fresh_cut(&cut, started_at)?\",\"Ok(Arc::new(owner))\"]\ntop_level = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"let origin = self.origin;\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"let owner = match self.origin {\",\"Ok(Arc::new(owner))\"]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"\nrequired = [\"impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>\",\"OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"UnixStream::connect\",\"File::open\",\"OpenOptions\",\".claim(\",\".complete(\",\"permit_all\",\"if false\",\"unwrap_or\",\"FrozenLearningScopeV2::freeze\",\"freeze_learning\",\"clone_from_original\",\"State::Awaiting\",\"create_dir\",\"std::fs::\",\"serde_json::from\",\"Vec<i64>\",\"Q24Batch\",\"dyn Fn\",\"impl Fn\",\"Arc::ptr_eq\",\"Deserialize\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn actual_context(\"\nsequence = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())\",\"snapshot.request != initial.request\",\"snapshot.owners != initial.owners\",\"snapshot.receipts.len() != 2\",\"cut.attestations().len() != 2\",\"coordinator.next_stage() != Some(LearningIterationStageV1::Training)\",\"return Err(Error::Binding(\",\"let context = OriginalCellQ24TrainingCommandContextV1 {\",\"dataset: snapshot.clone()\",\"scope: self.config.material.scope.clone()\",\"verifier: self.config.material.verifier.clone()\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\ntop_level = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh_cut(\"\nsequence = [\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&self.dataset\",\"cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&self.dataset\",\"&self.config.material\",\"require_panel_initial(&self.config, self.panel.as_deref())?;\",\"if let Some(panel) = self.panel.as_deref() {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\",\"panel,\",\"cut.snapshot(),\",\".map_err(|_| Error::Binding(\",\"at < started_at\",\"matches!(self.origin, Origin::Fresh)\",\"at\",\">= self\",\".config\",\".material\",\".initial\",\".request\",\".envelope\",\".expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&self.config.generator\",\"at\",\"Ok(())\"]\ntop_level = [\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"Ok(())\",\"require_panel_initial(&self.config, self.panel.as_deref())?;\",\"if let Some(panel) = self.panel.as_deref() {\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn build_original_owner(\"\nsequence = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"dataset: cut.snapshot().clone()\",\"scope: self.config.material.scope.clone()\",\"rule: self.config.material.rule\",\"optimizer: self.config.optimizer\",\"freeze_plan: self.config.material.freeze_plan.clone()\",\"freeze_evidence: self.config.material.freeze_evidence.clone()\",\"experience_evidence: cut.attestations()[0].clone()\",\"dataset_evidence: cut.attestations()[1].clone()\",\"verifier: self.config.material.verifier.clone()\",\"OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(\",\"material_source\",\"source_config.clone()\",\"capture_original_remote_cell_q24_training_source_v1(\",\"OriginalCellQ24RemoteTrainingSourceOwnersV1 {\",\"material\",\"baseline\",\"experience\",\"dataset\",\"source_config\",\".await?\",\"self.require_fresh_cut(&cut, started_at)?\",\"let signing = OriginalCellQ24TrainingSigningConfigV1 {\",\"dataset: context.dataset.clone()\",\"scope: context.scope.clone()\",\"signer: self.config.generator.clone()\",\"verifier: context.verifier.clone()\",\"maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds\",\"let origin = self.origin;\",\"let panel = self.panel.clone();\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"tokio::task::spawn_blocking(move || {\",\"OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?\",\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&original_dataset\",\"&original_cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&original_dataset\",\"&material_config\",\"if let Some(panel) = panel.as_deref() {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(\",\"panel,\",\"&material_config.initial,\",\".map_err(|_| Error::Binding(\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\",\"panel,\",\"original_cut.snapshot(),\",\".map_err(|_| Error::Binding(\",\"at < started_at\",\"matches!(origin, Origin::Fresh)\",\"at >= material_config.initial.request.envelope.expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&signing.signer\",\"at\",\"let native = match origin {\",\"Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"let receipts = match origin {\",\"Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Ok::<_, Error>((native, receipts))\",\".await\",\".map_err(|_| Error::Uncertain)??\",\"OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)\",\"SourceBoundCellQ24TrainingStageV1::from_original_stage(original)\",\"let owner = match self.origin {\",\"Origin::Fresh => {\",\"OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"Origin::Recovered => {\",\"OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"self.require_fresh_cut(&cut, started_at)?\",\"Ok(Arc::new(owner))\"]\ntop_level = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"let origin = self.origin;\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"let owner = match self.origin {\",\"Ok(Arc::new(owner))\",\"let panel = self.panel.clone();\"]\n\n"
+    }
+  ],
+  "boundary_replacements": [
+    {
+      "id": "learning_original_material_create",
+      "before_raw": "[[boundary]]\nid = \"learning_original_material_create\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::create\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn create(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
+      "before": {
+        "id": "learning_original_material_create",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn create("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "after": {
+        "id": "learning_original_material_create",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn create("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
+        ],
+        "caller_markers": []
+      },
+      "after_raw": "[[boundary]]\nid = \"learning_original_material_create\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::create\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn create(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_material_recover",
+      "before_raw": "[[boundary]]\nid = \"learning_original_material_recover\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::recover\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn recover(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
+      "before": {
+        "id": "learning_original_material_recover",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::recover",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn recover("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "after": {
+        "id": "learning_original_material_recover",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::recover",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn recover("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
+        ],
+        "caller_markers": []
+      },
+      "after_raw": "[[boundary]]\nid = \"learning_original_material_recover\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::recover\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn recover(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"]\ncaller_markers = []\n\n"
+    }
+  ],
+  "boundary_additions": [
+    {
+      "row": {
+        "id": "learning_original_material_config_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV2::from_original",
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn from_original("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_material_config_v2\"\nsymbol = \"OriginalCellQ24MaterialReceiptConfigV2::from_original\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptConfigV2\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn from_original(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "row": {
+        "id": "learning_original_material_create_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create_v2",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn create_v2("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_material_create_v2\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::create_v2\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn create_v2(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "row": {
+        "id": "learning_original_material_recover_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::recover_v2",
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "definition_markers": [
+          "pub fn recover_v2("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_material_recover_v2\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::recover_v2\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn recover_v2(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "row": {
+        "id": "learning_original_training_bootstrap_config_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapConfigV2::from_original",
+        "receiver_type": "OriginalCellQ24TrainingBootstrapConfigV2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "definition_markers": [
+          "pub fn from_original("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_training_bootstrap_config_v2\"\nsymbol = \"OriginalCellQ24TrainingBootstrapConfigV2::from_original\"\nreceiver_type = \"OriginalCellQ24TrainingBootstrapConfigV2\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\ndefinition_markers = [\"pub fn from_original(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "row": {
+        "id": "learning_original_training_bootstrap_create_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody_v2",
+        "receiver_type": "OriginalCellQ24TrainingBootstrapOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "definition_markers": [
+          "pub fn from_original_custody_v2("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_training_bootstrap_create_v2\"\nsymbol = \"OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody_v2\"\nreceiver_type = \"OriginalCellQ24TrainingBootstrapOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\ndefinition_markers = [\"pub fn from_original_custody_v2(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "row": {
+        "id": "learning_original_training_bootstrap_recover_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody_v2",
+        "receiver_type": "OriginalCellQ24TrainingBootstrapOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "definition_markers": [
+          "pub fn recover_original_custody_v2("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "raw": "[[boundary]]\nid = \"learning_original_training_bootstrap_recover_v2\"\nsymbol = \"OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody_v2\"\nreceiver_type = \"OriginalCellQ24TrainingBootstrapOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\ndefinition_markers = [\"pub fn recover_original_custody_v2(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    }
+  ],
+  "privileged_inventory_append": [
+    "learning_original_material_config_v2",
+    "learning_original_material_create_v2",
+    "learning_original_material_recover_v2",
+    "learning_original_training_bootstrap_config_v2",
+    "learning_original_training_bootstrap_create_v2",
+    "learning_original_training_bootstrap_recover_v2"
+  ],
+  "manifest_after": {
+    "sha": "6f882e37be23f6d783502960ef5aafb9406aaa58",
+    "bytes": 1545819,
+    "before": {
+      "boundary": 710,
+      "protected_file": 489,
+      "full_records": 1199
+    },
+    "after": {
+      "boundary": 716,
+      "protected_file": 489,
+      "full_records": 1205
+    },
+    "exact_full_record_replacements": 6,
+    "new_boundary_records": 6,
+    "unowned_raw_records_preserved": 1193,
+    "multiset_after_equals_before_minus_exact_replacements_plus_after_plus_additions": true,
+    "path_deduplication": false,
+    "inter_record_trailing_whitespace_ignored_only_for_counter": true
+  },
+  "legacy_qa_patch": {
+    "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+    "before_blob": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+    "after_blob": "2010c4ee88e24fa663bc75ee6ae87fff2a601cfc",
+    "before_fragment": "            self.assertEqual(self.boundaries[identifier].product_callers, ())\n        for identifier in (\"learning_original_material_experience_attest\",",
+    "after_fragment": "            self.assertEqual(self.boundaries[identifier].product_callers, (OWNER,))\n        for identifier in (\"learning_original_material_experience_attest\",",
+    "original_test_methods": 9,
+    "retained_test_methods": 9,
+    "change": "only the exact legacy create/recover caller assertions now include the actual in-file V2 delegation"
+  },
+  "new_source_qa": {
+    "path": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
+    "sha": "5b0622f31272800b4a5a55d6c8034e1a7a3e8cac",
+    "bytes": 17523,
+    "methods": 7,
+    "groups": {
+      "material": 16,
+      "training": 14,
+      "actual_cut_and_writer": 10
+    },
+    "comment_decoys_and_removals": 80,
+    "private_field_mutations": 4,
+    "forbidden_acquisitions": 20,
+    "conditional_depth_mutations": 3
+  },
+  "shared_export_patches": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "original_blob": "35f22a805c8865163cf8e666a07124d07c67ba37",
+      "before": "pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV1;\n",
+      "after": "pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV1;\npub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV2;\n",
+      "owner": "/root/learn_evaluator_budget",
+      "applied_in_this_commit": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "original_blob": "a951a3ffee5928c3ccee848033b0d071603d5798",
+      "before": "pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;\n",
+      "after": "pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;\npub use training_command::OriginalCellQ24TrainingBootstrapConfigV2;\n",
+      "owner": "/root/learn_evaluator_budget",
+      "applied_in_this_commit": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "original_blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+      "before": "#[cfg(target_os = \"linux\")]\npub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapConfigV1;\n",
+      "after": "#[cfg(target_os = \"linux\")]\npub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapConfigV1;\n#[cfg(target_os = \"linux\")]\npub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapConfigV2;\n",
+      "owner": "/root/learn_evaluator_budget",
+      "applied_in_this_commit": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "original_blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+      "before": "pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV1;\n",
+      "after": "pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV1;\n#[cfg(target_os = \"linux\")]\npub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV2;\n",
+      "owner": "/root/learn_evaluator_budget",
+      "applied_in_this_commit": false
+    }
+  ],
+  "validation": {
+    "full_source_blob_api_readback": true,
+    "independent_git_blob_hash": true,
+    "reverse_source_edits_restore_original_bytes": true,
+    "complete_record_counter_proof": true,
+    "projection": {
+      "baseline_full_rows": 4,
+      "functions": 37,
+      "mutation_count": 107,
+      "all_mutations_rejected": true,
+      "scope": "V8 projection of original comment/literal masking, unique bounded functions, ordered tokens and top/depth checks. Original Python/full caller/Rust/native remain unrun."
+    },
+    "original_python_source_qa": false,
+    "full_typed_caller": false,
+    "rust_compile": false,
+    "rust_native": false,
+    "just_fix": false,
+    "just_fmt": false,
+    "pending_executor": "Root alone controls final fixed-candidate H verification"
+  },
+  "peer_static_review": {
+    "reviewer": "learn_model_carrier",
+    "blob": "36bea398a21402a6e9c49c1e91bf26b125dba8d3",
+    "sha_verified": true,
+    "findings": [],
+    "scope": "four original/updated source files, not the E-owned policy implementation"
+  },
+  "acceptance_limits": [
+    "The original external ordinary launcher/custody handoff is still not established by this change.",
+    "LearningIterationRequest already refers to completed A; these hooks alone do not prove pre-A policy factory execution.",
+    "No runtime V2 policy admission, B/retention execution, positive adoption, new-session C or daemon/Root cold restart has been accepted here.",
+    "Original e5c diagnostics ended before helper/compile/test because the observed target path was missing; tests_run was zero and the existing candidate-material timeout cause remains unknown.",
+    "No keys, UID, grant, policy authority, transport connection, fixture acceptance, widened threshold or increased timeout are introduced."
+  ],
+  "ordinary_acceptance": {
+    "A": 0,
+    "B_retention": 0,
+    "positive_adoption": 0,
+    "NoUpdate_or_fallback": 0,
+    "C": 0,
+    "cold_restart": 0
+  }
+}

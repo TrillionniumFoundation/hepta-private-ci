@@ -16,6 +16,7 @@ use super::OriginalCellQ24TrainingBootstrapCustodyV1;
 use super::OriginalCellQ24TrainingBootstrapOwnerV1;
 use super::OriginalCellQ24TrainingCommandErrorV1;
 use super::OriginalCellQ24TrainingCommandOwnerV1;
+use super::require_panel_initial;
 use crate::CellQ24TrainingOwnerV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -26,6 +27,7 @@ use crate::OriginalCellQ24TrainingSigningConfigV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::OriginalCellQ24TrainingSourceV1;
 use crate::OriginalCellQ24TrainingStageV1;
+use crate::OriginalCircuitOnPolicyPanelPolicyV2;
 use crate::SourceBoundCellQ24TrainingStageV1;
 use crate::capture_original_remote_cell_q24_training_source_v1;
 
@@ -71,6 +73,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             &self.dataset,
             &self.config.material,
         )?;
+        require_panel_initial(&self.config, self.panel.as_deref())?;
+        if let Some(panel) = self.panel.as_deref() {
+            OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(
+                panel,
+                cut.snapshot(),
+            )
+            .map_err(|_| Error::Binding("original Trainer panel Dataset cut"))?;
+        }
         if at < started_at
             || matches!(self.origin, Origin::Fresh)
                 && at
@@ -152,6 +162,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds,
         };
         let origin = self.origin;
+        let panel = self.panel.clone();
         let original_dataset = Arc::clone(&self.dataset);
         let material_config = self.config.material.clone();
         let original_cut = cut.clone();
@@ -168,6 +179,18 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 &original_dataset,
                 &material_config,
             )?;
+            if let Some(panel) = panel.as_deref() {
+                OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(
+                    panel,
+                    &material_config.initial,
+                )
+                .map_err(|_| Error::Binding("original Trainer writer panel declaration"))?;
+                OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(
+                    panel,
+                    original_cut.snapshot(),
+                )
+                .map_err(|_| Error::Binding("original Trainer writer panel Dataset cut"))?;
+            }
             if at < started_at
                 || matches!(origin, Origin::Fresh)
                     && at >= material_config.initial.request.envelope.expiry_unix_seconds

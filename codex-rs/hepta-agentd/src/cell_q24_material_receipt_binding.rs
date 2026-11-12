@@ -140,6 +140,18 @@ pub(super) fn validate_config(
     ))
 }
 
+#[cfg(target_os = "linux")]
+pub(super) fn require_panel_initial(
+    config: &OriginalCellQ24MaterialReceiptConfigV1,
+    panel: Option<&OriginalCircuitOnPolicyPanelPolicyV2>,
+) -> Result<(), Error> {
+    if let Some(panel) = panel {
+        OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(panel, &config.initial)
+            .map_err(|_| invalid("original material on-policy panel declaration"))?;
+    }
+    Ok(())
+}
+
 pub(super) fn validate_snapshot(
     config: &OriginalCellQ24MaterialReceiptConfigV1,
     snapshot: &LearningIterationSnapshotV1,

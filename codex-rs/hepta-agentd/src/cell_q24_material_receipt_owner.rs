@@ -4,6 +4,8 @@
 //! Ledger and the same signed freeze. There is no arbitrary signing API.
 
 use std::fs::File;
+#[cfg(target_os = "linux")]
+use std::sync::Arc;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
@@ -32,6 +34,8 @@ use crate::CellQ24DatasetRuleV1;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24DatasetV1;
+#[cfg(target_os = "linux")]
+use crate::OriginalCircuitOnPolicyPanelPolicyV2;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -70,6 +74,26 @@ pub struct OriginalCellQ24MaterialReceiptConfigV1 {
     pub dataset_signer: TrustedLearningSignerV1,
     pub verifier: LearningEvidenceVerifierV1,
     pub maximum_signature_lifetime_seconds: u64,
+}
+
+/// Explicit immutable panel metadata for the original Material operation.
+/// This declaration does not supply custody or authorize either Observer claim.
+#[cfg(target_os = "linux")]
+#[derive(Clone)]
+pub struct OriginalCellQ24MaterialReceiptConfigV2 {
+    original: OriginalCellQ24MaterialReceiptConfigV1,
+    panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,
+}
+
+#[cfg(target_os = "linux")]
+impl OriginalCellQ24MaterialReceiptConfigV2 {
+    pub fn from_original(
+        original: OriginalCellQ24MaterialReceiptConfigV1,
+        panel: Arc<OriginalCircuitOnPolicyPanelPolicyV2>,
+    ) -> Result<Self, Error> {
+        binding::require_panel_initial(&original, Some(panel.as_ref()))?;
+        Ok(Self { original, panel })
+    }
 }
 
 /// Original descriptors, not paths or authority to create/enroll replacements.
@@ -113,6 +137,8 @@ pub struct OriginalCellQ24MaterialReceiptOwnersV1<EW: AnchorWitnessStore, DW: An
     experience: LearningOwnerJournalV1<EW>,
     dataset: LearningOwnerJournalV1<DW>,
     config: OriginalCellQ24MaterialReceiptConfigV1,
+    #[cfg(target_os = "linux")]
+    panel: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>,
     experience_key: SigningKey,
     dataset_key: SigningKey,
     experience_saved: ProductEvaluationExecutionKeyV1,
@@ -148,8 +174,26 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             experience_saved,
             dataset_binding,
             #[cfg(target_os = "linux")]
+            panel: None,
+            #[cfg(target_os = "linux")]
             command_origin: OriginalMaterialCommandOriginV1::FreshCreate,
         })
+    }
+
+    /// Validate the explicit panel before either original journal is created.
+    #[cfg(target_os = "linux")]
+    pub fn create_v2(
+        files: OriginalCellQ24MaterialReceiptFilesV1<EW, DW>,
+        config: OriginalCellQ24MaterialReceiptConfigV2,
+        experience_key: SigningKey,
+        dataset_key: SigningKey,
+    ) -> Result<Self, Error> {
+        let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;
+        binding::validate_config(&original, &experience_key, &dataset_key)?;
+        binding::require_panel_initial(&original, Some(panel.as_ref()))?;
+        let mut owner = Self::create(files, original, experience_key, dataset_key)?;
+        owner.panel = Some(panel);
+        Ok(owner)
     }
 
     /// Reopen these same already initialized journals and witnesses. Pending
@@ -180,8 +224,26 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             experience_saved,
             dataset_binding,
             #[cfg(target_os = "linux")]
+            panel: None,
+            #[cfg(target_os = "linux")]
             command_origin: OriginalMaterialCommandOriginV1::Recovered,
         })
+    }
+
+    /// Recheck the same explicit panel before recovering the original journals.
+    #[cfg(target_os = "linux")]
+    pub fn recover_v2(
+        files: OriginalCellQ24MaterialReceiptFilesV1<EW, DW>,
+        config: OriginalCellQ24MaterialReceiptConfigV2,
+        experience_key: SigningKey,
+        dataset_key: SigningKey,
+    ) -> Result<Self, Error> {
+        let OriginalCellQ24MaterialReceiptConfigV2 { original, panel } = config;
+        binding::validate_config(&original, &experience_key, &dataset_key)?;
+        binding::require_panel_initial(&original, Some(panel.as_ref()))?;
+        let mut owner = Self::recover(files, original, experience_key, dataset_key)?;
+        owner.panel = Some(panel);
+        Ok(owner)
     }
 
     /// Move this pair into its original role host's readback-only producer.
@@ -241,6 +303,8 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
     ) -> Result<OriginalCellQ24MaterialCompletionV1, Error> {
         let started_at = binding::now()?;
         binding::validate_snapshot(&self.config, sources.snapshot)?;
+        #[cfg(target_os = "linux")]
+        binding::require_panel_initial(&self.config, self.panel.as_deref())?;
         match self.experience.read(&self.experience_saved) {
             Ok(bytes) => return self.authenticate_experience(&mut sources, &bytes, started_at),
             Err(LearningOriginalOwnerErrorV1::Store(
@@ -371,6 +435,8 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         started_at: u64,
     ) -> Result<OriginalCellQ24MaterialCompletionV1, Error> {
         binding::validate_snapshot(&self.config, sources.snapshot)?;
+        #[cfg(target_os = "linux")]
+        binding::require_panel_initial(&self.config, self.panel.as_deref())?;
         let bytes = self.experience.read(&self.experience_saved)?;
         self.authenticate_experience(sources, &bytes, started_at)
     }
