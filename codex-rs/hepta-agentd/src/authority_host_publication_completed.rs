@@ -14,6 +14,8 @@ use crate::authority_host_runtime::OriginalCompletedLearningContextV1;
 
 #[path = "authority_host_publication_completed_open.rs"]
 mod open;
+#[path = "authority_host_publication_completed_next_use.rs"]
+mod next_use;
 
 /// Chosen by Root's completed-history deployment, never inferred from Missing.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -61,12 +63,13 @@ pub(crate) struct OriginalCompletedPublicationReadV1<'a> {
 
 pub(crate) fn with_original_publication_history<T>(
     root: Arc<RootAuthorityDirectory>,
+    root_path: &std::path::Path,
     initial: &LearningIterationSnapshotV1,
     scope: &FrozenLearningScopeV2,
     end: Instant,
     action: impl FnOnce(&OriginalPublicationHistoryProofV1<'_>) -> io::Result<T>,
 ) -> io::Result<(T, Digest32)> {
-    PublicationRefusal::with_completed_history(root, initial, scope, end, action)
+    PublicationRefusal::with_completed_history(root, root_path, initial, scope, end, action)
 }
 
 impl OriginalCompletedPublicationReadV1<'_> {
@@ -121,6 +124,9 @@ impl OriginalCompletedPublicationReadV1<'_> {
                 Some(RegisteredSuccessorData::read_data(held, cut)?)
             }
         };
+        if let Some(data) = &successor {
+            self.require_original_next_use(context, data)?;
+        }
         self.require_physical()?;
         context.require_original_publication_context(self.service, self.end)?;
         let data = OriginalCompletedPublicationDataV1 {
