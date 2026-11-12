@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -44,12 +45,69 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             "exact_pass_coverage"
         ]
 
+    def provider_native_cases(self):
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+        ).read_text()
+        names = re.findall(
+            r"(?m)^#\[tokio::test(?:\([^\n]*\))?\]\n"
+            r"async fn (original_evaluation_provider_\w+)\(",
+            source,
+        )
+        self.assertTrue(names, "no registered native Provider tests found")
+        return tuple(
+            coverage.ORIGINAL_EVALUATION_PROVIDER_PREFIX + name for name in names
+        )
+
     def test_exact_subset_retains_other_native_cases(self):
         root, log = self.reports()
         self.assertTrue(self.assess(root, log))
         # --success-output final repeats native status headers after Summary.
         final_headers = "\n".join(log.splitlines()[:-1])
         self.assertTrue(self.assess(root, log + "\n" + final_headers))
+
+    def test_provider_catalog_tracks_registered_native_tests(self):
+        # Compare independently maintained producer entry points and report
+        # obligations, not fixtures generated from the catalog itself.
+        self.assertCountEqual(
+            coverage.ORIGINAL_EVALUATION_PROVIDER_CASES, self.provider_native_cases()
+        )
+
+    def test_provider_cases_require_both_original_reports_and_package(self):
+        for name in self.provider_native_cases():
+            for mutation in ("missing_junit", "missing_log", "foreign_package"):
+                with self.subTest(name=name, mutation=mutation):
+                    root, log = self.reports()
+                    if mutation != "missing_log":
+                        for suite in root.findall("testsuite"):
+                            for case in list(suite):
+                                if case.get("name") != name:
+                                    continue
+                                suite.remove(case)
+                                if mutation == "foreign_package":
+                                    case.set("classname", "foreign-package")
+                                    foreign = ET.SubElement(
+                                        root, "testsuite", name="foreign-package"
+                                    )
+                                    foreign.append(case)
+                    if mutation == "missing_log":
+                        log = "\n".join(
+                            line
+                            for line in log.splitlines()
+                            if not line.endswith(" " + name)
+                        )
+                    elif mutation == "foreign_package":
+                        log = "\n".join(
+                            line.replace(
+                                f" {coverage.PACKAGE} {name}",
+                                f" foreign-package {name}",
+                            )
+                            if line.endswith(" " + name)
+                            else line
+                            for line in log.splitlines()
+                        )
+                    self.assertFalse(self.assess(root, log))
 
     def test_each_original_owner_group_is_required_in_both_reports(self):
         for group, _, names in coverage.OWNER_GROUPS:
