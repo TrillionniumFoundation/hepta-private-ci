@@ -1,0 +1,558 @@
+{
+  "analysis": {
+    "alpha": 0.05,
+    "difference_range": [
+      -1,
+      1
+    ],
+    "method": "one-sided Hoeffding; Bonferroni for all nine contrasts",
+    "missing": "use conservative per-source difference bounds; retain planned denominator",
+    "population": "independent fresh generated sources under one fixed task template",
+    "primary_contrast": "on_bm25 minus off",
+    "simultaneous_contrasts": 9
+  },
+  "common_A_writer_cost": {
+    "charged_once": true,
+    "wall_seconds": {
+      "missing_rows": 0,
+      "observed_rows": 32,
+      "observed_sum": 2.491560383
+    }
+  },
+  "contrasts": {
+    "delete": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus delete",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32
+    },
+    "delivery_off": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus delivery_off",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32
+    },
+    "exact_kv": {
+      "bonferroni_hoeffding_lower_95": -0.569701503579408,
+      "contrast": "on_bm25 minus exact_kv",
+      "missing_label_difference_bounds": [
+        0.0,
+        0.0
+      ],
+      "paired_mean_difference": 0.0,
+      "planned_pairs": 32
+    },
+    "finite_icl": {
+      "bonferroni_hoeffding_lower_95": 0.14904849642059204,
+      "contrast": "on_bm25 minus finite_icl",
+      "missing_label_difference_bounds": [
+        0.71875,
+        0.71875
+      ],
+      "paired_mean_difference": 0.71875,
+      "planned_pairs": 32
+    },
+    "off": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus off",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32,
+      "primary_hoeffding_lower_95": 0.5360454043494287
+    },
+    "replace": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus replace",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32
+    },
+    "retention_off": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus retention_off",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32
+    },
+    "retrieval_off": {
+      "bonferroni_hoeffding_lower_95": 0.39904849642059204,
+      "contrast": "on_bm25 minus retrieval_off",
+      "missing_label_difference_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "paired_mean_difference": 0.96875,
+      "planned_pairs": 32
+    },
+    "uniform_replay": {
+      "bonferroni_hoeffding_lower_95": 0.11779849642059204,
+      "contrast": "on_bm25 minus uniform_replay",
+      "missing_label_difference_bounds": [
+        0.6875,
+        0.6875
+      ],
+      "paired_mean_difference": 0.6875,
+      "planned_pairs": 32
+    }
+  },
+  "ended_at_unix_ns": 1794472893253312419,
+  "generated_sources": 32,
+  "known_returned_generations": 320,
+  "limitations": [
+    "generated single-template tasks; no natural-source generalization",
+    "deterministic A writer; new fixed text parser, not MEM5 public selector",
+    "research SQLite forks are not native owner recovery",
+    "same limits do not mean identical actual token or setup cost",
+    "missing-label bounds are not confidence intervals; no adoption threshold",
+    "energy, external effect recovery and original owner authentication unavailable"
+  ],
+  "measured_costs_by_arm": {
+    "delete": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 471
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3736
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 161.60858847550116
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 162.573919271
+      }
+    },
+    "delivery_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 614
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3130
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 166.34337446768768
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 167.240942743
+      }
+    },
+    "exact_kv": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 320
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3732
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 157.01532546174712
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 157.912127922
+      }
+    },
+    "finite_icl": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 442
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3740
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 163.6093700833153
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 164.528233794
+      }
+    },
+    "off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 614
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3130
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 165.93263929430395
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 166.740926288
+      }
+    },
+    "on_bm25": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 320
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3732
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 156.84312206646428
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 157.753170937
+      }
+    },
+    "replace": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 320
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3732
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 156.84081820747815
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 157.795315029
+      }
+    },
+    "retention_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 614
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3130
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 166.54889437370002
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 167.528822117
+      }
+    },
+    "retrieval_off": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 614
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3130
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 166.07352383621037
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 167.008523557
+      }
+    },
+    "uniform_replay": {
+      "output_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 470
+      },
+      "prompt_tokens": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 3736
+      },
+      "provider_wall_seconds_with_setup": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 162.4110509925522
+      },
+      "wall_seconds": {
+        "missing_rows": 0,
+        "observed_rows": 32,
+        "observed_sum": 163.31076175
+      }
+    }
+  },
+  "native_owner_used": false,
+  "natural_task_benefit_established": false,
+  "observer_authenticated": false,
+  "outer_supervisor_deadline_seconds": 21600,
+  "panels": {
+    "delete": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "delivery_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "exact_kv": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 31,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "finite_icl": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.25,
+        0.25
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 8,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "on_bm25": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.96875,
+        0.96875
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 31,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "replace": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "retention_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "retrieval_off": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.0,
+        0.0
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 0,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    },
+    "uniform_replay": {
+      "missing": 0,
+      "missing_label_rate_bounds": [
+        0.28125,
+        0.28125
+      ],
+      "planned": 32,
+      "scored": 32,
+      "statuses": {
+        "RETURNED": 32
+      },
+      "successes": 9,
+      "v1_descriptive": {
+        "format_accepted": 0,
+        "missing": 0,
+        "scored": 32,
+        "successes": 0
+      }
+    }
+  },
+  "parameter_consolidation_executed": false,
+  "planned_rows": 320,
+  "production_adoption": false,
+  "protocol_sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0",
+  "run_error": null,
+  "schema": "hepta.mem14.controlled-diagnostic-report.v1",
+  "scientific_acceptance": "HOLD",
+  "scored_controlled_rows": 320,
+  "selector_version": "v2",
+  "shared_task_templates": 1,
+  "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+  "started_at_unix_ns": 1794471257711073636,
+  "unsettled_generation_rows": 0
+}
