@@ -15,6 +15,9 @@ use std::time::Instant;
 
 use crate::AgentdRootAuthorityPeer;
 
+#[path = "root_generation_publication_source_close.rs"]
+mod source_capture_close;
+
 pub(crate) struct OriginalPublicationStream {
     stream: UnixStream,
     root: OwnedFd,
