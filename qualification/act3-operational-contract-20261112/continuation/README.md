@@ -40,3 +40,10 @@ restoration, production goal-checking host registration, original Root/AuthBus
 FinalUse, new independent real applications or full lifetime cost. Both target
 health calls timed out at MCP level; target reachability remains UNKNOWN.
 The fixed library stays the reference and adoption remains false.
+
+## Later joint gate
+
+[Joint original invocation recovery](joint/README.md) adds five exact-source
+passing cases on one assembled async/controller-recovery path. This supersedes
+only the earlier NOT_RUN status for that narrowly scoped gate. It does not join
+the model hidden-state or production-authority gates.
