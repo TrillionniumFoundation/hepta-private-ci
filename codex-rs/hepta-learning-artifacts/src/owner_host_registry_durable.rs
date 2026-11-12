@@ -220,7 +220,7 @@ impl LearningArtifactOwnerHost {
         if writer_after.lease_digest != writer.lease_digest { return Err(Error::ChangedDuringRead); }
         validate_artifact_publication_v3(&context.admission, withdrawals, fresh).map_err(ArtifactPublicationError::from)?;
         if let Some(signed) = &current_after {
-            self.verifier.verify_signed_head(signed, &self.preparation_head_requirement(signed, fresh), true)?;
+            self.verifier.verify_signed_head(signed, &self.preparation_head_requirement(signed, fresh), /*require_current_signer*/ true)?;
         }
         // No file, witness or peer I/O occurs after the fresh complete original
         // writer/head/withdrawal validation. This is a point-in-time proof.

@@ -134,7 +134,8 @@ impl LearningArtifactOwnerService {
             started,
         )?;
         let manifest = &context.admission.validated_manifest.manifest;
-        if manifest.bytes_digest != Digest32::of_bytes(payload)
+        if manifest.producer_id != *self.host.producer_id()
+            || manifest.bytes_digest != Digest32::of_bytes(payload)
             || manifest.encoded_size_bytes != payload.len() as u64
         {
             return Err(OriginalArtifactPreparationErrorV1::Context);

@@ -171,6 +171,15 @@ fn original_registry_wrong_context_is_refused_before_consuming_the_writer() {
     wrong.expected_registry_predecessor_head = fixture::digest("other-head");
     assert!(service.prepare_original_registry_with_clock(wrong, b"payload", &|| Ok(20)).is_err());
     assert!(service.prepare_original_registry_with_clock(valid.clone(), b"different", &|| Ok(20)).is_err());
+    let mut other_manifest = fixture::manifest();
+    other_manifest.producer_id = fixture::id("other-producer");
+    let mut wrong_producer = valid.clone();
+    wrong_producer.admission = admit_manifest_at_withdrawal_head_v3(
+        service.withdrawal_registry(), service.withdrawal_registry().head_digest(),
+        other_manifest, 20,
+    ).fixture("valid admission for another producer");
+    assert!(matches!(service.prepare_original_registry_with_clock(wrong_producer, b"payload", &|| Ok(20)),
+        Err(OriginalArtifactPreparationErrorV1::Context)));
     assert_eq!(files(&directory.0), before);
     assert!(service.recovery_required().is_none());
     assert!(service.prepare_original_registry_with_clock(valid, b"payload", &|| Ok(20)).is_ok());
