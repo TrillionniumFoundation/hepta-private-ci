@@ -1387,3 +1387,14 @@ pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationSourceV1;
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationTargetV1;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitFinalHoldoutProviderV1;
+
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandConnectionV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandErrorV1;

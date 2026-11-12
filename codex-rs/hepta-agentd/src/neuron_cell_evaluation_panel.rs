@@ -143,3 +143,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_panel_tests.rs"]
 mod tests;
+
+#[path = "neuron_cell_evaluation_host.rs"]
+mod host;
+pub use host::OriginalCellEvaluationHostV1;
+pub use host::OriginalCellEvaluationCommandConnectionV1;
+pub use host::OriginalCellEvaluationCommandClientV1;
+pub use host::OriginalCellEvaluationCommandReceiptV1;
+pub use host::OriginalCellEvaluationCommandErrorV1;
