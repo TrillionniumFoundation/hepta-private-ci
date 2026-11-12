@@ -32,6 +32,8 @@ fn main() -> anyhow::Result<()> {
             #[cfg(target_os = "linux")]
             let (mut config, production) = startup.receive().await?;
             let mut args = arguments.into_iter();
+            let mut notes_thread_seed_profile = false;
+            let mut other_profile_arguments = false;
             let mut authbus_trust = None;
             let mut intelligence_authority_file = None;
             let mut intelligence_authority_signer = None;
@@ -50,7 +52,18 @@ fn main() -> anyhow::Result<()> {
                 let path = args
                     .next()
                     .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
-                if flag == "--authbus-trust-file" {
+                other_profile_arguments |= flag != "--notes-thread-seed-profile";
+                if flag == "--notes-thread-seed-profile" {
+                    anyhow::ensure!(
+                        !notes_thread_seed_profile,
+                        "duplicate --notes-thread-seed-profile"
+                    );
+                    anyhow::ensure!(
+                        path == "finite-v2",
+                        "--notes-thread-seed-profile must be finite-v2"
+                    );
+                    notes_thread_seed_profile = true;
+                } else if flag == "--authbus-trust-file" {
                     anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                     authbus_trust = Some(path);
                 } else if flag == "--plasticity-bootstrap-descriptor" {
@@ -146,6 +159,22 @@ fn main() -> anyhow::Result<()> {
                 } else {
                     anyhow::bail!("unknown Agentd argument {flag:?}");
                 }
+            }
+            if notes_thread_seed_profile {
+                anyhow::ensure!(
+                    !other_profile_arguments,
+                    "--notes-thread-seed-profile cannot be combined with other Agentd arguments"
+                );
+                #[cfg(target_os = "linux")]
+                {
+                    anyhow::ensure!(
+                        production.is_none(),
+                        "--notes-thread-seed-profile cannot be combined with a Root launch"
+                    );
+                    config = config.with_original_notes_seed_profile()?;
+                }
+                #[cfg(not(target_os = "linux"))]
+                anyhow::bail!("--notes-thread-seed-profile requires Linux");
             }
             match (
                 intelligence_authority_file,

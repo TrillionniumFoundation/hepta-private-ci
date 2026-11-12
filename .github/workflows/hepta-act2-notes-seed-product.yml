@@ -2,7 +2,9 @@ name: ACT2 original Notes seed executable
 
 on:
   push:
-    branches: [ci/act2-notes-seed-product-20261112]
+    branches:
+      - ci/act2-notes-seed-product-20261112
+      - research/neuro4-finite-notes-seed-20261112-862531d
 
 permissions:
   contents: read
@@ -43,6 +45,7 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-notes-seed/source.txt"
           sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/act2-notes-seed/lock.sha256"
           git config --global credential.helper '!gh auth git-credential'
+          git fetch --no-tags --depth=1 origin 9db98207bdb1ec36e2ba9ac0cf0356bf243821ab
           sudo apt-get update
           sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
@@ -62,6 +65,12 @@ jobs:
           sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
           python3 scripts/hepta_ci_v8.py
           rustup run 1.96.0 rustc --version --verbose > "$RUNNER_TEMP/act2-notes-seed/rustc.txt"
+      - name: Verify the original caller boundaries
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4800 \
+            --output "$RUNNER_TEMP/act2-notes-seed/caller-proof.json" \
+            -- python3 scripts/verify_hepta_callers.py verify
       - name: Build both actual executable entries with the original lock
         run: |
           set -euo pipefail
@@ -78,6 +87,13 @@ jobs:
             --output "$RUNNER_TEMP/act2-notes-seed/seed.json" \
             -- just test --locked -p codex-hepta-agentd --test notes_thread_seed_product \
             -E 'test(launcher_seeds_one_unused_original_thread_without_model_contact)' --status-level all
+      - name: Require all five finite seed regression methods
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/act2-notes-seed/seed-regressions.json" \
+            -- just test --locked -p codex-hepta-agentd --lib --test notes_thread_seed_product \
+            -E 'test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)' --status-level all
       - name: Reject filtered-out tests and preserve the named-case receipt
         run: |
           set -euo pipefail
@@ -114,6 +130,51 @@ jobs:
               "final_use_qualified": False, "learning_gain_qualified": False,
           }
           (records / "named-case-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          regression = json.loads((records / "seed-regressions.json").read_text())
+          assert regression["status"] == "passed" and regression["exit_code"] == 0
+          assert regression["observed_passed_tests"] == 5
+          assert regression["observed_failed_tests"] == 0
+          assert regression["source_sha"] == regression["tested_sha"] == source
+          assert regression["before"] == regression["after"] == record["before"]
+          regression_log = records / regression["log_file"]
+          assert regression_log.resolve().parent == records.resolve()
+          regression_raw = regression_log.read_bytes()
+          assert hashlib.sha256(regression_raw).hexdigest() == regression["log_sha256"]
+          regression_text = re.sub(r"\x1b\[[0-9;]*m", "", regression_raw.decode())
+          names = (
+              "original_notes_seed_profile_does_not_supply_notes_execution_owners",
+              "original_notes_seed_profile_rejects_mixed_configurations_in_both_orders",
+              "original_notes_seed_profile_rechecks_files_before_runtime",
+              "seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state",
+              "standard_profile_rejects_original_notes_seed_before_model_contact",
+          )
+          regression_passes = {}
+          for name in names:
+              identity = re.compile(
+                  r"PASS\s+\[\s*\d+(?:\.\d+)?s\]\s+\S+\s+(?:\S+::)?"
+                  + re.escape(name)
+              )
+              matches = [
+                  line for line in regression_text.splitlines()
+                  if identity.fullmatch(line.strip())
+              ]
+              assert len(matches) == 1, f"expected one exact PASS for {name}"
+              regression_passes[name] = matches[0]
+          (records / "regression-case-receipt.json").write_text(
+              json.dumps(
+                  {
+                      "status": "FINITE_SEED_REGRESSION_METHODS_PASSED",
+                      "source_sha": source,
+                      "source_tree": regression["before"]["tree"],
+                      "expected_methods": 5,
+                      "passing_lines": regression_passes,
+                      "log_sha256": regression["log_sha256"],
+                      "production_authority": False,
+                      "owner_decision": None,
+                  },
+                  indent=2,
+              ) + "\n"
+          )
           PY
           just fmt --base 9db98207bdb1ec36e2ba9ac0cf0356bf243821ab --check > "$RUNNER_TEMP/act2-notes-seed/format.log" 2>&1
           test -z "$(git status --porcelain)"

@@ -19,6 +19,10 @@ mod desktop;
 #[path = "config_circuit_task.rs"]
 mod circuit_task;
 
+#[cfg(target_os = "linux")]
+#[path = "config_notes_seed.rs"]
+mod notes_seed;
+
 #[path = "config_sockets.rs"]
 mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;
@@ -111,6 +115,8 @@ pub struct AgentdConfig {
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
     desktop_objective: Option<crate::AgentdDesktopObjectiveConfig>,
+    #[cfg(target_os = "linux")]
+    notes_thread_seed_profile: bool,
     #[cfg(target_os = "linux")]
     notes_ui: Option<crate::AgentdNotesUiRuntime>,
     #[cfg(target_os = "linux")]
@@ -278,6 +284,8 @@ impl AgentdConfig {
             production_writer_host: None,
             notes_objective: None,
             desktop_objective: None,
+            #[cfg(target_os = "linux")]
+            notes_thread_seed_profile: false,
             #[cfg(target_os = "linux")]
             notes_ui: None,
             #[cfg(target_os = "linux")]

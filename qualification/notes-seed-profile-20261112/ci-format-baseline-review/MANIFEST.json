@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.act2.notes-seed-ci-format-baseline-review.v1",
+  "status": "STATIC_REVIEW_ONLY_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "8514d4754790e642f5f083d56696921b0628a313",
+  "base_tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
+  "code_tree": "222068dfafbba93aad498fe026c1a103d7e437f6",
+  "source_change": {
+    "path": ".github/workflows/hepta-act2-notes-seed-product.yml",
+    "base_commit": "8514d4754790e642f5f083d56696921b0628a313",
+    "base_tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
+    "base_blob_sha": "71ec1b1ece9411fb4bb505825ea66e2401196550",
+    "post_blob_sha": "458340f1ccfd5893021bdc33f9f4be643f56fcea",
+    "bytes": 9821,
+    "sha256": "f5dd8475568c8351dcc37b508b94797dc9b9d3e5fa3471a6257ad2d1f7ff71aa",
+    "change": {
+      "additions": 1,
+      "deletions": 0
+    },
+    "head_changes": false,
+    "new_native_execution": false,
+    "old_run_unchanged": 43200801767,
+    "fetch_changes_head": false,
+    "fetch_changes_worktree": false
+  },
+  "exact_history": [
+    {
+      "sha": "8514d4754790e642f5f083d56696921b0628a313",
+      "parent": "7e6affec5ffa987f561f431988cfdb3e2c25ba83"
+    },
+    {
+      "sha": "7e6affec5ffa987f561f431988cfdb3e2c25ba83",
+      "parent": "b02850c04dcd40f2703e95cc670df531468fd0e3"
+    },
+    {
+      "sha": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+      "parent": "9db98207bdb1ec36e2ba9ac0cf0356bf243821ab"
+    }
+  ],
+  "finding": {
+    "checkout_depth": 2,
+    "formatter_path": "scripts/format.py",
+    "formatter_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "formatter_operation": "git rev-parse --verify --end-of-options 9db98207bdb1ec36e2ba9ac0cf0356bf243821ab^{commit}",
+    "formatter_fetches_missing_base": false,
+    "implication": "A fresh depth-2 checkout at the exact head omits the format baseline; unchanged format.py cannot resolve the missing commit. This is a source-level finding, not a reported result of the still-queued workflow.",
+    "fix": "Fetch only the exact baseline commit with --no-tags --depth=1 after the existing GitHub credential helper. Preserve the exact checked-out head, format --base and --check, and source before/after verification.",
+    "scope_verified": "Removing the added fetch line reproduces the prior workflow byte-for-byte."
+  },
+  "original_run": {
+    "id": 43200801767,
+    "job_id": 131123414182,
+    "event": "push",
+    "attempt": 1,
+    "head_sha": "8514d4754790e642f5f083d56696921b0628a313",
+    "status": "queued",
+    "conclusion": null,
+    "runner_name": "",
+    "steps_observed": 0,
+    "log_available": false,
+    "rerun_requested": false,
+    "cancel_requested": false
+  },
+  "invariants": {
+    "rust_test_postimages_unchanged": true,
+    "six_expected_methods_unchanged": true,
+    "original_positive_receipt_checks_unchanged": true,
+    "regression_receipt_checks_unchanged": true,
+    "caller_proof_unchanged": true,
+    "original_format_scope_and_check_unchanged": true,
+    "source_before_after_checks_unchanged": true,
+    "ref_updated": false,
+    "commit_created": false,
+    "native_or_formatter_execution_performed": false,
+    "production_owner_qualification": false,
+    "owner_decision": null
+  }
+}

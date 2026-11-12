@@ -48,6 +48,8 @@ pub async fn run_with_shutdown(
     arg0_paths: Arg0DispatchPaths,
     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
 ) -> Result<(), AgentdError> {
+    #[cfg(target_os = "linux")]
+    let notes_thread_seed_profile = config.original_notes_seed_profile()?;
     let circuit_task = config.take_circuit_task_bootstrap()?;
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
@@ -62,6 +64,8 @@ pub async fn run_with_shutdown(
         crate::app_runtime::AppServerModelToolProfile::OriginalDesktop
     } else if notes_thread_tools.is_some() {
         crate::app_runtime::AppServerModelToolProfile::OriginalNotes
+    } else if notes_thread_seed_profile {
+        crate::app_runtime::AppServerModelToolProfile::OriginalNotesSeed
     } else {
         crate::app_runtime::AppServerModelToolProfile::Standard
     };

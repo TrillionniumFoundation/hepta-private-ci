@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "status": "CANDIDATE_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base_commit": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+  "source_base_tree": "09d528e50446fac713736c5a1b2d099b97399a12",
+  "candidate_code_tree": "88781d9f6dc0163fb1f2f4b5239947e004d71566",
+  "original_failure": {
+    "run_id": 43163424939,
+    "job_id": 130999664797,
+    "exact_test": "launcher_seeds_one_unused_original_thread_without_model_contact",
+    "error": "seed launcher failed: Invalid(\"original literal Notes: original Notes effective Core execution profile differs\")",
+    "original_log_custodian": "parent agent; not reproduced or transcribed as an original log here"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "base_blob_sha": "ad42091cd893c1108eb21a766104eee994cf02e5",
+      "post_blob_sha": "b0ff015afc939f30f96d8c3a0bbd45be84e4a84f",
+      "bytes": 38700,
+      "sha256": "931edc694f40c084f91d93358f91b1cc1f8efa8e4e43b0160975143605af166d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_notes_seed.rs",
+      "base_blob_sha": null,
+      "post_blob_sha": "3ab21aa78ca1945ff05558d5adb116ec01fa6b9c",
+      "bytes": 2832,
+      "sha256": "a2f99e211a36c6ef7a46a7600e79b40611fb108ae3e143260a55727137af0bff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "base_blob_sha": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+      "post_blob_sha": "6d51e700da42bb69d75003fc2ace3fb9d6ebc995",
+      "bytes": 19438,
+      "sha256": "bda103cc921f39e80983dede54979d89897c172d1f5f1fc34d61b7c206ef1543"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "base_blob_sha": "13f164a6199f75505368fa9829e26983f098e432",
+      "post_blob_sha": "ece8a256d17a8099c6af63d2e5be855201db6fe0",
+      "bytes": 30589,
+      "sha256": "dd01a145bef9b19015b14b233e7a4ee63a8f89b1fb5aa9ea4539f74bd8c782bd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "base_blob_sha": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "post_blob_sha": "2f0aa2e385e3cc9324dbc636f9b32f2a8104be0c",
+      "bytes": 14430,
+      "sha256": "d489019be5e463685fc7f5f6af3747d80a8cd646010bb7fb0c783ff86f23e4b5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_notes_seed_tests.rs",
+      "base_blob_sha": null,
+      "post_blob_sha": "bf9714cc3479fb6b9db2d14d905a81afaafc76c7",
+      "bytes": 5577,
+      "sha256": "8c3069fddd70bd3e56bc6041a861274cdcb629fc29a229fcbaf3c883080a44b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs",
+      "base_blob_sha": "613cbfa6f7df6347c19678ae1dfa3e6789ba3909",
+      "post_blob_sha": "0c126b05e330fda38e4b41f45496382711acb7e3",
+      "bytes": 6985,
+      "sha256": "2c6eed6c9a0b8dc2b075e4d45451097d7875e62564ed9f706271235eca3288f0"
+    },
+    {
+      "path": "CALLERS.toml",
+      "base_blob_sha": "20ba05760a8a7487aa683dbc87274103ffd48a6f",
+      "post_blob_sha": "a129f31f50c47ef5ec6feaf5f1473dece55a5ec1",
+      "bytes": 218976,
+      "sha256": "794c571559b5fe3134b5becab2a96dcba72ba91ce197974c3f43f712d76713a4"
+    }
+  ],
+  "line_changes": {
+    "added": 364,
+    "deleted": 2
+  },
+  "integrity": {
+    "original_blob_git_sha_verified": true,
+    "candidate_blob_git_sha_verified": true,
+    "all_8_postimages_read_back_exact": true,
+    "callers_original_prefix_preserved": true,
+    "integrity_checks_are_not_runtime_tests": true
+  },
+  "unchanged_execution_and_authority_files": [
+    {
+      "key": "thread_execution",
+      "sha": "d7c6b4110dfb7d5efde8862e6c7e7c5e4cd8fc7a"
+    },
+    {
+      "key": "thread_seed",
+      "sha": "2fe2e42ace22d6685f9d4f4d99750e01cfbc7067"
+    },
+    {
+      "key": "thread_tool",
+      "sha": "df33c57f2e3019557e16d26f8ccda776e6f63a20"
+    },
+    {
+      "key": "launch_mode",
+      "sha": "4c6d40bee8f88c277d23f1671686a6ec6ea952c2"
+    },
+    {
+      "key": "production_launcher",
+      "sha": "b43afaf755b97adc37a3717cc14614e0dc837c01"
+    },
+    {
+      "key": "launcher_inputs",
+      "sha": "f1f3b419775553fe8ded61487bd26bb380860606"
+    }
+  ],
+  "validation": {
+    "rust_build": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "caller_proof": "NOT_RUN",
+    "new_test_methods": 5,
+    "existing_named_positive_methods": 1,
+    "planned_commands": [
+      "python3 scripts/verify_hepta_callers.py verify",
+      "just test --locked -p codex-hepta-agentd --test notes_thread_seed_product -E 'test(launcher_seeds_one_unused_original_thread_without_model_contact)' --status-level all",
+      "just test --locked -p codex-hepta-agentd --lib --test notes_thread_seed_product -E 'test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)' --status-level all",
+      "just fmt --base b02850c04dcd40f2703e95cc670df531468fd0e3 --check"
+    ],
+    "expected_counts": {
+      "original_named_integration": 1,
+      "new_regression_methods": 5
+    },
+    "workflow_unchanged": true
+  },
+  "effects": {
+    "commits_created": 0,
+    "refs_updated": 0,
+    "pull_requests_updated": 0,
+    "actor_calls": 0,
+    "remote_dispatches": 0,
+    "production_authority": false,
+    "full_notes_handler_qualification": false,
+    "owner_decision": null
+  },
+  "diff": {
+    "bytes": 23507,
+    "sha256": "e916560b320ae019819651f30d798d7e8189bca10d2a9871a92b4460b0967617"
+  },
+  "supersedes_candidate_code_tree": "381b6bac618289a60628ca66fe5c20e1b60ce828",
+  "source_guard_revision": "Keep closed CLI literals in raw required; use code-only markers after the original verifier strips Rust strings. All original CALLERS bytes remain the prefix.",
+  "independent_static_review": {
+    "reviewer": "repository_research_audit",
+    "scope": "production/config/main/runtime/app_runtime and tests only",
+    "finding": "No additional source/type blocker identified; no compilation or runtime execution; reviewer did not evaluate the final CALLERS postimage."
+  }
+}

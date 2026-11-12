@@ -44,6 +44,9 @@ pub(crate) enum AppServerModelToolProfile {
     Standard,
     #[cfg(target_os = "linux")]
     OriginalNotes,
+    /// Pre-seed attenuation without an installed effect handler or Root grant.
+    #[cfg(target_os = "linux")]
+    OriginalNotesSeed,
     #[cfg(target_os = "linux")]
     OriginalDesktop,
 }
@@ -54,6 +57,8 @@ impl AppServerModelToolProfile {
             Self::Standard => true,
             #[cfg(target_os = "linux")]
             Self::OriginalNotes | Self::OriginalDesktop => false,
+            #[cfg(target_os = "linux")]
+            Self::OriginalNotesSeed => false,
         }
     }
 }
@@ -342,6 +347,15 @@ mod tests {
     async fn notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
         finite_embedding_keeps_only_the_original_store(
             super::AppServerModelToolProfile::OriginalNotes,
+        )
+        .await;
+    }
+
+    #[cfg(target_os = "linux")]
+    #[tokio::test]
+    async fn seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
+        finite_embedding_keeps_only_the_original_store(
+            super::AppServerModelToolProfile::OriginalNotesSeed,
         )
         .await;
     }
