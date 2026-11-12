@@ -141,6 +141,7 @@ impl OriginalCircuitEvaluationCohortV1 {
             manifest: Digest32::of_bytes(&provenance),
             dataset: receipt,
             inputs,
+            freeze_payload,
         })
     }
 

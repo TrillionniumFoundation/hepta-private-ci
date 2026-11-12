@@ -27,11 +27,18 @@ RECORDS = AGENT + "circuit_original_evaluation_provider_records.rs"
 READ = AGENT + "circuit_original_evaluation_provider_read.rs"
 POLICY = AGENT + "circuit_task_source_policy.rs"
 SOURCE = AGENT + "circuit_task_source.rs"
+CURRENT = AGENT + "circuit_original_evaluation_cohort_readback.rs"
 EXPECTED = {
     "learning_original_evaluation_cohort_capture": (),
     "learning_original_evaluation_holdout_provider": (),
     "learning_original_evaluation_material_current": (CORE,),
     "learning_original_source_policy_projection": (RECORDS,),
+    "learning_original_evaluation_cohort_readback_retain": (CORE,),
+    "learning_original_evaluation_cohort_readback_after_release": (),
+    "learning_original_evaluation_cohort_readback_cold": (),
+    "learning_original_evaluation_cohort_readback_current": (CORE,),
+    "learning_original_evaluation_cohort_member_binding": (),
+    "learning_original_evaluation_cohort_final_authentication": (),
 }
 
 
@@ -68,7 +75,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             self.verifies(path, changed)
 
     def test_exact_cohort_capture_provider_and_original_policy_edges(self):
-        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE}
+        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, CURRENT}
         sources = {path: self.code((ROOT / path).read_text()) for path in paths}
         for identifier, expected in EXPECTED.items():
             with self.subTest(boundary=identifier):
@@ -129,6 +136,26 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             self.rejects(READ, "fn read_original_material(", marker)
         for marker in ("expected != observed.manifest", "expected != &observed.dataset"):
             self.rejects(CORE, "fn read_current_with_clock(", marker)
+        for marker in (
+            "registration != &config.registration", "task != registered",
+            "task.cohort_rule_digest != self.original.rule_digest",
+            "training != &config.training", "scope != &config.scope",
+            "plan != &self.plan", "training_evidence != &config.training_evidence",
+            "verifier.trust_digest() != config.verifier.trust_digest()",
+            "verifier.scope_digest() != config.verifier.scope_digest()",
+            "verifier.objective_digest() != config.verifier.objective_digest()",
+        ):
+            self.rejects(CURRENT, "fn require_original_member(", marker)
+        for marker in (
+            "self.original.read_current_with_clock(clock)?",
+            "material.manifest != frozen.final_holdout_digest",
+            "material.dataset.snapshot.dataset_digest != frozen.dataset_digest",
+            "&self.original.config.training_evidence", "&self.original.config.freeze_evidence",
+            "evidence.signing_bytes()", "full.extend_from_slice(&evidence.signature)",
+            "bytes.extend_from_slice(&material.freeze_payload)",
+            "if self.last.as_ref().is_some_and(|last| last != &observed)",
+        ):
+            self.rejects(CURRENT, "fn read_current_with_clock(", marker)
 
     def test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support(self):
         for marker in (
@@ -217,10 +244,29 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
                        "OriginalCircuitEvaluationCohortV1::read_original_material("):
             self.rejects(CORE, "fn read_current_with_clock(", marker)
         self.rejects(CORE, "fn read_original(", "Self::read_original_with_clock(owners, config, now)")
+        self.rejects(CURRENT, "fn read_current(", "self.read_current_with_clock(super::now)")
+        for marker in (
+            "self.fenced = true", "self.last.as_ref() != Some(observed)",
+            "current < self.original.last_observed_at",
+            "binding::authenticate_training(config, current)?",
+            "&observed.freeze_payload",
+            "verify_signed_role_separation(&training.generator, &evaluator, current)?",
+            "LedgerWriter::freeze_dataset(", "!= observed.dataset",
+            "LedgerWriter::read_dataset_records(", "self.original.last_observed_at = current",
+        ):
+            self.rejects(CURRENT, "fn authenticate_current(", marker)
+        for addition in (
+            "fn bypass() { File::open(path); }",
+            "fn bypass() { owner.read_current_durable_snapshot(); }",
+            "fn bypass() { owner.request(); }",
+        ):
+            with self.assertRaises(PROOF.VerificationFailure):
+                self.verifies(CURRENT, (ROOT / CURRENT).read_text() + "\n" + addition)
 
     def test_only_the_original_consumed_holdout_releases_rows_once_without_authority(self):
         for marker in (
             "binding::require_plan(&self, &plan)?", "original: self", "release_attempted: false",
+            "release_completed: false",
         ):
             self.rejects(CORE, "fn into_final_holdout_provider(", marker)
         self.rejects(CORE, "fn release_after_consumption(", "self.release_with_clock(receipt, now)")
@@ -232,8 +278,16 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             "used.holdout_digest != plan.final_holdout_digest",
             "receipt.authority.grants_any()", "used.authority.grants_any()",
             "read_current_with_clock(clock)", "Ok(observed.inputs)",
+            "self.release_completed = true",
         ):
             self.rejects(CORE, "fn release_with_clock(", marker)
+        self.rejects(CORE, "fn into_original_readback(", "!self.release_completed")
+        self.rejects(CORE, "fn into_original_readback(", "self.original.fenced")
+        for marker in (
+            "binding::require_plan(&self, &plan)?",
+            "OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut readback)?",
+        ):
+            self.rejects(CORE, "fn into_readback_only(", marker)
         for addition in (
             "impl Clone for OriginalCircuitEvaluationCohortV1 {}",
             "impl Deserialize for OriginalCircuitEvaluationCohortV1 {}",

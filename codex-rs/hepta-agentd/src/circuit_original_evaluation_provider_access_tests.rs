@@ -66,6 +66,13 @@ impl CohortAt {
         assert_eq!(original.release_attempted, false);
         Ok(ProviderAt { original, at, manifest_calls: 0, releases: 0 })
     }
+
+    pub(crate) fn readonly(
+        self,
+        plan: CellEvaluationPlanV1,
+    ) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
+        OriginalCircuitEvaluationCohortReadbackV1::fixture_cold(self.original, plan, self.at)
+    }
 }
 
 pub(crate) struct ProviderAt {
@@ -73,6 +80,11 @@ pub(crate) struct ProviderAt {
     at: u64,
     pub(crate) manifest_calls: usize,
     pub(crate) releases: usize,
+}
+impl ProviderAt {
+    pub(crate) fn into_original_readback(self) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
+        Ok(self.original.into_original_readback()?.fixture_at(self.at))
+    }
 }
 impl FinalHoldoutProviderV1 for ProviderAt {
     fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {

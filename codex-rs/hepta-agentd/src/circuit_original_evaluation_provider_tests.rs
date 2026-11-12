@@ -77,6 +77,20 @@ async fn original_evaluation_provider_releases_actual_b_and_retention_only_after
         assert_eq!(provider.releases, 1);
         assert_eq!(runner.bytes(), consumed);
         assert_eq!(b.source_bytes()?, source_before);
+        let mut current = provider.into_original_readback()?;
+        let observed = current.read_current()?;
+        assert!(!observed.binding().is_zero());
+        assert_eq!(current.authority(), AuthorityPosture::DENY_ALL);
+        assert_eq!(current.read_current()?, observed);
+        current.authenticate_current(&observed, b.at)?;
+        assert_eq!(current.fixture_bytes()?, ledger_before);
+        assert_eq!(b.source_bytes()?, source_before);
+        // Completed release retains the live original Source. It is not a
+        // cached seal that can survive withdrawal of an observed B run.
+        b.withdraw_target()?;
+        assert!(current.read_current().is_err());
+        assert!(matches!(current.read_current(),
+            Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)));
     }
     original.finish().await
 }
@@ -130,6 +144,35 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
             &cohort.original, &b.rule, &BFixture::training(&original)?,
             BFixture::original_manifests(&original),
         ).and_then(|runner| cohort.consume(runner.plan).map_err(Into::into)).is_err());
+    }
+    for mode in ["unreleased", "cold-readonly"] {
+        let mut b = BFixture::new("original-B", objective, trust_time)?;
+        b.populate(&original, ObservationMode::Complete, /*changed_candidate_action*/ false).await?;
+        let config = b.config(&original, &registration)?;
+        let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+        let before = cohort.bytes()?;
+        let source_before = b.source_bytes()?;
+        let runner = ProviderPlanFixture::new(
+            &cohort.original, &b.rule, &BFixture::training(&original)?,
+            BFixture::original_manifests(&original),
+        )?;
+        let holdout_before = runner.bytes();
+        if mode == "unreleased" {
+            assert!(matches!(cohort.consume(runner.plan.clone())?.into_original_readback(),
+                Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)));
+        } else {
+            let mut current = cohort.readonly(runner.plan.clone())?;
+            let observed = current.read_current()?;
+            assert_eq!(current.read_current()?, observed);
+            assert_eq!(current.fixture_bytes()?, before);
+            current.authenticate_current(&observed, b.at + 1)?;
+            // A later caller cannot roll the clock back to the earlier read.
+            assert!(current.fixture_current(b.at).is_err());
+            assert!(matches!(current.fixture_current(b.at + 1),
+                Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)));
+        }
+        assert_eq!(runner.bytes(), holdout_before);
+        assert_eq!(b.source_bytes()?, source_before);
     }
     original.finish().await
 }
