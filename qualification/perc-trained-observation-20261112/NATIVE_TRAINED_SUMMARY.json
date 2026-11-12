@@ -1,0 +1,195 @@
+{
+  "actual_native_mlp_invocations_across_two_train_qualifications": 4,
+  "authority_granted": false,
+  "builds": {
+    "build-004": {
+      "binary_sha256": "ccb25bd316e48ee6b2120e8b81c0304231b4a785437d568f5e49e113eb9ce7d8",
+      "builder_sha256": "47a783a9b2647b7ad74ca96f5c5ec7fa3af75b13ab251550d66999123747b45d",
+      "builder_unchanged": true,
+      "cargo_lock_sha256": "89e7bc90886946ebad65c6efc556b1b61b69af4131573c772f1bd5bb50abe63c",
+      "copied_probe_sources": {
+        "control.rs": "b86a9d086b3d1b4fcf5c37c61a6cc0ee1e2a8d22cc6dcabbce9c5d26d62e0e9d",
+        "definition.rs": "a6950fce95dcb2e4d78794688eb14c96e817e68f9f7c5678e0a0c8e3613cebce",
+        "main.rs": "8f01b48366e627bad847a36f358bd561ee6cf873f16a8ed5ec59b0c24a273bd3",
+        "model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "full_private_build_record_sha256": "aaa99e7fa5df85474d8d8dd67bd0c7c69c027024e3b8f75b281a788ac8c78ed7",
+      "manifests": {
+        "Cargo.toml": "a9f9de30899c30944949f150f4fafa6e276319fa1cfc8da962faaa4e1178d5e1",
+        "hepta-infer-core/Cargo.toml": "e23a4df5368995333c29a120d831484be752d686ce06e322eb9f2ec1e9f00a15",
+        "hepta-neuron/Cargo.toml": "4496602bf0e1157661420de9045ec35e484706832cb5198aa85ca1765751a19a",
+        "hepta-types/Cargo.toml": "a29d55e7f5d5fa2b37f2deb819e789fe5b64b1c93534b5bd174cdde96137acb8"
+      },
+      "manifests_unchanged": true,
+      "original_log_sha256": {
+        "stderr": "68bc0add5768d8f580b2bd036b8cf795e7f3254a3ea2ce963ed2ff2e9f6cd022",
+        "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "probe_sources": {
+        "perc1_trained_native.rs": "8f01b48366e627bad847a36f358bd561ee6cf873f16a8ed5ec59b0c24a273bd3",
+        "perc1_trained_native_control.rs": "b86a9d086b3d1b4fcf5c37c61a6cc0ee1e2a8d22cc6dcabbce9c5d26d62e0e9d",
+        "perc1_trained_native_definition.rs": "a6950fce95dcb2e4d78794688eb14c96e817e68f9f7c5678e0a0c8e3613cebce",
+        "perc1_trained_native_model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "probe_sources_unchanged": true,
+      "returncode": 0,
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "source_ref": "a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39",
+      "sources_unchanged": true
+    },
+    "build-005": {
+      "binary_sha256": "ccb25bd316e48ee6b2120e8b81c0304231b4a785437d568f5e49e113eb9ce7d8",
+      "builder_sha256": "5639377ece3742078618aaf96b3c9aa6e90e5cf8bed00ea8cef4c44ff28edc49",
+      "builder_unchanged": true,
+      "cargo_lock_sha256": "89e7bc90886946ebad65c6efc556b1b61b69af4131573c772f1bd5bb50abe63c",
+      "copied_probe_sources": {
+        "control.rs": "b86a9d086b3d1b4fcf5c37c61a6cc0ee1e2a8d22cc6dcabbce9c5d26d62e0e9d",
+        "definition.rs": "a6950fce95dcb2e4d78794688eb14c96e817e68f9f7c5678e0a0c8e3613cebce",
+        "main.rs": "8f01b48366e627bad847a36f358bd561ee6cf873f16a8ed5ec59b0c24a273bd3",
+        "model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "full_private_build_record_sha256": "61e7850d029a64b9ebfd174a805796307ac21aa75972ee870f814e3c26ef0443",
+      "manifests": {
+        "Cargo.toml": "a9f9de30899c30944949f150f4fafa6e276319fa1cfc8da962faaa4e1178d5e1",
+        "hepta-infer-core/Cargo.toml": "e23a4df5368995333c29a120d831484be752d686ce06e322eb9f2ec1e9f00a15",
+        "hepta-neuron/Cargo.toml": "4496602bf0e1157661420de9045ec35e484706832cb5198aa85ca1765751a19a",
+        "hepta-types/Cargo.toml": "a29d55e7f5d5fa2b37f2deb819e789fe5b64b1c93534b5bd174cdde96137acb8"
+      },
+      "manifests_unchanged": true,
+      "original_log_sha256": {
+        "stderr": "bdd44c940d131308211d717be4fd9e1581ac394172742fa69f7b6fbf319a00c6",
+        "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "probe_sources": {
+        "perc1_trained_native.rs": "8f01b48366e627bad847a36f358bd561ee6cf873f16a8ed5ec59b0c24a273bd3",
+        "perc1_trained_native_control.rs": "b86a9d086b3d1b4fcf5c37c61a6cc0ee1e2a8d22cc6dcabbce9c5d26d62e0e9d",
+        "perc1_trained_native_definition.rs": "a6950fce95dcb2e4d78794688eb14c96e817e68f9f7c5678e0a0c8e3613cebce",
+        "perc1_trained_native_model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "probe_sources_unchanged": true,
+      "returncode": 0,
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "source_ref": "a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39",
+      "sources_unchanged": true
+    },
+    "build-006": {
+      "binary_sha256": "a8c9afb739a9bcf603d4f6096cbb8f7a89269e19edc9b9b0968870f2d09a2f8c",
+      "builder_sha256": "5639377ece3742078618aaf96b3c9aa6e90e5cf8bed00ea8cef4c44ff28edc49",
+      "builder_unchanged": true,
+      "cargo_lock_sha256": "89e7bc90886946ebad65c6efc556b1b61b69af4131573c772f1bd5bb50abe63c",
+      "copied_probe_sources": {
+        "control.rs": "c6050ea36b08e6dcfa9f99c8f488e7c487d57d24dffbf5c52e24937b367b32a1",
+        "definition.rs": "b4e9ec74c7aff9ce1b6dd3417f64ac7ac268d7b50f6f3de5931dcacb9918b1f2",
+        "main.rs": "778fb5f14939f5b4a2c95dd93c2bcd2e41f2c656b921e44882dcfb001d57cd5a",
+        "model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "full_private_build_record_sha256": "c974ce30929828ee4bd21b8495c15127448dccf3a91c6edd67126796f802ff79",
+      "manifests": {
+        "Cargo.toml": "a9f9de30899c30944949f150f4fafa6e276319fa1cfc8da962faaa4e1178d5e1",
+        "hepta-infer-core/Cargo.toml": "e23a4df5368995333c29a120d831484be752d686ce06e322eb9f2ec1e9f00a15",
+        "hepta-neuron/Cargo.toml": "4496602bf0e1157661420de9045ec35e484706832cb5198aa85ca1765751a19a",
+        "hepta-types/Cargo.toml": "a29d55e7f5d5fa2b37f2deb819e789fe5b64b1c93534b5bd174cdde96137acb8"
+      },
+      "manifests_unchanged": true,
+      "original_log_sha256": {
+        "stderr": "24626082b3e337ba03e7102d7538b8856265bc1709967452188bde2e0b5087f7",
+        "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "probe_sources": {
+        "perc1_trained_native.rs": "778fb5f14939f5b4a2c95dd93c2bcd2e41f2c656b921e44882dcfb001d57cd5a",
+        "perc1_trained_native_control.rs": "c6050ea36b08e6dcfa9f99c8f488e7c487d57d24dffbf5c52e24937b367b32a1",
+        "perc1_trained_native_definition.rs": "b4e9ec74c7aff9ce1b6dd3417f64ac7ac268d7b50f6f3de5931dcacb9918b1f2",
+        "perc1_trained_native_model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67"
+      },
+      "probe_sources_unchanged": true,
+      "returncode": 0,
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "source_ref": "a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39",
+      "sources_unchanged": true
+    }
+  },
+  "candidate_forwards_across_two_train_qualifications": 12,
+  "distinct_real_source_groups": 1,
+  "early_build_errata_sha256": "82e757115f8e5e580a722ffb09b53c328c82d4975d832b65e31258f709dda275",
+  "early_builder_hash_sampling_race_risk_corrected": true,
+  "final_hosted_unit_suite_status": "not claimed by this local summary; final-head CI is tracked separately",
+  "final_native_build": "build-006",
+  "final_published_rust_sources_equal_build006_snapshot": true,
+  "final_real_cord_provenance_sha256": "6392f8049cd182910a215a0e1e3db2984386abdc3be9d3a85a2e69bb6895eb93",
+  "final_real_cord_report_sha256": "4eb58bfbc1a97c0ec7337050911a994e6fbae41f8cf11acb4f71d2785f79c554",
+  "format_transition_sha256": "58f7f57168e85ab0509809c6485f35714cc41b9ba59d9d573c1ab50aa632dcb5",
+  "fresh_independent_confirmation_tasks": 0,
+  "native_controlled_original_pilot_actor": false,
+  "new_physical_capture_callbacks_in_native_qualifications": 0,
+  "observed_early_source_hash_mismatches": 0,
+  "parameter_v3_exercised": false,
+  "production_daemon_integrated": false,
+  "raw_execution_originals_remain_private": true,
+  "real_cord_provenance_sha256": "fde7714a12036d527161f71a572c908ccfa6f7f3ffa6360dfa0b0155f1157bee",
+  "real_cord_report_sha256": "824680da4aea4593a9cebc4d938ffbd04cda24f79a2c80eb8fd49330751df922",
+  "real_cord_runs": {
+    "before_repository_format": {
+      "binary_sha256": "ccb25bd316e48ee6b2120e8b81c0304231b4a785437d568f5e49e113eb9ce7d8",
+      "provenance": "NATIVE_TRAINED_PROVENANCE.json",
+      "report": "NATIVE_TRAINED_REPORT.json",
+      "status": "PASS_TRAIN_NUMERIC_AND_DURABILITY_ONLY"
+    },
+    "final_formatted_source": {
+      "binary_sha256": "a8c9afb739a9bcf603d4f6096cbb8f7a89269e19edc9b9b0968870f2d09a2f8c",
+      "provenance": "NATIVE_TRAINED_PROVENANCE_FINAL.json",
+      "report": "NATIVE_TRAINED_REPORT_FINAL.json",
+      "status": "PASS_TRAIN_NUMERIC_AND_DURABILITY_ONLY",
+      "unit_suite_repeated": false
+    }
+  },
+  "real_source_scope": "one already-used pre-plan exposed CORD TRAIN source, three candidates; no independent confirmation",
+  "repository_fmt_changes": "Only use declarations expanded/reordered in three Rust files",
+  "repository_sources_verified": 115,
+  "schema": "perc1.trained-native-public-summary.v1",
+  "scientific_status": "HOLD",
+  "source_binding_scope": "native carrier binds hashes and raw FP64 features; the executed outer qualifier cold-reconstructs real wire/profile/source-owner inputs and checks frozen PLAN/ACTOR_DONE",
+  "source_files_sha256": {
+    "scripts/perc1_trained_native.py": "5639377ece3742078618aaf96b3c9aa6e90e5cf8bed00ea8cef4c44ff28edc49",
+    "scripts/perc1_trained_native.rs": "778fb5f14939f5b4a2c95dd93c2bcd2e41f2c656b921e44882dcfb001d57cd5a",
+    "scripts/perc1_trained_native_control.rs": "c6050ea36b08e6dcfa9f99c8f488e7c487d57d24dffbf5c52e24937b367b32a1",
+    "scripts/perc1_trained_native_definition.rs": "b4e9ec74c7aff9ce1b6dd3417f64ac7ac268d7b50f6f3de5931dcacb9918b1f2",
+    "scripts/perc1_trained_native_model.rs": "a591ef5b839a1cd3cc1b92826797ff9bae6cb2b6f3e8e51bb6f3b17950110e67",
+    "scripts/perc1_trained_native_qualification.py": "70f656134d46e757ea25187fa0b6adcaef93034ba64666955065091c075f2e85",
+    "scripts/test_perc1_trained_native.py": "47ee01aa85dd605472910bc4b10a288ef2b5b2c88cdb1c095494b45a453c3ff8"
+  },
+  "source_ref": "a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39",
+  "status": "PASS_ENGINEERING_ONLY",
+  "terminal_task_net_benefit_established": false,
+  "tested_and_final_binary_identical": false,
+  "tests": {
+    "case_ids": [
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_excess_carrier_refuses_without_clipping_or_substitution",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_identity_and_catalog_errors_reject_before_dispatch",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_invalid_normalization_rejects_before_owner_admission",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_large_log_budget_and_three_dense_rows_use_lossless_carrier",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_lost_ack_recovers_original_without_new_mlp_execution",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_missing_original_output_never_reexecutes",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_native_fp64_parity_visual_change_and_cold_replay",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_rewritten_outputs_cannot_replace_journal_commitment",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_source_tamper_does_not_mutate_owner",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_sub_q24_positive_margin_and_near_tie_keep_fp64_choice",
+      "scripts.test_perc1_trained_native.TrainedNativeTests.test_ties_keep_catalog_order_and_budget_mask_is_enforced"
+    ],
+    "coverage": "Pre-repository-format binary and source snapshot; 005 binary identical",
+    "elapsed_seconds": 1.386,
+    "errors": 0,
+    "failed": 0,
+    "final_formatted_binary_unit_test_status": "not rerun locally after fmt per AGENTS; hosted final-head gate required",
+    "original_log_sha256": "789273b9b875d473b6556abfbaaedddaea275b6fcdb8aa0da0dd47ad8ed1da03",
+    "passed": 11,
+    "rerun_after_repository_format": false,
+    "skipped": 0,
+    "tested_binary_sha256": "ccb25bd316e48ee6b2120e8b81c0304231b4a785437d568f5e49e113eb9ce7d8",
+    "tested_native_build": "build-004"
+  },
+  "unchanged_library_crates": [
+    "hepta-types",
+    "hepta-infer-core",
+    "hepta-neuron"
+  ]
+}
