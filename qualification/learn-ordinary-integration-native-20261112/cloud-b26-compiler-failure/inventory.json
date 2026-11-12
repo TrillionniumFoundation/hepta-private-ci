@@ -1,0 +1,79 @@
+{
+  "source": {
+    "sha": "b26ea05c09900e77c2c316cab94b6668a16f6a8a",
+    "tree": "3720aa0a1ca9b98f659dbe2920937658ccb89363",
+    "status": ""
+  },
+  "source_unchanged": true,
+  "uid": 1000,
+  "executor": "74d784910ce8",
+  "stage": "helpers-build",
+  "outer_exit_code": 1,
+  "agentd_compile_errors": {
+    "E0433": 2,
+    "E0308": 1,
+    "E0624": 1
+  },
+  "tests_executed": 0,
+  "fresh_junit": 0,
+  "elapsed_seconds": 492.4159330629991,
+  "source_bundle_prerequisite": "82c895ceb49732ccd7097cde39d1c4da232e8507",
+  "originals": [
+    {
+      "path": "driver.json",
+      "bytes": 1967,
+      "sha256": "a5aaefccb690b39e39d2ecfa66e625d0f677d831a106db93bb6afcc6cb987e5e"
+    },
+    {
+      "path": "driver.py",
+      "bytes": 7513,
+      "sha256": "c2798f0d2a277591fc805eaa6cc53fd66c259a02d0cc8b795cb217075817b842"
+    },
+    {
+      "path": "exception.log",
+      "bytes": 261,
+      "sha256": "8a675e827e252cbcb0cf34685985a0ea80973aa6d3be759fe5baa4b2e3c6fa7f"
+    },
+    {
+      "path": "helpers-build/command.log",
+      "bytes": 212,
+      "sha256": "45e3c1b0e3339df2d089f9f1b7e0db793488aa60cd9c4020f834259866c3734b"
+    },
+    {
+      "path": "helpers-build/run.json",
+      "bytes": 1001,
+      "sha256": "a7afad3facc15b8d26b8fd4ed20a72e2508dead4665f4b25e1fa5c5c83b46946"
+    },
+    {
+      "path": "helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1101588,
+      "sha256": "649a2bc30a08c645ac136343b05506513f2fd75a9bf4e89d2d01b65285ff93d7"
+    },
+    {
+      "path": "helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 38701,
+      "sha256": "0bf5aa8f280f9430cd96c570727456bee00014d50456ae8dd5a107eea43cae26"
+    },
+    {
+      "path": "helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "helpers/manifest.json",
+      "bytes": 1233,
+      "sha256": "182850b8fdfba957d7ce8bacc172217cb8c838294441bca56577897874378cfb"
+    },
+    {
+      "path": "source.bundle",
+      "bytes": 338285,
+      "sha256": "e4f49bee47f12d00796f7470e52fb25a706fbc562a4f74b6a12f1a8ec750cb07"
+    }
+  ],
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 414216,
+    "sha256": "d779b31ddf20e210b87c2d0eba37401ffbf098f6d422a8c67d8b9f353eb07bba"
+  },
+  "roundtrip_verified": true
+}
