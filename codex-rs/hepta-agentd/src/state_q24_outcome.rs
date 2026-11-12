@@ -60,7 +60,10 @@ impl AgentdState {
     fn require_original_q24_outcome_current(&self) -> Result<(), AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if runtime.current_generation != self.identity.spawn_generation
+        // Running is the lifecycle transition after this process was spawned.
+        // The startup identity stays fixed while the Fleet generation advances.
+        let running_generation = self.identity.spawn_generation.checked_add(1);
+        if Some(runtime.current_generation) != running_generation
             || runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
             || !runtime.critical_stores_ready

@@ -336,3 +336,42 @@ async fn original_q24_outcome_control_refuses_fenced_state_without_append() -> a
     f.session.stop().await?;
     Ok(())
 }
+
+#[tokio::test]
+async fn original_q24_outcome_control_refuses_actual_drain_without_append() -> anyhow::Result<()> {
+    let mut f = Fixture::new(
+        "control-draining-ledger-owner",
+        /*lifetime*/ 600,
+        /*automatic*/ true,
+    )
+    .await?;
+    let control = Control::open(&mut f).await?;
+    control.client.original_q24_task_observation().await?;
+    let before = (f.task_bytes()?, f.learning_bytes()?);
+    let outcome = f.outcome();
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let current = f.session.runtime.state.current_generation()?;
+    assert_eq!(current, f.session.runtime.identity.spawn_generation + 1);
+    f.session.runtime.registry.compare_and_transition(
+        &f.session.runtime.identity.agent_id,
+        current,
+        codex_hepta_fleet::AgentLifecycle::Draining,
+    )?;
+    assert!(
+        control
+            .client
+            .original_q24_task_observation()
+            .await
+            .is_err()
+    );
+    assert!(
+        control
+            .client
+            .submit_original_q24_terminal_outcome(&outcome, &signed)
+            .await
+            .is_err()
+    );
+    assert_eq!((f.task_bytes()?, f.learning_bytes()?), before);
+    control.stop().await?;
+    f.session.stop().await
+}
