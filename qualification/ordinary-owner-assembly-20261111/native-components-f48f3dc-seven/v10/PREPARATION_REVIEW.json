@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.original-seven-root17-v35-request-preparation.v1",
+  "status": "Exact new source request prepared; original admission and native execution not yet run",
+  "source": {
+    "head": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb",
+    "parent": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+  },
+  "source_review": {
+    "actual_tree_diff": 11,
+    "source_files": 6,
+    "evidence_files": 5,
+    "all_preimages_and_postimages_verified": true,
+    "no_future_phase": true,
+    "independent_review": "a5a711a9f62d8f27e8c6f40afa8d87768a6611ef"
+  },
+  "original_request_blob": "89a4360e2c074f5c234b283b2f089692bfe2c93a",
+  "exact_request_delta": [
+    {
+      "path": "args[3].attempt",
+      "before": "ordinary-d973793-seven-final-v9",
+      "after": "ordinary-f48f3dc-seven-final-v10"
+    },
+    {
+      "path": "args[3].head",
+      "before": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "after": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8"
+    },
+    {
+      "path": "args[3].tree",
+      "before": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+      "after": "384222cf500019cb1293723dd8668eeb35a1e4cb"
+    },
+    {
+      "path": "args[3].work_name",
+      "before": "ordinary-d973793-seven-final-v9",
+      "after": "ordinary-f48f3dc-seven-final-v10"
+    },
+    {
+      "path": "idempotency_key",
+      "before": "af52-ordinary-d973793-seven-final-v9-20261112",
+      "after": "af52-ordinary-f48f3dc-seven-final-v10-20261112"
+    }
+  ],
+  "unchanged_request_fields": [
+    "host",
+    "executable",
+    "cwd",
+    "rows",
+    "cols"
+  ],
+  "harness": {
+    "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+    "unchanged": true
+  },
+  "config": {
+    "git_blob": "d36efb7c1dd31efe0836be557f121d5527877854",
+    "bytes": 3307,
+    "sha256": "3685e79bb273b2b9c83b6af1c535458ffffb358f75a113d139b39f8afe0e8313"
+  },
+  "original_rules": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "CALLERS": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+    "freshness_ns": 500000000,
+    "freshness_origin": "request_started_ns",
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "root_roster": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "retries": 0,
+    "caller_seconds": 3600,
+    "overall_seconds": 27000
+  },
+  "behavior": "Original global Rust-idle preflight, clean isolated fixed-source clone, fmt/fix/fmt, same-source helper, original QA/full-caller, original seven-package and exact actual-UID0 Root17 commands and collectors, cleanup and source/reference/tool custody. Actual preflight or maintenance drift still stops qualification without exemption.",
+  "no_changes": [
+    "No permission/network/credential repair",
+    "No process killing",
+    "No weaker checker or subset gate",
+    "No fake owner, task, Outcome, C or receipt",
+    "No prior PASS inheritance",
+    "No deadline renewal or closed-purpose revival"
+  ],
+  "acceptance": [
+    0,
+    0,
+    0
+  ],
+  "independent_C": false,
+  "actual_daemon_Root_restart": false,
+  "draft_only": true
+}

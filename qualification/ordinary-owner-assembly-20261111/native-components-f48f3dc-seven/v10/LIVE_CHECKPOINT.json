@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.original-v35-live-checkpoint.v1",
+  "classification": "UNFINISHED_NATIVE_RUN_NO_NEW_PASS",
+  "source": {
+    "head": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb"
+  },
+  "session": "dpty-23f66631257216f02525273717f055e22098d26d907cb1680566e054fc23d4a5",
+  "status": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 1062,
+    "bytes_stored": 1062,
+    "capture_error": null,
+    "created_unix_ms": 1794483547021,
+    "output_complete": false,
+    "owner_pid": 347254,
+    "pid": 347255,
+    "state": "running"
+  },
+  "last_observed_stage": "fetch-exact-source",
+  "pty": {
+    "offset": 0,
+    "next_offset": 1062,
+    "bytes": 1062,
+    "sha256": "642049fb49c13cc4193039462c91b148442e982a2e63d3dfcc4351bcd04cce9f",
+    "full_prefix_verified": true,
+    "output_complete": false
+  },
+  "request": {
+    "git_blob": "20911e9bcdaaf618eb3465dddb18664673e86833",
+    "bytes": 56729,
+    "sha256": "e8076899a41b0295fa8b8645ce401238421ed428ed87a87fff89f66f453f5b6b"
+  },
+  "config": {
+    "git_blob": "d36efb7c1dd31efe0836be557f121d5527877854",
+    "bytes": 3307,
+    "sha256": "3685e79bb273b2b9c83b6af1c535458ffffb358f75a113d139b39f8afe0e8313"
+  },
+  "preparation_review": {
+    "git_blob": "93bb32a4c806c3c60ac2dde6913c978d891c7cb4",
+    "bytes": 5746,
+    "sha256": "0cb2ed0c5c8c694d5884ab2ab65975da0c1ae4b6adf5d6ba75c206e50d66fa14"
+  },
+  "admission": {
+    "git_blob": "fe8aa04e4bfa82bf13dd6d89393fceef39fb8b4a",
+    "bytes": 582,
+    "sha256": "d2236d309e9c8ff91fcc098e3a493434e90ece2160211e9abbba73a7d5cb578d"
+  },
+  "scope": "Original unchanged seven-package / Root17 harness on diagnostic-only f48f3dc. Source is isolated; public Draft remains d973 and new phase drafts are not included.",
+  "acceptance": [
+    0,
+    0,
+    0
+  ],
+  "native_counts_for_this_source": "not yet established",
+  "inherited_PASS": false,
+  "retries": 0,
+  "original_failure_retained": {
+    "source": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "evidence": "83560e33b7ea3d287cf5b445f65a3b2d7444ec08",
+    "supplement": "17681e8984d004c3cf94c59cfc5a43666a1b329c",
+    "status": "failed-native-components"
+  }
+}
