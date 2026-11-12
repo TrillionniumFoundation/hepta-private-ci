@@ -24,6 +24,10 @@ mod stage;
 #[path = "cell_q24_training_snapshot_readback_tests.rs"]
 mod snapshot_readback;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_receipt_second_key_tests.rs"]
+mod second_original_key;
+
 fn clock() -> anyhow::Result<u64> {
     Ok(std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?

@@ -143,3 +143,49 @@ fn original_b_writer_transfers_once_and_rechecks_output_physically() -> io::Resu
     assert_eq!(std::fs::read(&path)?, b"completed original output");
     Ok(())
 }
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned B file custody"]
+fn original_b_plan_file_writes_once_and_never_replaces_a_conflicting_statement() -> io::Result<()> {
+    let directory = directory()?;
+    let path = directory.path().join("original-plan-input");
+    drop(private_file(&path, b"")?);
+    let original = OriginalBFiles::default().open(&path, OriginalBFileAccess::OwnerWriter)?;
+    let bytes = b"component fixture bytes; not an authorized Generator statement";
+    original.write_original_plan_once(bytes)?;
+    assert_eq!(
+        original.require_digest(Digest32::of_bytes(bytes), 128)?,
+        bytes
+    );
+    original.write_original_plan_once(bytes)?;
+    assert_eq!(std::fs::read(&path)?, bytes);
+    assert!(
+        original
+            .write_original_plan_once(b"different statement")
+            .is_err()
+    );
+    assert_eq!(std::fs::read(&path)?, bytes);
+    assert!(original.write_original_plan_once(bytes).is_err());
+    Ok(())
+}
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned B file custody"]
+fn original_b_plan_file_refuses_corruption_then_restored_bytes() -> io::Result<()> {
+    let directory = directory()?;
+    let path = directory.path().join("original-plan-input");
+    let mut writer = private_file(&path, b"")?;
+    let original = OriginalBFiles::default().open(&path, OriginalBFileAccess::OwnerWriter)?;
+    let bytes = b"original component plan input";
+    original.write_original_plan_once(bytes)?;
+    assert_eq!(
+        original.require_digest(Digest32::of_bytes(bytes), 128)?,
+        bytes
+    );
+    overwrite(&mut writer, b"physical corruption")?;
+    assert!(original.write_original_plan_once(bytes).is_err());
+    overwrite(&mut writer, bytes)?;
+    assert!(original.write_original_plan_once(bytes).is_err());
+    assert_eq!(std::fs::read(&path)?, bytes);
+    Ok(())
+}

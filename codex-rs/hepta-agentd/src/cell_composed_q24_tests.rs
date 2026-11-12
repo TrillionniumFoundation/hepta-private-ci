@@ -620,3 +620,7 @@ mod training_plan;
 
 #[path = "cell_composed_q24_training_tests.rs"]
 mod training;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_composed_q24_benchmark_tests.rs"]
+mod original_b_benchmark;
