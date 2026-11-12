@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-ci-original-provider-log-readback-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+  "source_tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b",
+  "common_candidate_at_recording": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "recorded_at_utc": "2026-11-12 01:32:35 UTC",
+  "original_provider": {
+    "tool": "github_fetch_workflow_job_logs",
+    "run_id": 43128465959,
+    "job_id": 130886423638
+  },
+  "log_github_blob_sha": "c25a8c49453aea25dae83bcac9d7d41271f8a2a9",
+  "summary_github_blob_sha": "2fbfc100a8888a5a076a6c154b6beb446e2c9e5d",
+  "root_independent_provider_log_review": {
+    "bytes": 3297956,
+    "summaryLines": [
+      "2026-11-12T01:23:07.1147013Z      Summary [ 310.358s] 1235 tests run: 1235 passed (2 slow), 78 skipped",
+      "2026-11-12T01:23:09.3909944Z      Summary [   0.775s] 12 tests run: 12 passed, 1033 skipped"
+    ],
+    "snapshots": [
+      "2026-11-12T01:06:28.9223349Z {\"source_snapshot\": \"checkout\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}",
+      "2026-11-12T01:13:39.2352210Z {\"source_snapshot\": \"before-tests\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}",
+      "2026-11-12T01:23:10.3976855Z {\"source_snapshot\": \"after-tests\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}",
+      "2026-11-12T01:27:27.9788977Z {\"source_snapshot\": \"after-maintenance\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}",
+      "2026-11-12T01:29:15.0425251Z {\"source_snapshot\": \"after-bins\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}",
+      "2026-11-12T01:29:15.9523731Z {\"source_snapshot\": \"final\", \"commit\": \"382a8dc4a732109ef16daa88de45ce52ac58f92c\", \"tree\": \"4a6857ae34d43b1fa8caa467cb60c14b15d85d9b\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"5862c9809781d27b276550cd485a97ae89062247fa9a7474c89cf59eff6b71aa\"}"
+    ],
+    "uid": [
+      "2026-11-12T01:23:07.2724857Z Root fixture uid=0 path=/run/hepta-daemon-learning-43128465959-1",
+      "2026-11-12T01:23:07.2985056Z Root test uid=0"
+    ]
+  },
+  "interpretation": "Unprivileged native library tests: 1235 pass, 78 skipped. Actual UID0 Root boundary fixtures: 12 pass, 1033 nonselected tests. All six full source inventories remain identical and clean through maintenance and bin check. These are engineering tests, not real ordinary business tasks.",
+  "source_rule": "This is evidence only for 382a8dc4. It excludes the subsequent Selector update; no result is transferred to 4453ce70.",
+  "qualification": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "new_accepted_real_business_chains": 0,
+    "new_independent_net_benefit_updates": 0
+  }
+}
