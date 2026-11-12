@@ -1,0 +1,42 @@
+{
+  "source": "/workspace/scratch/ff41dfc0f7bf/hepta-native-fix-recovered-cloud",
+  "before": {
+    "commit": "2420fb01d7d26d7c851f48dd24ad2f9385272259",
+    "tree": "24c507b1536b4dd7d92a87525f1adf13fa455b54",
+    "status": ""
+  },
+  "started_at": "2026-11-12T08:21:39.030810+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "qa/b4-no-bypass/test_run_start_read_only_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.0898959489998106,
+      "log": "test_run_start_read_only_source_closure.py.log",
+      "bytes": 1813,
+      "sha256": "7016922a391df01add2dc7d41cef6a6f09a47756a666c0be35f7ca9c73f2e215"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.5586540219999279,
+      "log": "test_q24_original_outcome_control_source_closure.py.log",
+      "bytes": 2757,
+      "sha256": "ae17391e1300bbc1d0cfc14c89e9316c8b32434279cf1e27018323fa9357197b"
+    }
+  ],
+  "after": {
+    "commit": "2420fb01d7d26d7c851f48dd24ad2f9385272259",
+    "tree": "24c507b1536b4dd7d92a87525f1adf13fa455b54",
+    "status": ""
+  },
+  "finished_at": "2026-11-12T08:21:42.724186+00:00",
+  "source_unchanged": true
+}
