@@ -1,7 +1,7 @@
 """Retain one actual Root installation and its original absolute deadlines.
 
 These are source mutations of the real serving and channel methods. They do
-not prove the unwired worker is an ordinary caller or a completed learning run.
+not qualify an ordinary process run or a completed learning iteration.
 """
 from dataclasses import replace
 from pathlib import Path
@@ -27,6 +27,7 @@ CALLERS = {
         A + "authority_host_generation_initial_transport.rs",
         A + "authority_host_initial_peer_runtime.rs",
         A + "authority_host_q24_evaluation_serve.rs",
+        A + "authority_host_q24_evaluation_source_serve.rs",
     ),
     "root_post_a_bound_learning": (A + "authority_host_session.rs", WORKER),
     "root_post_a_installation_prepare": (A + "authority_host_historical_read_session.rs",),
@@ -81,12 +82,24 @@ def require_structure(path, source):
         if not re.match(r"^\s*\)\(\);\s*if result.is_err\(\)", body[end:]):
             raise PROOF.VerificationFailure("all uncertain submissions must close the one attempt")
         body, _ = route.function(source, "fn run_installation(")
-        for marker in ("let end = submission.end.min(session_end)", "gate.require_original(end)?",
+        for marker in ("let end = submission.end.min(session_end)",
                        "verify_pinned_process(", "super::super::learning::BoundLearning::bind(",
                        "crate::send_root_learning_handoff(", "crate::send_root_q24_model_factory_handoff(",
                        "submission.acknowledgement.try_send(())",
                        "publication::serve_original_material("):
             at_depth(body, marker, 1)
+        gates = list(re.finditer(route.token_pattern("gate.require_original(end)?"), body))
+        depths = tuple(body[:match.start()].count("{") - body[:match.start()].count("}")
+                       for match in gates)
+        if depths != (1, 1, 2, 1, 1, 1, 1):
+            raise PROOF.VerificationFailure("all six outer checks and the Source handoff check are required")
+        source_start, source_end = route.original.span(body,
+            "if let (Some(handoff), Some(offer)) =\n"
+            "        (inputs.independent_source_handoff, independent_source_offer)")
+        if not source_start < gates[2].start() < source_end:
+            raise PROOF.VerificationFailure("the extra original check must guard the real Source handoff")
+        at_depth(body[source_start:source_end], "crate::send_root_independent_b_source_handoff(", 1)
+        at_depth(body[source_start:source_end], "owner_alive(owner, end)?", 1)
         begin, end = route.original.span(body, "publication::serve_original_material(")
         at_depth(body, "crate::authority_host_runtime::serve_independent_b_until(", 2)
         at_depth(body, "super::super::learning::serve_optional_until(", 3)
@@ -243,7 +256,7 @@ class PostAInstallationSourceTests(unittest.TestCase):
             "crate::send_root_learning_handoff(", "crate::send_root_q24_model_factory_handoff(",
             "compare_exchange(SUBMITTED, INSTALLED, Ordering::AcqRel, Ordering::Acquire)",
             "submission.acknowledgement.try_send(())", "super::super::learning::serve_optional_until("))
-        for occurrence in (0, 1, 2, 3, 4, 5):
+        for occurrence in range(7):
             self.reject(WORKER, "run_installation", "gate.require_original(end)?", occurrence)
         for occurrence in (0, 1):
             self.reject(WORKER, "run_installation", "verify_pinned_process(", occurrence)

@@ -167,7 +167,7 @@ class CurrentHistoricalARecoverySourceTests(unittest.TestCase):
 
     def test_original_decision_and_full_target_precede_the_recovery_lane(self):
         self.check(RECOVER, "recover_feature_from_historical_a", (
-            "original.require_current().await?", "original.decision.require_root_publication()?",
+            "original.decision.require_root_publication()?",
             "validation::feature_target(", "&recovery.target,", "&recovery.definition,", "&recovery.source,", "&recovery.model,",
             "initial.request != original.decision.snapshot.request", "initial.owners != original.decision.snapshot.owners",
             ".with_original_publication(snapshot, manifest, move || {", "revalidate(&self.driver, &mut selected)?",

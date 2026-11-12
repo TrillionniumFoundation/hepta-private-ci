@@ -153,10 +153,13 @@ class TrainingSourceOperationTests(unittest.TestCase):
 
     def test_training_evidence_comes_from_actual_completed_owners_and_exact_cut(self):
         self.check_markers(OPERATION, "fn read_original_training_evidence(", (
-            ".read_original_completion_with_source(self.source)",
+            "Self::read_original_completion_in_operation(self)?",
             "LearningIterationCoordinatorV1::from_snapshot(", "self.dataset.clone()",
             "cut.record(", "completed.receipt.clone()", "completed.receipt.observed_unix_seconds",
             "snapshot: cut.snapshot().clone()", "source: self.source"))
+        self.check_markers(OPERATION, "fn read_original_completion_in_operation(", (
+            "self.owners", ".read_original_completion_with_source(self.source)",
+            ".map_err(owner_error)"))
         self.check_markers(STAGE, "fn read_original_completion_with_source(", (
             "OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(",
             "CellQ24TrainingOwnerV1::readback_with_source(training, source)?", "Ok(OriginalCellQ24TrainingCompletionV1"))
