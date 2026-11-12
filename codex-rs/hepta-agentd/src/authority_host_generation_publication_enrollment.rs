@@ -206,7 +206,8 @@ impl HostAuthorityService {
                     selector_trust: inputs.artifacts.selector.trust_digest().to_string(),
                 };
                 if let Some((_, record)) = &recovered {
-                    let original = record.profile.original_for_version(version)?;
+                    let original =
+                        ReservedPublicationProfile::original_for_version(&record.profile, version)?;
                     if original.artifacts != artifact_pin
                         || original.decision != decision.snapshot.head_digest.to_string()
                         || original.initial != initial.head_digest.to_string()
@@ -276,11 +277,12 @@ impl HostAuthorityService {
                 };
                 if let Some((store, record)) = &recovered
                     && selected.observation().digest().into_array()
-                        != record
-                            .profile
-                            .original_for_version(version)?
-                            .intent
-                            .selection
+                        != ReservedPublicationProfile::original_for_version(
+                            &record.profile,
+                            version,
+                        )?
+                        .intent
+                        .selection
                 {
                     fence_record(store, &profile_owner)?;
                     return Err(io::Error::other(
@@ -451,7 +453,12 @@ impl HostAuthorityService {
                 profile.binding = profile.digest()?;
                 let (profile_store, reserved) = match recovered {
                     Some((store, record)) => {
-                        if record.profile.require_live_profile(&profile).is_err() {
+                        if ReservedPublicationProfile::require_live_profile(
+                            &record.profile,
+                            &profile,
+                        )
+                        .is_err()
+                        {
                             fence_record(&store, &profile_owner)?;
                             return Err(io::Error::other(
                                 "original complete publication profile differs",

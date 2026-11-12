@@ -158,7 +158,7 @@ impl RegisteredGenerationPublication {
         {
             return Err(io::Error::other("original publication enrollment changed"));
         }
-        self.reserved.require_live_profile(&self.profile)?;
+        ReservedPublicationProfile::require_live_profile(&self.reserved, &self.profile)?;
         Ok(())
     }
 
