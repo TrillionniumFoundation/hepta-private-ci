@@ -1,0 +1,38 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true --check -- /workspace/scratch/8cec085888c3/adoption-work/codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Diff in /workspace/scratch/8cec085888c3/adoption-work/codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs:17:
+ async fn insufficient_evaluation_never_claims_a_receipt_before_or_after_cold_reopen()
+ -> anyhow::Result<()> {
+     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+-    let mut fixture =
+-        LearningFixture::new_at(IndependentEvaluationDispositionV1::InsufficientEvidence, now);
++    let mut fixture = LearningFixture::new_at(
++        IndependentEvaluationDispositionV1::InsufficientEvidence,
++        now,
++    );
+     let config = receipt_config(&fixture)?;
+     let path = tempfile::tempdir()?;
+     let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
+Diff in /workspace/scratch/8cec085888c3/adoption-work/codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs:76:
+             original
+         );
+         assert_eq!(
+-            server.read(&mut [0]).expect_err("no Trainer request").kind(),
++            server
++                .read(&mut [0])
++                .expect_err("no Trainer request")
++                .kind(),
+             ErrorKind::WouldBlock
+         );
+         assert_eq!(fixture.snapshot, config.training);
+Diff in /workspace/scratch/8cec085888c3/adoption-work/codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs:83:
+         assert_eq!(
+-            LearningIterationCoordinatorV1::from_snapshot(fixture.snapshot.clone())?
+-                .next_stage(),
++            LearningIterationCoordinatorV1::from_snapshot(fixture.snapshot.clone())?.next_stage(),
+             Some(LearningIterationStageV1::Evaluation)
+         );
+     }
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1

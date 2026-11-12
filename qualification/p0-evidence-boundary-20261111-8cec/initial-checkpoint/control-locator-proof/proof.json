@@ -1,0 +1,25 @@
+{
+  "base": "08711bc7f339b99e03b7513a18084e55ebee5016",
+  "scope": "original verifier, only protected_file control.rs row; not full gate",
+  "original_verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_helper_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "original_row_result": "FAIL",
+  "original_row_error": "codex-rs/hepta-agentd/src/control.rs: exact function marker required",
+  "candidate_row_result": "PASS",
+  "candidate_checked_paths": [
+    "codex-rs/hepta-agentd/src/control.rs"
+  ],
+  "control_old_blob": "326c2318cb2d9b11faf7e1ce48b2bd3f8d658de7",
+  "control_new_blob": "aa3ab5e8b89bf20df2ab8a9eadaff55ce1f408c4",
+  "manifest_old_blob": "e062ce0d0d1779b842a9cd3b42965574e4a56723",
+  "manifest_new_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476",
+  "manifest_only_protected_row_changed": true,
+  "body_raw_equal": false,
+  "body_after_exact_four_space_dedent_equal": true,
+  "body_original_utf8_bytes": 2034,
+  "body_normalized_utf8_bytes": 2034,
+  "body_original_sha256": "20ed6a20cc47bd9c82bd2b141e19dc6bf72f29ce99f2eaa018a7604fa14c6cc7",
+  "body_new_normalized_sha256": "20ed6a20cc47bd9c82bd2b141e19dc6bf72f29ce99f2eaa018a7604fa14c6cc7",
+  "rustfmt_run": false,
+  "rust_compile_or_tests_run": false
+}

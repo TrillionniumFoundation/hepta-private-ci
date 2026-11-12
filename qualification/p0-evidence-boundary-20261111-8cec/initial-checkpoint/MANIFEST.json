@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.p0.evidence-boundary-checkpoint.v1",
+  "observed_at_utc": "2026-11-12 00:45:31 UTC",
+  "source_commit": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+  "source_tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b",
+  "parent_source": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "pull_request": 6036,
+  "classification": "ENGINEERING_ONLY_HOLD",
+  "changes": [
+    "Preserve InsufficientEvidence instead of a successful NoUpdate receipt.",
+    "Classify missing evidence before failed metrics while retaining diagnostics.",
+    "Reject legacy signed incomplete NoUpdate histories before owner I/O.",
+    "Repair the inherited exact control-function locator without modifying the verifier."
+  ],
+  "observations": [
+    {
+      "name": "eval_library_native",
+      "source_tree": "43c5753f12be735602643ddd4fd808695c786c60",
+      "status": "PASS",
+      "tests": 144,
+      "passed": 144,
+      "skipped": 0,
+      "scope": "codex-hepta-intelligence-eval --lib; excludes Agentd/Root and is not a current common-candidate PASS",
+      "execution": "tree43c-just-test-eval.json",
+      "raw_log": "tree43c-just-test-eval.log"
+    },
+    {
+      "name": "original_source_format_check",
+      "source_commit": "08711bc7f339b99e03b7513a18084e55ebee5016",
+      "status": "FAIL",
+      "raw_log": "0871-just-fmt-check.log",
+      "resolution": "Actual Rust 1.96 formatter postimages are included in the current source."
+    },
+    {
+      "name": "current_source_format_check",
+      "status": "PASS",
+      "execution": "382a8dc4-just-fmt-check.json"
+    },
+    {
+      "name": "original_caller_self_test",
+      "status": "PASS",
+      "execution": "382a8dc4-caller-validation.json"
+    },
+    {
+      "name": "first_complete_caller_attempt",
+      "status": "TIMEOUT",
+      "timeout_seconds": 180,
+      "exit_code": null,
+      "execution": "382a8dc4-caller-validation.json",
+      "raw_log": "382a8dc4-caller-verify.log"
+    },
+    {
+      "name": "complete_caller_followup",
+      "status": "IN_PROGRESS",
+      "timeout_seconds": 1800,
+      "scope": "Same current source and unchanged original verifier; external execution budget only."
+    },
+    {
+      "name": "inherited_locator_reproduction",
+      "status": "FAIL_THEN_TARGETED_PASS",
+      "execution": "control-locator-proof/proof.json",
+      "scope": "Only the original control.rs protected row. Pre-format normalized body identity is not a full candidate or whole-repository proof."
+    },
+    {
+      "name": "current_source_hosted_native",
+      "status": "QUEUED_OR_PENDING",
+      "run_ids": {
+        "daemon": 43128465959,
+        "shared": 43128465978,
+        "blocking": 43128466237,
+        "architecture": 43128466039,
+        "windows": 43128465954
+      },
+      "scope": "No successful current-source native result had been observed at this checkpoint."
+    }
+  ],
+  "acceptance": {
+    "complete_ordinary_business_chains_this_delivery": 0,
+    "independent_future_task_source_confirmations_this_delivery": 0,
+    "qualified_cell_net_benefit_updates_this_delivery": 0,
+    "production_adoption": false,
+    "p0": "HOLD",
+    "p1": "HOLD",
+    "p2_p3_p4": "NOT_ADMITTED",
+    "rsi_established": false
+  },
+  "remaining_requirements": [
+    "Ordinary Notes/business outcome-to-Ledger production integration.",
+    "Executable startup assembly with original role capabilities and independent B/C custody.",
+    "Normal non-root daemon Root CURRENT client/service.",
+    "Actual A/B/C task execution, whole daemon and Root cold restart, full amortized cost, retention, source-cluster independence and future-task evidence."
+  ],
+  "records": [
+    {
+      "name": "tree43c-just-test-eval.json",
+      "bytes": 674,
+      "sha256": "67d0186304cbb60e17fcc34fcaaa734e1253437cc82339447a7ae98a92a4a4ec"
+    },
+    {
+      "name": "tree43c-just-test-eval.log",
+      "bytes": 23659,
+      "sha256": "13fe275afd5049d5a545af4b63af8b9044c96f99d90b34d2c6cde09f99971918"
+    },
+    {
+      "name": "0871-just-fmt-check.log",
+      "bytes": 2101,
+      "sha256": "edcbf5eefe459e1c4868a3c6a2ab7c8cc9d1e180c982faf8bb8424834999c153"
+    },
+    {
+      "name": "0871-just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "gate-candidate-just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "382a8dc4-just-fmt-check.json",
+      "bytes": 902,
+      "sha256": "7ce69438164d30aaf7cf55f60964bb1c02a64e7a974fa2e846c8ec5e7de6f09a"
+    },
+    {
+      "name": "382a8dc4-just-fmt-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "382a8dc4-caller-validation.json",
+      "bytes": 1888,
+      "sha256": "0c54d8fefb05a8bda0c4b737e8b1b3830aec06a288c7880309930703924dc73c"
+    },
+    {
+      "name": "382a8dc4-caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "name": "382a8dc4-caller-verify.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "control-locator-proof/proof.json",
+      "bytes": 1246,
+      "sha256": "87dfbbd26fb6e1cfff4653a224819cdaf9d3a47fac5dbf34338114971b313b6e"
+    },
+    {
+      "name": "control-locator-proof/candidate.diff",
+      "bytes": 7016,
+      "sha256": "100f2f128e4021bdcbbf9e3d716e460a2bd92a5df059d332977f25a8b87e94f9"
+    }
+  ]
+}
