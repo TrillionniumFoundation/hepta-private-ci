@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::LearningIterationCheckpointOwnerV1;
+use std::time::Instant;
 
 impl HostAuthorityService {
     /// Serve a launcher-transferred dedicated learning stream. The owner must
@@ -14,8 +15,36 @@ impl HostAuthorityService {
         &self,
         backend: &LearningIterationCheckpointOwnerV1,
         stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+    ) -> Result<(), HostIssuerTransportError> {
+        self.serve_learning_checkpoint_with_end(
+            backend,
+            stream,
+            policy,
+            owner_pidfd,
+            /*original_end*/ None,
+        )
+    }
+
+    pub(crate) fn serve_learning_checkpoint_until(
+        &self,
+        backend: &LearningIterationCheckpointOwnerV1,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        end: Instant,
+    ) -> Result<(), HostIssuerTransportError> {
+        self.serve_learning_checkpoint_with_end(backend, stream, policy, owner_pidfd, Some(end))
+    }
+
+    fn serve_learning_checkpoint_with_end(
+        &self,
+        backend: &LearningIterationCheckpointOwnerV1,
+        stream: UnixStream,
         mut policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
+        original_end: Option<Instant>,
     ) -> Result<(), HostIssuerTransportError> {
         let writer: &RegisteredWriter = self
             .writer
@@ -27,6 +56,9 @@ impl HostAuthorityService {
         policy.request_bound = 16 * 1024;
         policy.response_bound = 16 * 1024;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
+        if let Some(end) = original_end {
+            channel.limit_original_end(end)?;
+        }
         let mut next_request_id = 1;
         while channel.exchange(|bytes| {
             self.check_logind_lifetime().map_err(unavailable)?;
