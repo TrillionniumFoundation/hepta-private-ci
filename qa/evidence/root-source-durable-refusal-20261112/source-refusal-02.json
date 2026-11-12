@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.root-source-refusal.source-check.v1",
+  "before": {
+    "head": "e4b9579c9d6183145859e16cfbb0d6b1ba2a75ca",
+    "tree": "3fb64f7e99b05ed83270f85d12b011f8696a3a65",
+    "status": "",
+    "callers_sha256": "c23085a53367a1f751e17709b905802a658f873a94a9bb964b17df092d0ae41c"
+  },
+  "after": {
+    "head": "e4b9579c9d6183145859e16cfbb0d6b1ba2a75ca",
+    "tree": "3fb64f7e99b05ed83270f85d12b011f8696a3a65",
+    "status": "",
+    "callers_sha256": "c23085a53367a1f751e17709b905802a658f873a94a9bb964b17df092d0ae41c"
+  },
+  "source_unchanged": true,
+  "modules": [
+    "test_exact_generic_function_order",
+    "test_root_historical_capture_source_closure",
+    "test_root_historical_handoff_source_closure",
+    "test_root_data_refusal_source_closure"
+  ],
+  "started_unix": 1794464567.4324107,
+  "ended_unix": 1794464573.9176836,
+  "tests_run": 34,
+  "failures": 0,
+  "errors": 0,
+  "cases": [
+    {
+      "id": "test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_comment_literal_and_test_only_functions_cannot_supply_definition",
+      "status": "passed"
+    },
+    {
+      "id": "test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_existing_and_actual_generic_markers_remain_exact",
+      "status": "passed"
+    },
+    {
+      "id": "test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_missing_and_duplicate_definitions_are_refused",
+      "status": "passed"
+    },
+    {
+      "id": "test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_reordered_and_nested_calls_cannot_supply_original_body",
+      "status": "passed"
+    },
+    {
+      "id": "test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_unimplemented_generic_grammar_is_rejected_without_fuzzy_matching",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_component_and_terminal_root_callers_are_exact",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capability_shares_the_session_deadline_and_requires_one_shot_ack_consumption",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capture_request_cannot_choose_payload_or_clone_a_capability",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capture_requires_reserve_original_process_writer_and_target",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_descriptor_custody_does_not_borrow_the_writer_lock",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_original_inputs_are_fixed_before_serving_and_rechecked_at_capture",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_original_session_exit_closes_pending_capture_without_a_new_wait_window",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_pin_recovery_does_not_initialize_and_refuses_fenced_or_different_records",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_root_lifetime_is_the_actual_process_and_boot",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_source_cut_must_be_read_physically_before_and_after_root_retention",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_ack_is_exact_pending_cas_and_conflict_stays_poisoned",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_capture_wait_occurs_after_original_context_has_returned",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_cli_requires_the_original_initial_route_before_exposing_the_offer",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_missing_pending_fenced_and_wrong_pin_cannot_be_recovered_as_finalized",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_only_a_real_original_receipt_and_matching_pin_can_create_pending",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_peer_ack_cannot_skip_original_context_postchecks_or_durable_finalization",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_terminal_requests_have_no_material_payload",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_arm_precedes_action_and_keeps_exact_attempt_and_shared_gate",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_context_failure_cannot_leave_a_successful_pin_arm",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_existing_marker_fallback_cannot_replay_a_started_capture",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_extra_primary_read_outside_arm_is_rejected",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_final_primary_readback_and_actual_receipt_stay_inside_arm",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_refusal_does_not_need_to_decode_the_primary",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_same_scope_full_target_and_no_cold_initialization_are_required",
+      "status": "passed"
+    },
+    {
+      "id": "test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_subprocess_success_requires_an_actual_child_execution_receipt",
+      "status": "passed"
+    }
+  ],
+  "protected_rows": 371,
+  "inventory": 510,
+  "protected_error": null,
+  "full_caller_scan": false,
+  "native_executed": false,
+  "status": "PASS"
+}
