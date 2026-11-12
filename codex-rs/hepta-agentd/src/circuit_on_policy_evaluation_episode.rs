@@ -87,7 +87,7 @@ impl<'a> Episode<'a> {
             || input.objective_digest != config.rule.objective_digest
             || decision.objective_digest != config.rule.objective_digest
             || decision.run_snapshot_digest != input.ndu_snapshot_digest
-            || !policy.checkpoint_before().is_zero()
+            || !CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()
             || decision.selected_candidate_id != *policy.selected()
             || decision.selected_propensity != ProbabilityQ32::ONE
             || decision.candidate_ids

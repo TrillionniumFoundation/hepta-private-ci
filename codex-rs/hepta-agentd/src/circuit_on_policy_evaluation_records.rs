@@ -23,6 +23,7 @@ use super::OriginalCircuitOnPolicyCohortConfigV1;
 use super::Publications;
 use super::episode::Episode;
 use crate::OriginalCircuitEvaluationSourceV1;
+use crate::circuit_task::CircuitTaskPolicyProjectionV1;
 
 pub(super) fn assemble(
     config: &OriginalCircuitOnPolicyCohortConfigV1,
@@ -170,7 +171,7 @@ fn append_arm(
     if row.admitted_at < evaluation_start
         || row.observed_at > evaluation_end
         || row.outcome.finalized_at.is_none_or(|at| at > evaluation_end)
-        || !row.policy.checkpoint_before().is_zero()
+        || !CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()
     {
         return Err(Error::Binding("actual held-out on-policy run window and FreshEmpty state"));
     }
@@ -194,7 +195,7 @@ fn append_arm(
         model_digest: row.source.bundle_digest(),
         input_digest: pair.input_digest,
         protocol_digest: pair.protocol_digest,
-        checkpoint_before: row.policy.checkpoint_before(),
+        checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy),
         source_evidence_digest: row.source.publication_digest(),
         execution_evidence_digest: history_digest(row.source.history_digest())?,
     });

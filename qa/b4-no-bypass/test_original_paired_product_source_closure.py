@@ -65,7 +65,10 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
             if literal["path"] != path:
                 continue
             start, end, body = self.function(source, literal["function"])
-            first, after = source_marker_span(source, literal["marker"], start, end + 1)
+            try:
+                first, after = source_marker_span(source, literal["marker"], start, end + 1)
+            except ValueError as error:
+                raise AssertionError(("missing original code literal", literal)) from error
             self.assertLessEqual(after, end + 1)
             self.assertEqual(body[first - start], source[first])
             self.assertTrue(body[first - start].strip(), literal)

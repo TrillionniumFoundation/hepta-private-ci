@@ -430,7 +430,7 @@ class OriginalOnPolicyEvaluationClosureTests(unittest.TestCase):
             ("circuit_on_policy_evaluation_contract.rs", "fn validate(",
              "!runs.insert(&row.candidate.behavior_run_id)"),
             ("circuit_on_policy_evaluation_episode.rs", "fn read_episode(",
-             "!policy.checkpoint_before().is_zero()"),
+             "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()"),
             ("circuit_on_policy_evaluation_records.rs", "fn append_arm(",
              "cluster_id: row.principal.clone()"),
             ("circuit_on_policy_evaluation_records.rs", "fn assemble(",
