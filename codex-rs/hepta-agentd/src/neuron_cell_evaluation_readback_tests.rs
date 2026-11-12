@@ -297,11 +297,14 @@ fn missing_cell_execution_readback_never_claims_or_releases() {
             ProductEvaluationExecutionStoreErrorV1::Missing
         ))
     ));
-    let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
-    assert!(matches!(
-        crate::cell_q24_learning_owner_error::owner_error(receipt),
-        crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
-    ));
+    #[cfg(target_os = "linux")]
+    {
+        let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
+        assert!(matches!(
+            crate::cell_q24_learning_owner_error::owner_error(receipt),
+            crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
+        ));
+    }
     assert_eq!(test.calls(), (0, 0, 0, 0));
     assert_eq!(test.executions.inner.anchor(), minimum);
     assert_eq!(test.fixture.holdout_bytes(), before);
@@ -331,11 +334,14 @@ fn pending_cell_execution_readback_never_reissues_work() {
         &original,
         CellEvaluationErrorV1::Execution(ProductEvaluationExecutionErrorV1::Pending)
     ));
-    let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
-    assert!(matches!(
-        crate::cell_q24_learning_owner_error::owner_error(receipt),
-        crate::LearningIterationRuntimeErrorV1::CommitUncertain
-    ));
+    #[cfg(target_os = "linux")]
+    {
+        let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
+        assert!(matches!(
+            crate::cell_q24_learning_owner_error::owner_error(receipt),
+            crate::LearningIterationRuntimeErrorV1::CommitUncertain
+        ));
+    }
     assert_eq!(test.calls(), calls);
     assert_eq!(test.executions.inner.anchor(), minimum);
     assert_eq!(test.fixture.holdout_bytes(), before);

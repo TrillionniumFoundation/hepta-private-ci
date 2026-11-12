@@ -80,7 +80,9 @@ fn known_evaluation_failures_do_not_become_uncertain_through_wrappers() {
         ProductEvaluationExecutionErrorV1::MissingExecution,
         ProductEvaluationExecutionErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Missing),
         ProductEvaluationExecutionErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Rejected),
-        ProductEvaluationExecutionErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Unavailable),
+        ProductEvaluationExecutionErrorV1::Store(
+            ProductEvaluationExecutionStoreErrorV1::Unavailable,
+        ),
         ProductEvaluationExecutionErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Corrupt),
         ProductEvaluationExecutionErrorV1::Evaluation(ProductEvaluationError::Binding(
             "Pending Indeterminate",
