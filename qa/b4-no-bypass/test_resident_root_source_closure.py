@@ -252,7 +252,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn compose(", "stages.require_initial(&profile.initial, &profile.scope, &verifier)"),
             ("fn run(", "self.admission_requested = true"),
             ("fn run(", "if result.is_err()"),
-            ("fn admit(", "self.owner.admit(cancellation).await?"),
+            ("fn admit(", "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?"),
             ("fn admit(", "slot.take().ok_or(Error::CommitUncertain)?"),
             ("fn admit(", "stages.install_fresh_resident_gate(Arc::clone(&continuation.gate))?"),
             ("fn continue_original(", "LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal"),

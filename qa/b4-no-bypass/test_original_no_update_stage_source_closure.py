@@ -230,7 +230,8 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
     def test_readiness_only_original_unresolved_publication_remains_pending(self):
         for marker in (
             "self.require_task_input_current()?",
-            "PublishedCircuitCellOwnerV1::read_learning_selection(",
+            "let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell",
+            "cell.read_learning_selection(&coordinator)?",
             "CircuitTaskSourceReadbackV1::read_run_publication(",
             "Err(CircuitTaskErrorV1::ReconciliationRequired)",
             "PublishedCircuitCellOwnerV1::snapshot(",

@@ -271,13 +271,13 @@ pub(super) fn open_registered_writer(
         clock,
         registration.registered_identity.identity()?,
     )?;
-    let service = if let Some(writer) = &config.writer {
+    let service: HostAuthorityService = if let Some(writer) = &config.writer {
         service.with_registered_writer(writer.clone(), leases.verifier())?
     } else {
         service
     };
-    Ok(service.retain_original_root_registry(Arc::new(leases))
-        .retain_original_resident_root(root))
+    let service: HostAuthorityService = service.retain_original_root_registry(Arc::new(leases));
+    Ok(service.retain_original_resident_root(root))
 }
 
 /// Explicit root administration authorizes a new original registry writer

@@ -92,7 +92,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
         self.require_task_input_current()?;
         let coordinator = wire::decision(&self.context)?;
-        let selection = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
+        let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
+        let selection = cell.read_learning_selection(&coordinator)?;
         self.require_original_selection(&selection)?;
         let publication = CircuitTaskSourceReadbackV1::read_run_publication(
             &self.source, &self.identity, &self.cell.task.source().scope.run_id,
@@ -115,7 +116,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             }
         };
         self.require_task_input_current()?;
-        if PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)? != selection {
+        if cell.read_learning_selection(&coordinator)? != selection {
             return Err(Error::Binding("original Selection changed during readiness"));
         }
         self.require_task_input_current()?;

@@ -194,13 +194,13 @@ impl RootResidentLearningRuntimeV3 {
         let initial = self.owner.authority.profile.initial.clone();
         // Empty recovery is not source evidence. Only fresh actual CAS admits
         // the original Experience handler, which checks its own live source.
-        let Some(continuation) = self.owner.admit(cancellation).await? else {
+        let Some(continuation) = ResidentRegisteredStateV3::admit(&self.owner, cancellation).await? else {
             return Ok((self.readback(cancellation).await?, None));
         };
         let ResidentStagesV3::Uninstalled(slot) = &mut self.stages else {
             return Err(Error::CommitUncertain);
         };
-        let mut stages = slot.take().ok_or(Error::CommitUncertain)?;
+        let mut stages: OriginalCellQ24NoUpdateStageOwnersV1 = slot.take().ok_or(Error::CommitUncertain)?;
         stages.install_fresh_resident_gate(Arc::clone(&continuation.gate))?;
         let stages = Arc::new(stages);
         self.stages = ResidentStagesV3::Installed(Arc::clone(&stages));
