@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "execution_source": {
+    "commit": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6",
+    "tree": "17f3172d6c7e751af97acaaec6a9318c44b5effe",
+    "before_after_equal": true,
+    "before_dirty": "",
+    "after_dirty": "",
+    "remote_branch": "codex/learn-eval-recovery-20261112-34f833",
+    "git_object_published_to_github": false
+  },
+  "job": {
+    "id": "1a1ce46368f-2564-15e8",
+    "idempotency_key": "learn-eval-34f833-compile-fix-native-v3",
+    "state": "failed",
+    "exit_code": 100,
+    "timed_out": false,
+    "cancelled": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "status_at_unix_ms": 1794462241621
+  },
+  "native": {
+    "testcases": 13,
+    "passed": 12,
+    "failed": 1,
+    "skipped": 1273,
+    "compiled": true,
+    "unmatched_filter": "neuron_cell_learning_evaluation::tests",
+    "not_covered_learning_module": "neuron_cell_evaluation::tests::learning::",
+    "failure_location": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37",
+    "failure": "preregistered() compared different admitted objectives before reaching the unsorted-policy regression body",
+    "scientific_or_product_qualification": false
+  },
+  "publication": {
+    "qualification_host_pr": 6131,
+    "main_joint_pr": 6135,
+    "joint_commit": "dadb9546cf2109057cc408aae86ae87804e76439",
+    "joint_tree": "eda195b158480dcc7a3951e4eab749d203be4346",
+    "root_refusal_pr": 6128,
+    "exact_joint_native_qualified": false
+  },
+  "ordinary_gates": {
+    "positive_adoption_completed": 0,
+    "no_update_or_rollback_completed": 0,
+    "daemon_and_root_whole_system_cold_restart_completed": 0
+  },
+  "raw_metadata_files": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/tested-commit.txt",
+      "sha256": "76ddf3980b3b88a2bfeea433c507d00e485f3c5bc29181e4b0e801b99ec0fbb1",
+      "size": 41,
+      "text": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6\n",
+      "version": "2050:15655561:41:1794462073284927188:1794462073284927188"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/tested-tree.txt",
+      "sha256": "6b0e6e93d4ad333689e79d3aee91081cdb9189adbf5692c92cd2c57d4cf1668e",
+      "size": 41,
+      "text": "17f3172d6c7e751af97acaaec6a9318c44b5effe\n",
+      "version": "2050:15655562:41:1794462073287927100:1794462073287927100"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/after-commit.txt",
+      "sha256": "76ddf3980b3b88a2bfeea433c507d00e485f3c5bc29181e4b0e801b99ec0fbb1",
+      "size": 41,
+      "text": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6\n",
+      "version": "2050:15655839:41:1794462241413997024:1794462241413997024"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/after-tree.txt",
+      "sha256": "6b0e6e93d4ad333689e79d3aee91081cdb9189adbf5692c92cd2c57d4cf1668e",
+      "size": 41,
+      "text": "17f3172d6c7e751af97acaaec6a9318c44b5effe\n",
+      "version": "2050:15655840:41:1794462241416996935:1794462241416996935"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/tested-dirty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "2050:15655564:0:1794462073291926983:1794462073291926983"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/after-dirty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "2050:15655841:0:1794462241417996906:1794462241417996906"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/native.exit",
+      "sha256": "eea8254c7500ba3de996aa8ad6af399183f04e17d4a8102fde539dbc93a90012",
+      "size": 4,
+      "text": "100\n",
+      "version": "2050:15655837:4:1794462241407557714:1794462241407557714"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/preimages.json",
+      "sha256": "c615ec8a190d6d1f0e55ca37ac023a29e1cdc26ab6e116e711d3a5c317cb6924",
+      "size": 1492,
+      "text": "{\n  \"pre_head\": \"42c4483aea9421dc13a745744c99d21b973ece9a\",\n  \"files\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\",\n      \"expected_sha256\": \"59ce7aee48738d7b6373785ba7f002616c63e624a9a5ac098a7a5193eddb1e0e\",\n      \"post_sha256\": \"8f0b3b60f9cbdcf493ec688fdeb2ac519646be2cb220cae35350100b32ace44d\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\",\n      \"expected_sha256\": \"9fa811357c567ca7943afdae718230caf58710c464ae862e4fd1836818d64902\",\n      \"post_sha256\": \"cf1e6ab2ffa8fa818558a716dccd0981c8093b04cae56935a962d2e4102894b5\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs\",\n      \"expected_sha256\": \"d734094066a48f5ca70f0954865feede37990a53e823d64905067744cb9b499c\",\n      \"post_sha256\": \"2f0568bf7ef872dc494b19833e75fe9a71a82c77b20976c9f4487c6722a73259\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\",\n      \"expected_sha256\": \"9acee05ecec58200a86377e076db4838bc56429b1f5f1232ecc36e5484ec759b\",\n      \"post_sha256\": \"898712b6126e77828688412b2e6189aeae6010195c067e50da9ba16644ff8818\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs\",\n      \"expected_sha256\": \"e524ad79051506dc6d0072ceb252a6e6d8d65e647e087c5f79ac1385782155f2\",\n      \"post_sha256\": \"eb36b28d17300c239b623a17e678ff67118a30d45484778b44a562ac889abf28\"\n    }\n  ]\n}\n",
+      "version": "2050:15655559:1492:1794462072522949470:1794462072522949470"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/branch.txt",
+      "sha256": "5f0b6a5c8de718d05bafbc457907bce98eed2186fd24377aa11761908dc9f0b4",
+      "size": 42,
+      "text": "codex/learn-eval-recovery-20261112-34f833\n",
+      "version": "2050:15655563:42:1794462073290927012:1794462073290927012"
+    }
+  ]
+}
