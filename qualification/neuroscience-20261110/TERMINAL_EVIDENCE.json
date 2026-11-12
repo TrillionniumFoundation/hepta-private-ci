@@ -1,9 +1,9 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 16:06:39 UTC",
+  "observed_at_utc": "2026-11-12 16:59:26 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "publication_parent": "07a36154f002429da878aa1a4ee60b052553840b",
-  "scope": "Evidence and documentation only. Original ACT bb8 hosted success is independently complete; EBE failures and the published 1631 follow-up are separately pinned. Four pre-frozen B/C development effects remain unchanged. No new research actors, promotion or deployment.",
+  "publication_parent": "01651139cf72fa3e310357c7637b38d05958b5d7",
+  "scope": "Evidence and documentation only. Seven complete original exact-9fac hosted logs are retained with exact execution source; no implementation or research actor dispatch. Older FAILED/UNKNOWN/NoUpdate and all twelve qualification gates remain unchanged.",
   "status": "HOLD",
   "owner_decision": null,
   "owner_evaluation": "not_authenticated",
@@ -11,8 +11,8 @@
   "all_blockers_closed": false,
   "historical_snapshot": {
     "initial_snapshot": "NEXT_STEP_EVIDENCE.json",
-    "previous_full_snapshot": "evidence/history-20261112/TERMINAL_EVIDENCE-ba20.json",
-    "previous_commit": "ba20e12044cbf9d90a8823f6e3e68878b638210f"
+    "previous_full_snapshot": "evidence/history-20261112/TERMINAL_EVIDENCE-016511.json",
+    "previous_commit": "01651139cf72fa3e310357c7637b38d05958b5d7"
   },
   "original_campaign": {
     "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
@@ -397,8 +397,8 @@
       "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
       "current_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
       "current_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
-      "current_native_status": "HOSTED_IN_PROGRESS_EXACT_9FAC",
-      "current_source_gate_status": "AWAITING_ORIGINAL_SOURCE_RESULT",
+      "current_native_status": "FAILED_ORDINARY_1726_OF_1738_ROOT_NOT_RUN",
+      "current_source_gate_status": "PASS_EXACT_SOURCE_414_PARSER_16_FULL_CALLER_541",
       "previous_source_results_transferred": false,
       "full_inventory_original_gzip_bytes": 762747,
       "full_inventory_original_gzip_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
@@ -409,11 +409,38 @@
         "run": 43254705812,
         "native_job": 131309678676,
         "caller_job": 131309678429,
-        "status": "in_progress",
-        "source_test_count": null,
-        "parser_test_count": null,
-        "native_test_count": null,
-        "previous_results_transferred": false
+        "status": "completed",
+        "conclusion": "failure",
+        "source_test_count": 414,
+        "parser_test_count": 16,
+        "native_test_count": 1738,
+        "native_passed": 1726,
+        "native_failed": 11,
+        "native_timed_out": 1,
+        "source_gate": "success",
+        "parser_gate": "success",
+        "same_source_helper_build": "success",
+        "previous_results_transferred": false,
+        "root_suite": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+        "scoped_fix_and_fmt": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+        "caller_status": "completed",
+        "caller_conclusion": "success",
+        "caller_boundaries": 541,
+        "caller_inventory": 541,
+        "caller_protected": 390,
+        "caller_rust_files": 6604,
+        "authority_granted": false,
+        "ordinary_skipped_outside_execution_denominator": 98,
+        "junit_tests": 1738,
+        "junit_failures": 12,
+        "junit_errors": 0,
+        "junit_skipped": 0,
+        "retries": 0,
+        "observed_jobs_record": "../evaluated-current-read-20261112/9fac-native-failure/jobs.original.json",
+        "original_native_manifest": "../evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
+        "original_caller_manifest": "../evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
+        "original_junit_xml_separately_fetched": false,
+        "full_original_inventory_separately_fetched": false
       },
       "previous_0e_validation": {
         "source": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
@@ -489,15 +516,40 @@
         "run": 43254705812,
         "native_job": 131309678676,
         "caller_job": 131309678429,
-        "status": "in_progress",
-        "source_test_count": null,
-        "parser_test_count": null,
-        "native_test_count": null,
+        "status": "completed",
+        "source_test_count": 414,
+        "parser_test_count": 16,
+        "native_test_count": 1738,
         "previous_results_transferred": false,
-        "expected_ordinary_methods_static_not_measured": 1738,
         "old_methods_removed": 0,
         "new_methods": 5,
-        "conclusion": null
+        "conclusion": "failure",
+        "source_gate": "success",
+        "parser_gate": "success",
+        "same_source_helper_build": "success",
+        "caller_status": "completed",
+        "caller_conclusion": "success",
+        "observed_jobs_record": "../evaluated-current-read-20261112/9fac-native-failure/jobs.original.json",
+        "native_passed": 1726,
+        "native_failed": 11,
+        "native_timed_out": 1,
+        "root_suite": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+        "scoped_fix_and_fmt": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+        "caller_boundaries": 541,
+        "caller_inventory": 541,
+        "caller_protected": 390,
+        "caller_rust_files": 6604,
+        "authority_granted": false,
+        "ordinary_skipped_outside_execution_denominator": 98,
+        "junit_tests": 1738,
+        "junit_failures": 12,
+        "junit_errors": 0,
+        "junit_skipped": 0,
+        "retries": 0,
+        "original_native_manifest": "../evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
+        "original_caller_manifest": "../evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
+        "original_junit_xml_separately_fetched": false,
+        "full_original_inventory_separately_fetched": false
       },
       "pending_integration": {
         "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
@@ -916,6 +968,202 @@
         "static_prior_review_limit": "Marker/order/depth review omitted minimum sequence length; its record remains static and is not represented as a checker PASS.",
         "followup": "9fac prepends exact fn state_mut( marker, retains original body expression and top-level check, and enables only original Fence diagnostic logging.",
         "evidence": "../evaluated-current-read-20261112/320533-source-closure-failure/"
+      },
+      "original_9fac_observations": {
+        "observed_at_utc": "2026-11-12 16:59:26 UTC",
+        "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+        "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+        "original_source_parser_helper_steps": [
+          {
+            "name": "Check original owner source closure before native compilation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-12T16:15:44Z",
+            "completed_at": "2026-11-12T16:18:11Z"
+          },
+          {
+            "name": "Check exact learning owner evidence parser controls",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-12T16:18:11Z",
+            "completed_at": "2026-11-12T16:18:11Z"
+          },
+          {
+            "name": "Build and pin the same-source joint proposal helper",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-12T16:19:01Z",
+            "completed_at": "2026-11-12T16:28:50Z"
+          }
+        ],
+        "original_native_step_in_progress": false,
+        "actual_native_denominator": 1738,
+        "complete_caller_still_in_progress": false,
+        "blocking_success_metadata": [
+          {
+            "job_id": 131310344951,
+            "name": "Blob size policy / Blob size policy",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-12T16:08:39Z"
+          },
+          {
+            "job_id": 131310622836,
+            "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-12T16:15:32Z"
+          },
+          {
+            "job_id": 131310623068,
+            "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-12T16:11:12Z"
+          },
+          {
+            "job_id": 131310623097,
+            "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-12T16:12:11Z"
+          },
+          {
+            "job_id": 131310874421,
+            "name": "rust-ci / Rust format",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-12T16:07:32Z"
+          }
+        ],
+        "actual_blocking_checkout": {
+          "commit": "6344842074357063c00dce9f2b67d789b2988c6f",
+          "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+          "tree_matches": true,
+          "root_original_api": "../evaluated-current-read-20261112/9fac-fence-clippy-pass/execution-commit.root.original.json"
+        },
+        "full_fence_clippy_logs": "../evaluated-current-read-20261112/9fac-fence-clippy-pass/MANIFEST.json",
+        "fence_scope": {
+          "mode": "audit",
+          "result": "healthy",
+          "readiness": "ready_observation_only",
+          "protection_available": false,
+          "debug_causality": "NOT_ESTABLISHED",
+          "earlier_precheckout_failures_preserved": true
+        },
+        "bazel_gnu_musl": {
+          "conclusion": "failure",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "target_timeout_seconds": 300,
+          "announced": 1190,
+          "explicit_ok": 917,
+          "explicit_failed": 15,
+          "explicit_ignored": 87,
+          "unobserved_terminal": 171,
+          "completed_method_summary": false,
+          "failure_panic_details_present": false,
+          "normalized_target_output_equal": true,
+          "independent_method_replications_not_claimed": true,
+          "manifest": "../evaluated-current-read-20261112/9fac-bazel-timeout/MANIFEST.json"
+        },
+        "windows_private_state": {
+          "run": 43254705684,
+          "job": 131309688525,
+          "status": "success",
+          "learning_tests": 36,
+          "passed": 36,
+          "errors": 0,
+          "failures": 0,
+          "skipped_in_xml": 0,
+          "retries": 0,
+          "selected_out": 597,
+          "other_groups_separate": true,
+          "whole_zip_or_original_xml_not_claimed": true,
+          "manifest": "../evaluated-current-read-20261112/9fac-windows-private-pass/MANIFEST.json"
+        },
+        "windows_blocking": {
+          "jobs": [
+            131310622783,
+            131310622818
+          ],
+          "status": "failure",
+          "observations": "Original locked-file Os33 errors, canonical fixture extra CR, and separately recorded TUI/core/exec-server failures. Unsupported original journal handle cloning and sandbox bypass are not introduced.",
+          "manifest": "../evaluated-current-read-20261112/9fac-windows-original-failures/MANIFEST.json"
+        },
+        "prepared_windows_correction": {
+          "commit": "b649baef1967d582b328df1023922a45aa196ab3",
+          "tree": "ac45546648ab87b9ef2a39ce0e84a514796293c7",
+          "paths": 3,
+          "status": "STATIC_REVIEWED_NOT_PUSHED_NOT_EXECUTED",
+          "review": "../evaluated-current-read-20261112/9fac-windows-original-failures/ROOT_REPAIR_REVIEW.json",
+          "independent_review": "../evaluated-current-read-20261112/9fac-windows-static-review/INDEPENDENT_REVIEW.json"
+        },
+        "previous_results_transferred": false,
+        "native_terminal": {
+          "tests_run": 1738,
+          "passed": 1726,
+          "failed": 11,
+          "timed_out": 1,
+          "skipped_outside_run": 98,
+          "junit_total": 1738,
+          "junit_failures": 12,
+          "junit_errors": 0,
+          "junit_skipped": 0,
+          "retries": 0,
+          "command_exit_code": 100,
+          "workflow_exit_code": 1,
+          "overall_timeout": false,
+          "root_suite": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+          "scoped_fix_and_fmt": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+          "selected_positive": {
+            "evaluated_current": "PASS 23.936s",
+            "deep_no_update_cold": "PASS 31.745s",
+            "deep_training_change_fence": "PASS 13.937s"
+          },
+          "complete_log_bytes": 3745971,
+          "complete_log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+          "manifest": "../evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
+          "all_previous_failures_preserved": true
+        },
+        "caller_terminal": {
+          "self_test": "PASS_HEPTA_CALLER_PROOF_SELF_TEST",
+          "full_verify": "PASS_HEPTA_CALLER_CLOSED_SET",
+          "boundary_count": 541,
+          "privileged_inventory_count": 541,
+          "protected_record_count": 390,
+          "rust_files_scanned": 6604,
+          "authority_granted": false,
+          "source_identity": "Direct exact head checkout is present in the original job log. Workflow's before/after tracked-source identity checks are in the completed successful step. No parsed/re-serialized file is presented as original output.",
+          "limits": "This caller proof qualifies the original caller inventory only. It does not imply any native test, Root suite, scientific experiment or later source passed.",
+          "manifest": "../evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
+          "complete_log_bytes": 2145300,
+          "complete_log_sha256": "edae7bf327161cfc19fcd391a682708fafab14e1365186e0408e5319c7f801b4"
+        },
+        "native_failure_groups": [
+          {
+            "kind": "candidate_material",
+            "methods": 1,
+            "result": "TIMEOUT_60_SECONDS"
+          },
+          {
+            "kind": "evaluated_publication_s_c",
+            "methods": 7,
+            "result": "FAILED"
+          },
+          {
+            "kind": "model_material",
+            "methods": 3,
+            "result": "FAILED"
+          },
+          {
+            "kind": "legacy_next_use_evidence",
+            "methods": 1,
+            "result": "FAILED_500MS_DEADLINE"
+          }
+        ]
       }
     }
   ],
@@ -1215,7 +1463,7 @@
     }
   },
   "moving_bases": {
-    "observed_at_utc": "2026-11-12 16:06:39 UTC",
+    "observed_at_utc": "2026-11-12 16:43:26 UTC",
     "owner_current_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
     "owner_current_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
     "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
@@ -1392,7 +1640,7 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 16:06:39 UTC",
+  "latest_followup_observed_at_utc": "2026-11-12 16:59:26 UTC",
   "wrapper_completed_macro_executions": 4,
   "latest_binary_readback": {
     "staged_commits": [
@@ -1418,24 +1666,63 @@
     "scope": "Concrete source/custody/data requirements. Engineering gaps actively implemented; scientific outcome, original custody and new independent data are not fabricated."
   },
   "active_engineering_work": {
-    "current_lint": "0869 original Linux Clippy passed after boxed original-state lease and explicit test error propagation. Current 320533 source checks must validate separately.",
+    "current_lint": "Exact 9fac GNU and Windows Clippy jobs passed. Full GNU original log and identical synthetic execution tree independently verified.",
     "evaluated_selection": "Initial original S command and resident continuation; client and server permanently attenuate after Readback; single original owner shared with purpose-fixed readonly evidence.",
     "evaluated_version_c": "Real evaluated preparation -> original task factory -> exact Root FinalUse issuer transport -> fresh opaque five-cut S -> original C; explicit initial streams under implementation.",
-    "candidate_tests_and_format": "320533 original Rustfmt passed. 9fac completes minimum sequence schema and preserves formatted Rust; S/Version/C drafts still not compiled/executed.",
+    "candidate_tests_and_format": "Exact 9fac Rustfmt passed. S/Version/C/Observer/batch drafts remain not formatted, compiled or executed; source guards and actual tests required before closure.",
     "qualified_adoption": "DENIED",
     "no_owner_or_socket_from_report_fields": true,
-    "current_native": "1631 original 1733/1697/36 preserved; all original methods plus five regressions retained. 0869 and 320533 each stopped on newly registered helper guard schema; exact 9fac follow-up pending.",
-    "fence": "Pinned v0.10 local-control inventory fails before checker; official bounded debug logging enabled only on the existing step. No change to protection, mode, pins, permissions, allowlist or resident child environment. Exact missing input still unknown.",
-    "observer_initialization": "Fresh S delivery to independent Observer is a separate actual initial-channel handoff under Root five-cut gate; being implemented, never derived by elevating readback."
+    "current_native": "Exact 9fac native completed failure: source 414/414, parser 16/16, same-source helper and complete caller passed; ordinary 1726 passed, 11 failed, 1 timed out out of 1738 actual methods, zero retries, 98 selected-out. Root and scoped maintenance were not reached. CURRENT positive and two deep readonly cases actually passed; this is not whole-suite qualification.",
+    "fence": "Exact 9fac pinned Fence setup, seven policy tests, changed-blob checker, clean worktree and post succeeded. Audit/observation-only readiness and protection_available=false preserved. No debug causality claimed; earlier failures remain FAILED.",
+    "observer_initialization": "Purpose-fixed once-only original Root-to-Observer Fresh-S receiver and ten ordinary framing/owner regressions are drafted. True distinct-process UID-0 factory coverage and all integrated format/compile/native validation remain pending.",
+    "full_frame_budget": "OPEN. Same-call batch upper-layer E/D/T count [112,110,106] for one mandatory final readback does not include shared downstream Material. Each actual Trainer readback performs four reads on each retained Material source; each Candidate page performs six. The proposed common T alone implies 424 downstream reads; R=1 Candidate requires 32*P pages and 192*P further reads, hence a lower bound of 616 at P=1 before other owners. This is a source-derived draft budget, not a measured successful run. Original full fixture Material peers have a 128-frame limit and cannot validate this flow. Production legacy readonly Material loops use monotonic request IDs plus original deadlines rather than the same 128 check; this distinction does not prove throughput, cost or completion within the original 300-second lifetime. No test cap, endpoint, cache or source identity is substituted.",
+    "windows_fixture_correction": "Three-path prepared commit b649 is independently reviewed/read back but not pushed: exact perception fixture LF; four finished port drops before raw byte checks; exact empty writer-lock sentinel metadata with regular-file/zero-length assertions. Product locks unchanged; other Windows failures remain open.",
+    "current_failure_repairs": [
+      {
+        "kind": "candidate_material",
+        "methods": 1,
+        "result": "TIMEOUT_60_SECONDS"
+      },
+      {
+        "kind": "evaluated_publication_s_c",
+        "methods": 7,
+        "result": "FAILED"
+      },
+      {
+        "kind": "model_material",
+        "methods": 3,
+        "result": "FAILED"
+      },
+      {
+        "kind": "legacy_next_use_evidence",
+        "methods": 1,
+        "result": "FAILED_500MS_DEADLINE"
+      }
+    ],
+    "local_environment": "Managed executor returned; direct read-only probes found no verified checkout and no rustfmt/rustc/cargo/just in PATH. No new local Git materialization or toolchain installation was attempted. Hosted original results remain the validation source."
   },
   "latest_text_readback": {
-    "observed_at_utc": "2026-11-12 16:08:41 UTC",
-    "original_logs_reassembled": 6,
-    "new_imported_blobs": 46,
-    "new_log_part_readbacks": 19,
-    "original_xml_counted": true,
-    "record": "evidence/terminal-20261112/GIT_READBACK_1609.json",
-    "all_verified": true,
-    "whole_1631_zip_and_inventory_not_claimed": true
+    "observed_at_utc": "2026-11-12 16:59:26 UTC",
+    "original_logs_reassembled": 9,
+    "new_imported_blobs": 48,
+    "new_log_part_readbacks": 7,
+    "original_logs": [
+      "Fence",
+      "GNU Clippy",
+      "GNU Bazel timeout",
+      "musl Bazel timeout",
+      "Windows Bazel shard 3",
+      "Windows Bazel shard 1",
+      "Windows private-state",
+      "9fac native",
+      "9fac caller"
+    ],
+    "root_fetched_all_original_logs": true,
+    "previous_record": "evidence/terminal-20261112/GIT_READBACK_1609.json",
+    "record": "evidence/terminal-20261112/GIT_READBACK_1700.json",
+    "all_verified": false,
+    "status": "STAGING_READBACK_REQUIRED_BEFORE_REF_UPDATE",
+    "original_xml_file_newly_recovered": false,
+    "original_1631_xml_previous_verification_preserved": true
   }
 }

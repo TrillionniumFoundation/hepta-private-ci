@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "kind": "independent_static_source_review",
+  "source_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "candidate_reported_by_root": {
+    "commit": "b649baef1967d582b328df1023922a45aa196ab3",
+    "tree": "ac45546648ab87b9ef2a39ce0e84a514796293c7",
+    "independently_read_commit": false
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "base": {
+        "blob_sha": "17da38650745923743630d38d3eb0327b7a55d1f",
+        "bytes": 755,
+        "sha256": "51bdbf461a07d891e1cb85721bf9ce50d4f761288edbe301bd565ee8e5091190"
+      },
+      "post": {
+        "blob_sha": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+        "bytes": 909,
+        "sha256": "697af3562bc9f094af53857d8aa1f5070450bd4fe192efecac35e969cfe138e4"
+      },
+      "diff": [
+        [
+          "+",
+          "# Cross-language perception evidence binds the canonical fixture bytes exactly."
+        ],
+        [
+          "+",
+          "codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json text eol=lf"
+        ]
+      ],
+      "assertions_before": 0,
+      "assertions_after": 0
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "base": {
+        "blob_sha": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+        "bytes": 12439,
+        "sha256": "4d55b3c2125f8fa811467b5b38197f29c92a2d70979063dcf3f341a1f917dca8"
+      },
+      "post": {
+        "blob_sha": "32fbe36826cc43fb4af106d820d82a4a11222425",
+        "bytes": 12514,
+        "sha256": "d5146e06e1ed575853783c625306cf8ba200de465a13c940b0da49cbc99089f2"
+      },
+      "diff": [
+        [
+          "+",
+          "    drop(recovered);"
+        ],
+        [
+          "+",
+          "    drop(fresh);"
+        ],
+        [
+          "+",
+          "    drop(port);"
+        ],
+        [
+          "+",
+          "    drop(recovered);"
+        ]
+      ],
+      "assertions_before": 39,
+      "assertions_after": 39
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "base": {
+        "blob_sha": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+        "bytes": 8338,
+        "sha256": "4c97d448da9ff38b5d5d9f12aded6955d8e0328beec68d33afaff16747150022"
+      },
+      "post": {
+        "blob_sha": "526596aa073290c60bf3e8d44f52d2812910b158",
+        "bytes": 8977,
+        "sha256": "bc3d2ae7cf0b8ae04254552cdf5ad64f31758b1a6560f9ca150a7380e5b1dc5d"
+      },
+      "diff": [
+        [
+          "+",
+          "                    // The writer fence is a verified empty sentinel. Windows"
+        ],
+        [
+          "+",
+          "                    // rejects data reads through a second handle while its"
+        ],
+        [
+          "+",
+          "                    // original exclusive lock is held, including at EOF."
+        ],
+        [
+          "+",
+          "                    let bytes = if path == root.join(\"writer\").join(\"owner.lock\") {"
+        ],
+        [
+          "+",
+          "                        let metadata = fs::metadata(&path).fixture(\"original writer fence metadata\");"
+        ],
+        [
+          "+",
+          "                        assert!(metadata.is_file());"
+        ],
+        [
+          "+",
+          "                        assert_eq!(metadata.len(), 0);"
+        ],
+        [
+          "+",
+          "                        Vec::new()"
+        ],
+        [
+          "+",
+          "                    } else {"
+        ],
+        [
+          "+",
+          "                        fs::read(&path).fixture(\"original bytes\")"
+        ],
+        [
+          "+",
+          "                    };"
+        ],
+        [
+          "-",
+          "                        fs::read(&path).fixture(\"original bytes\"),"
+        ],
+        [
+          "+",
+          "                        bytes,"
+        ]
+      ],
+      "assertions_before": 2,
+      "assertions_after": 4
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "blob_sha": "bb7366e8045a0fb009c28a6de150df829e999e9f",
+      "bytes": 33210,
+      "sha256": "3d37b1ceb0bdd22d7dbb463f65e65342da0c70bbe8569dcd56a1100ca2cc22e3"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "blob_sha": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+      "bytes": 86789,
+      "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json",
+      "blob_sha": "b74b52ceaa379739213ccc264d311e77b151e3a3",
+      "bytes": 2188,
+      "sha256": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b"
+    }
+  ],
+  "findings": [
+    {
+      "path": ".gitattributes",
+      "result": "No static blocker",
+      "reason": "Only one exact fixture path gains text eol=lf plus a comment. The original Git blob contains exactly one terminal LF and zero CR. Production encoder and exact byte assertion are unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "result": "No static blocker",
+      "reason": "Exactly four terminal drops are inserted before original journal byte reads. The dropped port has no subsequent use. All five test functions and 39 original assertion invocations are unchanged. Actual DurableInferenceControl::drop only unlocks its retained file; it performs no journal write."
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "result": "No static blocker",
+      "reason": "Only the exact writer/owner.lock sentinel uses metadata verification of regular file and zero length, preserving an empty entry in the same byte map. Every other original file still uses fs::read. Actual LearningArtifactOwnerHost opens and exclusively locks the sentinel but never writes payload through writer_fence; Drop only unlocks. Owner remains held during observation, so no product critical section is reopened."
+    }
+  ],
+  "execution": {
+    "formatter": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "source_guards": "NOT_RUN"
+  },
+  "limits": "This is a static review of exactly three pinned postimages, not a successful Windows/native/fmt run. It does not change or waive other Windows Bazel failures, sandbox isolation, source guards, protected caller inventory, production locking or runtime behavior.",
+  "canonical_fixture_bytes": {
+    "raw_bytes": 2188,
+    "raw_sha256": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+    "without_terminal_lf_bytes": 2187,
+    "without_terminal_lf_sha256": "e08fffef99344a9ff1bd0c70f715dfdf450ecf179732f6cd12e33fc0fa9cb454",
+    "note": "The latter is a derived test payload after stripping the one terminal LF; it is not the raw Git blob."
+  }
+}

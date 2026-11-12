@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "job_id": 131310622783,
+  "derived_only": true,
+  "full_original_parts": [
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part00",
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part01",
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part02"
+  ],
+  "excerpts": [
+    {
+      "line": 3449,
+      "block": "thread 'cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes' (4212) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\r\ncalled `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work stdout ----\r\n\r\nthread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (3176) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\r\ncalled `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3454,
+      "block": "thread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (3176) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\r\ncalled `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n\r\nfailures:\r\n    cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes\r\n    cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work\r\n\r"
+    },
+    {
+      "line": 3549,
+      "block": "thread 'feature_control::tests::feature_control_original_cell_path_binds_admission_and_pending_recovery' (3844) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n\r\n---- feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write stdout ----\r\n\r\nthread 'feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write' (7516) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+    },
+    {
+      "line": 3555,
+      "block": "thread 'feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write' (7516) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen stdout ----\r\n\r\nthread 'feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen' (6172) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3560,
+      "block": "thread 'feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen' (6172) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds stdout ----\r\n\r\nthread 'feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds' (2876) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3565,
+      "block": "thread 'feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds' (2876) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\r\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence stdout ----\r\n\r\nthread 'perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence' (5396) panicked at hepta-neuron/src\\perception_tests.rs:12:5:\r\nassertion failed: `(left == right)`\r\n\r"
+    },
+    {
+      "line": 3570,
+      "block": "thread 'perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence' (5396) panicked at hepta-neuron/src\\perception_tests.rs:12:5:\r\nassertion failed: `(left == right)`\r\n\r\nDiff < left / right > :\r\n [\r\n     123,\r\n     34,\r\n     115,\r"
+    },
+    {
+      "line": 6402,
+      "block": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (5148) panicked at tui/src/lib.rs:3265:9:\r\nassertion failed: `(left == right)`\r\n\r\nDiff < left / right > :\r\n<\"D:\\\\tmp\\\\.tmpqsUufv\\\\sqlite-home\\\\logs_2.sqlite\"\r\n>\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpqsUufv\\\\sqlite-home\\\\logs_2.sqlite\"\r\n\r\n\r"
+    },
+    {
+      "line": 6965,
+      "block": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (7612) panicked at tui/src/lib.rs:3265:9:\r\nassertion failed: `(left == right)`\r\n\r\nDiff < left / right > :\r\n<\"D:\\\\tmp\\\\.tmpVqBKp9\\\\sqlite-home\\\\logs_2.sqlite\"\r\n>\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpVqBKp9\\\\sqlite-home\\\\logs_2.sqlite\"\r\n\r\n\r"
+    },
+    {
+      "line": 7528,
+      "block": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (4640) panicked at tui/src/lib.rs:3265:9:\r\nassertion failed: `(left == right)`\r\n\r\nDiff < left / right > :\r\n<\"D:\\\\tmp\\\\.tmphlRwAu\\\\sqlite-home\\\\logs_2.sqlite\"\r\n>\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmphlRwAu\\\\sqlite-home\\\\logs_2.sqlite\"\r\n\r\n\r"
+    },
+    {
+      "line": 7779,
+      "block": "thread 'neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model' (1736) panicked at hepta-agentd/src\\neuron_generation_tests.rs:21:23:\r\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n\r\n---- neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback stdout ----\r\nError: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner stdout ----\r"
+    },
+    {
+      "line": 7784,
+      "block": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner stdout ----\r\nError: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation stdout ----\r\nError: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7787,
+      "block": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation stdout ----\r\nError: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (10216) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r"
+    },
+    {
+      "line": 7790,
+      "block": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (10216) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent stdout ----\r"
+    },
+    {
+      "line": 7794,
+      "block": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (10216) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent stdout ----\r\nError: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends stdout ----\r\n\r"
+    },
+    {
+      "line": 7798,
+      "block": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (8352) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome stdout ----\r"
+    },
+    {
+      "line": 7802,
+      "block": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (8352) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (3192) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7807,
+      "block": "thread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (3192) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (8480) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7812,
+      "block": "thread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (8480) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (5000) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7817,
+      "block": "thread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (5000) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (7676) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7822,
+      "block": "thread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (7676) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending stdout ----\r\n\r\nthread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (8356) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 7827,
+      "block": "thread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (8356) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n\r\nfailures:\r\n    neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model\r\n    neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback\r\n    neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation\r"
+    },
+    {
+      "line": 8835,
+      "block": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (4640) panicked at tui/src/lib.rs:3265:9:\r\nassertion failed: `(left == right)`\r\n\r\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\r\n\u001b[31m<\"D:\\\\tmp\\\\.tmphlRwAu\\\\sqlite-home\\\\logs_2.sqlite\"\u001b[0m\r\n\u001b[32m>\"\u001b[0m\u001b[1;48;5;22;32m\\\\\\\\?\\\\\u001b[0m\u001b[32mD:\\\\tmp\\\\.tmphlRwAu\\\\sqlite-home\\\\logs_2.sqlite\"\u001b[0m\r\n\r\n\r"
+    }
+  ]
+}

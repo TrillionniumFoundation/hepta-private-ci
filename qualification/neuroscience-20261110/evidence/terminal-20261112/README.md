@@ -1,5 +1,17 @@
 # 原始终态证据与最新增量
 
+截至 2026-11-12 16:59:26 UTC，当前源码仍为 `9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca`。其自身 source 414/414、parser 16/16、同源 helper 与完整 caller 通过。ordinary 实际 1,738 项：1,726 PASS、11 FAIL、1 TIMEOUT、0 重试。Root 与 scoped maintenance 未执行。CURRENT 正例和两个 deep readonly 原方法通过，完整资格仍未通过。
+
+Fence、GNU Clippy/release、Rustfmt、Windows Clippy 和独立 Windows 私有状态专项通过；Linux 两个 Bazel 原目标超时及 Windows 分片失败完整保留。九份完整原日志已独立取得并按原字节重组，源码/tree 已核对。完整 caller 为 541 boundaries/541 inventory/390 protected/6,604 Rust files，authorityGranted=false。[本次 Git 读回](GIT_READBACK_1700.json)。9fac 整 ZIP、JUnit XML 与完整 source inventory 尚未另取；日志原收集记录保留原始整数与时间字段。
+
+三路径 Windows 小修仅为已审查、未推送/未执行的准备提交。完整桥接的下游 Material 扇出仍超出原完整 fixture 预算，生产 legacy 限额语义另行区分。所有 12 个完整科学/权限门仍 OPEN，owner_decision=null，HOLD。见 [blocker 清单](../../BLOCKER_CLOSURE_NEXT.md) 与 [机器索引](../../TERMINAL_EVIDENCE.json)。
+
+## 016511 检查点的原说明
+
+以下保留原说明作为历史观察；其中当前/进行中状态以以上新索引为准。其独立副本见 [016511 README](../history-20261112/TERMINAL_README-016511.md)。
+
+# 原始终态证据与最新增量
+
 截至 2026-11-12 16:08:41 UTC，最新 CURRENT 已发布源码为 `9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca`，它自己的 CI 仍待观察。完整当前状态见 [blocker 清单](../../BLOCKER_CLOSURE_NEXT.md) 与 [机器索引](../../TERMINAL_EVIDENCE.json)。
 
 本次独立取回 1631 的完整 1,733 方法 JUnit、clean before/final、同源 helper 原件及 2,142,662 B 完整 caller；核对 1,697 PASS、36 FAILED，31 次 SIGABRT，0 跳过／重试。其完整 native、caller 与后续两个源码失败、Clippy／release 共六份日志已从 Git 重组核原 SHA。0869 的 Linux Clippy/release 成功，320533 的原 Rustfmt 成功；各自保留 exact source，不能转给当前 head。全部 12 个完整科学／权限门仍 OPEN，owner_decision=null，HOLD。
