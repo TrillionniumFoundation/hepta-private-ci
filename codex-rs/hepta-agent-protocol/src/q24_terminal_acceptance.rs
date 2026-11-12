@@ -43,3 +43,7 @@ impl OriginalQ24TerminalAcceptanceDataV1 {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "q24_terminal_acceptance_tests.rs"]
+mod tests;
