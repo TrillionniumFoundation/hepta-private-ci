@@ -137,7 +137,7 @@ fn late_cli_expected_identity_refuses_unregistered_roots_and_aliases() -> anyhow
     wrong_codex_home.codex_home = other.clone();
     let mut wrong_workspace = fixture.input.clone();
     wrong_workspace.current_dir = other;
-    let mut aliased_home = fixture.input.clone();
+    let mut aliased_home = fixture.input;
     aliased_home.home_root = alias;
     for changed in [
         wrong_home,

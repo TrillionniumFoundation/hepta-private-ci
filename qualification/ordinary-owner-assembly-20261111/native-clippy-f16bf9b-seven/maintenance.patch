@@ -1,0 +1,26 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs b/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
+index 8c85c70340ce1eb95e327869d40a22a4aacb8ce8..e51e0c3ab997a1910435ef94b43ddd9facde2b30 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
+@@ -551,7 +551,7 @@ impl Fixture {
+                             .revoked_grant_ids
+                             .contains(&record.signed.grant.grant_id)
+                     );
+-                    let mut expected = before.clone();
++                    let mut expected = before;
+                     expected.revision = expected
+                         .revision
+                         .checked_add(1)
+diff --git a/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs b/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
+index 0201372436dbb6a4399eb8702fac15254037edb1..cdc7037f1e63c311c4354e7b3a9193e3ea81825c 100644
+--- a/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
++++ b/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
+@@ -137,7 +137,7 @@ fn late_cli_expected_identity_refuses_unregistered_roots_and_aliases() -> anyhow
+     wrong_codex_home.codex_home = other.clone();
+     let mut wrong_workspace = fixture.input.clone();
+     wrong_workspace.current_dir = other;
+-    let mut aliased_home = fixture.input.clone();
++    let mut aliased_home = fixture.input;
+     aliased_home.home_root = alias;
+     for changed in [
+         wrong_home,

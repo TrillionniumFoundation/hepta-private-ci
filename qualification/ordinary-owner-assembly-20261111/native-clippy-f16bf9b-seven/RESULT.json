@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.native-seven-package-clippy-attempt.v1",
+  "source": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29"
+  },
+  "status": "failed-source-drift",
+  "request": "594028168c5d1db0a229fd6e7f65401b1796001c",
+  "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "session": "dpty-92f5aa08ac9e1d9fbc9cbb591a28a88748a59fecdc0a8ee3ff38bdd0d7869150",
+  "format": {
+    "status": "passed",
+    "command_exit_code": 0,
+    "executor_exit_code": 0,
+    "source_clean_before_after": true
+  },
+  "clippy": {
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-contracts",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-fleet"
+    ],
+    "started_at": "2026-11-12T04:39:50.947238+00:00",
+    "finished_at": "2026-11-12T04:43:30.872629+00:00",
+    "elapsed_seconds": 219.92409530002624,
+    "command_exit_code": 0,
+    "executor_exit_code": 1,
+    "error": "source identity or bytes changed during execution",
+    "dirty_postimages": 2,
+    "log_bytes": 83701,
+    "log_sha256": "3681daeba9a54a12d02623e314ad3c90ca44edf73419e0b607c82b214a2cc1da",
+    "timeout": false,
+    "output_limit_exceeded": false
+  },
+  "actual_source_delta": "Two unused final .clone() calls removed by the original native Clippy command, both in existing tests; no assertion change. Independent semantic review is retained separately.",
+  "original_callers_registry_changed": false,
+  "original_allowlist_changed": false,
+  "steps": [
+    {
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "isolated-clone",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "operator-toolchain",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fmt-before",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "exit_code": 1,
+      "timed_out": false
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361\", \"status\": \" M codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs\\\\n M codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs\\\\n\", \"tree\": \"d0827337173581d74ec1903e0053967e01534c29\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "tests_executed": 0,
+  "qa_or_full_caller_reached": false,
+  "source_retained_dirty": true,
+  "qualification_pass": false,
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0,
+    "independent_consumer": false,
+    "physical_daemon_root_restart": false
+  }
+}
