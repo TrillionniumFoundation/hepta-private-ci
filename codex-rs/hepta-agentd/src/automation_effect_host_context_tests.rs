@@ -1,7 +1,6 @@
 use super::tests::*;
 use super::*;
 use codex_hepta_automation::TaskFlowReconcileOutcome;
-use pretty_assertions::assert_eq;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use wiremock::Mock;
@@ -205,5 +204,77 @@ async fn host_recovery_missing_original_context_never_queries_current_provider()
     );
     server.verify().await;
     reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn host_duplicate_headers_leave_original_unknown_unqueried() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let now_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
+    let intent = effect_intent(&scope);
+    prepare_effect(&fixture, now_ms, &intent).await?;
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .respond_with(ResponseTemplate::new(500))
+        .expect(1)
+        .mount(&server)
+        .await;
+    Mock::given(method("GET"))
+        .respond_with(ResponseTemplate::new(500))
+        .expect(0)
+        .mount(&server)
+        .await;
+    let (host, signer, _) = open_http_effect_host(&fixture, &server, &scope)?;
+    let grant = signed_final_use(&intent, now_ms, &signer)?;
+    host.execute(
+        &fixture.store,
+        &intent,
+        WIRE,
+        &grant,
+        "duplicate-header-original",
+        now_ms + 5,
+    )
+    .await?;
+    let before = fixture.store.pending_authorized_taskflow_effects(8).await?;
+    assert_eq!(before.len(), 1);
+    let host_file = fixture
+        .identity
+        .layout
+        .automation_root()
+        .join("effect-host.json");
+    let original: Value = serde_json::from_slice(&fs::read(&host_file)?)?;
+    // The model-provider regression independently pins the old signed hash
+    // collision. Here the actual owner must preserve its already pending
+    // operation and reject configuration before entering any recovery path.
+    for values in [["alice", "bob"], ["bob", "alice"]] {
+        let mut changed = original.clone();
+        changed["headers"] = serde_json::json!({
+            "X-Tenant": values[0],
+            "x-tenant": values[1],
+        });
+        fs::write(&host_file, serde_json::to_vec(&changed)?)?;
+        assert!(matches!(
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file),
+            Err(AgentdError::Invalid(reason))
+                if reason == "provider contract headers must have one value per name"
+        ));
+        assert_eq!(
+            fixture.store.pending_authorized_taskflow_effects(8).await?,
+            before,
+        );
+    }
+    assert_eq!(
+        server
+            .received_requests()
+            .await
+            .expect("original provider requests")
+            .iter()
+            .map(|request| request.method.as_str())
+            .collect::<Vec<_>>(),
+        vec!["POST"],
+    );
+    server.verify().await;
+    fixture.store.close().await;
     Ok(())
 }
