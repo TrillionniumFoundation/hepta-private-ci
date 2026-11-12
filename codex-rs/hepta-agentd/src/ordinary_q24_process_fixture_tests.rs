@@ -30,14 +30,16 @@ use super::super::observer_config;
 use super::super::owned_mode;
 use super::super::private_file;
 use super::deployment::OriginalAFilePaths;
+use super::evidence_custody::OriginalEvidenceDirectory;
+use super::evidence_custody::OriginalEvidenceDirectoryKind;
 use super::inputs::ObjectiveInputs;
 use super::root::OriginalRootInputs;
 use super::root::write_bytes;
 use super::root::write_json;
 
 pub(super) struct OrdinaryAPlan {
-    pub(super) protected: tempfile::TempDir,
-    pub(super) runtime: tempfile::TempDir,
+    pub(super) protected: OriginalEvidenceDirectory,
+    pub(super) runtime: OriginalEvidenceDirectory,
     pub(super) registered: crate::HostAuthorityRegisteredIdentity,
     pub(super) identity: crate::AgentdIdentity,
     pub(super) root: OriginalRootInputs,
@@ -93,11 +95,17 @@ impl OrdinaryAPlan {
             inode: metadata.ino(),
         };
         required_bind.verify()?;
-        let protected = tempfile::Builder::new()
-            .prefix("ordinary-q24-")
-            .tempdir_in(&parent)?;
+        let protected = OriginalEvidenceDirectory::new(
+            tempfile::Builder::new()
+                .prefix("ordinary-q24-")
+                .tempdir_in(&parent)?,
+            OriginalEvidenceDirectoryKind::AProtected,
+        );
         owned_mode(protected.path(), 0, 0, 0o700)?;
-        let run_directory = tempfile::Builder::new().prefix("oq-").tempdir_in("/run")?;
+        let run_directory = OriginalEvidenceDirectory::new(
+            tempfile::Builder::new().prefix("oq-").tempdir_in("/run")?,
+            OriginalEvidenceDirectoryKind::ARuntime,
+        );
         // Register the original private Root control directories before
         // enabling group inheritance for later shared runtime inputs. Linux
         // otherwise adds SGID to a requested 0700 child, producing 02700.

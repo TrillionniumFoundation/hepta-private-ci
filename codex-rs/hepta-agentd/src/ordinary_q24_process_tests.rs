@@ -27,6 +27,8 @@ mod cold_record;
 mod cold_successor_data;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
 mod deployment;
+#[path = "ordinary_q24_evidence_custody_tests.rs"]
+mod evidence_custody;
 #[path = "ordinary_q24_process_fixture_tests.rs"]
 mod fixture;
 #[path = "ordinary_q24_process_inputs_tests.rs"]
