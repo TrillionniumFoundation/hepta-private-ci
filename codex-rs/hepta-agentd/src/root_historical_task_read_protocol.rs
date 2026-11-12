@@ -15,12 +15,37 @@ use crate::AgentdIdentity;
 use crate::HostAuthorityLearningProfileV1;
 use crate::HostAuthorityRegisteredIdentity;
 use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
+use crate::root_historical_learning_trust_data::HistoricalLearningTrustPinV1;
+use crate::root_historical_learning_trust_data::TRUST_PURPOSE;
 use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
 
 pub(crate) const PURPOSE: &str = "runtime.learning.historical-task-read.v1";
 pub(crate) const SOCKET: &str = "historical-task-read-v1.sock";
 pub(crate) const MAX_READS: u64 = 64;
 pub(crate) const WIRE_BOUND: usize = 16_384;
+
+#[derive(Clone, Copy)]
+pub(crate) enum HistoricalReadOperationV1 {
+    Task,
+    LearningTrust,
+}
+
+impl HistoricalReadOperationV1 {
+    pub(crate) fn from_purpose(purpose: &str) -> io::Result<Self> {
+        match purpose {
+            PURPOSE => Ok(Self::Task),
+            TRUST_PURPOSE => Ok(Self::LearningTrust),
+            _ => Err(io::Error::other("unknown original historical operation")),
+        }
+    }
+
+    pub(crate) fn purpose(self) -> &'static str {
+        match self {
+            Self::Task => PURPOSE,
+            Self::LearningTrust => TRUST_PURPOSE,
+        }
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -30,6 +55,7 @@ pub(crate) struct HistoricalTaskReadProfileV1 {
     pub(crate) writer: String,
     pub(crate) initial: String,
     pub(crate) deployment: String,
+    pub(crate) learning_trust: HistoricalLearningTrustPinV1,
     pub(crate) binding: String,
 }
 
@@ -72,7 +98,9 @@ impl HistoricalTaskReadProfileV1 {
         }
         canonical_digest(&self.deployment)?;
         canonical_digest(&self.writer)?;
-        initial.require_binding(identity, proof)
+        let initial = initial.require_binding(identity, proof)?;
+        self.learning_trust.require_initial(&initial)?;
+        Ok(initial)
     }
 }
 

@@ -23,8 +23,8 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertIn(DATA, rows["root_initial_learning_trust_activation"]["product_callers"])
         self.assertEqual(rows["root_historical_recipient_trust_activation"]["product_callers"], [FILES])
-        self.assertEqual(rows["root_historical_recipient_trust_files"]["product_callers"], [])
-        self.assertEqual(rows["root_historical_recipient_trust_payload"]["product_callers"], [])
+        self.assertEqual(rows["root_historical_recipient_trust_files"]["product_callers"], [AGENT + "authority_host_historical_read.rs"])
+        self.assertEqual(rows["root_historical_recipient_trust_payload"]["product_callers"], [AGENT + "authority_host_historical_read.rs"])
         self.check_markers(DATA, "fn activate_for_recipient(", (
             "self.signed.activate_pinned_genesis(now_seconds)?", "!initial.receipts.is_empty()",
             "activated.verifier().trust_digest() != initial.owners.evidence_trust_digest",
@@ -76,6 +76,38 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.reject_removal(FILES, "fn read_original_payload(", "self.revalidate(service, initial)?", occurrence)
         self.reject_removal(FILES, "fn read_original_payload(", "self.require_original_ledger(ledger)?")
+
+    def test_root_enrollment_fixes_current_trust_before_profile_and_ack(self):
+        self.check_markers(AGENT + "authority_host_historical_read.rs", "fn open_original(", (
+            "service.with_learning_profile(", "RootHistoricalLearningTrustV1::open_original(",
+            "&deployment.learning_trust_deployment", "&initial", "&deployment.target",
+            "learning_trust: learning_trust.pin.clone()", "profile.binding = profile.digest()?",
+            "RootHistoricalLearningTrustV1::revalidate(&learning_trust, service, &initial)?"))
+
+    def test_both_read_operations_keep_whole_root_context_and_physical_refusal(self):
+        path = AGENT + "authority_host_historical_read.rs"
+        for occurrence in (0, 1, 2):
+            self.reject_removal(path, "fn observe_complete_task(",
+                                "RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?", occurrence)
+        self.check_markers(path, "fn observe_complete_task(", (
+            ".with_original_historical_task(service, end, |read|", "let (reply, initial) = service.with_learning_profile(",
+            "RootOriginalHistoricalTaskReadV1::observe_original_task(",
+            "RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger)?",
+            "publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed)",
+            "HistoricalReadOperationV1::LearningTrust", "reply.is_empty() || reply.len() > WIRE_BOUND"))
+
+    def test_trust_reply_is_exact_profile_cut_pin_and_original_bound(self):
+        self.check_markers(DATA, "fn require_original_trust_reply(", (
+            "bytes.is_empty() || bytes.len() > WIRE_BOUND", "!(1..=MAX_READS).contains(&request_id)",
+            "response.schema != 1", "response.purpose != TRUST_PURPOSE", "response.request_id != request_id",
+            "response.profile != profile", "&response.pin != expected", "canonical_digest(&response.data_cut)?",
+            "response.pin.require_initial(initial)?"))
+
+    def test_operation_selection_cannot_reset_sequence_or_absolute_end(self):
+        self.check_markers(AGENT + "authority_host_historical_read_runtime.rs", "fn serve_optional(", (
+            "HistoricalReadOperationV1::from_purpose(&request.purpose)", "request.request_id != sequence",
+            "!(1..=MAX_READS).contains(&sequence)", ".checked_add(1)", "let request_end = session_end",
+            ".min(Instant::now() + Duration::from_millis(config.timeout_ms))", "operation,"))
 
 
 if __name__ == "__main__":

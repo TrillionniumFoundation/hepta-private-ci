@@ -294,4 +294,4 @@ fn select(
 
 #[cfg(test)]
 #[path = "root_initial_learning_trust_data_tests.rs"]
-mod tests;
+pub(crate) mod tests;

@@ -8,7 +8,7 @@ use pretty_assertions::assert_eq;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
-fn payload() -> LearningTrustPayloadV1 {
+pub(crate) fn payload() -> LearningTrustPayloadV1 {
     let root = SigningKey::from_bytes(&[71; 32]);
     let scope = Digest32::of_bytes(b"component-ledger-scope").into_array();
     let signers = [
@@ -70,7 +70,7 @@ fn payload() -> LearningTrustPayloadV1 {
     }
 }
 
-fn sign(payload: &mut LearningTrustPayloadV1) -> Result<(), Box<dyn std::error::Error>> {
+pub(crate) fn sign(payload: &mut LearningTrustPayloadV1) -> Result<(), Box<dyn std::error::Error>> {
     let data = &payload.distribution;
     let signed = SignedLearningTrustDistributionV1 {
         root_id: StableId::new(&data.root_id)?,
