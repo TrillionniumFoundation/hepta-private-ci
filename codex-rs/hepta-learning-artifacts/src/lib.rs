@@ -147,6 +147,8 @@ pub use owner_host::ArtifactOwnerRecoveryV1;
 pub use owner_host::ArtifactOwnerTrustV1;
 pub use owner_host::ArtifactOwnerVerifierV1;
 pub use owner_host::LearningArtifactOwnerHost;
+pub use owner_host::OriginalArtifactPublicationReadbackErrorV1;
+pub use owner_host::OriginalArtifactPublicationReadbackV1;
 pub use owner_host::SignedArtifactWriterLeaseV1;
 pub use owner_host::SignedCurrentArtifactHeadV1;
 pub use owner_host::TrustedArtifactSignerV1;

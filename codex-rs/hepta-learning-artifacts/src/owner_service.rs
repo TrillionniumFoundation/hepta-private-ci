@@ -29,6 +29,9 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner_service_readback.rs"]
+mod readback;
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
     pub root: PathBuf,
