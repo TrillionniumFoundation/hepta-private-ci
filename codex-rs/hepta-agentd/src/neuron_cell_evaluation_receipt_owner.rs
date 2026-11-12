@@ -105,12 +105,18 @@ pub struct OriginalCellEvaluationReceiptSourcesV1<
     pub trainer: &'a LearningIterationEvidenceClientV1,
 }
 
+enum HostOrigin {
+    FreshCreate,
+    ReadbackOnly,
+}
+
 pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
     config: OriginalCellEvaluationReceiptConfigV1,
     key: SigningKey,
     execution: ProductEvaluationExecutionKeyV1,
     saved: ProductEvaluationExecutionKeyV1,
+    host_origin: HostOrigin,
 }
 
 impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
@@ -128,6 +134,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             key,
             execution,
             saved,
+            host_origin: HostOrigin::FreshCreate,
         })
     }
 
@@ -147,6 +154,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             key,
             execution,
             saved,
+            host_origin: HostOrigin::ReadbackOnly,
         })
     }
 
@@ -162,6 +170,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         &mut self,
         mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        // Any original attestation attempt consumes the host's fresh brand,
+        // including a known failure before signing.
+        self.host_origin = HostOrigin::ReadbackOnly;
         if now()? >= self.config.training.request.envelope.expiry_unix_seconds {
             return Err(OwnerError::Binding("new Evaluation attestation after deadline").into());
         }
@@ -229,6 +240,27 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         let bytes = self.journal.read(&self.saved)?;
         self.authenticate_completed(&mut source, prepared, &bytes)
             .await
+    }
+
+    pub(crate) fn original_host_profile(
+        &self,
+    ) -> (&OriginalCellEvaluationReceiptConfigV1, bool) {
+        (&self.config, matches!(self.host_origin, HostOrigin::ReadbackOnly))
+    }
+
+    /// Final physical read for the closed host, after its complete panel I/O.
+    /// This never claims, signs, restores missing state or renews a window.
+    pub(crate) fn require_original_host_completed(
+        &mut self,
+        receipt: &LearningIterationReceiptV1,
+        signed: &SignedLearningEvidenceV1,
+    ) -> Result<(), Error> {
+        let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
+        let expected = learning_owner_evidence::encode(&payload, signed)?;
+        if self.journal.read(&self.saved)? != expected {
+            return Err(OwnerError::CommitUncertain.into());
+        }
+        Ok(())
     }
 
     fn training(&self) -> Result<&LearningIterationReceiptV1, Error> {
@@ -492,4 +524,40 @@ fn now() -> Result<u64, OwnerError> {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs())
         .map_err(|_| OwnerError::Binding("original owner clock"))
+}
+
+impl OriginalCellEvaluationReceiptOwnerV1<codex_hepta_neuron::FileAnchorWitnessStore> {
+    /// Move this original Evaluator capability into the fixed panel host.
+    /// The private create/recover/attempt history determines execution versus
+    /// readback. The caller cannot select or reset that history.
+    pub fn into_original_evaluation_host(
+        self,
+        panel: crate::OriginalCellEvaluationPanelOwnerV1<
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+        >,
+    ) -> Result<crate::OriginalCellEvaluationHostV1, crate::OriginalCellEvaluationCommandErrorV1> {
+        crate::OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
+    }
+}
+
+#[cfg(test)]
+impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    /// Fail the real original claim before any signature. This fixture seam
+    /// exercises durable Pending; it never creates a completed receipt.
+    pub(crate) fn fixture_pending_original_host(&mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(matches!(
+            self.journal.read(&self.saved),
+            Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)),
+        ));
+        self.host_origin = HostOrigin::ReadbackOnly;
+        let result = self.journal.commit_once(&self.saved, || {
+            Err(OwnerError::Binding("explicit test failure after original claim"))
+        });
+        anyhow::ensure!(matches!(result, Err(OwnerError::Binding(_))));
+        anyhow::ensure!(matches!(self.journal.read(&self.saved), Err(OwnerError::Pending)));
+        Ok(())
+    }
 }

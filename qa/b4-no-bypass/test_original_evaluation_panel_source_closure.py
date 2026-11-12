@@ -20,12 +20,16 @@ CORE = AGENT + "neuron_cell_evaluation_panel.rs"
 CONTRACT = AGENT + "neuron_cell_evaluation_panel_contract.rs"
 MEMBER = AGENT + "neuron_cell_evaluation_panel_member.rs"
 BINDING = AGENT + "neuron_cell_evaluation_panel_binding.rs"
+PROVIDER = AGENT + "circuit_original_evaluation_provider.rs"
 EXPECTED = {
     "cell_generation_original_physical_current": (MEMBER,),
     "learning_original_evaluation_panel_registration": (),
     "learning_original_evaluation_panel_owner": (),
-    "learning_original_evaluation_panel_current": (),
+    "learning_original_evaluation_panel_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
     "learning_original_evaluation_panel_member_current": (CORE,),
+    "learning_original_evaluation_cohort_readback_current": (PROVIDER, MEMBER),
+    "learning_original_evaluation_cohort_member_binding": (BINDING,),
+    "learning_original_evaluation_cohort_final_authentication": (MEMBER,),
 }
 
 
@@ -154,14 +158,15 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
                 self.verifies(MEMBER, (ROOT / MEMBER).read_text() + "\nfn bypass() { " + effect + "; }\n")
 
     def test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms(self):
-        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel().await"):
-            self.rejects(CORE, "fn read_current(", marker)
+        self.rejects(CORE, "fn read_current(", "self.read_current_with_clock(original::now).await")
+        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock).await"):
+            self.rejects(CORE, "fn read_current_with_clock(", marker)
         for marker in (
-            "let before = self.read_members().await?",
-            "let after = self.read_members().await?",
+            "let before = self.read_members(clock).await?",
+            "let after = self.read_members(clock).await?",
             "if before != after",
             "self.require_observed_panel(&after)?",
-            "let current = original::now()?",
+            "let current = clock()?",
             "original::clock_time(started_at, current)?",
             "self.primary.authenticate(&after[0], current)?",
             "owner.authenticate(observed, current)?",
@@ -169,7 +174,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         ):
             self.rejects(CORE, "fn read_original_panel(", marker)
         for marker in (
-            "let current = original::now()?",
+            "let current = clock()?",
             "original::clock_time(started_at, current)?",
             "self.authenticate(&observed, current)?",
         ):
@@ -195,6 +200,61 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         ):
             with self.assertRaises(PROOF.VerificationFailure):
                 self.verifies(CONTRACT, (ROOT / CONTRACT).read_text() + "\n" + addition + "\n")
+
+    def test_each_member_consumes_exact_original_cohort_custody(self):
+        self.verifies(MEMBER, (ROOT / MEMBER).read_text())
+        with self.assertRaises(PROOF.VerificationFailure):
+            self.verifies(
+                MEMBER,
+                (ROOT / MEMBER).read_text().replace(
+                    "pub cohort: OriginalCircuitEvaluationCohortReadbackV1",
+                    "pub cohort: Option<OriginalCircuitEvaluationCohortReadbackV1>",
+                    1,
+                ),
+            )
+        for marker in (
+            "OriginalCircuitEvaluationCohortReadbackV1::require_original_member(",
+            "&member.cohort,",
+            "registration,",
+            "task,",
+            "&config.training,",
+            "&config.scope,",
+            "&config.plan,",
+            "&config.training_evidence,",
+            "&config.verifier,",
+        ):
+            self.rejects(BINDING, "fn validate_original_members(", marker)
+        self.rejects(BINDING, "fn seal_observed_panel(", "member.cohort.binding()")
+        for addition in (
+            "pub async fn read_current_with_clock() {}",
+            "pub(crate) async fn read_current_with_clock() {}",
+            "pub(super) async fn read_current_with_clock() {}",
+        ):
+            with self.assertRaises(PROOF.VerificationFailure):
+                self.verifies(CORE, (ROOT / CORE).read_text() + "\n" + addition + "\n")
+
+    def test_original_cohort_current_brackets_all_members_before_final_clock(self):
+        self.rejects(MEMBER, "fn read_original(", "let started_at = original::now()?")
+        for marker in (
+            "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+            "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+            "cohort_before != cohort_after",
+            "cohort: cohort_after",
+            "let current = clock()?",
+            "original::clock_time(started_at, current)?",
+        ):
+            self.rejects(MEMBER, "fn read_original(", marker)
+        for marker in (
+            "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+            "&mut self.cohort,",
+            "&observed.cohort,",
+        ):
+            self.rejects(MEMBER, "fn authenticate(", marker)
+        self.rejects(
+            CORE,
+            "fn read_original_panel(",
+            "self.retention.iter_mut().zip(after.iter().skip(1))",
+        )
 
 
 if __name__ == "__main__":

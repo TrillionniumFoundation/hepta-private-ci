@@ -23,6 +23,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
+HOST = AGENT + "neuron_cell_evaluation_host.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
@@ -63,6 +64,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 *cls.boundaries[identifier].product_callers,
             )
         }
+        paths.add(HOST)
         cls.sources = {
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
@@ -130,7 +132,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             with self.subTest(boundary=identifier):
                 self.assertIn(identifier, inventory)
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, ())
+                expected = (HOST,) if suffix in ("attest", "readback") else ()
+                self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
                 self.reject_unregistered_caller(row)
         for identifier in (

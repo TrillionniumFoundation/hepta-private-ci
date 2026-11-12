@@ -55,7 +55,7 @@ EXPECTED = {
     "root_resident_final_observation": [
         "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
     ],
-    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"],
+    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"],
     "root_resident_gate_training_cancel": [
         "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
     ],
@@ -100,7 +100,8 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
     "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
     "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
-    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback"
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
 ]
 
 class ResidentRootSourceClosureTests(unittest.TestCase):
@@ -337,9 +338,19 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.assertTrue(set(ROOT_CASES).issubset(parents))
         self.assertEqual(len(parents), 7 + len(ROOT_CASES))
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
+        evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_evaluation_tests.rs"]\nmod evaluation;',
+            roots,
+        )
         for name in ROOT_CASES:
-            self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", roots)
-        self.assertEqual(roots.count('#[ignore = "explicit actual Root'), len(ROOT_CASES))
+            source = evaluation if "::evaluation::" in name else roots
+            self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
+        self.assertEqual(
+            roots.count('#[ignore = "explicit actual Root')
+            + evaluation.count('#[ignore = "explicit actual Root'),
+            len(ROOT_CASES),
+        )
         for marker in (
             '"codex-rs/hepta-neuron/**"', '"-p", "codex-hepta-neuron"',
             '"codex-rs/hepta-neuron/"', "  caller-proof:",

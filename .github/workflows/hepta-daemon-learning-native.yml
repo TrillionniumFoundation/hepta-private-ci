@@ -89,6 +89,7 @@ jobs:
               "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
               "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
               "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+              "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
                       "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",

@@ -12,6 +12,7 @@ use super::OriginalCellEvaluationPanelOwnerV1;
 use super::OriginalCellEvaluationPanelReadbackV1;
 use super::OriginalCellEvaluationPanelRegistrationV1;
 use super::original;
+use crate::OriginalCircuitEvaluationCohortReadbackV1;
 
 impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: AnchorWitnessStore>
     OriginalCellEvaluationPanelOwnerV1<C, F, X, Q>
@@ -40,6 +41,16 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         let tasks = std::iter::once(registration.primary()).chain(registration.retention());
         for (index, (member, task)) in members.zip(tasks).enumerate() {
             let config = &member.qualification.config;
+            OriginalCircuitEvaluationCohortReadbackV1::require_original_member(
+                &member.cohort,
+                registration,
+                task,
+                &config.training,
+                &config.scope,
+                &config.plan,
+                &config.training_evidence,
+                &config.verifier,
+            )?;
             let saved = original::validate_config(config)?;
             let record = config.plan.record();
             if member.qualification.saved != saved
@@ -131,6 +142,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             let product = member.qualification.product();
             for digest in [
                 *binding,
+                member.cohort.binding(),
                 member.cells[0],
                 member.cells[1],
                 product.temporal_execution_digest,

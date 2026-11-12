@@ -330,7 +330,6 @@ RETAINED_PUBLICATION_CASES = tuple(
 ORIGINAL_EVALUATION_PROVIDER_PREFIX = (
     MODEL_SELECTION_PREFIX + "original::evaluation_provider::"
 )
-
 ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
     ORIGINAL_EVALUATION_PROVIDER_PREFIX + name
     for name in (
@@ -340,9 +339,32 @@ ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX = (
+    ORIGINAL_EVALUATION_PROVIDER_PREFIX + "panel_members::"
+)
+ORIGINAL_EVALUATION_PANEL_MEMBER_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + name
+    for name in (
+        "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+        "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+    )
+)
+
+ORIGINAL_EVALUATION_HOST_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::" + name
+    for name in (
+        "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+    )
+)
+
 OWNER_GROUPS = (
-    ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
+    ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
+    ("original_evaluation_panel_members", PACKAGE, ORIGINAL_EVALUATION_PANEL_MEMBER_CASES),
+    ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
     ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),
     ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),

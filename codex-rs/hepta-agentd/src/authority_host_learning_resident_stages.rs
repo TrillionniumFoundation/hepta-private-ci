@@ -55,8 +55,8 @@ impl ResidentOriginalStageOwnersV3 {
     }
 
     /// A branch choice neither adds a producer nor expands the original Root
-    /// grant. Candidate Evaluation contacts its real material owner, then
-    /// explicitly refuses until the independent B/Outcome/Evaluator path exists.
+    /// grant. Candidate Evaluation contacts its original material and the
+    /// separately delivered original B/retention Evaluator command capability.
     pub(super) fn require_stage(&self, stage: Stage) -> Result<(), Error> {
         match stage {
             Stage::Proposal => Err(Error::OwnerUnavailable(

@@ -15,6 +15,7 @@ use super::Error;
 use super::super::Prepared;
 use crate::CellEvaluationQualificationV1;
 use crate::CellEvaluationReceiptV1;
+use crate::OriginalCircuitEvaluationCohortCurrentV1;
 
 pub(super) const MAX_RETENTION_TASKS: usize = 16;
 
@@ -94,6 +95,7 @@ pub struct OriginalCellEvaluationPanelMemberReadbackV1 {
     pub(super) execution_evidence: OriginalProductEvaluationExecutionEvidenceV1,
     pub(super) cells: [Digest32; 2],
     pub(super) scopes: [CellGenerationScopeV2; 2],
+    pub(super) cohort: OriginalCircuitEvaluationCohortCurrentV1,
 }
 
 impl OriginalCellEvaluationPanelMemberReadbackV1 {

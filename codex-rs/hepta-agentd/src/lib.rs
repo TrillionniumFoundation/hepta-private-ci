@@ -1384,6 +1384,10 @@ mod authority_host_learning_service_root_tests;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortConfigV1;
 #[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortCurrentV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortReadbackV1;
+#[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortRuleV1;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortV1;
@@ -1399,3 +1403,14 @@ pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationSourceV1;
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationTargetV1;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitFinalHoldoutProviderV1;
+
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandConnectionV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandErrorV1;

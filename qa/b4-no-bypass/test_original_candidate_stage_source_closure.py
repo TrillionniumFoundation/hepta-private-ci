@@ -32,12 +32,12 @@ EXPECTED = {
     "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_candidate_initial_binding": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
     "learning_original_candidate_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
-    "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
+    "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
     "learning_original_candidate_stage_create": (),
     "learning_original_candidate_stage_recover": (),
     "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_candidate_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
-    "learning_original_candidate_stage_current_material": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
+    "learning_original_candidate_stage_current_material": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
 }
 
 
@@ -111,6 +111,15 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             "peer.lifetime.is_zero()",
             "peer.lifetime > Duration::from_secs(300)",
             "admitted_at.checked_add(peer.lifetime)",
+            "evaluator.peer.actor_id != material.initial.owners.evaluator",
+            "evaluator.timeout.is_zero()",
+            "evaluator.timeout > Duration::from_secs(30)",
+            "evaluator.lifetime.is_zero()",
+            "evaluator.lifetime > Duration::from_secs(300)",
+            "admitted_at.checked_add(evaluator.lifetime)",
+            "OriginalCellEvaluationCommandConnectionV1::from_original_stream(",
+            "OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(",
+            "let end = end.min(evaluator_end)",
             "OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(",
             "OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(",
             "OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(",
@@ -176,6 +185,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
 
     def test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success(self):
         for marker in (
+            "mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh",
             "if lane.failed",
             "lane.failed = true",
             "lane.retained = Some(identity)",
@@ -194,7 +204,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
         self.rejects(CORE, "fn install_fresh_resident_gate(", "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(")
 
     def test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority(self):
-        self.rejects(CORE, "fn execute_stage<'a>", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(")
+        self.rejects(CORE, "fn execute_stage<'a>", "self.execute_original_evaluation(snapshot).await")
         self.rejects(CORE, "fn execute_stage<'a>", "snapshot.training_no_update_v2().is_none()")
         self.rejects(
             CORE, "fn execute_stage<'a>",
