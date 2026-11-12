@@ -1,0 +1,5 @@
+# Root B original-purpose serving and typed daemon reader
+
+This archive preserves exact Git objects for the owned Root B server, sealed two-rights handoff and original-session daemon client. The server wraps the native private B custodian in the original Root context and per-frame deadline; it exposes bounded data and signed evidence only. The daemon connects with Observe, then uses distinct Complete and Readback methods. Both stage methods require the actual synchronous Trainer borrow and check its current source before and after the request. Readback never executes a missing B outcome.
+
+The isolated source has an explicit integration dependency on ordinary source 335de717 for the actual Trainer borrow. Formatter and whitespace checks succeeded. These B stages have not been compiled or run natively; they do not establish ordinary entrypoint reachability or a whole-chain result. Root integration and main/Model assembly are subsequent work. Complete positive, NoUpdate and daemon plus Root cold restart counts remain zero.
