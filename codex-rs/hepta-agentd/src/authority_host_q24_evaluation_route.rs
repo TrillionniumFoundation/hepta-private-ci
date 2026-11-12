@@ -19,6 +19,9 @@ pub(crate) use serve::serve_optional_until;
 #[path = "authority_host_q24_evaluation_source_route.rs"]
 mod source_route;
 use source_route::OriginalBSourceRoute;
+#[path = "authority_host_q24_evaluation_source_flow.rs"]
+mod source_flow;
+use source_flow::OriginalBSourceFlow;
 
 pub struct RootIndependentBEvaluationOfferV1 {
     pub(crate) bootstrap: File,
