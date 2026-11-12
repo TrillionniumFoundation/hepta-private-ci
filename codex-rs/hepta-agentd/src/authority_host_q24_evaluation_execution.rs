@@ -29,6 +29,9 @@ use super::protocol::OriginalBProtocolData;
 use super::record::OriginalBEnrollment;
 use super::record::OriginalBOutputHeads;
 
+#[path = "authority_host_q24_evaluation_execute.rs"]
+mod execute;
+
 pub(super) struct OriginalBCompleted {
     pub(super) training: LearningIterationSnapshotV1,
     pub(super) training_attestation: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
