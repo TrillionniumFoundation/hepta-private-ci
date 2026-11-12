@@ -167,6 +167,12 @@ impl HostAuthorityLearningProfileV1 {
     pub(crate) fn encoded_initial(&self) -> &str {
         &self.initial_snapshot
     }
+
+    /// Immutable data for selecting an already registered operation's refusal
+    /// slot before live Root I/O. This is not a writer or execution admission.
+    pub(crate) fn original_initial_data(&self) -> io::Result<LearningIterationSnapshotV1> {
+        decode_initial(&self.initial_snapshot)
+    }
 }
 
 /// Separate sealed handoff. It changes neither the original five-lane schema

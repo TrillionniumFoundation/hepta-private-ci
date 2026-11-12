@@ -1,6 +1,6 @@
-//! Arm the original operation before publication data is opened. The first
-//! context only fixes immutable registration data; the second performs every
-//! primary/physical read and its complete original writer postchecks in the arm.
+//! Select only immutable data from the already registered Root learning owner,
+//! then arm before any live Root proof, primary or physical read. The complete
+//! original writer context and its postchecks are inside the same durable arm.
 
 use std::time::Instant;
 
@@ -22,17 +22,9 @@ impl HostAuthorityService {
     ) -> io::Result<RegisteredGenerationPublication> {
         original_root()?;
         require_end(end)?;
-        let binding = self.with_learning_profile(
-            config,
-            registration,
-            owner,
-            &learning.profile,
-            |initial, _proof| {
-                let scope = learning.profile.require_cell_scope(&initial)?;
-                PublicationRefusalBinding::from_original(&initial, &scope, &inputs, version)
-            },
-        )?;
-        require_end(end)?;
+        let initial = learning.profile.original_initial_data()?;
+        let scope = learning.profile.require_cell_scope(&initial)?;
+        let binding = PublicationRefusalBinding::from_original(&initial, &scope, &inputs, version)?;
         PublicationRefusal::enroll(
             Arc::clone(&inputs.current_directory),
             binding,
