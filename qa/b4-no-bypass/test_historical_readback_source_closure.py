@@ -17,6 +17,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 READER = "codex-rs/hepta-intelligence-eval/src/product_execution_readback.rs"
+PHYSICAL = "codex-rs/hepta-intelligence-eval/src/product_execution_physical.rs"
 SOURCE = "codex-rs/hepta-agentd/src/circuit_task_source_history.rs"
 WITNESS = "codex-rs/hepta-neuron/src/witness.rs"
 
@@ -53,9 +54,13 @@ class HistoricalSourceReadbackClosureTests(unittest.TestCase):
 
     def test_exact_witnessed_terminal_cut_is_required(self):
         self.rejects_removal(READER, "fn open(", (
-            "snapshot(&mut file)?", "&bytes[8..40] != binding.as_array()",
+            "snapshot(&mut file)?", "physical::replay_image(&bytes, binding, exact)?",
+            "if replayed.anchor != exact", "return Err(FileError::Rollback)",
+        ))
+        self.rejects_removal(PHYSICAL, "fn replay_image(", (
+            "&bytes[8..40] != binding.as_array()",
             "if checksum != next.history_digest.as_array()", "replay(&mut records, payload)?",
-            "if anchor != exact", "return Err(FileError::Rollback)",
+            "if !witnessed", "return Err(FileError::Rollback)",
         ))
 
     def test_every_cached_result_checks_physical_bytes_and_retains_failure(self):
@@ -67,9 +72,12 @@ class HistoricalSourceReadbackClosureTests(unittest.TestCase):
 
     def test_shared_read_is_bounded_and_releases_its_lock(self):
         self.rejects_removal(READER, "fn snapshot(", (
-            "file.try_lock_shared()", "if !metadata.is_file()", "if length > MAX_FILE_BYTES",
-            ".take(MAX_FILE_BYTES + 1)", "file.metadata().map_err(io_error)?.len() != length",
+            "file.try_lock_shared()", "physical::read_stable_image(file)",
             "file.unlock().map_err(io_error)", "unlocked?",
+        ))
+        self.rejects_removal(PHYSICAL, "fn read_stable_image(", (
+            "if !metadata.is_file()", "if length > MAX_FILE_BYTES",
+            ".take(MAX_FILE_BYTES + 1)", "file.metadata().map_err(io_error)?.len() != length",
         ))
 
     def test_source_reconstructs_the_original_complete_request(self):
@@ -109,7 +117,7 @@ class HistoricalSourceReadbackClosureTests(unittest.TestCase):
         ))
 
     def test_readers_cannot_acquire_writer_or_signing_operations(self):
-        for path in (READER, SOURCE):
+        for path in (READER, SOURCE, PHYSICAL):
             for forbidden in (".write_all(", ".sync_data(", ".compare_and_swap(",
                               ".claim(", ".complete(", "SigningKey", "into_inner"):
                 with self.subTest(path=path, marker=forbidden):
