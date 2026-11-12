@@ -1,0 +1,114 @@
+{
+  "assembly_parent": "d4dfbd23450db8b24b064125a35dfa17ca87ccd5",
+  "inputs": {
+    "c2": "fd414256c0e2ac36caab565ff6ebae1ffb920757",
+    "hpca": "92ab69cc8309a5d94b5c77ec347cf15eb51edbad",
+    "refractory": "9bd49f1a83801c327f795d814b74a313011bcfa8",
+    "spatial": "d4dfbd23450db8b24b064125a35dfa17ca87ccd5"
+  },
+  "production_qualified": false,
+  "schema": "hcsn-hpca-joint-source-gate-v1",
+  "scope": "one concrete source assembly; structural and research mechanism checks, not model efficacy or independent C2 replay",
+  "sources": [
+    {
+      "git_blob": "8db869fa0e743393e8c39f8d08181c2608aa2601",
+      "path": "qualification/hcsn_boundary_audit/probe_refractory_transport.py",
+      "sha256": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be"
+    },
+    {
+      "git_blob": "045dd6f41c117e68e54d787f1d9f748bd4640362",
+      "path": "qualification/hcsn_boundary_audit/probe_spatial_generator.py",
+      "sha256": "607f7ccc351f5460e3ad3af6c07cdac4311e96394d53a18711e1890975de0068"
+    },
+    {
+      "git_blob": "f06253382882042c23f30593afa93357c17725da",
+      "path": "qualification/hcsn_boundary_audit/refractory_transport.py",
+      "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    },
+    {
+      "git_blob": "50aae1665910b12373854d80de9aaf7e32db8467",
+      "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+      "sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+    },
+    {
+      "git_blob": "0356decabd3a9b8a67c246f2d77a760ac1b74c53",
+      "path": "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py",
+      "sha256": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b"
+    },
+    {
+      "git_blob": "0a311fc105bacba11195e1a201457c3ea9af3f87",
+      "path": "qualification/hcsn_boundary_audit/test_refractory_transport.py",
+      "sha256": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc"
+    },
+    {
+      "git_blob": "c3ede2827aa5aa71cb0e9d22b3c78c1f57ec6d2c",
+      "path": "qualification/hcsn_boundary_audit/test_spatial_generator.py",
+      "sha256": "611533442541d3b07d991ff0117f9fa38961610fe6e453590bb1d81907ee9381"
+    },
+    {
+      "git_blob": "75abb706f8380d713df737fcc9c4f5203ab7d904",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py",
+      "sha256": "932739d439d87bdc8aee6ce49555aab118abb7ad0efcfaaf4c96ba612263d01b"
+    },
+    {
+      "git_blob": "9bc26f04b46ea72c11896a17f9ecd5ec687eda5b",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_io.py",
+      "sha256": "355712a5b5c1fd9d3413988fa52832aaa97e2da3b417d8961f0ae19b2324fddb"
+    },
+    {
+      "git_blob": "50aa3f3b6c4f274b916bba0f0e29032f772a7610",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_recording.py",
+      "sha256": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0"
+    },
+    {
+      "git_blob": "5778b49263390c2cce69c4b963ed7d219813e5d6",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py",
+      "sha256": "895200625f1623df5381f2852e78b3d617f313793f77241237c17b35a6dc328b"
+    },
+    {
+      "git_blob": "ea4e316053c3d48901c19559642c6db3d2f9b909",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py",
+      "sha256": "2441a203001e7c7d15e53284ba162a49dd5203754d19a65b4b561dd28a18de2e"
+    },
+    {
+      "git_blob": "6563ab3b489bb9e44a922ce6d4c35d416978a9a2",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py",
+      "sha256": "541d62cd1eab58f884c1aa7453e9ba6b9fceb65dbdfccb8bef82ea08a44f259a"
+    },
+    {
+      "git_blob": "00991ce920d8dc73d061102323e089ba87f6b37e",
+      "path": "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py",
+      "sha256": "9d587c2e0fa883e0de9bc90cd3413de1eeef9fd0a634907d613e8da43891dd27"
+    },
+    {
+      "git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "path": "qualification/hpca-neuroscience-20261110/chat_wrapper_probe.py",
+      "sha256": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28"
+    },
+    {
+      "git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "path": "qualification/hpca-neuroscience-20261110/freegen_contract.py",
+      "sha256": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b"
+    },
+    {
+      "git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "path": "qualification/hpca-neuroscience-20261110/native_lora_ood_probe.py",
+      "sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8"
+    },
+    {
+      "git_blob": "1208825572e493015d4de4c949ac29064df54214",
+      "path": "qualification/hpca-neuroscience-20261110/real_freegen.py",
+      "sha256": "230d94cd184f6127d78d5c5671d8b7095307c61b366eb873a73fcc34c4c1056d"
+    },
+    {
+      "git_blob": "a932a8dbac2cfeb888e035bef2cc068045c2542d",
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py",
+      "sha256": "5fad5329a12fb895a2a36427fe0b70957ef1bf6a4b789f70762c0a81b4441a63"
+    },
+    {
+      "git_blob": "a65244dbbc8990f780b160c3f5f4aebedf8019e9",
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_wrapper_probe.py",
+      "sha256": "a48f5d78ee61889885435f617be8e0af2e0eac15d18d135eb61b100429177d89"
+    }
+  ]
+}
