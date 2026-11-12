@@ -15620,14 +15620,6 @@ sequence = ["require_end(end)?", "self.require_original_metadata()?", "initial !
 function = "fn require_original_task("
 sequence = ["publication.input()", "let request = &self.initial.request", "input.scope.agent_id != request.agent_id", "input.scope.cell_id != request.cell_id", "input.scope.run_id != request.source_run_id", "input.scope.principal_digest.to_string() != request.principal_id.as_str()", "input.objective_digest != request.envelope.objective_digest", "publication.original_record().snapshot.run_id != input.scope.run_id", "publication.original_record().snapshot.objective_digest != input.objective_digest", "publication.history_digest().as_str() != request.completed_task_receipt.to_string()", "publication.bundle_digest() != self.plan.projection.baseline_bundle", "Ok(())"]
 
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs"
-required = []
-forbidden = ["OriginalCompletedLearningContextV1", "OriginalPreparedReadV1", "OriginalQ24TrainingOperationV1", "tokio::select!", "SigningKey", "unsafe impl"]
-[[protected_file.required_function_order]]
-function = "fn accept_original_terminal("
-sequence = ["require_complete(self, snapshot)?", "require_ready(state).map_err(refused)?", "state.identity() != &self.identity || Instant::now() >= self.end", "terminal_acceptance", "try_lock()", "take()", "tokio::task::spawn_blocking(move ||", "OriginalCompletedLearningAcceptanceV1::accept(", "original,", "await", "require_ready(state).map_err(refused)?", "state.identity() != &self.identity", "Instant::now() >= self.end", "accepted.initial != self.prepared.initial().head_digest.to_string()", "accepted.frozen_scope != self.prepared.scope().binding().to_string()", "accepted.terminal_head != snapshot.head_digest.to_string()", "Ok(())"]
-
 [[boundary]]
 id = "q24_completed_history_config_install"
 symbol = "AgentdConfig::with_original_q24_completed_history"
@@ -15671,3 +15663,12 @@ forbidden = ["SigningKey", "LearningIterationCheckpointOwnerV1", "LearningOwnerJ
 [[protected_file.required_function_order]]
 function = "fn completed_learning_operation("
 sequence = ["require_end(end)?", "self.deployment.initial.original_initial_data()?", "RootAuthorityDirectory::open(&config.state_dir)", "HistoricalReadOperationV1::AcceptCompletedLearning if fixed.is_fresh()", "OriginalCompletedPublicationModeV1::AcceptedPublication", "HistoricalReadOperationV1::CaptureCompletedHistory", "fixed.data.mode == CompletedMode::CaptureRetired", "HistoricalReadOperationV1::ReadCompletedHistory", "fixed.data.mode == CompletedMode::ReadFinalized", "fixed.completion_phase.load(Ordering::Acquire) == 2", "OriginalCompletedPublicationModeV1::ReadFinalized", "compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire)", "fixed.original.as_ref()", "CompletedLearningRecord::accept(", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "self.observe_completed_learning(", "None,", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "checked.fact.clone()", "CompletedLearningRecord::read(", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "fact.deployment != fixed.binding.to_string()", "CompletedFiles::retain_original(", "self.observe_completed_learning(", "Some(fact),", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "result", "require_end(end)?", "compare_exchange(1, 2, Ordering::AcqRel, Ordering::Acquire)", "checked.publication.successor.is_some()", "CompletedLearningAcceptanceResponseV1 {", "identity_digest: self.profile.identity.clone()", "root_profile: self.profile.binding.clone()", "initial: initial.head_digest.to_string()", "terminal_head: checked.fact.terminal_head", "successor_record: successor.record_digest.clone()", "completion.validate_data()", "CompletedLearningHistoryResponseV1 {", "reply.is_empty() || reply.len() > WIRE_BOUND", "require_end(end)?", "Ok(reply)"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs"
+required = []
+forbidden = ["OriginalCompletedLearningContextV1", "OriginalPreparedReadV1", "OriginalQ24TrainingOperationV1", "tokio::select!", "SigningKey", "unsafe impl"]
+[[protected_file.required_function_order]]
+function = "fn accept_original_terminal("
+sequence = ["require_complete(self, snapshot)?", "require_ready(state).map_err(refused)?", "state.identity() != &self.identity || Instant::now() >= self.end", "terminal_acceptance", "try_lock()", "take()", "tokio::task::spawn_blocking(move ||", "OriginalCompletedLearningAcceptanceV1::accept(", "original,", "await", "require_ready(state).map_err(refused)?", "OriginalCompletedLearningAcknowledgementV1::data(&accepted)", "state.identity() != &self.identity", "Instant::now() >= self.end", "data.initial != self.prepared.initial().head_digest.to_string()", "data.frozen_scope != self.prepared.scope().binding().to_string()", "data.terminal_head != snapshot.head_digest.to_string()", "AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?", "Ok(())"]
+top_level = ["AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?"]

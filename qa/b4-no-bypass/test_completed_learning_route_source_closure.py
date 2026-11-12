@@ -50,6 +50,16 @@ def require_metadata_inside_terminal_attempt(source):
             raise PROOF.VerificationFailure("physical metadata must remain inside both terminal attempts")
 
 
+def require_ack_install_is_last(source):
+    code, _ = route.function(source, "fn accept_original_terminal(")
+    marker = "AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?;"
+    if code.count(marker) != 1:
+        raise PROOF.VerificationFailure("one actual original acknowledgement install required")
+    tail = code[code.index(marker) + len(marker):]
+    if re.sub(r"\s+", "", tail) != "Ok(())}":
+        raise PROOF.VerificationFailure("no fallible operation may follow acknowledgement publication")
+
+
 class CompletedLearningRouteSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -155,9 +165,11 @@ class CompletedLearningRouteSourceClosure(unittest.TestCase):
             "require_complete(self, snapshot)?;", "require_ready(state).map_err(refused)?;",
             "state.identity() != &self.identity || Instant::now() >= self.end",
             "try_lock()", "take()", "OriginalCompletedLearningAcceptanceV1::accept(",
-            "accepted.initial != self.prepared.initial().head_digest.to_string()",
-            "accepted.frozen_scope != self.prepared.scope().binding().to_string()",
-            "accepted.terminal_head != snapshot.head_digest.to_string()",
+            "OriginalCompletedLearningAcknowledgementV1::data(&accepted)",
+            "data.initial != self.prepared.initial().head_digest.to_string()",
+            "data.frozen_scope != self.prepared.scope().binding().to_string()",
+            "data.terminal_head != snapshot.head_digest.to_string()",
+            "AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?;",
         ):
             with self.subTest(marker=marker):
                 self.reject("learning_iteration_terminal_acceptance", marker)
@@ -185,6 +197,13 @@ class CompletedLearningRouteSourceClosure(unittest.TestCase):
                     mutant = source.replace(marker, "", 1).replace(position, marker + position, 1)
                     with self.assertRaises(PROOF.VerificationFailure):
                         require_metadata_inside_terminal_attempt(mutant)
+
+    def test_actual_ack_install_is_the_final_fallible_step(self):
+        source = (ROOT / A / "learning_iteration_terminal_acceptance.rs").read_text()
+        require_ack_install_is_last(source)
+        marker = "AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?;"
+        with self.assertRaises(PROOF.VerificationFailure):
+            require_ack_install_is_last(source.replace(marker, marker + "\nrequire_ready(state).map_err(refused)?;", 1))
 
     def test_actual_new_and_old_closed_calls_are_in_inventory(self):
         selected = [r for r in PROOF._boundary_rows(self.manifest) if r.identifier in NEW + UNIONS]
