@@ -19,6 +19,11 @@ impl HistoricalTaskReadRuntime {
             .post_a
             .as_ref()
             .ok_or_else(|| io::Error::other("original post-A deployment missing"))?;
+        let session_end = self
+            .post_a_worker
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original post-A worker missing"))?
+            .original_session_end(end)?;
         let (installation, reply) =
             RootRetainedHistoricalCompleteTaskV1::with_original_historical_task(
                 &self.task,
@@ -94,6 +99,7 @@ impl HistoricalTaskReadRuntime {
                         &observed,
                         &self.learning_trust,
                         end,
+                        session_end,
                     )?;
                     let reply = serde_json::to_vec(&PostAFrozenLearningResponseV1 {
                         schema: 1,

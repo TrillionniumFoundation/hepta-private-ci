@@ -45,6 +45,7 @@ struct Submission {
 struct OriginalInputs {
     learning_handoff: UnixDatagram,
     model_handoff: UnixDatagram,
+    publication_handoff: Option<UnixDatagram>,
     root_pidfd: OwnedFd,
     receiver: mpsc::Receiver<Submission>,
 }
@@ -63,6 +64,7 @@ pub(super) fn prepare(
     learning_handoff: UnixDatagram,
     model_handoff: UnixDatagram,
     root_pidfd: OwnedFd,
+    publication_handoff: Option<UnixDatagram>,
 ) -> io::Result<(PostALearningSubmitter, PostALearningWorker)> {
     original_root()?;
     let gate = Arc::new(InstallationGate {
@@ -84,12 +86,28 @@ pub(super) fn prepare(
             inputs: Mutex::new(Some(OriginalInputs {
                 learning_handoff,
                 model_handoff,
+                publication_handoff,
                 root_pidfd,
                 receiver,
             })),
             gate,
         },
     ))
+}
+
+impl PostALearningWorker {
+    pub(super) fn original_session_end(&self, request_end: Instant) -> io::Result<Instant> {
+        let end = *self
+            .gate
+            .session_end
+            .get()
+            .ok_or_else(|| io::Error::other("original post-A worker is not serving"))?;
+        self.gate.require_original(end)?;
+        if request_end > end || self.gate.phase.load(Ordering::Acquire) != SERVING {
+            return Err(io::Error::other("original post-A serving interval differs"));
+        }
+        Ok(end)
+    }
 }
 
 impl InstallationGate {
@@ -240,6 +258,8 @@ fn run_installation(
         learning_bootstrap,
         model_offer,
         publication,
+        publication_offer,
+        publication_deployment,
         frozen_scope,
     } = submission.installation;
     if learning.q24_model.is_none()
@@ -252,6 +272,14 @@ fn run_installation(
     {
         return Err(io::Error::other(
             "original post-A frozen learning or Model owner differs",
+        ));
+    }
+    if publication.is_some() != publication_offer.is_some()
+        || publication.is_some() != publication_deployment.is_some()
+        || publication.is_some() != inputs.publication_handoff.is_some()
+    {
+        return Err(io::Error::other(
+            "original post-A publication inputs differ",
         ));
     }
     let bound = super::super::learning::BoundLearning::bind(learning, config, publication)?;
@@ -280,6 +308,17 @@ fn run_installation(
         remaining()?,
     )
     .map_err(io::Error::other)?;
+    if let (Some(handoff), Some(offer)) = (inputs.publication_handoff, publication_offer) {
+        gate.require_original(end)?;
+        owner_alive(owner, end)?;
+        crate::send_root_generation_publication_handoff(
+            handoff,
+            offer,
+            &inputs.root_pidfd,
+            remaining()?,
+        )
+        .map_err(io::Error::other)?;
+    }
     gate.require_original(end)?;
     verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
     gate.phase
@@ -292,23 +331,28 @@ fn run_installation(
         .try_send(())
         .map_err(|_| io::Error::other("original post-A installation acknowledgement lost"))?;
     gate.require_original(end)?;
-    super::super::learning::serve_optional_until(
-        Some(&bound),
-        service,
-        config,
-        registration,
-        owner,
-        session_end,
-        || {
-            while gate.phase.load(Ordering::Acquire) != CLOSED {
-                gate.require_original(session_end)?;
-                owner_alive(owner, session_end)?;
-                std::thread::sleep(Duration::from_millis(5));
-            }
-            Ok(())
-        },
-    )
+    publication::serve_original_material(publication_deployment, gate, || {
+        super::super::learning::serve_optional_until(
+            Some(&bound),
+            service,
+            config,
+            registration,
+            owner,
+            session_end,
+            || {
+                while gate.phase.load(Ordering::Acquire) != CLOSED {
+                    gate.require_original(session_end)?;
+                    owner_alive(owner, session_end)?;
+                    std::thread::sleep(Duration::from_millis(5));
+                }
+                Ok(())
+            },
+        )
+    })
 }
+
+#[path = "authority_host_post_a_publication_worker.rs"]
+mod publication;
 
 fn root_start() -> io::Result<u64> {
     std::fs::read_to_string("/proc/self/stat")?
