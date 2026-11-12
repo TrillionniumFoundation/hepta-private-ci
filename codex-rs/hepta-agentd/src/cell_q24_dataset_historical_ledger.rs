@@ -97,7 +97,7 @@ impl CellQ24TrainingBatchV1 {
 }
 
 impl OriginalDataset {
-    fn materialize_historical(
+    pub(super) fn materialize_historical(
         &self,
         ledger: &HistoricalDatasetLedgerV1,
     ) -> Result<CellQ24TrainingBatchV1, Error> {
