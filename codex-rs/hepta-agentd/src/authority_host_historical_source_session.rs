@@ -16,6 +16,8 @@ use codex_hepta_types::Digest32;
 
 const ACKNOWLEDGED: u8 = 4;
 
+#[path = "authority_host_historical_cell_session.rs"]
+mod cell_retention;
 #[path = "authority_host_historical_source_deployment.rs"]
 mod deployment;
 
@@ -129,6 +131,7 @@ pub(super) struct HistoricalSourceRuntime {
     phase: Arc<AtomicU8>,
     root: RootLifetime,
     end: Arc<OnceLock<Instant>>,
+    cell: Mutex<cell_retention::OriginalCellCustody>,
 }
 
 pub(super) struct SourceCaptureContext<'a> {
@@ -188,6 +191,7 @@ impl PreparedHostAuthoritySession {
             phase: Arc::clone(&phase),
             root: root.clone(),
             end: Arc::clone(&end),
+            cell: Mutex::new(cell_retention::OriginalCellCustody::Absent),
         });
         Ok(RootHistoricalSourceCaptureCapabilityV1 {
             sender,
@@ -243,6 +247,7 @@ impl HistoricalSourceRuntime {
                 context.registration,
                 context.owner,
                 inputs,
+                self.take_original_source_cell()?,
             )?;
             let delivered = (|| {
                 let digest = pin.readback_digest()?;

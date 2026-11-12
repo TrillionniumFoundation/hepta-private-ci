@@ -21,6 +21,7 @@ use crate::CircuitCellRouteV1;
 use crate::CircuitTaskSourceInputV1;
 use crate::OriginalSingleQ24SourceConfigurationV1;
 use crate::RootHistoricalSourceInputsV1;
+use crate::authority_host_service::generation_initial::cell_retention::RootHistoricalCellInputsV1;
 
 #[path = "authority_host_historical_source_deployment_cell.rs"]
 mod cell;
@@ -32,6 +33,8 @@ pub(super) struct SourceDeploymentData {
     pub(super) purpose: String,
     pub(super) source_journal: PathBuf,
     pub(super) source_witness: PathBuf,
+    #[serde(default)]
+    pub(super) cell_files: Option<RootCellFilesData>,
     witness_scope: [u8; 32],
     witness_objective: [u8; 32],
     witness_generation: u64,
@@ -41,6 +44,43 @@ pub(super) struct SourceDeploymentData {
     routes: Vec<RouteData>,
     definition: cell::CellData,
     source: SourceData,
+}
+
+/// Optional additional original data custody. Presence requires its actual
+/// empty baseline before enrollment ACK and a committed Cell after drain.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RootCellFilesData {
+    journal: PathBuf,
+    witness: PathBuf,
+    witness_scope: [u8; 32],
+    witness_objective: [u8; 32],
+    witness_generation: u64,
+    witness_records: usize,
+    maximum_records: usize,
+}
+
+impl RootCellFilesData {
+    pub(super) fn open_original_cell_inputs(&self) -> io::Result<RootHistoricalCellInputsV1> {
+        crate::authority_host_service::generation_initial::original_root()?;
+        let journal = super::OriginalFile::open_original(&self.journal)?;
+        let witness = super::OriginalFile::open_original(&self.witness)?;
+        let inputs = RootHistoricalCellInputsV1 {
+            journal: journal.original_descriptor()?,
+            witness: witness.original_descriptor()?,
+            witness_scope: JournalScope {
+                scope_digest: Digest32::from_array(self.witness_scope),
+                objective_digest: Digest32::from_array(self.witness_objective),
+            },
+            witness_generation: Generation::new(self.witness_generation)
+                .map_err(io::Error::other)?,
+            witness_records: self.witness_records,
+            maximum_records: self.maximum_records,
+        };
+        journal.require_original_file()?;
+        witness.require_original_file()?;
+        Ok(inputs)
+    }
 }
 
 #[derive(Deserialize)]

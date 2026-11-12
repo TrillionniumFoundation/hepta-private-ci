@@ -27,6 +27,11 @@ impl PreparedHostAuthoritySession {
         }
         let journal = OriginalFile::open_original(&data.source_journal)?;
         let witness = OriginalFile::open_original(&data.source_witness)?;
+        let cell = data
+            .cell_files
+            .as_ref()
+            .map(data::RootCellFilesData::open_original_cell_inputs)
+            .transpose()?;
         let inputs = data.into_inputs(
             &self.registration.registered_identity.identity()?,
             journal.original_descriptor()?,
@@ -36,6 +41,9 @@ impl PreparedHostAuthoritySession {
         journal.require_original_file()?;
         witness.require_original_file()?;
         let capability = self.enable_initial_source_capture(inputs)?;
+        if let Some(cell) = cell {
+            self.install_initial_source_cell(cell)?;
+        }
         let initial = self
             .initial_publication
             .as_mut()
