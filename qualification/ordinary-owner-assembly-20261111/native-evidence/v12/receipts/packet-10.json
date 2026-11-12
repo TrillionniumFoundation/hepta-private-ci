@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.immutable-transfer.read-receipts.v1",
+  "transfer": "V12-terminal-V31",
+  "scope": {
+    "host": "ai395",
+    "original_export_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112"
+  },
+  "note": "Complete original read requests and tool responses. Existing exporter-declared parts have independent per-file versions. Failed calls are retained without interpretation; no archive member re-verification is claimed.",
+  "receipts": [
+    {
+      "attempt": 22,
+      "label": "original-base64-parts-23-23",
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-023.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "method": "Existing exporter-declared original part files, independent per-file versions.",
+      "recovery_of_failed_batch": 21,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "verification": {
+        "status": "failed",
+        "error": "Error: Read did not succeed"
+      }
+    }
+  ]
+}

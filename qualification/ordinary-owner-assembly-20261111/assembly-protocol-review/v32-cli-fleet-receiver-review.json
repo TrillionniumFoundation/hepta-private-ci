@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.cli-fleet-typed-receiver-static-review.v1",
+  "status": "bounded-static-review-no-confirmed-new-ambiguity",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "scope": {
+    "slice_manifest": "694ef36699785cd9ada883c822089cd50f860953",
+    "product_rust_paths": 7,
+    "callers_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "boundary_rows": 504,
+    "typed_boundary_rows": 219,
+    "typed_helper_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "definition_self_caller_exclusion": "Same-definition-file calls are not external caller inventory; their existing function-order protection is retained."
+  },
+  "execution": {
+    "official_checker": false,
+    "typed_helper": false,
+    "cargo": false,
+    "native": false,
+    "h": false,
+    "source_modified": false,
+    "ref_modified": false,
+    "whole_repository_field_index_rebuilt": false,
+    "method": "Read fixed Git contents; compare changed calls against typed boundary method names; inspect actual type annotations and original resolver rules. Pure V8 byte/hash and exact text comparisons only."
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "bytes": 27305,
+      "sha256": "d82f99428d4f95ae14dad69ed89fb6068d12ddf644e5ff7b8c6b8f907fb5ea68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "git_blob": "764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad",
+      "bytes": 8132,
+      "sha256": "6e54854d52c602406e237bc2e16ddcce3494c0a3a92568f3a98cc204b59f4443"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "git_blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+      "bytes": 3013,
+      "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "bytes": 39198,
+      "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "git_blob": "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7",
+      "bytes": 4059,
+      "sha256": "9de575c8ca63823dccfc2074456a84f2db48b35557209a12bed936fc9709a999"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "git_blob": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "bytes": 24911,
+      "sha256": "6fa250502444563bafb8c2ede7421298e40388a3b5e72ee16d2bc777be04c6cf"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "git_blob": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+      "bytes": 1354,
+      "sha256": "ca8cde70f416490323ce4da2dceccfc77833b409e6da042b50d534a2b1855fdb"
+    }
+  ],
+  "findings": [
+    {
+      "file": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "scope": "New CLI route",
+      "calls": [
+        {
+          "method": "prepare_original_late_writer_startup",
+          "form": "late_startup::OriginalLateWriterStartup::prepare_original_late_writer_startup(arguments)?",
+          "assessment": "Qualified original type; no inferred dot receiver needed."
+        },
+        {
+          "method": "receive_original_late_writer_startup",
+          "receiver_binding": "let startup: late_startup::OriginalLateWriterStartup = *startup;",
+          "call": "startup.receive_original_late_writer_startup().await?",
+          "assessment": "Explicit actual type is understood by the unchanged typed resolver."
+        }
+      ],
+      "existing_relevant_calls": "The two connect receivers are explicitly RootLearningHandoffV1 and RootQ24ModelFactoryHandoffV1. The RootInputs take method uses let inputs: &mut AgentdRootProductionInputs = &mut self.root. Config assembly receives config: AgentdConfig. These are not new ambiguous receivers."
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "scope": "Original receiver refactor",
+      "calls": [
+        {
+          "method": "prepare_original_late_writer_inputs",
+          "form": "OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?",
+          "assessment": "Qualified original type."
+        },
+        {
+          "method": "consume_original_late_writer_inputs",
+          "call": "inputs.consume_original_late_writer_inputs(expected).await?",
+          "assessment": "The tuple-bound local is not explicit, but this wrapper is in the boundary definition file and is not an external typed caller. Existing required_function_order pins prepare -> this exact consume -> Ok((config, launch, ordinary)); no invented caller or metadata removal is needed."
+        }
+      ],
+      "existing_relevant_calls": "Both inherited connect calls retain explicit RootLearningHandoffV1 and RootQ24ModelFactoryHandoffV1 receiver annotations."
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "scope": "New production external caller",
+      "calls": [
+        {
+          "method": "prepare_original_late_writer_inputs",
+          "form": "OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?",
+          "assessment": "Qualified original type."
+        },
+        {
+          "method": "consume_original_late_writer_inputs",
+          "receiver_binding": "let original: OriginalLateWriterInputs = original;",
+          "call": "original.consume_original_late_writer_inputs(&identity).await?",
+          "assessment": "Explicit actual type. Existing function-order guard pins destructure -> this annotation -> exact await -> cognitive mode."
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "scope": "New comparison-data reader",
+      "calls": [
+        {
+          "method": "read_existing_snapshot",
+          "form": "FleetRegistry::read_existing_snapshot(typed_root)?",
+          "assessment": "Qualified original type."
+        }
+      ],
+      "other_dot_calls": "No method name intersects the 219 typed boundaries. The private read_expected_starting_identity helper is not a typed-boundary method."
+    },
+    {
+      "file": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "scope": "New data-only snapshot entry",
+      "calls": [
+        {
+          "method": "load",
+          "receiver_binding": "let registry: FleetRegistry = Self { layout: fleet_root.layout() };",
+          "call": "registry.load()",
+          "assessment": "Explicit actual FleetRegistry; load is not among the typed-boundary method names in this registry."
+        }
+      ],
+      "other_dot_calls": "No method name intersects the 219 typed boundaries."
+    }
+  ],
+  "declaration_only_checks": [
+    {
+      "file": "codex-rs/hepta-agentd/src/config.rs",
+      "before": "6074dfea3af6c7f6862313f08c334bdf6cd60e99",
+      "after": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "removed_only": "Linux module declaration and crate-private identity-reader reexport",
+      "exact_before_equal": true
+    },
+    {
+      "file": "codex-rs/hepta-fleet/src/registry.rs",
+      "before": "cadd646638f8393652b03d70be57b89c55e7da29",
+      "after": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "removed_only": "registry_readonly.rs module declaration",
+      "exact_before_equal": true
+    }
+  ],
+  "method_name_screen": {
+    "whole_seven_file_dot_names_intersecting_typed_boundary_methods": [
+      "connect",
+      "with_root_q24_learning_owners",
+      "assemble_q24_learning",
+      "take_generation_publication_connection",
+      "receive_original_late_writer_startup",
+      "consume_original_late_writer_inputs",
+      "create",
+      "open",
+      "writer"
+    ],
+    "interpretation": "This is a lexical candidate list, followed by source inspection, not an execution of the Rust masking/resolver algorithm. The create/open/writer intersections are old bodies in declaration-only config/registry files, not dot calls added by this slice. Definitions and unrelated concrete receiver types are distinguished from real external calls.",
+    "introduced_external_dot_receiver_cases": 2
+  },
+  "limitations": [
+    "No confirmed second ambiguity within the seven-path changes; this is not a full-checker PASS or a proof over the repository-wide authority-field index.",
+    "The absence of a target type name alone was not treated as sufficient to rule out the resolver's indexed field-owner precheck.",
+    "No claim is made about the active V32 candidate or execution outcome. This report pins only 894138 and the listed immutable files.",
+    "This review does not change ordinary business, independent-C, or actual OS-restart acceptance; it does not reopen the prior lifecycle design."
+  ],
+  "recommended_patch": null
+}

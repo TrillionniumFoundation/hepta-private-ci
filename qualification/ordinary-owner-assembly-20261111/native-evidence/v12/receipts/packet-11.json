@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.immutable-transfer.read-receipts.v1",
+  "transfer": "V12-terminal-V31",
+  "scope": {
+    "host": "ai395",
+    "original_export_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112"
+  },
+  "note": "Complete original read requests and tool responses. Existing exporter-declared parts have independent per-file versions. Failed calls are retained without interpretation; no archive member re-verification is claimed.",
+  "receipts": [
+    {
+      "attempt": 23,
+      "label": "original-binary-suffix-828000",
+      "tool": "mcp__codex_apps__h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 828000,
+        "limit": 16384,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "method": "Original archive fixed-version suffix after independent per-file base64 prefix.",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "verification": {
+        "status": "failed",
+        "error": "Error: Read did not succeed"
+      }
+    }
+  ]
+}

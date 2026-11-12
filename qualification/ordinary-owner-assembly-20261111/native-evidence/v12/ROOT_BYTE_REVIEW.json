@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-v12-root-independent-byte-review-v1",
+  "status": "complete archive bytes independently reconstructed and verified by Root; not native qualification",
+  "transfer": "3d6b383ee33e191e9262caf5d63cbfc9868d0d40",
+  "verification": "c0df5e90ea2abc6bdf6cc1d241070f8c08b68b00",
+  "original_export": "188c701083e6d3d914950a414fba519ed101f5d7",
+  "original_export_PTY": "352efc800b697d53db1ec9cfeca6e771e318a06e",
+  "root_checks": {
+    "receipts": 30,
+    "successes": 19,
+    "errors": [
+      2,
+      3,
+      4,
+      5,
+      8,
+      14,
+      17,
+      20,
+      21,
+      22,
+      23
+    ],
+    "part_files": 34,
+    "ascii_bytes": 1607256,
+    "archive_bytes": 1205440,
+    "archive_sha256": "44008c4fa113fe83e3122af5a2c3e3c0e9a2505df5e1f02f95cc89cc60a3e0b4",
+    "archive_git_blob": "e5a484bbb82c15ac9d7ad4b75bcb5bebc743a5ad",
+    "original_prefix_bytes_checked": 49152,
+    "original_export_text_exact": true,
+    "all_part_sha_version_path_checked": true,
+    "all_receipt_packet_pins_GET_verified": true,
+    "independent_tar_parse": false
+  },
+  "original_source": {
+    "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+    "result": "351d2801b2b3655708209af2ba3303b4c88d1212"
+  },
+  "scope": "Root independently GET-read all14 exact receipt packets, validated every original file SHA/version/path, reconstructed all34 original parts, computed the whole archive SHA256/Git object identity and compared every byte of the separately read original49152-byte prefix. This is not a whole-file single-version binary download, binary GET reverification or independent tar decompression.",
+  "archive_member_claim": "64 members/63 payloads/no exclusions are the unchanged original exporter member-reopen observation; Root does not claim a second parser.",
+  "all_read_failures_retained": true,
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_restart": false
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "schema": "hepta.v12.original-record-export.independent-static-review.v2",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "NO_CONFIRMED_STATIC_BLOCKER_IN_FIXED_V2_REQUEST",
+  "conclusion": "The fixed V2 request archives the terminal failed V31 attempt only. Original inputs, exporter and wrapper are unchanged; the corrected outer -B option retains bytecode suppression. No request for native execution, V32 source, V32 records, ref change, permission change or credential operation is introduced. This review is not a remote export result or an archive/member re-verification.",
+  "fixed_artifacts": {
+    "request": {
+      "git": "8ddc60db11826a1de79342c3caed547e7623f2e2",
+      "size": 120975,
+      "sha256": "5b8d6ee48c3ab5eb28bf3efdd8602eff26a72c327f3395e8f94933a5296c51d1"
+    },
+    "config": {
+      "git": "eac6f2aea94ad2e20a49f04c64e964c67f587338",
+      "size": 107127,
+      "sha256": "cecada081aae80f6e33d56e9715132f661490f718a51b1df4050fb4ade05cab9"
+    },
+    "plan": {
+      "git": "a1f5a96cdc0cb94ee232833b165afebd90582be2",
+      "size": 8609,
+      "sha256": "0da5a268ccbecf6ddf62bfacc2f09e944f376dca7e244a3f02bea2d056301872"
+    },
+    "manifest": {
+      "git": "4c15d5456ee39327be32fa2574d6dc113762d750",
+      "size": 7693,
+      "sha256": "dafdaf2417e7035b649961915cb4feda47c8efa56ee9b26e806dc2d4867cf371"
+    },
+    "exporter": {
+      "git": "79494fe659157c453d4f0804cb01581eecce6052",
+      "size": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "wrapper": {
+      "git": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "size": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    }
+  },
+  "revision": {
+    "superseded_request": "f1567d380f8ae7e0506885104288a2ec9d9ef14d",
+    "superseded_preparation_manifest": "2c4bc8d91b98b8ff715f9aca4ae37de96d15adc5",
+    "superseded_undispatched_review": "61106ec795f220db18c10b08378ed9ee90f621cd",
+    "only_request_change": "args[0]: -u -> -B",
+    "unique_literal_forward_and_reverse_produce_exact_other_request_bytes": true,
+    "all_other_request_values_and_argument_bytes_equal": true,
+    "plan_delta": "Only request Git/SHA references, the -B option, and the explanatory V1/V2 section changed.",
+    "manifest_delta": "Only schema revision, request/plan references, interpreter_options [-B,-c], and the explanatory request_revision object changed.",
+    "input_config_scripts_host_cwd_output_key_unchanged": true,
+    "review_correction": "The V1 review verified the provided -u invocation but did not require retention of the prior -B option. Root identified that unnecessary parameter change before dispatch. V1 is historical only; this final review binds solely V2."
+  },
+  "transport": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-894138f-original-records-export-v12-20261112",
+    "rows": 24,
+    "cols": 200,
+    "argument_count": 9,
+    "leading_args": [
+      "-B",
+      "-c"
+    ],
+    "wrapper_index": 2,
+    "exporter_index": 3,
+    "config_chunk_bytes": [
+      24000,
+      24000,
+      24000,
+      24000,
+      11127
+    ],
+    "config_chunks": [
+      {
+        "arg_index": 4,
+        "bytes": 24000,
+        "sha256": "3c1c356e68795643c6fc360a7fb7b905046d50691ef5816650f8a3c2df80e65c"
+      },
+      {
+        "arg_index": 5,
+        "bytes": 24000,
+        "sha256": "aac7b2858f31382978af19326eb798042bb9c6efd9711bfaf20172e9cdfc5948"
+      },
+      {
+        "arg_index": 6,
+        "bytes": 24000,
+        "sha256": "9eb66e221e311ba5707b7759e333050aabd2ddc2fc546138b78b2a9d0b4576d4"
+      },
+      {
+        "arg_index": 7,
+        "bytes": 24000,
+        "sha256": "889ace1370d4beb4cfa5d271fdbc07c4af570fa13613f6e3c9cfff9341d22519"
+      },
+      {
+        "arg_index": 8,
+        "bytes": 11127,
+        "sha256": "5be1be0e5097841d8bd1f57a4b9a145acba03bf9b6162041d4830af7fe8ab852"
+      }
+    ],
+    "maximum_argument_bytes": 24000,
+    "config_concatenation_equals_original_config_bytes": true,
+    "wrapper_and_exporter_equal_their_original_pinned_bytes": true,
+    "extra_environment_supplied": false,
+    "native_request_handling": "The wrapper joins Python sys.argv[2:] into one CONFIG string and executes only the separately supplied unchanged exporter. The nested complete native request remains a parsed JSON value serialized into the archive, never an executed program."
+  },
+  "scope": {
+    "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+    "anchor": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-seven-final-v5/source",
+    "records": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-seven-final-v5/records",
+    "terminal": "progress.json",
+    "terminal_sha256": "ccb3080fec4eff1660037060a0a8eecd85d9513efbc6a1e71cefbb355b2476ef",
+    "terminal_expected": {
+      "status": "failed",
+      "source_sha": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+      "source_tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+    },
+    "new_output_only": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112",
+    "source_count": 1,
+    "request_count": 1,
+    "observation_count": 11,
+    "safe_member_prefixes": true,
+    "output_distinct_from_input_paths": true,
+    "v32_excluded": "The selected paths are solely ordinary-894138f-seven-final-v5/source and its records sibling, plus the new V12 output sibling. Active V32 5a2e9371814e9ee0ec55781a81844ef03434874b/tree22d55a327460ab4a835387a4a61332dbece6866d is not a source, anchor, records directory, or output target."
+  },
+  "directly_fetched_original_inputs": {
+    "progress": {
+      "git_blob": "4756f19cf98b490b59cc4dc996d18726e560b02f",
+      "bytes": 30883,
+      "sha256": "ccb3080fec4eff1660037060a0a8eecd85d9513efbc6a1e71cefbb355b2476ef"
+    },
+    "finalidentity": {
+      "git_blob": "4837204c0249b659e99780b4752cc896a921c8d5",
+      "bytes": 127,
+      "sha256": "531a738a24bc61a0786062c973bc96dd79072fdd523cdd69fa2c5be52550d182"
+    },
+    "native_request": {
+      "git_blob": "176ddf60ccf8e863e722f6339457665b25e71514",
+      "bytes": 56726,
+      "sha256": "581cc76224cb43a2d98d5b8d40cd9953f3de0b69b9c84065711862ca5051e7d8"
+    },
+    "result": {
+      "git_blob": "351d2801b2b3655708209af2ba3303b4c88d1212",
+      "bytes": 3159,
+      "sha256": "87c93cee26da873a99be19d3b3fc1b06846b71023d3433de7335de4177760840"
+    },
+    "pty_observation": {
+      "git_blob": "c852a801ddf009d48c8f1e0deb728ffedc7644cd",
+      "bytes": 27265,
+      "sha256": "90080f677585e7ca0ba15899b799a80dfc738ecf3675136cc3d64802900ac653"
+    },
+    "pty_container": {
+      "git_blob": "6a3d46b118a3e1e836c3cd19029cab228a49c5b7",
+      "bytes": 9571,
+      "sha256": "41b2b1b3047d417eebaf2c535320f806f90aef5927759b078074c3415f5aef4d"
+    },
+    "caller_error": {
+      "git_blob": "8f0c9b2d86c6e1abb74e416a7b3d237779852817",
+      "bytes": 203,
+      "sha256": "d6f0e425e083cec0836e26fc27a852c326a0c0a851e0d81792fd8396d4ed076e"
+    },
+    "caller_execution": {
+      "git_blob": "f537410cfbbe89816aef58e5372914a5719fbd10",
+      "bytes": 1452,
+      "sha256": "a556f80ff9eb6f0da1cec5e23079f4374998211d3f0d8b7f9a834c9e37b9801b"
+    }
+  },
+  "independent_checks": {
+    "preparation_and_input_blobs": "Six preparation/program blobs and all eight original input blobs were personally fetched and checked by Git ID, SHA256 and size. The three V2 replacement blobs were separately fetched and checked.",
+    "expected_terminal": "Config status failed, source_sha 894138ff2c34dc54b0f31d3883a840639d076ea5, source_tree 3c7e0963f8c32701066071f354c626aa5283687d, and the whole progress SHA match the original progress JSON.",
+    "embedded_values": "The complete embedded native request, final identity, PTY observation, Root RESULT and original caller execution each equal their separately pinned original parsed JSON. The raw caller error matches all 203 original bytes.",
+    "pty_bytes": {
+      "bytes": 6987,
+      "sha256": "b964af9eab374b69161382f9ba25e985060518f362a3f224b98649df9deb8883",
+      "git_blob": "7f15c033e06598bb07ad506826f655c033383722",
+      "pages": [
+        {
+          "offset": 0,
+          "end": 6421
+        },
+        {
+          "offset": 6421,
+          "end": 6987
+        }
+      ],
+      "per_page_sha_and_text_checked": true,
+      "complete_container_and_embedded_crlf_text_equal": true
+    },
+    "pty_scope": "Original Git-retained page hex/text and base64 container only; no new h read or PTY observation. The original terminal page records exit 1, output_complete=true and capture_error=null.",
+    "member_keys": "The single records prefix, request name and observation names are simple fixed names, with no path traversal or collision. New output is a sibling of the old work, not nested in its source/records, and does not target V32.",
+    "no_independent_remote_inventory": true
+  },
+  "preserved_result": {
+    "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+    "progress_status": "failed",
+    "result_status": "FAILED_FULL_CALLER_TYPED_RECEIVER",
+    "caller_error": "FAIL_HEPTA_CALLER_PROOF: q24_task_original_ready_observe: codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs: unresolved possible OriginalCellQ24TaskLedgerProducerV1::observe_learning receiver\n",
+    "command_exit": 1,
+    "executor_exit": 1,
+    "command_elapsed_seconds": 1163.66759224399,
+    "launcher_elapsed_seconds": 1163.7250565830618,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "maintenance_and_bins": "Original V31 progress records all maintenance and bins steps passed without drift.",
+    "qa": {
+      "b4": 221,
+      "fault_matrix": 5,
+      "performance": 5,
+      "vertical_slice": 5,
+      "total": 236,
+      "source_specific": true
+    },
+    "qa_attribution": "The exact counts are preserved from the original frozen Root RESULT; progress independently records four successful QA commands. No QA script/log was rerun.",
+    "caller_self_test": "passed on original V31",
+    "not_reached": [
+      "same-source helper build and preverify",
+      "ordinary seven-package tests",
+      "Root metadata/list and seventeen parent tests",
+      "post-test helper verification"
+    ],
+    "cleanup": [
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ],
+    "final_identity": {
+      "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+      "status": "",
+      "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+    },
+    "ordinary": {
+      "complete_chains": 0,
+      "positive_adoption": 0,
+      "no_update_rollback": 0,
+      "independent_c": false,
+      "physical_daemon_root_restart": false
+    },
+    "no_inherited_result": true
+  },
+  "unchanged_safety_and_preservation_contract": [
+    "The original exporter refuses an existing output directory and creates only the new fixed V12 directory with mode 0700.",
+    "It checks exact clean anchor HEAD/tree/status before and after collection, and the pinned failed terminal SHA and source fields.",
+    "It recursively retains original records, using original regular/nlink==1 and 32 MiB per-file checks, original 128 MiB total bound, and only the existing helpers/bin executable exclusion. Actual exclusion/member counts are not invented.",
+    "It uses the existing path-based lstat/read_bytes/recheck sequence, later comparing device/inode/size/mtime and each SHA256. This is not an O_NOFOLLOW or descriptor-anchored atomic snapshot.",
+    "Its only subprocesses are the original read-only Git identity/status commands. Cargo, just, tests, native replay, pushes/ref updates and permission/credential changes are not executed.",
+    "When actually run, it writes and reopens tar.xz to compare its member-name set and each file's bytes against collected payloads. That exporter validation has not been executed by this review; no tar was downloaded, decompressed or extracted here.",
+    "Normalized requests/ and observations/ JSON members preserve complete parsed values but are not represented as raw original JSON bytes. The native raw request 176ddf60ccf8e863e722f6339457665b25e71514 remains separately pinned; original log/source/execution files are collected as raw records bytes."
+  ],
+  "performed": {
+    "git_blob_reads": true,
+    "pure_in_memory_hash_json_hex_base64_and_exact_equality_checks": true,
+    "unreferenced_review_blob_write_only": true,
+    "h_or_pty": false,
+    "python_or_shell": false,
+    "exporter_or_native": false,
+    "checker_or_tests": false,
+    "tar_parse_or_extract": false,
+    "remote_mutation": false,
+    "ref_update": false
+  },
+  "remaining": "Root owns dispatch and subsequent terminal/export/transfer verification. The V2 plan and manifest say undispatched; this review made no remote call to determine current status. Archive existence, size, SHA, member count, and success are not asserted. V31 remains failed and ordinary counts remain 0/0/0."
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.pr6006-v32-body-template-bounded-review.v1",
+  "status": "final-template-static-review-complete-no-confirmed-wording-blocker",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "template": {
+    "git_blob": "0a2f5650aecb6d85408d9fc77b1987583f84999b",
+    "bytes": 9672,
+    "sha256": "e2521bea6378ff8614876424b703889b372458f4935a77392c9b974fdfd98cfd"
+  },
+  "assembly": {
+    "git_blob": "32796f51303b6965b93b72ddb585e2df21d2d77e",
+    "bytes": 5075,
+    "sha256": "48a02d497ed63d5b6f082158b3b000447f53e87bdcf23d4312c84d7d6f146137"
+  },
+  "candidate": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f"
+  },
+  "native_observation_boundary": {
+    "root_report_at_task_handoff": "Nine clean execution records, 236 QA tests and caller self-test checked; full caller still running; ordinary and Root suites not yet reached.",
+    "review_did_not_read_h_or_run_status": true,
+    "no_full_native_result_in_template": true,
+    "evidence_head_and_terminal_results_still_placeholders": true
+  },
+  "confirmed_conflicts": [],
+  "accepted_clarification": {
+    "location": "What changes / Real late-writer entry",
+    "original_ending": "Full launch still needs actual Primary/app-server inputs.",
+    "added_sentence": "The default Root CLI does not yet provide the trusted-host three-right sender.",
+    "reason": "The assembly explicitly retains this product wiring boundary. The existing paragraph describes the real CLI consumer but mentions only Primary/app-server materials afterward; the accepted sentence makes the absent default sender explicit.",
+    "classification": "Clarification of existing scope, not a product change, new capability, new native result or reversal of the zero-acceptance boundary.",
+    "status": "Present in the exact final template; its 79-byte insertion independently projected away to the old template byte-for-byte.",
+    "final_postimage": "0a2f5650aecb6d85408d9fc77b1987583f84999b"
+  },
+  "reviewed_semantics": [
+    {
+      "subject": "Actual owner components versus complete lifecycle",
+      "conclusion": "The task/Outcome, Dataset, native trainer, B adapter, Root Model/CURRENT, successor feedback and lost-ACK paragraphs describe implemented component capabilities. The opening zero counts and separate unimplemented Running-owner phase prevent these descriptions from claiming a completed ordinary A-to-C lifecycle.",
+      "retained_limit": "Independent Observer Outcome, B execution/holdout and complete evidence/cost inputs remain necessary; missing or pending evidence is not rewritten as NoUpdate."
+    },
+    {
+      "subject": "Late-writer entry and original custody",
+      "conclusion": "The actual CLI/Startup consumer, original three rights/five lanes, real Starting comparison and read-only existing Fleet snapshot are accurately characterized.",
+      "retained_limit": "The accepted clarification keeps the default Root CLI sender gap visible; the entry cannot create Starting, revive an old session or rebind historical retained A."
+    },
+    {
+      "subject": "Lease metadata observation",
+      "conclusion": "Sharing the original live-state read fence is distinguished from retaining serial dispatch/mutation exclusion. Exact lease, poison/refusal and same-serving-issuer proof/head custody remain explicit.",
+      "retained_limit": "Original request_started_ns-based 500 ms freshness is retained. The prose asserts neither refreshed age, deadline extension nor failed-session revival."
+    },
+    {
+      "subject": "V31 failure and V32 correction",
+      "conclusion": "The described failure is the actual unresolved non-learning self.source receiver. V32 adds a borrow of that same field as &DurableCircuitTaskSourceV1<FileAnchorWitnessStore>; the same call/arguments and the Producer's &Arc receiver remain.",
+      "metadata": "All 504 boundary rows and required IDs remain byte-identical; one protected row follows the actual annotation/call and the other 365 remain unchanged. The template correctly keeps caller sets, receiver patterns, ignore policy, checker/helper and global size rule unchanged.",
+      "evidence": "This agrees with assembly32796, exact fix manifest4ac612, and the previous exact-op/independent reviews. It does not claim the running full caller has already accepted V32."
+    },
+    {
+      "subject": "Live phase",
+      "conclusion": "The body calls both the same-session phase protocol and Model/deadline extraction unimplemented. It preserves the same original service and absolute end through channel and ACK handling, including the insufficiency of resampling a remaining duration.",
+      "retained_limit": "No existing Starting/Root/OnceLock capability is represented as a live owner transition."
+    },
+    {
+      "subject": "Independent C",
+      "conclusion": "The body accurately preserves same agent/cell/principal and different run/input, and explicitly denies that this proves independent consumer/controller adoption."
+    },
+    {
+      "subject": "Physical restart",
+      "conclusion": "The body correctly describes the two CURRENT tests as same Root and same fixture child across session reopen phases. It distinguishes G2 Manager replacement with Root still alive from a genuine both-process business restart.",
+      "retained_limit": "Durable readback/material recovery and late-writer construction are not represented as restoration of historical A or frozen-learning custody to a new incarnation."
+    },
+    {
+      "subject": "Historical failures and counts",
+      "conclusion": "Failures remain attached to their exact prior source. The two 236-QA results are not inherited by V32; V31's elapsed time, clean source, exit1/no-timeout and five cleanup checks agree with the assembly's recorded original attempt.",
+      "retained_limit": "No old subset, repeated hosted lane, embedded mutation sample or Chain count is added to ordinary business adoption or FinalUse qualification. The old Chain count values were not reaudited in this bounded review."
+    }
+  ],
+  "placeholders": {
+    "distinct_classes": [
+      "__FINAL_QUALIFICATION_TABLE__",
+      "__FINAL_SOURCE_AND_CLEANUP_RESULT__",
+      "__EVIDENCE_HEAD__",
+      "__FINAL_NATIVE_EVIDENCE_LINK__",
+      "__V11_EVIDENCE_LINK__",
+      "__V12_EVIDENCE_LINK__"
+    ],
+    "count": 6,
+    "intent": "All six classes are deliberate. This is a template review, not approval of a populated final outcome table.",
+    "finalization_rules": [
+      "Fill qualification and cleanup only from the terminal exact ef0da4... request on fixed 5a2e937/tree22d55; retain failed, unknown and unreached stages as such.",
+      "Use the actual separate evidence commit for every evidence link; do not replace it with a code candidate merely because that candidate was tested.",
+      "Do not publish unresolved placeholder tokens as completed evidence, and do not import predecessor totals."
+    ]
+  },
+  "evidence_paths": {
+    "root": "qualification/ordinary-owner-assembly-20261111/",
+    "v9_literal": "native-evidence/V9_EVIDENCE_INDEX.json",
+    "v10_literal": "native-evidence/v10/INDEX.json",
+    "v11_required_replacement": "native-evidence/v11/INDEX.json",
+    "v12_required_replacement": "native-evidence/v12/INDEX.json",
+    "case_rule": "Lowercase v10/v11/v12 directories; uppercase INDEX.json. V11/V12 are still whole-link placeholders in the reviewed template; V12 is explicitly awaiting integration.",
+    "target_existence_boundary": "The final evidence-head placeholder is unresolved. Final link existence at that future evidence commit is not certified here. A code-head directory is not used as a substitute."
+  },
+  "reviewed_prior_records": {
+    "exact_v32_delta": "4ac6124013a82e77e8e66b3286cdb0acf79abbaa",
+    "exact_v32_independent_review": "c2e3d28b3cb6c93b3fd447ad20497b3170a063bd",
+    "live_owner_gap": "dfaa66d37d88415421882c20a1a04cc3e752a6df",
+    "same_session_design": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+    "minimal_extraction_readiness": "11e7f8c493816b37cf26f2826320f56ce4986e38"
+  },
+  "execution": {
+    "source_reaudit": "No broad source rescan; template/assembly and existing fixed reviews only.",
+    "new_native": false,
+    "h": false,
+    "pr_changed": false,
+    "ref_changed": false,
+    "product_changed": false
+  },
+  "review_limit": "The exact final template is consistent with the fixed component capabilities and explicit zero-business/unaccepted lifecycle boundaries. The accepted default-sender clarification is present. Six intended result/evidence placeholders remain unfilled and require later exact-source evidence; this review supplies no native PASS or complete-business acceptance.",
+  "previous_template": {
+    "git_blob": "29a6e5ef6685b5557ae1ac09311c5faa16640472",
+    "bytes": 9593,
+    "sha256": "245823b9c9d00d062cd516021becff814c14c79368b5d1e9c16286a8f03514de"
+  },
+  "supersedes_review": "fe8949de65b53b68a5ed1e1c9ab4e19bf287dc29",
+  "template_delta": {
+    "old_text": "",
+    "new_text": "The default Root CLI does not yet provide the trusted-host three-right sender. ",
+    "added_utf8_bytes": 79,
+    "all_other_bytes_unchanged": true,
+    "placement": "Within the original late-writer bullet, before its unchanged Full launch still needs actual Primary/app-server inputs sentence."
+  }
+}

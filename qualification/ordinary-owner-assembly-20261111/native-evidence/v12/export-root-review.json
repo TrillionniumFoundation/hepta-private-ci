@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.original-records-export-v12.root-dispatch-review.v2",
+  "status": "reviewed-for-one-dispatch-no-result-asserted",
+  "request": {
+    "git_blob": "8ddc60db11826a1de79342c3caed547e7623f2e2",
+    "bytes": 120975,
+    "sha256": "5b8d6ee48c3ab5eb28bf3efdd8602eff26a72c327f3395e8f94933a5296c51d1"
+  },
+  "config": {
+    "git_blob": "eac6f2aea94ad2e20a49f04c64e964c67f587338",
+    "bytes": 107127,
+    "sha256": "cecada081aae80f6e33d56e9715132f661490f718a51b1df4050fb4ade05cab9"
+  },
+  "plan": {
+    "git_blob": "a1f5a96cdc0cb94ee232833b165afebd90582be2",
+    "bytes": 8609,
+    "sha256": "0da5a268ccbecf6ddf62bfacc2f09e944f376dca7e244a3f02bea2d056301872"
+  },
+  "preparation": {
+    "git_blob": "4c15d5456ee39327be32fa2574d6dc113762d750",
+    "bytes": 7693,
+    "sha256": "dafdaf2417e7035b649961915cb4feda47c8efa56ee9b26e806dc2d4867cf371"
+  },
+  "independent_review": {
+    "git_blob": "8f5bf7e05622948e1fd7a33c856479c05953a50f",
+    "bytes": 13508,
+    "sha256": "949ff07c74e3c568ecdf4667b1ee11ab0edd1487b449d52713245b99b54c71a8"
+  },
+  "root_review": [
+    "Read the complete original 4370-byte exporter and 146-byte wrapper; both remain unchanged.",
+    "Read all fixed plan, configuration requirements and complete final independent V2 report; checked request/config/plan/manifest/review SHA256, byte counts and Git object identities.",
+    "Compared embedded V31 original request, execution, final identity, PTY observation, raw terminal and caller failure against retained Root originals. Failed V31 remains failed; 236 QA passed but full caller exit 1 blocked later helper, ordinary and Root gates.",
+    "Only request revision was outer args[0] -u to -B, restoring the original bytecode suppression. V1 was never dispatched. The nine arguments retain exact script and five config chunks, max 24000 bytes; joined config equals pinned original.",
+    "Only old V31 records and exact clean 894138ff2c34dc54b0f31d3883a840639d076ea5/tree3c7e0963f8c32701066071f354c626aa5283687d are read. New V12 output is a distinct sibling; active V32 is not touched.",
+    "Original exporter makes only read-only git identity subprocesses and new evidence files. No native/Cargo/checker invocation, source mutation, ref operation, credential operation or permission repair.",
+    "Original path-based lstat/read/recheck is retained; do not claim descriptor-anchored atomic snapshot. Archive inventory, exclusions, byte count, SHA and member verification will be reported only from actual execution."
+  ],
+  "dispatch": {
+    "request_key": "af52-ordinary-894138f-original-records-export-v12-20261112",
+    "host": "ai395",
+    "new_output": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112",
+    "root_only": true
+  },
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer": false,
+    "physical_daemon_root_restart": false
+  },
+  "active_native": {
+    "source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "session": "dpty-3ce52f6ef49b7cc1bac22aac400007333464bdae415df0d7580a4f50bf1515f7",
+    "separate_and_unmodified": true
+  }
+}

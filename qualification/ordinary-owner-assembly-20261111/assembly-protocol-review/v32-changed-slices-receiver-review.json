@@ -1,0 +1,200 @@
+{
+  "schema": "hepta.v32.changed-slices-typed-receiver-bounded-review.v1",
+  "status": "bounded-static-review-no-additional-confirmed-ambiguity",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "inspected_commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "inspected_tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+    "execution_overlay": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+    "callers": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "root_reported_integrated_candidate": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "root_reported_integrated_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "attribution": "All listed source bytes were fetched at fixed 894138 paths, except the exact already-reviewed execution overlay. Root reports that these are the product bytes integrated into V32. This report does not attest the active native result."
+  },
+  "scope": {
+    "original_slice_manifests": {
+      "original_ledger": "2ad17bf2bb4981b627d6c687b59bbf48e910aeca",
+      "late_writer_cli_fleet": "694ef36699785cd9ada883c822089cd50f860953",
+      "lease_metadata_fence": "6a198c68d7715436006a1939d6a5a0a8a53398ea"
+    },
+    "product_rust_paths": 19,
+    "support_paths_additionally_read": 2,
+    "remaining_test_paths": 9,
+    "boundary_rows": 504,
+    "protected_rows": 366,
+    "typed_boundary_rows": 219,
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "method": "Read the three frozen manifests/ops to select changed Rust paths; read current immutable source and original resolver; use pure-JS raw method-name intersections only for navigation; inspect the actual new/changed receivers and enclosing declarations/cfg. No Python/helper/checker execution, no reconstructed global field index."
+  },
+  "findings": [
+    {
+      "area": "OriginalLedger feedback",
+      "result": "No additional confirmed receiver ambiguity beyond the repaired V31 None branch.",
+      "evidence": [
+        "OriginalQ24SuccessorInvocationV1::observe_learning keeps Some(producer) explicitly typed &Arc<OriginalCellQ24TaskLedgerProducerV1>. The V32 None branch explicitly borrows &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> from the same self.source and calls the same method with the same arguments.",
+        "The separate PendingSuccessorInvocation::observe_learning binds source: Arc<OriginalQ24SuccessorInvocationV1> before the dot call. This is a concrete non-Producer receiver even though the wrapper is an indexed field owner because it contains a Producer ledger. The existing require_open postcheck remains intact.",
+        "OriginalLedger construction calls OriginalCellQ24TaskLedgerProducerV1::open_original as a qualified actual-type call. Other changed state/worker references are concrete wrapper types; successor/lib edits are reexports. No second new method-name intersection needing an inferred authority receiver was found."
+      ]
+    },
+    {
+      "area": "Lease metadata fence",
+      "result": "The six new metadata dot calls have direct actual receiver types.",
+      "evidence": [
+        "RegisteredWriter.leases is declared AuthorityLeaseVerifier; observe receives issuer: &DeploymentFinalUseIssuer. The two guard locals are explicitly AuthorityLeaseObservationV1<'_> and OriginalHostWriterObservationV1<'_>.",
+        "observe_original_lease, observe_original_writer_state, original_writer_proof, original_writer_revocations, original_store_revision and finish_original_observation therefore have field/parameter/annotation evidence supported by the original resolver. Their closed product caller remains authority_host_writer.rs.",
+        "The pre-existing backend.exchange_learning_checkpoint parameter is explicitly &LearningIterationCheckpointOwnerV1; the RegisteredWriter boundary's own definition file is excluded by the original checker. No new ambiguous backend receiver was introduced.",
+        "New lock_dispatch_state/lock_mutation_state/try_lock_mutation_state calls do not intersect the 219 typed method sets. Existing DirBuilder.create and issuer OpenOptions.open homonyms were not introduced by these slice operations; no broader result is inferred for unrelated global owners.",
+        "The raw timing.complete homonym is inside an existing cfg(test) block; authority_lease test uses of revoke/with_verified_use/with_dispatch_boundary are inside its existing test-only module. They are not new product authorities."
+      ]
+    },
+    {
+      "area": "Late-writer CLI/Fleet",
+      "result": "No confirmed new ambiguity in the seven product paths; independently reviewed by chain_nextuse and then fetched/read by runtime_access.",
+      "evidence": [
+        "Launcher binds startup: late_startup::OriginalLateWriterStartup before receive_original_late_writer_startup. LateStartup binds original: OriginalLateWriterInputs before consume_original_late_writer_inputs. These are the two introduced external dot-receiver cases.",
+        "The convenience API's tuple-bound inputs.consume_original_late_writer_inputs is in that boundary's definition file; the unchanged checker excludes it from external caller inventory and its existing function-order guard still pins the actual wrapper. No caller is fabricated to avoid inference.",
+        "Learning and Model connect receivers retain explicit RootLearningHandoffV1 and RootQ24ModelFactoryHandoffV1 types. Existing RootInputs take uses an explicit &mut AgentdRootProductionInputs local.",
+        "Late preparation and FleetRegistry::read_existing_snapshot are qualified actual-type calls. registry_readonly additionally types registry: FleetRegistry; load is not a typed-boundary method here.",
+        "Config and Registry slice changes only add module/reexport declarations. Old create/open/writer homonyms in their existing bodies were not introduced or changed by this slice."
+      ]
+    },
+    {
+      "area": "Test and support disposition",
+      "result": "Original policy is unchanged; fixture calls are not promoted into product callers.",
+      "evidence": [
+        "The nine remaining *_tests.rs paths are subject to the registry's existing ignored_path_fragments, not a new exception.",
+        "circuit_q24_task_test_support.rs places the new successor channel/profile/ledger calls in the actual cfg(test) start_profile item. cell_q24_task_ledger_test_support.rs places changed fixture/profile methods in the actual cfg(test) impl Fixture.",
+        "The support OpenOptions helper already has an explicit std::fs::OpenOptions local. No new ignore, test-to-product caller, or type-only fake owner was added."
+      ]
+    }
+  ],
+  "source_pins": [
+    [
+      "lease_manifest",
+      "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "a3495b587fb5d91e8581f5ccb64a84d586523de8"
+    ],
+    [
+      "lease_manifest",
+      "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "8691a8725bad4c858589228015ee74cf75c266bb"
+    ],
+    [
+      "lease_manifest",
+      "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360"
+    ],
+    [
+      "lease_manifest",
+      "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "8489d6f8e8da15936a9ccd16060d0b434f69e264"
+    ],
+    [
+      "lease_manifest",
+      "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "da842adff40dfa5f63403195643d7c49112bdcd3"
+    ],
+    [
+      "lease_manifest",
+      "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "86021913605baf2555ec89acaf869ca774e2b437"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "379439c76b0d8ea1cb123b92bc199b162d8676e5"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "58232d6e10de477c7a66da516a1607a2aab788fe"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "00b0e2235e00c67086d7a9618223766ef1ff1cc7"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "235e6b1ce07063f854b54c202ee39c7cb54f514a"
+    ],
+    [
+      "feedback_manifest",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "ed0c326180e2c32f59e8198cb230312015022b70"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "9605d4c1f84292862e2b15bf6ff525e1a2337253"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "db398aa05e688dc9c455bacb8c7e065184fdbaf9"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-agentd/src/config.rs",
+      "6142284d17c3e9808a2af0ae6f105c829d7e0d59"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-fleet/src/registry.rs",
+      "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4"
+    ],
+    [
+      "cli",
+      "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528"
+    ]
+  ],
+  "support_pins": [
+    [
+      "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "dd802810439ed1e72f77f6d2126a0da48fd499b8"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "360e99732ef2aa8a12abd01851960fe9e3d59658"
+    ]
+  ],
+  "related_reviews": {
+    "exact_v31_fix_manifest": "4ac6124013a82e77e8e66b3286cdb0acf79abbaa",
+    "exact_v31_fix_independent_review": "c2e3d28b3cb6c93b3fd447ad20497b3170a063bd",
+    "cli_fleet_bounded_review": "bbaef6aca1dd81f53597dcf5d9c6c3ce28b82a4b"
+  },
+  "limitations": [
+    "This is a changed-slice static review, not full-caller PASS. It does not rebuild the repository-wide authority-fields/aliases index or execute the original Rust masking and typed resolver.",
+    "A raw same-name list is a search aid only. The absence of a target type name was not treated as sufficient to dismiss an indexed owner, and unchanged homonyms outside the added code were not given a new global qualification.",
+    "No source, registry, checker, QA, native process, h request, or ref was modified by this review. No additional patch is recommended from this scope.",
+    "No prior native PASS is inherited, and no prediction is made about V32. Root's original full checker and subsequent gates remain necessary; ordinary business, independent-C, and physical restart acceptance are unchanged."
+  ],
+  "recommended_patch": null,
+  "execution": {
+    "original_checker": false,
+    "typed_helper": false,
+    "python": false,
+    "cargo": false,
+    "native": false,
+    "h": false,
+    "ref_modified": false
+  }
+}

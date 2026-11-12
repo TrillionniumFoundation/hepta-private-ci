@@ -1,0 +1,354 @@
+{
+  "schema": "hepta.immutable-original-archive-transfer-verification.v1",
+  "status": "complete-byte-identity-verified-and-unreferenced-git-blob-uploaded",
+  "scope": {
+    "transfer": "V12 terminal V31 original records",
+    "source_commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "source_tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+    "export_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112",
+    "original_export_metadata": {
+      "git_blob": "188c701083e6d3d914950a414fba519ed101f5d7",
+      "bytes": 5018,
+      "sha256": "d8ffb5689bf6ba7fe91c7b5137f124274e35212ab1341c84a011684ddd6bead8",
+      "version": "66306:75544939:5018:1794466509623366361:1794466509623366361"
+    }
+  },
+  "archive": {
+    "bytes": 1205440,
+    "sha256": "44008c4fa113fe83e3122af5a2c3e3c0e9a2505df5e1f02f95cc89cc60a3e0b4",
+    "git_blob": "e5a484bbb82c15ac9d7ad4b75bcb5bebc743a5ad",
+    "encoding": "base64",
+    "returned_git_blob": "e5a484bbb82c15ac9d7ad4b75bcb5bebc743a5ad",
+    "complete_byte_identity_verified_before_upload": true,
+    "git_binary_download_reverification": false
+  },
+  "verification": {
+    "actual_ascii_characters": 1607256,
+    "complete_original_parts": 34,
+    "missing_original_parts": [],
+    "part_metadata_size_sha_ascii_checks": true,
+    "method": "Join all 34 exporter-declared original ASCII base64 parts in order and decode once; independently hash every decoded archive byte. Parts carry independent file versions and are not an atomic cross-file snapshot.",
+    "binary_overlap": {
+      "offset": 0,
+      "bytes": 49152,
+      "version": "66306:75544904:1205440:1794466509613028390:1794466509613028390",
+      "sha256": "9634fc9beb1f1551400d83f5cc5b3b8e7715fc0cf062d6b009825303789af89f",
+      "every_byte_equal_to_decoded_archive_prefix": true
+    },
+    "whole_archive_single_fixed_version_download": false,
+    "whole_archive_mixed_prefix_suffix": false,
+    "final_archive_matches_original_export_metadata": true,
+    "archive_git_create_returned_exact_sha": true,
+    "git_binary_download_reverification": false
+  },
+  "exporter_member_claim": {
+    "members": 64,
+    "payload_files": 63,
+    "excluded": [],
+    "manifest_sha256": "db97edaef9620290192a8391e00cb9051c51cf31da8b7e9aba52a1c8387e42b3",
+    "status": "Original unchanged exporter/Root terminal proof reports tar reopen and member verification. This transfer did not decompress or independently verify tar members."
+  },
+  "original_source_claim": {
+    "before": {
+      "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+      "status": "",
+      "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+    },
+    "after": {
+      "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+      "status": "",
+      "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+    },
+    "status": "Original exporter observations preserved. This transfer read only the completed export metadata, original archive prefix and declared part files; it did not revisit the source or native records."
+  },
+  "read_integrity": {
+    "attempts": 30,
+    "successful_tool_responses": 19,
+    "failed_tool_responses": 11,
+    "errors_all_MCP_timeout": true,
+    "timeout_count_by_tool": {
+      "mcp__codex_apps__h_binary_read": 5,
+      "mcp__codex_apps__h_read_multiple_files": 6
+    },
+    "all_original_requests_responses_errors_preserved_once": true,
+    "receipt_packets_max_bytes": 394731
+  },
+  "failure_scope": "Original V31 unresolved typed receiver failure and its qualified prefix remain source-bound. V12 preservation performs no test retry and provides no business qualification; ordinary/adoption/no-update acceptance stays 0/0/0.",
+  "actions": {
+    "only_authorized_immutable_h_reads": true,
+    "new_export": false,
+    "remote_program_start": false,
+    "remote_write": false,
+    "permission_change": false,
+    "source_change": false,
+    "refs_changed": false,
+    "native_or_Cargo": false
+  },
+  "root_original_export_proof_references": {
+    "root_supplied_full_pty_and_start_errors": "352efc800b697d53db1ec9cfeca6e771e318a06e",
+    "root_supplied_4819_byte_terminal_container": "2f879e447eb80ecf51f655cfdb7a86c1baec5e30",
+    "reference_scope": "Root-supplied separately preserved original exporter terminal objects, not re-executed or re-read by this transfer."
+  },
+  "superseded_partial_checkpoint": {
+    "git_blob": "bf70d3b18624f5e754a709d4908a42e4bf3fcb8c",
+    "bytes": 16236,
+    "sha256": "0c87b1c6bb0a98c0f3f1a073989da3e773cff79016e18f5aea086902f45b5007"
+  },
+  "errors": [
+    {
+      "attempt": 2,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "label": "archive-chunk-1",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 49152,
+        "limit": 49152,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 3,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "label": "archive-chunk-2",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 98304,
+        "limit": 49152,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 4,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "label": "archive-chunk-3",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 147456,
+        "limit": 49152,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 5,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "label": "archive-chunk-1-retry-1",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 49152,
+        "limit": 49152,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 8,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-5-8",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-005.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-006.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-007.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-008.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 14,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-15-16",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-015.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-016.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 17,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-19-20",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-019.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-020.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 20,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-23-24",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-023.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-024.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 21,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-23-24",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-023.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-024.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 22,
+      "tool": "mcp__codex_apps__h_read_multiple_files",
+      "label": "original-base64-parts-23-23",
+      "request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/part-023.txt"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 262144
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "attempt": 23,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "label": "original-binary-suffix-828000",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 828000,
+        "limit": 16384,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "error": null,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ]
+}

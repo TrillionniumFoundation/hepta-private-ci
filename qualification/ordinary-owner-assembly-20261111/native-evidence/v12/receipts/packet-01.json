@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.immutable-transfer.read-receipts.v1",
+  "transfer": "V12-terminal-V31",
+  "scope": {
+    "host": "ai395",
+    "archive": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz"
+  },
+  "archive_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390",
+  "note": "The first strictly identical single-read retry also timed out. The sequential batch stopped here; offsets 98304 and 147456 were not retried. No file or remote permission was changed.",
+  "receipts": [
+    {
+      "attempt": 5,
+      "label": "archive-chunk-1-retry-1",
+      "retry_of": 2,
+      "tool": "mcp__codex_apps__h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-original-records-export-v12-20261112/original-records.tar.xz",
+        "offset": 49152,
+        "limit": 49152,
+        "expected_version": "66306:75544904:1205440:1794466509613028390:1794466509613028390"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "verification": {
+        "status": "failed",
+        "error": "Error: Read did not succeed"
+      }
+    }
+  ]
+}
