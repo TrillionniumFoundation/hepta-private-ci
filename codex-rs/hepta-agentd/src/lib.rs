@@ -1499,3 +1499,7 @@ mod root_initial_learning_trust_data;
 pub use authority_host_runtime::RootInitialLearningTrustFilesV1;
 #[cfg(target_os = "linux")]
 pub(crate) use root_generation_initial_client::OriginalRootInitialLearningTrustV1;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "ordinary_q24_cold_snapshot_tests.rs"]
+mod ordinary_q24_cold_snapshot_tests;
