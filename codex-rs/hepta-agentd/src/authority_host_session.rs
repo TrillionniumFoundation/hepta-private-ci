@@ -37,10 +37,13 @@ pub(crate) use generation_initial::RootInitialRunStartFilesV1;
 
 #[path = "authority_host_generation_publication_session.rs"]
 mod generation_publication;
+pub(crate) use generation_publication::PreparedPublicationData;
+pub(crate) use generation_publication::PublicationInputData;
 pub use generation_publication::RootGenerationPublicationDeploymentSessionV1;
 pub use generation_publication::RootGenerationPublicationDeploymentV1;
 pub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use generation_publication::RootGenerationPublicationRegistrationV1;
+pub(crate) use generation_publication::publication_data;
 
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional

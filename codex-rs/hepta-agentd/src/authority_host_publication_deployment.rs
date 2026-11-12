@@ -21,15 +21,17 @@ use super::RootGenerationPublicationEnrollmentCapabilityV1;
 use super::RootGenerationPublicationRegistrationV1;
 
 #[path = "authority_host_publication_deployment_data.rs"]
-pub(in crate::authority_host_runtime::session) mod data;
+pub(crate) mod data;
 #[path = "authority_host_publication_deployment_files.rs"]
 pub(in crate::authority_host_runtime::session) mod files;
 #[path = "authority_host_publication_input_data.rs"]
 mod input_data;
+pub(crate) use input_data::PublicationInputData;
 #[path = "authority_host_publication_deployment_inputs.rs"]
 mod inputs;
 #[path = "authority_host_post_a_publication.rs"]
 pub(in crate::authority_host_runtime::session) mod post_a;
+pub(crate) use post_a::PreparedPublicationData;
 
 use data::DeploymentData;
 use data::LateMaterial;

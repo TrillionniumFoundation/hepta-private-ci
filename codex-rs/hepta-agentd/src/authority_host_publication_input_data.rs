@@ -4,6 +4,7 @@
 use std::path::PathBuf;
 
 use serde::Deserialize;
+use serde::Serialize;
 
 use super::data::CurrentData;
 use super::data::DeploymentData;
@@ -15,9 +16,9 @@ use super::data::SelectorTrustData;
 use super::data::WithdrawalData;
 use crate::RootPublicationFinalUseConsumerV1;
 
-#[derive(Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct PublicationInputData {
+pub(crate) struct PublicationInputData {
     pub mode: Mode,
     pub current_directory: PathBuf,
     pub previous_journal: PathBuf,

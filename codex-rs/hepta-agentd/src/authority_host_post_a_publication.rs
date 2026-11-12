@@ -11,6 +11,7 @@ use std::time::Duration;
 use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use serde::Deserialize;
+use serde::Serialize;
 
 use super::super::ACTIVE;
 use super::super::CLOSED;
@@ -30,6 +31,15 @@ use crate::authority_host_service::generation_publication::original_root;
 mod material;
 use material::MaterialData;
 use material::RetainedMaterial;
+
+/// Read-only fixed locations, public trust and physical pins from the private
+/// Root plan. Only the actual sealed route authenticates this ordinary data.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct PreparedPublicationData {
+    pub(crate) inputs: PublicationInputData,
+    pub(crate) material: MaterialData,
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -57,6 +67,18 @@ pub(in crate::authority_host_runtime::session) struct OriginalPostAPublicationDe
 }
 
 impl OriginalPostAPublicationFiles {
+    pub(in crate::authority_host_runtime::session) fn original_preparation_data(
+        &self,
+    ) -> io::Result<PreparedPublicationData> {
+        self.require_original_files()?;
+        let data = PreparedPublicationData {
+            inputs: self.data.clone(),
+            material: self.material.original_data()?,
+        };
+        self.require_original_files()?;
+        Ok(data)
+    }
+
     pub(in crate::authority_host_runtime::session) fn retain_original_publication(
         path: &Path,
         initial: &LearningIterationSnapshotV1,

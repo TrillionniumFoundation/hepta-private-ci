@@ -12,18 +12,19 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 
 use serde::Deserialize;
+use serde::Serialize;
 
 use super::super::files::OriginalFile;
 
-#[derive(Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct MaterialData {
-    path: PathBuf,
-    device: u64,
-    inode: u64,
-    uid: u32,
-    gid: u32,
-    mode: u32,
+pub(crate) struct MaterialData {
+    pub(crate) path: PathBuf,
+    pub(crate) device: u64,
+    pub(crate) inode: u64,
+    pub(crate) uid: u32,
+    pub(crate) gid: u32,
+    pub(crate) mode: u32,
 }
 
 pub(super) struct RetainedMaterial {
@@ -40,6 +41,11 @@ pub(super) struct MaterialObservation<'a> {
 }
 
 impl RetainedMaterial {
+    pub(super) fn original_data(&self) -> io::Result<MaterialData> {
+        self.require_original()?;
+        Ok(self.expected.clone())
+    }
+
     pub(super) fn open_original(expected: MaterialData, uid: u32, gid: u32) -> io::Result<Self> {
         if uid == 0
             || gid == 0

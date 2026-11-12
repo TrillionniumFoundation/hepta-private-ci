@@ -23,8 +23,11 @@ pub(super) use runtime::serve_optional_until;
 
 #[path = "authority_host_publication_deployment.rs"]
 pub(super) mod deployment;
+pub(crate) use deployment::PreparedPublicationData;
+pub(crate) use deployment::PublicationInputData;
 pub use deployment::RootGenerationPublicationDeploymentSessionV1;
 pub use deployment::RootGenerationPublicationDeploymentV1;
+pub(crate) use deployment::data as publication_data;
 
 #[path = "authority_host_original_publication_route.rs"]
 mod original_route;
