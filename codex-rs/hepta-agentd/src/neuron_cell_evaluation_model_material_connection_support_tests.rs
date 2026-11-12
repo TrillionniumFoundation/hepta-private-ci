@@ -13,6 +13,7 @@ use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
 use super::super::codec::Body;
+use super::super::codec::Reader;
 use super::*;
 use crate::OriginalCellEvaluationHostV1;
 
@@ -243,6 +244,78 @@ impl OriginalCellEvaluationModelMaterialV1 {
         assert!(self.fixture_original_material_pages() > 1);
         assert!(self.fixture_original_material_pages() <= MAX_PAGES);
         let raw = &body.members[0];
+        // These are unmodified bytes from the actual Product Qualification
+        // producer, not a value encoded by this reader or a reconstructed seal.
+        // Locate its two u64-counted lists independently of ids_u64.
+        let mut qualification = Reader::new(&raw.qualification);
+        qualification.literal(b"hepta.intelligence-eval.product-qualification.v4")?;
+        qualification.take(/*count*/ 7 * 32)?;
+        for _ in 0..3 {
+            qualification.id()?;
+        }
+        qualification.u8()?;
+        let failed_start = qualification.offset;
+        let failed_count = usize::try_from(qualification.u64()?)?;
+        anyhow::ensure!(failed_count <= 1024, "actual failed metric count");
+        let failed = (0..failed_count)
+            .map(|_| qualification.id())
+            .collect::<Result<Vec<_>, _>>()?;
+        let failed_end = qualification.offset;
+        qualification.id()?;
+        qualification.principal()?;
+        qualification.principal()?;
+        assert_eq!(qualification.u8()?, 0);
+        let snapshots_start = qualification.offset;
+        let snapshots_count = usize::try_from(qualification.u64()?)?;
+        anyhow::ensure!(
+            (1..=1024).contains(&snapshots_count),
+            "actual snapshot count"
+        );
+        let snapshots = (0..snapshots_count)
+            .map(|_| qualification.id())
+            .collect::<Result<Vec<_>, _>>()?;
+        let snapshots_end = qualification.offset;
+        assert_eq!([qualification.u8()?, qualification.u8()?], [0, 0]);
+        qualification.finish()?;
+        for (start, end, expected) in [
+            (failed_start, failed_end, failed),
+            (snapshots_start, snapshots_end, snapshots),
+        ] {
+            let original = &raw.qualification[start..end];
+            let mut reader = Reader::new(original);
+            assert_eq!(reader.ids_u64()?, expected);
+            reader.finish()?;
+            assert!(Reader::new(&original[..7]).ids_u64().is_err());
+            for count in [u64::try_from(expected.len())? + 1, 1025, u64::MAX] {
+                // Keep the complete original material; alter only this count.
+                let mut changed = Body::decode(&self.bytes)?;
+                changed.members[0].qualification[start..start + 8]
+                    .copy_from_slice(&count.to_be_bytes());
+                assert!(
+                    verify::material(
+                        &self.context,
+                        &self.evaluation,
+                        &changed.encode()?,
+                        current,
+                    )
+                    .is_err(),
+                    "changed original Qualification count at {start}: {count}"
+                );
+            }
+            // Reject a u32 fallback even when all identifiers and other
+            // authenticated bytes are retained exactly.
+            let mut changed = Body::decode(&self.bytes)?;
+            drop(changed.members[0].qualification.drain(start..start + 4));
+            assert!(
+                verify::material(
+                    &self.context,
+                    &self.evaluation,
+                    &changed.encode()?,
+                    current,
+                )
+                .is_err()
+            );
+        }
         let record: serde_json::Value = serde_json::from_slice(&raw.record)?;
         let candidate: CellBackendManifestV2 =
             serde_json::from_value(record["candidate"]["manifest"].clone())?;

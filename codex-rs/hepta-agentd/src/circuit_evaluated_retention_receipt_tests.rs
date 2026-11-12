@@ -388,7 +388,7 @@ async fn evaluated_selector_refuses_either_original_owner_after_signed_completio
                 read,
                 Err(SelectionError::Evaluated(
                     crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
-                        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
+                        crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
                     )
                 ))
             )),

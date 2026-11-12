@@ -110,7 +110,7 @@ async fn evaluated_retention_preserved_owner_connections_reject_withdrawal_after
                 f.host.retention_b.withdraw_target()?;
                 assert!(matches!(
                     evaluator.readback().await,
-                    Err(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain)
+                    Err(crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable)
                 ));
             }
             _ => unreachable!(),

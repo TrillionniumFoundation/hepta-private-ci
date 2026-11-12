@@ -152,7 +152,43 @@ pub(crate) fn serve_evidence<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_evidence_channel(&mut channel))
+    std::thread::spawn(move || {
+        for request_id in 1..=128_u64 {
+            let exchange_started = std::time::Instant::now();
+            let mut callback_started_after = None;
+            let mut callback_elapsed = None;
+            let mut response_bytes = None;
+            let mut callback_error = None;
+            let exchange = channel.exchange(|bytes| {
+                // The first-byte wait is lifetime-bounded, not part of the
+                // 500-ms exchange deadline. Measure the real callback once.
+                let callback_started = std::time::Instant::now();
+                callback_started_after = Some(callback_started.duration_since(exchange_started));
+                let original = owner.fixture_original_evidence_response(bytes, request_id);
+                callback_elapsed = Some(callback_started.elapsed());
+                match original {
+                    Ok(response) => {
+                        response_bytes = Some(response.len());
+                        Ok(response)
+                    }
+                    Err(error) => {
+                        callback_error = Some(error);
+                        Err(HostIssuerTransportError::InvalidRequest)
+                    }
+                }
+            });
+            // Emit after exchange returns, so diagnostics do not consume its
+            // deadline. No payload, signature or replacement read is logged.
+            eprintln!(
+                "ORIGINAL_C_EVIDENCE_EXCHANGE request_id={request_id} callback_started_after={callback_started_after:?} callback_elapsed={callback_elapsed:?} response_bytes={response_bytes:?} callback_error={callback_error:?} exchange_elapsed={:?} result={exchange:?}",
+                exchange_started.elapsed()
+            );
+            if !exchange? {
+                return Ok(request_id - 1);
+            }
+        }
+        Err(Error::Unavailable)
+    })
 }
 
 pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(

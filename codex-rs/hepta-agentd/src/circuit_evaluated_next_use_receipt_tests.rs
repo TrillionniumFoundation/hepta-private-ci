@@ -145,7 +145,8 @@ async fn evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
             &evaluator,
             &selector,
         ))
-        .await?;
+        .await
+        .map_err(|error| anyhow::anyhow!("first original completed C attestation: {error:?}"))?;
     assert_eq!(completed.snapshot().receipts.len(), 6);
     assert_eq!(
         &completed.snapshot().receipts[..5],
@@ -335,7 +336,7 @@ async fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() ->
             "evaluator" => assert!(matches!(
                 result,
                 Err(NextUseError::Evaluated(PublicationError::Evaluation(
-                    crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
+                    crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
                 )))
             )),
             "selector" => assert!(matches!(
@@ -413,18 +414,20 @@ async fn evaluated_c_rereads_actual_source_after_the_final_s_response() -> anyho
     let files = SelectorFiles::new()?;
     let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
     let before = files.bytes()?;
-    assert!(matches!(
-        owner
-            .attest_original_evaluated_completion(next_sources(
-                selected.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-                &selector,
-            ))
-            .await,
-        Err(NextUseError::Observation(_))
-    ));
+    let result = owner
+        .attest_original_evaluated_completion(next_sources(
+            selected.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+            &selector,
+        ))
+        .await;
+    assert!(
+        matches!(&result, Err(NextUseError::Observation(_))),
+        "after the final actual S response: {:?}",
+        result.as_ref().err()
+    );
     // The actual C claim/signature exists, but no successful response may use
     // the pre-await source observation after the original source changed.
     assert_ne!(files.bytes()?, before);
@@ -487,20 +490,25 @@ async fn evaluated_c_recovery_of_missing_receipt_never_claims_or_signs() -> anyh
     // Deliberately supply Fresh S pins: recover must attenuate them and must
     // not reinterpret Missing as permission to make a new Observer claim.
     let mut recovered = observer(&files, &f, &selected, OpenReceipt::Readback)?;
-    assert!(matches!(
-        recovered
-            .attest_original_evaluated_completion(next_sources(
-                selected.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-                &selector,
-            ))
-            .await,
-        Err(NextUseError::Owner(OwnerError::Store(
-            ProductEvaluationExecutionStoreErrorV1::Missing
-        )))
-    ));
+    let result = recovered
+        .attest_original_evaluated_completion(next_sources(
+            selected.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+            &selector,
+        ))
+        .await;
+    assert!(
+        matches!(
+            &result,
+            Err(NextUseError::Owner(OwnerError::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing
+            )))
+        ),
+        "original recovered missing C: {:?}",
+        result.as_ref().err()
+    );
     assert_eq!(files.bytes()?, untouched);
     assert!(matches!(
         recovered

@@ -336,6 +336,18 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()
 -> anyhow::Result<()> {
+    let started = std::time::Instant::now();
+    let phase = |name: &str| {
+        eprintln!(
+            "HEPTA_CANDIDATE_FAULTS phase={name} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+    };
+    phase("wire-bootstrap");
+    // These faults change only a reply after the original owner has read it.
+    // Keep that completed owner, but consume a separate transport for each fault.
+    let run = completed_candidate().await?;
+    let mut wire_pages = 0_u64;
     for fault in [
         Fault::WrongPage,
         Fault::WrongCompletion,
@@ -344,7 +356,8 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::CorruptHeads,
         Fault::CloseAfterFirst,
     ] {
-        let run = completed_candidate().await?;
+        phase("wire-case");
+        eprintln!("HEPTA_CANDIDATE_FAULTS fault={fault:?}");
         let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
         let (connection, peer) = page_peer(
             Arc::clone(&run.owner),
@@ -391,6 +404,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             Err(CandidateError::Unavailable)
         ));
         drop(client);
+        let page_count = peer.frames.load(Ordering::Acquire);
         assert_eq!(
             peer.finish()?,
             if matches!(fault, Fault::CorruptHeads) {
@@ -403,10 +417,15 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             (run.fixture.training_bytes()?, run.fixture.bytes()?),
             original
         );
-        run.close()?;
+        wire_pages += page_count;
     }
+    let counts = run.close()?;
+    eprintln!("HEPTA_CANDIDATE_FAULTS pages={wire_pages} material_counts={counts:?}");
+    assert!(counts.iter().all(|count| *count < 128));
 
+    phase("renewal-bootstrap");
     let run = completed_candidate().await?;
+    phase("renewal-ready");
     let context = support::context(&run.fixture, &run.dataset);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let mut renewed = run.training.attestation().clone();
@@ -531,7 +550,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     );
     run.close()?;
 
+    phase("withdrawal-bootstrap");
     let mut run = completed_candidate().await?;
+    phase("withdrawal-ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -558,6 +579,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    phase("withdrawal-response-held");
     run.fixture.withdraw()?;
     release.send(())?;
     assert!(matches!(
@@ -587,7 +609,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         "a real original source/evidence read must reject withdrawal"
     );
 
+    phase("cancel-bootstrap");
     let run = completed_candidate().await?;
+    phase("cancel-ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -614,6 +638,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    phase("cancel-response-held");
     pending.abort();
     match pending.await {
         Err(error) => assert!(error.is_cancelled()),
@@ -633,6 +658,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         original
     );
     run.close()?;
+    phase("complete");
     Ok(())
 }
 

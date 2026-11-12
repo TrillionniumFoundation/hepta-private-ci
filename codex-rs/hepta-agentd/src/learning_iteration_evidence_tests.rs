@@ -267,7 +267,7 @@ pub(crate) fn fixture_original_receipt_client_until_close(
     let expected = fixture.signature.payload_digest.to_string();
     let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
         for index in 0..128 {
-            let exchanged = channel.exchange(|bytes| {
+            let exchange = channel.exchange(|bytes| {
                 let request: wire::Request = serde_json::from_slice(bytes)
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
                 assert_eq!(request.request_id, index as u64 + 1);
@@ -279,11 +279,23 @@ pub(crate) fn fixture_original_receipt_client_until_close(
                 assert!(encoded.get("signature").is_none());
                 serde_json::to_vec(&response(request, fixture.evidence()))
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
-            })?;
+            });
+            if let Err(error) = &exchange {
+                eprintln!(
+                    "ORIGINAL_EVIDENCE_FIXTURE_FAILURE actor={} completed={index} next_request_id={} error={error:?}",
+                    fixture.receipt.actor_id.as_str(),
+                    index + 1
+                );
+            }
+            let exchanged = exchange?;
             if !exchanged {
                 return Ok(index);
             }
         }
+        eprintln!(
+            "ORIGINAL_EVIDENCE_FIXTURE_BUDGET actor={} completed=128",
+            fixture.receipt.actor_id.as_str()
+        );
         anyhow::bail!("bounded original evidence fixture exceeded its request budget")
     });
     Ok((client, peer))

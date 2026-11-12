@@ -220,6 +220,16 @@ impl<'a> Reader<'a> {
     pub(super) fn ids(&mut self) -> Result<Vec<StableId>, Error> {
         (0..self.count(1024)?).map(|_| self.id()).collect()
     }
+    // Product Qualification v4 uses u64 counts; request/decision v1 uses u32.
+    pub(super) fn ids_u64(&mut self) -> Result<Vec<StableId>, Error> {
+        let count = usize::try_from(self.u64()?)
+            .map_err(|_| Error::Binding("bounded original material count"))?;
+        // Every identifier still needs its original four-byte length prefix.
+        if count > 1024 || count > self.bytes.len().saturating_sub(self.offset) / 4 {
+            return Err(Error::Binding("bounded original material count"));
+        }
+        (0..count).map(|_| self.id()).collect()
+    }
     pub(super) fn principal(&mut self) -> Result<AuthenticatedPrincipalV1, Error> {
         Ok(AuthenticatedPrincipalV1 {
             principal_id: self.id()?,

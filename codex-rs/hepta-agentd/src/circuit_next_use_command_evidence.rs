@@ -86,3 +86,16 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         Ok(serde_json::to_vec(&response)?)
     }
 }
+
+#[cfg(test)]
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {
+    /// Expose only this unchanged original callback to the same-process fixture.
+    /// No alternate response, transport policy, owner or signature is supplied.
+    pub(super) fn fixture_original_evidence_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.evidence_response(bytes, request_id)
+    }
+}
