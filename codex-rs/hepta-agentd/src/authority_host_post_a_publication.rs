@@ -32,6 +32,11 @@ mod material;
 use material::MaterialData;
 use material::RetainedMaterial;
 
+#[path = "authority_host_successor_deployment_files.rs"]
+mod successor;
+use successor::RootOriginalSuccessorFilesV1;
+pub(crate) use successor::RootSuccessorTaskFilesDataV1;
+
 /// Read-only fixed locations, public trust and physical pins from the private
 /// Root plan. Only the actual sealed route authenticates this ordinary data.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -39,6 +44,7 @@ use material::RetainedMaterial;
 pub(crate) struct PreparedPublicationData {
     pub(crate) inputs: PublicationInputData,
     pub(crate) material: MaterialData,
+    pub(crate) successor: RootSuccessorTaskFilesDataV1,
 }
 
 #[derive(Deserialize)]
@@ -49,6 +55,7 @@ struct PostAPublicationData {
     initial: String,
     inputs: PublicationInputData,
     material: MaterialData,
+    successor: RootSuccessorTaskFilesDataV1,
 }
 
 pub(in crate::authority_host_runtime::session) struct OriginalPostAPublicationFiles {
@@ -59,6 +66,7 @@ pub(in crate::authority_host_runtime::session) struct OriginalPostAPublicationFi
     inputs: OriginalInputs,
     directories: Vec<DirectoryPin>,
     material: RetainedMaterial,
+    successor: Arc<RootOriginalSuccessorFilesV1>,
 }
 
 pub(in crate::authority_host_runtime::session) struct OriginalPostAPublicationDeployment {
@@ -74,6 +82,7 @@ impl OriginalPostAPublicationFiles {
         let data = PreparedPublicationData {
             inputs: self.data.clone(),
             material: self.material.original_data()?,
+            successor: self.successor.original_data()?,
         };
         self.require_original_files()?;
         Ok(data)
@@ -89,8 +98,8 @@ impl OriginalPostAPublicationFiles {
         let (descriptor, bytes) = MetadataFile::open_metadata(path)?;
         let data: PostAPublicationData =
             serde_json::from_slice(&bytes).map_err(io::Error::other)?;
-        if data.schema != 1
-            || data.purpose != "runtime.learning.post-a-publication-deployment.v1"
+        if data.schema != 2
+            || data.purpose != "runtime.learning.post-a-publication-deployment.v2"
             || data.initial != initial.head_digest.to_string()
             || !initial.receipts.is_empty()
             || data.inputs.issuer_keys.is_empty()
@@ -114,6 +123,12 @@ impl OriginalPostAPublicationFiles {
             withdrawal: OriginalFile::open_original(&data.inputs.withdrawal_file)?,
         };
         let material = RetainedMaterial::open_original(data.material, uid, gid)?;
+        let successor = RootOriginalSuccessorFilesV1::open_original(
+            data.successor,
+            uid,
+            gid,
+            data.inputs.mode,
+        )?;
         for file in [
             &inputs.previous_journal,
             &inputs.previous_witness,
@@ -122,7 +137,9 @@ impl OriginalPostAPublicationFiles {
             &inputs.withdrawal,
         ] {
             material.require_distinct(file)?;
+            successor.require_distinct(file)?;
         }
+        successor.require_distinct_material(&material)?;
         let held = Arc::new(Self {
             descriptor,
             data: data.inputs,
@@ -131,6 +148,7 @@ impl OriginalPostAPublicationFiles {
             inputs,
             directories,
             material,
+            successor,
         });
         held.require_original_files()?;
         Ok(held)
@@ -168,7 +186,8 @@ impl OriginalPostAPublicationFiles {
             directory.require_directory()?;
         }
         self.inputs.require_original_inputs()?;
-        self.material.require_original()
+        self.material.require_original()?;
+        self.successor.require_original()
     }
 }
 
