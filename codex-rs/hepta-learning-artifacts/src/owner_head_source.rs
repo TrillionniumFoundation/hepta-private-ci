@@ -50,7 +50,7 @@ impl ArtifactHeadSigningConfigV1 {
         bytes.extend_from_slice(self.storage_binding.as_array());
         bytes.extend_from_slice(self.writer_lease_digest().as_array());
         bytes.extend_from_slice(
-            crate::publication::digest_intent(
+            crate::publication::digest_original_registry_intent(
                 &self.publication.operation_id,
                 &self.publication.admission,
                 self.publication.expected_registry_predecessor_head,

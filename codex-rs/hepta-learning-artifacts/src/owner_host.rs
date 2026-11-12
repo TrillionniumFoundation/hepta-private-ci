@@ -57,6 +57,9 @@ mod readback;
 #[path = "owner_host_registry_durable.rs"]
 mod registry_durable;
 
+#[path = "owner_host_preparation.rs"]
+mod preparation;
+
 #[path = "owner_head_source.rs"]
 mod head_source;
 pub use head_source::ArtifactHeadSigningConfigV1;

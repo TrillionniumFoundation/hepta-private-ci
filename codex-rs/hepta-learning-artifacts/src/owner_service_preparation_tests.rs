@@ -150,6 +150,18 @@ fn original_registry_lost_return_and_cold_readback_cannot_recreate_continuation(
         .fixture("prepare");
     let head = signed(prepared.registry_durable());
     let before = files(&directory.0);
+    // A complete snapshot from this protocol must not become a legacy resume
+    // capability, even while all original bytes and authority are current.
+    assert!(matches!(
+        ArtifactPublicationTransactionV1::from_snapshot(prepared.transaction.snapshot()),
+        Err(ArtifactPublicationError::SnapshotMismatch)
+    ));
+    assert!(matches!(
+        service.host.resume_publication(prepared.transaction.snapshot(), 21),
+        Err(crate::ArtifactOwnerHostError::Publication(
+            ArtifactPublicationError::SnapshotMismatch
+        ))
+    ));
     assert!(matches!(
         service.prepare_original_registry_with_clock(context.clone(), b"payload", &|| Ok(21)),
         Err(OriginalArtifactPreparationErrorV1::ReadbackRequired)
@@ -171,6 +183,27 @@ fn original_registry_lost_return_and_cold_readback_cannot_recreate_continuation(
     drop(service);
     // Explicit original deployment open, followed only by the pure read path.
     let mut recovered = LearningArtifactOwnerService::open(config).fixture("cold open");
+    assert!(
+        recovered
+            .read_original_registry_durable_with_clock(&context, &|| Ok(21))
+            .is_ok()
+    );
+    // A cold service no longer has the in-memory active flag. The original
+    // immutable intent must still refuse the old write-and-resume entrance.
+    assert!(matches!(
+        recovered.publish(crate::LearningArtifactPublishRequestV1 {
+            operation_id: context.operation_id.clone(),
+            admission: context.admission.clone(),
+            payload: b"payload".to_vec(),
+            signed_current_head: head.clone(),
+            expected_registry_predecessor_head: context.expected_registry_predecessor_head,
+            now: 21,
+        }),
+        Err(crate::LearningArtifactOwnerServiceError::Host(
+            crate::ArtifactOwnerHostError::IdentityConflict
+        ))
+    ));
+    assert_eq!(files(&directory.0), before);
     assert!(
         recovered
             .read_original_registry_durable_with_clock(&context, &|| Ok(21))

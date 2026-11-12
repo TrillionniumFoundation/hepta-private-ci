@@ -141,7 +141,7 @@ impl UntrustedArtifactRegistryDurableV1 {
         {
             return Err(Error::CheckpointMismatch);
         }
-        let transaction = ArtifactPublicationTransactionV1::from_snapshot(
+        let transaction = ArtifactPublicationTransactionV1::from_original_registry_snapshot(
             ArtifactPublicationTransactionSnapshotV1 {
                 intent: ArtifactPublicationIntentV1 {
                     operation_id: context.operation_id.clone(),

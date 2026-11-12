@@ -175,7 +175,7 @@ impl LearningArtifactOwnerHost {
             {
                 return Err(Error::Context);
             }
-            ArtifactPublicationTransactionV1::from_snapshot(
+            ArtifactPublicationTransactionV1::from_original_registry_snapshot(
                 ArtifactPublicationTransactionSnapshotV1 {
                     intent: ArtifactPublicationIntentV1 {
                         operation_id: context.operation_id.clone(),
@@ -218,7 +218,7 @@ impl LearningArtifactOwnerHost {
         predecessor_snapshot.head_digest = context.expected_registry_predecessor_head;
         let predecessor = ArtifactRegistry::from_snapshot(predecessor_snapshot)
             .map_err(ArtifactOwnerHostError::from)?;
-        let mut transaction = ArtifactPublicationTransactionV1::begin(
+        let mut transaction = ArtifactPublicationTransactionV1::begin_original_registry(
             context.operation_id.clone(),
             context.admission.clone(),
             withdrawals,

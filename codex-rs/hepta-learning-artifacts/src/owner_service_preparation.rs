@@ -144,7 +144,7 @@ impl LearningArtifactOwnerService {
             return Err(OriginalArtifactPreparationErrorV1::Context);
         }
         // Complete validation before consuming the original writer entrance.
-        ArtifactPublicationTransactionV1::begin(
+        ArtifactPublicationTransactionV1::begin_original_registry(
             context.operation_id.clone(),
             context.admission.clone(),
             &self.withdrawal_registry,
@@ -154,7 +154,7 @@ impl LearningArtifactOwnerService {
         )?;
         self.recovery_required = Some(context.operation_id.clone());
         self.original_preparation_active = true;
-        let mut transaction = self.host.begin_publication(
+        let mut transaction = self.host.begin_original_registry_publication(
             context.operation_id.clone(),
             context.admission.clone(),
             &self.withdrawal_registry,
