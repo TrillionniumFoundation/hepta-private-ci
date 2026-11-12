@@ -1,0 +1,764 @@
+//! Actual root-authenticated observation and original writer authority. The
+//! retained session owns its single stream; dropping it closes authority.
+use crate::AgentdRootAuthorityError;
+use crate::AgentdRootAuthorityPeer;
+use crate::AgentdRootWriterTrust;
+use crate::HOST_AUTHORITY_OBSERVATION_V2;
+use crate::HOST_WRITER_AUTHORIZATION_V1;
+use crate::HostAuthorityObservationRequestV2;
+use crate::HostAuthorityObservationResponseV2;
+use crate::HostWriterAuthorizationReadRequestV1;
+use crate::HostWriterAuthorizationReadResponseV1;
+use crate::root_observation_cache::MAX_AGE_NS;
+use crate::root_observation_cache::RootObservationCache;
+use crate::root_observation_cache::boottime_ns;
+use crate::root_observation_stream::RootObservationStream;
+use crate::root_observation_stream::check_lifetime;
+use crate::root_writer_proof::VerifiedRootWriterProof;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityTrustError;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_memory::ProductionAuthorityLease;
+use codex_hepta_memory::ProductionAuthorityVerifier;
+use std::fs::File;
+use std::future::Future;
+use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixStream;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::OnceLock;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::task::Context;
+use std::task::Poll;
+use std::time::Duration;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use crate::same_actor_q24_phase_gate::SameActorPhaseStream;
+use tokio::io::unix::AsyncFd;
+
+struct LiveRoot {
+    proof: VerifiedRootWriterProof,
+    cache: RootObservationCache,
+    root: Arc<AsyncFd<OwnedFd>>,
+    end_boottime_ns: u64,
+    // None preserves the original default session. The explicit phase retains
+    // the same closed gate throughout its original and later purposes.
+    phase: Option<Arc<SameActorPhaseGate>>,
+    active: AtomicBool,
+    consumers: Mutex<Vec<FinalUseAuthority>>,
+    // One asynchronous admission token covers the entire observation and
+    // consumer barrier. There is no shared payload behind this permit.
+    serial: tokio::sync::Semaphore,
+    #[cfg(test)]
+    refresh_failed: AtomicBool,
+}
+
+// Only operational lifetimes retain this private, exact original File. Fenced
+// read-only LiveRoot clones cannot keep a retired registered owner locked.
+type WriterCustody = Arc<OnceLock<Arc<File>>>;
+
+// Field order drops the complete original future, including its stream and
+// consumers, before releasing its share of the original registered File.
+struct RootWorker<F> {
+    future: Pin<Box<F>>,
+    _writer_file: WriterCustody,
+}
+impl<F: Future<Output = ()>> Future for RootWorker<F> {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<()> {
+        self.get_mut().future.as_mut().poll(context)
+    }
+}
+
+// A queued blocking closure also drops the actual consumers before File even
+// when its executor shuts down without ever starting the original CAS work.
+struct ConsumerSyncJob {
+    consumers: Vec<FinalUseAuthority>,
+    head: FinalUseRevocations,
+    writer_file: WriterCustody,
+}
+impl ConsumerSyncJob {
+    fn run(self) -> Result<(), AgentdRootAuthorityError> {
+        let _writer_file = self.writer_file;
+        let consumers = self.consumers;
+        let head = self.head;
+        for owner in consumers {
+            if owner
+                .revocation_head()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+                != head
+            {
+                owner
+                    .update_revocations(head.clone())
+                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            }
+            if owner
+                .revocation_head()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+                != head
+            {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+        }
+        Ok(())
+    }
+}
+impl LiveRoot {
+    fn current(
+        &self,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+        let Some(phase) = &self.phase else {
+            return self.current_original();
+        };
+        let mut closing = CloseSameActorPhaseOnDrop::new(phase);
+        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let value = self.current_original()?;
+        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        closing.disarm();
+        Ok(value)
+    }
+
+    // All original lifetime, cache, proof and final peer checks remain here.
+    fn current_original(
+        &self,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+        if check_lifetime(self.root.get_ref())
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-pre-lifetime error={_error:?}");
+            })
+            .is_err()
+            || boottime_ns()
+                .inspect_err(|_error| {
+                    #[cfg(test)]
+                    eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-boottime error={_error:?}");
+                })
+                .inspect(|_now| {
+                    #[cfg(test)]
+                    if *_now >= self.end_boottime_ns {
+                        eprintln!(
+                            "ROOT_SESSION_DIAGNOSTIC phase=current-session-expired now_ns={} end_ns={}",
+                            _now, self.end_boottime_ns,
+                        );
+                    }
+                })
+                .map_or(true, |now| now >= self.end_boottime_ns)
+        {
+            self.cache.fence();
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        let (observation, now) = self.cache.current().inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-cache error={_error:?}");
+        })?;
+        // Bounded cache admission may have waited. Preserve the SAME
+        // session's absolute end before this read can authorize a caller.
+        if boottime_ns()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}"
+                );
+            })
+            .map_or(true, |checked| checked >= self.end_boottime_ns)
+        {
+            self.cache.fence();
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        if self
+            .proof
+            .matches_observation(&observation)
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-proof error={_error:?}");
+            })
+            .is_err()
+            || now
+                >= self
+                    .proof
+                    .authority()
+                    .lease_expires_at_unix_seconds
+                    .saturating_mul(1000)
+            || check_lifetime(self.root.get_ref())
+                .inspect_err(|_error| {
+                    #[cfg(test)]
+                    eprintln!(
+                        "ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}"
+                    );
+                })
+                .is_err()
+        {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_SESSION_DIAGNOSTIC phase=current-final-check now_unix_ms={} lease_expiry_seconds={}",
+                now,
+                self.proof.authority().lease_expires_at_unix_seconds,
+            );
+            self.cache.fence();
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        Ok((observation, now))
+    }
+}
+impl AuthorityClock for LiveRoot {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        self.current()
+            .map(|(_, now)| now)
+            .map_err(|_| AuthorityTrustError::Unavailable)
+    }
+}
+impl ProductionAuthorityVerifier for LiveRoot {
+    fn verify(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<(), String> {
+        if !self.active.load(Ordering::Acquire)
+            || authority != self.proof.authority()
+            || &authority.agent_id != expected_agent
+        {
+            return Err(
+                "root writer registration is inactive or differs from its verified proof".into(),
+            );
+        }
+        self.current()
+            .map(|_| ())
+            .map_err(|_| "root writer observation is unavailable or fenced".into())
+    }
+
+    fn verify_sender_process_binding(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+        local_lease_id: &str,
+        local_generation: u64,
+        spawn_generation: u64,
+    ) -> Result<(), String> {
+        self.verify(authority, expected_agent)?;
+        let (observation, _) = self
+            .current()
+            .map_err(|_| "root writer observation is unavailable or fenced".to_string())?;
+        if observation.spawn_generation != spawn_generation
+            || observation.writer.local_lease_id != local_lease_id
+            || observation.writer.local_lease_generation != local_generation
+        {
+            return Err(
+                "sender process binding differs from the verified root registration".into(),
+            );
+        }
+        Ok(())
+    }
+}
+
+/// Keep this handle alive for the whole original owner lifetime. `connect`
+/// starts only a read feed. The writer verifier remains disabled until the
+/// actual independently opened FinalUse consumers are installed and synced.
+pub struct AgentdRootAuthoritySession {
+    live: Arc<LiveRoot>,
+    worker: tokio::task::JoinHandle<()>,
+    writer_file: WriterCustody,
+}
+impl AgentdRootAuthoritySession {
+    pub async fn connect(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+        trust: AgentdRootWriterTrust,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        let created = boottime_ns()?;
+        let boot_id = peer.boot_id.clone();
+        let stream =
+            RootObservationStream::from_stream(stream, peer, root_pidfd, timeout, lifetime)?;
+        Self::connect_owned_stream(stream, boot_id, created, lifetime, trust).await
+    }
+    async fn connect_owned_stream(
+        stream: RootObservationStream,
+        boot_id: String,
+        created: u64,
+        lifetime: Duration,
+        trust: AgentdRootWriterTrust,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        let response: HostWriterAuthorizationReadResponseV1 = stream
+            .read(&HostWriterAuthorizationReadRequestV1 {
+                schema_version: 1,
+                operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+            })
+            .await?;
+        if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;
+        let live = Arc::new(LiveRoot {
+            proof,
+            cache: RootObservationCache::new(boot_id),
+            root: stream.root_lifetime(),
+            end_boottime_ns: created
+                .checked_add(
+                    u64::try_from(lifetime.as_nanos())
+                        .map_err(|_| AgentdRootAuthorityError::Refused)?,
+                )
+                .ok_or(AgentdRootAuthorityError::Refused)?,
+            phase: None,
+            active: AtomicBool::new(false),
+            consumers: Mutex::new(Vec::new()),
+            serial: tokio::sync::Semaphore::new(1),
+            #[cfg(test)]
+            refresh_failed: AtomicBool::new(false),
+        });
+        let writer_file = Arc::new(OnceLock::new());
+        refresh(&live, &stream, &writer_file).await?;
+        let background = Arc::clone(&live);
+        let background_file = Arc::clone(&writer_file);
+        let worker = tokio::spawn(RootWorker {
+            future: Box::pin(async move {
+                let _fence = FenceOnDrop(Arc::clone(&background));
+                loop {
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    if refresh(&background, &stream, &background_file)
+                        .await
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            eprintln!(
+                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
+                            );
+                        })
+                        .is_err()
+                    {
+                        return;
+                    }
+                }
+            }),
+            _writer_file: Arc::clone(&writer_file),
+        });
+        Ok(Self {
+            live,
+            worker,
+            writer_file,
+        })
+    }
+    /// Only the explicit phase receiver calls this with its original captured
+    /// session BOOTTIME end and the SAME gate used for every other lane. The
+    /// gate's Instant is the receiver/launcher's earlier local capture; the
+    /// Root-sealed BOOTTIME cap remains a separate, possibly tighter bound.
+    pub(crate) fn connect_same_actor_phase_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        original_session_end_boottime_ns: u64,
+        trust: AgentdRootWriterTrust,
+        phase: Arc<SameActorPhaseGate>,
+    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> {
+        // Captured outside the async body. Dropping an unpolled connection
+        // attempt closes all existing phase lanes too.
+        let mut closing = CloseSameActorPhaseOnDrop::new(&phase);
+        async move {
+            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            if original_session_end_boottime_ns == 0
+                || phase.deadline().boottime_ns() > original_session_end_boottime_ns
+            {
+                return Err(AgentdRootAuthorityError::Refused);
+            }
+            let stop = phase.retain_original_stream(&stream)
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            let boot_id = peer.boot_id.clone();
+            let stream = RootObservationStream::from_stream_until(
+                stream, peer, root_pidfd, timeout, phase.deadline().instant(),
+            )?;
+            let session = Self::connect_original_phase_stream(
+                stream, boot_id, original_session_end_boottime_ns, trust,
+                Arc::clone(&phase), stop,
+            ).await?;
+            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            closing.disarm();
+            Ok(session)
+        }
+    }
+
+    async fn connect_original_phase_stream(
+        stream: RootObservationStream,
+        boot_id: String,
+        original_session_end_boottime_ns: u64,
+        trust: AgentdRootWriterTrust,
+        phase: Arc<SameActorPhaseGate>,
+        stop: SameActorPhaseStream,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        let response: HostWriterAuthorizationReadResponseV1 = stream
+            .read(&HostWriterAuthorizationReadRequestV1 {
+                schema_version: 1,
+                operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+            })
+            .await?;
+        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;
+        let live = Arc::new(LiveRoot {
+            proof,
+            cache: RootObservationCache::new(boot_id),
+            root: stream.root_lifetime(),
+            // This is the actual original receiver capture, never now + a
+            // later remaining lifetime or a value learned from a later offer.
+            end_boottime_ns: original_session_end_boottime_ns,
+            phase: Some(Arc::clone(&phase)),
+            active: AtomicBool::new(false),
+            consumers: Mutex::new(Vec::new()),
+            serial: tokio::sync::Semaphore::new(1),
+            #[cfg(test)]
+            refresh_failed: AtomicBool::new(false),
+        });
+        let writer_file = Arc::new(OnceLock::new());
+        refresh(&live, &stream, &writer_file).await?;
+        let background = Arc::clone(&live);
+        let background_file = Arc::clone(&writer_file);
+        // These guards already exist before the future is created. Even a
+        // worker which never receives its first poll owns shared cancellation.
+        let worker_close = CloseSameActorPhaseOnDrop::new(&phase);
+        let worker = tokio::spawn(RootWorker {
+            future: Box::pin(async move {
+                let _worker_close = worker_close;
+                let _stream_stop = stop;
+                let _fence = FenceOnDrop(Arc::clone(&background));
+                loop {
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    if refresh(&background, &stream, &background_file)
+                        .await
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            eprintln!(
+                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
+                            );
+                        })
+                        .is_err()
+                    {
+                        return;
+                    }
+                }
+            }),
+            _writer_file: Arc::clone(&writer_file),
+        });
+        Ok(Self { live, worker, writer_file })
+    }
+
+    /// The wrapper captures cancellation before polling and covers every
+    /// original activation prefix, including clock/serial/duplicate refusals.
+    pub(crate) fn activate_original_phase_final_use_owners(
+        &self,
+        consumers: Vec<FinalUseAuthority>,
+    ) -> impl Future<Output = Result<(), AgentdRootAuthorityError>> + '_ {
+        let mut closing = self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new);
+        async move {
+            let phase = self.live.phase.as_ref().ok_or(AgentdRootAuthorityError::Refused)?;
+            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            self.activate_final_use_owners(consumers).await?;
+            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            if let Some(closing) = &mut closing { closing.disarm(); }
+            Ok(())
+        }
+    }
+
+    /// Called only with Config's already acquired original registered File.
+    /// A static proof mismatch never binds a foreign owner. Once bound, only
+    /// the SAME Arc allocation is accepted; a cache/peer failure cannot clear
+    /// custody or make a postload guard refusal release a still-live Root.
+    pub(crate) fn retain_registered_writer(
+        &self,
+        agent: &AgentId,
+        generation: u64,
+        file: &Arc<File>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        if !self
+            .live
+            .proof
+            .matches_registered_process(agent, generation)
+        {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let retained = self.writer_file.get_or_init(|| Arc::clone(file));
+        if !Arc::ptr_eq(retained, file) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        Ok(())
+    }
+
+    /// The exact BOOTTIME end captured by this original live session. This is
+    /// only a deadline pin: it does not read authority, refresh the feed, keep
+    /// the session active, or authorize another connection after retirement.
+    pub(crate) fn original_session_end_boottime_ns(&self) -> u64 {
+        self.live.end_boottime_ns
+    }
+
+    /// Origin comparison only. The caller still performs the original live
+    /// verifier checks; no new channel or authority is created by this comparison.
+    pub(crate) fn require_original_same_actor_phase_origin(
+        &self,
+        phase: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        if !self.live.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase)) {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        Ok(())
+    }
+
+    pub fn clock(&self) -> Arc<dyn AuthorityClock> {
+        self.live.clone()
+    }
+    pub fn authority(&self) -> ProductionAuthorityLease {
+        self.live.proof.authority().clone()
+    }
+    pub fn verifier(&self) -> Arc<dyn ProductionAuthorityVerifier> {
+        self.live.clone()
+    }
+    pub fn revocations(&self) -> Result<FinalUseRevocations, AgentdRootAuthorityError> {
+        self.live
+            .current()
+            .map(|(value, _)| value.revocations.clone())
+    }
+    /// Install the exact original Device/Notes owners, not replacement state
+    /// or a second nonce ledger. Their separate original frontier stores remain
+    /// the only durable owners. Calling twice is refused; failure stays fenced.
+    pub async fn activate_final_use_owners(
+        &self,
+        consumers: Vec<FinalUseAuthority>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        let mut phase_closing = self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new);
+        if consumers.is_empty() || consumers.len() > 8 || self.live.active.load(Ordering::Acquire) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let started = boottime_ns()?;
+        let _serial = match tokio::time::timeout(
+            Duration::from_millis(500),
+            self.live.serial.acquire(),
+        )
+        .await
+        {
+            Ok(Ok(permit)) => permit,
+            Ok(Err(_)) | Err(_) => {
+                self.live.cache.fence();
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+        };
+        if self.live.active.load(Ordering::Acquire) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let mut attempt = ActivationAttempt {
+            live: &self.live,
+            complete: false,
+        };
+        let (observation, _) = self.live.current()?;
+        self.live.cache.begin_update();
+        synchronize_consumers(
+            consumers.clone(),
+            observation.revocations.clone(),
+            started,
+            &self.writer_file,
+        )
+        .await?;
+        *self
+            .live
+            .consumers
+            .lock()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)? = consumers;
+        self.live.cache.end_update();
+        self.live.current()?;
+        self.live.active.store(true, Ordering::Release);
+        attempt.complete = true;
+        if let Some(closing) = &mut phase_closing { closing.disarm(); }
+        Ok(())
+    }
+}
+impl Drop for AgentdRootAuthoritySession {
+    fn drop(&mut self) {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=session-drop");
+        self.live.cache.fence();
+        if let Some(phase) = &self.live.phase { phase.close(); }
+        self.worker.abort();
+        // Each original consumer holds this SAME LiveRoot as its clock. Break
+        // the strong cycle after fencing; external owners remain independently
+        // alive and locked until their own original Arc handles retire.
+        let mut consumers = match self.live.consumers.lock() {
+            Ok(consumers) => consumers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        consumers.clear();
+    }
+}
+struct FenceOnDrop(Arc<LiveRoot>);
+impl Drop for FenceOnDrop {
+    fn drop(&mut self) {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-drop");
+        self.0.cache.fence();
+        if let Some(phase) = &self.0.phase { phase.close(); }
+    }
+}
+struct ActivationAttempt<'a> {
+    live: &'a LiveRoot,
+    complete: bool,
+}
+impl Drop for ActivationAttempt<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.live.cache.fence();
+            if let Some(phase) = &self.live.phase { phase.close(); }
+        }
+    }
+}
+
+async fn refresh(
+    live: &Arc<LiveRoot>,
+    stream: &RootObservationStream,
+    writer_file: &WriterCustody,
+) -> Result<(), AgentdRootAuthorityError> {
+    // Declared before the original permit: diagnostic output happens only
+    // after the unchanged refresh and consumer barrier release that permit.
+    #[cfg(test)]
+    let mut timing = tests::component_phase_timing("session.refresh", "original-feed");
+    let _serial = live
+        .serial
+        .acquire()
+        .await
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}");
+        })?;
+    // The test witness drops before this same serial permit on every failure.
+    #[cfg(test)]
+    let mut refresh_completion = tests::RefreshCompletion::new(&live.refresh_failed);
+    let started = boottime_ns().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-start-boottime error={_error:?}");
+    })?;
+    #[cfg(test)]
+    timing.mark_original("request-started", started);
+    let observation: HostAuthorityObservationResponseV2 = stream
+        .read(&HostAuthorityObservationRequestV2 {
+            schema_version: 2,
+            operation: HOST_AUTHORITY_OBSERVATION_V2.into(),
+        })
+        .await
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_SESSION_DIAGNOSTIC phase=refresh-stream started_ns={started} error={_error:?}"
+            );
+        })?;
+    let ended = boottime_ns().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-end-boottime error={_error:?}");
+    })?;
+    #[cfg(test)]
+    timing.mark_original("response-ended", ended);
+    live.proof.matches_observation(&observation).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-proof started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
+    let head = observation.revocations.clone();
+    let changed = !live.cache.revocations_match(&head);
+    #[cfg(test)]
+    timing.mark(if changed {
+        "accept-changed-head"
+    } else {
+        "accept-same-head"
+    });
+    if changed {
+        live.cache.begin_update();
+    }
+    // Validate and stage the complete response while the public cache is
+    // paused, then advance each original consumer before releasing the barrier.
+    live.cache.accept(observation, started, ended).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
+    #[cfg(test)]
+    timing.mark("cache-accepted");
+    if changed {
+        let consumers = live
+            .consumers
+            .lock()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-consumers-lock error={_error:?}");
+            })?
+            .clone();
+        synchronize_consumers(consumers, head, started, writer_file)
+            .await
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_SESSION_DIAGNOSTIC phase=refresh-consumer-sync started_ns={started} ended_ns={ended} error={_error:?}"
+                );
+            })?;
+        live.cache.end_update();
+    }
+    #[cfg(test)]
+    timing.mark("consumer-barrier-finished");
+    live.current().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
+    #[cfg(test)]
+    refresh_completion.complete();
+    #[cfg(test)]
+    timing.complete();
+    Ok(())
+}
+async fn synchronize_consumers(
+    consumers: Vec<FinalUseAuthority>,
+    head: FinalUseRevocations,
+    started: u64,
+    writer_file: &WriterCustody,
+) -> Result<(), AgentdRootAuthorityError> {
+    if consumers.is_empty() {
+        return Ok(());
+    }
+    let elapsed = boottime_ns()?
+        .checked_sub(started)
+        .ok_or(AgentdRootAuthorityError::Unavailable)?;
+    let remaining = MAX_AGE_NS
+        .checked_sub(elapsed)
+        .filter(|remaining| *remaining > 0)
+        .ok_or(AgentdRootAuthorityError::Unavailable)?;
+    let job = ConsumerSyncJob {
+        consumers,
+        head,
+        writer_file: Arc::clone(writer_file),
+    };
+    let result = tokio::time::timeout(
+        Duration::from_nanos(remaining),
+        // Aborting/timing out this await cannot cancel an already running CAS.
+        tokio::task::spawn_blocking(move || job.run()),
+    )
+    .await
+    .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+    result?;
+    if boottime_ns()?
+        .checked_sub(started)
+        .is_none_or(|age| age > MAX_AGE_NS)
+    {
+        return Err(AgentdRootAuthorityError::Unavailable);
+    }
+    Ok(())
+}
+#[cfg(test)]
+#[path = "root_authority_session_tests.rs"]
+pub(crate) mod tests;

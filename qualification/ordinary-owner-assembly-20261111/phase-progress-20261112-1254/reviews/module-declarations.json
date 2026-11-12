@@ -1,0 +1,229 @@
+{
+  "schema": "hepta-independent-static-module-review-v1",
+  "status": "bounded-module-closure-reviewed-record-path-corrected-not-compiled",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "/root/hepta_audit",
+  "base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "inputs": [
+    {
+      "blob": "1e90b2f390704c32159ab0a6ea3e222d7b275e2d",
+      "bytes": 11890,
+      "sha256": "2c1747b24beb50ba1fcac297a11e0f8df5cf16d89f9f06ca3e25ff9fa211ae20",
+      "description": "Eight original parent paths; eleven declarations/reexports operations"
+    },
+    {
+      "blob": "21504933a6f5ecfa24b0eefebe7b82181c7facf3",
+      "bytes": 1206,
+      "sha256": "fb5327db1bb696068ebb3bffa2c7ace3cf8a4f7924523cbd28f2689614ab5617",
+      "description": "One explicit record file path correction atop the new lib"
+    },
+    {
+      "blob": "32c8f8d84106ccd0c07fa09d43f7dc7cb06470c9",
+      "bytes": 1566,
+      "sha256": "ffe7ab4cbbf015c9f35cd32e2d2d105390d31d209e0c0aaefba793bcb4cb2ec8",
+      "description": "One actual Initial session child/reexport operation"
+    }
+  ],
+  "counts": {
+    "original_paths": 9,
+    "exact_operations": 13,
+    "source_functions_changed": 0,
+    "field_visibility_changes": 0
+  },
+  "replay_original": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "pre": "3d7f65f119cc3aebb77fb8dc6931711f800daf50",
+      "post": "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "pre": "1b9d802c993b3b52df72a130975c214a31c18f2d",
+      "post": "d36cb92a2aba3f78fffa98874e6f174a1d275b26",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "pre": "bf8c26ce91aa3ac517fc883e24d9be86b08dac1a",
+      "post": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "pre": "e7010b23dde46c73398082d038bae73e45e3716e",
+      "post": "547aa280219dba09d1a7f5eeea91319db375c942",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "pre": "7560be6c1171f4010352867346ff6f49dd15facd",
+      "post": "efa2a4163b9c685f217b264a966c6c2cd666b1bb",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": "14971bfa8f1fb0963c8dcebf19b83158ee74cdde",
+      "post": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "pre": "eccc3de46f610576ee47b072da10d0f53daf5739",
+      "post": "2bde009187e2f4e82e7e8c85d4e1f21dec502332",
+      "operations": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "pre": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "post": "a78c5761a53cc1687c7261515afb42d49e7b112c",
+      "operations": 4,
+      "unique_forward": true,
+      "unique_reverse": true
+    }
+  ],
+  "replay_supplements": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "pre": "a78c5761a53cc1687c7261515afb42d49e7b112c",
+      "post": "e758333d25dc270e5470e93fe72a8f988221311b",
+      "ops": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "pre": "0f72a32402fa990f46912ddd95872111d0a4c369",
+      "post": "8778a2dd0e8402a8a8b38ea221afc6431963d328",
+      "ops": 1,
+      "unique_forward": true,
+      "unique_reverse": true
+    }
+  ],
+  "final_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "blob": "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "blob": "d36cb92a2aba3f78fffa98874e6f174a1d275b26"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "blob": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "blob": "547aa280219dba09d1a7f5eeea91319db375c942"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "blob": "efa2a4163b9c685f217b264a966c6c2cd666b1bb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "blob": "2bde009187e2f4e82e7e8c85d4e1f21dec502332"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "e758333d25dc270e5470e93fe72a8f988221311b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "blob": "8778a2dd0e8402a8a8b38ea221afc6431963d328"
+    }
+  ],
+  "performed": [
+    "GET all postimages and recompute Git blob, UTF-8 bytes and SHA256.",
+    "Read all nine original paths at the fixed d973 commit and match the declared preimages.",
+    "Replay all thirteen operations uniquely in both directions; the record-path op is sequential atop the prior lib postimage.",
+    "Read the actual Initial capability, Publication capability and Root wrapper descendants to check the declared module ancestry and visibility of the real converter methods.",
+    "Check the actual task runtime and task-profile parent/child mapping and the existing crate Linux cfg context."
+  ],
+  "findings": [
+    {
+      "id": "RECORD_MODULE_PATH",
+      "status": "confirmed-and-corrected",
+      "original": "lib a78c5761a53cc1687c7261515afb42d49e7b112c declared mod same_actor_q24_phase_record without a path attribute, while the frozen record source path remains authority_host_same_actor_q24_phase_record.rs.",
+      "final": "e758333d25dc270e5470e93fe72a8f988221311b adds exactly #[path = \"authority_host_same_actor_q24_phase_record.rs\"] under the existing Linux cfg. It keeps the actual filename and crate module name; there is no silent file rename or source behavior change.",
+      "history": "The original 1e90 packet remains historical. Its lib postimage is not the final recommended source."
+    },
+    {
+      "id": "ROOT_SESSION_ANCESTRY",
+      "status": "no-confirmed-local-visibility-blocker",
+      "fact": "authority_host_runtime::session now declares its same_actor_phase child. That child accesses the actual PreparedHostAuthoritySession parent state through the existing ancestry; original fields were not made public.",
+      "dependent_sources": [
+        "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+        "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01",
+        "d36cb92a2aba3f78fffa98874e6f174a1d275b26"
+      ]
+    },
+    {
+      "id": "INITIAL_AND_PUBLICATION_CAP_VISIBILITY",
+      "status": "actual-ancestry-checked",
+      "fact": "Initial cap b4b39 and Publication cap 1e5d9 are real children of session::generation_initial and session::generation_publication. Their into_same_actor_phase methods are pub(in super::super), whose actual ancestor is session. The Root same_actor_phase sibling subtree is inside that visibility region. The public type reexports do not widen those converter methods.",
+      "dependent_sources": [
+        "b4b39eea3168b6fe66cb3627faec896746898a6d",
+        "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74",
+        "8778a2dd0e8402a8a8b38ea221afc6431963d328",
+        "8ac1bd31ec7c0280120048aaf654ed3c34b063c4"
+      ],
+      "initial_delta": "32c8 is only the actual #[path] child and public type reexport; the original Initial session body is retained exactly."
+    },
+    {
+      "id": "SERVICE_INITIAL_DESCENDANT",
+      "status": "actual-declaration-checked",
+      "fact": "The real Initial claim implementation is declared beneath authority_host_service::generation_initial. Its OriginalSameActorPhaseA reexport is crate-only; the child placement preserves access to the actual Original Initial slot rather than changing field visibility. The five-lane implementation is a real service child."
+    },
+    {
+      "id": "TASK_PROFILE_AND_RUNTIME_REEXPORTS",
+      "status": "actual-declarations-checked",
+      "fact": "circuit_task reexports SameActorTaskAdmission and SameActorTaskRoute as crate-only from the existing runtime child's actual same_actor_phase implementation. circuit_q24_task_profile reexports OriginalSameActorATaskParts as crate-only from learning, whose actual #[path] is circuit_q24_task_ledger_install.rs. Existing public task/profile items remain unchanged.",
+      "dependent_sources": [
+        "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+        "21aad5993517bbcd4fe7c419e1367d26b6226154",
+        "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "2bde009187e2f4e82e7e8c85d4e1f21dec502332"
+      ]
+    },
+    {
+      "id": "PLATFORM_AND_API_SCOPE",
+      "status": "source-checked-not-typechecked",
+      "fact": "The new crate-level Root/daemon phase modules and external type/API reexports retain Linux cfg. New public names are explicit Root or daemon startup/typed material surfaces; the module patch does not expose private owner fields, manufacture a capability, or change existing generic Runtime behavior."
+    }
+  ],
+  "limitations": [
+    "This is a bounded declaration/visibility review, not a compiler or complete source-tree module test. Final integration must still include every already-reviewed source dependency and newly announced test child at its exact path.",
+    "The complete final CALLERS update remains pending; no original checker, typed receiver scan or QA was run by this reviewer.",
+    "The separate qualified-B missing connection remains open in f1fe610f665e3950505e55d0737b935710facbb0. Module reachability does not cure that missing production call graph.",
+    "The new Startup result correction 789a13ad5c58edd39e4d17f3e6994924cbc8a276 remains a required separate overlay; these declaration edits do not certify physical owner join.",
+    "No h, PTY, native/Cargo/rustfmt, branch/ref mutation, ordinary business completion, independent-consumer C or real daemon-plus-Root cold-restart qualification was performed."
+  ],
+  "business_counts": {
+    "ordinary": 0,
+    "independent_c": 0,
+    "real_daemon_and_root_cold_restart": 0
+  }
+}

@@ -1,0 +1,446 @@
+{
+  "schema": "independent-fresh-phase-path-specific-metadata-review-v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "decision": "No confirmed static blocker in the three metadata operations. Old caller protection is retained and current real-path ordered protection is added. This is not original checker/full-index/compile/phase qualification.",
+  "source_of_truth": {
+    "packet": {
+      "blob": "332aa6ac6135acaf248446b549a88b6a688568b3",
+      "bytes": 22312,
+      "sha256": "a377f4505a07e6b602aa8858ca7108d995227d20457c3bba510955552085855a"
+    },
+    "callers_before": {
+      "blob": "9f3eb973ddac233359afefdf5b4bd0ba4dbffacf",
+      "bytes": 719772,
+      "sha256": "d499f2b115a24be4a04fb491bf856fcf4b792aec7a2831eaa8220c8dfe320e11"
+    },
+    "callers_after": {
+      "blob": "d4b4b5630bc13938ed25eb3743a0b3c457516b07",
+      "bytes": 722762,
+      "sha256": "eb423aeeabdf24c94327b93a29cdee3e3c96c34d546e61256c8aa7eb90e98fb5"
+    },
+    "old_real_caller": {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+      "bytes": 23993,
+      "sha256": "728d5c50957034993558dcbb4c96579836da9fc1c47e621778698cf92b4ffe12",
+      "source_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+    },
+    "new_real_caller": {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "file": "authority_host_same_actor_q24_phase.rs",
+      "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+      "bytes": 11161,
+      "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a"
+    },
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "reused_module_review": "81c723c38d76ab02913d48d74dc121b9dec70d57"
+  },
+  "verification": {
+    "git": "Independently GET and hash-check packet, both CALLERS objects, actual fixed-d973 CLI and reuse previously independently GET/hash-checked actual wrapper403fb6. No author's static status substituted for source reads.",
+    "exact_operations": "All three old/new literal operations occur once and replay in declared order to full postimage; reverse order restores full preimage. The same three operations replay uniquely and reverse exactly over the immutable Work ee142 append-only registry.",
+    "changes_existing_tables": [
+      "boundary:root_prepared_fresh_session",
+      "protected_file:codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    ],
+    "added_tables": [
+      "protected_file:codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+    ],
+    "counts": {
+      "base": {
+        "boundaries": 524,
+        "protected": 374
+      },
+      "post": {
+        "boundaries": 524,
+        "protected": 375
+      },
+      "work_base": {
+        "boundaries": 548,
+        "protected": 388
+      },
+      "work_union": {
+        "boundaries": 548,
+        "protected": 389
+      }
+    },
+    "computed_work_union": {
+      "blob": "58be7976d5258018fce1336876f8e3678d3af713",
+      "bytes": 763076,
+      "sha256": "67815c819843668dcd7ad3046f329c1100ce791e63e92c0c6265071110358d0c",
+      "uploaded": false
+    },
+    "no_combined_registry_upload": "The computed 58be7976... identity is a local pure-JS result, not a published branch/ref or an executed closed-set verification.",
+    "original_boundary": "Symbol, definition path, exact definition markers and every other existing boundary field are unchanged. Existing CLI caller remains; the actual phase wrapper caller is added. Common caller marker remains the real original Prepared function name.",
+    "raw_requirement_preservation": {
+      "all_seven_old_caller_markers_retained_on_original_CLI": true,
+      "old_required_prefix_unchanged": true,
+      "old_required_count": 28,
+      "new_required_count": 32,
+      "old_five_required_order_arrays_exact": true,
+      "new_sixth_array_added": true,
+      "original_forbidden_and_required_function_order_exact": true,
+      "all_other_existing_523_boundary_tables_and_373_protected_tables_exact": true
+    }
+  },
+  "actual_old_caller_order": {
+    "original_checker_semantics": "Original _verify_boundary checks caller_markers as raw text in every declared file. Moving native-path-specific markers to the same old caller's protected.required preserves all seven original raw requirements; it does not waive them for the CLI. The original checker cannot use required_function_order fn main( here because both Linux and non-Linux main declarations remain.",
+    "strengthened_code_order": "The new required_order uses a unique full Linux main signature, actual prepare, match/native branch, original launch, stop, join and served? propagation, then the next real declaration. These markers survive original comment/string/test masks.",
+    "positions": {
+      "start": 110,
+      "end": 22172,
+      "fn_main_occurrences": 2,
+      "unique_full_signature": 1,
+      "all_old_raw": true,
+      "order": {
+        "ok": true,
+        "matches": [
+          {
+            "marker": "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+            "start": 110,
+            "end": 163
+          },
+          {
+            "marker": "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+            "start": 12353,
+            "end": 12413
+          },
+          {
+            "marker": "let served = match (native_profile, text) {",
+            "start": 20670,
+            "end": 20713
+          },
+          {
+            "marker": "(Some(profile), None) => {",
+            "start": 20730,
+            "end": 20756
+          },
+          {
+            "marker": "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+            "start": 20777,
+            "end": 20851
+          },
+          {
+            "marker": "drop(stop);",
+            "start": 21246,
+            "end": 21257
+          },
+          {
+            "marker": "worker.join()",
+            "start": 21657,
+            "end": 21670
+          },
+          {
+            "marker": "served?;",
+            "start": 21849,
+            "end": 21857
+          },
+          {
+            "marker": "\nstruct PublicationDeploymentStop<'a>",
+            "start": 22202,
+            "end": 22239
+          }
+        ]
+      },
+      "only_whitespace_attributes_until_next_declaration": true,
+      "test_only_descriptor_module_stripped": true
+    },
+    "range_limit": "The unchanged checker enforces file-wide ordered-code markers, not a new Rust function-range rule. Independently inspecting the current masked braces proves the actual authority markers are all within Linux main110..22172 and the next declaration begins22202. This bounded source fact is not a claim the original checker acquired function-scope enforcement for arbitrary future refactors.",
+    "precision_note": "The actual CLI also contains #[cfg(all(test, target_os = \"linux\"))] descriptor_tests. This review applies the original test-only stripping semantics as well as literal/comment masking. That test-only declaration is after Linux main and its following declaration; stripping it does not change the reported offsets or conclusions."
+  },
+  "actual_new_caller_order": {
+    "source_read": "Read the actual wrapper open/prepare/capture/serve bodies. The type retains the same PreparedHostAuthoritySession and CloseOnDrop; no source edit is part of this metadata change.",
+    "flow": "Capture the original service's absolute phase deadline before original open or async fresh prepare, consume that same Prepared value into capture_original_phase, compare real config and prior-purpose state, bind the same gate to the actual service issuer, enable original Initial, obtain the original witness context and persist actual reserved record before sealed descriptor and capabilities, then retain that same original/gate/record/model/scope and close guard.",
+    "function_local_projections": {
+      "raw_required": [
+        "pub struct PreparedRootSameActorQ24PhaseV1",
+        "original: PreparedHostAuthoritySession,",
+        "closing: CloseSameActorPhaseOnDrop,"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "SigningKey"
+      ],
+      "functions": [
+        {
+          "function": "fn open(",
+          "start": 2337,
+          "end": 3109,
+          "nested_functions_masked": 0,
+          "markers": 6,
+          "positions": [
+            {
+              "marker": "let config: HostAuthorityServiceConfig = read_root_json(config_file)?",
+              "start": 317,
+              "end": 386
+            },
+            {
+              "marker": "SameActorPhaseDeadline::at_original_service_start(",
+              "start": 411,
+              "end": 461
+            },
+            {
+              "marker": "std::time::Duration::from_millis(config.lifetime_ms)",
+              "start": 474,
+              "end": 526
+            },
+            {
+              "marker": "PreparedHostAuthoritySession::open(",
+              "start": 563,
+              "end": 598
+            },
+            {
+              "marker": "config_file, registration_file, owner_pidfd",
+              "start": 611,
+              "end": 654
+            },
+            {
+              "marker": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+              "start": 676,
+              "end": 767
+            }
+          ]
+        },
+        {
+          "function": "fn prepare_fresh_from_registered(",
+          "start": 3126,
+          "end": 3954,
+          "nested_functions_masked": 0,
+          "markers": 7,
+          "positions": [
+            {
+              "marker": "let config: HostAuthorityServiceConfig = read_root_json(config_file)?",
+              "start": 342,
+              "end": 411
+            },
+            {
+              "marker": "SameActorPhaseDeadline::at_original_service_start(",
+              "start": 436,
+              "end": 486
+            },
+            {
+              "marker": "std::time::Duration::from_millis(config.lifetime_ms)",
+              "start": 499,
+              "end": 551
+            },
+            {
+              "marker": "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+              "start": 588,
+              "end": 648
+            },
+            {
+              "marker": "config_file, registration_file, owner_pidfd",
+              "start": 661,
+              "end": 704
+            },
+            {
+              "marker": ").await?",
+              "start": 714,
+              "end": 722
+            },
+            {
+              "marker": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+              "start": 732,
+              "end": 823
+            }
+          ]
+        },
+        {
+          "function": "fn capture_original_phase(",
+          "start": 3961,
+          "end": 8631,
+          "nested_functions_masked": 0,
+          "markers": 27,
+          "positions": [
+            {
+              "marker": "SameActorPhaseGate::from_original_deadline(deadline)?",
+              "start": 392,
+              "end": 445
+            },
+            {
+              "marker": "CloseSameActorPhaseOnDrop::new(&gate)",
+              "start": 473,
+              "end": 510
+            },
+            {
+              "marker": "serde_json::to_vec(&config)",
+              "start": 523,
+              "end": 550
+            },
+            {
+              "marker": "serde_json::to_vec(&original.config)",
+              "start": 593,
+              "end": 629
+            },
+            {
+              "marker": "original.learning.is_some()",
+              "start": 672,
+              "end": 699
+            },
+            {
+              "marker": "original.publication.is_some()",
+              "start": 715,
+              "end": 745
+            },
+            {
+              "marker": "original.initial_publication.is_some()",
+              "start": 761,
+              "end": 799
+            },
+            {
+              "marker": "original.root_admin.is_some()",
+              "start": 815,
+              "end": 844
+            },
+            {
+              "marker": "original.config.sockets.device_frontier.is_none()",
+              "start": 860,
+              "end": 909
+            },
+            {
+              "marker": "original.config.sockets.notes_frontier.is_none()",
+              "start": 925,
+              "end": 973
+            },
+            {
+              "marker": "gate.require_open()?",
+              "start": 1104,
+              "end": 1124
+            },
+            {
+              "marker": "original.service.bind_original_same_actor_phase_issuer(&gate)?",
+              "start": 1134,
+              "end": 1196
+            },
+            {
+              "marker": "original.enable_generation_initial(initial.clone())?",
+              "start": 1260,
+              "end": 1312
+            },
+            {
+              "marker": "original.service.with_initial_publication_context(",
+              "start": 1355,
+              "end": 1405
+            },
+            {
+              "marker": "gate.require_open()?",
+              "start": 1509,
+              "end": 1529
+            },
+            {
+              "marker": "root_end_boottime_ns: deadline.boottime_ns()",
+              "start": 2712,
+              "end": 2756
+            },
+            {
+              "marker": "OriginalPhaseRecord::reserve(",
+              "start": 2806,
+              "end": 2835
+            },
+            {
+              "marker": "Arc::clone(&current_directory), phase_identity.clone()",
+              "start": 2856,
+              "end": 2910
+            },
+            {
+              "marker": "seal_bytes(&encoded)?",
+              "start": 3536,
+              "end": 3557
+            },
+            {
+              "marker": "gate.require_open()?",
+              "start": 3575,
+              "end": 3595
+            },
+            {
+              "marker": "retained = Some((record, descriptor, sealed))",
+              "start": 3613,
+              "end": 3658
+            },
+            {
+              "marker": "gate.require_open()?",
+              "start": 3718,
+              "end": 3738
+            },
+            {
+              "marker": "scope_cap::ScopeRuntime::mint(descriptor.original.root.clone(), &gate)",
+              "start": 3933,
+              "end": 4003
+            },
+            {
+              "marker": "initial_capability.into_same_actor_phase(&gate, &current_directory)",
+              "start": 4085,
+              "end": 4152
+            },
+            {
+              "marker": "closing.disarm()",
+              "start": 4488,
+              "end": 4504
+            },
+            {
+              "marker": "let closing = CloseSameActorPhaseOnDrop::new(&gate)",
+              "start": 4514,
+              "end": 4565
+            },
+            {
+              "marker": "Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })",
+              "start": 4575,
+              "end": 4665
+            }
+          ]
+        },
+        {
+          "function": "fn serve_with_ready(",
+          "start": 10663,
+          "end": 10803,
+          "nested_functions_masked": 0,
+          "markers": 2,
+          "positions": [
+            {
+              "marker": "fn serve_with_ready(",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "marker": "worker::serve_original_phase(self, ready)",
+              "start": 94,
+              "end": 135
+            }
+          ]
+        }
+      ]
+    },
+    "constraints": "All four new required_function_order selectors are unique real functions in wrapper403fb6; each has at least two actual markers. Actual forbidden names are absent from masked code. No fake comment, UI path, replacement signer, new authority, or synthetic caller was added.",
+    "limits": "This metadata guards existing source operations; it does not by itself prove new business inputs, final B installation, complete controller qualification or graceful Root completion."
+  },
+  "method": {
+    "code": "Pure JavaScript transcription of the independently read original _strip_rust_non_code/_strip_cfg_test_items/_rust_item_end/_verify_required_order/_verify_function_order semantics applied only to the exact two real caller files.",
+    "prior_projection_implementation": "Stored reviewed frontier_metadata_mask_projection_js; no original Python helper/checker executed.",
+    "equality": "Checked all existing table identities/bytes except the two declared changed tables, preserved all existing arrays/forbidden/function-order exactly, and verified the one new actual table.",
+    "original_checker_executed": false,
+    "full_repository_scan": false,
+    "rust_parser_or_compiler": false
+  },
+  "integration_notes": [
+    "Apply the three operations onto the actual current Work metadata/combined registry; do not overwrite it with the standalone d4b4 table.",
+    "The Work append-only ee142 registry still requires the actual existing-caller annex and runtime's full final union. The 548/389 computed intermediate count is not a complete product caller PASS.",
+    "Later real formatter changes must be reflected only in exact marker whitespace where required; these findings bind the stated source bytes.",
+    "Qualified-B handoff is still being authored. None of these metadata checks changes ordinary/independent-C/cold-restart qualification counts."
+  ],
+  "execution": {
+    "h": false,
+    "pty": false,
+    "native": false,
+    "cargo": false,
+    "original_checker": false,
+    "source_changes": false,
+    "ref_changes": false
+  },
+  "counts": {
+    "ordinary": 0,
+    "independently_controlled_C": 0,
+    "real_daemon_and_root_cold_restart": 0
+  }
+}

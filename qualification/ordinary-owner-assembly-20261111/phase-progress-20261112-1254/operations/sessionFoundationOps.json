@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "stage": "source draft for independent review; incomplete phase integration",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "dependencies": {
+    "session_native_base": "13ef7d0943f056527f45a7805e07a3f89b302985",
+    "getter_postimage": "1f1aae78fe0defc1c0757bd8159d668eba5478c3",
+    "getter_ops": "4c05c69162b98fd9befa1785638d9a1f2a6015ac",
+    "gate": "515e9fe69b000941f7c8d49809d6be92c876e42a",
+    "observation_until": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c"
+  },
+  "paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "blob": "1f1aae78fe0defc1c0757bd8159d668eba5478c3",
+        "bytes": 21953,
+        "sha256": "94d3ede0c84cb2f90fc27d7e9fafae5019532b8c14cc368e44ac826afced5048"
+      },
+      "postimage": {
+        "file": "root_authority_session.rs",
+        "blob": "cc85f6a8a3e959b2e6a80b68dac6417e3a764f1e",
+        "bytes": 29129,
+        "sha256": "4ff203f12388dc7cf12be0a061fa4903ed793fbcaa042e0d4ebf67cd27cf8963"
+      },
+      "ops": [
+        {
+          "old_text": "use std::time::Duration;\n",
+          "new_text": "use std::time::Duration;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseStream;\n"
+        },
+        {
+          "old_text": "    end_boottime_ns: u64,\n    active: AtomicBool,",
+          "new_text": "    end_boottime_ns: u64,\n    // None preserves the original default session. The explicit phase retains\n    // the same closed gate throughout its original and later purposes.\n    phase: Option<Arc<SameActorPhaseGate>>,\n    active: AtomicBool,"
+        },
+        {
+          "old_text": "impl LiveRoot {\n    fn current(\n        &self,\n    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {\n",
+          "new_text": "impl LiveRoot {\n    fn current(\n        &self,\n    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {\n        let Some(phase) = &self.phase else {\n            return self.current_original();\n        };\n        let mut closing = CloseSameActorPhaseOnDrop::new(phase);\n        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        let value = self.current_original()?;\n        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        closing.disarm();\n        Ok(value)\n    }\n\n    // All original lifetime, cache, proof and final peer checks remain here.\n    fn current_original(\n        &self,\n    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {\n"
+        },
+        {
+          "old_text": "                .ok_or(AgentdRootAuthorityError::Refused)?,\n            active: AtomicBool::new(false),",
+          "new_text": "                .ok_or(AgentdRootAuthorityError::Refused)?,\n            phase: None,\n            active: AtomicBool::new(false),"
+        },
+        {
+          "old_text": "    /// Called only with Config's already acquired original registered File.\n",
+          "new_text": "    /// Only the explicit phase receiver calls this with its original captured\n    /// session BOOTTIME end and the SAME gate used for every other lane. The\n    /// gate's Instant is the receiver/launcher's earlier local capture; the\n    /// Root-sealed BOOTTIME cap remains a separate, possibly tighter bound.\n    pub(crate) fn connect_same_actor_phase_until(\n        stream: UnixStream,\n        peer: AgentdRootAuthorityPeer,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        original_session_end_boottime_ns: u64,\n        trust: AgentdRootWriterTrust,\n        phase: Arc<SameActorPhaseGate>,\n    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> {\n        // Captured outside the async body. Dropping an unpolled connection\n        // attempt closes all existing phase lanes too.\n        let mut closing = CloseSameActorPhaseOnDrop::new(&phase);\n        async move {\n            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            if original_session_end_boottime_ns == 0\n                || phase.deadline().boottime_ns() > original_session_end_boottime_ns\n            {\n                return Err(AgentdRootAuthorityError::Refused);\n            }\n            let stop = phase.retain_original_stream(&stream)\n                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            let boot_id = peer.boot_id.clone();\n            let stream = RootObservationStream::from_stream_until(\n                stream, peer, root_pidfd, timeout, phase.deadline().instant(),\n            )?;\n            let session = Self::connect_original_phase_stream(\n                stream, boot_id, original_session_end_boottime_ns, trust,\n                Arc::clone(&phase), stop,\n            ).await?;\n            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            closing.disarm();\n            Ok(session)\n        }\n    }\n\n    async fn connect_original_phase_stream(\n        stream: RootObservationStream,\n        boot_id: String,\n        original_session_end_boottime_ns: u64,\n        trust: AgentdRootWriterTrust,\n        phase: Arc<SameActorPhaseGate>,\n        stop: SameActorPhaseStream,\n    ) -> Result<Self, AgentdRootAuthorityError> {\n        let response: HostWriterAuthorizationReadResponseV1 = stream\n            .read(&HostWriterAuthorizationReadRequestV1 {\n                schema_version: 1,\n                operation: HOST_WRITER_AUTHORIZATION_V1.into(),\n            })\n            .await?;\n        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;\n        let live = Arc::new(LiveRoot {\n            proof,\n            cache: RootObservationCache::new(boot_id),\n            root: stream.root_lifetime(),\n            // This is the actual original receiver capture, never now + a\n            // later remaining lifetime or a value learned from a later offer.\n            end_boottime_ns: original_session_end_boottime_ns,\n            phase: Some(Arc::clone(&phase)),\n            active: AtomicBool::new(false),\n            consumers: Mutex::new(Vec::new()),\n            serial: tokio::sync::Semaphore::new(1),\n            #[cfg(test)]\n            refresh_failed: AtomicBool::new(false),\n        });\n        let writer_file = Arc::new(OnceLock::new());\n        refresh(&live, &stream, &writer_file).await?;\n        let background = Arc::clone(&live);\n        let background_file = Arc::clone(&writer_file);\n        // These guards already exist before the future is created. Even a\n        // worker which never receives its first poll owns shared cancellation.\n        let worker_close = CloseSameActorPhaseOnDrop::new(&phase);\n        let worker = tokio::spawn(RootWorker {\n            future: Box::pin(async move {\n                let _worker_close = worker_close;\n                let _stream_stop = stop;\n                let _fence = FenceOnDrop(Arc::clone(&background));\n                loop {\n                    tokio::time::sleep(Duration::from_millis(100)).await;\n                    if refresh(&background, &stream, &background_file)\n                        .await\n                        .inspect_err(|_error| {\n                            #[cfg(test)]\n                            eprintln!(\n                                \"ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}\"\n                            );\n                        })\n                        .is_err()\n                    {\n                        return;\n                    }\n                }\n            }),\n            _writer_file: Arc::clone(&writer_file),\n        });\n        Ok(Self { live, worker, writer_file })\n    }\n\n    /// The wrapper captures cancellation before polling and covers every\n    /// original activation prefix, including clock/serial/duplicate refusals.\n    pub(crate) fn activate_original_phase_final_use_owners(\n        &self,\n        consumers: Vec<FinalUseAuthority>,\n    ) -> impl Future<Output = Result<(), AgentdRootAuthorityError>> + '_ {\n        let mut closing = self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new);\n        async move {\n            let phase = self.live.phase.as_ref().ok_or(AgentdRootAuthorityError::Refused)?;\n            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            self.activate_final_use_owners(consumers).await?;\n            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            if let Some(closing) = &mut closing { closing.disarm(); }\n            Ok(())\n        }\n    }\n\n    /// Called only with Config's already acquired original registered File.\n"
+        },
+        {
+          "old_text": "    ) -> Result<(), AgentdRootAuthorityError> {\n        if consumers.is_empty() || consumers.len() > 8 || self.live.active.load(Ordering::Acquire) {",
+          "new_text": "    ) -> Result<(), AgentdRootAuthorityError> {\n        let mut phase_closing = self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new);\n        if consumers.is_empty() || consumers.len() > 8 || self.live.active.load(Ordering::Acquire) {"
+        },
+        {
+          "old_text": "        attempt.complete = true;\n        Ok(())\n",
+          "new_text": "        attempt.complete = true;\n        if let Some(closing) = &mut phase_closing { closing.disarm(); }\n        Ok(())\n"
+        },
+        {
+          "old_text": "        self.live.cache.fence();\n        self.worker.abort();",
+          "new_text": "        self.live.cache.fence();\n        if let Some(phase) = &self.live.phase { phase.close(); }\n        self.worker.abort();"
+        },
+        {
+          "old_text": "        self.0.cache.fence();\n    }\n}\nstruct ActivationAttempt",
+          "new_text": "        self.0.cache.fence();\n        if let Some(phase) = &self.0.phase { phase.close(); }\n    }\n}\nstruct ActivationAttempt"
+        },
+        {
+          "old_text": "        if !self.complete {\n            self.live.cache.fence();\n        }\n",
+          "new_text": "        if !self.complete {\n            self.live.cache.fence();\n            if let Some(phase) = &self.live.phase { phase.close(); }\n        }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "blob": "a0e27f8c747f8ef9f41bb0701caa77babd32950e",
+        "bytes": 26968,
+        "sha256": "1d7c228977479b79a97226d71e85a752e3539884aa3c09260d663fb5a3e02dc7"
+      },
+      "postimage": {
+        "file": "root_authority_session_tests.rs",
+        "blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "ops": [
+        {
+          "old_text": "        end_boottime_ns: end,\n        active: AtomicBool::new(false),",
+          "new_text": "        end_boottime_ns: end,\n        phase: None,\n        active: AtomicBool::new(false),"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Default connect and owned constructor retain original guards, order and worker; only LiveRoot.phase=None added.",
+    "New phase constructor captures closing guard outside async future; new worker captures closing guard before async body creation.",
+    "Session/FenceOnDrop/ActivationAttempt close same gate; phase activation wrapper covers early and unpolled attempts.",
+    "RootWorker future before writer_file and ConsumerSyncJob fields/body remain byte-identical.",
+    "Current original body moved intact behind optional phase pre/post wrapper; no refresh/retry/500ms change.",
+    "Actual new-mode original BOOTTIME end supplied by earliest receiver; local Instant comes from same gate; Root-sealed BOOTTIME is independent narrowing.",
+    "No new tests run; one existing private LiveRoot literal adds None only. New behavior regression coverage pending final coherent slice."
+  ]
+}

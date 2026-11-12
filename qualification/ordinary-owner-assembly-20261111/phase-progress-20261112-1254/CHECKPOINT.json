@@ -1,0 +1,1716 @@
+{
+  "schema": "ordinary-phase-source-progress-v1",
+  "status": "STATIC_WORK_CHECKPOINT_NOT_CANDIDATE_OR_QUALIFICATION",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "base_tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+  "staging_head_unchanged": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+  "public_draft_6006_head_unchanged": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "evidence_parent": "2d66e8d7d37852138dfc486219745104625372f8",
+  "observed_at_utc": "2026-11-12 12:54:26 UTC",
+  "counts": {
+    "known_paths": 118,
+    "exact_package_edges": 167,
+    "packages": 33,
+    "rust_files": 117,
+    "source_bytes": 2141666
+  },
+  "originals": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "harness_bytes": 50167,
+    "freshness_ms": 500,
+    "freshness_origin": "original request_started_ns",
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600,
+    "retries": 0,
+    "root_parent_roster": 17
+  },
+  "current_execution": {
+    "V34": "FAILED_NATIVE_COMPONENTS: ordinary 1950/1950; Root16/17; QA236/236; original caller gate passed. Initial Root first Publish fails at live-retained-final-use Unavailable; exact leaf unknown.",
+    "V35": "FAILED_BEFORE_CHECKOUT: exact-source fetch exited128 after curl56 connection reset, early EOF and invalid index-pack. Not a timeout; no checker, formatter, compiler, helper or tests reached.",
+    "future_phase_native_executed": false
+  },
+  "caveats": [
+    "All 118 known file graphs close exactly at this snapshot; this does not certify whole-project type or caller closure.",
+    "Snapshot CALLERS ee142 is an intermediate Work table: its 24 added boundary IDs are not yet in required_boundary_ids, 19 existing caller increments and the remaining phase-wide union are pending. Do not run or describe this table as a completed closed set.",
+    "Fresh path-specific protection proposal 332aa6 was separately GET/replayed and reviewed. It preserves all original raw guards and orders, adds actual ordered-code protections, and leaves the original checker unchanged. It is not applied to the raw CALLERS file in this checkpoint.",
+    "Qualified B assembly remains incomplete in snapshot sources. New controller packet ed094 was received after this graph was frozen; the actual Training checkpoint and once-only Evaluation installer are still being authored/reviewed.",
+    "Startup preserves original runtime errors and refuses generic runtime Ok because original phase completion and physical owner join have no successful final acknowledgement.",
+    "Seven Work component tests use actual blocking handles, mutexes, semaphores and Unix-stream output custody; they have not executed. No ordinary task, owner, training receipt, B experiment, C receipt or recovery evidence is fabricated.",
+    "No ordinary business completion, independent consumer C, actual daemon-plus-Root OS restart, final phase completion or NoUpdate/rollback acceptance is claimed.",
+    "No h, native, Cargo, formatter, original checker or branch-source rerun occurred for this checkpoint."
+  ],
+  "business_counts": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_namespace.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "1a5a4a9214242b4dcfc2dbe2d80a9e361d5e1e2a",
+        "bytes": 963,
+        "sha256": "d631ce4dddb726b1d6653f803b03408b75fce5284bb34d32a3223fbfd517852d"
+      },
+      "ordered_packages": [
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "preimage": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "postimage": {
+        "blob": "67df73589c32c8565bb893b1053c2477987b5cfe",
+        "bytes": 16093,
+        "sha256": "29e5b79b7581e8e8270f757cc8de8e55c4f42d4cb49b4de657478a7f30bcf868"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "preimage": "275842b2fd966afa349697705ab90095a913d0ff",
+      "postimage": {
+        "blob": "5edb5484bdba8f0f3c4d063383367d85b9162a1c",
+        "bytes": 17992,
+        "sha256": "38a6834a4687d52f5b457b6399c264f11931a99d8f1ab6dc2a0957cc43e86754"
+      },
+      "ordered_packages": [
+        "foundationFoundationOps",
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "793bc2510e97fe5ed07336e6d823561aa0e8c58f",
+        "bytes": 10685,
+        "sha256": "9375e499f973ad2149462590347a791d2aed3f55936648a311df3cfcfe06eaab"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "preimage": "17d7daad0e91901fe63dd4cb919545c5fa8c66b9",
+      "postimage": {
+        "blob": "cb0cec6b10b9f44bbff1e3a3f67cd6998f441f83",
+        "bytes": 10815,
+        "sha256": "52a6000a7f022c44628631cf2cc0c343e14821118e2bdead0992a0d6d02e6bf5"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "preimage": "7d3d9a13db15464078f78efec7178b20f3b1b61e",
+      "postimage": {
+        "blob": "718edae2aa581aa1e16a7ae18b4d03e051bf4f50",
+        "bytes": 17977,
+        "sha256": "b26d4439ad8f524cda1fad035d2a4aa0ff39453d01bbcde80158656dbeeab5aa"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "preimage": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+      "postimage": {
+        "blob": "89249218eca3b9808e096b697450b12ef6cd93c7",
+        "bytes": 10684,
+        "sha256": "774342f55067be95109f6c203a664a7b3d7a4bf89910d02fac65fc03851090fa"
+      },
+      "ordered_packages": [
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_publication.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "c9ab3dc7b8f15dbb65d8fdcc2cd9f91524050b79",
+        "bytes": 1983,
+        "sha256": "227bd7bd37ac1654dfc01833483014083029da9df5b4369bc2e46b73a19f8027"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "preimage": "93f9e4bc85f79954ed70c2a7b7f5517766a2adee",
+      "postimage": {
+        "blob": "d4227925ae1d26f065bb62908757ed2fbb4184a4",
+        "bytes": 26917,
+        "sha256": "a4dccdac0ab4cd126be17a5d5dd99755c0f02db302b389c1198890ad397305e1"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "46c3554abd4916f9d79059d0ebdcf0c3032c82a0",
+        "bytes": 13509,
+        "sha256": "4f0bc7c023062127e42245fb817a93303c360a91204b283bf76a889566e9d7df"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps",
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "preimage": "dfc225cf5a667cbbb19af23356d864118d07e4d8",
+      "postimage": {
+        "blob": "1ae19b2347be7c26a5bd4c3b663ed26bc342e82f",
+        "bytes": 3684,
+        "sha256": "c9b22c9330f524ebd934bd61a98acb1938885535d1a46bd59f869772300ba456"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "preimage": "da842adff40dfa5f63403195643d7c49112bdcd3",
+      "postimage": {
+        "blob": "13bd0e2313911ca9385ac31eb4281801cf97b3ad",
+        "bytes": 17103,
+        "sha256": "06b0ce405f0ae8f393713e9bcf69919983929194c8c6f1d1e12f22c4b1666aa6"
+      },
+      "ordered_packages": [
+        "innerEffectOps",
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "preimage": "0734bd530f6ce52a809d07abe64c49126eb39255",
+      "postimage": {
+        "blob": "5556ce691aabf249c28859d43094c0a047d62c94",
+        "bytes": 10426,
+        "sha256": "35258d94d5203f01ee74594c603d8334b9ad2845b397f7b6d7f7d08fc85c11be"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "innerEffectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "preimage": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+      "postimage": {
+        "blob": "f846ed613863cdf06414fd50624e09911ec82f95",
+        "bytes": 22095,
+        "sha256": "c90b75147923e9a8e981eb9c52f23d843830d4c2f7775bc6e7e8d5616767f4e9"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+      "postimage": {
+        "blob": "566ad14163ae8cf6cbaf93b9e55d8a2ded4816dc",
+        "bytes": 14697,
+        "sha256": "ee01180481d3ccb9429eb814ae170c0c25430c98ebb90ecb7ddd48570aa8e808"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_authbus.rs",
+      "preimage": "1ea1ab3e8bd07fbe2389631e14b6e0157b109617",
+      "postimage": {
+        "blob": "9c63a629f90551804b2a7e6ab609dd7b58a208b7",
+        "bytes": 7114,
+        "sha256": "9310b70a36a532d1a97e173b15d511f3f92ee0d951eae4a9db77aae7c2542eec"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "preimage": "d3719d1c1ea28c49e7e4fd9050b23aeffc7dfc95",
+      "postimage": {
+        "blob": "6e87f8b8dbfe1a368b363f6b1e270b14e8a131d5",
+        "bytes": 7124,
+        "sha256": "65e9b2e51d71f3466294601765bfce9d0fc1fbbd98e78c1fffe42cb4405d26a9"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "preimage": "bfb919dde3e27bb2588cca720d57a84446fbd68f",
+      "postimage": {
+        "blob": "168531a0ebb30072c7fd690a8942e79ecfc613ea",
+        "bytes": 16100,
+        "sha256": "4b19dbe9de22d5d83b9b06bcd2d5ef04d8b6aeebfddfb1d507932daec515d238"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "preimage": "9568f1a648dc5b49a7060eab1da22b15ae3a6e6b",
+      "postimage": {
+        "blob": "5ca40ccd01f5947fca8f8f4994ebc6fd8fd9089e",
+        "bytes": 15950,
+        "sha256": "2791948cb575fabebf97d4e76c4437b9b4a20826e806c1074c9ba59ebc35fca4"
+      },
+      "ordered_packages": [
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "a19c39c27aafd028001c6e571de070db92df61a6",
+        "bytes": 4586,
+        "sha256": "08ad39fe3dc4948b5ff431e7f38513e71b2b8839592eb1ef29e94737e5a93063"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "lanesIssuerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+        "bytes": 11161,
+        "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "lanesIssuerOps",
+        "rootHostOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": "13ef7d0943f056527f45a7805e07a3f89b302985",
+      "postimage": {
+        "blob": "1f5bd882580fe6efe0402e5ad5ce13fd5ff99f88",
+        "bytes": 29722,
+        "sha256": "6f4863365cdc11a60c4b61ca8fba1dfc27ff09597127e2dcaadbccd096b925ad"
+      },
+      "ordered_packages": [
+        "getterFoundationOps",
+        "sessionFoundationOps",
+        "cPartsOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "preimage": "b6f34b3b9e0452d2ca311b79084233d5c3305fb7",
+      "postimage": {
+        "blob": "a0cbc911a862d11403426afb43a5022f7a348b1d",
+        "bytes": 5577,
+        "sha256": "8abe49a110e85c15bb824ccb4c69175050863c787b86dff53cb8b102484372f4"
+      },
+      "ordered_packages": [
+        "cPartsOps",
+        "purposeConnectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "2f29fb002c70222aaa9c58240546934d2fc92496",
+        "bytes": 3832,
+        "sha256": "7ec22758e3f8b8b69c2f8cda04ab9d3c3d044d165c19c809666476ca32acb2a9"
+      },
+      "ordered_packages": [
+        "cPartsOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "preimage": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+      "postimage": {
+        "blob": "e947422e2ab860086abf813a8da95bfab8ac4c05",
+        "bytes": 8384,
+        "sha256": "91b36498db50823d92bf7e682b02e0e4bdcb90d0d4d161fde5555202db195c65"
+      },
+      "ordered_packages": [
+        "cPartsOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+        "bytes": 19888,
+        "sha256": "e177d8e161f024cc6c77726bcf15339b5d9c8053a6c870558cd3520989f772b9"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps",
+        "phaseDeadlineOps",
+        "preflightMutableOps",
+        "digestTypeFixOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "preimage": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "postimage": {
+        "blob": "fd9ae43a0fcbc63b228c55ca5c96a801ee3fe164",
+        "bytes": 13942,
+        "sha256": "c82dde1965fef818a83a93d87a1ad6a172436fe6deb2848d1b28ffe433fba765"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "b0d5cf6559cdc8d8622a63e5e67550753ca520f2",
+        "bytes": 9811,
+        "sha256": "f7fdb9dd15adc8f3f5977b4880b15fcf99f8bfaa115a466df0c570994f95ddd5"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps",
+        "digestTypeFixOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+      "preimage": "af5cd79ac56102e0741a8145504e8266f5912cce",
+      "postimage": {
+        "blob": "e0d98a18c451e17530b3f1b5a5ed6bf4c98dd6ef",
+        "bytes": 13189,
+        "sha256": "53e80b57b0233da434709d3b483d2718006919d09e3a5bdc2f8e9d243c7d5daf"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "preimage": "3010b057741884954604a6d22a366e20287dba36",
+      "postimage": {
+        "blob": "b799893212918bafc19419f1c28161bb5cb19008",
+        "bytes": 13570,
+        "sha256": "ed39f0560ef3b3aa15c1bfe7672253222b03799c647c49ec28e95d340e616b22"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "preimage": "d6dbdcfca4ed85d7f9a13be5fa143de8cf561984",
+      "postimage": {
+        "blob": "b446253905da915e6830c59a579674d79b995bba",
+        "bytes": 12832,
+        "sha256": "23ad85cde0ca6a14bdf6d1686fcd73d406fcb37deeac5d729cdf4fa89b564dad"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "preimage": "2e1e33e9a7ed3ee09b3968bae43a623009cf5976",
+      "postimage": {
+        "blob": "21c5ddef9a7c0738be6cfae3ca14c83754fe1895",
+        "bytes": 12876,
+        "sha256": "5327eb644a925d22aa5fc1a05e20252d09d1057d9748ad99c7b04dc7fa447919"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "9d6c7d9243a7779b9941879087520f67cf52a439",
+        "bytes": 10556,
+        "sha256": "bed03a5298710fb89cb6ea5ca7bc9ce6f42fbe56d26c56c68c00d9f5200a0395"
+      },
+      "ordered_packages": [
+        "daemonReceiveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "aa38bdd0c38fc7ed5e904df34617ba9d2abbdb39",
+        "bytes": 13370,
+        "sha256": "b9508e5cba272e8d29c598b365f43161e7f4205b8b19d21f0941790758e6bb3d"
+      },
+      "ordered_packages": [
+        "purposeConnectOps",
+        "initialConnectorTypeOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+      "preimage": "d3c5da3501fe4395f8aa8e0ce159a62e9bbc6c34",
+      "postimage": {
+        "blob": "6c57d2abff8ee9efe16511da8b92f1619fe8f8a1",
+        "bytes": 6162,
+        "sha256": "46ee29d7ef7f1611a7ea40325dcb009f9a518dadd0ef96112b9f5f92d75efd1e"
+      },
+      "ordered_packages": [
+        "purposeConnectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "af6493ab046fd70ea55da5b5360722917abf0664",
+        "bytes": 14605,
+        "sha256": "0ddb84a0e471319c8c1cb02da318e5ba5263c50e69eae9208f5523e56f0eb874"
+      },
+      "ordered_packages": [
+        "purposeConnectOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "preimage": "3806529bc4a51d336e495934bb31cf3c28144b18",
+      "postimage": {
+        "blob": "9cdfb8aa002232e67843093ab6dfb3b8a6184164",
+        "bytes": 10048,
+        "sha256": "0175647eaa6046215548334b1c62b8c93f789cddbbd4535f74f376874e71daf3"
+      },
+      "ordered_packages": [
+        "purposeConnectOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "preimage": "40fd1895db90734959fe87223e779a0fe38d12bc",
+      "postimage": {
+        "blob": "8a7eee2723d1082b3e3130434621e960412fea3c",
+        "bytes": 14897,
+        "sha256": "35663bcd0c23e3d148b775659816a28a17cb14139e805792bcc18b4715e1ca6d"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "6ef608fb0cdcd8acbad836ff5dd80a8203272ab2",
+        "bytes": 2855,
+        "sha256": "9023ed1951f3d05b79d8a9c7a72d0c0ab02190141cac563ea679ac82ab59e05d"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "preimage": "3d4ed8f0ddf8e5b339a22eb664ef218c18a6df6c",
+      "postimage": {
+        "blob": "f15a3f5549a6eaf83c3759afab4366bf71938661",
+        "bytes": 16043,
+        "sha256": "b6dabb5abcf20b286827714fd9033e84e5107c2d3b70d0e251c323236948bfa2"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "8bdd6e546a039df5a72e5a117e1903b253f2d940",
+        "bytes": 2102,
+        "sha256": "05ffd97a453fd998c6da9d2e33126c48fce9c46bab7416be79e1ff5a21e7ebc4"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+      "preimage": "1827d0f88a7e69d84194039a3ff0948911fe7012",
+      "postimage": {
+        "blob": "ee867a20921f65e7c17907aac8cf53a074cba426",
+        "bytes": 13694,
+        "sha256": "0174a7e89bfc663f6711543459198764c36d2b99b6a70a0c5c9227c06c99cba2"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "318d10429421c1ce43b7e830e93d548ea98bf9e4",
+        "bytes": 10740,
+        "sha256": "8dfb1c1179079a5823b9900c3c4fc0577da0063e7d8fafa7c6f47633d0f38793"
+      },
+      "ordered_packages": [
+        "clientFinalOps",
+        "clientTestImportOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory_tests.rs",
+      "preimage": "b7225b1ddcf042f184458ee034945a0ed375f35e",
+      "postimage": {
+        "blob": "90a8d074822b567dcd97ccbb93685575ded92079",
+        "bytes": 2632,
+        "sha256": "75e20a7693397ea20af77038dbe95cb01045d5827e4a1586bb0db17d9578ef7e"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "e3185a06efa76e1cef43a256f8cb1399273ff748",
+        "bytes": 8990,
+        "sha256": "ceaf855f01ca61ff5a2ce6950a466c81f7c8addbf363227c64039643de686817"
+      },
+      "ordered_packages": [
+        "clientFinalOps"
+      ]
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "postimage": {
+        "blob": "ee142aea0d277d77de6d3e9cda62259a3b393f11",
+        "bytes": 760086,
+        "sha256": "6bce27885a7fbf3e1181da221ccf9934dbf58f88e5949a8f4e0c12edcf09ba7a"
+      },
+      "ordered_packages": [
+        "foundationFoundationOps",
+        "frontierFoundationOps",
+        "grantFoundationOps",
+        "observationFoundationOps",
+        "queueV2Ops",
+        "futureDiagnosticMetadataOps",
+        "futureDiagnosticMetadataFixOps",
+        "clientFinalOps",
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "preimage": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+      "postimage": {
+        "blob": "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+        "bytes": 13130,
+        "sha256": "7c5d3adaf46c810c1efed3ce636969df7b4d8b70249bd3bcf00211f5bb85f82a"
+      },
+      "ordered_packages": [
+        "queueV2Ops"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "preimage": "0ef46c3138832f28ec0f1ef4269c5d4c8677798e",
+      "postimage": {
+        "blob": "72b09ab29442ecbace54a7a46b01e847e8c52125",
+        "bytes": 12726,
+        "sha256": "d6ad6eeb902ce2b378e9a9fa81c55598b901af75dc628ce9a0b6371a460bbec4"
+      },
+      "ordered_packages": [
+        "queueV2Ops"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs",
+      "preimage": "021ba7c7883dc502c8b719d1cd00abf1bf6dc3dc",
+      "postimage": {
+        "blob": "21aad5993517bbcd4fe7c419e1367d26b6226154",
+        "bytes": 6935,
+        "sha256": "4f9fbfce8b384d655eb6ac03cb449823f4a00c4e6af2afc3c5d9cc5a847e9176"
+      },
+      "ordered_packages": [
+        "queueV2Ops"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "2738b74658fb953e21e73d99faa14eee35a62b26",
+        "bytes": 18106,
+        "sha256": "80e77fa7cacf680911807f0c9ec49dbd0e5bd734c060e90c04a685068497604f"
+      },
+      "ordered_packages": [
+        "queueV2Ops",
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "88acef591b17e17c199b46ca27f2720e4b3cedd2",
+        "bytes": 9078,
+        "sha256": "6413797ed968937522a243da26f00e6d836d3d5c298284f8bb7ebf4a92cf1693"
+      },
+      "ordered_packages": [
+        "queueV2Ops"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "05c93cc8110d340d43d2e9a0d852c39771df3020",
+        "bytes": 19582,
+        "sha256": "c3ec9db7b6ea534ad636e0dd8b9b183267a29e893357ce7c05f6741f39202d85"
+      },
+      "ordered_packages": [
+        "queueV2Ops"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "2cd7b91b2f21680256cedc0ecfe1ee0bf1cc7447",
+        "bytes": 16768,
+        "sha256": "19385e73e31af6bf2ffbaaab326f689189de049c44e335d07ec90faccd38cb4e"
+      },
+      "ordered_packages": [
+        "historicalBridgeOps",
+        "phaseDeadlineOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+        "bytes": 8624,
+        "sha256": "78d2015459f50c893319900a65b8c17061ae00c964ea8ba2f6140e61c40e8ce3"
+      },
+      "ordered_packages": [
+        "rootHostOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+        "bytes": 11071,
+        "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4"
+      },
+      "ordered_packages": [
+        "startupActualOps",
+        "startupReturnOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "3b50191a5102765cbb48aa449345d481f0e6731e",
+        "bytes": 9518,
+        "sha256": "37fef28ce0d1e16dc5bc74b09b3a242b53742d0b6d9a12caf90f6a9146c23fd9"
+      },
+      "ordered_packages": [
+        "startupActualOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "cd368edd9bcdbcfafd84ff13d44ea12c04cefb5a",
+        "bytes": 4079,
+        "sha256": "09275003e739aef211ee02af390874049320e4f55810a17710dc1001250b550d"
+      },
+      "ordered_packages": [
+        "startupActualOps",
+        "typedReceiversOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "preimage": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "postimage": {
+        "blob": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+        "bytes": 27445,
+        "sha256": "6b09e46a1e8e97616d25e03671852cd87976ce557dc52aecc2dcb80bf70229ad"
+      },
+      "ordered_packages": [
+        "startupActualOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "preimage": "764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad",
+      "postimage": {
+        "blob": "25513fb7db7a53ef735d48fdfa4cf3738ec3c125",
+        "bytes": 8143,
+        "sha256": "d2f1c23d05dcb20aa45e303b2decd03650b19ba512a8a50410ea854e5a2ec35a"
+      },
+      "ordered_packages": [
+        "startupActualOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "0dd1deba7fcc402269c73c1ee7480f6c12320552",
+        "bytes": 3587,
+        "sha256": "2f7a008f9d12d6b050126c2af289cffcbc81bd1b6e7fd364d9328da8c454a5c8"
+      },
+      "ordered_packages": [
+        "aAddsOps",
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "f4cf8a01bc778eb02d8bf9c2d3d1b96895cfc863",
+        "bytes": 9037,
+        "sha256": "7808bc2acb2b3a4b460d0c9275833c6945af0fd965630bdea1d9ff66e310dc7a"
+      },
+      "ordered_packages": [
+        "aAddsOps",
+        "digestTypeFixOps",
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "dc08d2d342a9eac0fad3a999aa64150b513793f0",
+        "bytes": 9373,
+        "sha256": "e1ead28196e856b5db608952cc0f50b886cc78b62ce9aa5fcfa8ebfa747b84f9"
+      },
+      "ordered_packages": [
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "1da6f999280238c494dd3aedb623c4d733cbae5e",
+        "bytes": 9622,
+        "sha256": "bdb1863299d4cb61f1870472d402a126c4994c06199049a802d05688137c24af"
+      },
+      "ordered_packages": [
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "0d51ad8fb5e821f6ddfe5de4ae323a7ea78e3402",
+        "bytes": 4910,
+        "sha256": "f35a3d04a28050fd4d09e03e77658aea09562388e007f4a1c73b2008363e7d87"
+      },
+      "ordered_packages": [
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "preimage": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+      "postimage": {
+        "blob": "bee4b106d8914a538cb3b40ab5aee81f1262da31",
+        "bytes": 14560,
+        "sha256": "12c17b46f43aac5b84ce4e2136684720d45c1424e4d1a71b051148ab09f79bf9"
+      },
+      "ordered_packages": [
+        "cControllerOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "preimage": "3d7f65f119cc3aebb77fb8dc6931711f800daf50",
+      "postimage": {
+        "blob": "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01",
+        "bytes": 21205,
+        "sha256": "9eb0a3417edfb529b7f0bdba7143e52de2f08228fccda032031ddb6270f0faee"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "preimage": "1b9d802c993b3b52df72a130975c214a31c18f2d",
+      "postimage": {
+        "blob": "d36cb92a2aba3f78fffa98874e6f174a1d275b26",
+        "bytes": 19901,
+        "sha256": "4fff0738c309e87e286968845246df30fc877027ff50706a0eb98a9584cabcdb"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "preimage": "bf8c26ce91aa3ac517fc883e24d9be86b08dac1a",
+      "postimage": {
+        "blob": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+        "bytes": 23362,
+        "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "preimage": "e7010b23dde46c73398082d038bae73e45e3716e",
+      "postimage": {
+        "blob": "547aa280219dba09d1a7f5eeea91319db375c942",
+        "bytes": 10648,
+        "sha256": "c37a7693572bbe7a6b3e7e311018041f609bcd4a84b7cd116b0d0c0a764b9d84"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "preimage": "7560be6c1171f4010352867346ff6f49dd15facd",
+      "postimage": {
+        "blob": "efa2a4163b9c685f217b264a966c6c2cd666b1bb",
+        "bytes": 10429,
+        "sha256": "8b3251501e400edff3af9a98b17112b654e3b3fb9149f482d3ad701147ef9d66"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "preimage": "14971bfa8f1fb0963c8dcebf19b83158ee74cdde",
+      "postimage": {
+        "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "bytes": 5069,
+        "sha256": "fa0fdbc36f92230cf5bd20a59fb94e8f124289efe503dbffb94b26be95101419"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "preimage": "eccc3de46f610576ee47b072da10d0f53daf5739",
+      "postimage": {
+        "blob": "2bde009187e2f4e82e7e8c85d4e1f21dec502332",
+        "bytes": 7947,
+        "sha256": "b4ba6c496d2cba51bc7327a7ad48112e65187f717db05f78c1e5704f8514cfb4"
+      },
+      "ordered_packages": [
+        "modulesOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "preimage": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "postimage": {
+        "blob": "e758333d25dc270e5470e93fe72a8f988221311b",
+        "bytes": 66693,
+        "sha256": "f596ebec608feaca718fb5ee922de01295f0538f47761565fd7556175cf9b4ad"
+      },
+      "ordered_packages": [
+        "modulesOps",
+        "moduleRecordFixOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "preimage": "0f72a32402fa990f46912ddd95872111d0a4c369",
+      "postimage": {
+        "blob": "8778a2dd0e8402a8a8b38ea221afc6431963d328",
+        "bytes": 8622,
+        "sha256": "541ac23b5495efd1f393b0f0cc5cfac490278f92914276ec67bd2900a946c864"
+      },
+      "ordered_packages": [
+        "initialSessionModuleOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "preimage": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "postimage": {
+        "blob": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+        "bytes": 7508,
+        "sha256": "b01371b59ab743db58935ea3590e692a69494ab92feb9abb4d352577400d4b37"
+      },
+      "ordered_packages": [
+        "foundationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "preimage": "36e4524baea04320b7610325579f0ff206690fab",
+      "postimage": {
+        "blob": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+        "bytes": 8664,
+        "sha256": "2a0eca20235067945c47780b0df848c3284430eb1a95e7a952e57364d7d94845"
+      },
+      "ordered_packages": [
+        "foundationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "573fd94965f6daff1ddd318d8d900e6b9da15905",
+        "bytes": 6129,
+        "sha256": "4ff0c3a7fa70b87082740fd33cf93985ddd1c4520c20368d7b8251cdf36e9d12"
+      },
+      "ordered_packages": [
+        "foundationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "preimage": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "postimage": {
+        "blob": "0451ca5b309b701b186ca749241e9c5f1191daa5",
+        "bytes": 15405,
+        "sha256": "8d84370c08f0abbed050418f06035af7d5b6b777a9e033ce0e1f5f497e199c0d"
+      },
+      "ordered_packages": [
+        "frontierFoundationOps",
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs",
+      "preimage": "1656af0d3b0ed8faaff8cf3d74085a5bee4f0d5c",
+      "postimage": {
+        "blob": "9d74ca12c14730e3b8ba9b6b345bf3f9e8254b2d",
+        "bytes": 9875,
+        "sha256": "d2709044d6bbf9d69aef323b35d4576bbee5791842649b56b35aa57f55fbd103"
+      },
+      "ordered_packages": [
+        "frontierFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "76ed6df0567c669eb9fec4a43f4f7f359e71fbbc",
+        "bytes": 4877,
+        "sha256": "0e844d42236eeed8952569aa746ba22b22452245abf89d2bae67514e913fc147"
+      },
+      "ordered_packages": [
+        "frontierFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "preimage": "e6a8969341404b3220ff0a2080a739986a74fa38",
+      "postimage": {
+        "blob": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+        "bytes": 9853,
+        "sha256": "a7374f4233e2a5309fbc57fb6eaf5600dca9ccc5515857c8d522847859366f5e"
+      },
+      "ordered_packages": [
+        "grantFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+      "preimage": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+      "postimage": {
+        "blob": "4be776f01978d384997f1043b47858260d928a8b",
+        "bytes": 9892,
+        "sha256": "cbdc67e942a8dacfe851128997ad6d53e1d5b6f0b0f12d7904f1d534b6c2defc"
+      },
+      "ordered_packages": [
+        "grantFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+        "bytes": 5376,
+        "sha256": "6aff64f810c9633457ef73c9c563ad50eda6dfc3bbe2d78e49ea693bb1657fb3"
+      },
+      "ordered_packages": [
+        "grantFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "preimage": "9d3d24bd5104be99372c8a55859360e792120605",
+      "postimage": {
+        "blob": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c",
+        "bytes": 13169,
+        "sha256": "971216ee16d408873f4aa9acfceb79b748eb6acc807e825e5d1bf9bb4d112864"
+      },
+      "ordered_packages": [
+        "observationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+      "preimage": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+      "postimage": {
+        "blob": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e",
+        "bytes": 8807,
+        "sha256": "488c5338ed7ca4aa8c55321f1a59e2c1160ab630fea8f93c7053aaca8442a9d4"
+      },
+      "ordered_packages": [
+        "observationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+        "bytes": 4676,
+        "sha256": "2d8bab1e48de976fb0326c9e89236f7386d07cc9719540fde63d5521e79dd4ae"
+      },
+      "ordered_packages": [
+        "observationFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": "a0e27f8c747f8ef9f41bb0701caa77babd32950e",
+      "postimage": {
+        "blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "ordered_packages": [
+        "sessionFoundationOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "fa902ef2a40f3fecfe2db1687a099022b92edf2b",
+        "bytes": 13753,
+        "sha256": "81d3cfa15d5771f22efbdfd52b732649bc3742794e9a19bb1bd30963bea23aa7"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+        "bytes": 11355,
+        "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "preimage": "7bbeae1f64c573f2cbf27376b77ad80651c4f9db",
+      "postimage": {
+        "blob": "0c266ea74c08bbe477a225b5a05edb6784a1d897",
+        "bytes": 29832,
+        "sha256": "1951c4ad769c1c115a9090aee70415f0c9ef5d553eb6e89f9518bf51ffa3f914"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "a6e053b4034ff06bd8acb2fde2d5f0ba54f2c7a0",
+        "bytes": 7473,
+        "sha256": "f616c45fa85b9f23e7bb98b7b124e292a75e0903c27ef94a760b2f78d2a59a19"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "preimage": "0d889ad2a039ab20bc6114ca352b1e25692c8ba9",
+      "postimage": {
+        "blob": "99827f392e51719e18f91dacc37f7603605c7979",
+        "bytes": 13648,
+        "sha256": "10f2c9b40a64a0512d85db2c0363ece8b91c62b19eee879680f51596cfca7870"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "6b0f3b3f17f7fb59de2eaad382642772740a0c55",
+        "bytes": 5595,
+        "sha256": "9e3c685c58062ca62d0a0aed8e0921250c0a74567750dc354fdf91402d864119"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "preimage": "5279378df21dc04d3241918912a16444cef4cb4d",
+      "postimage": {
+        "blob": "50cedd202a98027f672153fa375d7d41ded41d22",
+        "bytes": 24121,
+        "sha256": "9a1f3a45bf9f0147e9cacf4baf6fa902b59d576d75add913a2b9ceec3c7721d6"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "7b534fd212f4d3da901878cc7dd1c2d66b2abe84",
+        "bytes": 7067,
+        "sha256": "644050d444174601eae757f7513b3aa51a61ee982b7bc886067e9e81acda0588"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "fad2523ec6e5d9ccfc64c24605cbb7a1343e0fd9",
+        "bytes": 6074,
+        "sha256": "8bc4e4fd8b6af3a2d3626423e7d0506652ea588b10570a1529452842291ae143"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "cba8c4bfef61cb1b7b0485488b75155d1b25a6ee",
+        "bytes": 1246,
+        "sha256": "717e967ca3fbaa2810c4c2ecb0aa191a44da5066e1868beac475abbf85f4abc7"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "727083c272082dfc01189015b8ec6c187257b8f5",
+        "bytes": 4976,
+        "sha256": "dec54bef7ae2f56a8a045aad1a604034948d4e9ac5cefeffd6057384084bb68c"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs",
+      "preimage": "2ab1acb3b630a5d0b0dd725e6adbae3e123c8e35",
+      "postimage": {
+        "blob": "1f6dbb79fc20bd3e18c462b8cc5b0ec0e67a3a27",
+        "bytes": 18362,
+        "sha256": "0d0414f91229b56112ec47bcb4dd25945205384720df70011ae9a4cbec3b0c55"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "preimage": "94ffbcfd0db944429f21cac6f80a0e9e7c2df7ea",
+      "postimage": {
+        "blob": "b6346458f3a5d5e28fdb90bb90925d59beb31b9e",
+        "bytes": 7603,
+        "sha256": "ef8c9c688971e8b2cbfefa2f5a282df808ce6b1fa30024606b3395ffa7180adb"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "8e59fd63da4e9cf650636875a35a04e6b39c8589",
+        "bytes": 10737,
+        "sha256": "ff25a7d8c8d00166c583d9d8c2549347a1ee4d7b91ae8e24bc99f50d803b5ff1"
+      },
+      "ordered_packages": [
+        "actualWorkFinalOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "f045720cc85590a9f750f8c976088b797a2df29f",
+        "bytes": 4390,
+        "sha256": "cec96b5a5fb70863aca252358aeef9393e09a6a0bd7cbe10fe12402d56de505f"
+      },
+      "ordered_packages": [
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "preimage": "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+      "postimage": {
+        "blob": "fe558c9b64c4ed047a9d8320ee48d0b8f2c13d2c",
+        "bytes": 37803,
+        "sha256": "a0f08a08c56e821196ccefc7b30f31babec3fa6f0f555998f43532bd4edd6c30"
+      },
+      "ordered_packages": [
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "preimage": "9bd9466142c8575a9cf875cc83c9cfd0fc3587bb",
+      "postimage": {
+        "blob": "60b6ec963cfcaaa6277fad7d6ba01feb1723f539",
+        "bytes": 6190,
+        "sha256": "a667f3360d5560229583f4e1bb28ecdd8578082f00b3e55f2055afddefc1cbaf"
+      },
+      "ordered_packages": [
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "preimage": "ed96ac3966a20a7aab1c5138c7493464b6d8b2a8",
+      "postimage": {
+        "blob": "3bcc3fe813ffaecf3c97067eb7ba1474b29281ec",
+        "bytes": 3864,
+        "sha256": "8b666c07e2482b20644b71ec71eeba9faf94b6111e67b9b45510d36f7357503b"
+      },
+      "ordered_packages": [
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "preimage": "9dae7caa808e31b3415116ae94c10c1a9c0c6a63",
+      "postimage": {
+        "blob": "4a7f6e9f585a6d4d3a6bf83f43a78081c2e9c602",
+        "bytes": 23757,
+        "sha256": "f850e108301e953617d29513ded91200f638d17f50579b78f1b8b4c26e5dd059"
+      },
+      "ordered_packages": [
+        "futureDiagnosticOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "preimage": "77b578235471b9d99e2aeea832647ea52524c3d6",
+      "postimage": {
+        "blob": "813518bbcaad6591b7077e4b89ee6167e60e983c",
+        "bytes": 10813,
+        "sha256": "d27afdf16f629f4697eee9765fd34287d22d07dbba6d7eef1b516ee3010017a3"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "preimage": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+      "postimage": {
+        "blob": "8ac1bd31ec7c0280120048aaf654ed3c34b063c4",
+        "bytes": 9891,
+        "sha256": "f2da00091edb7a643f7ab2e17a9e9a28272d59ea2b80d3eed75fe9b529d9c239"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "preimage": "641493da17d404419605189ac4934d67406e5457",
+      "postimage": {
+        "blob": "0fda77f096bca1f11d7178187f15bba1c5ecdbab",
+        "bytes": 17878,
+        "sha256": "63c1398c62ebada65432e4d1a8844f25ad607c99a35e2e1e05a1a4aee3a0a3cf"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "preimage": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "postimage": {
+        "blob": "bd395196c5138b5472a54c772abd40181f50a696",
+        "bytes": 11160,
+        "sha256": "288638c8c57992e4b0354202128c091451be3cad9ecbbaa9d8c32e5d4a468a3e"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "preimage": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "postimage": {
+        "blob": "452879cf5d45a7fb4b719d748f3faccf1b928275",
+        "bytes": 9895,
+        "sha256": "a782ce5c17269d1a8a5891c6f9e528fec4c843d06d80727e8bc0cdf6a5175c4f"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "preimage": "b987852053e2ba0a252548aadb5816bbd7fcf2ad",
+      "postimage": {
+        "blob": "6796ebce1230a76af52aad34147ce9fc3f64fb0e",
+        "bytes": 8177,
+        "sha256": "bc4168357b37fb05d9ef824731934da75165e73660fdfce4bbd5d6d6707e58f5"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_protocol.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "0e0ec113287d1ca4814c33dc9ea6eac3c9a5fc0c",
+        "bytes": 1138,
+        "sha256": "69f5badf171f559c0b18f72103e150e7a0eff2cd3957e76791ef456f0c7579e6"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "b4b39eea3168b6fe66cb3627faec896746898a6d",
+        "bytes": 3149,
+        "sha256": "813621ef864dc93adb7c9491dc009ff078975323ce6b404891438d349ef170bb"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74",
+        "bytes": 2920,
+        "sha256": "97d5b017a9a05cad0b75304b1eabb9d3fc3331f7a26705bb98cdaece405577a5"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "fd725bca00e67d49fca7357fbd8dfa38d07cc9e1",
+        "bytes": 4977,
+        "sha256": "cda4b48a3330ba07a401416ddd27e33248a822815c42f7b5dc4416d7afffb506"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "15379b5fd88dfef1e63fe4e317fc6bb2caf56d09",
+        "bytes": 6987,
+        "sha256": "c9526eb5a734aed23c71b70531f1b76a57ed04c4389ff3b6fad56232af875fdc"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "221c6be56043103af62bcf7f37dcf083861acc0c",
+        "bytes": 7384,
+        "sha256": "38c5364dfa74e2d19b7b0d8ebb019b9668a2e9018a77cbba0466e3be36c3d1e8"
+      },
+      "ordered_packages": [
+        "historicalTwelveOps"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "key": "innerEffectOps",
+      "blob": "738bf33f55e8634403ddfc77cb4e923aaccf9721",
+      "bytes": 44679,
+      "sha256": "f49fd9460fa753a055c5de94d35692060291d4382b87fd4aa2d630d4339ed48e"
+    },
+    {
+      "key": "lanesIssuerOps",
+      "blob": "d9914e79b5d1bdb023a3954e70e304c90756496e",
+      "bytes": 21886,
+      "sha256": "7972cbde6f595544b6f44351fee5d486d915457d249e5ac8e80b2c4de699e7dc"
+    },
+    {
+      "key": "cPartsOps",
+      "blob": "c1cc37c62c24b8113d1b45cc654cc74f7339b803",
+      "bytes": 10709,
+      "sha256": "6e962db4d85b0d87a92ec888d35410f0a5873526f4ebed947df0c82a5529f5a1"
+    },
+    {
+      "key": "daemonReceiveOps",
+      "blob": "52adcfa18d17d3edf2c7d823fcda91b0c032f4ed",
+      "bytes": 64288,
+      "sha256": "32fcad05e6de9210b746d252fbbed7896b40fee637bba6deecca8ceecbcc277b"
+    },
+    {
+      "key": "purposeConnectOps",
+      "blob": "9ae8593808037875d005865b21a2bc9084c55beb",
+      "bytes": 32320,
+      "sha256": "c2bcedc33ebc69ebc83980b133178c761eaab3684c903f6d25e3e6cfa544ca75"
+    },
+    {
+      "key": "clientFinalOps",
+      "blob": "25bf8cbb9a6a0c738b6e4b1e7e31a497e520441e",
+      "bytes": 110309,
+      "sha256": "6eb1039742724d0e03f27bf3ae3a45e3a0028381b6982e2a9a3fa927a86aa4b1"
+    },
+    {
+      "key": "queueV2Ops",
+      "blob": "f47a2ba4f412c033ffbecf9af0d86daedf42c1a2",
+      "bytes": 135984,
+      "sha256": "07e4ba28a4350e19ce9bedda2d6fe79282d0372b5a8c510b85e9992547e93008"
+    },
+    {
+      "key": "phaseDeadlineOps",
+      "blob": "cac86cf486d6414ae683d18174b7d1da5dfd3eca",
+      "bytes": 8310,
+      "sha256": "d78b3eaec0c087438ff77ad66f921acf7474ba517cd8f536cd3a61ff09fefbf0"
+    },
+    {
+      "key": "initialConnectorTypeOps",
+      "blob": "b5e154cf7000cef4801edf73e76a976e2ec683e8",
+      "bytes": 1116,
+      "sha256": "fc19fde7f532975dc3c2e90b2f0d18163c84bf06dc1a9c1781cd9ea6f0443f66"
+    },
+    {
+      "key": "clientTestImportOps",
+      "blob": "847ffa54b5796dcd320e69518d7490f279da3ba8",
+      "bytes": 1033,
+      "sha256": "e3a32e7b1ca2a4d38135afb95ca11e934f2d8ea92ff3cc275547a695ddab3678"
+    },
+    {
+      "key": "rootHostOps",
+      "blob": "98dd73c13a3c1cce0cee55ff5ecdc768c41ad445",
+      "bytes": 11563,
+      "sha256": "15e3c61a90d636526501d180a759b0c4e56bc99742904bbdb7191b7d5fe8312d"
+    },
+    {
+      "key": "preflightMutableOps",
+      "blob": "da534b11bbc7b43590c11accf76a8316606cafe9",
+      "bytes": 5154,
+      "sha256": "af4016fda4412707318d585680499144f038a2a32353898587c4eab1630a5199"
+    },
+    {
+      "key": "startupActualOps",
+      "blob": "37b31af93d94a80b73116b33bd3077d1c94b4083",
+      "bytes": 29523,
+      "sha256": "3b029e8d4d916c8144ee1f147ddf02e255c3ef1c4d46c98ff35640d41e977152"
+    },
+    {
+      "key": "aAddsOps",
+      "blob": "f152b4d11909f211903ddb054d2a8b8b56e1ee39",
+      "bytes": 14476,
+      "sha256": "bf1a931ad252a1fa39aa414c8937da5f2c95ef0cefe922dd5c9de5292ad3a608"
+    },
+    {
+      "key": "digestTypeFixOps",
+      "blob": "e8a1ff557d0a2c3f864c1ba50aa8f69641ea607a",
+      "bytes": 4178,
+      "sha256": "588aa9edee5488756ffa55be6a61c4688bdb1d93d5facab9e17dd8e6ed56ca2f"
+    },
+    {
+      "key": "cControllerOps",
+      "blob": "eac26530b458a0b0e8cb2967b5bd550412e7eb05",
+      "bytes": 35484,
+      "sha256": "38635c9a2f98356d5984ec6cfef9df10504acf8dbd0cc62c2652b85d17cade5a"
+    },
+    {
+      "key": "startupReturnOps",
+      "blob": "789a13ad5c58edd39e4d17f3e6994924cbc8a276",
+      "bytes": 2574,
+      "sha256": "dda60c7716584fa58bf6e8fbfd8e48d7da027efda19c183bd68bf37ca5b15e26"
+    },
+    {
+      "key": "modulesOps",
+      "blob": "1e90b2f390704c32159ab0a6ea3e222d7b275e2d",
+      "bytes": 11890,
+      "sha256": "2c1747b24beb50ba1fcac297a11e0f8df5cf16d89f9f06ca3e25ff9fa211ae20"
+    },
+    {
+      "key": "moduleRecordFixOps",
+      "blob": "21504933a6f5ecfa24b0eefebe7b82181c7facf3",
+      "bytes": 1206,
+      "sha256": "fb5327db1bb696068ebb3bffa2c7ace3cf8a4f7924523cbd28f2689614ab5617"
+    },
+    {
+      "key": "initialSessionModuleOps",
+      "blob": "32c8f8d84106ccd0c07fa09d43f7dc7cb06470c9",
+      "bytes": 1566,
+      "sha256": "ffe7ab4cbbf015c9f35cd32e2d2d105390d31d209e0c0aaefba793bcb4cb2ec8"
+    },
+    {
+      "key": "foundationFoundationOps",
+      "blob": "89666c639e40730cf32acf5996a4b90244201278",
+      "bytes": 36860,
+      "sha256": "a36a1baedef971a548dd61609f90be6b04a18c33b55b714b40bcac3b6fe24ff9"
+    },
+    {
+      "key": "frontierFoundationOps",
+      "blob": "d77803995f3e67b08a02aed73187c925f2f7099d",
+      "bytes": 17826,
+      "sha256": "58b2e507bb622d3d414589e93b22a5b822d03f0938e7409569479b5a9df8b345"
+    },
+    {
+      "key": "getterFoundationOps",
+      "blob": "4c05c69162b98fd9befa1785638d9a1f2a6015ac",
+      "bytes": 1250,
+      "sha256": "9977fa474ba9e40654912a44b2eefe138e70abc08bcbe32eb649bce045967383"
+    },
+    {
+      "key": "grantFoundationOps",
+      "blob": "2fdddeddf91200838a5754bfacd1dfda7c45c083",
+      "bytes": 14618,
+      "sha256": "f5d82ba66997962aa3f58a265bc66ec4c3b829a4db852f06dd4b490316961922"
+    },
+    {
+      "key": "observationFoundationOps",
+      "blob": "3ac77eb43d0e80e6112c7c5577744e5ddb56f3df",
+      "bytes": 18823,
+      "sha256": "46f9674051ec7759fca63bf2bc20eb8d760071d9472697bb49f6e8ea8c4c140a"
+    },
+    {
+      "key": "sessionFoundationOps",
+      "blob": "ec9db3342c1fc5c6a3fa300cf2290557c2534676",
+      "bytes": 12437,
+      "sha256": "f16cd6ebea1351e3f6c005384d19196bb67a3b7116bb672440246853389bd7d3"
+    },
+    {
+      "key": "historicalBridgeOps",
+      "blob": "fdc741f5a13378ecaf5d9d5d00d72c431bcdfdee",
+      "bytes": 83583,
+      "sha256": "8ec479c23a46af92920f655ed0b85850920ae9fcdf536263f518b633b42c597a"
+    },
+    {
+      "key": "typedReceiversOps",
+      "blob": "d7a04c799003fffc6d58693a8c8f3515e4281f2d",
+      "bytes": 51232,
+      "sha256": "29785f30a557b000b07a496a74844b14cee2a29ff59946d417810b0214d27528"
+    },
+    {
+      "key": "actualWorkFinalOps",
+      "blob": "0c50562977ebfc5409e67c2dce3b8c037d66da9e",
+      "bytes": 136187,
+      "sha256": "7ebe260fe04ab5a361f64a497548e5a7de06cad8b8f744db6da103d19c830016"
+    },
+    {
+      "key": "futureDiagnosticOps",
+      "blob": "3ad08bb760c6e87c6457f1f89dad5c08c29f1405",
+      "bytes": 29114,
+      "sha256": "a9e8d6088a191932dee0fd55e61495b5ab8f7d13b31690c997468e05031a3f97"
+    },
+    {
+      "key": "historicalTwelveOps",
+      "blob": "923c9ca0e605fd35b73ab95fbda9b4ea677cab58",
+      "bytes": 58365,
+      "sha256": "981dada54e93de85f6559f87f975cbeceb8fd4f06d939ed72d434f64344c9cb8"
+    },
+    {
+      "key": "futureDiagnosticMetadataOps",
+      "blob": "5edc337a254aeef4a1460c09538ab9d55816fec5",
+      "bytes": 3333,
+      "sha256": "896dd4e478e6b037adb43ba67b0c7429f00fad4f61360511d46228cf284b8b44"
+    },
+    {
+      "key": "futureDiagnosticMetadataFixOps",
+      "blob": "e94d01cf1ff75a179f11ef22a9842e484c26080e",
+      "bytes": 5138,
+      "sha256": "6229022d1f7ac5ef114eda550c207e823e59d15b7eaaf3668123c531bd194b6c"
+    }
+  ]
+}

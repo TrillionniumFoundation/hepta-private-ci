@@ -1,0 +1,313 @@
+{
+  "schema": "independent-same-actor-phase-explicit-receiver-static-review-v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "No confirmed blocker in this spelling-only delta; not compiler/checker/phase qualification.",
+  "scope": {
+    "packet": {
+      "blob": "d7a04c799003fffc6d58693a8c8f3515e4281f2d",
+      "bytes": 51232,
+      "sha256": "29785f30a557b000b07a496a74844b14cee2a29ff59946d417810b0214d27528"
+    },
+    "files": 8,
+    "unique_operations": 43,
+    "current_review_does_not_reopen": "Previously reviewed startup, two-ACK join, same-instance capabilities, actual source custody and module design.",
+    "prior_reviews": {
+      "startup_actual_work_and_C_with_open_B_blocker": "f1fe610f665e3950505e55d0737b935710facbb0",
+      "module_path_and_visibility": "81c723c38d76ab02913d48d74dc121b9dec70d57"
+    }
+  },
+  "byte_evidence": {
+    "method": "Independently GET all 16 pre/post Git blobs, verify full Git SHA-1/UTF-8 bytes/SHA256; replay all exact old/new literals uniquely in declared order and reverse order.",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+        "preimage": {
+          "blob": "b8f3b0d949ebf8f31900aa0e771177fcd8274ae5",
+          "bytes": 9398,
+          "sha256": "c0be5a619b64021f4be35af620dbdf7d583f1136f7e4f78ce535498b51bb75ef"
+        },
+        "postimage": {
+          "blob": "3b50191a5102765cbb48aa449345d481f0e6731e",
+          "bytes": 9518,
+          "sha256": "37fef28ce0d1e16dc5bc74b09b3a242b53742d0b6d9a12caf90f6a9146c23fd9"
+        },
+        "operations": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+        "preimage": {
+          "blob": "5bed2357d051bd8d687119f9b6bf040e5469011c",
+          "bytes": 9481,
+          "sha256": "aadeeaa3feeef9f3c4770f6ac995e371a89e68298e2b7d2d1f2371775edeaf84"
+        },
+        "postimage": {
+          "blob": "b0d5cf6559cdc8d8622a63e5e67550753ca520f2",
+          "bytes": 9811,
+          "sha256": "f7fdb9dd15adc8f3f5977b4880b15fcf99f8bfaa115a466df0c570994f95ddd5"
+        },
+        "operations": 7
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "preimage": {
+          "blob": "54fa42aa701aff6fee87d786e7a0a4816d258953",
+          "bytes": 19771,
+          "sha256": "6258616f68acac6bb81f09f4e88bf1cb2f3de36c3f6027824c72a3aed56f35d1"
+        },
+        "postimage": {
+          "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+          "bytes": 19888,
+          "sha256": "e177d8e161f024cc6c77726bcf15339b5d9c8053a6c870558cd3520989f772b9"
+        },
+        "operations": 4
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "preimage": {
+          "blob": "58f1f7512a51a5b1e7fc00ac67df1224021a724c",
+          "bytes": 14073,
+          "sha256": "ebaee77ca0c955f17f156dcb3d6d3284f273e5b835e10016549c7025b444c3fb"
+        },
+        "postimage": {
+          "blob": "af6493ab046fd70ea55da5b5360722917abf0664",
+          "bytes": 14605,
+          "sha256": "0ddb84a0e471319c8c1cb02da318e5ba5263c50e69eae9208f5523e56f0eb874"
+        },
+        "operations": 11
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "preimage": {
+          "blob": "1fa1a5ec897476b111b78ca353d3f70f0a44d2e0",
+          "bytes": 10898,
+          "sha256": "a008bb7a6b957e3308f82901fcb4b658477dfa1ad2b43708c5b72ba869711ef7"
+        },
+        "postimage": {
+          "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+          "bytes": 11071,
+          "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4"
+        },
+        "operations": 4
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+        "preimage": {
+          "blob": "af99c0ad33cb8ee24f79d864e7614fb8e58f97df",
+          "bytes": 3869,
+          "sha256": "27cc8d18a4b5164abfdd76481a4b128d063ab1f3cd6b55a2a3dc45ff862804ec"
+        },
+        "postimage": {
+          "blob": "cd368edd9bcdbcfafd84ff13d44ea12c04cefb5a",
+          "bytes": 4079,
+          "sha256": "09275003e739aef211ee02af390874049320e4f55810a17710dc1001250b550d"
+        },
+        "operations": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+        "preimage": {
+          "blob": "0de49d62c3ad19daf5b784f644e40a66af7187b2",
+          "bytes": 13010,
+          "sha256": "6eff847acbf02bc6749f717046c55a97e69a6775d45fb63852d203aad2f604c1"
+        },
+        "postimage": {
+          "blob": "aa38bdd0c38fc7ed5e904df34617ba9d2abbdb39",
+          "bytes": 13370,
+          "sha256": "b9508e5cba272e8d29c598b365f43161e7f4205b8b19d21f0941790758e6bb3d"
+        },
+        "operations": 7
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+        "preimage": {
+          "blob": "5df98478dfb2bd2978c614c71679dbb95dba7c6c",
+          "bytes": 8473,
+          "sha256": "0f55907acf8ef493534b03700987c0435ff9796bacc1d2a884b5998d1a8e475c"
+        },
+        "postimage": {
+          "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+          "bytes": 8624,
+          "sha256": "78d2015459f50c893319900a65b8c17061ae00c964ea8ba2f6140e61c40e8ce3"
+        },
+        "operations": 3
+      }
+    ],
+    "projection": {
+      "method": "Pure JS replace only each named UFCS expression with its original method-call spelling and remove the one actual RootContext import. All eight projected files equal their original preimages byte for byte.",
+      "root_context_calls": 57,
+      "opaque_joined_prepared_getters": 2,
+      "consuming_capability_registers": 3,
+      "new_type_imports": 1,
+      "per_file": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+          "counts": {
+            "root_context": 4,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+          "counts": {
+            "root_context": 11,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "counts": {
+            "root_context": 4,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+          "counts": {
+            "root_context": 16,
+            "joined_prepared": 2,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+          "counts": {
+            "root_context": 3,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 1
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+          "counts": {
+            "root_context": 7,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+          "counts": {
+            "root_context": 12,
+            "joined_prepared": 0,
+            "initial_register": 0,
+            "scope_register": 0,
+            "publication_register": 0,
+            "import": 0
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+          "counts": {
+            "root_context": 0,
+            "joined_prepared": 0,
+            "initial_register": 1,
+            "scope_register": 1,
+            "publication_register": 1,
+            "import": 0
+          }
+        }
+      ],
+      "not_claimed": "This projection is not original typed helper/checker execution, Rust parsing, compilation or a full-index receiver scan."
+    },
+    "replay_summary": {
+      "all_files": 8,
+      "all_operations": 43,
+      "forward_unique": 43,
+      "reverse_unique": 43,
+      "full_result_bytes_equal": true
+    }
+  },
+  "source_reason": {
+    "original_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "helper_read": "Independently GET/hash verified and read authority_fields, _receiver_type, _bindings, has_authority_call.",
+    "exact_risk": "authority_fields retains only fields whose type is the queried target; _receiver_type walks only that map. Arc::clone of an opaque method return is unresolved. Scoped-input source names AgentdRootQ24ModelFactoryV1 but self.context and Arc::clone(joined.context()) are different real RootContext receivers. The generic require_current method spelling can therefore be unresolved under another authority query.",
+    "correction": "UFCS names the actual receiver type. It does not add an ignore, receiver alias, invented authority field, caller exemption, or altered checker rule.",
+    "full_guard_remaining": "Final source/metadata assembly must still pass the unchanged original checker and full source index. This local source review does not predict that result."
+  },
+  "ownership_and_order": [
+    {
+      "actual_definition": "root_production_same_actor_phase_inputs.rs@9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+      "fact": "OriginalSameActorRootContext::require_current is inherent pub(crate) fn(&self)->Result<(),AgentdError>. Its original same-session/gate validation and CloseOnDrop body are unchanged.",
+      "reference_shape": "&context / &self.context / &receive_context / &worker_context coerce the same &RootContext or &Arc<RootContext> to &RootContext. No new Arc clone, owner construction, mutable borrow, move, timing sample or resource retention is introduced. self inside RootContext passes the existing &self directly."
+    },
+    {
+      "actual_definition": "same_actor_q24_phase_join_client.rs@b0d5cf6559cdc8d8622a63e5e67550753ca520f2",
+      "fact": "OriginalJoinedSameActorA::prepared(&self) returns the existing &Arc<CellQ24PreparedLearningV1>. The two replacements retain the original Prepared object and the original Arc::clone call where it already existed. They do not deserialize or reconstruct a Prepared owner.",
+      "unchanged": "Actual first/second ACK validation, same gate association, original retained-source revalidation, control message order, ?/await placement and CloseOnDrop transfer all remain byte-identical after spelling projection."
+    },
+    {
+      "definitions": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+          "blob": "b4b39eea3168b6fe66cb3627faec896746898a6d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+          "blob": "fd725bca00e67d49fca7357fbd8dfa38d07cc9e1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+          "blob": "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74"
+        }
+      ],
+      "fact": "All three actual register methods consume self by value. New UFCS still consumes exactly initial_capability, scope_capability and publication respectively; no borrow, clone or second registration.",
+      "visibility": "Independently reused previously read final lib e758333d25dc270e5470e93fe72a8f988221311b and wrapper403fb6ffa83a85bc539df92ca8f9b7f447636ca4: Initial/Publication capabilities are crate-root reexports, Scope is available in the real parent wrapper and its child host through use super::*.",
+      "path_evidence": "Actual Initial session8778a2dd0e8402a8a8b38ea221afc6431963d328 declares #[path = \"authority_host_same_actor_initial_cap.rs\"] mod same_actor and reexports the exact capability."
+    },
+    {
+      "actual_definition": "production_launcher_same_actor_phase.rs@b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+      "fact": "The one import resolves the real crate-private context already used by the receiver. The previously required Startup return correction remains: preserve launch.run Err; generic Ok is mapped to GenerationFenced because final phase completion/physical owner join is not acknowledged.",
+      "unchanged": "No generic Runtime or blocking task supervision behavior is altered by UFCS."
+    }
+  ],
+  "metadata": {
+    "changes_in_packet": 0,
+    "not_assumed": "Author final module/CALLERS assembly has not been supplied by this packet; no complete closed-caller or protected-row pass is claimed.",
+    "pending_fresh_caller_review": "Root's latest allowed proposal is separate and not yet reviewed: because original source has Linux/non-Linux main declarations, preserve all original protection plus the six old raw markers, and express actual unique Linux full-main signature -> original prepare/six markers -> immediately following declaration with required_order. Static original-mask/brace inspection must establish the current source range; this does not give the unchanged checker a new function-range facility. All old callers must remain equally or more protected; new phase needs its actual gate/Prepared/deadline/custody order."
+  },
+  "unresolved_whole_phase": [
+    "The confirmed qualified-B Evaluation handoff remains open until a concrete actual Training checkpoint/candidate/readonly Trainer cap -> external real Evaluator input -> original install_independent_evaluation path is delivered and reviewed. Variant presence or genuine NoUpdate does not close it.",
+    "Final Work15 source/metadata, actual new component tests and final combined modules/caller closure await their fixed packet.",
+    "Same-custodian new C run is not an independently controlled consumer; no cold-restart capability is supplied.",
+    "No successful final Root service/owner-join ACK exists; public phase startup therefore cannot report generic runtime Ok as phase completion."
+  ],
+  "execution": {
+    "git_gets": true,
+    "pure_js_hash_and_exact_replay": true,
+    "original_checker": false,
+    "original_typed_helper": false,
+    "rustfmt": false,
+    "cargo": false,
+    "native": false,
+    "h": false,
+    "pty": false,
+    "branch_or_ref_change": false
+  },
+  "business_counts": {
+    "ordinary": 0,
+    "independently_controlled_C": 0,
+    "real_daemon_and_root_cold_restart": 0
+  }
+}

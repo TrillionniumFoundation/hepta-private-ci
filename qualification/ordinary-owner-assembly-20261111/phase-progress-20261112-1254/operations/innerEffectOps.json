@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "kind": "same_actor_phase_inner_effect_admission_exact_delta",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "unintegrated source candidate; no compiler, checker, native, or behavior execution",
+  "base_note": "These exact preimages include earlier unintegrated phase drafts. This is an incremental review delta, not directly applicable over V34 alone. Original runtime reference remains d9737937eaccccf2ed2f1f79444ddec6c10d0eea.",
+  "file_count": 13,
+  "operation_count": 33,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_namespace.rs",
+      "preimage": null,
+      "postimage": {
+        "git_blob": "1a5a4a9214242b4dcfc2dbe2d80a9e361d5e1e2a",
+        "bytes": 963,
+        "sha256": "d631ce4dddb726b1d6653f803b03408b75fce5284bb34d32a3223fbfd517852d"
+      },
+      "operations": [
+        {
+          "operation": "add_file",
+          "content": "//! Borrowed checks for new namespaces inside the original writer witness.\n//! This object owns no authority; every call still uses the same Root service.\n\nuse std::io;\nuse std::sync::Arc;\n\nuse crate::same_actor_q24_phase_gate::SameActorPhaseAdmission;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse crate::same_actor_q24_phase_record::OriginalPhaseRecord;\n\npub(crate) struct OriginalPhaseNamespaceContext<'a> {\n    pub(crate) gate: &'a Arc<SameActorPhaseGate>,\n    pub(crate) record: &'a OriginalPhaseRecord,\n}\n\nimpl OriginalPhaseNamespaceContext<'_> {\n    pub(crate) fn enter_claimed(&self) -> io::Result<SameActorPhaseAdmission> {\n        let admission = self.gate.enter_original_lane()?;\n        self.require_claimed()?;\n        Ok(admission)\n    }\n\n    pub(crate) fn require_claimed(&self) -> io::Result<()> {\n        self.gate.require_open()?;\n        self.record.require_claimed()?;\n        self.gate.require_open()?;\n        Ok(())\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "preimage": {
+        "git_blob": "c250def6f6167505c9d2224370a7f4b0bc878c3e",
+        "bytes": 14479,
+        "sha256": "ab2a455951ee428364cd8696d310ef32ca7228ddd24c841339d604bbec9355e6"
+      },
+      "postimage": {
+        "git_blob": "67df73589c32c8565bb893b1053c2477987b5cfe",
+        "bytes": 16093,
+        "sha256": "29e5b79b7581e8e8270f757cc8de8e55c4f42d4cb49b4de657478a7f30bcf868"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        owner_pidfd: &OwnedFd,\n        profile: &HostAuthorityLearningProfileV1,\n    ) -> io::Result<HostAuthorityLearningRegistrationV1> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            profile,\n            |initial, proof| {\n                let scope = profile.frozen_scope(&initial)?;\n                let binding = scope.as_ref().map(|scope| scope.binding().to_string());\n                learning_store(&config.state_dir, &initial, StoreMode::Register, scope)?;\n                Ok(HostAuthorityLearningRegistrationV1 {\n                    schema_version: profile.schema_version,\n                    initial_head: initial.head_digest.to_string(),\n",
+          "new_text": "        owner_pidfd: &OwnedFd,\n        profile: &HostAuthorityLearningProfileV1,\n    ) -> io::Result<HostAuthorityLearningRegistrationV1> {\n        self.reserve_original_learning_profile_in_phase(\n            config, registration, owner_pidfd, profile, None,\n        )\n    }\n\n    pub(crate) fn reserve_original_learning_profile_in_phase(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner_pidfd: &OwnedFd,\n        profile: &HostAuthorityLearningProfileV1,\n        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<HostAuthorityLearningRegistrationV1> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            profile,\n            |initial, proof| {\n                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;\n                let scope = profile.frozen_scope(&initial)?;\n                let binding = scope.as_ref().map(|scope| scope.binding().to_string());\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                learning_store(&config.state_dir, &initial, StoreMode::Register, scope)?;\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                Ok(HostAuthorityLearningRegistrationV1 {\n                    schema_version: profile.schema_version,\n                    initial_head: initial.head_digest.to_string(),\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        owner_pidfd: &OwnedFd,\n        profile: HostAuthorityLearningProfileV1,\n    ) -> io::Result<RegisteredHostLearningCheckpointV1> {\n        let backend = self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            &profile,\n            |initial, _| {\n                learning_store(\n                    &config.state_dir,\n                    &initial,\n                    StoreMode::Reopen,\n                    profile.frozen_scope(&initial)?,\n                )\n            },\n        )?;\n        let socket_path = config\n",
+          "new_text": "        owner_pidfd: &OwnedFd,\n        profile: HostAuthorityLearningProfileV1,\n    ) -> io::Result<RegisteredHostLearningCheckpointV1> {\n        self.open_original_learning_profile_in_phase(\n            config, registration, owner_pidfd, profile, None,\n        )\n    }\n\n    pub(crate) fn open_original_learning_profile_in_phase(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner_pidfd: &OwnedFd,\n        profile: HostAuthorityLearningProfileV1,\n        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<RegisteredHostLearningCheckpointV1> {\n        let backend = self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            &profile,\n            |initial, _| {\n                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;\n                let store = learning_store(\n                    &config.state_dir,\n                    &initial,\n                    StoreMode::Reopen,\n                    profile.frozen_scope(&initial)?,\n                )?;\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                Ok(store)\n            },\n        )?;\n        let socket_path = config\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            .collect();\n        paths.push(&socket_path);\n        crate::authority_host_runtime::validate_lane_paths(&paths, config.peer_gid)?;\n        Ok(RegisteredHostLearningCheckpointV1 {\n            backend,\n            profile,\n",
+          "new_text": "            .collect();\n        paths.push(&socket_path);\n        crate::authority_host_runtime::validate_lane_paths(&paths, config.peer_gid)?;\n        if let Some(phase) = phase { phase.require_claimed()?; }\n        Ok(RegisteredHostLearningCheckpointV1 {\n            backend,\n            profile,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "preimage": {
+        "git_blob": "9be4d3735186c95697b7ad1c893fc110026bce90",
+        "bytes": 16257,
+        "sha256": "6972a70d39945930574344efd2dda3341d814c0a234c90c2ff343080fe25243c"
+      },
+      "postimage": {
+        "git_blob": "5edb5484bdba8f0f3c4d063383367d85b9162a1c",
+        "bytes": 17992,
+        "sha256": "38a6834a4687d52f5b457b6399c264f11931a99d8f1ab6dc2a0957cc43e86754"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        learning: &HostAuthorityLearningProfileV1,\n        reservation: &HostAuthorityQ24ModelFactoryReservationV1,\n    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            learning,\n            |initial, proof| {\n                let scope = learning.require_cell_scope(&initial)?;\n                let now = self\n                    .clock\n",
+          "new_text": "        learning: &HostAuthorityLearningProfileV1,\n        reservation: &HostAuthorityQ24ModelFactoryReservationV1,\n    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {\n        self.reserve_original_phase_q24_model_factory(\n            config, registration, owner_pidfd, learning, reservation, None,\n        )\n    }\n\n    pub(crate) fn reserve_original_phase_q24_model_factory(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner_pidfd: &OwnedFd,\n        learning: &HostAuthorityLearningProfileV1,\n        reservation: &HostAuthorityQ24ModelFactoryReservationV1,\n        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            learning,\n            |initial, proof| {\n                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;\n                let scope = learning.require_cell_scope(&initial)?;\n                let now = self\n                    .clock\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                }\n                let domain = witness_domain(config, reservation)?;\n                let directory = config.state_dir.join(DIRECTORY);\n                std::fs::DirBuilder::new().mode(0o700).create(&directory)?;\n                File::open(&config.state_dir)?.sync_all()?;\n                let journal = new_file(&directory.join(\"proposal.journal\"))?;\n",
+          "new_text": "                }\n                let domain = witness_domain(config, reservation)?;\n                let directory = config.state_dir.join(DIRECTORY);\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                std::fs::DirBuilder::new().mode(0o700).create(&directory)?;\n                File::open(&config.state_dir)?.sync_all()?;\n                let journal = new_file(&directory.join(\"proposal.journal\"))?;\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                        \"factory reservation crossed its original work deadline\",\n                    ));\n                }\n                Ok(profile)\n            },\n        )\n",
+          "new_text": "                        \"factory reservation crossed its original work deadline\",\n                    ));\n                }\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                Ok(profile)\n            },\n        )\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        learning: &HostAuthorityLearningProfileV1,\n        reservation: HostAuthorityQ24ModelFactoryReservationV1,\n    ) -> io::Result<RegisteredQ24ModelFactory> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            learning,\n            |initial, proof| {\n                let scope = learning.require_cell_scope(&initial)?;\n                let domain = witness_domain(config, &reservation)?;\n                let directory = config.state_dir.join(DIRECTORY);\n",
+          "new_text": "        learning: &HostAuthorityLearningProfileV1,\n        reservation: HostAuthorityQ24ModelFactoryReservationV1,\n    ) -> io::Result<RegisteredQ24ModelFactory> {\n        self.open_original_phase_q24_model_reservation(\n            config, registration, owner_pidfd, learning, reservation, None,\n        )\n    }\n\n    pub(crate) fn open_original_phase_q24_model_reservation(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner_pidfd: &OwnedFd,\n        learning: &HostAuthorityLearningProfileV1,\n        reservation: HostAuthorityQ24ModelFactoryReservationV1,\n        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<RegisteredQ24ModelFactory> {\n        self.with_learning_profile(\n            config,\n            registration,\n            owner_pidfd,\n            learning,\n            |initial, proof| {\n                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;\n                let scope = learning.require_cell_scope(&initial)?;\n                let domain = witness_domain(config, &reservation)?;\n                let directory = config.state_dir.join(DIRECTORY);\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                retained.validate()?;\n                let journal_path = directory.join(\"proposal.journal\");\n                let witness_path = witness_path(&reservation);\n                let journal = open_file(&journal_path)?;\n                let witness = open_file(&witness_path)?;\n                let profile = HostAuthorityQ24ModelFactoryProfileV1::new(\n",
+          "new_text": "                retained.validate()?;\n                let journal_path = directory.join(\"proposal.journal\");\n                let witness_path = witness_path(&reservation);\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                let journal = open_file(&journal_path)?;\n                let witness = open_file(&witness_path)?;\n                let profile = HostAuthorityQ24ModelFactoryProfileV1::new(\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                    socket_path,\n                };\n                factory.current(config)?;\n                Ok(factory)\n            },\n        )\n",
+          "new_text": "                    socket_path,\n                };\n                factory.current(config)?;\n                if let Some(phase) = phase { phase.require_claimed()?; }\n                Ok(factory)\n            },\n        )\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "preimage": {
+        "git_blob": "1095c491b81ba4d24fc66828189249468219914e",
+        "bytes": 10451,
+        "sha256": "715737aa2269cbed14174bdb6c3bc101794b7e91632d1223ae5012b698c8f327"
+      },
+      "postimage": {
+        "git_blob": "793bc2510e97fe5ed07336e6d823561aa0e8c58f",
+        "bytes": 10685,
+        "sha256": "9375e499f973ad2149462590347a791d2aed3f55936648a311df3cfcfe06eaab"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        original: &RegisteredGenerationInitial,\n        profile: &HostAuthorityLearningProfileV1,\n        record: &mut OriginalPhaseRecord,\n    ) -> io::Result<OriginalSameActorPhaseClaim> {\n        let mut captured = None;\n        self.with_learning_profile(config, registration, owner_pidfd, profile, |initial, proof| {\n            let scope = profile.require_cell_scope(&initial)?;\n            if original.mode != RootGenerationInitialModeV1::Reserve\n                || record.identity()?.initial != original.profile.deployment\n",
+          "new_text": "        original: &RegisteredGenerationInitial,\n        profile: &HostAuthorityLearningProfileV1,\n        record: &mut OriginalPhaseRecord,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> io::Result<OriginalSameActorPhaseClaim> {\n        let mut captured = None;\n        self.with_learning_profile(config, registration, owner_pidfd, profile, |initial, proof| {\n            let _admission = gate.enter_original_lane()?;\n            let scope = profile.require_cell_scope(&initial)?;\n            if original.mode != RootGenerationInitialModeV1::Reserve\n                || record.identity()?.initial != original.profile.deployment\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            };\n            // This durable claim precedes every Learning/Model namespace.\n            // Any uncertainty consumes the record's in-memory expected value.\n            record.claim_before_namespaces(claim)?;\n            if original.target.observe().map_err(io::Error::other)? != observed\n                || original.target.files_binding().to_string() != original.profile.target_files\n                || current.as_ref()\n",
+          "new_text": "            };\n            // This durable claim precedes every Learning/Model namespace.\n            // Any uncertainty consumes the record's in-memory expected value.\n            gate.require_open()?;\n            record.claim_before_namespaces(claim)?;\n            gate.require_open()?;\n            if original.target.observe().map_err(io::Error::other)? != observed\n                || original.target.files_binding().to_string() != original.profile.target_files\n                || current.as_ref()\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            original.require_selection(\n                self.clock.refresh_projection().map_err(io::Error::other)?.observed_unix_ms,\n            )?;\n            captured = Some(OriginalSameActorPhaseClaim {\n                root: Arc::clone(&original.root),\n                head,\n",
+          "new_text": "            original.require_selection(\n                self.clock.refresh_projection().map_err(io::Error::other)?.observed_unix_ms,\n            )?;\n            gate.require_open()?;\n            captured = Some(OriginalSameActorPhaseClaim {\n                root: Arc::clone(&original.root),\n                head,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "preimage": {
+        "git_blob": "6a49d5662d060e56e64d3618fa2848e7933811ef",
+        "bytes": 10794,
+        "sha256": "75bb27cef1b8dc5210860e7584bb79c54920a6c21b5cfea5533f210643851bcb"
+      },
+      "postimage": {
+        "git_blob": "cb0cec6b10b9f44bbff1e3a3f67cd6998f441f83",
+        "bytes": 10815,
+        "sha256": "52a6000a7f022c44628631cf2cc0c343e14821118e2bdead0992a0d6d02e6bf5"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        if submission.inputs.mode != crate::RootGenerationInitialModeV1::Reserve {\n            return Err(io::Error::other(\"same-actor phase requires the original fresh A\"));\n        }\n        let slot = service.enroll_generation_initial(\n            config, registration, owner, &self.runtime.deployment, submission.inputs,\n        );\n        let slot = match slot {\n            Ok(slot) => {\n",
+          "new_text": "        if submission.inputs.mode != crate::RootGenerationInitialModeV1::Reserve {\n            return Err(io::Error::other(\"same-actor phase requires the original fresh A\"));\n        }\n        let slot = service.enroll_generation_initial_in_phase(\n            config, registration, owner, &self.runtime.deployment, submission.inputs, Some(gate),\n        );\n        let slot = match slot {\n            Ok(slot) => {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "preimage": {
+        "git_blob": "1b56703e4271b80795e4aceccdaaa1dd2f0cb314",
+        "bytes": 17745,
+        "sha256": "4c55deffa06ce460bc3645729137bb4c6818ed16af3f1cba1b9f5bb9d7a627d9"
+      },
+      "postimage": {
+        "git_blob": "718edae2aa581aa1e16a7ae18b4d03e051bf4f50",
+        "bytes": 17977,
+        "sha256": "b26d4439ad8f524cda1fad035d2a4aa0ff39453d01bbcde80158656dbeeab5aa"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;\n                let mut encoded_response = None;\n                self.with_initial_publication_context(config, registration, &pin, |proof| {\n                    if slot.profile.writer != proof\n                        || slot.profile.identity\n                            != crate::neuron_generation_process_identity_digest_v1(&self.identity)\n",
+          "new_text": "                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;\n                let mut encoded_response = None;\n                self.with_initial_publication_context(config, registration, &pin, |proof| {\n                    if let Some(gate) = phase { gate.require_open()?; }\n                    if slot.profile.writer != proof\n                        || slot.profile.identity\n                            != crate::neuron_generation_process_identity_digest_v1(&self.identity)\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                                ));\n                            }\n                            slot.require_target(/*fresh*/ true)?;\n                            let (owner, prepared) =\n                                NeuronGenerationCurrentOwnerV1::prepare_initial(\n                                    slot.root.clone(),\n",
+          "new_text": "                                ));\n                            }\n                            slot.require_target(/*fresh*/ true)?;\n                            if let Some(gate) = phase { gate.require_open()?; }\n                            let (owner, prepared) =\n                                NeuronGenerationCurrentOwnerV1::prepare_initial(\n                                    slot.root.clone(),\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                        Command::Publish {\n                            signed, witness, ..\n                        } => {\n                            current\n                                .as_ref()\n                                .ok_or_else(|| {\n",
+          "new_text": "                        Command::Publish {\n                            signed, witness, ..\n                        } => {\n                            if let Some(gate) = phase { gate.require_open()?; }\n                            current\n                                .as_ref()\n                                .ok_or_else(|| {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "preimage": {
+        "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+        "bytes": 9897,
+        "sha256": "9f8613d8a78e7ad0567de8c6adf02410a93e668db5ef19a2a8a20b42b0eaa071"
+      },
+      "postimage": {
+        "git_blob": "89249218eca3b9808e096b697450b12ef6cd93c7",
+        "bytes": 10684,
+        "sha256": "774342f55067be95109f6c203a664a7b3d7a4bf89910d02fac65fc03851090fa"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        deployment: &HostGenerationInitialDeploymentV1,\n        inputs: RootGenerationInitialEnrollmentV1,\n    ) -> io::Result<RegisteredGenerationInitial> {\n        original_root()?;\n        let mut enrolled_result = None;\n        self.with_initial_publication_context(config, registration, owner, |proof| {\n            let profile_owner = format!(\n                \"generation-initial/{}\",\n                crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)\n",
+          "new_text": "        deployment: &HostGenerationInitialDeploymentV1,\n        inputs: RootGenerationInitialEnrollmentV1,\n    ) -> io::Result<RegisteredGenerationInitial> {\n        self.enroll_generation_initial_in_phase(\n            config, registration, owner, deployment, inputs, None,\n        )\n    }\n\n    pub(crate) fn enroll_generation_initial_in_phase(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner: &OwnedFd,\n        deployment: &HostGenerationInitialDeploymentV1,\n        inputs: RootGenerationInitialEnrollmentV1,\n        phase: Option<&Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,\n    ) -> io::Result<RegisteredGenerationInitial> {\n        original_root()?;\n        let mut enrolled_result = None;\n        self.with_initial_publication_context(config, registration, owner, |proof| {\n            let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()?;\n            let profile_owner = format!(\n                \"generation-initial/{}\",\n                crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                            Some(current)\n                        }\n                    };\n                let profile_store = match &recovered {\n                    Some((store, record)) => {\n                        if record.profile != profile {\n",
+          "new_text": "                            Some(current)\n                        }\n                    };\n                if let Some(gate) = phase { gate.require_open()?; }\n                let profile_store = match &recovered {\n                    Some((store, record)) => {\n                        if record.profile != profile {\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                    }\n                }\n                drop(held);\n                Ok(enrolled)\n            })();\n            let enrolled = match retained_result {\n",
+          "new_text": "                    }\n                }\n                drop(held);\n                if let Some(gate) = phase { gate.require_open()?; }\n                Ok(enrolled)\n            })();\n            let enrolled = match retained_result {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_publication.rs",
+      "preimage": {
+        "git_blob": "17eb909ead6260b1b2fc151c08d8d2e10556b52f",
+        "bytes": 1721,
+        "sha256": "595ad2d103bf88acaf0726d22997ba541316190e59e02be16c9a5f376dba0c0f"
+      },
+      "postimage": {
+        "git_blob": "c9ab3dc7b8f15dbb65d8fdcc2cd9f91524050b79",
+        "bytes": 1983,
+        "sha256": "227bd7bd37ac1654dfc01833483014083029da9df5b4369bc2e46b73a19f8027"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "}\n\nimpl OriginalPhasePublicationContext<'_> {\n    pub(crate) fn require_original(&self, slot: &RegisteredGenerationPublication) -> io::Result<()> {\n        self.gate.require_open()?;\n        self.record.require_scoped()?;\n",
+          "new_text": "}\n\nimpl OriginalPhasePublicationContext<'_> {\n    pub(crate) fn require_before_enrollment(&self) -> std::io::Result<()> {\n        self.gate.require_open()?;\n        self.record.require_scoped()?;\n        self.original.require_retained_predecessor()?;\n        self.gate.require_open()?;\n        Ok(())\n    }\n\n    pub(crate) fn require_original(&self, slot: &RegisteredGenerationPublication) -> io::Result<()> {\n        self.gate.require_open()?;\n        self.record.require_scoped()?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "preimage": {
+        "git_blob": "d2eca4575f59376f75db62bd8aad5a34b457fe21",
+        "bytes": 25773,
+        "sha256": "e0ae0e6f2d89b52359a16394786e466d33976f793100e2b16b6f18e315d3a86f"
+      },
+      "postimage": {
+        "git_blob": "d4227925ae1d26f065bb62908757ed2fbb4184a4",
+        "bytes": 26917,
+        "sha256": "a4dccdac0ab4cd126be17a5d5dd99755c0f02db302b389c1198890ad397305e1"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        learning: &RegisteredHostLearningCheckpointV1,\n        inputs: RootGenerationPublicationEnrollmentV1,\n    ) -> io::Result<RegisteredGenerationPublication> {\n        original_root()?;\n        self.with_learning_profile(\n            config,\n",
+          "new_text": "        learning: &RegisteredHostLearningCheckpointV1,\n        inputs: RootGenerationPublicationEnrollmentV1,\n    ) -> io::Result<RegisteredGenerationPublication> {\n        self.enroll_original_publication_body(\n            config, registration, owner, learning, inputs, None,\n        )\n    }\n\n    pub(crate) fn enroll_original_publication_body(\n        &self,\n        config: &HostAuthorityServiceConfig,\n        registration: &HostAuthorityRegistration,\n        owner: &OwnedFd,\n        learning: &RegisteredHostLearningCheckpointV1,\n        inputs: RootGenerationPublicationEnrollmentV1,\n        phase: Option<&crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>>,\n    ) -> io::Result<RegisteredGenerationPublication> {\n        original_root()?;\n        self.with_learning_profile(\n            config,\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            owner,\n            &learning.profile,\n            |initial, proof| {\n                let scope = learning.profile.require_cell_scope(&initial)?;\n                let actual = learning\n                    .backend\n",
+          "new_text": "            owner,\n            &learning.profile,\n            |initial, proof| {\n                let _admission = phase.map(|context| {\n                    let admission = context.gate.enter_original_lane()?;\n                    context.require_before_enrollment()?;\n                    Ok::<_, io::Error>(admission)\n                }).transpose()?;\n                let scope = learning.profile.require_cell_scope(&initial)?;\n                let actual = learning\n                    .backend\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                        NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel\n                    },\n                };\n                let current = NeuronGenerationCurrentOwnerV1::open(\n                    inputs.current_directory.clone(),\n                    from.scope(),\n",
+          "new_text": "                        NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel\n                    },\n                };\n                if let Some(context) = phase { context.require_before_enrollment()?; }\n                let current = NeuronGenerationCurrentOwnerV1::open(\n                    inputs.current_directory.clone(),\n                    from.scope(),\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                    binding: String::new(),\n                };\n                profile.binding = profile.digest()?;\n                let profile_store = match recovered {\n                    Some((store, record)) => {\n                        if record.profile != profile {\n",
+          "new_text": "                    binding: String::new(),\n                };\n                profile.binding = profile.digest()?;\n                if let Some(context) = phase { context.require_before_enrollment()?; }\n                let profile_store = match recovered {\n                    Some((store, record)) => {\n                        if record.profile != profile {\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                        .map_err(io::Error::other)?\n                        .observed_unix_ms,\n                )?;\n                Ok(enrolled)\n            },\n        )\n",
+          "new_text": "                        .map_err(io::Error::other)?\n                        .observed_unix_ms,\n                )?;\n                if let Some(context) = phase { context.require_original(&enrolled)?; }\n                Ok(enrolled)\n            },\n        )\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            return Err(io::Error::other(\"same-actor phase predecessor changed before enrollment\"));\n        }\n        phase.gate.require_open()?;\n        let slot = self.enroll_generation_publication(\n            config, registration, owner, learning, inputs,\n        )?;\n        self.with_learning_profile(config, registration, owner, &learning.profile, |_initial, _proof| {\n            phase.require_original(&slot)?;\n",
+          "new_text": "            return Err(io::Error::other(\"same-actor phase predecessor changed before enrollment\"));\n        }\n        phase.gate.require_open()?;\n        let slot = self.enroll_original_publication_body(\n            config, registration, owner, learning, inputs, Some(phase),\n        )?;\n        self.with_learning_profile(config, registration, owner, &learning.profile, |_initial, _proof| {\n            phase.require_original(&slot)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "preimage": {
+        "git_blob": "958f8b8eafe43a137f703390f6597391645b1e0b",
+        "bytes": 13149,
+        "sha256": "9236cddc93f1fde2be5dffe206453de4b077027b3a5e33d31b2ea931e53551cf"
+      },
+      "postimage": {
+        "git_blob": "e9305a886c0f8cec7083c019a7e513c6f03ecc66",
+        "bytes": 13426,
+        "sha256": "7a52cc1d1b8189b3a50a0de1c7a5d1f2d83eb5f2cf153c0fe08b04a905a75d97"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "    joined.require_original_profile(&descriptor.phase, &submission.profile, retirement, gate)?;\n    let claim = original.service.claim_same_actor_phase_after_original_a(\n        &original.config, &original.registration, &original.owner_pidfd,\n        &initial, &submission.profile, &mut record,\n    )?;\n    // Any failure above leaves a claimed/partial record closed. No fallthrough\n    // can open a Learning/Model namespace or convert this attempt into recovery.\n",
+          "new_text": "    joined.require_original_profile(&descriptor.phase, &submission.profile, retirement, gate)?;\n    let claim = original.service.claim_same_actor_phase_after_original_a(\n        &original.config, &original.registration, &original.owner_pidfd,\n        &initial, &submission.profile, &mut record, gate,\n    )?;\n    // Any failure above leaves a claimed/partial record closed. No fallthrough\n    // can open a Learning/Model namespace or convert this attempt into recovery.\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "    gate.require_open()?;\n    origin.require_retained_predecessor()?;\n    record.require_claimed()?;\n    original.service.reserve_original_learning_profile(\n        &original.config, &original.registration, &original.owner_pidfd, &submission.profile,\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let mut learning = original.service.open_original_learning_profile(\n        &original.config, &original.registration, &original.owner_pidfd, submission.profile.clone(),\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let factory_profile = HostAuthorityService::reserve_q24_model_factory(\n        &original.service, &original.config, &original.registration, &original.owner_pidfd,\n        &learning.profile, model,\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let factory = original.service.open_original_q24_model_reservation(\n        &original.config, &original.registration, &original.owner_pidfd,\n        &learning.profile, model.clone(),\n    )?;\n    if factory.profile != factory_profile {\n        return Err(io::Error::other(\"original reserved Model factory changed on open\"));\n",
+          "new_text": "    gate.require_open()?;\n    origin.require_retained_predecessor()?;\n    record.require_claimed()?;\n    let namespace = crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext {\n        gate, record: &record,\n    };\n    original.service.reserve_original_learning_profile_in_phase(\n        &original.config, &original.registration, &original.owner_pidfd, &submission.profile,\n        Some(&namespace),\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let mut learning = original.service.open_original_learning_profile_in_phase(\n        &original.config, &original.registration, &original.owner_pidfd, submission.profile.clone(),\n        Some(&namespace),\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let factory_profile = HostAuthorityService::reserve_original_phase_q24_model_factory(\n        &original.service, &original.config, &original.registration, &original.owner_pidfd,\n        &learning.profile, model, Some(&namespace),\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    let factory = original.service.open_original_phase_q24_model_reservation(\n        &original.config, &original.registration, &original.owner_pidfd,\n        &learning.profile, model.clone(), Some(&namespace),\n    )?;\n    if factory.profile != factory_profile {\n        return Err(io::Error::other(\"original reserved Model factory changed on open\"));\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "preimage": {
+        "git_blob": "86e595c0d1b685fa433b74702135ece9e752ad40",
+        "bytes": 3666,
+        "sha256": "4cc5cc0304e8d4640c7ed6ba01ea505a59ac0fb090347f59954ca85d221e18d4"
+      },
+      "postimage": {
+        "git_blob": "1ae19b2347be7c26a5bd4c3b663ed26bc342e82f",
+        "bytes": 3684,
+        "sha256": "c9b22c9330f524ebd934bd61a98acb1938885535d1a46bd59f869772300ba456"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        while channel.exchange(|bytes| {\n            let _admission = phase.enter_original_lane().map_err(unavailable)?;\n            self.check_logind_lifetime().map_err(unavailable)?;\n            let response = writer.exchange_learning_checkpoint(\n                &self.issuer, &self.clock, backend, bytes, &mut next_request_id,\n            )?;\n            self.check_logind_lifetime().map_err(unavailable)?;\n            phase.require_open().map_err(unavailable)?;\n",
+          "new_text": "        while channel.exchange(|bytes| {\n            let _admission = phase.enter_original_lane().map_err(unavailable)?;\n            self.check_logind_lifetime().map_err(unavailable)?;\n            let response = writer.exchange_same_actor_learning_checkpoint(\n                &self.issuer, &self.clock, backend, bytes, &mut next_request_id, phase,\n            )?;\n            self.check_logind_lifetime().map_err(unavailable)?;\n            phase.require_open().map_err(unavailable)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "preimage": {
+        "git_blob": "da842adff40dfa5f63403195643d7c49112bdcd3",
+        "bytes": 12575,
+        "sha256": "0ee8c79585d4275b5201a73509e42e4f359ca4c142c4f45f3a2d3bda07705891"
+      },
+      "postimage": {
+        "git_blob": "04592261934b3c39aef1f655a66b79f807d9e127",
+        "bytes": 14452,
+        "sha256": "5fb63cda411282616165cfd32ccad21ad83579c0446d2acc8a3037d0e8005c1e"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            .map_err(unavailable)\n    }\n\n    pub(super) fn open(\n        issuer: &DeploymentFinalUseIssuer,\n        identity: &AgentdIdentity,\n",
+          "new_text": "            .map_err(unavailable)\n    }\n\n    pub(super) fn exchange_same_actor_learning_checkpoint(\n        &self,\n        issuer: &DeploymentFinalUseIssuer,\n        clock: &HostAuthorityClock,\n        backend: &crate::LearningIterationCheckpointOwnerV1,\n        bytes: &[u8],\n        next_request_id: &mut u64,\n        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<Vec<u8>, HostIssuerTransportError> {\n        self.registration\n            .with_live(&self.leases, |_| {\n                let _admission = phase.enter_original_lane()?;\n                if issuer.retained_writer_authorization(&self.registration)? != self.proof {\n                    return Err(io::Error::other(\"retained writer proof changed\"));\n                }\n                let before = issuer.revocations()?;\n                let now = clock\n                    .refresh_projection()\n                    .map_err(io::Error::other)?\n                    .observed_unix_ms;\n                validate_observation_lease(&self.registration.authority_lease, &before, now)?;\n                phase.require_open()?;\n                let response = backend\n                    .exchange_learning_checkpoint(bytes, next_request_id)\n                    .map_err(io::Error::other)?;\n                let after = issuer.revocations()?;\n                if before != after {\n                    return Err(io::Error::other(\n                        \"issuer head changed during learning checkpoint\",\n                    ));\n                }\n                let now = clock\n                    .refresh_projection()\n                    .map_err(io::Error::other)?\n                    .observed_unix_ms;\n                validate_observation_lease(&self.registration.authority_lease, &after, now)?;\n                phase.require_open()?;\n                Ok(response)\n            })\n            .map_err(unavailable)\n    }\n\n    pub(super) fn open(\n        issuer: &DeploymentFinalUseIssuer,\n        identity: &AgentdIdentity,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "preimage": {
+        "git_blob": "608c225ae15c669198b4c23a21da3f11cc802463",
+        "bytes": 10270,
+        "sha256": "8790e24ff99e55ce6589aab0d6ccb8a5ad1eb3a28497cfe7543567c9fc3e966c"
+      },
+      "postimage": {
+        "git_blob": "5556ce691aabf249c28859d43094c0a047d62c94",
+        "bytes": 10426,
+        "sha256": "35258d94d5203f01ee74594c603d8334b9ad2845b397f7b6d7f7d08fc85c11be"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                    &pin,\n                    &factory.learning,\n                    |initial, proof| {\n                        factory.profile.require_context(\n                            &self.identity,\n                            &proof,\n",
+          "new_text": "                    &pin,\n                    &factory.learning,\n                    |initial, proof| {\n                        if let Some(gate) = phase { gate.require_open()?; }\n                        factory.profile.require_context(\n                            &self.identity,\n                            &proof,\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                            / 1000;\n                        let (after, reply) = transition(&before, lease, request.command, now)?;\n                        if after != before {\n                            factory\n                                .store\n                                .compare_and_set(OWNER, &before, &after)\n",
+          "new_text": "                            / 1000;\n                        let (after, reply) = transition(&before, lease, request.command, now)?;\n                        if after != before {\n                            if let Some(gate) = phase { gate.require_open()?; }\n                            factory\n                                .store\n                                .compare_and_set(OWNER, &before, &after)\n"
+        }
+      ]
+    }
+  ]
+}

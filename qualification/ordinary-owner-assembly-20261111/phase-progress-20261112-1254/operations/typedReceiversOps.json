@@ -1,0 +1,310 @@
+{
+  "schema": "original-same-actor-phase-explicit-receiver-v1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "preimage": {
+        "blob": "b8f3b0d949ebf8f31900aa0e771177fcd8274ae5",
+        "bytes": 9398,
+        "sha256": "c0be5a619b64021f4be35af620dbdf7d583f1136f7e4f78ce535498b51bb75ef"
+      },
+      "postimage": {
+        "blob": "3b50191a5102765cbb48aa449345d481f0e6731e",
+        "bytes": 9518,
+        "sha256": "37fef28ce0d1e16dc5bc74b09b3a242b53742d0b6d9a12caf90f6a9146c23fd9"
+      },
+      "operations": [
+        {
+          "old_text": "        &self, context: &OriginalSameActorRootContext, event: OriginalSameActorPhaseEventV1,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        context.require_current()?;\n        self.events.try_send(event)\n            .map_err(|_| phase_refused(\"original phase host notification lost\"))?;\n        context.require_current()?;\n        closing.disarm();\n        Ok(())\n    }\n",
+          "new_text": "        &self, context: &OriginalSameActorRootContext, event: OriginalSameActorPhaseEventV1,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        OriginalSameActorRootContext::require_current(&context)?;\n        self.events.try_send(event)\n            .map_err(|_| phase_refused(\"original phase host notification lost\"))?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        closing.disarm();\n        Ok(())\n    }\n"
+        },
+        {
+          "old_text": "        &mut self, context: &OriginalSameActorRootContext,\n    ) -> Result<OriginalSameActorPhaseCommandV1, AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        context.require_current()?;\n        let received = tokio::select! {\n            _ = context.gate().cancelled() => return Err(phase_refused(\"original phase is closed\")),\n            received = self.commands.recv() => received,\n        }.ok_or_else(|| phase_refused(\"original phase host command stream closed\"))?;\n        context.require_current()?;\n        closing.disarm();\n        Ok(received)\n    }\n",
+          "new_text": "        &mut self, context: &OriginalSameActorRootContext,\n    ) -> Result<OriginalSameActorPhaseCommandV1, AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        OriginalSameActorRootContext::require_current(&context)?;\n        let received = tokio::select! {\n            _ = context.gate().cancelled() => return Err(phase_refused(\"original phase is closed\")),\n            received = self.commands.recv() => received,\n        }.ok_or_else(|| phase_refused(\"original phase host command stream closed\"))?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        closing.disarm();\n        Ok(received)\n    }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "preimage": {
+        "blob": "5bed2357d051bd8d687119f9b6bf040e5469011c",
+        "bytes": 9481,
+        "sha256": "aadeeaa3feeef9f3c4770f6ac995e371a89e68298e2b7d2d1f2371775edeaf84"
+      },
+      "postimage": {
+        "blob": "b0d5cf6559cdc8d8622a63e5e67550753ca520f2",
+        "bytes": 9811,
+        "sha256": "f7fdb9dd15adc8f3f5977b4880b15fcf99f8bfaa115a466df0c570994f95ddd5"
+      },
+      "operations": [
+        {
+          "old_text": "\n    fn accept_original_retirement_ack(&self, context: &OriginalSameActorRootContext) -> Result<(), AgentdError> {\n        self.require_original_gate(context.gate())?;\n        context.require_current()?;\n        if self.phase != context.descriptor().phase\n            || self.accepted.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err()\n        {\n            return Err(refused(\"original retirement acknowledgement was already consumed\"));\n        }\n        context.require_current()\n    }\n}\n\n",
+          "new_text": "\n    fn accept_original_retirement_ack(&self, context: &OriginalSameActorRootContext) -> Result<(), AgentdError> {\n        self.require_original_gate(context.gate())?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        if self.phase != context.descriptor().phase\n            || self.accepted.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err()\n        {\n            return Err(refused(\"original retirement acknowledgement was already consumed\"));\n        }\n        OriginalSameActorRootContext::require_current(&context)\n    }\n}\n\n"
+        },
+        {
+          "old_text": "            if timeout.is_zero() || timeout > Duration::from_millis(500) {\n                return Err(refused(\"bounded original phase join timeout required\"));\n            }\n            context.require_current()?;\n            retained.require_same_actor_phase_prepared(&prepared, context.identity()).await?;\n            let profile = prepared.root_profile(\n                context.identity(), context.bootstrap().writer_proof.sha256()?.as_str()\n",
+          "new_text": "            if timeout.is_zero() || timeout > Duration::from_millis(500) {\n                return Err(refused(\"bounded original phase join timeout required\"));\n            }\n            OriginalSameActorRootContext::require_current(&context)?;\n            retained.require_same_actor_phase_prepared(&prepared, context.identity()).await?;\n            let profile = prepared.root_profile(\n                context.identity(), context.bootstrap().writer_proof.sha256()?.as_str()\n"
+        },
+        {
+          "old_text": "                timeout.min(context.gate().require_open()?),\n                tokio::net::UnixStream::connect(&context.descriptor().control_socket),\n            ).await.map_err(|_| refused(\"original phase join connection expired\"))??;\n            context.require_current()?;\n            let stream = stream.into_std()?;\n            let stop = context.gate().retain_original_stream(&stream)?;\n            let root = &context.bootstrap().root;\n",
+          "new_text": "                timeout.min(context.gate().require_open()?),\n                tokio::net::UnixStream::connect(&context.descriptor().control_socket),\n            ).await.map_err(|_| refused(\"original phase join connection expired\"))??;\n            OriginalSameActorRootContext::require_current(&context)?;\n            let stream = stream.into_std()?;\n            let stop = context.gate().retain_original_stream(&stream)?;\n            let root = &context.bootstrap().root;\n"
+        },
+        {
+          "old_text": "    /// the old Initial/Cell/CURRENT resources; Root independently waits for\n    /// their authorized EOF and checks the held physical drained journal cut.\n    pub(crate) async fn join_after_original_a_drop(mut self) -> Result<OriginalJoinedSameActorA, AgentdError> {\n        self.context.require_current()?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        original_join_exchange(&self.transport, &self.context, &self.profile, 2).await?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        self.context.require_current()?;\n        let closing = CloseSameActorPhaseOnDrop::new(self.context.gate());\n        self.closing.disarm();\n        Ok(OriginalJoinedSameActorA {\n",
+          "new_text": "    /// the old Initial/Cell/CURRENT resources; Root independently waits for\n    /// their authorized EOF and checks the held physical drained journal cut.\n    pub(crate) async fn join_after_original_a_drop(mut self) -> Result<OriginalJoinedSameActorA, AgentdError> {\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        original_join_exchange(&self.transport, &self.context, &self.profile, 2).await?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        let closing = CloseSameActorPhaseOnDrop::new(self.context.gate());\n        self.closing.disarm();\n        Ok(OriginalJoinedSameActorA {\n"
+        },
+        {
+          "old_text": "    pub(crate) fn profile(&self) -> &HostAuthorityLearningProfileV1 { &self.profile }\n\n    pub(crate) async fn require_original(&self) -> Result<(), AgentdError> {\n        self.context.require_current()?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        self.prepared.require_profile(\n            &self.profile, self.context.identity(),\n            self.context.bootstrap().writer_proof.sha256()?.as_str()\n                .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),\n        ).map_err(refused)?;\n        self.context.require_current()\n    }\n\n    pub(crate) fn into_original_learning_parts(\n        mut self,\n    ) -> Result<(Arc<OriginalSameActorRootContext>, Arc<CellQ24PreparedLearningV1>, OriginalCellQ24RetainedLearningSourceV1), AgentdError> {\n        self.context.require_current()?;\n        self.closing.disarm();\n        Ok((self.context, self.prepared, self.retained))\n    }\n",
+          "new_text": "    pub(crate) fn profile(&self) -> &HostAuthorityLearningProfileV1 { &self.profile }\n\n    pub(crate) async fn require_original(&self) -> Result<(), AgentdError> {\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;\n        self.prepared.require_profile(\n            &self.profile, self.context.identity(),\n            self.context.bootstrap().writer_proof.sha256()?.as_str()\n                .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),\n        ).map_err(refused)?;\n        OriginalSameActorRootContext::require_current(&self.context)\n    }\n\n    pub(crate) fn into_original_learning_parts(\n        mut self,\n    ) -> Result<(Arc<OriginalSameActorRootContext>, Arc<CellQ24PreparedLearningV1>, OriginalCellQ24RetainedLearningSourceV1), AgentdError> {\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        self.closing.disarm();\n        Ok((self.context, self.prepared, self.retained))\n    }\n"
+        },
+        {
+          "old_text": "    sequence: u8,\n) -> Result<(), AgentdError> {\n    let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n    context.require_current()?;\n    let profile = serde_json::to_string(profile)?;\n    let request = PhaseJoinRequest {\n        schema: 1, purpose: PURPOSE.into(), sequence,\n",
+          "new_text": "    sequence: u8,\n) -> Result<(), AgentdError> {\n    let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n    OriginalSameActorRootContext::require_current(&context)?;\n    let profile = serde_json::to_string(profile)?;\n    let request = PhaseJoinRequest {\n        schema: 1, purpose: PURPOSE.into(), sequence,\n"
+        },
+        {
+          "old_text": "    {\n        return Err(refused(\"original phase acknowledgement differs\"));\n    }\n    context.require_current()?;\n    closing.disarm();\n    Ok(())\n}\n",
+          "new_text": "    {\n        return Err(refused(\"original phase acknowledgement differs\"));\n    }\n    OriginalSameActorRootContext::require_current(&context)?;\n    closing.disarm();\n    Ok(())\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "preimage": {
+        "blob": "54fa42aa701aff6fee87d786e7a0a4816d258953",
+        "bytes": 19771,
+        "sha256": "6258616f68acac6bb81f09f4e88bf1cb2f3de36c3f6027824c72a3aed56f35d1"
+      },
+      "postimage": {
+        "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+        "bytes": 19888,
+        "sha256": "e177d8e161f024cc6c77726bcf15339b5d9c8053a6c870558cd3520989f772b9"
+      },
+      "operations": [
+        {
+          "old_text": "        Arc::clone(&self.session)\n    }\n    pub(crate) fn root_pidfd(&self) -> Result<OwnedFd, AgentdError> {\n        self.require_current()?;\n        Ok(self.root_pidfd.try_clone()?)\n    }\n    pub(crate) fn clock(&self) -> Arc<dyn AuthorityClock> { Arc::clone(&self.clock) }\n",
+          "new_text": "        Arc::clone(&self.session)\n    }\n    pub(crate) fn root_pidfd(&self) -> Result<OwnedFd, AgentdError> {\n        OriginalSameActorRootContext::require_current(self)?;\n        Ok(self.root_pidfd.try_clone()?)\n    }\n    pub(crate) fn clock(&self) -> Arc<dyn AuthorityClock> { Arc::clone(&self.clock) }\n"
+        },
+        {
+          "old_text": "        prepared: &crate::CellQ24PreparedLearningV1,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);\n        self.require_current()?;\n        if self.scoped_consumed.compare_exchange(\n            false, true, Ordering::AcqRel, Ordering::Acquire,\n        ).is_err() {\n",
+          "new_text": "        prepared: &crate::CellQ24PreparedLearningV1,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);\n        OriginalSameActorRootContext::require_current(self)?;\n        if self.scoped_consumed.compare_exchange(\n            false, true, Ordering::AcqRel, Ordering::Acquire,\n        ).is_err() {\n"
+        },
+        {
+          "old_text": "            self.bootstrap.writer_proof.sha256()?.as_str()\n                .parse::<Digest32>().map_err(protocol)?.into_array(),\n        ).map_err(protocol)?;\n        self.require_current()?;\n        closing.disarm();\n        Ok(())\n    }\n",
+          "new_text": "            self.bootstrap.writer_proof.sha256()?.as_str()\n                .parse::<Digest32>().map_err(protocol)?.into_array(),\n        ).map_err(protocol)?;\n        OriginalSameActorRootContext::require_current(self)?;\n        closing.disarm();\n        Ok(())\n    }\n"
+        },
+        {
+          "old_text": "    let root = AgentdRootProductionInputs {\n        session, checkpoint, device, notes, grants, bootstrap: bundle, publication_connection,\n    };\n    context.require_current()?;\n    closing.disarm();\n    Ok(OriginalSameActorProductionInputs { root, context, initial })\n}\n",
+          "new_text": "    let root = AgentdRootProductionInputs {\n        session, checkpoint, device, notes, grants, bootstrap: bundle, publication_connection,\n    };\n    OriginalSameActorRootContext::require_current(&context)?;\n    closing.disarm();\n    Ok(OriginalSameActorProductionInputs { root, context, initial })\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "preimage": {
+        "blob": "58f1f7512a51a5b1e7fc00ac67df1224021a724c",
+        "bytes": 14073,
+        "sha256": "ebaee77ca0c955f17f156dcb3d6d3284f273e5b835e10016549c7025b444c3fb"
+      },
+      "postimage": {
+        "blob": "af6493ab046fd70ea55da5b5360722917abf0664",
+        "bytes": 14605,
+        "sha256": "0ddb84a0e471319c8c1cb02da318e5ba5263c50e69eae9208f5523e56f0eb874"
+      },
+      "operations": [
+        {
+          "old_text": "        session: &OriginalQ24SuccessorSession,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(self.context.gate());\n        self.context.require_current()?;\n        if !std::ptr::eq(self.context.successor_session().as_ref(), session)\n            || self.scoped.original != *self.context.descriptor()\n            || self.consumed.compare_exchange(\n",
+          "new_text": "        session: &OriginalQ24SuccessorSession,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(self.context.gate());\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        if !std::ptr::eq(self.context.successor_session().as_ref(), session)\n            || self.scoped.original != *self.context.descriptor()\n            || self.consumed.compare_exchange(\n"
+        },
+        {
+          "old_text": "    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>> {\n        // The ticket already owns its close guard before this future is polled.\n        async move {\n            self.context.require_current()?;\n            let connection = self.context.successor_session()\n                .take_original_scoped_publication_connection(&self)?;\n            let current = self.handoff.connect_original_same_actor_publication(\n                connection, Arc::clone(&self.context), self.scoped, timeout,\n            ).await?;\n            self.context.require_current()?;\n            self.closing.disarm();\n            Ok(current)\n        }\n",
+          "new_text": "    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>> {\n        // The ticket already owns its close guard before this future is polled.\n        async move {\n            OriginalSameActorRootContext::require_current(&self.context)?;\n            let connection = self.context.successor_session()\n                .take_original_scoped_publication_connection(&self)?;\n            let current = self.handoff.connect_original_same_actor_publication(\n                connection, Arc::clone(&self.context), self.scoped, timeout,\n            ).await?;\n            OriginalSameActorRootContext::require_current(&self.context)?;\n            self.closing.disarm();\n            Ok(current)\n        }\n"
+        },
+        {
+          "old_text": "        Arc<CellQ24PreparedLearningV1>,\n        OriginalCellQ24RetainedLearningSourceV1,\n    ), AgentdError> {\n        self.context.require_current()?;\n        self.learning.require_prepared_q24(&self.prepared)?;\n        self.closing.disarm();\n        Ok((self.context, self.learning, self.model, self.publication, self.prepared, self.retained))\n",
+          "new_text": "        Arc<CellQ24PreparedLearningV1>,\n        OriginalCellQ24RetainedLearningSourceV1,\n    ), AgentdError> {\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        self.learning.require_prepared_q24(&self.prepared)?;\n        self.closing.disarm();\n        Ok((self.context, self.learning, self.model, self.publication, self.prepared, self.retained))\n"
+        },
+        {
+          "old_text": "        let context = Arc::clone(joined.context());\n        let receive_context = Arc::clone(&context);\n        let handoff = tokio::task::spawn_blocking(move || {\n            receive_context.require_current()?;\n            let handoff = receive_original_scoped_phase(socket, timeout, receive_context.gate())?;\n            receive_context.require_current()?;\n            Ok::<_, AgentdError>(handoff)\n        }).await.map_err(|_| refused(\"original scoped rights receiver was lost\"))??;\n        joined.require_original().await?;\n",
+          "new_text": "        let context = Arc::clone(joined.context());\n        let receive_context = Arc::clone(&context);\n        let handoff = tokio::task::spawn_blocking(move || {\n            OriginalSameActorRootContext::require_current(&receive_context)?;\n            let handoff = receive_original_scoped_phase(socket, timeout, receive_context.gate())?;\n            OriginalSameActorRootContext::require_current(&receive_context)?;\n            Ok::<_, AgentdError>(handoff)\n        }).await.map_err(|_| refused(\"original scoped rights receiver was lost\"))??;\n        joined.require_original().await?;\n"
+        },
+        {
+          "old_text": "        if handoff.root_pid != context.bootstrap().root.pid {\n            return Err(refused(\"scoped rights came from another original Root\"));\n        }\n        context.accept_original_scoped_descriptor(&scoped, joined.prepared())?;\n        if serde_json::to_vec(&scoped.learning)? != serde_json::to_vec(joined.profile())? {\n            return Err(refused(\"scoped Root profile differs from the actual joined A\"));\n        }\n        let learning = handoff.learning.connect_original_same_actor_learning(\n            Arc::clone(&context), scoped.clone(), Arc::clone(joined.prepared()), timeout,\n        ).await?;\n        context.require_current()?;\n        let model = connect_original_same_actor_model(\n            handoff.model, &context, &learning, &scoped, timeout,\n        ).await?;\n        joined.require_original().await?;\n        context.require_current()?;\n        let publication = OriginalScopedPublicationTicket {\n            handoff: handoff.publication,\n            context: Arc::clone(&context),\n",
+          "new_text": "        if handoff.root_pid != context.bootstrap().root.pid {\n            return Err(refused(\"scoped rights came from another original Root\"));\n        }\n        context.accept_original_scoped_descriptor(&scoped, OriginalJoinedSameActorA::prepared(&joined))?;\n        if serde_json::to_vec(&scoped.learning)? != serde_json::to_vec(joined.profile())? {\n            return Err(refused(\"scoped Root profile differs from the actual joined A\"));\n        }\n        let learning = handoff.learning.connect_original_same_actor_learning(\n            Arc::clone(&context), scoped.clone(), Arc::clone(OriginalJoinedSameActorA::prepared(&joined)), timeout,\n        ).await?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        let model = connect_original_same_actor_model(\n            handoff.model, &context, &learning, &scoped, timeout,\n        ).await?;\n        joined.require_original().await?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        let publication = OriginalScopedPublicationTicket {\n            handoff: handoff.publication,\n            context: Arc::clone(&context),\n"
+        },
+        {
+          "old_text": "            if timeout.is_zero() || timeout > Duration::from_millis(500) {\n                return Err(refused(\"bounded original phase Learning timeout required\"));\n            }\n            context.require_current()?;\n            let bundle: HostAuthorityLearningBootstrapV1 = read_original_phase_descriptor(self.bootstrap)?;\n            let initial = validate_binding(\n                &bundle, context.bootstrap(), context.identity(), self.root_pid,\n",
+          "new_text": "            if timeout.is_zero() || timeout > Duration::from_millis(500) {\n                return Err(refused(\"bounded original phase Learning timeout required\"));\n            }\n            OriginalSameActorRootContext::require_current(&context)?;\n            let bundle: HostAuthorityLearningBootstrapV1 = read_original_phase_descriptor(self.bootstrap)?;\n            let initial = validate_binding(\n                &bundle, context.bootstrap(), context.identity(), self.root_pid,\n"
+        },
+        {
+          "old_text": "                  &paths.device_frontier, &paths.notes_frontier, &bundle.socket_path],\n                unsafe { libc::getegid() },\n            )?;\n            context.require_current()?;\n            let stream = tokio::time::timeout(\n                timeout.min(context.gate().require_open()?),\n                tokio::net::UnixStream::connect(&bundle.socket_path),\n            ).await.map_err(|_| refused(\"original phase Learning connection expired\"))??;\n            context.require_current()?;\n            let client = AgentdLearningCheckpointClientV1::from_original_same_actor_stream_until(\n                stream.into_std()?,\n                AgentdRootAuthorityPeer {\n",
+          "new_text": "                  &paths.device_frontier, &paths.notes_frontier, &bundle.socket_path],\n                unsafe { libc::getegid() },\n            )?;\n            OriginalSameActorRootContext::require_current(&context)?;\n            let stream = tokio::time::timeout(\n                timeout.min(context.gate().require_open()?),\n                tokio::net::UnixStream::connect(&bundle.socket_path),\n            ).await.map_err(|_| refused(\"original phase Learning connection expired\"))??;\n            OriginalSameActorRootContext::require_current(&context)?;\n            let client = AgentdLearningCheckpointClientV1::from_original_same_actor_stream_until(\n                stream.into_std()?,\n                AgentdRootAuthorityPeer {\n"
+        },
+        {
+          "old_text": "            ).map_err(|error| refused(format!(\"original phase Learning transport: {error}\")))?;\n            client.restore(&initial.request).await\n                .map_err(|error| refused(format!(\"original phase Learning CURRENT: {error}\")))?;\n            context.require_current()?;\n            closing.disarm();\n            Ok(AgentdRootLearningInputsV1 {\n                client, initial, identity: context.identity().clone(), scope: Some(scope),\n",
+          "new_text": "            ).map_err(|error| refused(format!(\"original phase Learning transport: {error}\")))?;\n            client.restore(&initial.request).await\n                .map_err(|error| refused(format!(\"original phase Learning CURRENT: {error}\")))?;\n            OriginalSameActorRootContext::require_current(&context)?;\n            closing.disarm();\n            Ok(AgentdRootLearningInputsV1 {\n                client, initial, identity: context.identity().clone(), scope: Some(scope),\n"
+        },
+        {
+          "old_text": "    if timeout.is_zero() || timeout > Duration::from_millis(500) {\n        return Err(refused(\"bounded original phase Model timeout required\"));\n    }\n    context.require_current()?;\n    let bundle: Q24ModelFactoryBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;\n    let original = context.bootstrap();\n    let identity = context.identity();\n",
+          "new_text": "    if timeout.is_zero() || timeout > Duration::from_millis(500) {\n        return Err(refused(\"bounded original phase Model timeout required\"));\n    }\n    OriginalSameActorRootContext::require_current(&context)?;\n    let bundle: Q24ModelFactoryBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;\n    let original = context.bootstrap();\n    let identity = context.identity();\n"
+        },
+        {
+          "old_text": "          &paths.device_frontier, &paths.notes_frontier, &socket],\n        unsafe { libc::getegid() },\n    )?;\n    context.require_current()?;\n    let stream = tokio::time::timeout(\n        timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n    ).await.map_err(|_| refused(\"original phase Model connection expired\"))??;\n    context.require_current()?;\n    let stream = stream.into_std()?;\n    // Both owners are derived here from THIS original stream and THIS gate.\n    // The factory is never passed an externally chosen transport/guard pair.\n",
+          "new_text": "          &paths.device_frontier, &paths.notes_frontier, &socket],\n        unsafe { libc::getegid() },\n    )?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let stream = tokio::time::timeout(\n        timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n    ).await.map_err(|_| refused(\"original phase Model connection expired\"))??;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let stream = stream.into_std()?;\n    // Both owners are derived here from THIS original stream and THIS gate.\n    // The factory is never passed an externally chosen transport/guard pair.\n"
+        },
+        {
+          "old_text": "        transport, bundle.profile, initial, scope, identity.spawn_generation,\n        (handoff.journal, handoff.witness), required,\n    ).await?;\n    context.require_current()?;\n    closing.disarm();\n    Ok(model)\n}\n",
+          "new_text": "        transport, bundle.profile, initial, scope, identity.spawn_generation,\n        (handoff.journal, handoff.witness), required,\n    ).await?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    closing.disarm();\n    Ok(model)\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "preimage": {
+        "blob": "1fa1a5ec897476b111b78ca353d3f70f0a44d2e0",
+        "bytes": 10898,
+        "sha256": "a008bb7a6b957e3308f82901fcb4b658477dfa1ad2b43708c5b72ba869711ef7"
+      },
+      "postimage": {
+        "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+        "bytes": 11071,
+        "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4"
+      },
+      "operations": [
+        {
+          "old_text": "use crate::root_production_inputs::same_actor_phase::OriginalPhaseReceiveStart;\nuse crate::root_production_inputs::same_actor_phase::OriginalPhaseReceiveDeadline;\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorProductionInputs;\nuse crate::root_production_inputs::same_actor_phase::receive_original_same_actor_inputs;\nuse crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;\nuse crate::same_actor_q24_phase::OriginalSameActorPhaseCommandV1;\n",
+          "new_text": "use crate::root_production_inputs::same_actor_phase::OriginalPhaseReceiveStart;\nuse crate::root_production_inputs::same_actor_phase::OriginalPhaseReceiveDeadline;\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorProductionInputs;\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;\nuse crate::root_production_inputs::same_actor_phase::receive_original_same_actor_inputs;\nuse crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;\nuse crate::same_actor_q24_phase::OriginalSameActorPhaseCommandV1;\n"
+        },
+        {
+          "old_text": "            if config.identity() != &identity || context.identity() != &identity {\n                return Err(refused(\"original Starting Config differs from the received phase\"));\n            }\n            context.require_current()?;\n            business.host.notify_original(\n                &context, OriginalSameActorPhaseEventV1::InputsOpened {\n                    identity: Box::new(identity.clone()),\n",
+          "new_text": "            if config.identity() != &identity || context.identity() != &identity {\n                return Err(refused(\"original Starting Config differs from the received phase\"));\n            }\n            OriginalSameActorRootContext::require_current(&context)?;\n            business.host.notify_original(\n                &context, OriginalSameActorPhaseEventV1::InputsOpened {\n                    identity: Box::new(identity.clone()),\n"
+        },
+        {
+          "old_text": "            let initial = initial.connect_original_same_actor_initial(\n                connection, Arc::clone(&context), Duration::from_millis(500),\n            ).await?;\n            context.require_current()?;\n            // Original synchronous owners complete before this poll returns.\n            // block_in_place lets the original refresh worker continue; it\n            // creates no detached owner task or discardable JoinHandle.\n",
+          "new_text": "            let initial = initial.connect_original_same_actor_initial(\n                connection, Arc::clone(&context), Duration::from_millis(500),\n            ).await?;\n            OriginalSameActorRootContext::require_current(&context)?;\n            // Original synchronous owners complete before this poll returns.\n            // block_in_place lets the original refresh worker continue; it\n            // creates no detached owner task or discardable JoinHandle.\n"
+        },
+        {
+          "old_text": "                )\n            })?;\n            late_writer::require_late_owner(uid, gid)?;\n            context.require_current()?;\n            let launch = AgentdProductionLaunch {\n                root,\n                inputs: RuntimeInputs { primary, notes, notes_ui },\n",
+          "new_text": "                )\n            })?;\n            late_writer::require_late_owner(uid, gid)?;\n            OriginalSameActorRootContext::require_current(&context)?;\n            let launch = AgentdProductionLaunch {\n                root,\n                inputs: RuntimeInputs { primary, notes, notes_ui },\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "preimage": {
+        "blob": "af99c0ad33cb8ee24f79d864e7614fb8e58f97df",
+        "bytes": 3869,
+        "sha256": "27cc8d18a4b5164abfdd76481a4b128d063ab1f3cd6b55a2a3dc45ff862804ec"
+      },
+      "postimage": {
+        "blob": "cd368edd9bcdbcfafd84ff13d44ea12c04cefb5a",
+        "bytes": 4079,
+        "sha256": "09275003e739aef211ee02af390874049320e4f55810a17710dc1001250b550d"
+      },
+      "operations": [
+        {
+          "old_text": "    scoped: UnixDatagram,\n) -> Result<AgentdConfig, AgentdError> {\n    let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n    context.require_current()?;\n    if config.identity() != context.identity()\n        || inputs.ledger.open_mode != CircuitQ24TaskOpenModeV1::Create\n    {\n",
+          "new_text": "    scoped: UnixDatagram,\n) -> Result<AgentdConfig, AgentdError> {\n    let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n    OriginalSameActorRootContext::require_current(&context)?;\n    if config.identity() != context.identity()\n        || inputs.ledger.open_mode != CircuitQ24TaskOpenModeV1::Create\n    {\n"
+        },
+        {
+          "old_text": "        OriginalRootGenerationInitialV1::prepare_feature(\n            initial, authorities.clone(), selected, target,\n        )?;\n    context.require_current()?;\n    let grants: Arc<AgentdUnixFinalUseGrantProvider> = context.grants();\n    let signed = AgentdUnixFinalUseGrantProvider::request_grant(\n        grants.as_ref(), prepared.final_use_binding(),\n    ).map_err(phase_owner_error)?;\n    context.require_current()?;\n    let published: PublishedCircuitFeatureTaskV1 = prepared.publish(&signed)?;\n    context.require_current()?;\n    let OriginalSameActorATaskInputsV1 {\n        files, fence, circuit, routes, worker_generation, maximum_cell_records,\n        queue_capacity, clock,\n",
+          "new_text": "        OriginalRootGenerationInitialV1::prepare_feature(\n            initial, authorities.clone(), selected, target,\n        )?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let grants: Arc<AgentdUnixFinalUseGrantProvider> = context.grants();\n    let signed = AgentdUnixFinalUseGrantProvider::request_grant(\n        grants.as_ref(), prepared.final_use_binding(),\n    ).map_err(phase_owner_error)?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let published: PublishedCircuitFeatureTaskV1 = prepared.publish(&signed)?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let OriginalSameActorATaskInputsV1 {\n        files, fence, circuit, routes, worker_generation, maximum_cell_records,\n        queue_capacity, clock,\n"
+        },
+        {
+          "old_text": "                maximum_cell_records, queue_capacity, clock,\n            },\n        )?;\n    context.require_current()?;\n    let parts = runtime.into_original_same_actor_task_parts(\n        context.identity(), Arc::clone(context.gate()), published.clone(), ledger,\n    )?;\n",
+          "new_text": "                maximum_cell_records, queue_capacity, clock,\n            },\n        )?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let parts = runtime.into_original_same_actor_task_parts(\n        context.identity(), Arc::clone(context.gate()), published.clone(), ledger,\n    )?;\n"
+        },
+        {
+          "old_text": "    let route: Arc<SameActorTaskRoute> = route;\n    let (bootstrap, source, cell, ledger) =\n        SameActorTaskRoute::install_original_a(route.as_ref(), parts)?;\n    context.require_current()?;\n    let owners = OriginalSameActorAOwners { bootstrap, source, cell, ledger, published };\n    let worker = OriginalSameActorTaskWorker::new(\n        Arc::clone(&context), Arc::clone(&route), owners, authorities, scoped, host,\n",
+          "new_text": "    let route: Arc<SameActorTaskRoute> = route;\n    let (bootstrap, source, cell, ledger) =\n        SameActorTaskRoute::install_original_a(route.as_ref(), parts)?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    let owners = OriginalSameActorAOwners { bootstrap, source, cell, ledger, published };\n    let worker = OriginalSameActorTaskWorker::new(\n        Arc::clone(&context), Arc::clone(&route), owners, authorities, scoped, host,\n"
+        },
+        {
+          "old_text": "        context.identity(), route, worker,\n    )?;\n    let config = config.with_circuit_task_bootstrap(bootstrap, invocation)?;\n    context.require_current()?;\n    closing.disarm();\n    Ok(config)\n}\n",
+          "new_text": "        context.identity(), route, worker,\n    )?;\n    let config = config.with_circuit_task_bootstrap(bootstrap, invocation)?;\n    OriginalSameActorRootContext::require_current(&context)?;\n    closing.disarm();\n    Ok(config)\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+      "preimage": {
+        "blob": "0de49d62c3ad19daf5b784f644e40a66af7187b2",
+        "bytes": 13010,
+        "sha256": "6eff847acbf02bc6749f717046c55a97e69a6775d45fb63852d203aad2f604c1"
+      },
+      "postimage": {
+        "blob": "aa38bdd0c38fc7ed5e904df34617ba9d2abbdb39",
+        "bytes": 13370,
+        "sha256": "b9508e5cba272e8d29c598b365f43161e7f4205b8b19d21f0941790758e6bb3d"
+      },
+      "operations": [
+        {
+          "old_text": "    ) -> impl std::future::Future<Output = Result<OriginalRootGenerationInitialV1, AgentdError>> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        async move {\n        context.require_current()?;\n        connection.require_same_successor_session(context.successor_session().as_ref())?;\n        let lifetime = context.gate().require_open()?;\n        // SAFETY: both calls only read the current process's credentials.\n",
+          "new_text": "    ) -> impl std::future::Future<Output = Result<OriginalRootGenerationInitialV1, AgentdError>> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        async move {\n        OriginalSameActorRootContext::require_current(&context)?;\n        connection.require_same_successor_session(context.successor_session().as_ref())?;\n        let lifetime = context.gate().require_open()?;\n        // SAFETY: both calls only read the current process's credentials.\n"
+        },
+        {
+          "old_text": "            unsafe { libc::getegid() },\n        )?;\n        connection.require_original_publication_session()?;\n        context.require_current()?;\n        let stream = tokio::time::timeout(\n            timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n        )\n            .await\n            .map_err(|_| refused(\"initial publication Root connection timed out\"))??;\n        context.require_current()?;\n        if Instant::now() >= end { return Err(refused(\"initial publication route expired\")); }\n        let original = OriginalPublicationStream::from_original_initial_phase_stream_until(\n            stream.into_std()?,\n",
+          "new_text": "            unsafe { libc::getegid() },\n        )?;\n        connection.require_original_publication_session()?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        let stream = tokio::time::timeout(\n            timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n        )\n            .await\n            .map_err(|_| refused(\"initial publication Root connection timed out\"))??;\n        OriginalSameActorRootContext::require_current(&context)?;\n        if Instant::now() >= end { return Err(refused(\"initial publication route expired\")); }\n        let original = OriginalPublicationStream::from_original_initial_phase_stream_until(\n            stream.into_std()?,\n"
+        },
+        {
+          "old_text": "        // result and original stream; it never starts a CURRENT mutation.\n        let worker_context = Arc::clone(&context);\n        let result = tokio::task::spawn_blocking(move || {\n            worker_context.require_current()?;\n            connection.require_original_publication_session()?;\n            let client = RootGenerationInitialClient::from_original_initial_stream(\n                original, &bundle, connection,\n            )?;\n            worker_context.require_current()?;\n            Ok::<_, AgentdError>(OriginalRootGenerationInitialV1 { client })\n        })\n        .await\n        .map_err(|_| refused(\"initial publication connect worker lost\"))??;\n        context.require_current()?;\n        closing.disarm();\n        Ok(result)\n        }\n",
+          "new_text": "        // result and original stream; it never starts a CURRENT mutation.\n        let worker_context = Arc::clone(&context);\n        let result = tokio::task::spawn_blocking(move || {\n            OriginalSameActorRootContext::require_current(&worker_context)?;\n            connection.require_original_publication_session()?;\n            let client = RootGenerationInitialClient::from_original_initial_stream(\n                original, &bundle, connection,\n            )?;\n            OriginalSameActorRootContext::require_current(&worker_context)?;\n            Ok::<_, AgentdError>(OriginalRootGenerationInitialV1 { client })\n        })\n        .await\n        .map_err(|_| refused(\"initial publication connect worker lost\"))??;\n        OriginalSameActorRootContext::require_current(&context)?;\n        closing.disarm();\n        Ok(result)\n        }\n"
+        },
+        {
+          "old_text": "    ) -> impl std::future::Future<Output = Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError>> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        async move {\n        context.require_current()?;\n        connection.require_same_successor_session(context.successor_session().as_ref())?;\n        if scoped.original != *context.descriptor()\n            || scoped.phase != context.descriptor().phase\n",
+          "new_text": "    ) -> impl std::future::Future<Output = Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError>> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        async move {\n        OriginalSameActorRootContext::require_current(&context)?;\n        connection.require_same_successor_session(context.successor_session().as_ref())?;\n        if scoped.original != *context.descriptor()\n            || scoped.phase != context.descriptor().phase\n"
+        },
+        {
+          "old_text": "            unsafe { libc::getegid() },\n        )?;\n        connection.require_original_publication_session()?;\n        context.require_current()?;\n        let stream = tokio::time::timeout(\n            timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n        )\n            .await\n            .map_err(|_| refused(\"publication Root connection timed out\"))??;\n        context.require_current()?;\n        if Instant::now() >= end { return Err(refused(\"publication route expired\")); }\n        let original = OriginalPublicationStream::from_original_scoped_phase_stream_until(\n            stream.into_std()?,\n",
+          "new_text": "            unsafe { libc::getegid() },\n        )?;\n        connection.require_original_publication_session()?;\n        OriginalSameActorRootContext::require_current(&context)?;\n        let stream = tokio::time::timeout(\n            timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),\n        )\n            .await\n            .map_err(|_| refused(\"publication Root connection timed out\"))??;\n        OriginalSameActorRootContext::require_current(&context)?;\n        if Instant::now() >= end { return Err(refused(\"publication route expired\")); }\n        let original = OriginalPublicationStream::from_original_scoped_phase_stream_until(\n            stream.into_std()?,\n"
+        },
+        {
+          "old_text": "        // result and original stream; it never starts a CURRENT mutation.\n        let worker_context = Arc::clone(&context);\n        let result = tokio::task::spawn_blocking(move || {\n            worker_context.require_current()?;\n            connection.require_original_publication_session()?;\n            let client = RootGenerationCurrentClient::from_original_stream(\n                original,\n",
+          "new_text": "        // result and original stream; it never starts a CURRENT mutation.\n        let worker_context = Arc::clone(&context);\n        let result = tokio::task::spawn_blocking(move || {\n            OriginalSameActorRootContext::require_current(&worker_context)?;\n            connection.require_original_publication_session()?;\n            let client = RootGenerationCurrentClient::from_original_stream(\n                original,\n"
+        },
+        {
+          "old_text": "            )?;\n            let owner = NeuronGenerationCurrentOwnerV1::from_original_root_publication(client)\n                .map(Arc::new)?;\n            worker_context.require_current()?;\n            Ok::<_, AgentdError>(owner)\n        })\n        .await\n        .map_err(|_| refused(\"publication connect worker lost\"))??;\n        context.require_current()?;\n        closing.disarm();\n        Ok(result)\n        }\n",
+          "new_text": "            )?;\n            let owner = NeuronGenerationCurrentOwnerV1::from_original_root_publication(client)\n                .map(Arc::new)?;\n            OriginalSameActorRootContext::require_current(&worker_context)?;\n            Ok::<_, AgentdError>(owner)\n        })\n        .await\n        .map_err(|_| refused(\"publication connect worker lost\"))??;\n        OriginalSameActorRootContext::require_current(&context)?;\n        closing.disarm();\n        Ok(result)\n        }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "preimage": {
+        "blob": "5df98478dfb2bd2978c614c71679dbb95dba7c6c",
+        "bytes": 8473,
+        "sha256": "0f55907acf8ef493534b03700987c0435ff9796bacc1d2a884b5998d1a8e475c"
+      },
+      "postimage": {
+        "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+        "bytes": 8624,
+        "sha256": "78d2015459f50c893319900a65b8c17061ae00c964ea8ba2f6140e61c40e8ce3"
+      },
+      "operations": [
+        {
+          "old_text": "                else {\n                    return Err(io::Error::other(\"original Initial host command required first\"));\n                };\n                let original = initial_capability.register(initial)?;\n                worker_gate.require_open()?;\n                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::InitialRegistered {\n                    binding: original.binding().to_string(),\n",
+          "new_text": "                else {\n                    return Err(io::Error::other(\"original Initial host command required first\"));\n                };\n                let original = crate::RootSameActorInitialEnrollmentCapabilityV1::register(initial_capability, initial)?;\n                worker_gate.require_open()?;\n                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::InitialRegistered {\n                    binding: original.binding().to_string(),\n"
+        },
+        {
+          "old_text": "                else {\n                    return Err(io::Error::other(\"actual original Prepared profile required next\"));\n                };\n                let scoped = scope_capability.register(profile)?;\n                worker_gate.require_open()?;\n                let publication = crate::send_root_same_actor_scoped_handoff(\n                    scoped_handoff, scoped, &scoped_root, timeout.min(worker_gate.require_open()?),\n",
+          "new_text": "                else {\n                    return Err(io::Error::other(\"actual original Prepared profile required next\"));\n                };\n                let scoped = RootSameActorScopeEnrollmentCapabilityV1::register(scope_capability, profile)?;\n                worker_gate.require_open()?;\n                let publication = crate::send_root_same_actor_scoped_handoff(\n                    scoped_handoff, scoped, &scoped_root, timeout.min(worker_gate.require_open()?),\n"
+        },
+        {
+          "old_text": "                else {\n                    return Err(io::Error::other(\"actual original CURRENT host enrollment required last\"));\n                };\n                let original = publication.register(current)?;\n                worker_gate.require_open()?;\n                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::CurrentRegistered {\n                    binding: original.binding().to_string(),\n",
+          "new_text": "                else {\n                    return Err(io::Error::other(\"actual original CURRENT host enrollment required last\"));\n                };\n                let original = crate::RootSameActorPublicationEnrollmentCapabilityV1::register(publication, current)?;\n                worker_gate.require_open()?;\n                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::CurrentRegistered {\n                    binding: original.binding().to_string(),\n"
+        }
+      ]
+    }
+  ],
+  "file_count": 8,
+  "operation_count": 43,
+  "reason": "The unchanged typed checker indexes only fields of the queried authority, not arbitrary other field types. New scoped-input code contains AgentdRootQ24ModelFactoryV1 yet called require_current on a different context, including inferred Arc::clone(method_return) and self.context. These new phase calls now explicitly name the actual RootContext receiver. Three real Root cap registration calls and two opaque Joined Prepared getters likewise name the actual sealed type.",
+  "semantics": "Only Rust UFCS spelling (same receiver borrowing/move) and the necessary real type import. Same function, source object, argument, evaluation position and ?/await ordering. No guard or authority result changes; no fabricated receiver metadata.",
+  "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "validation": "Author pure-JS unique exact replay and reverse plus immutable Git/hash readbacks. No original checker/helper or native execution.",
+  "execution": {
+    "native": 0,
+    "checker": 0,
+    "refs_changed": 0,
+    "business": 0
+  }
+}

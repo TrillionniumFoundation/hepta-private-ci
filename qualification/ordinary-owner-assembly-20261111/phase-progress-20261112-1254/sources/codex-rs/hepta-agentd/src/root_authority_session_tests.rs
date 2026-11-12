@@ -1,0 +1,740 @@
+//! Same-UID/synthetic-key qualification with the original durable owners.
+//! Two executor workers match the production Agentd runtime: synchronous
+//! durable fixture initialization must not starve its original Root read feed.
+use super::*;
+use crate::AgentdConfig;
+use crate::AgentdRootWriterTrust;
+use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_paths::HeptaFleetRoot;
+use std::error::Error;
+
+use crate::root_writer_proof::tests::fixture;
+use crate::root_writer_proof::tests::observation;
+use codex_hepta_contracts::AuthorityFrontierStore;
+use codex_hepta_contracts::FinalUseFrontier;
+use codex_hepta_contracts::FinalUseIssuerTrustKey;
+use pretty_assertions::assert_eq;
+use std::io::Read;
+use std::io::Write;
+use std::os::fd::FromRawFd;
+use std::os::unix::fs::PermissionsExt;
+use std::sync::atomic::AtomicU64;
+pub(crate) struct Frontier {
+    value: Mutex<FinalUseFrontier>,
+    commits: AtomicU64,
+    wait: AtomicBool,
+    entered: AtomicBool,
+    fail: AtomicBool,
+}
+impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
+    fn load(&self, _: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        Ok(*self.value.lock().unwrap())
+    }
+    fn compare_and_set(
+        &self,
+        _: &str,
+        expected: &FinalUseFrontier,
+        next: &FinalUseFrontier,
+    ) -> Result<(), AuthorityTrustError> {
+        self.entered.store(true, Ordering::Release);
+        let started = std::time::Instant::now();
+        eprintln!(
+            "fixture frontier CAS entered: wait={}, boottime_ns={}",
+            self.wait.load(Ordering::Acquire),
+            boottime_ns().unwrap()
+        );
+        let bound = std::time::Instant::now() + Duration::from_secs(1);
+        while self.wait.load(Ordering::Acquire) {
+            if std::time::Instant::now() >= bound {
+                eprintln!(
+                    "fixture frontier CAS wait expired after {:?}",
+                    started.elapsed()
+                );
+                return Err(AuthorityTrustError::Unavailable);
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        if self.fail.load(Ordering::Acquire) {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        let mut value = self.value.lock().unwrap();
+        if *value != *expected {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        *value = *next;
+        self.commits.fetch_add(1, Ordering::AcqRel);
+        eprintln!(
+            "fixture frontier CAS completed after {:?}",
+            started.elapsed()
+        );
+        Ok(())
+    }
+}
+pub(crate) fn owner(
+    session: &AgentdRootAuthoritySession,
+    key: [u8; 32],
+) -> (FinalUseAuthority, Arc<Frontier>, tempfile::TempDir) {
+    let head = session.revocations().unwrap();
+    let frontier = Arc::new(Frontier {
+        value: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
+        commits: AtomicU64::new(0),
+        wait: AtomicBool::new(false),
+        entered: AtomicBool::new(false),
+        fail: AtomicBool::new(false),
+    });
+    let directory = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
+    let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory.path(),
+        "root-issuer".into(),
+        vec![FinalUseIssuerTrustKey {
+            key_id: "synthetic-fixture".into(),
+            verifying_key: key,
+            not_before_authority_epoch: 2,
+            not_after_authority_epoch: 2,
+        }],
+        head,
+        session.clock(),
+        frontier.clone(),
+    )
+    .unwrap();
+    (authority, frontier, directory)
+}
+pub(crate) async fn connected() -> (
+    AgentdRootAuthoritySession,
+    Arc<AtomicU64>,
+    std::thread::JoinHandle<()>,
+    [u8; 32],
+) {
+    let (trust, proof) = fixture();
+    connected_with_unix_time(trust, proof, 2_000).await
+}
+
+pub(crate) async fn connected_with_unix_time(
+    trust: crate::AgentdRootWriterTrust,
+    proof: crate::HostSignedWriterAuthorizationV1,
+    unix_base_ms: u64,
+) -> (
+    AgentdRootAuthoritySession,
+    Arc<AtomicU64>,
+    std::thread::JoinHandle<()>,
+    [u8; 32],
+) {
+    let key = trust.verifying_key;
+    let (client, mut server) = UnixStream::pair().unwrap();
+    let pid = std::process::id();
+    let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
+        .unwrap()
+        .trim()
+        .to_string();
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat")).unwrap();
+    let peer = AgentdRootAuthorityPeer {
+        pid,
+        boot_id: boot_id.clone(),
+        process_start_ticks: stat
+            .rsplit_once(") ")
+            .unwrap()
+            .1
+            .split_whitespace()
+            .nth(19)
+            .unwrap()
+            .parse()
+            .unwrap(),
+    };
+    // SAFETY: live test PID; syscall returns exclusively owned descriptor.
+    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    assert!(fd >= 0);
+    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
+    let stream = RootObservationStream::from_stream_for_uid(
+        client,
+        peer,
+        pidfd,
+        Duration::from_millis(300),
+        Duration::from_secs(10),
+        unsafe { libc::geteuid() },
+    )
+    .unwrap();
+    let head = Arc::new(AtomicU64::new(1));
+    let next_head = Arc::clone(&head);
+    let base = boottime_ns().unwrap();
+    let peer_boot = boot_id.clone();
+    let worker = std::thread::spawn(move || {
+        server
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
+        loop {
+            let mut prefix = [0; 4];
+            if server.read_exact(&mut prefix).is_err() {
+                return;
+            }
+            let mut request = vec![0; u32::from_be_bytes(prefix) as usize];
+            server.read_exact(&mut request).unwrap();
+            let value: serde_json::Value = serde_json::from_slice(&request).unwrap();
+            let response = if value["operation"] == HOST_WRITER_AUTHORIZATION_V1 {
+                serde_json::to_vec(&HostWriterAuthorizationReadResponseV1 {
+                    schema_version: 1,
+                    operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+                    proof: proof.clone(),
+                })
+                .unwrap()
+            } else {
+                assert_eq!(value["operation"], HOST_AUTHORITY_OBSERVATION_V2);
+                let mut sample = observation(&proof);
+                let elapsed = (boottime_ns().unwrap() - base) / 1_000_000;
+                sample.clock.boot_id = peer_boot.clone();
+                sample.clock.anchor_boottime_ns = base;
+                sample.clock.anchor_unix_ms = unix_base_ms;
+                sample.clock.ceiling_unix_ms = unix_base_ms + 1_001 + elapsed;
+                sample.observed_unix_ms = unix_base_ms + elapsed;
+                sample.revocations.revision = next_head.load(Ordering::Acquire);
+                if sample.revocations.revision > 1 {
+                    sample
+                        .revocations
+                        .revoked_grant_ids
+                        .insert("revoked-effect".into());
+                }
+                sample.writer.store_revision = 7 + sample.revocations.revision;
+                serde_json::to_vec(&sample).unwrap()
+            };
+            if server
+                .write_all(&(response.len() as u32).to_be_bytes())
+                .is_err()
+                || server.write_all(&response).is_err()
+            {
+                return;
+            }
+        }
+    });
+    let session = AgentdRootAuthoritySession::connect_owned_stream(
+        stream,
+        boot_id,
+        base,
+        Duration::from_secs(10),
+        trust,
+    )
+    .await
+    .unwrap();
+    (session, head, worker, key)
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clones() {
+    let (session, _, peer, key) = connected().await;
+    let authority = session.authority();
+    let verifier = session.verifier();
+    assert!(verifier.verify(&authority, &authority.agent_id).is_err());
+    let (device, _, _device_dir) = owner(&session, key);
+    let (notes, _, _notes_dir) = owner(&session, key);
+    session
+        .activate_final_use_owners(vec![device, notes])
+        .await
+        .unwrap();
+    verifier.verify(&authority, &authority.agent_id).unwrap();
+    let (trust, _) = fixture();
+    verifier
+        .verify_sender_process_binding(
+            &authority,
+            &authority.agent_id,
+            &trust.local_lease_id,
+            trust.local_lease_generation,
+            trust.spawn_generation,
+        )
+        .unwrap();
+    for (lease_id, local, spawn) in [
+        (
+            "wrong-local-lease",
+            trust.local_lease_generation,
+            trust.spawn_generation,
+        ),
+        (
+            trust.local_lease_id.as_str(),
+            trust.local_lease_generation + 1,
+            trust.spawn_generation,
+        ),
+        (
+            trust.local_lease_id.as_str(),
+            trust.local_lease_generation,
+            trust.spawn_generation + 1,
+        ),
+    ] {
+        assert!(
+            verifier
+                .verify_sender_process_binding(
+                    &authority,
+                    &authority.agent_id,
+                    lease_id,
+                    local,
+                    spawn,
+                )
+                .is_err()
+        );
+    }
+    let mut changed = authority.clone();
+    changed.owner_epoch += 1;
+    assert!(verifier.verify(&changed, &changed.agent_id).is_err());
+    verifier.verify(&authority, &authority.agent_id).unwrap();
+    let clock = session.clock();
+    drop(session);
+    assert!(verifier.verify(&authority, &authority.agent_id).is_err());
+    assert!(clock.now_unix_ms().is_err());
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    peer.join().unwrap();
+}
+// Opening both original durable owners performs synchronous filesystem I/O.
+// Match the production multi-worker runtime so that initialization cannot
+// starve the unchanged 100 ms Root feed past its 500 ms observation fence.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn both_original_frontiers_finish_before_new_head_is_published() {
+    let (session, head, peer, key) = connected().await;
+    let (device, first, _device_dir) = owner(&session, key);
+    let (notes, second, _notes_dir) = owner(&session, key);
+    session
+        .activate_final_use_owners(vec![device.clone(), notes.clone()])
+        .await
+        .unwrap();
+    second.wait.store(true, Ordering::Release);
+    head.store(2, Ordering::Release);
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while !second.entered.load(Ordering::Acquire) {
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+    })
+    .await
+    .unwrap();
+    eprintln!(
+        "test observed second frontier entry: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
+    let before = std::time::Instant::now();
+    assert!(
+        session
+            .verifier()
+            .verify(&session.authority(), &session.authority().agent_id)
+            .is_err()
+    );
+    assert!(before.elapsed() < Duration::from_millis(30));
+    assert_eq!(first.commits.load(Ordering::Acquire), 1);
+    assert_eq!(second.commits.load(Ordering::Acquire), 0);
+    second.wait.store(false, Ordering::Release);
+    eprintln!(
+        "test released second frontier: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
+    let current = tokio::time::timeout(Duration::from_millis(300), async {
+        loop {
+            if let Ok(current) = session.revocations() {
+                break current;
+            }
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+    })
+    .await
+    .unwrap_or_else(|error| {
+        panic!(
+            "original observation did not resume: {error}; updater_finished={}, first_commits={}, second_commits={}, second_wait={}",
+            session.worker.is_finished(),
+            first.commits.load(Ordering::Acquire),
+            second.commits.load(Ordering::Acquire),
+            second.wait.load(Ordering::Acquire),
+        )
+    });
+    assert_eq!(current.revision, 2);
+    assert_eq!(device.revocation_head().unwrap(), current);
+    assert_eq!(notes.revocation_head().unwrap(), current);
+    assert_eq!(second.commits.load(Ordering::Acquire), 1);
+    drop(session);
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    peer.join().unwrap();
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn uncertain_original_consumer_update_fences_even_with_fresh_root_responses() {
+    let (session, head, peer, key) = connected().await;
+    let (device, first, _device_dir) = owner(&session, key);
+    let (notes, second, _notes_dir) = owner(&session, key);
+    session
+        .activate_final_use_owners(vec![device, notes])
+        .await
+        .unwrap();
+    second.fail.store(true, Ordering::Release);
+    head.store(2, Ordering::Release);
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while !second.entered.load(Ordering::Acquire) {
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        }
+    })
+    .await
+    .unwrap();
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    assert_eq!(first.commits.load(Ordering::Acquire), 1);
+    assert!(session.clock().now_unix_ms().is_err());
+    assert!(
+        session
+            .verifier()
+            .verify(&session.authority(), &session.authority().agent_id)
+            .is_err()
+    );
+    assert!(session.activate_final_use_owners(Vec::new()).await.is_err());
+    drop(session);
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    peer.join().unwrap();
+}
+
+#[path = "root_authority_resource_tests.rs"]
+mod resources;
+
+pub(crate) fn observation_worker(session: &AgentdRootAuthoritySession) -> tokio::task::AbortHandle {
+    session.worker.abort_handle()
+}
+
+pub(crate) fn original_config(
+    path: &std::path::Path,
+    trust: &AgentdRootWriterTrust,
+) -> Result<AgentdConfig, Box<dyn Error>> {
+    let fleet = HeptaFleetRoot::parse(path.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet.clone())?;
+    let workspace = path.join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let record = registry.register(AgentManifest::new(
+        trust.agent_id.clone(),
+        WorkspaceBinding::new(workspace.clone(), &fleet)?,
+        ResourceBudget::local_default(),
+    )?)?;
+    registry.compare_and_transition(&trust.agent_id, 0, AgentLifecycle::Starting)?;
+    registry.compare_and_transition(&trust.agent_id, 1, AgentLifecycle::Failed)?;
+    registry.compare_and_transition(&trust.agent_id, 2, AgentLifecycle::Starting)?;
+    Ok(AgentdConfig::load(
+        fleet.as_path().to_owned(),
+        trust.agent_id.clone(),
+        trust.spawn_generation,
+        record.layout.home_root().to_owned(),
+        record.layout.run_root().to_owned(),
+        record.layout.home_root().to_owned(),
+        workspace,
+    )?)
+}
+
+#[path = "root_authority_file_custody_tests.rs"]
+mod file_custody;
+
+// A prior failed/cancelled refresh must not be misclassified as an intentional
+// component shutdown merely because its worker has not returned yet.
+pub(super) struct RefreshCompletion<'a> {
+    failed: &'a AtomicBool,
+    complete: bool,
+}
+impl<'a> RefreshCompletion<'a> {
+    pub(super) fn new(failed: &'a AtomicBool) -> Self {
+        Self {
+            failed,
+            complete: false,
+        }
+    }
+
+    pub(super) fn complete(&mut self) {
+        self.complete = true;
+    }
+}
+impl Drop for RefreshCompletion<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.failed.store(true, Ordering::Release);
+        }
+    }
+}
+
+/// End the original observation feed only when its whole original read and
+/// consumer barrier have finished. Actual inputs/session Drop performs the
+/// fencing and abort; this helper never refreshes or pre-aborts the worker.
+pub(crate) async fn drop_original_production_after_idle(
+    inputs: crate::AgentdRootProductionInputs,
+    timeout: Duration,
+    before_drop: impl FnOnce() -> std::io::Result<()>,
+) -> std::io::Result<()> {
+    let live = Arc::clone(&inputs.session.live);
+    let worker = inputs.session.worker.abort_handle();
+    tokio::time::timeout(timeout, async move {
+        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        live.current().map_err(std::io::Error::other)?;
+        before_drop()?;
+        // The permit prevents any new refresh from starting during this check
+        // and the actual Drop. A retained task can now test that original Drop.
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        drop(inputs);
+        while !worker.is_finished() {
+            tokio::task::yield_now().await;
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::TimedOut,
+            "original Root observation worker did not finish within deliberate Drop budget",
+        )
+    })?
+}
+
+#[cfg(test)]
+impl AgentdRootAuthoritySession {
+    /// Wait only for the original feed and consumer barrier to observe one
+    /// same-epoch revocation. This never refreshes, updates or grants authority.
+    pub(crate) async fn component_wait_for_original_revocations(
+        &self,
+        consumers: [&FinalUseAuthority; 2],
+        expected: &FinalUseRevocations,
+        timeout: Duration,
+    ) -> std::io::Result<()> {
+        tokio::time::timeout(timeout, async {
+            loop {
+                let serial = self
+                    .live
+                    .serial
+                    .acquire()
+                    .await
+                    .map_err(std::io::Error::other)?;
+                if self.live.refresh_failed.load(Ordering::Acquire) || self.worker.is_finished() {
+                    return Err(std::io::Error::other(
+                        "original Root observation worker failed or finished",
+                    ));
+                }
+                let device = consumers[0]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let notes = consumers[1]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let actual = self.revocations().map_err(std::io::Error::other)?;
+                if device != actual || notes != actual {
+                    return Err(std::io::Error::other(
+                        "original Root consumer barrier did not complete one exact head",
+                    ));
+                }
+                if &actual == expected {
+                    return Ok(());
+                }
+                if actual.authority_epoch != expected.authority_epoch
+                    || actual.revision >= expected.revision
+                    || !expected
+                        .revoked_grant_ids
+                        .is_superset(&actual.revoked_grant_ids)
+                {
+                    return Err(std::io::Error::other(
+                        "original Root revocation head cannot advance to the expected head",
+                    ));
+                }
+                drop(serial);
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "original Root revocation feed did not reach the expected head",
+            )
+        })?
+    }
+}
+
+// Bounded component diagnostics only. A reserved slot survives until this
+// scope ends, so nested feed work cannot consume its eventual record. No
+// sample below is returned to an authority, freshness or timeout decision.
+static COMPONENT_TIMING_RESERVED: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+static COMPONENT_TIMING_SEQUENCE: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+
+pub(crate) struct ComponentPhaseTiming {
+    label: &'static str,
+    phase: String,
+    sequence: usize,
+    reserved: bool,
+    begin_ns: Option<u64>,
+    marks: [(&'static str, Option<u64>); 8],
+    used: usize,
+    reported_outcome: Option<&'static str>,
+    pub(crate) minimum_success_ns: Option<u64>,
+}
+
+/// Call before acquiring the original guard and drop after that guard. Marks
+/// only sample or copy diagnostic values; they never print while it is held.
+pub(crate) fn component_phase_timing(
+    label: &'static str,
+    phase: impl std::fmt::Debug,
+) -> ComponentPhaseTiming {
+    let reserved = COMPONENT_TIMING_RESERVED
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |used| {
+            (used < 64).then_some(used + 1)
+        })
+        .is_ok();
+    ComponentPhaseTiming {
+        label,
+        phase: format!("{phase:?}").chars().take(64).collect(),
+        sequence: COMPONENT_TIMING_SEQUENCE.fetch_add(1, Ordering::Relaxed),
+        reserved,
+        begin_ns: reserved.then(|| super::boottime_ns().ok()).flatten(),
+        marks: [("", None); 8],
+        used: 0,
+        reported_outcome: None,
+        minimum_success_ns: None,
+    }
+}
+
+impl ComponentPhaseTiming {
+    pub(crate) fn mark(&mut self, label: &'static str) {
+        if self.reserved {
+            self.record(label, super::boottime_ns().ok());
+        }
+    }
+
+    pub(crate) fn mark_original(&mut self, label: &'static str, original_ns: u64) {
+        if self.reserved {
+            self.record(label, Some(original_ns));
+        }
+    }
+
+    fn record(&mut self, label: &'static str, value: Option<u64>) {
+        if let Some(slot) = self.marks.get_mut(self.used) {
+            *slot = (label, value);
+            self.used += 1;
+        }
+    }
+
+    pub(crate) fn complete(&mut self) {
+        self.reported_outcome = Some("Ok");
+        self.mark("complete");
+    }
+
+    pub(crate) fn callback(&mut self) -> ComponentCallbackTiming<'_> {
+        self.mark("callback-entry");
+        ComponentCallbackTiming { timing: self }
+    }
+}
+
+/// This nested guard only records. Its parent prints after the original
+/// dispatch function has released the original lease/revocation guard.
+pub(crate) struct ComponentCallbackTiming<'a> {
+    timing: &'a mut ComponentPhaseTiming,
+}
+
+impl Drop for ComponentCallbackTiming<'_> {
+    fn drop(&mut self) {
+        self.timing.mark("callback-exit");
+    }
+}
+
+impl Drop for ComponentPhaseTiming {
+    fn drop(&mut self) {
+        if !self.reserved {
+            return;
+        }
+        let end_ns = super::boottime_ns().ok();
+        let elapsed_ns = self
+            .begin_ns
+            .zip(end_ns)
+            .and_then(|(begin, end)| end.checked_sub(begin));
+        if self.reported_outcome == Some("Ok")
+            && self
+                .minimum_success_ns
+                .zip(elapsed_ns)
+                .is_some_and(|(minimum, elapsed)| elapsed < minimum)
+        {
+            // This slot produced no bytes and can serve a later scope.
+            COMPONENT_TIMING_RESERVED.fetch_sub(1, Ordering::Relaxed);
+            return;
+        }
+        use std::io::Write as _;
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "ROOT_COMPONENT_TIMING pid={} label={} phase={} sequence={} begin_ns={:?} end_ns={end_ns:?} elapsed_ns={elapsed_ns:?} reported_outcome={:?} marks={:?} record_cap=64",
+            std::process::id(),
+            self.label,
+            self.phase,
+            self.sequence,
+            self.begin_ns,
+            self.reported_outcome,
+            &self.marks[..self.used],
+        );
+        // A printed slot is never returned. At most 64 records are emitted
+        // in this process, including scopes that were already in flight.
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
+    let (trust, signed) = fixture();
+    let proof = VerifiedRootWriterProof::verify(signed.clone(), &trust).unwrap();
+    let cache = RootObservationCache::new("fixture-boot".into());
+    let origin = boottime_ns().unwrap();
+    let mut sample = observation(&signed);
+    sample.clock.anchor_boottime_ns = origin;
+    cache.accept(sample, origin, origin).unwrap();
+    // Same-UID/synthetic-proof component: an actual held pidfd is live, and
+    // only the original session's absolute end expires during cache admission.
+    // SAFETY: this process is live; pidfd_open returns a new owned descriptor.
+    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    assert!(fd >= 0);
+    // SAFETY: this syscall returned the exclusively owned test pidfd.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
+    let root = Arc::new(AsyncFd::new(pidfd).unwrap());
+    let end = origin.checked_add(200_000_000).unwrap();
+    let live = Arc::new(LiveRoot {
+        proof,
+        cache,
+        root,
+        end_boottime_ns: end,
+        phase: None,
+        active: AtomicBool::new(false),
+        consumers: Mutex::new(Vec::new()),
+        serial: tokio::sync::Semaphore::new(1),
+        refresh_failed: AtomicBool::new(false),
+    });
+    let mut waiting = None;
+    crate::root_observation_cache::tests::component_with_original_retained_lock(
+        &live.cache,
+        || {
+            let reader = Arc::clone(&live);
+            waiting = Some(std::thread::spawn(move || reader.current()));
+            crate::root_observation_cache::tests::component_wait_for_original_read_admission(
+                &live.cache,
+            );
+            while boottime_ns().unwrap() < end {
+                std::thread::yield_now();
+            }
+        },
+    );
+    assert!(matches!(
+        waiting.unwrap().join().unwrap(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+    let validated =
+        crate::root_observation_cache::tests::component_last_validated_read(&live.cache);
+    assert!(
+        validated >= end,
+        "cache validation did not cross the session end"
+    );
+    assert!(
+        validated - origin <= MAX_AGE_NS,
+        "the cache itself had already expired"
+    );
+    // The retained proof cannot authorize a new call after this original
+    // session end. This is a negative read, never a retry of an effect.
+    assert!(matches!(
+        live.cache.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+}

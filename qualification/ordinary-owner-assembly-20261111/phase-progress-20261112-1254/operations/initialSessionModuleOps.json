@@ -1,0 +1,30 @@
+{
+  "schema": "original-same-actor-phase-initial-cap-module-v1",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "preimage": {
+        "blob": "0f72a32402fa990f46912ddd95872111d0a4c369",
+        "bytes": 8487,
+        "sha256": "1433d1ceea83b19a42e89004f4eea47aadd46164dcd0d92e9a3836a4772e2d6d"
+      },
+      "postimage": {
+        "blob": "8778a2dd0e8402a8a8b38ea221afc6431963d328",
+        "bytes": 8622,
+        "sha256": "541ac23b5495efd1f393b0f0cc5cfac490278f92914276ec67bd2900a946c864"
+      },
+      "operations": [
+        {
+          "old_text": "pub use deployment::RootGenerationInitialDeploymentSessionV1;\npub use deployment::RootGenerationInitialDeploymentV1;\n\n#[path = \"authority_host_generation_initial_runtime.rs\"]\nmod runtime;\npub(super) use runtime::BoundInitial;\n",
+          "new_text": "pub use deployment::RootGenerationInitialDeploymentSessionV1;\npub use deployment::RootGenerationInitialDeploymentV1;\n\n\n#[path = \"authority_host_same_actor_initial_cap.rs\"]\nmod same_actor;\npub use same_actor::RootSameActorInitialEnrollmentCapabilityV1;\n\n#[path = \"authority_host_generation_initial_runtime.rs\"]\nmod runtime;\npub(super) use runtime::BoundInitial;\n"
+        }
+      ]
+    }
+  ],
+  "scope": "One module declaration and public reexport. Original Initial session body unchanged. Dependency: actual existing b4b39 Initial phase capability.",
+  "execution": {
+    "native": 0,
+    "checker": 0
+  }
+}

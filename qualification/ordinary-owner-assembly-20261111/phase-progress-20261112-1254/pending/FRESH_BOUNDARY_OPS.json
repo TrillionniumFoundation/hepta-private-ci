@@ -1,0 +1,203 @@
+{
+  "schema": "same-actor-original-fresh-caller-path-guards-v1",
+  "base": "9f3eb973ddac233359afefdf5b4bd0ba4dbffacf",
+  "file_count": 1,
+  "operation_count": 3,
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "preimage": {
+        "blob": "9f3eb973ddac233359afefdf5b4bd0ba4dbffacf",
+        "bytes": 719772,
+        "sha256": "d499f2b115a24be4a04fb491bf856fcf4b792aec7a2831eaa8220c8dfe320e11"
+      },
+      "postimage": {
+        "blob": "d4b4b5630bc13938ed25eb3743a0b3c457516b07",
+        "bytes": 722762,
+        "sha256": "eb423aeeabdf24c94327b93a29cdee3e3c96c34d546e61256c8aa7eb90e98fb5"
+      },
+      "operations": [
+        {
+          "old_text": "[[boundary]]\nid = \"root_prepared_fresh_session\"\nsymbol = \"PreparedHostAuthoritySession::prepare_fresh_from_registered\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_session.rs\"\ndefinition_markers = [\"pub async fn prepare_fresh_from_registered(\", \"open_registered_writer(&config, &registration, &owner_pidfd)?\", \"FreshHostCognitiveState::prepare(&registration.registered_identity)\", \"service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = [\"PreparedHostAuthoritySession::prepare_fresh_from_registered\",\"Some(profile), None\",\"prepared.launch_native_with_ready(&config, &registration, &profile, ready)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\"]\n\n",
+          "new_text": "[[boundary]]\nid = \"root_prepared_fresh_session\"\nsymbol = \"PreparedHostAuthoritySession::prepare_fresh_from_registered\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_session.rs\"\ndefinition_markers = [\"pub async fn prepare_fresh_from_registered(\", \"open_registered_writer(&config, &registration, &owner_pidfd)?\", \"FreshHostCognitiveState::prepare(&registration.registered_identity)\", \"service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\",\"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs\"]\ncaller_markers = [\"PreparedHostAuthoritySession::prepare_fresh_from_registered\"]\n\n"
+        },
+        {
+          "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\",\"--generation-initial-deployment\",\"--root-generation-initial-handoff-fd\",\"initial_deployment.is_some() != initial_handoff.is_some()\",\"initial and learned publication require separate original Root sessions\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"deployment.wait_and_register_initial(stop_ref)?\",\"initial_registered_binding\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"],[\"let registered = deployment.wait_and_register(stop_ref)?\",\"let stdout = std::io::stdout()\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\",\"registered?\"],[\"let initial_handoff =\\n            options.remove\",\"if (initial_deployment.is_some() || initial_handoff.is_some())\",\"if initial_deployment.is_some() != initial_handoff.is_some()\",\"if publication_deployment.is_some() != publication_handoff.is_some()\",\"let mut claimed =\",\"let initial_handoff = initial_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"send_root_generation_initial_handoff(\",\"if let Some(session) = initial_ready\",\"std::io::stdout().flush()?\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register_initial(stop_ref)?\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"initial_worker\",\"worker.join()\",\"served?\",\"initial_registered\"],[\"drop(stop)\",\"let registered = match worker\",\"worker\\n                        .join()\",\"let initial_registered = match initial_worker\",\"worker.join()\",\"served?\",\"if let Some(registered) = initial_registered\",\"registered?\",\"if let Some(registered) = registered\",\"registered?\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0\\n            .store(\",\"std::sync::atomic::Ordering::Release\"] }]\n",
+          "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\",\"--generation-initial-deployment\",\"--root-generation-initial-handoff-fd\",\"initial_deployment.is_some() != initial_handoff.is_some()\",\"initial and learned publication require separate original Root sessions\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"deployment.wait_and_register_initial(stop_ref)?\",\"initial_registered_binding\",\"PreparedHostAuthoritySession::prepare_fresh_from_registered\",\"Some(profile), None\",\"prepared.launch_native_with_ready(&config, &registration, &profile, ready)\",\"worker.join()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"],[\"let registered = deployment.wait_and_register(stop_ref)?\",\"let stdout = std::io::stdout()\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\",\"registered?\"],[\"let initial_handoff =\\n            options.remove\",\"if (initial_deployment.is_some() || initial_handoff.is_some())\",\"if initial_deployment.is_some() != initial_handoff.is_some()\",\"if publication_deployment.is_some() != publication_handoff.is_some()\",\"let mut claimed =\",\"let initial_handoff = initial_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"send_root_generation_initial_handoff(\",\"if let Some(session) = initial_ready\",\"std::io::stdout().flush()?\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register_initial(stop_ref)?\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"initial_worker\",\"worker.join()\",\"served?\",\"initial_registered\"],[\"drop(stop)\",\"let registered = match worker\",\"worker\\n                        .join()\",\"let initial_registered = match initial_worker\",\"worker.join()\",\"served?\",\"if let Some(registered) = initial_registered\",\"registered?\",\"if let Some(registered) = registered\",\"registered?\"],[\"fn main() -> Result<(), Box<dyn std::error::Error>> {\",\"PreparedHostAuthoritySession::prepare_fresh_from_registered(\",\"let served = match (native_profile, text) {\",\"(Some(profile), None) => {\",\"prepared.launch_native_with_ready(&config, &registration, &profile, ready)\",\"drop(stop);\",\"worker.join()\",\"served?;\",\"\\nstruct PublicationDeploymentStop<'a>\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0\\n            .store(\",\"std::sync::atomic::Ordering::Release\"] }]\n"
+        },
+        {
+          "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs\"\nrequired = [\"impl AgentdRootQ24ModelFactoryV1\",\"phase: RequiredSameActorPhaseChannel\",\"phase: Some(phase)\",\"files: (File, File)\"]\nforbidden = [\"Instant::now()\",\"Duration::from_secs(\",\"File::open\",\"SigningKey\",\"permit_all\"]\nrequired_function_order = [{ function = \"fn from_original_same_actor_handoff(\", sequence = [\"phase.failure_scope()\",\"phase.require_open().map_err(refused)?\",\"let (journal, witness) = files\",\"profile.require_files(&journal, &witness)?\",\"transport: Some(transport)\",\"next_request_id: 1\",\"profile,\",\"initial,\",\"scope,\",\"Generation::new(spawn_generation).map_err(refused)?\",\"files: Some((journal, witness))\",\"owner: None\",\"fenced: false\",\"phase: Some(phase)\",\"factory.exchange(Command::Observe).await?\",\"factory.require_original_phase()?\",\"closing.disarm()\",\"Ok(factory)\"] }, { function = \"fn original_phase_failure_scope(\", sequence = [\"self.phase\",\".as_ref()\",\".map(|phase: &RequiredSameActorPhaseChannel| phase.failure_scope())\"] }, { function = \"fn require_original_phase(\", sequence = [\"if let Some(phase) = &self.phase\",\"let phase: &RequiredSameActorPhaseChannel = phase\",\"phase.require_open().map_err(refused)?\",\"Ok(())\"] }]\n\n",
+          "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs\"\nrequired = [\"impl AgentdRootQ24ModelFactoryV1\",\"phase: RequiredSameActorPhaseChannel\",\"phase: Some(phase)\",\"files: (File, File)\"]\nforbidden = [\"Instant::now()\",\"Duration::from_secs(\",\"File::open\",\"SigningKey\",\"permit_all\"]\nrequired_function_order = [{ function = \"fn from_original_same_actor_handoff(\", sequence = [\"phase.failure_scope()\",\"phase.require_open().map_err(refused)?\",\"let (journal, witness) = files\",\"profile.require_files(&journal, &witness)?\",\"transport: Some(transport)\",\"next_request_id: 1\",\"profile,\",\"initial,\",\"scope,\",\"Generation::new(spawn_generation).map_err(refused)?\",\"files: Some((journal, witness))\",\"owner: None\",\"fenced: false\",\"phase: Some(phase)\",\"factory.exchange(Command::Observe).await?\",\"factory.require_original_phase()?\",\"closing.disarm()\",\"Ok(factory)\"] }, { function = \"fn original_phase_failure_scope(\", sequence = [\"self.phase\",\".as_ref()\",\".map(|phase: &RequiredSameActorPhaseChannel| phase.failure_scope())\"] }, { function = \"fn require_original_phase(\", sequence = [\"if let Some(phase) = &self.phase\",\"let phase: &RequiredSameActorPhaseChannel = phase\",\"phase.require_open().map_err(refused)?\",\"Ok(())\"] }]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs\"\nrequired = [\"pub struct PreparedRootSameActorQ24PhaseV1\",\"original: PreparedHostAuthoritySession,\",\"closing: CloseSameActorPhaseOnDrop,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\"]\nrequired_function_order = [\n  { function = \"fn open(\", sequence = [\"let config: HostAuthorityServiceConfig = read_root_json(config_file)?\",\"SameActorPhaseDeadline::at_original_service_start(\",\"std::time::Duration::from_millis(config.lifetime_ms)\",\"PreparedHostAuthoritySession::open(\",\"config_file, registration_file, owner_pidfd\",\"Self::capture_original_phase(original, config, deadline, current_directory, initial, model)\"] },\n  { function = \"fn prepare_fresh_from_registered(\", sequence = [\"let config: HostAuthorityServiceConfig = read_root_json(config_file)?\",\"SameActorPhaseDeadline::at_original_service_start(\",\"std::time::Duration::from_millis(config.lifetime_ms)\",\"PreparedHostAuthoritySession::prepare_fresh_from_registered(\",\"config_file, registration_file, owner_pidfd\",\").await?\",\"Self::capture_original_phase(original, config, deadline, current_directory, initial, model)\"] },\n  { function = \"fn capture_original_phase(\", sequence = [\"SameActorPhaseGate::from_original_deadline(deadline)?\",\"CloseSameActorPhaseOnDrop::new(&gate)\",\"serde_json::to_vec(&config)\",\"serde_json::to_vec(&original.config)\",\"original.learning.is_some()\",\"original.publication.is_some()\",\"original.initial_publication.is_some()\",\"original.root_admin.is_some()\",\"original.config.sockets.device_frontier.is_none()\",\"original.config.sockets.notes_frontier.is_none()\",\"gate.require_open()?\",\"original.service.bind_original_same_actor_phase_issuer(&gate)?\",\"original.enable_generation_initial(initial.clone())?\",\"original.service.with_initial_publication_context(\",\"gate.require_open()?\",\"root_end_boottime_ns: deadline.boottime_ns()\",\"OriginalPhaseRecord::reserve(\",\"Arc::clone(&current_directory), phase_identity.clone()\",\"seal_bytes(&encoded)?\",\"gate.require_open()?\",\"retained = Some((record, descriptor, sealed))\",\"gate.require_open()?\",\"scope_cap::ScopeRuntime::mint(descriptor.original.root.clone(), &gate)\",\"initial_capability.into_same_actor_phase(&gate, &current_directory)\",\"closing.disarm()\",\"let closing = CloseSameActorPhaseOnDrop::new(&gate)\",\"Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })\"] },\n  { function = \"fn serve_with_ready(\", sequence = [\"fn serve_with_ready(\",\"worker::serve_original_phase(self, ready)\"] },\n]\n\n"
+        }
+      ]
+    }
+  ],
+  "source_changes": 0,
+  "checker_changes": 0,
+  "authority_changes": 0,
+  "meaning": "Split path-specific caller guards without fabricating a native UI launch in the new same-Service phase caller. Old CLI retains every former caller marker as raw required text and gains their actual ordered-code sequence bounded by the unique Linux main signature and following declaration. Original definition/receiver/forbidden and all prior protected sequences remain unchanged. New phase wrapper has actual function-local authority/deadline/custody guards.",
+  "old_caller": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+  "new_actual_caller": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+  "old_caller_source": {
+    "blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+    "bytes": 23993,
+    "sha256": "728d5c50957034993558dcbb4c96579836da9fc1c47e621778698cf92b4ffe12"
+  },
+  "new_actual_caller_source": {
+    "file": "authority_host_same_actor_q24_phase.rs",
+    "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+    "bytes": 11161,
+    "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a"
+  },
+  "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "static_projection": {
+    "masked_bytes": 23993,
+    "main_start": 110,
+    "main_end": 22172,
+    "positions": [
+      {
+        "marker": "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+        "offset": 110
+      },
+      {
+        "marker": "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+        "offset": 12353
+      },
+      {
+        "marker": "let served = match (native_profile, text) {",
+        "offset": 20670
+      },
+      {
+        "marker": "(Some(profile), None) => {",
+        "offset": 20730
+      },
+      {
+        "marker": "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+        "offset": 20777
+      },
+      {
+        "marker": "drop(stop);",
+        "offset": 21246
+      },
+      {
+        "marker": "worker.join()",
+        "offset": 21657
+      },
+      {
+        "marker": "served?;",
+        "offset": 21849
+      },
+      {
+        "marker": "\nstruct PublicationDeploymentStop<'a>",
+        "offset": 22202
+      }
+    ],
+    "old_fn_main_count": 2,
+    "mask": "Literal JavaScript transcription of original _strip_rust_non_code/_looks_like_char_literal for this ASCII source, with no checker or Python execution. Platform cfg is retained; there are no #[cfg(test)] blocks in this bin.",
+    "main_end_inclusive": 22172
+  },
+  "new_phase_projection": {
+    "source": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+    "proofs": [
+      {
+        "function": "fn open(",
+        "start": 2337,
+        "end": 3109,
+        "marker_count": 6,
+        "positions": [
+          317,
+          411,
+          474,
+          563,
+          611,
+          676
+        ]
+      },
+      {
+        "function": "fn prepare_fresh_from_registered(",
+        "start": 3126,
+        "end": 3954,
+        "marker_count": 7,
+        "positions": [
+          342,
+          436,
+          499,
+          588,
+          661,
+          714,
+          732
+        ]
+      },
+      {
+        "function": "fn capture_original_phase(",
+        "start": 3961,
+        "end": 8631,
+        "marker_count": 27,
+        "positions": [
+          392,
+          473,
+          523,
+          593,
+          672,
+          715,
+          761,
+          815,
+          860,
+          925,
+          1104,
+          1134,
+          1260,
+          1355,
+          1509,
+          2712,
+          2806,
+          2856,
+          3536,
+          3575,
+          3613,
+          3718,
+          3933,
+          4085,
+          4488,
+          4514,
+          4575
+        ]
+      },
+      {
+        "function": "fn serve_with_ready(",
+        "start": 10663,
+        "end": 10803,
+        "marker_count": 2,
+        "positions": [
+          0,
+          94
+        ]
+      }
+    ]
+  },
+  "limitation": "Original required_function_order requires unique `fn name(`. The original bin has Linux and non-Linux main definitions and the checker keeps unknown platform cfgs. This adds required_order over a unique full signature and following declaration; the brace-range proof is a bounded static check, not a new checker function-scope feature. No Rust refactor, fake comment, Python/checker execution or receiver/caller exemption.",
+  "preservation": {
+    "boundaries_before": 524,
+    "boundaries_after": 524,
+    "protected_before": 374,
+    "protected_after": 375,
+    "old_caller_set_included": true,
+    "original_definition_receiver_forbidden_unchanged": true,
+    "old_raw_markers_all_required": true,
+    "all_old_required_order_and_function_order_preserved": true
+  },
+  "composition": "All three exact operations also replay uniquely over ee142aea0d277d77de6d3e9cda62259a3b393f11 append-only Work metadata. This package does not include the later actual caller union or final inventory. No whole-phase closure is claimed.",
+  "verification": {
+    "forward_reverse_unique": true,
+    "post_create_get_exact": true,
+    "package_initial_create_get_exact": true
+  },
+  "execution": {
+    "native": false,
+    "checker": false,
+    "tests": false,
+    "refs_changed": false
+  },
+  "metadata_supersedes": "1af6c0fc7e18f76cb06ad4c4d6b36902eed37b3c"
+}

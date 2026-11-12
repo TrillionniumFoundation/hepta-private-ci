@@ -1,0 +1,426 @@
+//! Read-only writer proof/observation lane. Registration is root-only and the
+//! original registry state and issuer fences cover every response, including I/O.
+//! Only metadata observations share the state fence; effect entry stays serial.
+
+use super::*;
+use crate::HOST_AUTHORITY_OBSERVATION_V2;
+use crate::HOST_WRITER_AUTHORIZATION_V1;
+use crate::HostAuthorityObservationResponseV2;
+use crate::HostAuthorityWriterObservationV2;
+use crate::HostAuthorityWriterRegistration;
+use crate::HostSignedWriterAuthorizationV1;
+use crate::HostWriterAuthorizationReadResponseV1;
+use crate::deployment_issuer::OriginalHostWriterObservationV1;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseObservationV1;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
+
+#[path = "authority_host_bootstrap_capture.rs"]
+mod bootstrap;
+
+#[path = "authority_host_generation_initial_context.rs"]
+mod initial_context;
+
+#[path = "authority_host_learning_registration.rs"]
+mod learning_registration;
+pub use learning_registration::HostAuthorityLearningRegistrationV1;
+pub(crate) use learning_registration::RegisteredHostLearningCheckpointV1;
+
+#[path = "authority_host_fresh.rs"]
+mod fresh;
+pub use fresh::FreshHostCognitiveState;
+
+#[path = "authority_host_fresh_publish.rs"]
+mod fresh_publish;
+
+#[path = "authority_host_material_recovery.rs"]
+mod material_recovery;
+
+pub(super) struct RegisteredWriter {
+    pub(super) registration: HostAuthorityWriterRegistration,
+    leases: AuthorityLeaseVerifier,
+    pub(super) proof: HostSignedWriterAuthorizationV1,
+}
+
+impl RegisteredWriter {
+    pub(super) fn close_unsigned_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        namespace: &str,
+        request_id: &str,
+        body: crate::AuthBusTextBody,
+    ) -> io::Result<crate::text_session::TextUnsignedClosure> {
+        issuer.registered_writer_close_unsigned_text(
+            identity,
+            namespace,
+            request_id,
+            body,
+            crate::deployment_issuer::RegisteredTextWriter {
+                registration: &self.registration,
+                leases: &self.leases,
+                proof: &self.proof,
+            },
+        )
+    }
+
+    pub(super) fn retire_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request_id: &str,
+        proof: crate::deployment_issuer::VerifiedTextRetirement,
+    ) -> io::Result<()> {
+        issuer.retire_registered_text(
+            identity,
+            request_id,
+            proof,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
+    pub(super) fn text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request_id: &str,
+        body: crate::AuthBusTextBody,
+        operation: crate::TextIssuerOperation,
+    ) -> io::Result<crate::AuthBusTextIngress> {
+        issuer.registered_writer_text(
+            identity,
+            request_id,
+            body,
+            operation,
+            crate::deployment_issuer::RegisteredTextWriter {
+                registration: &self.registration,
+                leases: &self.leases,
+                proof: &self.proof,
+            },
+        )
+    }
+
+    pub(super) fn matches_notes(&self, notes: &crate::RootNotesGrantAdmission) -> bool {
+        notes.matches_writer(&self.registration, &self.proof)
+    }
+
+    pub(super) fn human_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request: crate::deployment_issuer::RootHumanTextRequest<'_>,
+    ) -> io::Result<crate::AuthBusTextIngress> {
+        issuer.registered_writer_human_text(
+            identity,
+            request,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
+    pub(super) fn exchange_consumer(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostConsumerFrontier,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if after != before {
+                    return Err(io::Error::other(
+                        "issuer head changed during consumer exchange",
+                    ));
+                }
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostCognitiveCheckpoint,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let response = backend.exchange(bytes).map_err(io::Error::other)?;
+                let head = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_learning_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::LearningIterationCheckpointOwnerV1,
+        bytes: &[u8],
+        next_request_id: &mut u64,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &before, now)?;
+                let response = backend
+                    .exchange_learning_checkpoint(bytes, next_request_id)
+                    .map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if before != after {
+                    return Err(io::Error::other(
+                        "issuer head changed during learning checkpoint",
+                    ));
+                }
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_consumer_in_same_actor_phase(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostConsumerFrontier,
+        bytes: &[u8],
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                phase.require_open()?;
+                let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if after != before {
+                    return Err(io::Error::other(
+                        "issuer head changed during consumer exchange",
+                    ));
+                }
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_checkpoint_in_same_actor_phase(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostCognitiveCheckpoint,
+        bytes: &[u8],
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                phase.require_open()?;
+                let response = backend.exchange(bytes).map_err(io::Error::other)?;
+                let head = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_same_actor_learning_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::LearningIterationCheckpointOwnerV1,
+        bytes: &[u8],
+        next_request_id: &mut u64,
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &before, now)?;
+                phase.require_open()?;
+                let response = backend
+                    .exchange_learning_checkpoint(bytes, next_request_id)
+                    .map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if before != after {
+                    return Err(io::Error::other(
+                        "issuer head changed during learning checkpoint",
+                    ));
+                }
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn open(
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        registration: HostAuthorityWriterRegistration,
+        leases: AuthorityLeaseVerifier,
+    ) -> io::Result<Self> {
+        if registration.registered_agent_id != identity.agent_id
+            || registration.spawn_generation != identity.spawn_generation
+        {
+            return Err(io::Error::other("registered writer identity mismatch"));
+        }
+        let proof = registration.with_live(&leases, |_| {
+            issuer.retained_writer_authorization(&registration)
+        })?;
+        Ok(Self {
+            registration,
+            leases,
+            proof,
+        })
+    }
+
+    pub(super) fn sign_objective(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        body: AuthBusObjectiveBody,
+    ) -> io::Result<AuthBusObjectiveIngress> {
+        issuer.sign_registered_writer_objective(
+            identity,
+            body,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
+    pub(super) fn observe(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        identity: &AgentdIdentity,
+        request: &ObservationRequest,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        match (request.schema_version, request.operation.as_str()) {
+            (1, HOST_WRITER_AUTHORIZATION_V1) | (2, HOST_AUTHORITY_OBSERVATION_V2) => {}
+            _ => return Err(HostIssuerTransportError::InvalidRequest),
+        }
+        (|| -> io::Result<Vec<u8>> {
+            self.registration.validate()?;
+            let lease: AuthorityLeaseObservationV1<'_> = self
+                .leases
+                .observe_original_lease(&self.registration.authority_lease)
+                .map_err(io::Error::other)?;
+            let retained: OriginalHostWriterObservationV1<'_> =
+                issuer.observe_original_writer_state(&self.registration)?;
+            let proof = retained.original_writer_proof().clone();
+            if proof != self.proof {
+                return Err(io::Error::other("retained writer proof changed"));
+            }
+            let revocations = retained.original_writer_revocations().clone();
+            // Both original owner fences remain held. All blocking owner reads
+            // precede the actual final projection and lease expiry check.
+            // Do not do another clock-writing verification after this projection.
+            let observation = clock.refresh_projection().map_err(io::Error::other)?;
+            validate_observation_lease(
+                &self.registration.authority_lease,
+                &revocations,
+                observation.observed_unix_ms,
+            )?;
+            let response = if request.operation == HOST_WRITER_AUTHORIZATION_V1 {
+                encode_bounded(
+                    &HostWriterAuthorizationReadResponseV1 {
+                        schema_version: 1,
+                        operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+                        proof,
+                    },
+                    16 * 1024,
+                )
+                .map_err(io::Error::other)?
+            } else {
+                encode_bounded(
+                    &HostAuthorityObservationResponseV2 {
+                        schema_version: 2,
+                        operation: HOST_AUTHORITY_OBSERVATION_V2.into(),
+                        authority_epoch: revocations.authority_epoch,
+                        revocations,
+                        clock: observation.projection,
+                        observed_unix_ms: observation.observed_unix_ms,
+                        registered_agent_id: identity.agent_id.clone(),
+                        spawn_generation: identity.spawn_generation,
+                        writer: HostAuthorityWriterObservationV2 {
+                            authority_lease: self.registration.authority_lease.clone(),
+                            store_revision: lease.original_store_revision(),
+                            authority_lease_sha256: proof.claims.authority_lease_sha256.clone(),
+                            owner_epoch: self.registration.owner_epoch,
+                            local_lease_id: self.registration.local_lease_id.clone(),
+                            local_lease_generation: self.registration.local_lease_generation,
+                            writer_authorization_sha256: proof.sha256()?,
+                        },
+                    },
+                    16 * 1024,
+                )
+                .map_err(io::Error::other)?
+            };
+            drop(retained);
+            lease
+                .finish_original_observation()
+                .map_err(io::Error::other)?;
+            Ok(response)
+        })()
+        .map_err(unavailable)
+    }
+}

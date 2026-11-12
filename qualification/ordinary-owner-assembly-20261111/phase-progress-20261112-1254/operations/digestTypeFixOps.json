@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "kind": "exact-source-type-correction",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "scope": "Future same-actor phase sources only; four expressions in three already-created unpublished phase sources.",
+  "diagnosis": "HostSignedWriterAuthorizationV1::sha256 returns serde_json::Result<contracts::Sha256Digest>, which exposes as_str but no into_array. Preserve the exact digest string, strictly parse the existing types::Digest32, then use its original into_array. A parse failure remains a refusal.",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_wire.rs",
+      "blob": "6c03fbfe662d087d394e999b01cde5a60e4bea13"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/receipt.rs",
+      "blob": "bc8bb81d4e29d54877fb406899aa9269a924c444"
+    }
+  ],
+  "operation_count": 4,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "pre": {
+        "blob": "641dc65944960168af3c56a84e2df5bce12902e2",
+        "bytes": 8726,
+        "sha256": "7303415dab4e7b9290364441e7138869d8f2cb82278e6164fcf6222f2f78d4e2"
+      },
+      "post": {
+        "blob": "2e8504b1d91a0c0ebdfbcc8f913306c4ea4e3d25",
+        "bytes": 8908,
+        "sha256": "6d52f427756e9c05a6c94712a378d62ed7de2d4f0c55c9481d7eb192deea0679"
+      },
+      "operations": [
+        {
+          "old_text": "self.context.bootstrap().writer_proof.sha256()?.into_array(),",
+          "new_text": "self.context.bootstrap().writer_proof.sha256()?.as_str()\n                .parse::<codex_hepta_types::Digest32>()\n                .map_err(|error| phase_refused(&format!(\"original writer proof digest: {error}\")))?\n                .into_array(),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "pre": {
+        "blob": "191dcca5820abd90dbdb918a7d4a92d950c50285",
+        "bytes": 9311,
+        "sha256": "cade8344b9f99a1b21196ca18354c0d98996470dc6609baec0af7696cdc5ddbc"
+      },
+      "post": {
+        "blob": "5bed2357d051bd8d687119f9b6bf040e5469011c",
+        "bytes": 9481,
+        "sha256": "aadeeaa3feeef9f3c4770f6ac995e371a89e68298e2b7d2d1f2371775edeaf84"
+      },
+      "operations": [
+        {
+          "old_text": "context.identity(), context.bootstrap().writer_proof.sha256()?.into_array(),",
+          "new_text": "context.identity(), context.bootstrap().writer_proof.sha256()?.as_str()\n                    .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),"
+        },
+        {
+          "old_text": "self.context.bootstrap().writer_proof.sha256()?.into_array(),",
+          "new_text": "self.context.bootstrap().writer_proof.sha256()?.as_str()\n                .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "blob": "8ea3890ea7843db319a6b43ed98b64f2abcbde12",
+        "bytes": 19706,
+        "sha256": "e5a203454b1bccaa51b4f7d3e10661595b8162e82e60d51dfaf2f288ca016b6a"
+      },
+      "post": {
+        "blob": "54fa42aa701aff6fee87d786e7a0a4816d258953",
+        "bytes": 19771,
+        "sha256": "6258616f68acac6bb81f09f4e88bf1cb2f3de36c3f6027824c72a3aed56f35d1"
+      },
+      "operations": [
+        {
+          "old_text": "self.bootstrap.writer_proof.sha256()?.into_array(),",
+          "new_text": "self.bootstrap.writer_proof.sha256()?.as_str()\n                .parse::<Digest32>().map_err(protocol)?.into_array(),"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "unique_forward_reverse": true,
+    "own_available_phase_drafts_scanned": 54,
+    "remaining_direct_sha256_into_array": 0,
+    "native": false,
+    "fmt": false,
+    "checker": false,
+    "refs": false
+  },
+  "limitations": [
+    "Corrects a static type defect, not a runtime outcome.",
+    "Old local reviews of the affected three postimages are historical and do not establish compilation.",
+    "No new proof, authority, digest algorithm, permission, bound, or source callback; no fallback parse."
+  ]
+}

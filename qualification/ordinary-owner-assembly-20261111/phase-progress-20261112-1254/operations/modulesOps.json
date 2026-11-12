@@ -1,0 +1,180 @@
+{
+  "schema": "original-same-actor-phase-module-closure-v1",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "source_count": 8,
+  "operation_count": 11,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "preimage": {
+        "blob": "3d7f65f119cc3aebb77fb8dc6931711f800daf50",
+        "bytes": 20571,
+        "sha256": "195cefae347d293ff0744bbb3400ccf5a88c004713ff3b20b5b65f2f103fd414"
+      },
+      "postimage": {
+        "blob": "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01",
+        "bytes": 21205,
+        "sha256": "9eb0a3417edfb529b7f0bdba7143e52de2f08228fccda032031ddb6270f0faee"
+      },
+      "operations": [
+        {
+          "old_text": "#[path = \"authority_host_learning_session.rs\"]\nmod learning;\n",
+          "new_text": "#[path = \"authority_host_same_actor_q24_phase.rs\"]\nmod same_actor_phase;\npub use same_actor_phase::PreparedRootSameActorQ24PhaseV1;\npub use same_actor_phase::RootSameActorPhaseStartV1;\npub use same_actor_phase::RootSameActorScopeEnrollmentCapabilityV1;\npub use same_actor_phase::RootSameActorScopedEnrollmentV1;\npub use same_actor_phase::RootSameActorHostInputsV1;\npub use same_actor_phase::RootSameActorHostCommandV1;\npub use same_actor_phase::RootSameActorHostAcknowledgementV1;\npub use generation_initial::RootSameActorInitialEnrollmentCapabilityV1;\npub use generation_publication::RootSameActorPublicationEnrollmentCapabilityV1;\n\n#[path = \"authority_host_learning_session.rs\"]\nmod learning;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "preimage": {
+        "blob": "1b9d802c993b3b52df72a130975c214a31c18f2d",
+        "bytes": 19430,
+        "sha256": "9ab4153a38dbcb101c4286d6f976917e1e9f6ad220cd689b8026060b0e121e6f"
+      },
+      "postimage": {
+        "blob": "d36cb92a2aba3f78fffa98874e6f174a1d275b26",
+        "bytes": 19901,
+        "sha256": "4fff0738c309e87e286968845246df30fc877027ff50706a0eb98a9584cabcdb"
+      },
+      "operations": [
+        {
+          "old_text": "pub use session::PreparedHostAuthoritySession;\n",
+          "new_text": "pub use session::PreparedHostAuthoritySession;\npub use session::PreparedRootSameActorQ24PhaseV1;\npub use session::RootSameActorPhaseStartV1;\npub use session::RootSameActorScopeEnrollmentCapabilityV1;\npub use session::RootSameActorScopedEnrollmentV1;\npub use session::RootSameActorHostInputsV1;\npub use session::RootSameActorHostCommandV1;\npub use session::RootSameActorHostAcknowledgementV1;\npub use session::RootSameActorInitialEnrollmentCapabilityV1;\npub use session::RootSameActorPublicationEnrollmentCapabilityV1;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "preimage": {
+        "blob": "bf8c26ce91aa3ac517fc883e24d9be86b08dac1a",
+        "bytes": 23282,
+        "sha256": "5dfce4e6265be61d99b6fe4009f1750ad8b234019bff243ef7a9293f36927b3b"
+      },
+      "postimage": {
+        "blob": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+        "bytes": 23362,
+        "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+      },
+      "operations": [
+        {
+          "old_text": "#[path = \"authority_host_writer.rs\"]\nmod writer;\n",
+          "new_text": "#[path = \"authority_host_same_actor_q24_phase_lanes.rs\"]\nmod same_actor_phase;\n\n#[path = \"authority_host_writer.rs\"]\nmod writer;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "preimage": {
+        "blob": "e7010b23dde46c73398082d038bae73e45e3716e",
+        "bytes": 10513,
+        "sha256": "7776e029bf05e0b5f0fe2c3dd75d62e8326789105d348855a0e748d7a921950b"
+      },
+      "postimage": {
+        "blob": "547aa280219dba09d1a7f5eeea91319db375c942",
+        "bytes": 10648,
+        "sha256": "c37a7693572bbe7a6b3e7e311018041f609bcd4a84b7cd116b0d0c0a764b9d84"
+      },
+      "operations": [
+        {
+          "old_text": "#[path = \"authority_host_generation_initial_enrollment.rs\"]\nmod enrollment;\n",
+          "new_text": "#[path = \"authority_host_generation_initial_enrollment.rs\"]\nmod enrollment;\n#[path = \"authority_host_generation_initial_phase.rs\"]\nmod same_actor_phase;\npub(crate) use same_actor_phase::OriginalSameActorPhaseA;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "preimage": {
+        "blob": "7560be6c1171f4010352867346ff6f49dd15facd",
+        "bytes": 10161,
+        "sha256": "86d46549626f14ac146bbef0dacd35158883e85aa42d55bd847479abf7222374"
+      },
+      "postimage": {
+        "blob": "efa2a4163b9c685f217b264a966c6c2cd666b1bb",
+        "bytes": 10429,
+        "sha256": "8b3251501e400edff3af9a98b17112b654e3b3fb9149f482d3ad701147ef9d66"
+      },
+      "operations": [
+        {
+          "old_text": "#[path = \"root_production_writer_handoff.rs\"]\nmod writer;\n",
+          "new_text": "#[path = \"root_production_same_actor_phase_handoff.rs\"]\npub(crate) mod same_actor_phase;\npub use same_actor_phase::RootSameActorPhaseOfferV1;\npub use same_actor_phase::send_root_same_actor_phase_handoff;\npub use same_actor_phase::send_root_same_actor_scoped_handoff;\n\n#[path = \"root_production_writer_handoff.rs\"]\nmod writer;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "preimage": {
+        "blob": "14971bfa8f1fb0963c8dcebf19b83158ee74cdde",
+        "bytes": 4921,
+        "sha256": "598e52476d4a39ecbe9e435127d3f4823650491f9a2d5d820f1a67e34e0cb4a1"
+      },
+      "postimage": {
+        "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "bytes": 5069,
+        "sha256": "fa0fdbc36f92230cf5bd20a59fb94e8f124289efe503dbffb94b26be95101419"
+      },
+      "operations": [
+        {
+          "old_text": "pub use runtime::CircuitTaskRuntimeBootstrapV1;\n",
+          "new_text": "pub use runtime::CircuitTaskRuntimeBootstrapV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::SameActorTaskAdmission;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::SameActorTaskRoute;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "preimage": {
+        "blob": "eccc3de46f610576ee47b072da10d0f53daf5739",
+        "bytes": 7865,
+        "sha256": "4ee9b0ff4a842f3867ba65ebee6e83eea9ad33389685efbcf6ddc84e1cf35161"
+      },
+      "postimage": {
+        "blob": "2bde009187e2f4e82e7e8c85d4e1f21dec502332",
+        "bytes": 7947,
+        "sha256": "b4ba6c496d2cba51bc7327a7ad48112e65187f717db05f78c1e5704f8514cfb4"
+      },
+      "operations": [
+        {
+          "old_text": "pub use learning::AgentdQ24LearningTaskRuntimeV1;\n",
+          "new_text": "pub use learning::AgentdQ24LearningTaskRuntimeV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use learning::OriginalSameActorATaskParts;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "preimage": {
+        "blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+        "bytes": 63786,
+        "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+      },
+      "postimage": {
+        "blob": "a78c5761a53cc1687c7261515afb42d49e7b112c",
+        "bytes": 66635,
+        "sha256": "bea506605caa6420115f38271c0ab65aeaba3e440844b7b2c676669640799a7e"
+      },
+      "operations": [
+        {
+          "old_text": "#[cfg(target_os = \"linux\")]\nmod authority_host_service;\n",
+          "new_text": "#[cfg(target_os = \"linux\")]\nmod authority_host_service;\n#[cfg(target_os = \"linux\")]\nmod authority_host_same_actor_q24_phase_join;\n#[cfg(target_os = \"linux\")]\nmod authority_host_same_actor_q24_phase_namespace;\n#[cfg(target_os = \"linux\")]\nmod authority_host_same_actor_q24_phase_publication;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_gate;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_protocol;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_record;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_join_client;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_learning;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase;\n"
+        },
+        {
+          "old_text": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedHostAuthoritySession;\n",
+          "new_text": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedHostAuthoritySession;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedRootSameActorQ24PhaseV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorPhaseStartV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorScopeEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorScopedEnrollmentV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorHostInputsV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorHostCommandV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorHostAcknowledgementV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorInitialEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootSameActorPublicationEnrollmentCapabilityV1;\n"
+        },
+        {
+          "old_text": "#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_q24_model_factory_handoff;\n",
+          "new_text": "#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_q24_model_factory_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::RootSameActorPhaseOfferV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_same_actor_phase_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_same_actor_scoped_handoff;\n"
+        },
+        {
+          "old_text": "#[cfg(target_os = \"linux\")]\npub use production_launcher::AgentdProductionStartup;\n",
+          "new_text": "#[cfg(target_os = \"linux\")]\npub use production_launcher::AgentdProductionStartup;\n#[cfg(target_os = \"linux\")]\npub use production_launcher::AgentdOriginalSameActorPhaseStartupV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorATaskInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorBusinessInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorCompletedAInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorLearningInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorArtifactInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorCInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorCOutcomeInputsV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorPhaseCommandV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorPhaseEventV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::OriginalSameActorPhaseHostV1;\n#[cfg(target_os = \"linux\")]\npub use same_actor_q24_phase::original_same_actor_phase_host_channel_v1;\n"
+        }
+      ]
+    }
+  ],
+  "scope": "Only module declarations and type/API reexports. Existing function bodies and field visibility remain unchanged. Platform-specific root surfaces remain under original Linux cfg.",
+  "dependencies": "Actual previously frozen Root/daemon/queue/Work/Startup phase source bodies. Full caller metadata is a separate still-pending closure; these declarations do not assert compilation or business acceptance.",
+  "execution": {
+    "native": 0,
+    "checker": 0,
+    "business": 0,
+    "refs_changed": 0
+  }
+}
