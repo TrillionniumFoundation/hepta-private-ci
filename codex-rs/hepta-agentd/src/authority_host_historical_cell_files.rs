@@ -94,7 +94,7 @@ impl OriginalCellFiles {
     /// Called before Root acknowledges Initial enrollment. An empty original
     /// Cell journal and an existing empty witness are observed twice; no owner
     /// is initialized, advanced or repaired by this read.
-    pub(super) fn require_original_cell_baseline(&self) -> io::Result<()> {
+    pub(crate) fn require_original_cell_baseline(&self) -> io::Result<()> {
         original_root()?;
         for _ in 0..2 {
             self.require_original_files()?;
@@ -118,6 +118,25 @@ impl OriginalCellFiles {
             self.require_original_files()?;
         }
         Ok(())
+    }
+
+    /// Data-only read of the actual Cell for the separately registered
+    /// successor. The Root publication caller supplies its complete context.
+    pub(crate) fn read_original_successor_cell(
+        &self,
+        definition: &CellDefinitionV1,
+        source: &CircuitTaskSourceInputV1,
+        publication: &crate::CircuitTaskSourcePublicationV1,
+        target: &CellGenerationOwnerBindingV1,
+    ) -> io::Result<(JournalAnchor, CellDecisionReceiptV1)> {
+        let before = self.read_original_cell_data(definition, source, publication, target)?;
+        let after = self.read_original_cell_data(definition, source, publication, target)?;
+        if before != after {
+            return Err(io::Error::other(
+                "original successor Cell changed during readback",
+            ));
+        }
+        Ok((after.anchor, after.decision))
     }
 
     pub(super) fn observe_original_cell(
