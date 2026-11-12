@@ -191,7 +191,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
             let mut state = match self.state.try_lock() {
                 Ok(state) => state,
                 Err(std::sync::TryLockError::WouldBlock) => {
-                    return self.encode_response(request, wire::OriginalResult::Busy, started, None);
+                    return self.encode_response(
+                        request,
+                        wire::OriginalResult::Busy,
+                        started,
+                        None,
+                    );
                 }
                 Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
             };
