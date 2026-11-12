@@ -1,0 +1,81 @@
+{
+  "source": "a512082999b005395c3caf651bd2f75396222872",
+  "tree": "452f6e273553c417080753d7f5e2fd878f473e6e",
+  "source_before_after_equal_clean": true,
+  "source_change": "7a8 plus only original 5f614f84 one-line materializer visibility fix",
+  "bundle_prerequisite": "7a8cc3c8c473b623a12667f49750c2ee5a46ea14",
+  "scope": "required same-source helper Cargo build only",
+  "outer_exit": 1,
+  "cargo_process_exit": -9,
+  "cargo_finished": null,
+  "elapsed_seconds": 95.85566569200091,
+  "actual_error": "helper manifest records Cargo build process killed by SIGKILL; no rustc signal diagnostic or fresh type errors in stderr",
+  "tests": 0,
+  "junit": 0,
+  "profile_override": null,
+  "cargo_build_jobs": 1,
+  "cause_oom_or_enospc_proven": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 91227,
+    "sha256": "f3e9435718ff60cd1365f07296c80413349cbcbe4587cb5dd9ef061960f385ad",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "helper/build.log",
+      "bytes": 212,
+      "sha256": "a58e0ecd6eb897eec8547c3f86015409fbc8a186fe64d4dd6871b6a31d95dcc9"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1101369,
+      "sha256": "b00992e4be45f639f3d93c4783b47c9d825b8db80d5941bd2b49ed1c741f8d58"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 23003,
+      "sha256": "68a93903daef15d6a5d9b196ed3f78c0f67c17729f1ebf5023f94fa4f789a2c4"
+    },
+    {
+      "path": "helper/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "helper/helpers/manifest.json",
+      "bytes": 1230,
+      "sha256": "28dc04cf9857a79a31ecf42fbdacdc1052aef4574bc0db524bf918095a1cc4e2"
+    },
+    {
+      "path": "helper/run.json",
+      "bytes": 2393,
+      "sha256": "bc6c81330118de3b09dcfc4cdfcbf41d517b10ee770ad78c7e63eb081ff68505"
+    },
+    {
+      "path": "run_roota512_helpers.py",
+      "bytes": 3373,
+      "sha256": "c524c90a952522af2955a8dbcf87c436ffbc822495ba3a234a99f5f4f067c514"
+    },
+    {
+      "path": "root-a5120829-helper-source.bundle",
+      "bytes": 760,
+      "sha256": "a5170e11b7113a3047fd91203dc295b6c6b62a771a0e613480c562e8ad143d41"
+    },
+    {
+      "path": "completed-a512-incremental-retirement.json",
+      "bytes": 48153,
+      "sha256": "4fd27e79da8123769644c5e3029e512ad0a1f455c005f2d1b2a85a68b0914732"
+    },
+    {
+      "path": "retire_completed_a512_incremental.py",
+      "bytes": 3169,
+      "sha256": "9407ffeeba56249be06a88685479ac9c54b43af6ab43c0fa9cede908ff40df0d"
+    }
+  ]
+}
