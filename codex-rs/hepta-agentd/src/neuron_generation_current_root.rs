@@ -11,8 +11,7 @@ impl NeuronGenerationCurrentOwnerV1 {
         &self,
         original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
     ) -> Result<(), AgentdError> {
-        self.store
-            .require_original_root_historical_receipt(original)
+        store::CurrentStore::require_original_root_historical_receipt(&self.store, original)
     }
 
     pub(crate) fn original_broker_head(&self) -> Result<CurrentHead, AgentdError> {
