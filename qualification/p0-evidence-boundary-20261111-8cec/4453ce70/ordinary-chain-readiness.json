@@ -1,0 +1,174 @@
+{
+  "schema": "hepta-ordinary-chain-readiness-audit-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "recorded_at_utc": "2026-11-12 01:09:21 UTC",
+  "method": "Read-only exact-commit source inspection and full codex-rs Git text search. This is implementation-readiness analysis, not runtime or scientific evidence.",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob_sha": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/main.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+      "blob_sha": "6003d3506f6780c0b17559ba75aa3b38275a1d84",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "blob_sha": "37ca20950ed899189f0d059b297270036a8466a8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/objective_submission.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "blob_sha": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/circuit_task_source_codec.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+      "blob_sha": "b568f0c6a6403b797a97a130920e2c6ba2211732",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "blob_sha": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "blob_sha": "189eb1d1b352aea86ee195fdf4e6df6efff51b44",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-intelligence/src/outcome_credit_v2.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "blob_sha": "3806529bc4a51d336e495934bb31cf3c28144b18",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4453ce7089168c583553c434ce1bee92e209f8dd/codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+    }
+  ],
+  "original_search": {
+    "learning_assembly_and_capture": {
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "capture_original|receive_q24_learning|assemble_q24_learning",
+        "4453ce7089168c583553c434ce1bee92e209f8dd",
+        "--",
+        "codex-rs"
+      ],
+      "exit_code": 0,
+      "stdout": "4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner_tests.rs:53:    let phase = Phase::capture_original(\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs:18:    pub fn capture_original(\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-agentd/src/production_launcher.rs:157:    pub async fn receive_q24_learning(\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-agentd/src/production_launcher.rs:175:        let (launch, config, handle, owners) = launch.assemble_q24_learning(config, inputs).await?;\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-agentd/src/production_launcher.rs:268:    pub async fn assemble_q24_learning(\n",
+      "stderr": ""
+    },
+    "observed_outcome_callers": {
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "append_observed_outcome_v2",
+        "4453ce7089168c583553c434ce1bee92e209f8dd",
+        "--",
+        "codex-rs"
+      ],
+      "exit_code": 0,
+      "stdout": "4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/generation_episode.rs:26:use crate::append_observed_outcome_v2;\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/generation_episode.rs:220:    append_observed_outcome_v2(ledger, request, now).map_err(GenerationEpisodeErrorV1::Outcome)\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/lib.rs:67:pub use outcome_credit_v2::append_observed_outcome_v2;\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/outcome_credit_preflight_tests.rs:167:    append_observed_outcome_v2(&mut writer, corrected, /*now*/ 50).expect(\"correction\");\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/outcome_credit_v2.rs:82:pub fn append_observed_outcome_v2(\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/outcome_credit_v2.rs:124:    let outcome_receipt = append_observed_outcome_v2(ledger, request.outcome, now)?;\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/outcome_credit_v2.rs:564:            append_observed_outcome_v2(&mut writer, initial_request, 50).expect(\"initial outcome\");\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-intelligence/src/outcome_credit_v2.rs:653:            append_observed_outcome_v2(&mut writer, observed, 50),\n4453ce7089168c583553c434ce1bee92e209f8dd:codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md:45:| source-composed terminal Outcome/correction/CreditBatch caller | `append_observed_outcome_v2`, `append_outcome_credit_v2` | `../hepta-intelligence/src/outcome_credit_v2.rs` | implemented; live daemon binding pending |\n",
+      "stderr": ""
+    },
+    "source_tree": {
+      "command": [
+        "git",
+        "rev-parse",
+        "4453ce7089168c583553c434ce1bee92e209f8dd^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "28269245f5ef63c5395143b2aa1a63c184676c33\n",
+      "stderr": ""
+    }
+  },
+  "findings": [
+    {
+      "id": "binary_startup",
+      "status": "NOT_ASSEMBLED",
+      "evidence_paths": [
+        "codex-rs/hepta-agentd/src/main.rs",
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "observed": "The production binary invokes startup.receive(); receiving learning establishes checkpoint access only and still requires real stage owners and pinned evidence trust."
+    },
+    {
+      "id": "original_dataset_capture",
+      "status": "NO_PRODUCT_CALLER_OBSERVED",
+      "evidence_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+      ],
+      "observed": "Git search finds capture_original only at its definition and a freeze-owner test. It requires the original source readback and committed Cell owner, not a caller-created input/target."
+    },
+    {
+      "id": "notes_circuit_route",
+      "status": "NOT_COMPOSED",
+      "evidence_paths": [
+        "codex-rs/hepta-agentd/src/objective_submission.rs"
+      ],
+      "observed": "Full execution returns from Circuit before literal Notes; finite Notes rejects circuit_task_enabled. Existing Notes execution is not by itself the Q24 sealed task source."
+    },
+    {
+      "id": "q24_projection",
+      "status": "RESTRICTED_SINGLE_FEATURE_SOURCE",
+      "evidence_paths": [
+        "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+      ],
+      "observed": "Source configuration restricts Compute/Decide to entry, permits only entry-origin edges with no feedback, and rejects Subcircuit/Join. Dataset projection requires exact source publication support, independent Terminal outcome, unit profile and HQ24I001 input. These checks must not be relaxed to rename a Notes receipt as eligible evidence."
+    },
+    {
+      "id": "independent_outcome",
+      "status": "NOTES_BRIDGE_NOT_ESTABLISHED",
+      "evidence_paths": [
+        "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+      ],
+      "observed": "append_observed_outcome_v2 verifies active run/episode Decision and appends independently authenticated Outcome. Notes readback returns retained operation/receipt and document facts; it does not supply the independent signed Outcome or utility contract. Exact-symbol search is scoped evidence, not a whole-program type proof."
+    },
+    {
+      "id": "full_cost",
+      "status": "INCOMPLETE_FOR_REQUESTED_ESTIMAND",
+      "evidence_paths": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+      ],
+      "observed": "TaskLedgersBeforeFinalHoldout explicitly excludes subsequent holdout estimator, signature verification and publication overhead. Existing totals alone do not establish full amortized net benefit."
+    },
+    {
+      "id": "future_tasks",
+      "status": "UNAVAILABLE",
+      "observed": "No independent real B/C custody, new future-task observations or qualified net-benefit update was produced in this work."
+    }
+  ],
+  "required_original_inputs": [
+    "Real document/screenshot task sources, Notes target, original session handoff and durable writer/recovery custody.",
+    "A deployed Observer independent from Generator, with its original principal/controller, signing capability and valid trust distribution.",
+    "Pre-registered utility, complete cost accounting, amortization window, terminality rules and unit profile.",
+    "The actual task Cell, sealed publication, candidate set and signed Decision with original support linkage.",
+    "Original dataset freeze and stage owner/witness capabilities, plus a normal non-root Root CURRENT path for the complete restart chain."
+  ],
+  "next_implementation_boundary": {
+    "action": "Recoverably deliver original Notes facts to the deployed independent Observer, then use the existing signed Outcome append path.",
+    "facts": "Original operation, request digest, target, terminal receipt, fresh document revision/hash and separate readback availability.",
+    "unavailable_rule": "Do not mint reward, substitute signer/trust, rename source support or repeat the Notes effect when an Outcome append is uncertain.",
+    "recovery_rule": "Drive handoff from retained durable receipts and its own delivery recovery state; do not hide Ledger effects in status queries or depend solely on a post-terminal callback.",
+    "current_q24_limit": "A versioned projection and actual source/Decision composition are still required if the task's evidence shape differs from HQ24I001."
+  },
+  "acceptance": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "P2": "NOT_ADMITTED",
+    "P3": "NOT_ADMITTED",
+    "P4": "NOT_ADMITTED",
+    "new_accepted_business_chains": 0,
+    "new_independent_benefit_updates": 0,
+    "production_adoption": false,
+    "rsi_claim": false
+  }
+}
