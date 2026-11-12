@@ -53,6 +53,7 @@ pub(super) struct OriginalBEnrollment {
     pub(super) output_images: Vec<[u8; 32]>,
     pub(super) realized_plan_statement: Option<[u8; 32]>,
     pub(super) original_training_attestation: Option<Vec<u8>>,
+    pub(super) admitted_source: Option<super::provider::OriginalBReleasedSource>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -126,6 +127,7 @@ impl OriginalBRecord {
             || !enrollment.output_images.is_empty()
             || enrollment.realized_plan_statement.is_some()
             || enrollment.original_training_attestation.is_some()
+            || enrollment.admitted_source.is_some()
             || enrollment.files.is_empty()
             || enrollment.files.len() > 64
             || enrollment.namespace == [0; 32]
@@ -212,7 +214,12 @@ impl OriginalBRecord {
             immutable.realized_plan_statement = original.realized_plan_statement;
             immutable.original_training_attestation =
                 original.original_training_attestation.clone();
+            immutable.admitted_source = original.admitted_source.clone();
             if &immutable != original
+                || original
+                    .admitted_source
+                    .as_ref()
+                    .is_some_and(|old| enrollment.admitted_source.as_ref() != Some(old))
                 || self.poisoned.load(Ordering::Acquire)
                 || Instant::now() >= end
             {

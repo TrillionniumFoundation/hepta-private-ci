@@ -22,6 +22,7 @@ pub(crate) const OBSERVATION_DOMAIN: &[u8] = b"hepta.root.independent-b.observed
 pub(crate) struct SourceBootstrap {
     pub(crate) schema: u8,
     pub(crate) purpose: String,
+    pub(crate) mode: SourceMode,
     pub(crate) root: CognitiveCheckpointPeerLifetime,
     pub(crate) source_peer: CognitiveCheckpointPeerLifetime,
     pub(crate) learner: CognitiveCheckpointPeerLifetime,
@@ -34,6 +35,14 @@ pub(crate) struct SourceBootstrap {
     pub(crate) registered_at_seconds: u64,
     pub(crate) absolute_end_monotonic_ns: u64,
     pub(crate) frame_timeout_ms: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum SourceMode {
+    FreshInput,
+    Retained,
+    NoUpdate,
 }
 
 #[derive(Deserialize, Serialize)]
