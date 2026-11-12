@@ -43,6 +43,9 @@ use evaluation::EvaluationLane;
 #[path = "cell_q24_candidate_stage_model.rs"]
 mod model;
 use model::ModelLane;
+#[path = "cell_q24_candidate_stage_adoption.rs"]
+mod adoption;
+use adoption::AdoptionLane;
 #[path = "cell_q24_candidate_stage_operation.rs"]
 mod operation;
 pub(crate) use operation::OriginalCandidateOperationEvidence;
@@ -66,6 +69,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     candidate: Mutex<CandidateLane>,
     evaluation: Mutex<EvaluationLane>,
     model: Mutex<ModelLane>,
+    adoption: Mutex<AdoptionLane>,
     operation: Mutex<OperationLane>,
     end: Instant,
 }
@@ -133,6 +137,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             match snapshot.receipts.len() {
                 4 => self.original_evaluation(snapshot, evaluation::Action::Readback).await,
                 5 => self.original_model(snapshot, model::Action::Readback).await,
+                6 => self.original_selection(snapshot, adoption::Action::Readback).await,
+                7 => self.original_next_use(snapshot, adoption::Action::Readback).await,
                 _ => Err(Error::WrongScope),
             }
         }).await.map_err(|_| Error::CommitUncertain)?
@@ -151,7 +157,9 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             match stage {
                 Stage::Evaluation => self.original_evaluation(snapshot, evaluation::Action::Execute).await,
                 Stage::Proposal => self.original_model(snapshot, model::Action::Execute).await,
-                Stage::Experience | Stage::Dataset | Stage::Training | Stage::Selection | Stage::NextUse => Err(Error::WrongScope),
+                Stage::Selection => self.original_selection(snapshot, adoption::Action::Execute).await,
+                Stage::NextUse => self.original_next_use(snapshot, adoption::Action::Execute).await,
+                Stage::Experience | Stage::Dataset | Stage::Training => Err(Error::WrongScope),
             }
         }).await.map_err(|_| Error::CommitUncertain)?
     }
@@ -166,19 +174,11 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
-                    OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?;
-                    Ok(())
-                } else if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
-                    // This is original readback, including while the fresh
-                    // Root future still has the three-cut Evaluation intent.
-                    // It never asks that gate to accept the future fourth cut.
-                    self.read_original_evaluation(snapshot).await?;
-                    if snapshot.receipts.len() != 4 {
-                        return Err(Error::OwnerUnavailable(
-                            "original post-Evaluation Model and adoption readback capabilities are required",
-                        ));
-                    }
+                if coordinator.candidate().is_some() && (4..=7).contains(&snapshot.receipts.len()) {
+                    let original = self.read_original_evidence(snapshot).await?;
+                    OriginalCandidateOperationEvidence::into_original_parts(
+                        original, self, snapshot, super::auth::now()?,
+                    )?;
                     Ok(())
                 } else if self.common.origin == Origin::Recovered
                     && snapshot.receipts.len() == 3 && coordinator.candidate().is_some()
@@ -291,6 +291,7 @@ pub(crate) fn fixture_from_original_clients(
         candidate: Mutex::new(CandidateLane::new(initial)),
         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
         model: Mutex::new(ModelLane::fixture_unavailable()),
+        adoption: Mutex::new(AdoptionLane::default()),
         operation: Mutex::new(OperationLane::default()),
         end,
     };

@@ -10,6 +10,7 @@ use super::CandidateLane;
 use super::Error;
 use super::EvaluationLane;
 use super::ModelLane;
+use super::AdoptionLane;
 use super::OperationLane;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
@@ -172,6 +173,7 @@ pub(super) fn bind(
         candidate: Mutex::new(CandidateLane::new(candidate)),
         evaluation: Mutex::new(EvaluationLane::new(evaluator)),
         model: Mutex::new(ModelLane::new(model)),
+        adoption: Mutex::new(AdoptionLane::default()),
         operation: Mutex::new(OperationLane::default()),
         end,
     })

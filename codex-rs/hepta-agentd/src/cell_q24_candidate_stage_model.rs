@@ -225,6 +225,65 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(evidence)
     }
 
+    /// An adoption operation needs a new actual Model/E observation. A saved
+    /// client supplies only the original connection and comparison context.
+    /// Finish releases the Model host before Version/S/C can call that same host.
+    pub(super) async fn read_model_for_adoption(
+        &self,
+        operation: &CandidateOriginalOperation<'_>,
+    ) -> Result<crate::OriginalCellQ24ModelReadCompletionV1, Error> {
+        operation.require_owner(self)?;
+        let expected = super::adoption::model_cut(self, &operation.supplied)?;
+        let needs_binding = {
+            let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            if lane.failed { return Err(Error::CommitUncertain); }
+            lane.failed = true;
+            lane.client.is_none()
+        };
+        if needs_binding {
+            let evaluation = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
+                self, operation, super::evaluation::Action::Readback,
+            ).await?;
+            let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            if lane.client.is_some() { return Err(Error::CommitUncertain); }
+            let initial = lane.initial.take().ok_or(Error::CommitUncertain)?;
+            lane.client = Some(Arc::new(
+                OriginalCellQ24ModelCommandConnectionV1::bind_original_evaluation(
+                    initial, operation.dataset.clone(), operation.training.clone(), evaluation,
+                ).map_err(model_failure)?,
+            ));
+        }
+        let client = {
+            let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+            Arc::clone(lane.client.as_ref().ok_or(Error::CommitUncertain)?)
+        };
+        let original = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(
+            client.as_ref(),
+        ).await.map_err(|_| Error::CommitUncertain)?;
+        if original.model().snapshot() != &expected {
+            return Err(Error::CommitUncertain);
+        }
+        let before = original.model().clone();
+        let completed = original.finish().await.map_err(|_| Error::CommitUncertain)?;
+        if completed.model() != &before {
+            return Err(Error::CommitUncertain);
+        }
+        // The complete opaque D/T/E context is compared before any adoption
+        // dispatch. This pure factory does not turn the pin into a CURRENT.
+        let context = super::adoption::publication_context(self, operation, &completed)?;
+        context.authenticate_material(
+            completed.material(), super::super::auth::now()?, false,
+        ).map_err(|_| Error::CommitUncertain)?;
+        self.require_live_deadline()?;
+        let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+        if lane.retained.as_ref().is_some_and(|saved| saved != completed.model()) {
+            return Err(Error::CommitUncertain);
+        }
+        lane.retained = Some(completed.model().clone());
+        lane.failed = false;
+        Ok(completed)
+    }
+
 }
 
 fn model_failure(error: OriginalCellQ24ModelCommandErrorV1) -> Error {

@@ -113,7 +113,7 @@ pub(super) fn decode_current(
             _ => Error::Unavailable,
         });
     };
-    if evidence.len() > 5 {
+    if evidence.len() > 6 {
         return Err(Error::WrongScope);
     }
     let snapshot = snapshot

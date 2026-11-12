@@ -36,7 +36,7 @@ pub(super) async fn original_attestations(
 ) -> Result<ResidentOriginalEvidenceV3, Error> {
     owner.authority.profile.scope.validate_snapshot(snapshot)?;
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-    if coordinator.candidate().is_some() && matches!(snapshot.receipts.len(), 4 | 5) {
+    if coordinator.candidate().is_some() && (4..=7).contains(&snapshot.receipts.len()) {
         let original = ResidentOriginalStageOwnersV3::read_original_candidate_evidence(
             stages, snapshot,
         ).await?;
@@ -209,10 +209,11 @@ fn verify_non_model_attestations(
         || snapshot.owners != profile.initial.owners
         || proposal_count > 1
         || proposal_count == 1
-            && (snapshot.receipts.len() != 5
+            && (!(5..=7).contains(&snapshot.receipts.len())
                 || snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal)
         || signatures.len() + proposal_count != snapshot.receipts.len()
-        || signatures.len() > 5
+        || signatures.len() > 6
+        || proposal_count == 0 && signatures.len() > 5
         || verifier.trust_digest() != snapshot.owners.evidence_trust_digest
     {
         return Err(Error::WrongScope);
@@ -285,15 +286,32 @@ fn verify_non_model_attestations(
         let independent: &[LearningIterationStageV1] = match stage {
             LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
             LearningIterationStageV1::Selection => {
-                if snapshot.training_no_update_v2().is_none() {
-                    return Err(Error::WrongScope);
+                if snapshot.training_no_update_v2().is_some() {
+                    &[LearningIterationStageV1::Training]
+                } else {
+                    if proposal_count != 1 || snapshot.receipts.len() < 6 {
+                        return Err(Error::WrongScope);
+                    }
+                    &[
+                        LearningIterationStageV1::Training,
+                        LearningIterationStageV1::Evaluation,
+                    ]
                 }
-                &[LearningIterationStageV1::Training]
             }
-            LearningIterationStageV1::NextUse => &[
-                LearningIterationStageV1::Training,
-                LearningIterationStageV1::Selection,
-            ],
+            LearningIterationStageV1::NextUse => {
+                if snapshot.training_no_update_v2().is_some() {
+                    &[LearningIterationStageV1::Training, LearningIterationStageV1::Selection]
+                } else {
+                    if proposal_count != 1 || snapshot.receipts.len() != 7 {
+                        return Err(Error::WrongScope);
+                    }
+                    &[
+                        LearningIterationStageV1::Training,
+                        LearningIterationStageV1::Evaluation,
+                        LearningIterationStageV1::Selection,
+                    ]
+                }
+            }
             _ => &[],
         };
         for predecessor in independent {
