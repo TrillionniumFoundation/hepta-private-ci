@@ -1,0 +1,114 @@
+{
+  "base_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "base_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "own_delta": {
+    "bytes": 646532,
+    "sha256": "25da7b8438ee06b1027045613441cfce88a1d214b33ab4a2f0c3f1eaa421f577",
+    "blob": "6044f900aef3e0b0215bdaf8226f302be093e66d"
+  },
+  "inputs": [
+    {
+      "manifest": "/workspace/scratch/037c0371c195/candidate-evaluated-c-remote-formatted-v1/VERIFIED_MANIFEST.json",
+      "bytes": 6200,
+      "sha256": "702a60e1b9a34f9d63dace2b5360066493d1c4dafcd3b5e63413bdd8d95ece13",
+      "blob": "f49e5b3366279769206cd9ed92fcd06c0648a014"
+    },
+    {
+      "manifest": "/workspace/scratch/037c0371c195/candidate-evaluated-s-command-formatted-v1/VERIFIED_MANIFEST.json",
+      "bytes": 6305,
+      "sha256": "2f678992c893814ccd5857bb3ae5433403dc6f97c65eaa5cc2ae1f252aa65f69",
+      "blob": "59f66111c46bdbb383f8d79241cafb4cfb7d44b6"
+    },
+    {
+      "manifest": "/workspace/scratch/037c0371c195/candidate-evaluated-c-command-formatted-v1/VERIFIED_MANIFEST.json",
+      "bytes": 6340,
+      "sha256": "ea4708304a36b1ca0bbeef0384d631115bce27221d24ae6663a4df35893db9cc",
+      "blob": "aab36f91409ab32ffe05b6b10d2177a860491745"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-formatted-v1/VERIFIED_MANIFEST.json",
+      "bytes": 9132,
+      "sha256": "1bf282fb4827faf416cc3f0d428a7ce77f7e1d3f2da6da9c4caee8e22967a902",
+      "blob": "a9f14c9414014f7c10bd2c3812a4750d71d03387"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-caller-fix-v2/MANIFEST.json",
+      "bytes": 741,
+      "sha256": "783aa39acb8ee7ea6773df008e0eb29691d57a46dbd7e36403828ccd96a0d0ab",
+      "blob": "e438e8684fcb9fa4ab53acb886fc56d006255f40"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/profile-evaluated-version-a96-v3/PREFMT_V3.json",
+      "bytes": 15746,
+      "sha256": "d271cbaa2c550ab6e582fa228815f5c072769813a6e4a9b55e3d59c7c1bf172c",
+      "blob": "5e12d3d2bf83729ad48ad30f1a6edffd74b5d2e3"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/candidate-current-formatted-v1/manifest.json",
+      "bytes": 15678,
+      "sha256": "ec5b65247d25d3feb5f1b25f3b93ce3368718e49a397159900cd838bfa72b2f9",
+      "blob": "4691427f4a36486b610dc60e3fe856eb25f35d00"
+    }
+  ],
+  "merges": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "before": {
+        "bytes": 15438,
+        "sha256": "67f2834545368daba5217e7dc1288dd249c6b8da3338a40b8b8d7037e2bb5bb0",
+        "blob": "ea951efca28c0f1c2bcc6fcd54c771837ee60419"
+      },
+      "base": {
+        "bytes": 15361,
+        "sha256": "638960b10793c4ee351d22bb0e58db8e797d578d36209570bc1ec769a79652f2",
+        "blob": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0"
+      },
+      "incoming": {
+        "bytes": 15436,
+        "sha256": "e40174d68597587baf88b3905d593b1ed996ed6643502cd3975691a34c33c1bb",
+        "blob": "198daaddbba35a58c427da7bbb7d627c24ab673c"
+      },
+      "result": {
+        "bytes": 15991,
+        "sha256": "7d362a327a21ec09fef252171816051008cba48694cc3418b8edb741e97f8983",
+        "blob": "950f7aa9f31e5ccc8cdcacbaa608942c5e02f153"
+      },
+      "exit": 1,
+      "stderr": "",
+      "resolution": "Both exact independent trailing module mounts retained; base is an identical byte prefix of both inputs",
+      "resolved": {
+        "bytes": 15513,
+        "sha256": "28c5131f78a1671e4e7ba4b0918a1c9ae825f8d6c87fb2f6ae3540930cfaad1f",
+        "blob": "a4b4fd8169407c81360b279f6796b366240de9ca"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "before": {
+        "bytes": 71837,
+        "sha256": "b93431b99c45ba00215026be04bef6f4ce832659e9979e8c97db480a0fe41cac",
+        "blob": "31c1be04500874fee7f4fa06db34768c3461e960"
+      },
+      "base": {
+        "bytes": 70871,
+        "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+        "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a"
+      },
+      "incoming": {
+        "bytes": 71201,
+        "sha256": "a172500c7da5561a5946286ee0aecfb4620bc16d83be0de990ff38caead5ed17",
+        "blob": "d549316f180de567cb19f12a1bc2b768ea893f02"
+      },
+      "result": {
+        "bytes": 72167,
+        "sha256": "f37f764e9f32547c6ec5ab93d45ec2bea08dbc2da56f3f8ef7eef813c2cdc403",
+        "blob": "baad0edbbf0fada41eabd11f92d6e0b906831620"
+      },
+      "exit": 0,
+      "stderr": ""
+    }
+  ],
+  "root_v2_status": "caller fix prefmt, explicitly temporary",
+  "profile40_status": "frozen prefmt V3, explicitly temporary; actual after must be reconciled",
+  "full_source_or_native_pass": false
+}

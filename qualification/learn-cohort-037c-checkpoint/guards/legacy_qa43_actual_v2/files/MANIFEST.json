@@ -1,0 +1,124 @@
+{
+  "status": "frozen_actual_input_source_qa",
+  "suites": [
+    {
+      "suite": "test_evaluated_next_use_source_closure",
+      "tests": 24,
+      "seconds": 5.753,
+      "exit_code": 0
+    },
+    {
+      "suite": "test_evaluated_selection_source_closure",
+      "tests": 13,
+      "seconds": 3.031,
+      "exit_code": 0
+    },
+    {
+      "suite": "test_original_circuit_observer_source_closure",
+      "tests": 6,
+      "seconds": 4.162,
+      "exit_code": 0
+    }
+  ],
+  "total_tests": 43,
+  "failures_errors": 0,
+  "actual_version40": true,
+  "actual_root_caller_v2": true,
+  "new_qa_edits": [],
+  "registry_verifier_scanner_unchanged": true,
+  "source_files": 219,
+  "outputs": [
+    {
+      "path": "results/test_evaluated_next_use_source_closure/result.json",
+      "bytes": 171,
+      "sha256": "fc551be481029e969ac25d1991acc928a0c71dba6d18b3030c71c2990e3eb9e3",
+      "git_blob": "9a7dea7848e2247c4bc4139c08af7df70a9fdd8f"
+    },
+    {
+      "path": "results/test_evaluated_next_use_source_closure/stderr.log",
+      "bytes": 123,
+      "sha256": "627061c4578d9c9858b6d3fae3d22b95ae223004d2deedc01321702d1d36bcc5",
+      "git_blob": "24a301ee32d8e4ef0401d967fce84afd7823a96c"
+    },
+    {
+      "path": "results/test_evaluated_next_use_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "results/test_evaluated_selection_source_closure/result.json",
+      "bytes": 172,
+      "sha256": "7ed99265e77c4db42f4864f5a069e2693cf67d1cd65163b06cb474d2c2ebe540",
+      "git_blob": "c33514c8674c5d0fdb46d8f6173ba2a515907a55"
+    },
+    {
+      "path": "results/test_evaluated_selection_source_closure/stderr.log",
+      "bytes": 112,
+      "sha256": "6f6c2116fd3e9a4d206107a625bcaacefba15422d76397d36fa014b68ed44893",
+      "git_blob": "84863144b50b1ef609371eec5fac25725625e1e2"
+    },
+    {
+      "path": "results/test_evaluated_selection_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "results/test_original_circuit_observer_source_closure/result.json",
+      "bytes": 178,
+      "sha256": "052258a856254e771c7a6ff94819d7263bfe4be9ea44f0a20aa12197eb79fd77",
+      "git_blob": "f948e990fcfb2aba7a159572e94dcad8e1ff8991"
+    },
+    {
+      "path": "results/test_original_circuit_observer_source_closure/stderr.log",
+      "bytes": 104,
+      "sha256": "6da326ace4c83b34d858bf3fb3b8b39c858b1372690b8603717c6577854306b1",
+      "git_blob": "e6c6195fedac3f1c6e64022dd9467d7fc809f503"
+    },
+    {
+      "path": "results/test_original_circuit_observer_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "merge-evidence/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "bytes": 15513,
+      "sha256": "28c5131f78a1671e4e7ba4b0918a1c9ae825f8d6c87fb2f6ae3540930cfaad1f",
+      "git_blob": "a4b4fd8169407c81360b279f6796b366240de9ca"
+    },
+    {
+      "path": "merge-evidence/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 72167,
+      "sha256": "76830312435171ae52f85d95be1931d7593c91c3734c7bf1afeae655c905da18",
+      "git_blob": "8ea08d0b85d609c745e67506e878b8777cec17f9"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 1911,
+      "sha256": "b7da88bd621ea6d36463f843c8295155b4093bbfc5b80ee9fb682bf498ef1dd9",
+      "git_blob": "eb80d460085b445f7520b85bf41484f90235887f"
+    },
+    {
+      "path": "INPUT_RECONCILIATION.json",
+      "bytes": 37984,
+      "sha256": "e79540e277475de0af5daf0d7cae96c2605a124cdb35def2194bd4284e5175f5",
+      "git_blob": "54b06f6cc9a6944dd11f0fa01bfe2b30d962a5b7"
+    },
+    {
+      "path": "SOURCE_INVENTORY.json",
+      "bytes": 54859,
+      "sha256": "97724992958079b313f0f70db75f89cfb93f8e17447c773d8fbdda021d387334",
+      "git_blob": "3a62e3ef7e7898e4056701e257e0aca05e183ac5"
+    }
+  ],
+  "native": "UNRUN",
+  "full_caller": "UNRUN",
+  "excludes": [
+    "Profile V4 progress",
+    "Root progress v3",
+    "Root postread v1"
+  ],
+  "ordinary_qualification_added": 0
+}

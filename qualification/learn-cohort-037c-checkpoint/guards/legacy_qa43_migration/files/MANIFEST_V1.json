@@ -1,0 +1,220 @@
+{
+  "base_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "base_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "base": {
+        "bytes": 22139,
+        "sha256": "2c0ebf4a1e26704f06306d1c951f94487646c1449c6fd406a172f8e23400d4ce",
+        "blob": "776e861fe82c208f6f61af73208a2bff263239ef"
+      },
+      "after": {
+        "bytes": 22171,
+        "sha256": "f0fbb590564d4db50b934c1d167e1bf183ddcdffd85755ecd506bfb1d4eddc74",
+        "blob": "c7bfd6b769821c0d335d61b0efb9cc66feeceb69"
+      },
+      "retained_original_cases": [
+        "test_original_profiles_pass_each_complete_protected_row",
+        "test_profile_guards_cannot_be_hidden_in_an_uninvoked_closure",
+        "test_exact_entrypoints_remain_closed_and_cell_reader_has_one_new_caller",
+        "test_recovered_context_and_opaque_selection_never_regain_fresh_authority",
+        "test_recovery_cannot_claim_missing_or_pending_selection_or_create_a_replacement_store",
+        "test_original_t_b_and_actual_cell_capabilities_are_required",
+        "test_final_cell_check_follows_last_t_b_await_and_precedes_journal_read",
+        "test_t_b_and_s_all_keep_original_signatures_independent_roles_and_clocks",
+        "test_journal_binding_includes_b_full_signature_and_old_tnu_profile_stays_distinct",
+        "test_old_command_adapter_still_refuses_the_new_evaluated_four_cut",
+        "test_legacy_c_refuses_evaluated_five_cut_before_touching_original_journal",
+        "test_opaque_receipt_has_no_additional_public_capability_or_mutable_owner_getter",
+        "test_original_fixture_tests_are_mounted_and_public_exports_stay_linux_only"
+      ],
+      "new_cases": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "base": {
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+        "blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234"
+      },
+      "after": {
+        "bytes": 37566,
+        "sha256": "db710ca506d268ed46dba8d0605c3f0df7ce84f6b96606fdd39f4f5ae3c9f0ea",
+        "blob": "12cd06b62484817187858fe80b0ae37252303d76"
+      },
+      "retained_original_cases": [
+        "test_opaque_result_and_readonly_host_custody_fields_cannot_become_writable",
+        "test_all_complete_product_rows_remain_valid",
+        "test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed",
+        "test_recovery_permanently_attenuates_fresh_s_and_never_claims_missing_c",
+        "test_new_work_checks_cannot_be_deferred_into_uninvoked_closures",
+        "test_private_source_profile_prevents_legacy_or_remote_downgrade",
+        "test_full_original_s_cut_and_signature_cannot_be_replaced_by_metadata",
+        "test_c_full_same_prefix_is_checked_before_readonly_s_io",
+        "test_both_live_predecessors_and_readonly_original_s_are_mandatory",
+        "test_final_source_cell_fence_follows_every_awaited_t_b_s_response",
+        "test_claim_and_readback_failures_keep_fence_and_original_journal",
+        "test_all_t_b_s_and_observer_roles_remain_independent_and_current",
+        "test_bindings_include_full_original_t_b_s_and_no_timestamp_refresh",
+        "test_private_receipt_helper_accepts_only_actual_retained_c",
+        "test_generic_transfer_and_duplicate_receipt_name_guards_are_top_level",
+        "test_distinct_signature_domains_are_actual_code_and_not_comment_decoys",
+        "test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head",
+        "test_host_checks_each_correlated_readonly_request_before_original_io",
+        "test_host_response_is_exact_original_s_and_never_new_signing",
+        "test_host_keeps_original_custody_session_and_finite_exchange_budgets",
+        "test_mechanical_binding_extraction_preserves_legacy_profile_and_commands",
+        "test_native_mechanisms_cover_real_source_failure_cold_missing_and_full_read_counts"
+      ],
+      "new_cases": [
+        "test_shared_binding_retains_all_original_readonly_host_forbidden_markers",
+        "test_original_host_cannot_bypass_or_reorder_shared_binding_delegation"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "base": {
+        "bytes": 10942,
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3",
+        "blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9"
+      },
+      "after": {
+        "bytes": 11042,
+        "sha256": "f13fcdae3c52de92b5dbb6404c1782ed0fc8f93c611d297d3e6edc98028304a8",
+        "blob": "8ed82c4dc2debf7dac0884d5a6703d05bf7b4c6f"
+      },
+      "retained_original_cases": [
+        "test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+        "test_each_source_role_and_clock_constraint_remains_present_in_order",
+        "test_configuration_and_physical_read_guards_cannot_be_dead_branches",
+        "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed",
+        "test_new_attestation_deadline_and_readback_window_are_distinct",
+        "test_no_key_generation_execution_or_unbound_stage_assembly_is_added"
+      ],
+      "new_cases": []
+    }
+  ],
+  "qa_results": [
+    {
+      "suite": "selection",
+      "cases": 13,
+      "exit": 0
+    },
+    {
+      "suite": "next_use",
+      "cases": 24,
+      "exit": 0
+    },
+    {
+      "suite": "observer",
+      "cases": 6,
+      "exit": 0
+    }
+  ],
+  "total_cases": 43,
+  "old_cases_preserved": 41,
+  "new_cases": 2,
+  "individual_guard_before_accepted_after_rejected": 7,
+  "patch": {
+    "bytes": 13097,
+    "sha256": "01e16a49627a369897b2881bf3ee0f0d8a782fed2f8de4e189548466abde873d",
+    "blob": "986fb2a52f376723bfa07256e6a1cbbbc96fb8dd"
+  },
+  "row_delta": {
+    "bytes": 22115,
+    "sha256": "2cbfbf7d15b1137c5697a488093fb5108c98e0e7fcdd69166e312bdac1e59928",
+    "blob": "e80b7345bf368589d945df6cd20f55bf1a5371c6"
+  },
+  "input_manifest": {
+    "bytes": 4652,
+    "sha256": "07c8cd4fc871b7c7eb163dc574063048ed553aeb2e53ade14e887b135a2c520e",
+    "blob": "1a32435b4bc50084637e6074ca6f0cc45bc228bb"
+  },
+  "source_identities": {
+    "bytes": 51354,
+    "sha256": "bd4e2a857417a6999c0ce78e60c94c42a903d0bdb020528d0c3ddf03457dc20f",
+    "blob": "71d846f6e4e66fec7397eac93a88c5d64854edad"
+  },
+  "fourth_suite_unchanged": {
+    "bytes": 26213,
+    "sha256": "e4b2027353ce1868ad59754a3d604a502ce16856763401381ace15cb3d496697",
+    "blob": "1a94d6e95dfb5314bfc2fe1e32c19aa71bf0606a"
+  },
+  "report": {
+    "bytes": 2965,
+    "sha256": "d7cba8f4981f3f420369596c140467f59eccb79afa65cd96d5e945bb82c20b76",
+    "blob": "f35e9ac4e45397ae40a3c90c52bf1e774724f9f3"
+  },
+  "mapping": {
+    "bytes": 2234,
+    "sha256": "79aec8f89da6eef2589285284e475ca851d80f89eb7d00484b21b06d3a10eb85",
+    "blob": "716c8f1baafd7a45b527103866c3d131ce751eca"
+  },
+  "actual_final_root_v2_and_version40_images": "PENDING_RECONCILIATION",
+  "native": "UNRUN",
+  "ordinary_qualification": 0,
+  "evidence": {
+    "evidence/after-attempt-01/RESULTS.json": {
+      "bytes": 1111,
+      "sha256": "7d9026cc64a3ccbe4768154c3a052c967c085d709e58f8caf6ded73fb45d7f25",
+      "blob": "a6fb711426c89a7f68aba590104bbe905e63cd28"
+    },
+    "evidence/after-attempt-01/test_evaluated_next_use_source_closure.py.log": {
+      "bytes": 4443,
+      "sha256": "a5a24f9c609aa1cbd0364f305641017a3a15d886d50db55697d8ce648d82f0ed",
+      "blob": "88c2b521fddefe464dbb4090bed366df6b57cd83"
+    },
+    "evidence/after-attempt-01/test_evaluated_selection_source_closure.py.log": {
+      "bytes": 2594,
+      "sha256": "3a7e85941755d416508b82118d895b7282d83db1f8c852d298f1cdf05577c385",
+      "blob": "5f52c6ffa0ffcaac63ca548694524548f25b6214"
+    },
+    "evidence/after-attempt-01/test_original_circuit_observer_source_closure.py.log": {
+      "bytes": 1292,
+      "sha256": "bbc4635573801fc75116594a67baf696eb3c0de1ee58a9cc4be72308814edc0b",
+      "blob": "bf11c2339266f8821290f0802940f25b76d67112"
+    },
+    "evidence/before/RESULTS.json": {
+      "bytes": 1131,
+      "sha256": "545d5a349e250645d07d8f465869f8a9ce28265d272be3f2a7887c236a89ec42",
+      "blob": "44f2111b3476e3e5bb89e5a5a6c614965be36c0e"
+    },
+    "evidence/before/test_evaluated_next_use_source_closure.py.log": {
+      "bytes": 8102,
+      "sha256": "9e9418c0c951bce6408822d457c6bea9aa7b7d7424c54a08ff6654213fc9a129",
+      "blob": "77348825c1a0e067118dd158dc519ca32ba3f7e9"
+    },
+    "evidence/before/test_evaluated_selection_source_closure.py.log": {
+      "bytes": 1445,
+      "sha256": "cb6efe70a04a73f676eb55fe4cb7606fbd9b59a3d36564ecd80dc42fb578edb6",
+      "blob": "8f3216c8acef4cc5a2c47a9697306d97e523dd9c"
+    },
+    "evidence/before/test_original_circuit_observer_source_closure.py.log": {
+      "bytes": 1964,
+      "sha256": "58d433d8eadb6cbe10d36b0df9849092a50505261903c46948fe3967d82feb7e",
+      "blob": "bff124e79a95f672679664443433a6a6257f2f6e"
+    },
+    "evidence/binding-forbidden-before-after.json": {
+      "bytes": 1925,
+      "sha256": "a9dce1fb69186a2cf42c3d8542163c1e5f3cd861ab3d34912da2b119970473cb",
+      "blob": "a6ce19d62e28b6432b378d36243a89000fc7cbb9"
+    },
+    "evidence/patch-roundtrip.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "evidence/patch-roundtrip.stdout": {
+      "bytes": 224,
+      "sha256": "ce057fc85eacb3fceb562840b347b9613eb8b77d5b2ed841549ae44f7a3ef839",
+      "blob": "1d96e0408c8f8d061b4cad69673b55d4af8570cd"
+    }
+  },
+  "patch_roundtrip": {
+    "exit": 0,
+    "exact_postimages": 3,
+    "fuzz": false,
+    "offset": false
+  }
+}

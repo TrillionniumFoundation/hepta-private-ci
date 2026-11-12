@@ -1,0 +1,257 @@
+{
+  "input_callers_sha256": "5e96b6be1004d20b39779ee01bc1041a279092fc595c4bac2431a94ca3da87be",
+  "output_callers_sha256": "d70dc5496217d0c3f40b096fe465347e4eaa2cd2b4d38a54ce32444c6827e928",
+  "protected_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs",
+        "required": [],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "RootResidentLearningEffectGateV3",
+          "attest_original_evaluated",
+          "attest_source(",
+          "commit_once(",
+          "sign_original(",
+          "execute_selection(",
+          "attest_completed_task(",
+          "OriginalCircuitSelectionReceiptOwnerV1::create_evaluated",
+          "OriginalCircuitNextUseReceiptOwnerV1::create_evaluated"
+        ],
+        "required_order": [
+          [
+            "\npub(super) fn original_context(\n    config: &OriginalCircuitSelectionReceiptConfigV1,\n    selection: &OriginalCircuitEvaluatedSelectionReceiptV1,\n) -> Result<(Digest32, Digest32), Error>",
+            "selection.original_receipt_predecessors(now()?)?;"
+          ],
+          [
+            "\n    pub(super) fn from_original_pins(\n        selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,\n        initial_head: Digest32,\n        binding: Digest32,\n    ) -> Self",
+            "Self {\n            selection,\n            initial_head,\n            binding,\n        }"
+          ],
+          [
+            "\n    pub(super) fn before_read(\n        &self,\n        bytes: &[u8],\n        request_id: u64,\n    ) -> Result<(wire::Request, u64), Error>",
+            "let request: wire::Request = serde_json::from_slice(bytes)?;"
+          ],
+          [
+            "\n    pub(super) fn after_read(\n        &self,\n        request: wire::Request,\n        started_at: u64,\n        original: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Vec<u8>, Error>",
+            "let current = now()?;"
+          ],
+          [
+            "\npub(super) struct ReadbackBinding<'a>",
+            "{\n    selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,\n    initial_head: Digest32,\n    binding: Digest32,\n}"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_context(",
+            "sequence": [
+              "fn original_context(",
+              "{\n    selection.original_receipt_predecessors(now()?)?;\n    let (scope, verifier, training) = selection.original_context().receipt_configuration();\n    if config.decision != *selection.original_context().snapshot()\n        || config.scope.binding() != scope.binding()\n        || config.verifier.trust_digest() != verifier.trust_digest()\n        || config.verifier.scope_digest() != verifier.scope_digest()\n        || config.verifier.objective_digest() != verifier.objective_digest()\n        || config.training_evidence != training\n        || config.signer.principal.principal_id != selection.receipt().actor_id\n    {\n        return Err(Error::Binding(\n                                                               ,\n        ));\n    }\n    let initial = LearningIterationCoordinatorV1::new(\n        selection.snapshot().request.clone(),\n        selection.snapshot().owners.clone(),\n    )\n    .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;\n    Ok((\n        initial.snapshot().head_digest,\n        selection.original_receipt_binding(),\n    ))\n}"
+            ],
+            "top_level": [
+              "selection.original_receipt_predecessors(now()?)?;",
+              "let (scope, verifier, training) = selection.original_context().receipt_configuration();",
+              "if config.decision != *selection.original_context().snapshot()\n        || config.scope.binding() != scope.binding()\n        || config.verifier.trust_digest() != verifier.trust_digest()\n        || config.verifier.scope_digest() != verifier.scope_digest()\n        || config.verifier.objective_digest() != verifier.objective_digest()\n        || config.training_evidence != training\n        || config.signer.principal.principal_id != selection.receipt().actor_id\n    {\n        return Err(Error::Binding(\n                                                               ,\n        ));\n    }",
+              "let initial = LearningIterationCoordinatorV1::new(\n        selection.snapshot().request.clone(),\n        selection.snapshot().owners.clone(),\n    )\n    .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;",
+              "Ok((\n        initial.snapshot().head_digest,\n        selection.original_receipt_binding(),\n    ))"
+            ]
+          },
+          {
+            "function": "fn from_original_pins(",
+            "sequence": [
+              "fn from_original_pins(",
+              "{\n        Self {\n            selection,\n            initial_head,\n            binding,\n        }\n    }"
+            ],
+            "top_level": [
+              "Self {\n            selection,\n            initial_head,\n            binding,\n        }"
+            ]
+          },
+          {
+            "function": "fn before_read(",
+            "sequence": [
+              "fn before_read(",
+              "{\n        let request: wire::Request = serde_json::from_slice(bytes)?;\n        let snapshot_head: Digest32 = request\n            .snapshot_head\n            .parse()\n            .map_err(|_| Error::Binding(                                              ))?;\n        if request.schema != 1\n            || request.operation != wire::OPERATION\n            || request.request_id != request_id\n            || !(1..=128).contains(&request_id)\n            || request.binding != self.initial_head.to_string()\n            || request.operation_id != self.selection.snapshot().request.operation_id.as_str()\n            || request.actor_id != self.selection.snapshot().owners.selector.as_str()\n            || request.predecessor != self.selection.receipt().predecessor.to_string()\n            || request.receipt_digest != self.selection.attestation().payload_digest.to_string()\n            || snapshot_head.is_zero()\n            || request.snapshot_head != snapshot_head.to_string()\n        {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }\n        let started_at = now()?;\n        self.selection.original_receipt_predecessors(started_at)?;\n        Ok((request, started_at))\n    }"
+            ],
+            "top_level": [
+              "let request: wire::Request = serde_json::from_slice(bytes)?;",
+              "let snapshot_head: Digest32 = request\n            .snapshot_head\n            .parse()\n            .map_err(|_| Error::Binding(                                              ))?;",
+              "if request.schema != 1\n            || request.operation != wire::OPERATION\n            || request.request_id != request_id\n            || !(1..=128).contains(&request_id)\n            || request.binding != self.initial_head.to_string()\n            || request.operation_id != self.selection.snapshot().request.operation_id.as_str()\n            || request.actor_id != self.selection.snapshot().owners.selector.as_str()\n            || request.predecessor != self.selection.receipt().predecessor.to_string()\n            || request.receipt_digest != self.selection.attestation().payload_digest.to_string()\n            || snapshot_head.is_zero()\n            || request.snapshot_head != snapshot_head.to_string()\n        {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }",
+              "let started_at = now()?;",
+              "self.selection.original_receipt_predecessors(started_at)?;",
+              "Ok((request, started_at))"
+            ]
+          },
+          {
+            "function": "fn after_read(",
+            "sequence": [
+              "fn after_read(",
+              "{\n        let current = now()?;\n        original.original_receipt_predecessors(current)?;\n        if current < started_at\n            || original.snapshot() != self.selection.snapshot()\n            || original.receipt() != self.selection.receipt()\n            || original.attestation() != self.selection.attestation()\n            || original.original_receipt_binding() != self.binding\n        {\n            return Err(Error::Binding(\n                                                              ,\n            ));\n        }\n                                                                              \n                                                                               \n        Ok(serde_json::to_vec(&wire::Response {\n            schema: 1,\n            operation: request.operation,\n            request_id: request.request_id,\n            binding: request.binding,\n            snapshot_head: request.snapshot_head,\n            receipt_digest: request.receipt_digest,\n            evidence: wire::Evidence::from_original(original.attestation()),\n        })?)\n    }"
+            ],
+            "top_level": [
+              "let current = now()?;",
+              "original.original_receipt_predecessors(current)?;",
+              "if current < started_at\n            || original.snapshot() != self.selection.snapshot()\n            || original.receipt() != self.selection.receipt()\n            || original.attestation() != self.selection.attestation()\n            || original.original_receipt_binding() != self.binding\n        {\n            return Err(Error::Binding(\n                                                              ,\n            ));\n        }",
+              "Ok(serde_json::to_vec(&wire::Response {\n            schema: 1,\n            operation: request.operation,\n            request_id: request.request_id,\n            binding: request.binding,\n            snapshot_head: request.snapshot_head,\n            receipt_digest: request.receipt_digest,\n            evidence: wire::Evidence::from_original(original.attestation()),\n        })?)"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs",
+        "required": [],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "RootResidentLearningEffectGateV3",
+          "attest_original_evaluated",
+          "attest_source(",
+          "commit_once(",
+          "sign_original(",
+          "execute_selection(",
+          "attest_completed_task(",
+          "OriginalCircuitSelectionReceiptOwnerV1::create_evaluated",
+          "OriginalCircuitNextUseReceiptOwnerV1::create_evaluated",
+          "SigningKey",
+          "attest_original_evaluated_selection",
+          "execute(",
+          "serve_execute(",
+          "create_evaluated(",
+          "recover_evaluated(",
+          "pub owner:",
+          "pub cell:",
+          "pub trainer:",
+          "pub evaluator:",
+          "pub selection:",
+          "pub initial_head:",
+          "pub binding:",
+          "pub connections:",
+          "pub fn from_original_receipt_owner(",
+          "pub fn evidence_response(",
+          "pub(crate) fn evidence_response("
+        ],
+        "required_order": [
+          [
+            "\npub(super) fn original_context(\n    config: &OriginalCircuitSelectionReceiptConfigV1,\n    selection: &OriginalCircuitEvaluatedSelectionReceiptV1,\n) -> Result<(Digest32, Digest32), Error>",
+            "selection.original_receipt_predecessors(now()?)?;"
+          ],
+          [
+            "\n    pub(super) fn from_original_pins(\n        selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,\n        initial_head: Digest32,\n        binding: Digest32,\n    ) -> Self",
+            "Self {\n            selection,\n            initial_head,\n            binding,\n        }"
+          ],
+          [
+            "\n    pub(super) fn before_read(\n        &self,\n        bytes: &[u8],\n        request_id: u64,\n    ) -> Result<(wire::Request, u64), Error>",
+            "let request: wire::Request = serde_json::from_slice(bytes)?;"
+          ],
+          [
+            "\n    pub(super) fn after_read(\n        &self,\n        request: wire::Request,\n        started_at: u64,\n        original: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Vec<u8>, Error>",
+            "let current = now()?;"
+          ],
+          [
+            "\npub(super) struct ReadbackBinding<'a>",
+            "{\n    selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,\n    initial_head: Digest32,\n    binding: Digest32,\n}"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_context(",
+            "sequence": [
+              "fn original_context(",
+              "{\n    selection.original_receipt_predecessors(now()?)?;\n    let (scope, verifier, training) = selection.original_context().receipt_configuration();\n    if config.decision != *selection.original_context().snapshot()\n        || config.scope.binding() != scope.binding()\n        || config.verifier.trust_digest() != verifier.trust_digest()\n        || config.verifier.scope_digest() != verifier.scope_digest()\n        || config.verifier.objective_digest() != verifier.objective_digest()\n        || config.training_evidence != training\n        || config.signer.principal.principal_id != selection.receipt().actor_id\n    {\n        return Err(Error::Binding(\n                                                               ,\n        ));\n    }\n    let initial = LearningIterationCoordinatorV1::new(\n        selection.snapshot().request.clone(),\n        selection.snapshot().owners.clone(),\n    )\n    .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;\n    Ok((\n        initial.snapshot().head_digest,\n        selection.original_receipt_binding(),\n    ))\n}"
+            ],
+            "top_level": [
+              "selection.original_receipt_predecessors(now()?)?;",
+              "let (scope, verifier, training) = selection.original_context().receipt_configuration();",
+              "if config.decision != *selection.original_context().snapshot()\n        || config.scope.binding() != scope.binding()\n        || config.verifier.trust_digest() != verifier.trust_digest()\n        || config.verifier.scope_digest() != verifier.scope_digest()\n        || config.verifier.objective_digest() != verifier.objective_digest()\n        || config.training_evidence != training\n        || config.signer.principal.principal_id != selection.receipt().actor_id\n    {\n        return Err(Error::Binding(\n                                                               ,\n        ));\n    }",
+              "let initial = LearningIterationCoordinatorV1::new(\n        selection.snapshot().request.clone(),\n        selection.snapshot().owners.clone(),\n    )\n    .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;",
+              "Ok((\n        initial.snapshot().head_digest,\n        selection.original_receipt_binding(),\n    ))"
+            ]
+          },
+          {
+            "function": "fn from_original_pins(",
+            "sequence": [
+              "fn from_original_pins(",
+              "{\n        Self {\n            selection,\n            initial_head,\n            binding,\n        }\n    }"
+            ],
+            "top_level": [
+              "Self {\n            selection,\n            initial_head,\n            binding,\n        }"
+            ]
+          },
+          {
+            "function": "fn before_read(",
+            "sequence": [
+              "fn before_read(",
+              "{\n        let request: wire::Request = serde_json::from_slice(bytes)?;\n        let snapshot_head: Digest32 = request\n            .snapshot_head\n            .parse()\n            .map_err(|_| Error::Binding(                                              ))?;\n        if request.schema != 1\n            || request.operation != wire::OPERATION\n            || request.request_id != request_id\n            || !(1..=128).contains(&request_id)\n            || request.binding != self.initial_head.to_string()\n            || request.operation_id != self.selection.snapshot().request.operation_id.as_str()\n            || request.actor_id != self.selection.snapshot().owners.selector.as_str()\n            || request.predecessor != self.selection.receipt().predecessor.to_string()\n            || request.receipt_digest != self.selection.attestation().payload_digest.to_string()\n            || snapshot_head.is_zero()\n            || request.snapshot_head != snapshot_head.to_string()\n        {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }\n        let started_at = now()?;\n        self.selection.original_receipt_predecessors(started_at)?;\n        Ok((request, started_at))\n    }"
+            ],
+            "top_level": [
+              "let request: wire::Request = serde_json::from_slice(bytes)?;",
+              "let snapshot_head: Digest32 = request\n            .snapshot_head\n            .parse()\n            .map_err(|_| Error::Binding(                                              ))?;",
+              "if request.schema != 1\n            || request.operation != wire::OPERATION\n            || request.request_id != request_id\n            || !(1..=128).contains(&request_id)\n            || request.binding != self.initial_head.to_string()\n            || request.operation_id != self.selection.snapshot().request.operation_id.as_str()\n            || request.actor_id != self.selection.snapshot().owners.selector.as_str()\n            || request.predecessor != self.selection.receipt().predecessor.to_string()\n            || request.receipt_digest != self.selection.attestation().payload_digest.to_string()\n            || snapshot_head.is_zero()\n            || request.snapshot_head != snapshot_head.to_string()\n        {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }",
+              "let started_at = now()?;",
+              "self.selection.original_receipt_predecessors(started_at)?;",
+              "Ok((request, started_at))"
+            ]
+          },
+          {
+            "function": "fn after_read(",
+            "sequence": [
+              "fn after_read(",
+              "{\n        let current = now()?;\n        original.original_receipt_predecessors(current)?;\n        if current < started_at\n            || original.snapshot() != self.selection.snapshot()\n            || original.receipt() != self.selection.receipt()\n            || original.attestation() != self.selection.attestation()\n            || original.original_receipt_binding() != self.binding\n        {\n            return Err(Error::Binding(\n                                                              ,\n            ));\n        }\n                                                                              \n                                                                               \n        Ok(serde_json::to_vec(&wire::Response {\n            schema: 1,\n            operation: request.operation,\n            request_id: request.request_id,\n            binding: request.binding,\n            snapshot_head: request.snapshot_head,\n            receipt_digest: request.receipt_digest,\n            evidence: wire::Evidence::from_original(original.attestation()),\n        })?)\n    }"
+            ],
+            "top_level": [
+              "let current = now()?;",
+              "original.original_receipt_predecessors(current)?;",
+              "if current < started_at\n            || original.snapshot() != self.selection.snapshot()\n            || original.receipt() != self.selection.receipt()\n            || original.attestation() != self.selection.attestation()\n            || original.original_receipt_binding() != self.binding\n        {\n            return Err(Error::Binding(\n                                                              ,\n            ));\n        }",
+              "Ok(serde_json::to_vec(&wire::Response {\n            schema: 1,\n            operation: request.operation,\n            request_id: request.request_id,\n            binding: request.binding,\n            snapshot_head: request.snapshot_head,\n            receipt_digest: request.receipt_digest,\n            evidence: wire::Evidence::from_original(original.attestation()),\n        })?)"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "added_forbidden": [
+    "SigningKey",
+    "attest_original_evaluated_selection",
+    "execute(",
+    "serve_execute(",
+    "create_evaluated(",
+    "recover_evaluated(",
+    "pub owner:",
+    "pub cell:",
+    "pub trainer:",
+    "pub evaluator:",
+    "pub selection:",
+    "pub initial_head:",
+    "pub binding:",
+    "pub connections:",
+    "pub fn from_original_receipt_owner(",
+    "pub fn evidence_response(",
+    "pub(crate) fn evidence_response("
+  ],
+  "all_other_registry_data_identical": true,
+  "counts": [
+    573,
+    402
+  ],
+  "qualification": "One isolated protected-row migration; not a complete caller/source gate"
+}

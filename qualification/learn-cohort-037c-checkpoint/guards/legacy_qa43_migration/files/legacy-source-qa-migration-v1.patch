@@ -1,0 +1,195 @@
+--- a/qa/b4-no-bypass/test_evaluated_selection_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_selection_source_closure.py
+@@ -355,7 +355,7 @@
+         self.assertEqual(sorted(re.findall(r"\bpub\s+(?:async\s+)?fn\s+(\w+)", code)), sorted((
+             "snapshot", "receipt", "attestation", "create_evaluated", "recover_evaluated",
+             "attest_original_evaluated_selection", "readback_evaluated_selection",
+-            "into_evaluated_readback_owner",
++            "into_evaluated_readback_owner", "into_evaluated_command_owner",
+         )))
+         for marker in (
+             "pub fn from_snapshot(", "SigningKey::generate(", "LearningEvidenceVerifierV1::new(",
+--- a/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py
+@@ -28,6 +28,7 @@
+ SELECTION = AGENT + "circuit_evaluated_selection_receipt.rs"
+ CONTEXT = AGENT + "circuit_evaluated_retention_context.rs"
+ HOST = AGENT + "circuit_evaluated_selection_readback_owner.rs"
++READBACK_BINDING = AGENT + "circuit_evaluated_selection_readback_binding.rs"
+ CLIENT = AGENT + "learning_iteration_evidence_client.rs"
+ COMMAND = AGENT + "circuit_next_use_command.rs"
+ NATIVE = AGENT + "circuit_evaluated_next_use_receipt_tests.rs"
+@@ -41,6 +42,18 @@
+     "learning_original_evaluated_selection_readback_serve": (),
+     "learning_original_evaluated_selection_readback": (HOST,),
+ }
++ORIGINAL_READONLY_FORBIDDEN = (
++    "SigningKey", "File::open", "UnixStream::connect",
++    "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1",
++    "attest_original_evaluated_selection", "attest_source(", "commit_once(",
++    "sign_original(", "execute(", "serve_execute(", "create_evaluated(",
++    "recover_evaluated(", "RootResidentLearningEffectGateV3",
++    "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for",
++    "unwrap_or", "permit_all", "if false", "pub owner:", "pub cell:",
++    "pub trainer:", "pub evaluator:", "pub selection:", "pub initial_head:",
++    "pub binding:", "pub connections:", "pub fn from_original_receipt_owner(",
++    "pub fn evidence_response(", "pub(crate) fn evidence_response(",
++)
+ 
+ 
+ def code(source):
+@@ -115,6 +128,8 @@
+             (HOST, "pub struct OriginalCircuitEvaluatedSelectionReadbackOwnerV1<",
+              ("owner", "cell", "trainer", "evaluator", "selection", "initial_head",
+               "binding", "runtime", "connections")),
++            (READBACK_BINDING, "pub(super) struct ReadbackBinding<'a> {",
++             ("selection", "initial_head", "binding")),
+         )
+         for path, declaration, fields in profiles:
+             source = (ROOT / path).read_text()
+@@ -138,7 +153,8 @@
+                             self.verifies(path, changed + "\n/*\n" + body + "\n*/\n")
+ 
+     def test_all_complete_product_rows_remain_valid(self):
+-        for path in (OWNER, BINDING, EVALUATED, SELECTION, CONTEXT, HOST, CLIENT, COMMAND):
++        for path in (OWNER, BINDING, EVALUATED, SELECTION, CONTEXT, HOST,
++                     READBACK_BINDING, CLIENT, COMMAND):
+             with self.subTest(path=path):
+                 self.verifies(path, (ROOT / path).read_text())
+ 
+@@ -202,9 +218,9 @@
+             (OWNER, "fn prepare(", "if source.snapshot().request != self.config.selection.request"),
+             (EVALUATED, "fn authenticate_predecessors(", "if selection.snapshot() != &config.selection"),
+             (SELECTION, "fn original_receipt_predecessors(", "if original.snapshot() != &self.snapshot"),
+-            (HOST, "fn from_original_receipt_owner(", "if config.decision != *selection.original_context().snapshot()"),
+-            (HOST, "fn evidence_response(", "if request.schema != 1"),
+-            (HOST, "fn evidence_response(", "if current < started_at"),
++            (READBACK_BINDING, "fn original_context(", "if config.decision != *selection.original_context().snapshot()"),
++            (READBACK_BINDING, "fn before_read(", "if request.schema != 1"),
++            (READBACK_BINDING, "fn after_read(", "if current < started_at"),
+         ):
+             with self.subTest(path=path, marker=marker):
+                 self.rejects_hidden(path, function, marker)
+@@ -411,14 +427,16 @@
+                     actual_literal(changed, function, literal)
+ 
+     def test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head(self):
+-        for marker in ("selection.original_receipt_predecessors(now()?)?", "owner.original_command_profile()",
++        for marker in ("owner.original_command_profile()", "binding::original_context(config, &selection)?"):
++            self.rejects(HOST, "fn from_original_receipt_owner(", marker)
++        for marker in ("selection.original_receipt_predecessors(now()?)?",
+                        "config.decision != *selection.original_context().snapshot()", "config.scope.binding() != scope.binding()",
+                        "config.verifier.trust_digest() != verifier.trust_digest()", "config.verifier.scope_digest() != verifier.scope_digest()",
+                        "config.verifier.objective_digest() != verifier.objective_digest()", "config.training_evidence != training",
+                        "config.signer.principal.principal_id != selection.receipt().actor_id",
+                        "selection.snapshot().request.clone()", "selection.snapshot().owners.clone()",
+-                       "initial_head: initial.snapshot().head_digest", "selection.original_receipt_binding()"):
+-            self.rejects(HOST, "fn from_original_receipt_owner(", marker)
++                       "initial.snapshot().head_digest", "selection.original_receipt_binding()"):
++            self.rejects(READBACK_BINDING, "fn original_context(", marker)
+         for marker in ("let Profile::Evaluated(context) = &self.profile else",
+                        "context.receipt_context_binding() != selection.original_context().receipt_context_binding()",
+                        "self.config.decision != *selection.original_context().snapshot()",
+@@ -435,26 +453,73 @@
+                        "request.predecessor != self.selection.receipt().predecessor.to_string()",
+                        "request.receipt_digest != self.selection.attestation().payload_digest.to_string()",
+                        "snapshot_head.is_zero()", "request.snapshot_head != snapshot_head.to_string()",
+-                       "self.selection.original_receipt_predecessors(started_at)?",
+-                       "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_selection("):
++                       "self.selection.original_receipt_predecessors(started_at)?"):
++            self.rejects(READBACK_BINDING, "fn before_read(", marker)
++        self.rejects(HOST, "fn evidence_response(",
++                     "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_selection(")
++        self.rejects(READBACK_BINDING, "fn before_read(", "request.operation != wire::OPERATION", "request.operation == wire::OPERATION")
++        self.rejects(READBACK_BINDING, "fn before_read(", "request.binding != self.initial_head.to_string()",
++                     "request.binding != request.snapshot_head")
++
++    def test_host_response_is_exact_original_s_and_never_new_signing(self):
++        for marker in ("snapshot: self.selection.snapshot()", "cell: &self.cell", "trainer: &self.trainer", "evaluator: &self.evaluator"):
+             self.rejects(HOST, "fn evidence_response(", marker)
+-        self.rejects(HOST, "fn evidence_response(", "request.operation != wire::OPERATION", "request.operation == wire::OPERATION")
+-        self.rejects(HOST, "fn evidence_response(", "request.binding != self.initial_head.to_string()",
+-                     "request.binding != request.snapshot_head")
+-
+-    def test_host_response_is_exact_original_s_and_never_new_signing(self):
+-        for marker in ("snapshot: self.selection.snapshot()", "cell: &self.cell", "trainer: &self.trainer", "evaluator: &self.evaluator",
+-                       "original.original_receipt_predecessors(current)?", "current < started_at",
++        for marker in ("original.original_receipt_predecessors(current)?", "current < started_at",
+                        "original.snapshot() != self.selection.snapshot()", "original.receipt() != self.selection.receipt()",
+                        "original.attestation() != self.selection.attestation()", "original.original_receipt_binding() != self.binding",
+                        "wire::Evidence::from_original(original.attestation())"):
+-            self.rejects(HOST, "fn evidence_response(", marker)
++            self.rejects(READBACK_BINDING, "fn after_read(", marker)
+         source = (ROOT / HOST).read_text()
+         for marker in ("SigningKey", "UnixStream::connect(", "File::open(", "attest_original_evaluated_selection(",
+                        "attest_source(", "commit_once(", "sign_original(", "execute(", "serve_execute(", "pub owner:"):
+             with self.subTest(marker=marker), self.assertRaises(PROOF.VerificationFailure):
+                 self.verifies(HOST, source + "\n" + marker + "\n")
+         self.assertEqual(re.findall(r"\bpub\s+(?:async\s+)?fn\s+(\w+)", code(source)), ["serve_readback"])
++
++    def test_shared_binding_retains_all_original_readonly_host_forbidden_markers(self):
++        for path in (HOST, READBACK_BINDING):
++            row = next(row for row in self.manifest["protected_file"] if row["path"] == path)
++            self.assertTrue(set(ORIGINAL_READONLY_FORBIDDEN).issubset(row["forbidden"]))
++            original = (ROOT / path).read_text()
++            self.verifies(path, original)
++            for marker in ORIGINAL_READONLY_FORBIDDEN:
++                with self.subTest(path=path, marker=marker):
++                    with self.assertRaises(PROOF.VerificationFailure):
++                        self.verifies(path, original + "\n" + marker + "\n")
++
++    def test_original_host_cannot_bypass_or_reorder_shared_binding_delegation(self):
++        for marker in ("binding::ReadbackBinding::from_original_pins(",
++                       "&self.selection", "self.initial_head", "self.binding",
++                       "binding.before_read(bytes, request_id)?",
++                       "binding.after_read(request, started_at, original)"):
++            self.rejects(HOST, "fn evidence_response(", marker)
++        self.rejects(HOST, "fn from_original_receipt_owner(",
++                     "binding::original_context(config, &selection)?",
++                     "(selection.snapshot().head_digest, selection.original_receipt_binding())")
++        self.rejects(HOST, "fn evidence_response(",
++                     "binding.before_read(bytes, request_id)?",
++                     "(serde_json::from_slice(bytes)?, now()?)")
++        source = (ROOT / HOST).read_text()
++        begin, end = bounds(source, "fn evidence_response(")
++        check_start, check_stop = locate(
++            source, "let (request, started_at) = binding.before_read(bytes, request_id)?;", begin, end
++        )
++        read_start, _ = locate(source, "let original = {", check_stop, end)
++        read_end = PROOF._rust_item_end(code(source), read_start)
++        self.assertIsNotNone(read_end)
++        assert read_end is not None
++        self.assertEqual(source[read_end:read_end + 2], "};")
++        read_stop = read_end + 2
++        self.assertFalse(source[check_stop:read_start].strip())
++        swapped = (source[:check_start] + source[read_start:read_stop]
++                   + "\n        " + source[check_start:check_stop] + source[read_stop:])
++        self.verifies(HOST, source)
++        with self.assertRaises(PROOF.VerificationFailure):
++            self.verifies(HOST, swapped)
++        hidden = ("let _unused = || binding.before_read(bytes, request_id);\n"
++                  "        let (request, started_at) = (serde_json::from_slice(bytes)?, now()?);")
++        self.rejects(HOST, "fn evidence_response(",
++                     "let (request, started_at) = binding.before_read(bytes, request_id)?;", hidden)
+ 
+     def test_host_keeps_original_custody_session_and_finite_exchange_budgets(self):
+         for marker in ("timeout.is_zero()", "timeout > Duration::from_millis(500)", ".try_acquire_owned()",
+--- a/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
++++ b/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
+@@ -31,6 +31,7 @@
+     AGENT + "cell_q24_training_source.rs",
+         AGENT + "circuit_model_selection_receipt_sources.rs",
+     AGENT + "neuron_cell_evaluation_qualification_sources.rs",
++    AGENT + "circuit_evaluated_version_commands.rs",
+ )
+ FUNCTIONS = {
+     OWNER: {
+@@ -40,7 +41,7 @@
+         "fn attest_original_completion(", "fn attest_original_remote_completion(",
+         "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
+         "fn read_remote_next_use(", "fn original_command_profile(",
+-        "fn into_command_owner(",
++        "fn into_command_owner(", "fn require_profile(", "fn evaluated_owners(",
+     },
+     BINDING: {
+         "fn validate_config(", "fn authenticate_predecessors(", "fn receipt(",

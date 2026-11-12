@@ -1,0 +1,31 @@
+.....F.......
+======================================================================
+FAIL: test_opaque_receipt_has_no_additional_public_capability_or_mutable_owner_getter (__main__.EvaluatedSelectionClosureTests.test_opaque_receipt_has_no_additional_public_capability_or_mutable_owner_getter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_selection_source_closure.py", line 355, in test_opaque_receipt_has_no_additional_public_capability_or_mutable_owner_getter
+    self.assertEqual(sorted(re.findall(r"\bpub\s+(?:async\s+)?fn\s+(\w+)", code)), sorted((
+AssertionError: Lists differ: ['att[81 chars]ated_command_owner', 'into_evaluated_readback_[78 chars]hot'] != ['att[81 chars]ated_readback_owner', 'readback_evaluated_sele[46 chars]hot']
+
+First differing element 3:
+'into_evaluated_command_owner'
+'into_evaluated_readback_owner'
+
+First list contains 1 additional elements.
+First extra element 8:
+'snapshot'
+
+  ['attest_original_evaluated_selection',
+   'attestation',
+   'create_evaluated',
+-  'into_evaluated_command_owner',
+   'into_evaluated_readback_owner',
+   'readback_evaluated_selection',
+   'receipt',
+   'recover_evaluated',
+   'snapshot']
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.781s
+
+FAILED (failures=1)

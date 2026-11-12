@@ -1,0 +1,29 @@
+.F...F
+======================================================================
+FAIL: test_each_source_role_and_clock_constraint_remains_present_in_order (__main__.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py", line 145, in test_each_source_role_and_clock_constraint_remains_present_in_order
+    self.assertEqual({row["function"] for row in functions}, expected)
+AssertionError: Items in the first set but not the second:
+'fn require_profile('
+'fn evaluated_owners('
+
+======================================================================
+FAIL: test_real_read_edges_are_registered_and_owner_constructors_remain_closed (__main__.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed) (boundary='learning_evidence_original_owner_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py", line 122, in test_real_read_edges_are_registered_and_owner_constructors_remain_closed
+    self.assertEqual(row.product_callers, callers)
+AssertionError: Tuples differ: ('cod[533 chars]s.rs', 'codex-rs/hepta-agentd/src/circuit_eval[22 chars].rs') != ('cod[533 chars]s.rs')
+
+First tuple contains 1 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'
+
+Diff is 880 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.904s
+
+FAILED (failures=2)

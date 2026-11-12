@@ -1,0 +1,461 @@
+{
+  "status": "DATA_ONLY_NO_SOURCE_OR_GLOBAL_REGISTRY_CHANGES",
+  "branch": "codex/learn-cohort-checkpoint-037c",
+  "expected_parent": "e18d71c2d066fbefc4f323159a9f2d968eac2d54",
+  "source_checkpoint_tree": "0c69c83a619921caa45f3bb3e8f7f6b6eec12d5a",
+  "packages": 4,
+  "logical_deliverables": 3,
+  "expanded_original_files": 68,
+  "files_excluding_this_manifest": [
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/CORE_IDENTITY_VERIFICATION.json",
+      "bytes": 1971,
+      "sha256": "3146f7b20d08ee9456f435e159073f173d52e2da351339c674d140c917496493",
+      "git_blob": "25f52287eec67301ebe54fb0d069e142ffb8aaad"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/INPUT_RECONCILIATION.json",
+      "bytes": 37984,
+      "sha256": "e79540e277475de0af5daf0d7cae96c2605a124cdb35def2194bd4284e5175f5",
+      "git_blob": "54b06f6cc9a6944dd11f0fa01bfe2b30d962a5b7"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/MANIFEST.json",
+      "bytes": 4345,
+      "sha256": "cf6df7ece75602a1dd2cb6b3262d3d2896d2b8836faf2df9501eee004a8ab065",
+      "git_blob": "7b5769322eba880943e8ef117812a71a8f8cdc19"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/merge-evidence/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "bytes": 15513,
+      "sha256": "28c5131f78a1671e4e7ba4b0918a1c9ae825f8d6c87fb2f6ae3540930cfaad1f",
+      "git_blob": "a4b4fd8169407c81360b279f6796b366240de9ca"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/merge-evidence/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 72167,
+      "sha256": "76830312435171ae52f85d95be1931d7593c91c3734c7bf1afeae655c905da18",
+      "git_blob": "8ea08d0b85d609c745e67506e878b8777cec17f9"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/REPORT.md",
+      "bytes": 1911,
+      "sha256": "b7da88bd621ea6d36463f843c8295155b4093bbfc5b80ee9fb682bf498ef1dd9",
+      "git_blob": "eb80d460085b445f7520b85bf41484f90235887f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_next_use_source_closure/result.json",
+      "bytes": 171,
+      "sha256": "fc551be481029e969ac25d1991acc928a0c71dba6d18b3030c71c2990e3eb9e3",
+      "git_blob": "9a7dea7848e2247c4bc4139c08af7df70a9fdd8f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_next_use_source_closure/stderr.log",
+      "bytes": 123,
+      "sha256": "627061c4578d9c9858b6d3fae3d22b95ae223004d2deedc01321702d1d36bcc5",
+      "git_blob": "24a301ee32d8e4ef0401d967fce84afd7823a96c"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_next_use_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_selection_source_closure/result.json",
+      "bytes": 172,
+      "sha256": "7ed99265e77c4db42f4864f5a069e2693cf67d1cd65163b06cb474d2c2ebe540",
+      "git_blob": "c33514c8674c5d0fdb46d8f6173ba2a515907a55"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_selection_source_closure/stderr.log",
+      "bytes": 112,
+      "sha256": "6f6c2116fd3e9a4d206107a625bcaacefba15422d76397d36fa014b68ed44893",
+      "git_blob": "84863144b50b1ef609371eec5fac25725625e1e2"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_evaluated_selection_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_original_circuit_observer_source_closure/result.json",
+      "bytes": 178,
+      "sha256": "052258a856254e771c7a6ff94819d7263bfe4be9ea44f0a20aa12197eb79fd77",
+      "git_blob": "f948e990fcfb2aba7a159572e94dcad8e1ff8991"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_original_circuit_observer_source_closure/stderr.log",
+      "bytes": 104,
+      "sha256": "6da326ace4c83b34d858bf3fb3b8b39c858b1372690b8603717c6577854306b1",
+      "git_blob": "e6c6195fedac3f1c6e64022dd9467d7fc809f503"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/results/test_original_circuit_observer_source_closure/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/files/SOURCE_INVENTORY.json",
+      "bytes": 54859,
+      "sha256": "97724992958079b313f0f70db75f89cfb93f8e17447c773d8fbdda021d387334",
+      "git_blob": "3a62e3ef7e7898e4056701e257e0aca05e183ac5"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_actual_v2/ORIGINAL_BUNDLE.json",
+      "bytes": 53351,
+      "sha256": "cd9c58bdbc6b71aa4b1ef6a41e7b702192a6ebcc522c6c91d6aa2d797247cf75",
+      "git_blob": "c41978455408dd52d5d15df17e9049ddaa6420f7"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/BASE_QA_MANIFEST.json",
+      "bytes": 1738,
+      "sha256": "57930a62ed71c8413099505eb8868247e327897ba1648acb4bde3019946d53ae",
+      "git_blob": "4533d386f8e93c08f3877fc1115f3796e083743a"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/BINDING_FORBIDDEN_DELTA.json",
+      "bytes": 22115,
+      "sha256": "2cbfbf7d15b1137c5697a488093fb5108c98e0e7fcdd69166e312bdac1e59928",
+      "git_blob": "e80b7345bf368589d945df6cd20f55bf1a5371c6"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/after-attempt-01/RESULTS.json",
+      "bytes": 1111,
+      "sha256": "7d9026cc64a3ccbe4768154c3a052c967c085d709e58f8caf6ded73fb45d7f25",
+      "git_blob": "a6fb711426c89a7f68aba590104bbe905e63cd28"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/after-attempt-01/test_evaluated_next_use_source_closure.py.log",
+      "bytes": 4443,
+      "sha256": "a5a24f9c609aa1cbd0364f305641017a3a15d886d50db55697d8ce648d82f0ed",
+      "git_blob": "88c2b521fddefe464dbb4090bed366df6b57cd83"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/after-attempt-01/test_evaluated_selection_source_closure.py.log",
+      "bytes": 2594,
+      "sha256": "3a7e85941755d416508b82118d895b7282d83db1f8c852d298f1cdf05577c385",
+      "git_blob": "5f52c6ffa0ffcaac63ca548694524548f25b6214"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/after-attempt-01/test_original_circuit_observer_source_closure.py.log",
+      "bytes": 1292,
+      "sha256": "bbc4635573801fc75116594a67baf696eb3c0de1ee58a9cc4be72308814edc0b",
+      "git_blob": "bf11c2339266f8821290f0802940f25b76d67112"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/before/RESULTS.json",
+      "bytes": 1131,
+      "sha256": "545d5a349e250645d07d8f465869f8a9ce28265d272be3f2a7887c236a89ec42",
+      "git_blob": "44f2111b3476e3e5bb89e5a5a6c614965be36c0e"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/before/test_evaluated_next_use_source_closure.py.log",
+      "bytes": 8102,
+      "sha256": "9e9418c0c951bce6408822d457c6bea9aa7b7d7424c54a08ff6654213fc9a129",
+      "git_blob": "77348825c1a0e067118dd158dc519ca32ba3f7e9"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/before/test_evaluated_selection_source_closure.py.log",
+      "bytes": 1445,
+      "sha256": "cb6efe70a04a73f676eb55fe4cb7606fbd9b59a3d36564ecd80dc42fb578edb6",
+      "git_blob": "8f3216c8acef4cc5a2c47a9697306d97e523dd9c"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/before/test_original_circuit_observer_source_closure.py.log",
+      "bytes": 1964,
+      "sha256": "58d433d8eadb6cbe10d36b0df9849092a50505261903c46948fe3967d82feb7e",
+      "git_blob": "bff124e79a95f672679664443433a6a6257f2f6e"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/binding-forbidden-before-after.json",
+      "bytes": 1925,
+      "sha256": "a9dce1fb69186a2cf42c3d8542163c1e5f3cd861ab3d34912da2b119970473cb",
+      "git_blob": "a6ce19d62e28b6432b378d36243a89000fc7cbb9"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/patch-roundtrip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/evidence/patch-roundtrip.stdout",
+      "bytes": 224,
+      "sha256": "ce057fc85eacb3fceb562840b347b9613eb8b77d5b2ed841549ae44f7a3ef839",
+      "git_blob": "1d96e0408c8f8d061b4cad69673b55d4af8570cd"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/INPUT_MANIFEST.json",
+      "bytes": 4652,
+      "sha256": "07c8cd4fc871b7c7eb163dc574063048ed553aeb2e53ade14e887b135a2c520e",
+      "git_blob": "1a32435b4bc50084637e6074ca6f0cc45bc228bb"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/legacy-source-qa-migration-v1.patch",
+      "bytes": 13097,
+      "sha256": "01e16a49627a369897b2881bf3ee0f0d8a782fed2f8de4e189548466abde873d",
+      "git_blob": "986fb2a52f376723bfa07256e6a1cbbbc96fb8dd"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/MANIFEST_V1.json",
+      "bytes": 9648,
+      "sha256": "7b1ae1b113c3e48b39abcb3376a449c22a93c0fdb472d75b5b21b7912caebc47",
+      "git_blob": "cb9bd6788bb00b3d0d4864581847eab40fd627fe"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/migrate_binding_guard.py",
+      "bytes": 4078,
+      "sha256": "6a97560aaa674152548845e3c97db0411ba38f59d220ecb9f878154999dd4287",
+      "git_blob": "4912eda0fc3fe6ff2de16779acc2fa84db4780df"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/MIGRATION_MAP.json",
+      "bytes": 2234,
+      "sha256": "79aec8f89da6eef2589285284e475ca851d80f89eb7d00484b21b06d3a10eb85",
+      "git_blob": "716c8f1baafd7a45b527103866c3d131ce751eca"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/postimages/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "bytes": 37566,
+      "sha256": "db710ca506d268ed46dba8d0605c3f0df7ce84f6b96606fdd39f4f5ae3c9f0ea",
+      "git_blob": "12cd06b62484817187858fe80b0ae37252303d76"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/postimages/qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "bytes": 22171,
+      "sha256": "f0fbb590564d4db50b934c1d167e1bf183ddcdffd85755ecd506bfb1d4eddc74",
+      "git_blob": "c7bfd6b769821c0d335d61b0efb9cc66feeceb69"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/postimages/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "bytes": 11042,
+      "sha256": "f13fcdae3c52de92b5dbb6404c1782ed0fc8f93c611d297d3e6edc98028304a8",
+      "git_blob": "8ed82c4dc2debf7dac0884d5a6703d05bf7b4c6f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/files/REPORT.md",
+      "bytes": 2965,
+      "sha256": "d7cba8f4981f3f420369596c140467f59eccb79afa65cd96d5e945bb82c20b76",
+      "git_blob": "f35e9ac4e45397ae40a3c90c52bf1e774724f9f3"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/legacy_qa43_migration/ORIGINAL_BUNDLE.json",
+      "bytes": 41659,
+      "sha256": "1262cb3583ee4a2c6b6c68e7404e6e23610e0b6f3d4fd8e8868fe305c2696746",
+      "git_blob": "3e6dc612b89b401cee754a081fab84514297b1aa"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/PACKAGES.json",
+      "bytes": 4108,
+      "sha256": "957a49321e272c2b29e6fb172495433d956746baba16b49e6dca69e094e4bc99",
+      "git_blob": "aa0bec4a07413fcfbe83fb8c7269f08be577c561"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/README.md",
+      "bytes": 1819,
+      "sha256": "8de8b51b7ba0ea283f8b0a350d593a6e450e1c66df5b6e064c77e1f9f74eb6a2",
+      "git_blob": "b49c940447a9dde4af31f16b04848f4dd4dab354"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-01/result.json",
+      "bytes": 184,
+      "sha256": "8df35cb61ee8450bcbec4855da8a1363fceda55bf1544fff4fa146a00ca38e48",
+      "git_blob": "6a611c2b0e1f12187a793438cd37e6af3948b25f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-01/stderr.log",
+      "bytes": 119,
+      "sha256": "d6f9ea4628c0989792a9d073d5c63ba3c354fe17d1077ae3618d8b165525b492",
+      "git_blob": "caeffed339f36289879881fd3cacd745e522d6a2"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-01/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-02/result.json",
+      "bytes": 184,
+      "sha256": "8df35cb61ee8450bcbec4855da8a1363fceda55bf1544fff4fa146a00ca38e48",
+      "git_blob": "6a611c2b0e1f12187a793438cd37e6af3948b25f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-02/stderr.log",
+      "bytes": 119,
+      "sha256": "aed5678a584813d1a4a5cbb219642781c3b6971ee56f244b583411ddd4a2f9ba",
+      "git_blob": "6ba38148b29c34cb45fe525b229b4b582dc95441"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/after-attempt-02/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/before/result.json",
+      "bytes": 315,
+      "sha256": "3bbc400f99514ff0709ff556a081f725c62c3a3a6344fbda258ca6a066bf9c5c",
+      "git_blob": "1a4b843666a63ccc5fdd44e2402a24b0f2feab0c"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/before/stderr.log",
+      "bytes": 15434,
+      "sha256": "0e87afd349192e9a803c7210efa93824afd232d9491da94524040b54e1981627",
+      "git_blob": "9d71d5b120f1f9c7cd1d6cdd527144b20e3d275c"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/before/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/build_delta.py",
+      "bytes": 13848,
+      "sha256": "0632cf0a3622b76c7ef895392db1124a74610f2b2f222d8a91bd3fb6f5fe2064",
+      "git_blob": "44167a5408a3a1c2c2e699a8b747130ba7820ade"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/CALLERS-SINCE-ROOT-V1.delta.json",
+      "bytes": 65570,
+      "sha256": "d43a15aa415ee04c72288f969a25a89178219c058bc2171387a011de32289696",
+      "git_blob": "13cd4c71e620e02aec05f6e9f3cb5011d7580ee7"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/CALLERS.delta.json",
+      "bytes": 168327,
+      "sha256": "59b685ca143ed69518c4d7f4ec42e00cd7c8c6d7975a368f5f348b90feeae269",
+      "git_blob": "2e46f3bf713fffb8be0f6376715049fb1c94110f"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/GUARD_ALIGNMENTS.json",
+      "bytes": 3447,
+      "sha256": "b06dff71ade5e5166679d64160bbc420bd13f407454e893831443d36bf3f7c13",
+      "git_blob": "e793a23b92796f573d9b1f45e193c218c747b5e2"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/INPUT_MANIFEST.json",
+      "bytes": 7234,
+      "sha256": "28eb1c1646a688f90f3f947248655c08b2b8f6956fb072316f94a4761ba7e8c8",
+      "git_blob": "8b4395c340c0a474ae572cd86648171662dae763"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/INPUT_VERIFICATION.json",
+      "bytes": 2661,
+      "sha256": "0ba6f694acc027343023760eed12c5b048b0e9b22047c126127d0dcf8848f988",
+      "git_blob": "f7f4adfca0523b575240e806fafbea85490708e1"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/MANIFEST.json",
+      "bytes": 5209,
+      "sha256": "36bc8db796298c2ce2bfd7e819574bc125c42c2ca4978332478cefff3bf7d33a",
+      "git_blob": "f731ba8baac54f1c0fa725385e6e9b5a6155767a"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/postimages/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py",
+      "bytes": 31602,
+      "sha256": "cef8f018ead5711b7cf228a9e5fcbd07656519f3397ebaa964cd8f309c35f741",
+      "git_blob": "b1610eb0463cfaeb964d26386030824d50ebf5ad"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/QA_CASE_MAP.json",
+      "bytes": 1719,
+      "sha256": "53a91ccb7d83bc7abe389976f9ecce8f99d2a3211568ca61bdd0777a5cfe7732",
+      "git_blob": "4c7053024d1f0570489d7fe0b05a58bd0d5af7a7"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/QA_PATCH_ROUNDTRIP.json",
+      "bytes": 167,
+      "sha256": "80f1a12af28123d5c3f034e6810af4db3615a4a2a7ba0eb196226d7753dc5486",
+      "git_blob": "68bb7f11922b2ec5c2037695e950ed5e72997547"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/REPORT.md",
+      "bytes": 5537,
+      "sha256": "7f198b663a496003cdf1de80ff2e63e0f782a12c6768d9f4e12be8cc5dbd0a82",
+      "git_blob": "48ab9d7bb7c7603b8883b25793cbf4e66f790ef6"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/files/ROOT_QA_V2.patch",
+      "bytes": 13814,
+      "sha256": "65367d22e7b12903ff849e152283bae8a420a83c84052ea6f402b3346de93d3e",
+      "git_blob": "5cf7cd4b111e7dc84e8418eabcc7eaa2890503c4"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/root_progress_postread_guards/ORIGINAL_BUNDLE.json",
+      "bytes": 55754,
+      "sha256": "14da6ec27325c87ceda8a178ba7924f84edf02d6c0415f608e6d54b420948752",
+      "git_blob": "bf7131eb96de439519dac118d614e2af40c801d9"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/CALLERS_DELTA_PLAN_V2.json",
+      "bytes": 646532,
+      "sha256": "25da7b8438ee06b1027045613441cfce88a1d214b33ab4a2f0c3f1eaa421f577",
+      "git_blob": "6044f900aef3e0b0215bdaf8226f302be093e66d"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/GUARDED_FUNCTIONS.json",
+      "bytes": 6961,
+      "sha256": "f5f9950d63d82bf93480ea9e8808dbd4e9fa14087eaa522df06a70e14af0026a",
+      "git_blob": "044b79ee1a534d2d19c4895de0b9371730146458"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/MANIFEST_V2.json",
+      "bytes": 4878,
+      "sha256": "f8b6a30872dcca3a48f529912e4b083e23ae049a440063d02877cf89746864ad",
+      "git_blob": "7e65507610450c3459134b1c9f183a67b40b9b7b"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/postimages/qa/b4-no-bypass/test_evaluated_retention_command_source_closure.py",
+      "bytes": 51393,
+      "sha256": "1ef9403577d3e662564b52cf70ea68808f455aec44e317009470059c9df8a8a1",
+      "git_blob": "a3d90487a495f57de02eae9f262325232f72c127"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/regenerate_qa.py",
+      "bytes": 1298,
+      "sha256": "17817a65f379d5745e89cf843b28aa78cf543662ed1707fa4a257ac91155cb7e",
+      "git_blob": "af0b0a01b8608c84fcf4a7ac4986752bb90377f6"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/REPORT_V2.md",
+      "bytes": 3993,
+      "sha256": "a2586049deab1809aeb914312b25bfcd1b4f3b39feab4cad092a9a510a38e8cc",
+      "git_blob": "80c9744d43c1d8b7109a3cb58fbad12b269f691b"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/reviewed_contract_constants.json",
+      "bytes": 32417,
+      "sha256": "950346a488dd555c1c8104cea1dd217da1fbfe11cf746fd9ce1aa79304c65aa4",
+      "git_blob": "6c1af6a22b1090cac953b22fb8990f7137fed850"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/source_qa.template.py",
+      "bytes": 26749,
+      "sha256": "ae1ef668107a541c9a530cd5859a1267be99aa3842fce3709be05fa334e250d9",
+      "git_blob": "648a8970f9a79e42ff2da4fcca82f88bab7be3f8"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-a96-v1/source-qa-attempt-03.log",
+      "bytes": 165,
+      "sha256": "163bd4fd219f4923585a5f8bb15be1857419e3b4739cd8ebbc4f560464d8a82a",
+      "git_blob": "36c3851c739b058d3afd25714d71cb12b2940026"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/files/candidate-evaluated-command-guards-builder-v1.py",
+      "bytes": 19783,
+      "sha256": "88cb2495b4be70ba9a84adb2295e3cf9f262b2474df5c99df0ac692d38c92850",
+      "git_blob": "a4061bef364fb46fa98698959abe0721ca0dec76"
+    },
+    {
+      "path": "qualification/learn-cohort-037c-checkpoint/guards/sc_command_guards/ORIGINAL_BUNDLE.json",
+      "bytes": 121118,
+      "sha256": "cd08fa9c397124ded0cbc26e0232107f86684e36f96728d4c477f1d7dcbf15e9",
+      "git_blob": "7ebdee7e4960ff2d80bbfe04dcbbd36ec5b19f37"
+    }
+  ]
+}

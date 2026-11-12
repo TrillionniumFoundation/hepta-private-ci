@@ -1,0 +1,44 @@
+[
+  {
+    "attack": "fn illicit_key_slot(_: &ed25519_dalek::SigningKey) {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'SigningKey'"
+  },
+  {
+    "attack": "fn execute() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'execute('"
+  },
+  {
+    "attack": "fn serve_execute() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'serve_execute('"
+  },
+  {
+    "attack": "fn create_evaluated() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'create_evaluated('"
+  },
+  {
+    "attack": "fn recover_evaluated() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'recover_evaluated('"
+  },
+  {
+    "attack": "pub fn from_original_receipt_owner() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'pub fn from_original_receipt_owner('"
+  },
+  {
+    "attack": "pub(crate) fn evidence_response() {}",
+    "before": "accepted by this protected row",
+    "after": "rejected",
+    "after_error": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_binding.rs: forbidden marker present: 'pub(crate) fn evidence_response('"
+  }
+]

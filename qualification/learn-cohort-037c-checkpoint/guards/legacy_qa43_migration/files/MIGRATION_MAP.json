@@ -1,0 +1,38 @@
+{
+  "case_inventory": {
+    "original": 41,
+    "retained": 41,
+    "added": 2,
+    "final": 43
+  },
+  "selection": {
+    "public_inventory_added_only": "into_evaluated_command_owner",
+    "all_original_negative_tests_retained": true
+  },
+  "next_use": {
+    "fixed_context": "owner.original_command_profile remains on host; all context/scope/signer/full-original-signature and initial-head construction mutations moved to binding::original_context; original initial_head field constructor now targets the same initial.snapshot().head_digest tuple element",
+    "request": "all request/schema/purpose/id/binding/actor/predecessor/digest/canonical-head/time checks and comparison flips moved to binding::before_read; actual readback invocation remains on host",
+    "response": "actual snapshot/Cell/Trainer/Evaluator source-field mutations remain on host; all original signed-result/clock/pin/evidence-encoding mutations moved to binding::after_read",
+    "uninvoked_closures": "three original conditional checks moved exactly to original_context/before_read/after_read; all other original closure attacks retained",
+    "host_delegation_added": [
+      "remove actual original_context binding",
+      "substitute future head for initial original context",
+      "remove fixed selection/head/binding pins",
+      "bypass before_read with raw JSON parse",
+      "remove after_read",
+      "swap authenticated request check behind original owner I/O",
+      "put real before_read in an unused closure while parsing unvalidated request"
+    ],
+    "visibility_added": "all three private ReadbackBinding fields reject pub/pub(crate)/pub(super), with and without comment decoys",
+    "forbidden": "all 30 original readonly-host prohibitions pinned in both old host and extracted binding; 7 individual-row previously accepted mutation cases now rejected"
+  },
+  "observer": {
+    "exact_function_inventory_additions": [
+      "fn require_profile(",
+      "fn evaluated_owners("
+    ],
+    "exact_actual_caller_added": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+    "unregistered_caller_and_empty_callset_attacks_retained": true
+  },
+  "fourth_suite_not_modified": "test_evaluated_published_read_source_closure.py"
+}

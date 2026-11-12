@@ -1,0 +1,89 @@
+...........FF.F..FFF....
+======================================================================
+FAIL: test_host_checks_each_correlated_readonly_request_before_original_io (__main__.EvaluatedNextUseClosureTests.test_host_checks_each_correlated_readonly_request_before_original_io)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 440, in test_host_checks_each_correlated_readonly_request_before_original_io
+    self.rejects(HOST, "fn evidence_response(", marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 90, in rejects
+    start, stop = locate(source, marker, begin, end, occurrence)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('request.schema != 1', 0, 0)
+
+======================================================================
+FAIL: test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head (__main__.EvaluatedNextUseClosureTests.test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 421, in test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head
+    self.rejects(HOST, "fn from_original_receipt_owner(", marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 90, in rejects
+    start, stop = locate(source, marker, begin, end, occurrence)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('selection.original_receipt_predecessors(now()?)?', 0, 0)
+
+======================================================================
+FAIL: test_host_response_is_exact_original_s_and_never_new_signing (__main__.EvaluatedNextUseClosureTests.test_host_response_is_exact_original_s_and_never_new_signing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 451, in test_host_response_is_exact_original_s_and_never_new_signing
+    self.rejects(HOST, "fn evidence_response(", marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 90, in rejects
+    start, stop = locate(source, marker, begin, end, occurrence)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('original.original_receipt_predecessors(current)?', 0, 0)
+
+======================================================================
+FAIL: test_new_work_checks_cannot_be_deferred_into_uninvoked_closures (__main__.EvaluatedNextUseClosureTests.test_new_work_checks_cannot_be_deferred_into_uninvoked_closures) (path='codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs', marker='if config.decision != *selection.original_context().snapshot()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 210, in test_new_work_checks_cannot_be_deferred_into_uninvoked_closures
+    self.rejects_hidden(path, function, marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 98, in rejects_hidden
+    start, _ = locate(source, marker, begin, end, occurrence)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('if config.decision != *selection.original_context().snapshot()', 0, 0)
+
+======================================================================
+FAIL: test_new_work_checks_cannot_be_deferred_into_uninvoked_closures (__main__.EvaluatedNextUseClosureTests.test_new_work_checks_cannot_be_deferred_into_uninvoked_closures) (path='codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs', marker='if request.schema != 1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 210, in test_new_work_checks_cannot_be_deferred_into_uninvoked_closures
+    self.rejects_hidden(path, function, marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 98, in rejects_hidden
+    start, _ = locate(source, marker, begin, end, occurrence)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('if request.schema != 1', 0, 0)
+
+======================================================================
+FAIL: test_new_work_checks_cannot_be_deferred_into_uninvoked_closures (__main__.EvaluatedNextUseClosureTests.test_new_work_checks_cannot_be_deferred_into_uninvoked_closures) (path='codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs', marker='if current < started_at')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 210, in test_new_work_checks_cannot_be_deferred_into_uninvoked_closures
+    self.rejects_hidden(path, function, marker)
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 98, in rejects_hidden
+    start, _ = locate(source, marker, begin, end, occurrence)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/037c0371c195/candidate-legacy-qa-migration-a96-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py", line 66, in locate
+    assert len(matches) > occurrence, (needle, len(matches), occurrence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('if current < started_at', 0, 0)
+
+----------------------------------------------------------------------
+Ran 22 tests in 6.167s
+
+FAILED (failures=6)

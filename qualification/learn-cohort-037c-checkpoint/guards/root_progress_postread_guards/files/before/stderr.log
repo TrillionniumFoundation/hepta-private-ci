@@ -1,0 +1,105 @@
+E.....EE...EEE
+======================================================================
+ERROR: test_all_actual_sources_and_private_functions_are_guarded (__main__.EvaluatedCandidateContinuationTests.test_all_actual_sources_and_private_functions_are_guarded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 173, in test_all_actual_sources_and_private_functions_are_guarded
+    self.verifies(path, (ROOT / path).read_text())
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 646, in _verify_function_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs: unique top-level code marker required: let evaluation =
+
+======================================================================
+ERROR: test_execute_effects_and_root_checks_stay_inside_the_fresh_branch (__main__.EvaluatedCandidateContinuationTests.test_execute_effects_and_root_checks_stay_inside_the_fresh_branch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 262, in test_execute_effects_and_root_checks_stay_inside_the_fresh_branch
+    self.rejects(path,name,'self.common.origin != Origin::Fresh','self.common.origin == Origin::Fresh')
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 154, in rejects
+    self.verifies(path, original)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs:fn prepare_evaluated_version(: required code order missing: ['self.common.root.as_ref()', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::prepare_original_version(', 'RootResidentLearningEffectGateV3::training_cancellation(gate)', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'OriginalCircuitRetainedVersionErrorV1::Busy', 'OriginalCircuitRetainedVersionErrorV1::ReadbackRequired', 'OriginalCircuitRetainedVersionErrorV1::CommitUncertain', 'loop {', 'actual\n                .as_ref()\n                .is_some_and(|read| read.publication().is_some())', 'RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    four_cut,\n                    &self.common.material.scope,\n                )', 'return Ok(())', 'lane.version_requests >= 128 - VERSION_READBACK_RESERVE', 'tokio::time::sleep(Duration::from_secs(2)).await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::readback(client)\n                    .await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )']
+
+======================================================================
+ERROR: test_full_prefix_checks_and_actual_predecessor_io_are_mandatory (__main__.EvaluatedCandidateContinuationTests.test_full_prefix_checks_and_actual_predecessor_io_are_mandatory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 242, in test_full_prefix_checks_and_actual_predecessor_io_are_mandatory
+    self.rejects(MAIN,'evaluated_retention_prefix',marker)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 154, in rejects
+    self.verifies(path, original)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 646, in _verify_function_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs: unique top-level code marker required: let evaluation =
+
+======================================================================
+ERROR: test_stage_routing_keeps_qualified_candidate_refusal_and_tnu_route (__main__.EvaluatedCandidateContinuationTests.test_stage_routing_keeps_qualified_candidate_refusal_and_tnu_route)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 227, in test_stage_routing_keeps_qualified_candidate_refusal_and_tnu_route
+    self.rejects(MAIN,'require_evaluated_retention_stage',marker)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 154, in rejects
+    self.verifies(path, original)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 646, in _verify_function_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs: unique top-level code marker required: let evaluation =
+
+======================================================================
+ERROR: test_unknown_results_and_cancellation_keep_the_lane_fenced (__main__.EvaluatedCandidateContinuationTests.test_unknown_results_and_cancellation_keep_the_lane_fenced)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 256, in test_unknown_results_and_cancellation_keep_the_lane_fenced
+    self.rejects(path,name,marker,replacement)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 154, in rejects
+    self.verifies(path, original)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs:fn prepare_evaluated_version(: required code order missing: ['self.common.root.as_ref()', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::prepare_original_version(', 'RootResidentLearningEffectGateV3::training_cancellation(gate)', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'OriginalCircuitRetainedVersionErrorV1::Busy', 'OriginalCircuitRetainedVersionErrorV1::ReadbackRequired', 'OriginalCircuitRetainedVersionErrorV1::CommitUncertain', 'loop {', 'actual\n                .as_ref()\n                .is_some_and(|read| read.publication().is_some())', 'RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    four_cut,\n                    &self.common.material.scope,\n                )', 'return Ok(())', 'lane.version_requests >= 128 - VERSION_READBACK_RESERVE', 'tokio::time::sleep(Duration::from_secs(2)).await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::readback(client)\n                    .await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )']
+
+======================================================================
+ERROR: test_version_prepare_once_and_original_frame_reserve_are_not_retried (__main__.EvaluatedCandidateContinuationTests.test_version_prepare_once_and_original_frame_reserve_are_not_retried)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 272, in test_version_prepare_once_and_original_frame_reserve_are_not_retried
+    self.rejects(S,'prepare_evaluated_version',marker)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 154, in rejects
+    self.verifies(path, original)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py", line 148, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/037c0371c195/candidate-root-progress-postread-guards-v2/overlay/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+evaluated_candidate_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs:fn prepare_evaluated_version(: required code order missing: ['self.common.root.as_ref()', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::prepare_original_version(', 'RootResidentLearningEffectGateV3::training_cancellation(gate)', 'RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )', 'OriginalCircuitRetainedVersionErrorV1::Busy', 'OriginalCircuitRetainedVersionErrorV1::ReadbackRequired', 'OriginalCircuitRetainedVersionErrorV1::CommitUncertain', 'loop {', 'actual\n                .as_ref()\n                .is_some_and(|read| read.publication().is_some())', 'RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    four_cut,\n                    &self.common.material.scope,\n                )', 'return Ok(())', 'lane.version_requests >= 128 - VERSION_READBACK_RESERVE', 'tokio::time::sleep(Duration::from_secs(2)).await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )', 'lane.take_version_request()?', 'OriginalCircuitRetainedVersionClientV1::readback(client)\n                    .await', 'RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )']
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.281s
+
+FAILED (errors=6)

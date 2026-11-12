@@ -1,0 +1,188 @@
+--- a/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py
+@@ -32,8 +32,9 @@
+ STATE = AGENT + 'cell_q24_no_update_stage_state.rs'
+ STAGES = AGENT + 'authority_host_learning_resident_stages.rs'
+ ROOT_AUTH = AGENT + 'authority_host_learning_resident_auth.rs'
+-PRODUCT = (MAIN, AUTH, BINDING, CHANNELS, S, C, BATCH, OWNERS, INPUTS, STATE, STAGES, ROOT_AUTH)
+-NEW = (MAIN, AUTH, BINDING, CHANNELS, S, C, BATCH)
++EVALUATION = AGENT + 'cell_q24_candidate_stage_evaluation.rs'
++PRODUCT = (MAIN, AUTH, BINDING, CHANNELS, S, C, BATCH, OWNERS, INPUTS, STATE, STAGES, ROOT_AUTH, EVALUATION)
++NEW = (MAIN, AUTH, BINDING, CHANNELS, S, C, BATCH, EVALUATION)
+ EXPECTED = {
+     'learning_original_candidate_evaluated_stage_admission': (STAGES,),
+     'learning_original_candidate_evaluated_attestations': (STAGES,),
+@@ -43,6 +44,7 @@
+     'learning_original_candidate_evaluated_selection': (MAIN, BATCH),
+     'learning_original_candidate_evaluated_next_use': (MAIN, BATCH),
+     'learning_original_candidate_evaluated_channels': (BINDING,),
++    'learning_original_candidate_evaluation_postread': (MAIN,),
+ }
+ 
+ 
+@@ -131,6 +133,33 @@
+             raise PROOF.VerificationFailure('actual production channel transfer is required')
+ 
+ 
++def require_progress_and_postread_contract(path, source):
++    """Only actual original reads complete a Current proof in this invocation."""
++    code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
++    if path == S:
++        _, start, end = span(source, 'prepare_evaluated_version')
++        body = code[start:end]
++        if len(re.findall(r'OriginalCircuitRetainedVersionClientV1::prepare_original_version\s*\(', body)) != 1:
++            raise PROOF.VerificationFailure('exactly one original Prepare; progress cannot retry it')
++        if len(re.findall(r'OriginalCircuitRetainedVersionClientV1::publication_progress\s*\(', body)) != 1:
++            raise PROOF.VerificationFailure('only one actual progress exchange per loop iteration')
++        if len(re.findall(r'\.read_evaluated_version\s*\(\s*lane\s*\)', body)) != 1:
++            raise PROOF.VerificationFailure('Available must consume actual complete readback')
++    if path == EVALUATION:
++        actual = set(re.findall(r'\bfn (\w+)\(', code))
++        expected = {'new', 'into_parts', 'training_prefix', 'execute_original_evaluation',
++                    'read_original_evaluation', 'read_original_evaluation_with_originals',
++                    'original_evaluation', 'verify_original_evaluation', 'evaluation_failure'}
++        if actual != expected or len(re.findall(r'\bPostEvaluationOriginals\b', code)) != 5:
++            raise PROOF.VerificationFailure('post-read values have one private producer and no extra factory/cache')
++        _, start, end = span(source, 'original_evaluation')
++        body = code[start:end]
++        if len(re.findall(r'common\.read_prefix\s*\(', body)) != 2:
++            raise PROOF.VerificationFailure('both original common reads remain')
++        if len(re.findall(r'OriginalCellQ24CandidateStageOwnersV1::read_original_candidate\s*\(', body)) != 2:
++            raise PROOF.VerificationFailure('both actual Candidate exchanges remain')
++
++
+ class EvaluatedCandidateContinuationTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls):
+@@ -148,6 +177,7 @@
+             PROOF._verify_protected_files(root, {'protected_file': rows})
+         require_execute_dominance(path, source)
+         require_readonly_and_mounts(path, source)
++        require_progress_and_postread_contract(path, source)
+ 
+     def rejects(self, path, name, marker, replacement='', ordinal=0):
+         original = (ROOT / path).read_text()
+@@ -240,10 +270,16 @@
+                        'original.record(evaluation.clone(), evaluation.observed_unix_seconds)?',
+                        'original.next_stage() != Some(Stage::Selection) || original.candidate().is_none()'):
+             self.rejects(MAIN,'evaluated_retention_prefix',marker)
+-        for marker in ('self.read_original_evaluation(four_cut).await?', 'common.read_prefix(&self.common, &training_cut).await?',
++        for marker in ('self.read_original_evaluation_with_originals(four_cut).await?', '.into_parts()',
++                       'common.original_dataset.as_ref() != Some(&dataset)',
++                       'common.original_training.as_ref() != Some(&training)',
+                        'evaluation.snapshot() != four_cut','evaluation.training_attestation() != training.attestation()',
+                        'self.verify_original_evaluation(four_cut, &training_cut, &training, &evaluation, fresh)?'):
+             self.rejects(MAIN,'evaluated_predecessors',marker)
++        # The old mandatory final original read now belongs to the same awaited
++        # producer; it was not converted to a cache or metadata comparison.
++        for ordinal in (0, 1):
++            self.rejects(EVALUATION,'original_evaluation','common.read_prefix(&self.common, &training_cut).await?',ordinal=ordinal)
+         self.rejects_unused(MAIN,'evaluated_predecessors')
+ 
+     def test_unknown_results_and_cancellation_keep_the_lane_fenced(self):
+@@ -268,11 +304,104 @@
+ 
+     def test_version_prepare_once_and_original_frame_reserve_are_not_retried(self):
+         for marker in ('lane.take_version_request()?','RootResidentLearningEffectGateV3::training_cancellation(gate)',
+-                       'lane.version_requests >= 128 - VERSION_READBACK_RESERVE','OriginalCircuitRetainedVersionClientV1::readback(client).await'):
++                       'lane.version_requests >= 128 - VERSION_READBACK_RESERVE - 1',
++                       'OriginalCircuitRetainedVersionClientV1::publication_progress(client).await',
++                       'self.read_evaluated_version(lane).await?'):
+             self.rejects(S,'prepare_evaluated_version',marker)
++        self.rejects(S,'read_evaluated_version','OriginalCircuitRetainedVersionClientV1::readback(client).await')
+         self.rejects(MAIN,'take_version_request','self.version_requests >= 128','self.version_requests >= 256')
+         self.rejects(S,'read_evaluated_version','actual.publication().is_none()','actual.publication().is_some()')
+         self.rejects_unused(S,'prepare_evaluated_version')
++
++    def test_pending_is_not_a_current_publication_and_available_requires_full_read(self):
++        for marker, replacement in (
++            ('Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending) | Err(OriginalCircuitRetainedVersionErrorV1::Busy) => {}',
++             'Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending) | Err(OriginalCircuitRetainedVersionErrorV1::Busy) => { return Ok(()); }'),
++            ('Ok(OriginalCircuitEvaluatedVersionProgressV1::ReadbackAvailable)',
++             'Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending)'),
++            ('self.read_evaluated_version(lane).await?;', ''),
++            ('self.read_evaluated_version(lane).await?;',
++             'let _unused = || async { self.read_evaluated_version(lane).await };'),
++            ('Err(_) => return Err(Error::CommitUncertain)', 'Err(_) => return Ok(())'),
++        ):
++            self.rejects(S, 'prepare_evaluated_version', marker, replacement)
++
++    def test_progress_reserves_a_complete_read_and_later_current_frames(self):
++        for replacement in ('lane.version_requests >= 128',
++                            'lane.version_requests >= 128 - VERSION_READBACK_RESERVE',
++                            'lane.version_requests >= 256 - VERSION_READBACK_RESERVE - 1'):
++            self.rejects(S, 'prepare_evaluated_version',
++                         'lane.version_requests >= 128 - VERSION_READBACK_RESERVE - 1', replacement)
++        original = (ROOT/S).read_text()
++        for replacement in ('const VERSION_READBACK_RESERVE: usize = 0;',
++                            '// const VERSION_READBACK_RESERVE: usize = 8;\nconst VERSION_READBACK_RESERVE: usize = 0;'):
++            changed = original.replace('const VERSION_READBACK_RESERVE: usize = 8;', replacement, 1)
++            with self.assertRaises(PROOF.VerificationFailure): self.verifies(S, changed)
++
++    def test_progress_cannot_issue_a_second_prepare_or_hide_a_progress_call(self):
++        self.rejects(S, 'prepare_evaluated_version', 'loop {',
++                     'loop { OriginalCircuitRetainedVersionClientV1::prepare_original_version(client, cancel).await?;')
++        self.rejects(S, 'prepare_evaluated_version',
++                     'OriginalCircuitRetainedVersionClientV1::publication_progress(client).await',
++                     '{ let _unused = || async { OriginalCircuitRetainedVersionClientV1::publication_progress(client).await }; panic!() }')
++
++    def test_postread_opaque_fields_cannot_be_exposed_cloned_or_constructed_elsewhere(self):
++        original = (ROOT/EVALUATION).read_text()
++        start = original.index('pub(super) struct PostEvaluationOriginals {')
++        for field in ('dataset', 'training', 'evaluation'):
++            point = original.index('    ' + field + ':', start)
++            for visibility in ('pub ', 'pub(crate) ', 'pub(super) '):
++                changed = original[:point] + '    ' + visibility + original[point+4:]
++                with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        changed = original[:start] + '#[derive(Clone)]\n' + original[start:]
++        with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        changed = original + '\nimpl PostEvaluationOriginals { pub(crate) fn forge(dataset: OriginalCellQ24MaterialCommandReceiptV1, training: OriginalCellQ24TrainingCommandReceiptV1, evaluation: OriginalCellEvaluationCommandReceiptV1) -> Self { Self { dataset, training, evaluation } } }\n'
++        with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        caller = (ROOT/MAIN).read_text() + '\nfn forge(dataset: OriginalCellQ24MaterialCommandReceiptV1, training: OriginalCellQ24TrainingCommandReceiptV1, evaluation: OriginalCellEvaluationCommandReceiptV1) { let _forged = PostEvaluationOriginals { dataset, training, evaluation }; }\n'
++        with self.assertRaises(PROOF.VerificationFailure): self.verifies(MAIN, caller)
++
++    def test_postread_current_cannot_be_stored_or_returned_without_live_read(self):
++        original = (ROOT/EVALUATION).read_text()
++        for replacement in ('pub(super) struct EvaluationLane {\n    postread: Option<PostEvaluationOriginals>,',
++                            'pub(super) struct EvaluationLane {\n    postread: Option<super::evaluation::PostEvaluationOriginals>,'):
++            changed = original.replace('pub(super) struct EvaluationLane {', replacement, 1)
++            with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        self.rejects(EVALUATION, 'read_original_evaluation_with_originals',
++                     'self.original_evaluation(snapshot, Action::Readback).await',
++                     'Ok(self.evaluation.try_lock()?.postread.take().unwrap())')
++        self.rejects(EVALUATION, 'read_original_evaluation_with_originals',
++                     'self.original_evaluation(snapshot, Action::Readback).await',
++                     'self.original_evaluation(snapshot, Action::Execute).await')
++        self.rejects_unused(EVALUATION, 'read_original_evaluation_with_originals')
++
++    def test_postread_values_are_minted_only_after_final_actual_io_and_full_auth(self):
++        for marker in ('dataset: common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone()',
++                       'training: current_training.clone()', 'evaluation: original.clone()',
++                       'auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?',
++                       'self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?'):
++            self.rejects(EVALUATION, 'original_evaluation', marker)
++        self.rejects(EVALUATION, 'original_evaluation', 'training: current_training.clone()', 'training: training.clone()')
++        original = (ROOT/EVALUATION).read_text()
++        code, start, end = span(original, 'original_evaluation')
++        post = locate(code[start:end], 'let post = PostEvaluationOriginals {')
++        post_start = start + post.start()
++        post_end = PROOF._rust_item_end(code, post_start)
++        self.assertIsNotNone(post_end)
++        post_end = code.index(';', post_end) + 1
++        block = original[post_start:post_end]
++        final_read = locate(code[start:end], 'common.read_prefix(&self.common, &training_cut).await?;', 1)
++        read_start = start + final_read.start()
++        changed = (original[:read_start] + block + '\n' + original[read_start:post_start]
++                   + original[post_end:])
++        with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        changed = original.replace('lane.failed = false;\n        Ok(post)', 'Ok(post)', 1)
++        changed = changed[:post_start] + 'lane.failed = false;\n        ' + changed[post_start:]
++        with self.assertRaises(PROOF.VerificationFailure): self.verifies(EVALUATION, changed)
++        self.rejects_unused(EVALUATION, 'original_evaluation')
++        self.rejects_unused(EVALUATION, 'into_parts')
++        self.rejects(MAIN, 'evaluated_predecessors',
++                     'common.original_training.as_ref() != Some(&training)',
++                     'common.original_training.as_ref().map(|old| old.receipt()) != Some(training.receipt())')
+ 
+     def test_c_reads_actual_s_and_separate_readiness_before_dispatch(self):
+         for marker in ('OriginalCircuitEvaluatedSelectionCommandClientV1::readback(selector)',

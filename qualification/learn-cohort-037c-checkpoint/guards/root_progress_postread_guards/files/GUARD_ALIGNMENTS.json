@@ -1,0 +1,23 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+    "function": "fn original_evaluation(",
+    "field": "sequence",
+    "before": "dataset: common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone()",
+    "after": "dataset: common\n                .original_dataset\n                .as_ref()\n                .ok_or(Error::CommitUncertain)?\n                .clone()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+    "function": "fn evaluated_predecessors(",
+    "field": "sequence",
+    "before": "self.common.continuation.try_lock()",
+    "after": "self\n            .common\n            .continuation\n            .try_lock()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+    "function": "fn prepare_evaluated_version(",
+    "field": "sequence",
+    "before": "{\n        let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n        RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await?;\n        lane.take_version_request()?;\n        let client = lane.version.as_ref().ok_or(Error::CommitUncertain)?;\n        let result = OriginalCircuitRetainedVersionClientV1::prepare_original_version(\n            client,\n            RootResidentLearningEffectGateV3::training_cancellation(gate),\n        )\n        .await;\n        if RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await\n        .is_err()\n        {\n            return Err(Error::CommitUncertain);\n        }\n        let actual = match result {\n            Ok(original) => Some(original),\n            Err(\n                OriginalCircuitRetainedVersionErrorV1::Busy\n                | OriginalCircuitRetainedVersionErrorV1::ReadbackRequired\n                | OriginalCircuitRetainedVersionErrorV1::CommitUncertain,\n            ) => None,\n            Err(_) => return Err(Error::CommitUncertain),\n        };\n        ",
+    "after": "{\n        let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n        RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await?;\n        lane.take_version_request()?;\n        let client = lane.version.as_ref().ok_or(Error::CommitUncertain)?;\n        let result = OriginalCircuitRetainedVersionClientV1::prepare_original_version(\n            client,\n            RootResidentLearningEffectGateV3::training_cancellation(gate),\n        )\n        .await;\n        if RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await\n        .is_err()\n        {\n            return Err(Error::CommitUncertain);\n        }\n        let actual = match result {\n            Ok(original) => Some(original),\n            Err(\n                OriginalCircuitRetainedVersionErrorV1::Busy\n                | OriginalCircuitRetainedVersionErrorV1::ReadbackRequired\n                | OriginalCircuitRetainedVersionErrorV1::CommitUncertain,\n            ) => None,\n            Err(_) => return Err(Error::CommitUncertain),\n        };"
+  }
+]
