@@ -144,7 +144,7 @@ class OwnedProducer:
         self.worker = None
         self.code_sha256 = sha(Path(__file__).read_bytes())
 
-    def observe(self, operation_id, request, capture):
+    def observe(self, operation_id, request, capture, *, decision_sha256=None):
         """Reserve one attempt, then acquire real bytes and run the frozen producer.
 
         Capture returns image bytes, or {image_bytes, exact_text}; exact_text is
@@ -188,9 +188,13 @@ class OwnedProducer:
             "producer source/model changed",
         )
         require(callable(capture), "configured capture callback required")
+        admitted_request = {"capture": request, "adapter_sha256": self.code_sha256}
+        if decision_sha256 is not None:
+            require(digest(decision_sha256) != "0" * 64, "empty decision binding")
+            admitted_request["decision_sha256"] = decision_sha256
         return self.owner.execute(
             operation_id,
-            {"capture": request, "adapter_sha256": self.code_sha256},
+            admitted_request,
             dispatch=lambda admitted: self._capture(
                 operation_id, admitted["capture"], capture
             ),
