@@ -1,0 +1,34 @@
+{
+  "schema": "hepta-final-source-architecture-originals-root-review-v1",
+  "recorded_at_utc": "2026-11-12T02:31:23.976Z",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "independent_provider_log_refetch": true,
+  "provider_log_blobs_match": true,
+  "source_log_blob": "4b0ce48733ce47eadc8f410ae028000ce7b41574",
+  "source_log_bytes": 865453,
+  "source_execution_records_match_independent_root_parse": true,
+  "source_root_review": {
+    "execution_count": 31,
+    "all_passed": true,
+    "all_before_after_exact_clean": true
+  },
+  "source_original_jobs_api_conclusion": "success",
+  "source_original_final_unchanged_check": "success",
+  "merge_log_blob": "94d92ebbb47023fb548d81965910d4e3273fa8a0",
+  "merge_log_bytes": 81255,
+  "merge_identity_plan": {
+    "base_sha": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "lane": "base-merge",
+    "native_execution_required": false,
+    "requires_source_head_success": true,
+    "schema_version": 1,
+    "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tested_sha": "299f51d9419be139ed9eb0c7a3b1417d760b12de",
+    "tested_tree": "28269245f5ef63c5395143b2aa1a63c184676c33"
+  },
+  "merge_native_execution_claimed": false,
+  "architecture_required_aggregate": "queued at checkpoint",
+  "interpretation": "31 separately scoped original command records passed on the source-head; this is engineering qualification. Base-merge same-tree conditional reuse is not another native execution. No aggregate success, real A/B/C task, net benefit or RSI is inferred."
+}

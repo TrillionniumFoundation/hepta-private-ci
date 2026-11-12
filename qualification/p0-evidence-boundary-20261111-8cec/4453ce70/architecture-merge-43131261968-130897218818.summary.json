@@ -1,0 +1,204 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "workflow": {
+    "name": "Hepta architecture convergence",
+    "path": ".github/workflows/hepta-architecture-convergence.yml",
+    "run_id": 43131261968,
+    "run_attempt": 1,
+    "job_id": 130897218818,
+    "job_name": "Architecture convergence (base-merge)",
+    "lane": "base-merge",
+    "conclusion": "success",
+    "started_at": "2026-11-12T01:50:39Z",
+    "completed_at": "2026-11-12T01:51:15Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131261968/jobs/130897218818"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "94d92ebbb47023fb548d81965910d4e3273fa8a0",
+    "encoding": "utf-8",
+    "byte_count": 81255,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits, including original leading BOM and line endings"
+  },
+  "candidate_plan": {
+    "base_sha": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "lane": "base-merge",
+    "native_execution_required": false,
+    "requires_source_head_success": true,
+    "schema_version": 1,
+    "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tested_sha": "299f51d9419be139ed9eb0c7a3b1417d760b12de",
+    "tested_tree": "28269245f5ef63c5395143b2aa1a63c184676c33"
+  },
+  "dependency_preserved": {
+    "requires_source_head_success": true,
+    "source_head_run_id": 43131261968,
+    "source_head_job_id": 130897219170,
+    "source_head_summary_blob_sha": "eca60399091e9fd4693e98582b86fe7edd50ca3d",
+    "source_head_raw_log_blob_sha": "4b0ce48733ce47eadc8f410ae028000ce7b41574",
+    "source_head_observed_conclusion": "success"
+  },
+  "all_job_steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Check out exact candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Fetch exact qualification history",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify GitHub prospective merge ref matches this exact candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Construct the canonical prospective merge",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Bind tested identity",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Select exact-tree native execution",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Select affected architecture boundaries",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Test execution-record rejection and retained diagnostics",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Repository-control rejection regressions",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Prepare native prerequisites",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Expose DotSlash for existing integration tests",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Resolve verified V8 artifacts",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Verify Cargo lock resolution and print exact resolver drift",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Inference owner regressions and streaming digest",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Durable operation and external-effect recovery",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Module lifecycle generations and migration rollback",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Objective and prompt policy convergence",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Converged authority and browser semantics",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Selected-artifact adoption and explicit rollback",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Compiled service lifecycle and actual process restart",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Derived-view drift",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Retain advisory candidate Git transport observation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify unchanged reviewed source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Retain exact source input on failure for reproducible diagnosis",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Retain command records and bounded stdout stderr",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Check out exact candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "coverage_limits": {
+    "qualification_scope": "Exact synthetic-merge identity, parent/tree checks, and same-tree reuse conditions.",
+    "native_execution_required": false,
+    "native_results_claimed": false,
+    "counting_rule": "This is not a second native execution or an independent task cohort. Preserve the explicit dependency on the separate same-source source-head success.",
+    "aggregate_state": "Architecture required fan-in remains a separate job and was queued when this metadata was created."
+  }
+}
