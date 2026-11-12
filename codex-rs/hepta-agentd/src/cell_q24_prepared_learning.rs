@@ -197,7 +197,9 @@ impl CellQ24PreparedLearningV1 {
     }
 
     pub fn read_validated_facts(&self) -> Result<CellQ24PreparedLearningFactsV1, Error> {
-        self.with_original_prepared_operation(OriginalPreparedReadV1::read_validated_facts)?
+        self.with_original_prepared_operation(|read| {
+            OriginalPreparedReadV1::read_validated_facts(read)
+        })?
     }
 
     pub fn require_initial(
