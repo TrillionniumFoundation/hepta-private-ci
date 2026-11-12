@@ -20,7 +20,7 @@ use ed25519_dalek::SigningKey;
 
 use super::CellQ24DatasetFreezePreparationV1;
 use super::CellQ24LearningPreparationErrorV1;
-use super::now;
+use super::OriginalDatasetLedgerV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -105,7 +105,9 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
             Err(LearningOriginalOwnerErrorV1::Store(
                 ProductEvaluationExecutionStoreErrorV1::Missing,
             )) => {
-                if now()? >= preparation.config.request.envelope.expiry_unix_seconds {
+                if preparation.observed_unix_seconds()?
+                    >= preparation.config.request.envelope.expiry_unix_seconds
+                {
                     return Err(LearningOriginalOwnerErrorV1::Binding(
                         "new freeze authorization deadline",
                     )
@@ -116,8 +118,9 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
                 let key = &self.key;
                 let saved = &self.saved;
                 self.journal.commit_once(saved, || {
-                    let observed =
-                        now().map_err(|_| LearningOriginalOwnerErrorV1::Binding("freeze clock"))?;
+                    let observed = preparation
+                        .observed_unix_seconds()
+                        .map_err(|_| LearningOriginalOwnerErrorV1::Binding("freeze clock"))?;
                     if observed >= preparation.config.request.envelope.expiry_unix_seconds
                         || preparation.signing_payload().map_err(|_| {
                             LearningOriginalOwnerErrorV1::Binding("original freeze changed")
@@ -185,7 +188,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
             LearningEvidenceRoleV1::Evaluator,
             &signed,
             &payload,
-            now()?,
+            preparation.observed_unix_seconds()?,
         )?;
         if verified.principal() != &self.config.signer.principal
             || verified.controller_id() != &self.config.signer.controller_id
@@ -207,6 +210,9 @@ fn validate_config(
     config: &OriginalCellQ24DatasetFreezeSigningConfigV1,
     key: &SigningKey,
 ) -> Result<ProductEvaluationExecutionKeyV1, Error> {
+    if let OriginalDatasetLedgerV1::Historical(ledger) = &preparation.ledger {
+        return Ok(preparation.validate_historical_freezer(ledger, config, key)?);
+    }
     let identity = preparation.identity()?;
     let ledger = preparation
         .ledger
@@ -227,11 +233,15 @@ fn validate_config(
         )
         .into());
     }
-    original.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &config.signer, now()?)?;
+    original.require_signer_binding(
+        LearningEvidenceRoleV1::Evaluator,
+        &config.signer,
+        preparation.observed_unix_seconds()?,
+    )?;
     config.verifier.require_signer_binding(
         LearningEvidenceRoleV1::Evaluator,
         &config.signer,
-        now()?,
+        preparation.observed_unix_seconds()?,
     )?;
     Ok(crate::original_q24_dataset_freeze_execution_key_v1(
         &preparation.config.request.operation_id,

@@ -53,6 +53,8 @@ use crate::HostAuthorityLearningProfileV1;
 mod capture;
 #[path = "cell_q24_dataset_freeze_owner.rs"]
 mod freeze_owner;
+#[path = "cell_q24_dataset_historical_freezer.rs"]
+mod historical_freezer;
 #[path = "cell_q24_dataset_historical_preparation.rs"]
 mod historical_preparation;
 #[path = "cell_q24_prepared_learning.rs"]
