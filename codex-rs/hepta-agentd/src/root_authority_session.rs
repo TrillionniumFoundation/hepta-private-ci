@@ -432,6 +432,10 @@ async fn refresh(
     stream: &RootObservationStream,
     writer_file: &WriterCustody,
 ) -> Result<(), AgentdRootAuthorityError> {
+    // Declared before the original permit: diagnostic output happens only
+    // after the unchanged refresh and consumer barrier release that permit.
+    #[cfg(test)]
+    let mut timing = tests::component_phase_timing("session.refresh", "original-feed");
     let _serial = live
         .serial
         .acquire()
@@ -448,6 +452,8 @@ async fn refresh(
         #[cfg(test)]
         eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-start-boottime error={_error:?}");
     })?;
+    #[cfg(test)]
+    timing.mark_original("request-started", started);
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
             schema_version: 2,
@@ -464,6 +470,8 @@ async fn refresh(
         #[cfg(test)]
         eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-end-boottime error={_error:?}");
     })?;
+    #[cfg(test)]
+    timing.mark_original("response-ended", ended);
     live.proof.matches_observation(&observation).inspect_err(|_error| {
         #[cfg(test)]
         eprintln!(
@@ -472,6 +480,8 @@ async fn refresh(
     })?;
     let head = observation.revocations.clone();
     let changed = !live.cache.revocations_match(&head);
+    #[cfg(test)]
+    timing.mark(if changed { "accept-changed-head" } else { "accept-same-head" });
     if changed {
         live.cache.begin_update();
     }
@@ -483,6 +493,8 @@ async fn refresh(
             "ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}"
         );
     })?;
+    #[cfg(test)]
+    timing.mark("cache-accepted");
     if changed {
         let consumers = live
             .consumers
@@ -503,6 +515,8 @@ async fn refresh(
             })?;
         live.cache.end_update();
     }
+    #[cfg(test)]
+    timing.mark("consumer-barrier-finished");
     live.current().inspect_err(|_error| {
         #[cfg(test)]
         eprintln!(
@@ -511,6 +525,8 @@ async fn refresh(
     })?;
     #[cfg(test)]
     refresh_completion.complete();
+    #[cfg(test)]
+    timing.complete();
     Ok(())
 }
 async fn synchronize_consumers(

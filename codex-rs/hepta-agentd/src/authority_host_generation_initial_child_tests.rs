@@ -53,19 +53,31 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             assert_eq!(plan.phase, phase);
             let (journal, witness) = receive_target_files(&socket)
                 .with_context(|| format!("initial child {phase:?}: receiving original target descriptors"))?;
+            let timing = crate::root_authority_session::tests::component_phase_timing(
+                "initial.child.five-lane-open", phase,
+            );
             let mut production = crate::receive_root_production_inputs(
                 sealed, root_pin, &identity, TIMEOUT, LIFETIME,
             ).await.with_context(|| format!("initial child {phase:?}: opening original five-lane inputs"))?;
+            drop(timing);
             eprintln!("ROOT_INITIAL_CHILD phase={phase:?} stage=original_five_lane_inputs_open");
             let connection = production.take_generation_publication_connection()?;
             assert!(production.take_generation_publication_connection().is_err());
             let claims = production.bootstrap.consumers.device.local_state_dir.join("authority.claims");
             // Only the same original Artifact writer is reopened, after the
             // parent released it and transferred its retained signed inputs.
+            let timing = crate::root_authority_session::tests::component_phase_timing(
+                "initial.child.artifact-reopen", phase,
+            );
             let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)
                 .with_context(|| format!("initial child {phase:?}: reopening original Artifact owner"))?;
+            drop(timing);
+            let timing = crate::root_authority_session::tests::component_phase_timing(
+                "initial.child.model-load", phase,
+            );
             let (model, bundle, definition) = material::load(&plan.model_directory)
                 .with_context(|| format!("initial child {phase:?}: loading actual model material"))?;
+            drop(timing);
             let source = material::source(identity.agent_id.as_str())?;
             let target = crate::OriginalRootInitialFeatureTargetV1 {
                 files: RootGenerationJournalInputsV1 {
@@ -78,8 +90,12 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             ).with_context(|| format!("initial child {phase:?}: binding original publication authorities"))?;
             assert_eq!(socket.send(b"ORIGINAL_INPUTS_READY")?, 21);
             eprintln!("ROOT_INITIAL_CHILD phase={phase:?} stage=original_inputs_ready_sent");
+            let timing = crate::root_authority_session::tests::component_phase_timing(
+                "initial.child.root-enrollment-wait", phase,
+            );
             let enrolled: bool = data(&socket)
                 .with_context(|| format!("initial child {phase:?}: awaiting original enrollment result"))?;
+            drop(timing);
             if matches!(phase, Phase::ReserveExisting | Phase::Corrupt | Phase::Restored) {
                 assert!(!enrolled, "existing CURRENT, actual corrupt or durably fenced original material rejected");
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
@@ -100,16 +116,32 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 continue;
             }
             assert!(enrolled);
+            let timing = crate::root_authority_session::tests::component_phase_timing(
+                "initial.child.initial-connect", phase,
+            );
             let initial = initial.connect(connection, TIMEOUT, LIFETIME).await
                 .with_context(|| format!("initial child {phase:?}: connecting original initial lane"))?;
+            drop(timing);
             if phase == Phase::Publish {
                 assert_eq!(production.device.capacity()?.used_nonces, 0);
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.child.prepare-feature", phase,
+                );
                 let prepared = initial.prepare_feature(authorities, selected, target)
                     .with_context(|| format!("initial child {phase:?}: preparing original Feature CURRENT"))?;
+                drop(timing);
                 let binding = prepared.final_use_binding().clone();
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.child.request-grant", phase,
+                );
                 let signed = production.grants.request_grant(&binding)
                     .with_context(|| format!("initial child {phase:?}: requesting original FinalUse grant"))?;
+                drop(timing);
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.child.publish-feature", phase,
+                );
                 let result = prepared.publish(&signed);
+                drop(timing);
                 if plan.lose_ack {
                     require_uncertain(result.err().ok_or_else(|| anyhow::anyhow!("controlled ACK must be lost"))?);
                     observed_ack_loss = true;
@@ -128,8 +160,12 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             } else {
                 let before = std::fs::read(&claims)?;
                 assert_eq!(Some(&before), original_claims.as_ref());
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.child.recover-feature", phase,
+                );
                 let task = initial.recover_feature(authorities, selected, target)
                     .with_context(|| format!("initial child {phase:?}: reading original published Feature"))?;
+                drop(timing);
                 task.require_bundle(&bundle)?;
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(std::fs::read(&claims)?, before);

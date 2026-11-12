@@ -47,12 +47,25 @@ impl HostAuthorityWriterRegistration {
         verifier: &AuthorityLeaseVerifier,
         dispatch: impl FnOnce(u64) -> io::Result<T>,
     ) -> io::Result<T> {
+        #[cfg(test)]
+        let mut timing = crate::root_authority_session::tests::component_phase_timing(
+            "writer.with_live",
+            "original-dispatch",
+        );
+        #[cfg(test)]
+        {
+            timing.minimum_success_ns = Some(20_000_000);
+        }
         self.validate()?;
+        #[cfg(test)]
+        timing.mark("read-lease-start");
         let lease = verifier
             .read_lease(&self.authority_lease.lease_id)
             .map_err(root::lease_error)?
             .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "writer lease missing"))?
             .lease;
+        #[cfg(test)]
+        timing.mark("read-lease-done");
         if lease != self.authority_lease {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
@@ -62,8 +75,14 @@ impl HostAuthorityWriterRegistration {
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
             .map_err(root::lease_error)?;
+        #[cfg(test)]
+        timing.mark("use-verified");
         let (result, _) =
             dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {
+                // Recording only: the outer timing guard writes after the
+                // original dispatch has released its original owner fence.
+                #[cfg(test)]
+                let _callback_timing = timing.callback();
                 match &witness.authority_ref {
                     // Metadata only. The original opaque token and owner fence,
                     // rather than the serializable witness, authorize this call.
@@ -76,6 +95,13 @@ impl HostAuthorityWriterRegistration {
                 }
             })
             .map_err(root::lease_error)?;
+        #[cfg(test)]
+        {
+            timing.mark("dispatch-returned");
+            if result.is_ok() {
+                timing.complete();
+            }
+        }
         result
     }
 }

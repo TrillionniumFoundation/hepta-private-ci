@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "scope": "V7 original Root observation freshness: bounded cfg(test)-only timing, no functional repair",
+  "baseline": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "rust_parent": "d50474f93da462e278cf3ec95acef88701d16799"
+  },
+  "evidence": {
+    "junit_blob": "c1a7678e07626c99ef76ca0d115f83032774070d",
+    "raw_log_blob": "8fcd181c561947a362f924067678ec24fae2b8d1",
+    "actual_tests": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "initial_publish_age_ns": 533636917,
+    "publication_publish_age_ns": 603668108,
+    "time_regressed": false,
+    "interpretation": "Actual now minus the retained original request start exceeded the unchanged 500000000 ns bound. last_checked is also updated by ordinary current(), so it cannot identify response completion or RPC duration."
+  },
+  "source_delta": {
+    "git_blob": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+    "bytes": 11706,
+    "sha256": "9336455a92557e6a3c1f509d546320e020470e58cc246d7c8220ab0efd043886",
+    "operations": 12
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "postimage": {
+        "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+        "bytes": 20883,
+        "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+      },
+      "operation_count": 7
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": {
+        "git_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+        "bytes": 12120,
+        "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+      },
+      "postimage": {
+        "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+        "bytes": 12990,
+        "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3"
+      },
+      "operation_count": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "postimage": {
+        "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+        "bytes": 24410,
+        "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+      },
+      "operation_count": 1
+    }
+  ],
+  "normal_build": {
+    "source_projection": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "added_cfg_blocks": 7,
+        "normal_build_projection_byte_equal": true,
+        "projection_sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "added_cfg_blocks": 7,
+        "normal_build_projection_byte_equal": true,
+        "projection_sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+      }
+    ],
+    "test_module": "root_authority_session.rs retains its existing #[cfg(test)] #[path=\"root_authority_session_tests.rs\"] pub(crate) mod tests",
+    "platform": "Both deployment_issuer and root_authority_session are already target_os=linux in exact lib blob2cbcceb440a7c39313e687a4b0baa1f172defcd3",
+    "changed_authority_calls": 0,
+    "changed_clock_or_freshness_rules": 0,
+    "changed_lock_scope": 0,
+    "changed_timeout_or_sleep": 0,
+    "changed_return_or_error_mapping": 0,
+    "new_features": 0,
+    "new_test_methods": 0,
+    "callers_operations": [],
+    "checker_changes": 0
+  },
+  "timing": {
+    "shared_symbol": "crate::root_authority_session::tests::component_phase_timing(label: &'static str, phase: impl Debug) -> ComponentPhaseTiming",
+    "record_budget": "At most 64 emitted records per process. A slot is reserved at construction; an already-started scope retains its slot. Only a successful writer span under 20000000 ns that produced no bytes returns its slot. Printed slots never return.",
+    "capture": "At most eight static-labelled marks and 64 phase characters. Diagnostic BOOTTIME sampling errors are None and never propagate or affect a safety check. No new live.current(), refresh(), authority validation, I/O recovery or retry is called by the helper.",
+    "refresh": "The timing guard is declared before the original serial permit. Original started and ended are copied, never replaced. Additional test-only markers identify acceptance and consumer-barrier completion. Drop writes only after the permit and existing refresh-failure latch have dropped.",
+    "writer": "The outer timing guard outlives the original dispatch call. A nested callback guard only writes timestamps to the fixed local mark array; it performs no stderr I/O. The outer guard prints after dispatch returned or unwound and released its original lease/revocation guard.",
+    "labels": "read-lease-start/done include the original read_lease lock. read-lease-done to use-verified also includes the original comparison, verify_use lock and its clock validation. use-verified to callback-entry includes original dispatch lock wait plus validation/witness creation, NOT pure mutex-wait time. callback-entry/exit bound original callback work while that lock is held; they are a lower bound for the total lock-hold interval.",
+    "outcomes": "reported_outcome=None means only scope termination without an explicit outcome declaration; it does not classify a fixture as failed. Only an actual Ok result or the original successful refresh final check sets Some(\"Ok\").",
+    "limitations": [
+      "Missing/suppressed records do not prove absence of work. Sequence numbers include scopes that may be suppressed.",
+      "The current helper does not split kernel scheduling, filesystem I/O and CPU inside a measured phase.",
+      "Instrumentation overhead can affect timing; a new run remains evidence for its exact new source only."
+    ]
+  },
+  "causal_findings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "fact": "Original refresh holds serial from acquire through stream read, accept, optional original consumer synchronization and final live.current. The worker then sleeps 100 ms after each completed refresh."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+      "fact": "current checks original request age, actual time regression and ceiling and fences the unchanged stale case. accept also rejects a previous retained observation that already aged out. None of this file changes."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "fact": "Original stream is exclusive; deadline/error/cancellation after taking it does not reconnect or restore uncertain use. Unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "blob": "4459afe74818d940acf090966baf3c0da2bd5384",
+      "fact": "Original observation, consumer and learning-checkpoint exchanges use the same registered writer.with_live."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "blob": "924e4552472038934f665f6acf7a95438294893f",
+      "fact": "with_dispatch_boundary_witness holds the original state Mutex through dispatch_boundary and explicitly drops it afterward. This contracts file is not modified or rebuilt with any new feature."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs",
+      "blob": "4c7638bd3ffc433dde4cfd8aeb3293b5c57cea11",
+      "fact": "Original Initial context holds that writer fence through its action and before/after authority validations."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "fact": "Original with_learning_profile holds the same writer fence through action and postconditions."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_clock.rs",
+      "blob": "c42d9d3c54d741e66ca43ba7a9fcd2bd5e055312",
+      "fact": "refresh_projection locks its original clock, loads retained state, performs original durable CAS, and samples after I/O. These reads/writes and their safety semantics are untouched."
+    }
+  ],
+  "conclusion": "The source proves real serialization paths capable of delaying an observation; the V7 failure log does not identify which path consumed the budget. No functional repair, timeout relaxation, manual refresh, reset, retry or fenced-client revival is proposed here.",
+  "companion": {
+    "owner": "runtime_access",
+    "source_operations": "e83dba8a9611905ddb2351d643fa2ce00d06c1b2",
+    "scope": "20 outer phase spans / 40 insertions in four existing component fixture/child files; same helper; separately reviewed"
+  },
+  "validation": {
+    "source_blob_readbacks_equal": true,
+    "exact_forward_and_reverse_replay": true,
+    "normal_build_added_block_projection_exact": true,
+    "full_compile": false,
+    "formatter": false,
+    "native": false,
+    "full_official_caller_guard": false,
+    "h_started": false,
+    "refs_changed": false,
+    "pr_changed": false
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_rollback": 0
+  },
+  "metadata_correction": {
+    "superseded_operations_blob": "9f96018c5689dbdda32b8f9e4fde663bce81cfef",
+    "superseded_manifest_blob": "01b0fd0378f7bf42283e971bbf45bea4306066b8",
+    "change": "deployment_writer added cfg(test) items are seven, not six. The previous value counted insertion groups instead of conditional items. No Rust byte, operation text or authority behavior changes."
+  }
+}

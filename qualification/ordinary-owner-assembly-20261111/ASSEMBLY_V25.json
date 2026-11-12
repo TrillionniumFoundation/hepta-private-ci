@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.candidate.v25",
+  "parent": "4e88a3adb244e8c8baca89e526637807c538e11c",
+  "parent_tree": "9c2f9ba0876a858db49601f35c505fcc1439f644",
+  "status": "bounded diagnostic source; native maintenance and source-specific qualification pending",
+  "rust_files_changed": 7,
+  "normal_build_authority_behavior_changed": false,
+  "new_test_methods": 0,
+  "root_roster_changed": false,
+  "registry_changed": false,
+  "source_operations": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+  "fixture_operations": "e83dba8a9611905ddb2351d643fa2ce00d06c1b2",
+  "exact_operations": 52,
+  "integration_review": "0766e4709b4f480aeeb5804983e0649b30876213",
+  "fixture_independent_review": "e7477ad5b7b10aa6158b91b80efbac7f3bd01085",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "postimage": {
+        "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+        "bytes": 20883,
+        "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": {
+        "git_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+        "bytes": 12120,
+        "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+      },
+      "postimage": {
+        "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+        "bytes": 12990,
+        "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "postimage": {
+        "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+        "bytes": 24410,
+        "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "postimage": {
+        "git_blob": "eaf9a9e313755e218e257dc32d58f818abaead77",
+        "bytes": 17429,
+        "sha256": "2349d5a8483ed1a3feda4e2897167c9ffc7990643dfb5b577ec0cbb5593ad761"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "postimage": {
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+        "bytes": 32386,
+        "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+      },
+      "postimage": {
+        "git_blob": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+        "bytes": 32800,
+        "sha256": "7e45bca121c9e2fbed6b84931e3edb38de7caab81f21393993dd02a83c4dc860"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "postimage": {
+        "git_blob": "66542ac41091faefba07f70dfb96535b064fd413",
+        "bytes": 24635,
+        "sha256": "a8f7a22744207eb8daaf4c4ddde592595d75d3122a3051d02c1dfb36f652d142"
+      }
+    }
+  ],
+  "purpose": "Measure original observation refresh, original registered-writer dispatch path and existing component phases after V7 genuine500ms freshness refusals. No functional cause or repair is claimed.",
+  "limits": {
+    "unchanged_max_age_ns": 500000000,
+    "max_records_per_process": 64,
+    "writer_success_suppressed_below_ns": 20000000,
+    "missing_record_is_not_zero_wait": true,
+    "dispatch_pre_callback_includes_validation": true,
+    "callback_span_is_lock_hold_lower_bound": true,
+    "diagnostic_samples_not_used_for_authority": true
+  },
+  "original_failure": {
+    "source": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "executed": 17,
+    "passed": 15,
+    "failed": 2,
+    "history_retained": true
+  },
+  "required_next": "Unchanged final qualification harness90994f511820596ecceeb2ecc5ca4ecdafa8c653. Preserve any actual native maintenance drift as terminal failure and exact postimages before further fixed-source tests.",
+  "full_qualification": false,
+  "no_qualification_inheritance": true,
+  "no_main_merge": true,
+  "public_draft_head_unchanged": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  }
+}

@@ -507,7 +507,14 @@ impl Fixture {
         let send = self.offer.try_clone()?;
         let snapshot = std::thread::scope(|scope| {
             let registration = scope.spawn(|| -> anyhow::Result<_> {
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "publication.root.wait-learning-ready", phase,
+                );
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
+                drop(timing);
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "publication.root.deployment-register", phase,
+                );
                 deployment.component_trigger_original(&late_material)?;
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
                 let registered = deployment
@@ -517,6 +524,7 @@ impl Fixture {
                     !registered.binding().parse::<Digest32>()?.is_zero(),
                     "actual Root acknowledgement"
                 );
+                drop(timing);
                 send_data(&self.offer, &self.intent)?;
                 if matches!(phase, Phase::Revoked) {
                     // The existing schema3 owners and recovered publication

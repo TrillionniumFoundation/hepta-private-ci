@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "review": "Independent static review of runtime_access's four V7 component timing files",
+  "baseline": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1"
+  },
+  "source_operations": "e83dba8a9611905ddb2351d643fa2ce00d06c1b2",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "postimage": {
+        "git_blob": "eaf9a9e313755e218e257dc32d58f818abaead77",
+        "bytes": 17429,
+        "sha256": "2349d5a8483ed1a3feda4e2897167c9ffc7990643dfb5b577ec0cbb5593ad761"
+      },
+      "operations": 14,
+      "forward_equal": true,
+      "reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "postimage": {
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "operations": 18,
+      "forward_equal": true,
+      "reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+        "bytes": 32386,
+        "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+      },
+      "postimage": {
+        "git_blob": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+        "bytes": 32800,
+        "sha256": "7e45bca121c9e2fbed6b84931e3edb38de7caab81f21393993dd02a83c4dc860"
+      },
+      "operations": 4,
+      "forward_equal": true,
+      "reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "postimage": {
+        "git_blob": "66542ac41091faefba07f70dfb96535b064fd413",
+        "bytes": 24635,
+        "sha256": "a8f7a22744207eb8daaf4c4ddde592595d75d3122a3051d02c1dfb36f652d142"
+      },
+      "operations": 4,
+      "forward_equal": true,
+      "reverse_equal": true
+    }
+  ],
+  "independently_verified": [
+    "All four preimages fetched by exact f913 path; Git blob identities equal the submitted preimages.",
+    "All four base and postimage Git blobs read in full. Forty exact operations each have one old and one reverse new match at the applicable step. Forward and reverse bytes and all eight SHA256 values match.",
+    "The four source changes are twenty local timer definitions plus twenty timer drops. Removing them recovers all original bytes, including every original assertion, error propagation, timeout and phase/control message.",
+    "Both child runtime builders remain the original two-worker multi-thread Tokio runtime.",
+    "Initial fresh prepare, original grant request, publish and recovery calls retain their original scopes and arguments. The timer does not substitute authority or retry an original operation.",
+    "Publication claim/dispatch/publish uses one outer timer whose explicit drop occurs after the original dispatch returned and the original result was checked. It prints no new log from the original irreversible callback.",
+    "Parent enrollment spans wrap the unchanged production deployment trigger/register calls and end only after those calls return. The waiting spans record scope time without bypassing ready messages or original serving results.",
+    "An early original ? still exits and drops the timer. reported_outcome=None from the shared helper is not a claim of success or failure.",
+    "All fixture phase values are existing Debug enums and all labels are static bounded source literals."
+  ],
+  "dependency": {
+    "helper_file": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+    "helper_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+    "helper_manifest": "1a0d1d00f58ce9a1ba02ee9e511391e91f22eccc",
+    "record_cap_per_process": 64,
+    "qualification": "The shared helper is required; these four files do not independently define it."
+  },
+  "cautions": [
+    "The root registration spans include trigger/material handling and post-call assertions as written; they are not pure lease-mutex timing. The writer-level marks separately bound actual callback work.",
+    "An exhausted shared budget can suppress later spans; no missing record may be treated as proof of zero wait or no action.",
+    "Timing instrumentation can perturb execution. Any forthcoming observation belongs to the exact newly built source; prior V7 failures remain failed.",
+    "This static review does not prove the root cause of the 533.636917 ms and 603.668108 ms cache ages."
+  ],
+  "conclusion": "No concrete blocker found within the four-file diagnostic-only delta. Production authority, identity, proof, lease, nonce, revocation and freshness checks are unchanged.",
+  "validation": {
+    "native": false,
+    "compile": false,
+    "format": false,
+    "full_official_guard": false,
+    "new_test_methods": 0,
+    "callers_changes": 0,
+    "refs_changed": false
+  },
+  "ordinary_acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_rollback": 0
+  },
+  "metadata_correction": {
+    "superseded_review_blob": "511932426b08cfeb22b49d7411da8ec11eefd33d",
+    "change": "Dependency points to the corrected shared manifest (seven writer cfg(test) items); the four reviewed source files and all findings are unchanged."
+  }
+}

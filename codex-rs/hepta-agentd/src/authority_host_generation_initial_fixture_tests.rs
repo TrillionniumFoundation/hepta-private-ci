@@ -430,12 +430,19 @@ impl Fixture {
         );
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.root.wait-original-inputs", phase,
+                );
                 control(&self.offer, b"ORIGINAL_INPUTS_READY")
                     .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
+                drop(timing);
                 // The original child has now opened both real nonce owners.
                 // The production loader invokes the original same-PID cap.
                 let unchanged = support::protected_files(&self.current_path)?;
                 let claims_before = std::fs::read(self.local.join("device/authority.claims"))?;
+                let timing = crate::root_authority_session::tests::component_phase_timing(
+                    "initial.root.deployment-register", phase,
+                );
                 deployment.component_trigger_initial()?;
                 assert_eq!(support::protected_files(&self.current_path)?, unchanged);
                 assert_eq!(
@@ -445,6 +452,7 @@ impl Fixture {
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
                 let deployment: crate::RootGenerationInitialDeploymentV1 = deployment;
                 let outcome = deployment.wait_and_register_initial(&stopping);
+                drop(timing);
                 if reject {
                     anyhow::ensure!(
                         outcome.is_err(),

@@ -555,3 +555,127 @@ impl AgentdRootAuthoritySession {
         })?
     }
 }
+
+// Bounded component diagnostics only. A reserved slot survives until this
+// scope ends, so nested feed work cannot consume its eventual record. No
+// sample below is returned to an authority, freshness or timeout decision.
+static COMPONENT_TIMING_RESERVED: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+static COMPONENT_TIMING_SEQUENCE: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+
+pub(crate) struct ComponentPhaseTiming {
+    label: &'static str,
+    phase: String,
+    sequence: usize,
+    reserved: bool,
+    begin_ns: Option<u64>,
+    marks: [(&'static str, Option<u64>); 8],
+    used: usize,
+    reported_outcome: Option<&'static str>,
+    pub(crate) minimum_success_ns: Option<u64>,
+}
+
+/// Call before acquiring the original guard and drop after that guard. Marks
+/// only sample or copy diagnostic values; they never print while it is held.
+pub(crate) fn component_phase_timing(
+    label: &'static str,
+    phase: impl std::fmt::Debug,
+) -> ComponentPhaseTiming {
+    let reserved = COMPONENT_TIMING_RESERVED
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |used| {
+            (used < 64).then_some(used + 1)
+        })
+        .is_ok();
+    ComponentPhaseTiming {
+        label,
+        phase: format!("{phase:?}").chars().take(64).collect(),
+        sequence: COMPONENT_TIMING_SEQUENCE.fetch_add(1, Ordering::Relaxed),
+        reserved,
+        begin_ns: reserved.then(|| super::boottime_ns().ok()).flatten(),
+        marks: [("", None); 8],
+        used: 0,
+        reported_outcome: None,
+        minimum_success_ns: None,
+    }
+}
+
+impl ComponentPhaseTiming {
+    pub(crate) fn mark(&mut self, label: &'static str) {
+        if self.reserved {
+            self.record(label, super::boottime_ns().ok());
+        }
+    }
+
+    pub(crate) fn mark_original(&mut self, label: &'static str, original_ns: u64) {
+        if self.reserved {
+            self.record(label, Some(original_ns));
+        }
+    }
+
+    fn record(&mut self, label: &'static str, value: Option<u64>) {
+        if let Some(slot) = self.marks.get_mut(self.used) {
+            *slot = (label, value);
+            self.used += 1;
+        }
+    }
+
+    pub(crate) fn complete(&mut self) {
+        self.reported_outcome = Some("Ok");
+        self.mark("complete");
+    }
+
+    pub(crate) fn callback(&mut self) -> ComponentCallbackTiming<'_> {
+        self.mark("callback-entry");
+        ComponentCallbackTiming { timing: self }
+    }
+}
+
+/// This nested guard only records. Its parent prints after the original
+/// dispatch function has released the original lease/revocation guard.
+pub(crate) struct ComponentCallbackTiming<'a> {
+    timing: &'a mut ComponentPhaseTiming,
+}
+
+impl Drop for ComponentCallbackTiming<'_> {
+    fn drop(&mut self) {
+        self.timing.mark("callback-exit");
+    }
+}
+
+impl Drop for ComponentPhaseTiming {
+    fn drop(&mut self) {
+        if !self.reserved {
+            return;
+        }
+        let end_ns = super::boottime_ns().ok();
+        let elapsed_ns = self
+            .begin_ns
+            .zip(end_ns)
+            .and_then(|(begin, end)| end.checked_sub(begin));
+        if self.reported_outcome == Some("Ok")
+            && self
+                .minimum_success_ns
+                .zip(elapsed_ns)
+                .is_some_and(|(minimum, elapsed)| elapsed < minimum)
+        {
+            // This slot produced no bytes and can serve a later scope.
+            COMPONENT_TIMING_RESERVED.fetch_sub(1, Ordering::Relaxed);
+            return;
+        }
+        use std::io::Write as _;
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "ROOT_COMPONENT_TIMING pid={} label={} phase={} sequence={} begin_ns={:?} end_ns={end_ns:?} elapsed_ns={elapsed_ns:?} reported_outcome={:?} marks={:?} record_cap=64",
+            std::process::id(),
+            self.label,
+            self.phase,
+            self.sequence,
+            self.begin_ns,
+            self.reported_outcome,
+            &self.marks[..self.used],
+        );
+        // A printed slot is never returned. At most 64 records are emitted
+        // in this process, including scopes that were already in flight.
+    }
+}
