@@ -7,7 +7,8 @@ use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
-use tokio::time::timeout;
+use tokio::time::Instant;
+use tokio::time::timeout_at;
 
 use super::AgentdClient;
 use super::unexpected;
@@ -43,9 +44,26 @@ impl AgentdClient {
         &self,
         request: AuthBusObjectiveIngress,
     ) -> Result<ObjectiveStartReplyV1, AgentdError> {
+        self.objective_start_with_original_end(request, None).await
+    }
+
+    pub(crate) async fn objective_start_once_until(
+        &self,
+        request: AuthBusObjectiveIngress,
+        end: Instant,
+    ) -> Result<ObjectiveStartReplyV1, AgentdError> {
+        self.objective_start_with_original_end(request, Some(end))
+            .await
+    }
+
+    async fn objective_start_with_original_end(
+        &self,
+        request: AuthBusObjectiveIngress,
+        end: Option<Instant>,
+    ) -> Result<ObjectiveStartReplyV1, AgentdError> {
         let request =
             AgentdRequest::objective_start(self.request_id(), self.spawn_generation, request);
-        let response = match self.send_once(request).await {
+        let response = match self.send_once_with_original_end(request, end).await {
             Ok(response) => response,
             Err(ControlCallError::AcknowledgementLost(error)) => {
                 return Ok(ObjectiveStartReplyV1::AcknowledgementLost(error));
@@ -75,11 +93,22 @@ impl AgentdClient {
     }
 
     async fn send_once(&self, request: AgentdRequest) -> Result<AgentdResponse, ControlCallError> {
+        self.send_once_with_original_end(request, None).await
+    }
+
+    async fn send_once_with_original_end(
+        &self,
+        request: AgentdRequest,
+        end: Option<Instant>,
+    ) -> Result<AgentdResponse, ControlCallError> {
         let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
-            .map_err(AgentdError::from)?;
+        let stream = timeout_at(
+            self.original_phase_end(end)?,
+            UnixStream::connect(&self.socket_path),
+        )
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
+        .map_err(AgentdError::from)?;
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request).map_err(AgentdError::from)?;
         bytes.push(b'\n');
@@ -88,13 +117,16 @@ impl AgentdClient {
                 AgentdError::Protocol("agentd request exceeded frame bound".to_string()).into(),
             );
         }
-        timeout(self.timeout, writer.write_all(&bytes))
+        timeout_at(self.original_phase_end(end)?, writer.write_all(&bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))?
             .map_err(AgentdError::from)?;
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+        let read_end = self
+            .original_phase_end(end)
+            .map_err(ControlCallError::AcknowledgementLost)?;
+        let count = timeout_at(read_end, reader.read_until(b'\n', &mut response_bytes))
             .await
             .map_err(|_| {
                 ControlCallError::AcknowledgementLost(AgentdError::Protocol(
@@ -133,7 +165,23 @@ impl AgentdClient {
             )
             .into());
         }
+        if end.is_some_and(|end| Instant::now() >= end) {
+            return Err(ControlCallError::AcknowledgementLost(
+                AgentdError::Protocol("original agentd control end elapsed".into()),
+            ));
+        }
         Ok(response)
+    }
+
+    fn original_phase_end(&self, end: Option<Instant>) -> Result<Instant, AgentdError> {
+        let now = Instant::now();
+        let deadline = end.map_or(now + self.timeout, |end| (now + self.timeout).min(end));
+        if now >= deadline {
+            return Err(AgentdError::Protocol(
+                "original agentd control end elapsed".into(),
+            ));
+        }
+        Ok(deadline)
     }
 }
 
