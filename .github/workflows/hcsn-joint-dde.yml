@@ -1,0 +1,36 @@
+name: HCSN joint delay-reset candidate checks
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_joint_dde/**
+      - qualification/hcsn_boundary_audit/spatial_generator.py
+      - qualification/hcsn_boundary_audit/refractory_transport.py
+      - .github/workflows/hcsn-joint-dde.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-joint-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install explicit numerical dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Execute actual joint-flow controls
+        run: python -m unittest qualification.hcsn_joint_dde.test_model -v
+      - name: Require clean source tree
+        run: git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=normal)"

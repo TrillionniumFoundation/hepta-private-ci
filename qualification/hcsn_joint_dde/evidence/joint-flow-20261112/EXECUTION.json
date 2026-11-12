@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "qualification.hcsn_joint_dde.test_model",
+    "-v"
+  ],
+  "exit": 0,
+  "python": "3.12.14",
+  "schema": "hcsn-joint-flow-execution-v1",
+  "source_sha256_after": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_joint_dde/basis.py": "18a2e9a309a243e36f74d97a8e39b208a2207dba4d9c01a735c3d687751bab51",
+    "qualification/hcsn_joint_dde/model.py": "e4195fb7f98c28c2f1c8246778b107c2f1a3607a399a8e361aa702574ae1d9bd",
+    "qualification/hcsn_joint_dde/reference.py": "4e0b84506205e19bc750f48d2679a7de37d1f09688c587059c6ade4744e4e716",
+    "qualification/hcsn_joint_dde/test_model.py": "9ed63e86b894318cad1502751e856074f43388812658a3be26a6d6e33d516479"
+  },
+  "source_sha256_before": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_joint_dde/basis.py": "18a2e9a309a243e36f74d97a8e39b208a2207dba4d9c01a735c3d687751bab51",
+    "qualification/hcsn_joint_dde/model.py": "e4195fb7f98c28c2f1c8246778b107c2f1a3607a399a8e361aa702574ae1d9bd",
+    "qualification/hcsn_joint_dde/reference.py": "4e0b84506205e19bc750f48d2679a7de37d1f09688c587059c6ade4744e4e716",
+    "qualification/hcsn_joint_dde/test_model.py": "9ed63e86b894318cad1502751e856074f43388812658a3be26a6d6e33d516479"
+  },
+  "source_unchanged": true,
+  "status": "HOLD_NO_GO",
+  "wall_seconds": 2.4967490949998137
+}
