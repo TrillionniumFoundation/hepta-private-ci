@@ -106,7 +106,7 @@ impl OriginalPublicationReadbackFixture {
         let mut failed = request.clone();
         failed.payload = b"wrong-original-payload".to_vec();
         assert!(self.service.publish(failed).is_err());
-        assert_eq!(
+        ::std::assert_eq!(
             self.service.recovery_required(),
             Some(&request.operation_id)
         );
