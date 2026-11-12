@@ -11139,7 +11139,7 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-neuron/src/witness.rs"
-required = ["const HEADER: usize = 112","const RECORD: usize = 112","const MAX_RECORDS: usize = 4096","file: Mutex<WitnessLockedFile>","header: [u8; HEADER]","history_digest: Digest32","poisoned: AtomicBool","let _ = self.0.unlock()"]
+required = ["const HEADER: usize = 112","const RECORD: usize = 112","const MAX_RECORDS: usize = 4096","file: Mutex<WitnessLockedFile>","header: [u8; HEADER]","history_digest: Digest32","poisoned: AtomicBool,","let _ = self.0.unlock()"]
 forbidden = ["Ok(self.current)","File::open","OpenOptions","std::fs::read","try_clone(","SigningKey","LearningEvidenceVerifierV1::new","pub file:","pub current:","pub history_digest:"]
 required_function_order = [
   { function = "fn acquire(", sequence = ["file.metadata()?.is_file()","return Err(WitnessStoreError::NotRegular)","match file.try_lock()","Ok(()) => Ok(Self(file))","Err(TryLockError::WouldBlock) => Err(WitnessStoreError::Busy)","Err(TryLockError::Error(error)) => Err(error.into())"] },
@@ -11198,9 +11198,10 @@ required_order = [
   ["fn read_model_proposal<", "self.in_model_lane(", "require_original_training(inputs, completed)?", "CellQ24ModelProposalOwnerV1::readback(model, training, inputs)"],
   ["fn in_model_lane<T>", "let _permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "self.owners.try_lock()", "Error::CommitUncertain", "training\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?", "let original = owners.read_original_completion()?", "let result = work(&mut owners.training, &original)", "let current = owners", ".read_original_completion().map_err(", "Error::CommitUncertain", "if current.receipt != original.receipt || current.attestation != original.attestation", "return Err(Error::CommitUncertain)", "result"],
 ]
-required_function_order = [
-  { function = "fn require_original_training(", sequence = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "|| inputs.training_attestation != &completed.attestation", "return Err(Error::Binding(", "Ok(())"], top_level = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "Ok(())"] },
-]
+[[protected_file.required_function_order]]
+function = "fn require_original_training("
+sequence = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "|| inputs.training_attestation != &completed.attestation", "return Err(Error::Binding(", "Ok(())"]
+top_level = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "Ok(())"]
 
 [[protected_file.required_function_order]]
 function = "fn read_candidate_material("
@@ -11430,7 +11431,7 @@ required_order = [["const ORIGINAL_Q24_CANDIDATE_HEAD_BYTES: usize = 12 + 64 * 6
 
 [[protected_file.required_function_order]]
 function = "fn authority("
-sequence = ["AuthorityPosture::DENY_ALL"]
+sequence = ["fn authority(&self) -> AuthorityPosture {", "AuthorityPosture::DENY_ALL"]
 top_level = ["AuthorityPosture::DENY_ALL"]
 
 [[protected_file.required_function_order]]
