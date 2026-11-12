@@ -156,7 +156,7 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
             "observed.original_identity() != &self.identity",
             "observed.original_fence() != &inputs.fence",
             "observed.original_source() != &inputs.source",
-            "observed.publication().bundle_digest()", "!= inputs.definition.bundle_digest",
+            "observed.publication().bundle_digest()\n                                != inputs.definition.bundle_digest",
             "RootHistoricalSourcePinV1::retain_unchecked(", "!= observed",
             "slot.target.observe().map_err(io::Error::other)? != target",
             "current.original_broker_head().map_err(io::Error::other)? != head",

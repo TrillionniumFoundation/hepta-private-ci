@@ -153,7 +153,9 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
             "RootHistoricalSourceHandoffV1::begin(",
             "RootHistoricalSourceHandoffV1::acknowledge(&mut handoff)",
             "RootHistoricalSourceHandoffV1::finalize_after_verified_context(",
-            "retained_root", "retained_target",
+            "let retained_root = Arc::clone(&self.slot.root)",
+            "let retained_target = &self.slot.profile.deployment.target",
+            "retained_root,\n                            retained_target",
             "pin.readback_digest()? != receipt.pin_digest()", "self.acknowledged = true",
         ))
         def early_ack(source):
