@@ -163,6 +163,8 @@ pub use root_independent_b_publication_data::OriginalRootBPublicationDataV2;
 #[cfg(target_os = "linux")]
 mod root_independent_b_notice;
 #[cfg(target_os = "linux")]
+mod root_independent_b_source_ready;
+#[cfg(target_os = "linux")]
 pub use root_independent_b_candidate_notice::OriginalRootBCandidateDataV1;
 #[cfg(target_os = "linux")]
 mod root_independent_b_protocol;

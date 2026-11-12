@@ -58,7 +58,7 @@ pub(crate) struct SourceRequest {
     pub(crate) policy_statement: Vec<u8>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct SourceAcknowledgement {
     pub(crate) schema: u8,
