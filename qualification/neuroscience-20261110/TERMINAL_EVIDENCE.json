@@ -8263,12 +8263,25 @@
     "current_GNU_musl_tests": "Both original dff5 test jobs failed. Seven printed agentd blocks announce1105;985 observed unique terminal methods=888ok+16FAILED+81ignored,120 missing terminal. Six shards timed out; shard6 completed135PASS/4FAIL/14ignored. Normalized seven stdout blocks identical across GNU/musl; not independent samples. Full original bytes and actual metadata independently verified."
   },
   "latest_text_readback": {
-    "status": "IMPORTED_ORIGINAL_BYTES_VERIFIED_PENDING_FINAL_TREE_READBACK",
+    "status": "ALL_IMPORT_BYTES_CANONICAL_TEXTS_AND_COMPLETE_STAGED_TREE_VERIFIED",
     "imported_paths": 259,
     "imported_distinct_git_blobs": 253,
     "imported_referenced_bytes": 23819389,
-    "record": "evidence/terminal-20261112/IMPORT_MAPPING_B10.json",
     "all_imported_bytes_verified": true,
+    "staged_head": "daa2b3cf3dfb558724746ef19712470bfb790ce6",
+    "staged_tree": "7c987691e11be67d72e782b25328bee3af09b192",
+    "base_head": "37ceb8104df4002e2fa582edef64207ed6f72db0",
+    "base_tree": "35b9e514e2832e86c2ae4f07723fed7e2fdc6772",
+    "complete_changed_leaves": 265,
+    "tree_pairs": 37,
+    "canonical_texts": 6,
+    "qualification_only": true,
+    "no_source_changes": true,
+    "record": "evidence/terminal-20261112/FMT5_STAGE_FULL_READBACK.json",
+    "record_git_blob": "3421e99ab7892fe5bcdf995f7e5e3b1286c1cd69",
+    "record_sha256": "ed6ec90b0b6b7e6956b14f702007db56699023ea5d08c795b949fa8f72f7c880",
+    "final_index_publication_rule": "The following proof-linked terminal index and manifest require exact readback and a three-leaf stage-to-final tree check before ref publication.",
+    "owner_decision": null,
     "all_blockers_closed": false
   },
   "current_source": {
