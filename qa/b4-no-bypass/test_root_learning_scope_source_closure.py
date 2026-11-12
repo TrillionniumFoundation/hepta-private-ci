@@ -175,14 +175,29 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
             (CHECKPOINT, "fn vacant_scoped_v2(", "scope\n            .validate_request(&request, &owners)"),
             (CHECKPOINT, "fn from_registered_scoped_v2(", "scope\n            .validate_request(&request, &owners)"),
             (CHECKPOINT, "fn checkpoint(", "scope.validate_snapshot(next)"),
-            (CHECKPOINT, "fn load(", "record.schema != schema"),
-            (CHECKPOINT, "fn load(", "record.binding != binding"),
-            (CHECKPOINT, "fn load(", "scope\n                .validate_snapshot(&snapshot)"),
+            (CHECKPOINT, "fn decode_original_snapshot(", "self.schema != schema"),
+            (CHECKPOINT, "fn decode_original_snapshot(", "self.binding != binding"),
+            (CHECKPOINT, "fn decode_original_snapshot(", "scope\n                .validate_snapshot(&snapshot)"),
             (TRANSPORT, "fn restore(", "scope\n                            .validate_snapshot(&snapshot)"),
             (TRANSPORT, "fn checkpoint(", "scope.validate_snapshot(snapshot)"),
         ):
             with self.subTest(path=path, item=item, marker=marker):
                 self.rejects(path, item, marker)
+
+    def test_completed_data_cannot_accept_an_unfinished_or_different_checkpoint(self):
+        for marker in (
+            "scope.validate_snapshot(initial)",
+            "self\n            .decode_original_snapshot(initial, Some(scope))?",
+            "coordinator.next_stage().is_some()",
+            "snapshot.receipts.len() != codec::MAX_RECEIPTS",
+            "snapshot.training_no_update_v2().is_some()",
+            "snapshot.receipts.last().is_none_or",
+            "LearningIterationStageV1::NextUse",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(CHECKPOINT, "fn read_original_completed_scoped(", marker)
+        self.rejects(CHECKPOINT, "fn load(",
+                     "record.decode_original_snapshot(&self.initial, self.scope.as_ref())?")
 
     def test_worker_checks_scope_before_authentication_and_progress(self):
         for item, marker in (

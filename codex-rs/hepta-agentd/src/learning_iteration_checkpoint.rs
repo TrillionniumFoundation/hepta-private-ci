@@ -340,15 +340,58 @@ impl LearningIterationCheckpointOwnerV1 {
             }
         }
         .map_err(Error::Store)?;
-        let (schema, binding) = self.profile_identity();
-        if record.schema != schema || record.binding != binding {
+        let snapshot = record.decode_original_snapshot(&self.initial, self.scope.as_ref())?;
+        Ok((record, snapshot))
+    }
+}
+
+impl LearningIterationCheckpointRecordV1 {
+    /// Strict DATA projection of an already completed scoped checkpoint. This
+    /// neither opens a checkpoint owner nor authenticates stage signatures. A
+    /// Root completed-history capability must separately verify the original
+    /// acceptance record, current recipient and unchanged physical cuts.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_original_completed_scoped(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<LearningIterationSnapshotV1, Error> {
+        scope.validate_snapshot(initial).map_err(Error::Snapshot)?;
+        let snapshot = self
+            .decode_original_snapshot(initial, Some(scope))?
+            .ok_or(Error::InvalidRecord)?;
+        let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
+            .map_err(Error::Snapshot)?;
+        if coordinator.next_stage().is_some()
+            || snapshot.receipts.len() != codec::MAX_RECEIPTS
+            || snapshot.training_no_update_v2().is_some()
+            || snapshot.receipts.last().is_none_or(|receipt| {
+                receipt.observation.stage()
+                    != codex_hepta_learning_artifacts::LearningIterationStageV1::NextUse
+            })
+        {
+            return Err(Error::InvalidRecord);
+        }
+        Ok(snapshot)
+    }
+
+    fn decode_original_snapshot(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+        scope: Option<&FrozenLearningScopeV2>,
+    ) -> Result<Option<LearningIterationSnapshotV1>, Error> {
+        let (schema, binding) = scope.map_or_else(
+            || (1, initial.head_digest.to_string()),
+            |scope| (2, scope.binding().to_string()),
+        );
+        if self.schema != schema || self.binding != binding {
             return Err(Error::WrongScope);
         }
-        let Some(encoded) = &record.snapshot else {
-            if record.predecessor != Digest32::ZERO.to_string() {
+        let Some(encoded) = &self.snapshot else {
+            if self.predecessor != Digest32::ZERO.to_string() {
                 return Err(Error::InvalidRecord);
             }
-            return Ok((record, None));
+            return Ok(None);
         };
         if encoded.len() > codec::MAX_BYTES.div_ceil(3) * 4 {
             return Err(Error::Capacity);
@@ -362,24 +405,24 @@ impl LearningIterationCheckpointOwnerV1 {
             return Err(Error::InvalidRecord);
         }
         let snapshot = codec::decode(bytes)?;
-        if let Some(scope) = &self.scope {
+        if let Some(scope) = scope {
             scope
                 .validate_snapshot(&snapshot)
                 .map_err(Error::Snapshot)?;
         } else if snapshot.requires_scoped_owner_v2() {
             return Err(Error::WrongScope);
         }
-        if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
+        if snapshot.request != initial.request || snapshot.owners != initial.owners {
             return Err(Error::WrongScope);
         }
         let predecessor = snapshot
             .receipts
             .last()
             .map_or(Digest32::ZERO, |receipt| receipt.predecessor);
-        if record.predecessor != predecessor.to_string() {
+        if self.predecessor != predecessor.to_string() {
             return Err(Error::InvalidRecord);
         }
-        Ok((record, Some(snapshot)))
+        Ok(Some(snapshot))
     }
 }
 
