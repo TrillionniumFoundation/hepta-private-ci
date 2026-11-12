@@ -35,6 +35,7 @@ fn root_source_handoff_physical_corruption_then_restore_stays_refused_across_pro
     let bytes = std::fs::read(&path)?;
     drop(retained);
     for (data, phase) in [
+        (bytes.as_slice(), "baseline"),
         (&b"{broken-handoff"[..], "observe_corruption"),
         (bytes.as_slice(), "restore_then_reopen"),
     ] {
@@ -75,9 +76,17 @@ fn root_source_handoff_refusal_child() -> anyhow::Result<()> {
     let target = serde_json::from_str(&std::env::var("HEPTA_SOURCE_HANDOFF_TEST_TARGET")?)?;
     let root = RootAuthorityDirectory::open(&directory)?;
     let phase = std::env::var("HEPTA_SOURCE_HANDOFF_TEST_PHASE")?;
-    assert!(
-        RootHistoricalSourceHandoffV1::open_record(root, &target).is_err(),
-        "restored handoff primary unexpectedly reopened: {phase}"
-    );
+    match phase.as_str() {
+        "baseline" => {
+            RootHistoricalSourceHandoffV1::open_record(root, &target)?.require_finalized()?;
+        }
+        "observe_corruption" | "restore_then_reopen" => {
+            assert!(
+                RootHistoricalSourceHandoffV1::open_record(root, &target).is_err(),
+                "restored handoff primary unexpectedly reopened: {phase}"
+            );
+        }
+        _ => anyhow::bail!("unknown Source handoff child phase: {phase}"),
+    }
     Ok(())
 }

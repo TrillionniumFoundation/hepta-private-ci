@@ -145,6 +145,7 @@ impl RootHistoricalSourcePinV1 {
         pin: SourcePin,
         access: PinRecordAccess,
     ) -> io::Result<RetainedSourcePinRecordV1> {
+        original_root()?;
         let owner = owner(&pin.target)?;
         let expected = PinRecord { pin, fenced: false };
         let store = match access {
