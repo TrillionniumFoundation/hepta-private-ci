@@ -8,6 +8,7 @@ Refractory laws retain their rationalized original remaining-time supports.
 """
 
 from fractions import Fraction
+import hashlib
 import math
 
 import numpy as np
@@ -71,9 +72,25 @@ def migration_weights(nodes, endpoint=4.8, cells=16, tail_rate=1.0):
     return weights, report
 
 
-def migrate(model, probability, content, weights, *, identity="graded", phase_cells=8):
+def migrate(
+    model,
+    probability,
+    content,
+    weights,
+    *,
+    identity="graded",
+    phase_cells=8,
+    source_endpoint=4.8,
+    source_tail_rate=1.0,
+):
+    """Transport through the canonical map bound to declared source and target.
+
+    Conserving mass alone does not make a supplied matrix the correct law
+    migration. Recompute the declared map and reject substitutions before
+    reading out a new state. Nondefault source laws must be explicit.
+    """
     p, marks = np.asarray(probability, dtype=float), np.asarray(content, dtype=float)
-    weights = np.asarray(weights, dtype=float)
+    weights = np.array(weights, dtype=float, copy=True)
     cells = weights.shape[0] if weights.ndim == 2 else 0
     if (
         type(phase_cells) is not int
@@ -96,6 +113,16 @@ def migrate(model, probability, content, weights, *, identity="graded", phase_ce
         or not np.isfinite(marks).all()
     ):
         raise ValueError("finite conservative migration shapes/values required")
+    canonical, _ = migration_weights(
+        model.spatial.nodes,
+        endpoint=source_endpoint,
+        cells=cells - 1,
+        tail_rate=source_tail_rate,
+    )
+    if not np.array_equal(weights, canonical):
+        raise ValueError(
+            "migration weights are not bound to the declared source law and target nodes"
+        )
     active, marked = p[:cells] @ weights, weights.T @ marks[:cells]
     phase = []
     delay = Fraction(str(model.delay))
@@ -132,5 +159,19 @@ def migrate(model, probability, content, weights, *, identity="graded", phase_ce
             "content_residual": mark_error.tolist(),
             "lower_atom": float(active[0]),
             "upper_mass": float(active[-1]),
+            "binding": {
+                "schema": "hcsn-graded-migration-map-v1",
+                "source_endpoint": source_endpoint,
+                "source_active_cells": cells - 1,
+                "source_tail_rate": source_tail_rate,
+                "phase_cells": phase_cells,
+                "delay": model.delay,
+                "target_nodes_sha256": hashlib.sha256(
+                    np.asarray(model.spatial.nodes, dtype="<f8").tobytes()
+                ).hexdigest(),
+                "weights_sha256": hashlib.sha256(
+                    np.asarray(weights, dtype="<f8").tobytes()
+                ).hexdigest(),
+            },
         },
     )
