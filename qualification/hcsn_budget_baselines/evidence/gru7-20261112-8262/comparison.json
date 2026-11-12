@@ -1,0 +1,369 @@
+{
+  "actual_equal_occupancy": false,
+  "adequate_training_established": false,
+  "adoption": false,
+  "all_factorial_process_wall": 549.6004019370002,
+  "all_gru_process_wall": 4.719307772999855,
+  "co_tenancy": true,
+  "confirmation": false,
+  "cost_limitations": "Different trace payloads, cold initialization and co-tenancy; no isolated kernel throughput, deployment latency, energy or equal-quality comparison",
+  "delta_direction": "HCSN c1_b1 minus GRU; positive CE is worse; positive accuracy is better",
+  "descriptive_seed_means": {
+    "gru": {
+      "accuracy": 0.11805555555555554,
+      "cross_entropy": 2.089997434223069
+    },
+    "hcsn_c1_b1": {
+      "accuracy": 0.12500000000000003,
+      "cross_entropy": 2.092303424003432
+    },
+    "hcsn_minus_gru": {
+      "accuracy": 0.006944444444444452,
+      "cross_entropy": 0.0023059897803629306
+    }
+  },
+  "failures": [],
+  "host": "05afa1b52275",
+  "independent_test_sources": 0,
+  "inference_scope": "Three initializations on one fixed synthetic D set; no inferential significance claim",
+  "input_files_sha256": {
+    "/dev/shm/hepta-hcsn-full-002/DATA.json": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+    "/dev/shm/hepta-hcsn-full-002/PLAN.json": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55",
+    "/dev/shm/hepta-hcsn-full-002/SUMMARY.json": "3ea5dc8f1f9e7d0f9e9a8d684f25efd6563b3cc4e88fdc750e9b13e13db91881",
+    "/dev/shm/hepta-hcsn-full-002/seed11-c1_b1/checkpoint.pt": "4df565541b522ca612ebd83ddeedfd5513c39db8e16efeed890df1a7eb5dd756",
+    "/dev/shm/hepta-hcsn-full-002/seed11-c1_b1/development.json": "e41f1af9e1c0ff72d349541f9de9bb17d7078811209e1852ec49fb70960990df",
+    "/dev/shm/hepta-hcsn-full-002/seed23-c1_b1/checkpoint.pt": "51eaf7c7fe83396c5a5e1451c71504b17f4fbc90775138970b4b657eb7d08246",
+    "/dev/shm/hepta-hcsn-full-002/seed23-c1_b1/development.json": "d64e8ecedf241d57e15fdb350b1bb6f3584dd9e1f529bb0c5889c067a093b5b3",
+    "/dev/shm/hepta-hcsn-full-002/seed37-c1_b1/checkpoint.pt": "f9963b36444e07841f6b5a19ebb4ae1fdeba6929472c9a3b9c52e6aa9bc9e191",
+    "/dev/shm/hepta-hcsn-full-002/seed37-c1_b1/development.json": "50e744e194bcb9297dce87df9bebe7509b1558f865c01b6b8667316d0e7f218c",
+    "/dev/shm/hepta-hcsn-gru-001/SUMMARY.json": "9c6bf865315e720c01b730a90043baa14ba2cd03b84e65aa19889b4c377e2cfa",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/checkpoint.pt": "51548bfc981eae0daf549691a738212e2c9b9720867943911acdd3033b772dc3",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/development.json": "46612455a2e54087cfb4eda98a4d46bffbc485caa562c58cc27ef9c47a8cdd76",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/checkpoint.pt": "5f9cb1cb1d9f2b48d5374fe2f00208855c1f2804d314dc220d0c8960de10b76a",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/development.json": "0d5df41f6bc6481a6960bc6d0552bd678d3e1cba839903da1569800af17f4fcb",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/checkpoint.pt": "33afa50a1b0b239e2ac8c8975452be91ee7f7335cce6b1d5969d9195257ab9ed",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/development.json": "7c337a4563c7a34785657384cf0bceef5c87b91934e7d17947b00818ca352e90",
+    "/dev/shm/hepta-hcsn-gru-review-001/RESULT.json": "938da0d628947b7ebeeb96f3c5c713e5baefe9029e3193966f20e0a1b57206cd",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_boundary_factorial/__init__.py": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_boundary_factorial/run.py": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_boundary_factorial/test_run.py": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_budget_baselines/__init__.py": "d23532e95ec3c977d328835f646be3afa15c7b545fd5e6bc2b00a159cb85da88",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_budget_baselines/model.py": "3d2ae5009897acfcd7eaea75badbd537d1fa026b5e7602c5dad63c50994ae3b9",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_budget_baselines/run.py": "e1bd2e924d14db9c80ae3b18a2c7852ffee98cc545a51a267c543027a1dac981",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_budget_baselines/test_baseline.py": "6b36d44f43e8f3395b83884ad209f80dca47b5b79664eb5dc2ff9b1e80399b05",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/workspace/scratch/8262eeaa059c/hcsn-boundary-work/qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d",
+    "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/DATA.json": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+    "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/PLAN.json": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55"
+  },
+  "measured_cost_scope": "Each fit includes model construction, full trace retention, training, D evaluation, checkpoint and new-model D replay; final result write excluded",
+  "output_device": 38,
+  "passed": true,
+  "process_scope": "12-arm factorial and 3-seed GRU process totals are different workloads; do not ratio them as model costs",
+  "readout_caveat": "Frozen head tensor equality is verified; the GRU learned 7-to-9 projection changes effective readout flexibility",
+  "rows": [
+    {
+      "capacity": {
+        "gru": {
+          "recurrent_payload_bytes": 56,
+          "total_parameters": 513,
+          "trainable_parameters": 345
+        },
+        "hcsn_joint": {
+          "recurrent_payload_bytes": 1000,
+          "total_parameters": 812,
+          "trainable_parameters": 391
+        }
+      },
+      "common_interface_tensors_equal": {
+        "frontend": true,
+        "readout": true
+      },
+      "costs": {
+        "gru_components": {
+          "artifact_retention_cpu": 0.013044333000000297,
+          "artifact_retention_wall": 0.013037097999585967,
+          "development_compute_cpu": 0.053104998999999875,
+          "development_compute_wall": 0.0531001630006358,
+          "replay_compute_cpu": 0.06213577800000003,
+          "replay_compute_wall": 0.062138989999766636,
+          "trace_retention_cpu": 0.013344200999998002,
+          "trace_retention_wall": 0.013316015997588693,
+          "training_compute_cpu": 0.30368397700000216,
+          "training_compute_wall": 0.30358322900065104
+        },
+        "gru_fit_cpu": 1.539824725,
+        "gru_fit_wall": 1.5506627929999013,
+        "hcsn_component_reason": "Frozen producer did not record separate compute/retention timers",
+        "hcsn_components": null,
+        "hcsn_fit_cpu": 58.20035873399999,
+        "hcsn_fit_wall": 58.300237557999935
+      },
+      "gru": {
+        "accuracy": 0.11458333333333333,
+        "cross_entropy": 2.0795867599775577
+      },
+      "hcsn_c1_b1": {
+        "accuracy": 0.16145833333333334,
+        "cross_entropy": 2.0765901444297623
+      },
+      "hcsn_minus_gru": {
+        "accuracy": 0.046875000000000014,
+        "cross_entropy": -0.0029966155477954004
+      },
+      "per_task": {
+        "delayed_copy": {
+          "gru": {
+            "accuracy": 0.109375,
+            "cross_entropy": 2.0948803726764815
+          },
+          "hcsn": {
+            "accuracy": 0.125,
+            "cross_entropy": 2.0945953767971304
+          },
+          "hcsn_minus_gru": {
+            "accuracy": 0.015625,
+            "cross_entropy": -0.00028499587935115755
+          }
+        },
+        "overwrite_retrieval": {
+          "gru": {
+            "accuracy": 0.078125,
+            "cross_entropy": 2.0645300029689384
+          },
+          "hcsn": {
+            "accuracy": 0.25,
+            "cross_entropy": 2.0519308590889063
+          },
+          "hcsn_minus_gru": {
+            "accuracy": 0.171875,
+            "cross_entropy": -0.012599143880032138
+          }
+        },
+        "pair_composition": {
+          "gru": {
+            "accuracy": 0.15625,
+            "cross_entropy": 2.0793499042872545
+          },
+          "hcsn": {
+            "accuracy": 0.109375,
+            "cross_entropy": 2.0832441974032503
+          },
+          "hcsn_minus_gru": {
+            "accuracy": -0.046875,
+            "cross_entropy": 0.0038942931159957617
+          }
+        }
+      },
+      "scored_positions": 192,
+      "seed": 11
+    },
+    {
+      "capacity": {
+        "gru": {
+          "recurrent_payload_bytes": 56,
+          "total_parameters": 513,
+          "trainable_parameters": 345
+        },
+        "hcsn_joint": {
+          "recurrent_payload_bytes": 1000,
+          "total_parameters": 812,
+          "trainable_parameters": 391
+        }
+      },
+      "common_interface_tensors_equal": {
+        "frontend": true,
+        "readout": true
+      },
+      "costs": {
+        "gru_components": {
+          "artifact_retention_cpu": 0.013027468999999847,
+          "artifact_retention_wall": 0.013017025999943144,
+          "development_compute_cpu": 0.053291923999999824,
+          "development_compute_wall": 0.0629256020001776,
+          "replay_compute_cpu": 0.15535723500000032,
+          "replay_compute_wall": 0.1555337089994282,
+          "trace_retention_cpu": 0.013735497999999513,
+          "trace_retention_wall": 0.013706507003007573,
+          "training_compute_cpu": 0.31038572100000206,
+          "training_compute_wall": 0.31034894800723123
+        },
+        "gru_fit_cpu": 0.5688123399999996,
+        "gru_fit_wall": 0.578809425000145,
+        "hcsn_component_reason": "Frozen producer did not record separate compute/retention timers",
+        "hcsn_components": null,
+        "hcsn_fit_cpu": 55.090969661999964,
+        "hcsn_fit_wall": 55.734384574000615
+      },
+      "gru": {
+        "accuracy": 0.125,
+        "cross_entropy": 2.0886086578273826
+      },
+      "hcsn_c1_b1": {
+        "accuracy": 0.125,
+        "cross_entropy": 2.101300046777737
+      },
+      "hcsn_minus_gru": {
+        "accuracy": 0.0,
+        "cross_entropy": 0.012691388950354376
+      },
+      "per_task": {
+        "delayed_copy": {
+          "gru": {
+            "accuracy": 0.0625,
+            "cross_entropy": 2.0713849757999867
+          },
+          "hcsn": {
+            "accuracy": 0.0625,
+            "cross_entropy": 2.1059481155141873
+          },
+          "hcsn_minus_gru": {
+            "accuracy": 0.0,
+            "cross_entropy": 0.03456313971420055
+          }
+        },
+        "overwrite_retrieval": {
+          "gru": {
+            "accuracy": 0.171875,
+            "cross_entropy": 2.108502960758845
+          },
+          "hcsn": {
+            "accuracy": 0.171875,
+            "cross_entropy": 2.1073469967235794
+          },
+          "hcsn_minus_gru": {
+            "accuracy": 0.0,
+            "cross_entropy": -0.001155964035265633
+          }
+        },
+        "pair_composition": {
+          "gru": {
+            "accuracy": 0.140625,
+            "cross_entropy": 2.085938036923316
+          },
+          "hcsn": {
+            "accuracy": 0.140625,
+            "cross_entropy": 2.0906050280954442
+          },
+          "hcsn_minus_gru": {
+            "accuracy": 0.0,
+            "cross_entropy": 0.00466699117212821
+          }
+        }
+      },
+      "scored_positions": 192,
+      "seed": 23
+    },
+    {
+      "capacity": {
+        "gru": {
+          "recurrent_payload_bytes": 56,
+          "total_parameters": 513,
+          "trainable_parameters": 345
+        },
+        "hcsn_joint": {
+          "recurrent_payload_bytes": 1000,
+          "total_parameters": 812,
+          "trainable_parameters": 391
+        }
+      },
+      "common_interface_tensors_equal": {
+        "frontend": true,
+        "readout": true
+      },
+      "costs": {
+        "gru_components": {
+          "artifact_retention_cpu": 0.010909728999999757,
+          "artifact_retention_wall": 0.010904505999860703,
+          "development_compute_cpu": 0.06079621599999996,
+          "development_compute_wall": 0.06077563799954078,
+          "replay_compute_cpu": 0.06989427200000087,
+          "replay_compute_wall": 0.06988810600068973,
+          "trace_retention_cpu": 0.014618212000000241,
+          "trace_retention_wall": 0.014618590000281984,
+          "training_compute_cpu": 0.3088217400000053,
+          "training_compute_wall": 0.30958561999705125
+        },
+        "gru_fit_cpu": 0.48769895299999977,
+        "gru_fit_wall": 0.48885539599996264,
+        "hcsn_component_reason": "Frozen producer did not record separate compute/retention timers",
+        "hcsn_components": null,
+        "hcsn_fit_cpu": 48.208881897000026,
+        "hcsn_fit_wall": 48.67361176800023
+      },
+      "gru": {
+        "accuracy": 0.11458333333333333,
+        "cross_entropy": 2.1017968848642674
+      },
+      "hcsn_c1_b1": {
+        "accuracy": 0.08854166666666667,
+        "cross_entropy": 2.0990200808027972
+      },
+      "hcsn_minus_gru": {
+        "accuracy": -0.026041666666666657,
+        "cross_entropy": -0.002776804061470184
+      },
+      "per_task": {
+        "delayed_copy": {
+          "gru": {
+            "accuracy": 0.109375,
+            "cross_entropy": 2.120197325574273
+          },
+          "hcsn": {
+            "accuracy": 0.078125,
+            "cross_entropy": 2.102145704557552
+          },
+          "hcsn_minus_gru": {
+            "accuracy": -0.03125,
+            "cross_entropy": -0.018051621016720976
+          }
+        },
+        "overwrite_retrieval": {
+          "gru": {
+            "accuracy": 0.078125,
+            "cross_entropy": 2.1086241338128806
+          },
+          "hcsn": {
+            "accuracy": 0.0625,
+            "cross_entropy": 2.1140240095905702
+          },
+          "hcsn_minus_gru": {
+            "accuracy": -0.015625,
+            "cross_entropy": 0.005399875777689633
+          }
+        },
+        "pair_composition": {
+          "gru": {
+            "accuracy": 0.15625,
+            "cross_entropy": 2.076569195205648
+          },
+          "hcsn": {
+            "accuracy": 0.125,
+            "cross_entropy": 2.0808905282602694
+          },
+          "hcsn_minus_gru": {
+            "accuracy": -0.03125,
+            "cross_entropy": 0.004321333054621235
+          }
+        }
+      },
+      "scored_positions": 192,
+      "seed": 37
+    }
+  ],
+  "schema": "hcsn-gru-common-ceiling-comparison-v1",
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "shared_development_queries": 192,
+  "source_sha256": "dbab604f1340a469a18df555cb2a2000a8d0bbb9037783180f1a6582bcc047f6",
+  "tuned_strong_baseline": false,
+  "wall_seconds": 0.06618911199984723
+}
