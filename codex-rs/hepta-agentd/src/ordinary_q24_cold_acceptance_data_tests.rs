@@ -4,6 +4,7 @@
 
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_types::Digest32;
@@ -11,6 +12,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::cold_record::observe_original_record;
+use super::post_a_launch::RunningOrdinaryPostA;
+use super::post_a_plan::OriginalPostAPlan;
 use super::post_a_retained::RetainedOrdinaryQ24Fixture;
 use crate::LearningIterationCheckpointRecordV1;
 use crate::authority_host_runtime::RootCompletedLearningAcceptanceDataV1;
@@ -60,11 +63,6 @@ impl OriginalColdAcceptanceData {
         original.root.require_dead()?;
         original.source.require_dead()?;
         let initial = original.plan.profile.original_initial_data()?;
-        let terminal = original
-            .terminal
-            .snapshot
-            .as_ref()
-            .ok_or_else(|| anyhow::anyhow!("actual terminal checkpoint absent"))?;
         let service = &original.plan.resources.successor.service;
         let service_pin = OriginalBusinessSnapshot::capture(&[service.clone()])?;
         let config: crate::HostAuthorityServiceConfig = serde_json::from_slice(
@@ -96,77 +94,7 @@ impl OriginalColdAcceptanceData {
                     == Some(original.terminal.clone()),
                 "the physical original checkpoint is not the actual terminal result"
             );
-            let data = serde_json::to_value(&accepted)?;
-            let profile_text = data["original_profile"]
-                .as_str()
-                .ok_or_else(|| anyhow::anyhow!("accepted frozen profile absent"))?;
-            let profile: crate::HostAuthorityLearningProfileV1 =
-                serde_json::from_str(profile_text)?;
-            let proof = original.plan.resources.successor.writer_proof.sha256()?;
-            let verified = data["root_verified_at_seconds"]
-                .as_u64()
-                .ok_or_else(|| anyhow::anyhow!("actual first verification time absent"))?;
-            anyhow::ensure!(
-                data["schema"] == 1
-                    && data["purpose"] == "runtime.learning.completed-acceptance.v1"
-                    && data["initial"] == initial.head_digest.to_string()
-                    && data["target"]
-                        == Digest32::from_array(
-                            original
-                                .plan
-                                .resources
-                                .original
-                                .plan
-                                .deployment
-                                .target
-                                .digest()?
-                        )
-                        .to_string()
-                    && data["terminal_head"] == terminal.head_digest.to_string()
-                    && data["frozen_scope"] == original.terminal.scope_binding.to_string()
-                    && data["checkpoint"]
-                        == Digest32::of_parts(&[
-                            b"hepta.root.completed-learning.checkpoint.v1\0",
-                            &serde_json::to_vec(&checkpoint)?,
-                        ])
-                        .to_string()
-                    && serde_json::to_string(&profile)? == profile_text
-                    && profile.schema_version == 2
-                    && profile.require_binding(
-                        &original.plan.resources.successor.identity,
-                        proof.as_str()
-                    )? == initial
-                    && profile.require_cell_scope(&initial)?.binding()
-                        == original.terminal.scope_binding
-                    && verified > 0
-                    && verified < initial.request.envelope.expiry_unix_seconds
-                    && verified <= crate::authbus_ingress::now_ms()? / 1_000
-                    && terminal
-                        .receipts
-                        .iter()
-                        .all(|receipt| receipt.observed_unix_seconds <= verified),
-                "actual first acceptance differs from the original completed phase"
-            );
-            for field in [
-                "deployment",
-                "original_task",
-                "independent_b",
-                "publication",
-            ] {
-                require_digest(&data[field])?;
-            }
-            for field in ["journals", "signatures"] {
-                let values = data[field]
-                    .as_array()
-                    .ok_or_else(|| anyhow::anyhow!("actual accepted {field} absent"))?;
-                anyhow::ensure!(
-                    values.len() == 7,
-                    "all seven original completion inputs required"
-                );
-                for value in values {
-                    require_digest(value)?;
-                }
-            }
+            require_actual_acceptance(&accepted, &checkpoint, &original.plan, &original.terminal)?;
             Ok::<_, anyhow::Error>(accepted)
         })();
         immutable.require_unchanged(&paths)?;
@@ -249,6 +177,78 @@ impl OriginalColdAcceptanceData {
     }
 }
 
+fn require_actual_acceptance(
+    accepted: &RootCompletedLearningAcceptanceDataV1,
+    checkpoint: &LearningIterationCheckpointRecordV1,
+    plan: &OriginalPostAPlan,
+    terminal_data: &OriginalCheckpointData,
+) -> anyhow::Result<()> {
+    let initial = plan.profile.original_initial_data()?;
+    let terminal = terminal_data
+        .snapshot
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("actual terminal checkpoint absent"))?;
+    let data = serde_json::to_value(accepted)?;
+    let profile_text = data["original_profile"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("accepted frozen profile absent"))?;
+    let profile: crate::HostAuthorityLearningProfileV1 = serde_json::from_str(profile_text)?;
+    let proof = plan.resources.successor.writer_proof.sha256()?;
+    let verified = data["root_verified_at_seconds"]
+        .as_u64()
+        .ok_or_else(|| anyhow::anyhow!("actual first verification time absent"))?;
+    anyhow::ensure!(
+        data["schema"] == 1
+            && data["purpose"] == "runtime.learning.completed-acceptance.v1"
+            && data["initial"] == initial.head_digest.to_string()
+            && data["target"]
+                == Digest32::from_array(plan.resources.original.plan.deployment.target.digest()?)
+                    .to_string()
+            && data["terminal_head"] == terminal.head_digest.to_string()
+            && data["frozen_scope"] == terminal_data.scope_binding.to_string()
+            && data["checkpoint"]
+                == Digest32::of_parts(&[
+                    b"hepta.root.completed-learning.checkpoint.v1\0",
+                    &serde_json::to_vec(checkpoint)?,
+                ])
+                .to_string()
+            && serde_json::to_string(&profile)? == profile_text
+            && profile.schema_version == 2
+            && profile.require_binding(&plan.resources.successor.identity, proof.as_str())?
+                == initial
+            && profile.require_cell_scope(&initial)?.binding() == terminal_data.scope_binding
+            && verified > 0
+            && verified < initial.request.envelope.expiry_unix_seconds
+            && verified <= crate::authbus_ingress::now_ms()? / 1_000
+            && terminal
+                .receipts
+                .iter()
+                .all(|receipt| receipt.observed_unix_seconds <= verified),
+        "actual first acceptance differs from the original completed phase"
+    );
+    for field in [
+        "deployment",
+        "original_task",
+        "independent_b",
+        "publication",
+    ] {
+        require_digest(&data[field])?;
+    }
+    for field in ["journals", "signatures"] {
+        let values = data[field]
+            .as_array()
+            .ok_or_else(|| anyhow::anyhow!("actual accepted {field} absent"))?;
+        anyhow::ensure!(
+            values.len() == 7,
+            "all seven original completion inputs required"
+        );
+        for value in values {
+            require_digest(value)?;
+        }
+    }
+    Ok(())
+}
+
 fn require_digest(value: &serde_json::Value) -> anyhow::Result<()> {
     let text = value
         .as_str()
@@ -267,4 +267,100 @@ fn record_paths(directory: &Path, owner: &str) -> Vec<PathBuf> {
         directory.join(&name),
         directory.join(format!("{name}.lock")),
     ]
+}
+
+/// Scheduling data only: completion still requires the product's original
+/// acceptance exchange and successful daemon/Root shutdown in the parent.
+pub(super) async fn wait_for_original_terminal_acceptance(
+    running: &RunningOrdinaryPostA,
+    terminal: &OriginalCheckpointData,
+) -> anyhow::Result<Digest32> {
+    let plan = &running.plan;
+    let initial = plan.profile.original_initial_data()?;
+    let directory = &plan.resources.original.plan.root.authority;
+    let owner = completed_learning_acceptance_owner(&initial);
+    let path = record_paths(directory, &owner).remove(0);
+    let target = &plan.resources.original.plan.deployment.target;
+    let refusal_owner = format!(
+        "initial-data-refusal/completed-learning/{}/{}",
+        initial.head_digest,
+        crate::neuron_generation_current::types::scope_digest(target.scope())?
+    );
+    let checkpoint_directory = directory.join("learning-checkpoint");
+    let validate_refusal = |data: &Refusal| -> anyhow::Result<()> {
+        anyhow::ensure!(
+            data.schema == 1
+                && data.purpose == "runtime.initial-data-refusal.v1"
+                && data.kind
+                    == Kind::CompletedLearning {
+                        initial: initial.head_digest.into_array()
+                    }
+                && data.target == *target
+                && data.attempt >= 1
+                && data.phase != Phase::Refused,
+            "actual first-acceptance registration is invalid or refused"
+        );
+        Ok(())
+    };
+    let mut previous_attempt = 0;
+    let mut first = None;
+    loop {
+        running.require_live()?;
+        if let Some(before) =
+            observe_original_record::<Refusal>(directory, &refusal_owner, &validate_refusal)?
+        {
+            anyhow::ensure!(
+                before.attempt >= previous_attempt,
+                "acceptance attempt regressed"
+            );
+            previous_attempt = before.attempt;
+            let present = match std::fs::symlink_metadata(&path) {
+                Ok(_) => true,
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
+                Err(error) => return Err(error.into()),
+            };
+            if present
+                && let Some(accepted) = observe_original_record::<
+                    RootCompletedLearningAcceptanceDataV1,
+                >(directory, &owner, |_| Ok(()))?
+            {
+                if let Some(original) = &first {
+                    anyhow::ensure!(original == &accepted, "first acceptance was rewritten");
+                }
+                let checkpoint = observe_original_record::<LearningIterationCheckpointRecordV1>(
+                    &checkpoint_directory,
+                    "root-learning-checkpoint-v1",
+                    |_| Ok(()),
+                )?
+                .ok_or_else(|| {
+                    anyhow::anyhow!("terminal checkpoint changed during first acceptance")
+                })?;
+                anyhow::ensure!(
+                    OriginalCheckpointData::observe_live(&checkpoint_directory, &initial)?
+                        == Some(terminal.clone()),
+                    "first acceptance does not describe the actual terminal checkpoint"
+                );
+                require_actual_acceptance(&accepted, &checkpoint, plan, terminal)?;
+                let digest = accepted.data_digest()?;
+                first = Some(accepted);
+                if let Some(after) = observe_original_record::<Refusal>(
+                    directory,
+                    &refusal_owner,
+                    &validate_refusal,
+                )? {
+                    anyhow::ensure!(
+                        after.attempt >= previous_attempt,
+                        "acceptance postcheck regressed"
+                    );
+                    previous_attempt = after.attempt;
+                    if before == after && after.phase == Phase::Ready && after.attempt >= 2 {
+                        running.require_live()?;
+                        return Ok(digest);
+                    }
+                }
+            }
+        }
+        running.require_live()?;
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
 }
