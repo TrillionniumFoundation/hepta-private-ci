@@ -39,5 +39,5 @@ jobs:
           git rev-parse HEAD
           git diff --exit-code
           python -c 'import sys,numpy,scipy,torch; print(sys.version,numpy.__version__,scipy.__version__,torch.__version__)'
-          python -B -m unittest qualification.hcsn_reset_aligned.test_model qualification.hcsn_reset_aligned.test_torch -v
+          python -B -m unittest qualification.hcsn_reset_aligned.test_model qualification.hcsn_reset_aligned.test_torch qualification.hcsn_reset_aligned.test_perpetual qualification.hcsn_reset_aligned.test_first_hit qualification.hcsn_reset_aligned.test_readouts_torch -v
           git diff --exit-code
