@@ -1,0 +1,53 @@
+commit de40a4286dd75513082f506469cc1715608e5a92
+Author:     Codex <codex@openai.com>
+AuthorDate: Thu Nov 12 13:56:52 2026 -0500
+Commit:     Codex <codex@openai.com>
+CommitDate: Thu Nov 12 13:56:52 2026 -0500
+
+    test(hepta): execute original B notice child through retained binary fd
+
+diff --git a/codex-rs/hepta-agentd/src/root_independent_b_source_terminal_tests.rs b/codex-rs/hepta-agentd/src/root_independent_b_source_terminal_tests.rs
+index 51b0e7d7..e1e4dd11 100644
+--- a/codex-rs/hepta-agentd/src/root_independent_b_source_terminal_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_independent_b_source_terminal_tests.rs
+@@ -66,8 +66,13 @@ fn run_parent(phase: &str) -> anyhow::Result<()> {
+         .split_once("::")
+         .ok_or_else(|| io::Error::other("test path missing"))?
+         .1;
+-    let mut command = Command::new(std::env::current_exe()?);
++    // Retain the exact built executable before dropping credentials. The source
++    // child need not traverse the private build tree or change its permissions.
++    let executable = File::open(std::env::current_exe()?)?;
++    let executable_fd = executable.as_raw_fd();
++    let mut command = Command::new(format!("/proc/self/fd/{executable_fd}"));
+     command
++        .current_dir("/run")
+         .args(["--ignored", "--exact", name, "--nocapture"])
+         .uid(60_002)
+         .gid(60_002)
+@@ -81,12 +86,13 @@ fn run_parent(phase: &str) -> anyhow::Result<()> {
+         .env("HEPTA_B_TERMINAL_ROOT_PID", std::process::id().to_string())
+         .env("HEPTA_B_TERMINAL_ROOT_START", start)
+         .env("HEPTA_B_TERMINAL_END", seal_original_end(end)?.to_string());
+-    // SAFETY: only the two original inherited descriptors are changed in the
+-    // child before exec. The parent retains both owned descriptors until spawn.
++    // SAFETY: only the two original rights and exact executable descriptor are
++    // changed before exec. Their owned descriptors remain live until spawn.
+     unsafe {
+         command.pre_exec(move || {
+-            for fd in [root_fd, notice_fd] {
+-                if libc::fcntl(fd, libc::F_SETFD, 0) < 0 {
++            for fd in [root_fd, notice_fd, executable_fd] {
++                let flags = libc::fcntl(fd, libc::F_GETFD);
++                if flags < 0 || libc::fcntl(fd, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {
+                     return Err(io::Error::last_os_error());
+                 }
+             }
+@@ -94,6 +100,7 @@ fn run_parent(phase: &str) -> anyhow::Result<()> {
+         });
+     }
+     let mut child = ChildGuard(Some(command.spawn()?));
++    drop(executable);
+     let process = child
+         .0
+         .as_mut()

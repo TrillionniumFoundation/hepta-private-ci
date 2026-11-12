@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-12T18:58:08.266876+00:00",
+  "base": "da0f6e55966fb5803d827b64707d3446b0e121e9",
+  "candidate": "de40a4286dd75513082f506469cc1715608e5a92",
+  "tree": "70e0fbca1288ab4935f062797e03e5ab1dc46c70",
+  "worktree_clean": true,
+  "scope": "test fixture executable traversal only; product and authority checks unchanged",
+  "native": "not executed for this postimage; Root owns qualification",
+  "validation": {
+    "just_fmt_base": "da0f6e55966fb5803d827b64707d3446b0e121e9",
+    "just_fmt_exit": 0,
+    "git_diff_check_exit": 0,
+    "source_qa": "not rerun: only test harness executable handoff changed"
+  },
+  "native_tests_pending": [
+    "root_independent_b_notice::terminal_tests::original_b_source_terminal_notice_allows_exit_after_real_frame_postcheck",
+    "root_independent_b_notice::terminal_tests::original_b_source_terminal_missing_notice_never_completes"
+  ],
+  "original_failure": {
+    "source_head": "da0f6e55966fb5803d827b64707d3446b0e121e9",
+    "actual": "both tests failed with Permission denied (os error 13), before their component assertions",
+    "original_json": {
+      "bytes": 14526,
+      "sha256": "0c20bbdebed03c14db371b2c98f737137ecf50d25f9baa2db6782e0b3268867b"
+    }
+  },
+  "files": {
+    "original-failure-sections.json": {
+      "bytes": 14526,
+      "sha256": "0c20bbdebed03c14db371b2c98f737137ecf50d25f9baa2db6782e0b3268867b"
+    },
+    "source.bundle": {
+      "bytes": 1128,
+      "sha256": "ccc8d160fd5b291b7d2a536bc2bdf3c721042986df5b29330b0df26a1d29fcc4"
+    },
+    "source.patch": {
+      "bytes": 2654,
+      "sha256": "e877ad75079dc63a9a76219afeef2d9fd98f2671f578c6f6a3bd02b942d34dd3"
+    },
+    "bundle-verify.txt.gz": {
+      "bytes": 279,
+      "sha256": "bbd1b8e5779b877c2e61cc417f8424f6213d2a070b031439d9374d4654732a33",
+      "uncompressed": {
+        "bytes": 421,
+        "sha256": "ff6ae2a445c7acbf697d9e413f09199d64f3e2168621cd6ab21595f4422bb18c"
+      }
+    }
+  },
+  "evidence_packaging": {
+    "initial_diff_check_exit": 2,
+    "reason": "Actual git bundle verify output has a trailing space after its prerequisite SHA; raw bytes preserved in deterministic gzip without rewriting."
+  }
+}
