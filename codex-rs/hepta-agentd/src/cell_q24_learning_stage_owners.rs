@@ -37,6 +37,10 @@ use crate::cell_q24_learning_owner_error::owner_error as unavailable;
 #[path = "cell_q24_learning_successor.rs"]
 mod successor;
 
+#[path = "cell_q24_learning_evaluation_root.rs"]
+mod evaluation_root;
+use evaluation_root::OriginalRootBEvaluationActionV1;
+
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
 #[path = "cell_q24_publication_material.rs"]
@@ -55,6 +59,7 @@ struct Q24StageOwners {
     factory: AgentdRootQ24ModelFactoryV1,
     local: OriginalCellQ24LocalDecisionOwnerV1<FileAnchorWitnessStore>,
     evaluation: Option<OriginalCellQ24EvaluationStageV1>,
+    root_evaluation: Option<Arc<crate::OriginalRootIndependentBEvaluationClientV1>>,
     generation: Option<(
         OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
         OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
@@ -165,6 +170,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     factory,
                     local,
                     evaluation: None,
+                    root_evaluation: None,
                     generation: None,
                 })),
                 lane: Arc::new(Semaphore::new(/*permits*/ 1)),
@@ -213,7 +219,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     FileAnchorWitnessStore,
                 >,
                       runtime| {
-                    if owners.evaluation.is_some() {
+                    if owners.evaluation.is_some() || owners.root_evaluation.is_some() {
                         return Err(Error::WrongScope);
                     }
                     let trainer_source: &crate::OriginalCellEvaluationTrainerV1 =
@@ -257,7 +263,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     FileAnchorWitnessStore,
                 >,
                       runtime| {
-                    if owners.evaluation.is_some() {
+                    if owners.evaluation.is_some() || owners.root_evaluation.is_some() {
                         return Err(Error::WrongScope);
                     }
                     let trainer_source: &crate::OriginalCellEvaluationTrainerV1 = &original.trainer;
@@ -475,12 +481,13 @@ impl Q24StageOwners {
                 (original.receipt, Some(original.attestation))
             }
             LearningIterationStageV1::Evaluation => {
-                let eval: &mut OriginalCellQ24EvaluationStageV1 = self
-                    .evaluation
-                    .as_mut()
-                    .ok_or(Error::OwnerUnavailable("original B handoff"))?;
-                let (receipt, signed) =
-                    runtime.block_on(eval.complete(snapshot, /*read_only*/ true))?;
+                let (receipt, signed) = self.evaluation_receipt(
+                    inner,
+                    training,
+                    runtime,
+                    snapshot,
+                    OriginalRootBEvaluationActionV1::Readback,
+                )?;
                 (receipt, Some(signed))
             }
             LearningIterationStageV1::Proposal => (
@@ -591,15 +598,15 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24LearningStageOwnersV1
                             .block_on(training.execute_training(&snapshot, cancellation))
                             .map_err(unavailable)?
                             .receipt),
-                        LearningIterationStageV1::Evaluation => {
-                            let evaluation: &mut OriginalCellQ24EvaluationStageV1 = owners
-                                .evaluation
-                                .as_mut()
-                                .ok_or(Error::OwnerUnavailable("original B handoff"))?;
-                            runtime
-                                .block_on(evaluation.complete(&snapshot, /*read_only*/ false))
-                                .map(|value| value.0)
-                        }
+                        LearningIterationStageV1::Evaluation => owners
+                            .evaluation_receipt(
+                                &inner,
+                                training,
+                                runtime,
+                                &snapshot,
+                                OriginalRootBEvaluationActionV1::Complete,
+                            )
+                            .map(|value| value.0),
                         LearningIterationStageV1::Proposal => Err(Error::WrongScope),
                         LearningIterationStageV1::Selection => {
                             if snapshot.receipts.last().is_some_and(|receipt| {
