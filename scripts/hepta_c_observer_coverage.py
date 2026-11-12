@@ -341,6 +341,7 @@ ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
 )
 
 ARTIFACT_PUBLICATION_READBACK_CASES = (
+    "owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan",
     "owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing",
     "owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged",
     "owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion",

@@ -131,3 +131,26 @@ fn original_publication_readback_uses_live_clock_not_an_old_request_timestamp() 
     ));
     assert_eq!(fixture.bytes(), before);
 }
+
+#[test]
+fn original_publication_readback_bounds_the_actual_transaction_scan() {
+    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let directory = fixture.directory.0.join("transactions");
+    // These are real regular files ignored by the legacy receipt decoder. The
+    // actual bounded scanner must count them, not only matching checkpoints.
+    for index in 0..4_097 {
+        fs::write(directory.join(format!("readback-bound-{index}.ignored")), b"")
+            .fixture("actual original transaction-directory entry");
+    }
+    let before = fixture.bytes();
+    assert!(matches!(
+        fixture.service.read_original_publication_current(
+            &fixture.baseline.operation_id, fixture.baseline_intent,
+        ),
+        Err(OriginalArtifactPublicationReadbackErrorV1::Owner(
+            ArtifactOwnerHostError::Capacity
+        ))
+    ));
+    assert_eq!(fixture.bytes(), before);
+    assert!(fixture.service.recovery_required().is_none());
+}

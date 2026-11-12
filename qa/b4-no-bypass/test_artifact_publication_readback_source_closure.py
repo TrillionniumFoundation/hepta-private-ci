@@ -90,10 +90,6 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
         for marker in (
             "expected_intent_digest: Digest32",
             "expected_intent_digest.is_zero()",
-            'fs::read_dir(self.root.join("transactions"))',
-            ".take(MAX_READBACK_TRANSACTION_RECORDS + 1)",
-            ".enumerate()",
-            "if index >= MAX_READBACK_TRANSACTION_RECORDS",
             "let before = self.recover_publication(operation_id)?",
             "before.checkpoint.operation_id != *operation_id",
             "before.checkpoint.intent_digest != expected_intent_digest",
@@ -106,8 +102,8 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
     def test_original_checkpoint_and_current_are_physically_read_twice(self):
         for marker in (
             "let head_before = self.discover_current_head(started)?",
-            "let current_before = self.current_registry_view(started)?",
-            "let current_after = self.current_registry_view(started)?",
+            "let current_before = self.current_registry_view_bounded(started)?",
+            "let current_after = self.current_registry_view_bounded(started)?",
             "let head_after = self.discover_current_head(started)?",
             "let after = self.recover_publication(operation_id)?",
             "if before != after",
@@ -146,7 +142,7 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
         self.rejects(HOST, "fn now_unix_millis(", "SystemTime::now().duration_since(UNIX_EPOCH)")
         self.rejects(HOST, "fn now_unix_millis(", "u64::try_from(elapsed.as_millis())")
         source = (ROOT / HOST).read_text()
-        before = "let current_after = self.current_registry_view(started)?;"
+        before = "let current_after = self.current_registry_view_bounded(started)?;"
         fresh = "let fresh = now_unix_millis()?;"
         self.rejects_source(HOST, source.replace(before, "__swap_current_read__").replace(fresh, before).replace("__swap_current_read__", fresh))
 
@@ -185,7 +181,42 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
                 self.rejects_source(path, (ROOT / path).read_text() + "\n" + marker)
         self.rejects(HOST, "fn authority(", "AuthorityPosture::DENY_ALL")
 
-    def test_six_real_artifact_cases_are_package_qualified(self):
+
+    def test_each_actual_receipt_scan_is_bounded_before_metadata_and_decode(self):
+        for marker in (
+            'fs::read_dir(self.root.join("transactions"))',
+            ".take(MAX_READBACK_TRANSACTION_RECORDS + 1)",
+            ".enumerate()",
+            "if index >= MAX_READBACK_TRANSACTION_RECORDS",
+            "return Err(ArtifactOwnerHostError::Capacity)",
+            "fs::symlink_metadata(entry.path())?",
+            "metadata.file_type().is_symlink() || !metadata.is_file()",
+            "let checkpoint = decode_checkpoint(",
+            "&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?",
+            "registry_receipt.head_digest != current.signed.witness.head_digest",
+            "registry_receipt.binding != current.signed.binding",
+            "witness_receipt.witness_digest != current.witness_digest",
+            "witness_receipt.binding != current.signed.binding",
+            "Some(existing) if existing != registry_receipt",
+            "matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(HOST, "fn current_registry_receipt_bounded(", marker)
+        for marker in (
+            "let current = self.discover_current_head(at)?",
+            "let receipt = self.current_registry_receipt_bounded(&current)?",
+            "let registry = read_registry_snapshot(",
+            "File::open(self.registry_snapshot_path(receipt))?",
+            "if registry.snapshot().head_digest != current.signed.witness.head_digest",
+            "receipt, registry, current.witness_digest, current.trust_digest",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(HOST, "fn current_registry_view_bounded(", marker)
+        self.rejects_source(
+            HOST, (ROOT / HOST).read_text() + "\nself.current_registry_view("
+        )
+
+    def test_seven_real_artifact_cases_are_package_qualified(self):
         sys.path.insert(0, str(ROOT / "scripts"))
         import hepta_c_observer_coverage as coverage
 
@@ -197,8 +228,8 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
         self.assertEqual(len(selected), 1)
         package, names = selected[0]
         self.assertEqual(package, "codex-hepta-learning-artifacts")
-        self.assertEqual(len(names), 6)
-        self.assertEqual(len(set(names)), 6)
+        self.assertEqual(len(names), 7)
+        self.assertEqual(len(set(names)), 7)
         tests = (ROOT / ARTIFACT / "owner_service_readback_tests.rs").read_text()
         for name in names:
             self.assertIn(
