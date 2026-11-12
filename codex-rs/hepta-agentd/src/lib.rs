@@ -844,6 +844,8 @@ pub use circuit_experience_intake::OriginalCircuitExperienceRequestV1;
 #[cfg(target_os = "linux")]
 pub use circuit_experience_intake::append_original_circuit_experience_v1;
 #[cfg(target_os = "linux")]
+pub use circuit_experience_intake::append_original_circuit_experience_v2;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]
 pub(crate) use circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;

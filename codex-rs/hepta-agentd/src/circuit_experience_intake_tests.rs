@@ -11,6 +11,7 @@ use codex_hepta_learning_ledger::candidate_ids_digest_v2;
 use codex_hepta_learning_ledger::candidate_order_digest_v2;
 use codex_hepta_types::FixedQ32;
 use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 #[path = "circuit_credit_ledger_test_support.rs"]
 mod ledger;
@@ -285,5 +286,131 @@ async fn expiry_after_decision_keeps_partial_pair_unacknowledged_without_resigni
         append_with_clock(&source, &identity, &mut fixture.writer, &request, || Ok(91)).is_err()
     );
     assert_eq!(fixture.bytes(), bytes);
+    Ok(())
+}
+
+fn append_v2_fixture(
+    source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
+    identity: &AgentdIdentity,
+    writer: &mut LedgerWriter,
+    request: &OriginalCircuitExperienceRequestV1,
+) -> Result<OriginalCircuitExperienceReceiptV1, Error> {
+    append_profile_with_clock(
+        source,
+        identity,
+        writer,
+        request,
+        OutcomeSupportProfile::IndependentMeasurementV2,
+        || Ok(50),
+    )
+}
+
+#[tokio::test]
+async fn independent_measurement_v2_preserves_original_pair_and_strict_v1() -> anyhow::Result<()> {
+    for partial in [false, true] {
+        let root = tempfile::tempdir()?;
+        let mut fixture = ledger::LedgerFixture::new("experience-independent-measurement");
+        let (_, bundle) = source::model(root.path())?;
+        let identity = crate::circuit_task::source_test_support::identity(root.path())?;
+        let run = circuit_learning_run_id_v1(&fixture.writer, &identity.agent_id, &id("episode"))?;
+        let (identity, original) =
+            source::completed(root.path(), &bundle, &run, &source::observation([0, 0])).await?;
+        let source = original.readback();
+        let publication = source.read_run_publication(&identity, &run)?;
+        let mut request = request(&fixture.writer, &publication)?;
+        request.outcome.support_digest = d("original-independent-observer-measurement");
+        assert_ne!(
+            request.outcome.support_digest,
+            publication.publication_digest()
+        );
+        request.outcome_evidence = ledger::sign(
+            &fixture.writer,
+            LearningEvidenceRoleV1::Observer,
+            &outcome_signing_payload_v2(&request.outcome),
+        );
+        let before = fixture.bytes();
+        assert!(
+            append_with_clock(&source, &identity, &mut fixture.writer, &request, || Ok(50))
+                .is_err()
+        );
+        assert_eq!(fixture.bytes(), before);
+        if partial {
+            fixture.writer.append_decision(
+                request.expected_predecessor,
+                request.decision.clone(),
+                &request.decision_evidence,
+                /*now*/ 50,
+            )?;
+        }
+        let first = append_v2_fixture(&source, &identity, &mut fixture.writer, &request)?;
+        let snapshot = fixture.writer.read_current_durable_snapshot()?;
+        assert_eq!(snapshot.records().len(), 2);
+        let LedgerEvent::AuthenticatedOutcomeV2(outcome) = &snapshot.records()[1].event else {
+            anyhow::bail!("original signed measured Outcome");
+        };
+        assert_eq!(outcome.support_digest, request.outcome.support_digest);
+        let bytes = fixture.bytes();
+        let replay = append_v2_fixture(&source, &identity, &mut fixture.writer, &request)?;
+        assert_eq!(first.outcome.chain_digest, replay.outcome.chain_digest);
+        assert_eq!(fixture.writer.read_current_durable_snapshot()?, snapshot);
+        assert_eq!(fixture.bytes(), bytes);
+        original.withdraw_source(&run)?;
+        assert!(append_v2_fixture(&source, &identity, &mut fixture.writer, &request).is_err());
+        assert_eq!(fixture.bytes(), bytes);
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution()
+-> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let mut fixture = ledger::LedgerFixture::new("experience-v2-refusals");
+    let (_, bundle) = source::model(root.path())?;
+    let identity = crate::circuit_task::source_test_support::identity(root.path())?;
+    let run = circuit_learning_run_id_v1(&fixture.writer, &identity.agent_id, &id("episode"))?;
+    let (identity, original) =
+        source::completed(root.path(), &bundle, &run, &source::observation([0, 0])).await?;
+    let source = original.readback();
+    let mut valid = request(
+        &fixture.writer,
+        &source.read_run_publication(&identity, &run)?,
+    )?;
+    valid.outcome.support_digest = d("independent-v2-measurement");
+    valid.outcome_evidence = ledger::sign(
+        &fixture.writer,
+        LearningEvidenceRoleV1::Observer,
+        &outcome_signing_payload_v2(&valid.outcome),
+    );
+    let before = fixture.bytes();
+    for mutation in 0..7 {
+        let mut changed = valid.clone();
+        match mutation {
+            0 => changed.outcome.support_digest = Digest32::ZERO,
+            1 => changed.decision.support_digest = d("different-original-publication"),
+            2 => changed.decision.run_snapshot_digest = d("different-ndu-snapshot"),
+            3 => changed.decision.policy_digest = d("different-original-policy"),
+            4 => changed.outcome.episode_id = id("different-original-episode"),
+            5 => changed.outcome.watermark.finalized_at = Some(44),
+            6 => changed.outcome.value = Some(FixedQ32::ZERO),
+            _ => unreachable!(),
+        }
+        // All structural attacks carry valid original-role signatures. The
+        // final case instead changes the measurement without re-signing it.
+        if mutation != 6 {
+            changed.decision_evidence = ledger::sign(
+                &fixture.writer,
+                LearningEvidenceRoleV1::Generator,
+                &decision_signing_payload_v2(&changed.decision)?,
+            );
+            changed.outcome_evidence = ledger::sign(
+                &fixture.writer,
+                LearningEvidenceRoleV1::Observer,
+                &outcome_signing_payload_v2(&changed.outcome),
+            );
+        }
+        assert!(append_v2_fixture(&source, &identity, &mut fixture.writer, &changed).is_err());
+        assert_eq!(fixture.bytes(), before);
+    }
     Ok(())
 }
