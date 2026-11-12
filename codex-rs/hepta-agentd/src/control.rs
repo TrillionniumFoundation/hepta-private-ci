@@ -144,7 +144,10 @@ impl AgentdControlServer {
         self.run_for::<NotesControlProfile>().await
     }
 
-    async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {
+    async fn run_for<P>(mut self) -> Result<(), AgentdError>
+    where
+        P: ControlProfile + 'static,
+    {
         let mut connections = JoinSet::new();
         let mut failure = None;
         loop {
@@ -196,7 +199,7 @@ impl AgentdControlServer {
         }
         #[cfg(target_os = "linux")]
         if let Some(completion) = self.source_capture_completion.take() {
-            completion.complete()?;
+            completion.acknowledge_original_control_completion()?;
         }
         Ok(())
     }

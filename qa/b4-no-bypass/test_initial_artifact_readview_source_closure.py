@@ -34,7 +34,8 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
     ],
     "root_initial_artifact_same_session": [
-        "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs"
+        "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs",
+        "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs"
     ],
     "root_initial_artifact_full_pin": [
         "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs"
