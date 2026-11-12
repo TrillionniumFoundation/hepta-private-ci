@@ -15,3 +15,6 @@ mod protocol;
 
 #[path = "authority_host_q24_evaluation_record.rs"]
 mod record;
+
+#[path = "authority_host_q24_evaluation_deployment.rs"]
+mod deployment;
