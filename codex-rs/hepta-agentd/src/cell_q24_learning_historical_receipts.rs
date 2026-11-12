@@ -118,7 +118,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         OriginalReceiptVerificationV1::verify(&verification, &signed, self.current_time()?)
     }
 
-    pub(super) fn authenticate_receipt(
+    pub(in super::super) fn authenticate_receipt(
         &mut self,
         snapshot: &LearningIterationSnapshotV1,
         receipt: &LearningIterationReceiptV1,

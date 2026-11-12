@@ -19,7 +19,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         Ok(())
     }
 
-    pub(super) fn finish_original_b_read(&mut self) -> Result<(), Error> {
+    pub(in super::super) fn finish_original_b_read(&mut self) -> Result<(), Error> {
         let Some(before) = self.original_b.take() else {
             return Ok(());
         };
@@ -55,7 +55,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         )
     }
 
-    pub(super) fn read_publication_material(
+    pub(in super::super) fn read_publication_material(
         &mut self,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<Option<codex_hepta_neuron::CellBackendManifestV2>, Error> {
