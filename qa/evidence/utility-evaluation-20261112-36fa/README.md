@@ -1,8 +1,8 @@
 # Utility evaluation evidence — complete diagnostics and integrated preparation
 
-Checkpoint: 2026-11-12 13:12:09 UTC. Published source and Draft PR #6203 still identify **e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd**, tree **b607ff5f50812c5e0f932d7dae18d4c74f1269cb**. That exact source **failed qualification**. The new integrated tree below is preparation awaiting native maintenance and a newly frozen commit; it has no inherited test or full-gate pass.
+Checkpoint: 2026-11-12 13:25:53 UTC. Published source and Draft PR #6203 still identify **e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd**, tree **b607ff5f50812c5e0f932d7dae18d4c74f1269cb**. That exact source **failed qualification**. The new integrated tree below has been applied in the isolated review checkout. Its first maintenance attempt failed before Cargo on an absent build-cache path; a separately identified maintenance continuation is pending terminal observation. No new source commit, inherited test result or full-gate pass is claimed.
 
-The preceding 556-file checkpoint is retained unchanged at [README_556FILES_E8B6_PREPARATION.md](checkpoints/README_556FILES_E8B6_PREPARATION.md). Earlier original failures, unavailable-artifact observations, source restorations, preparations and actual run records remain in this evidence history.
+The preceding 807-file checkpoint is retained unchanged at [README_807FILES_E8B6_PREPARATION.md](checkpoints/README_807FILES_E8B6_PREPARATION.md); the 556-file predecessor remains at [README_556FILES_E8B6_PREPARATION.md](checkpoints/README_556FILES_E8B6_PREPARATION.md). Earlier original failures, unavailable-artifact observations, source restorations, preparations and actual run records remain in this evidence history.
 
 ## Integrated preparation: 40 exact changes, complete source identity
 
@@ -23,6 +23,14 @@ The packet is 4,901,225 raw bytes, SHA-256 **9efc9637c3d04a038d4bae2dee61e8ef579
 Root rebuilt the e8 tree from all 14,741 retained source leaves, reconstructed the complete fixed b298 tree with 14,842 leaves, and checked every preparation preimage. Two independent reviews reconstructed the final 1,798 tree nodes and all nine new raw tree objects; reversing all 40 changes recovered the original b298 tree. GitHub's independently created tree also matched a8c41 exactly. See [evaluation review](integrated-fixed-b298-prepared-v1/EVALUATION_INDEPENDENT_REVIEW.json), [native review](integrated-fixed-b298-prepared-v1/NATIVE_INDEPENDENT_REVIEW.json), and the root reconstruction/composition scripts under [independent-review/scripts](independent-review/scripts).
 
 This proves the prepared bytes and their composition. Native formatting/fix, a final source commit, original source/caller gates, and Rust execution remain distinct subsequent steps. The packet creates no owner, adopts no model and changes no production deployment.
+
+## Requirement coverage: source mechanisms are not ordinary acceptance
+
+The [source-pinned requirement matrix](UTILITY_REQUIREMENT_COVERAGE_A8C41.md) compares the user's complete utility requirements with this prepared source. Its 36 source pins match the complete prepared inventory; root additionally read the original NDU specification and seven critical implementation files. This corrects older reports: direct evaluated S/C receipt mechanisms and strict Root six-receipt authentication now exist.
+
+Substantive gaps still remain in source. The ordinary Version/published-read profile accepts the older TrainingNoUpdate prefixes; Candidate ordinary Selection/NextUse and part of its recovery routing are still refused, and original startup assembly has no registered product caller. Cost coverage is explicitly TaskLedgersBeforeFinalHoldout, so post-cut estimator, signature/publication, download, service and maintenance totals are not implied. A matched fixed expert is not proof of the strongest deployable baseline. Declared controller separation and supported deterministic policy records do not establish actual operational independence or changed-action causal support.
+
+The retention checks refuse an incompatible Qualified composition; they do not invent an aggregate NoUpdate, a fraud verdict or a payment contract. These distinctions remain necessary even if future software gates pass. See [root source/placement review](independent-review/FINAL_PLACEMENT_AND_REQUIREMENT_COVERAGE_ROOT.json).
 
 ## Actual complete 534-boundary diagnostic: failed, no missing rows
 
@@ -47,7 +55,7 @@ The explicit Trainer-reference postimage is **467831627aaf7833f035804b3c94629739
 
 The first diagnostic actually passed positions 281 and 313 and failed the original protected row 279 because that row retained the previous masked body. Its overall exit remains **1**. [Original placement](source-gates/desktop-next-use-trainer-type-v1/PLACEMENT.json) and [root review](source-gates/desktop-next-use-trainer-type-v1/ROOT_REVIEW.json) retain this result.
 
-A separate original diagnostic then ran position 468: **one passed, zero failed/Unknown, zero protected rows**, normal exit 0. The original Evaluation callers are only candidate-stage Evaluation and evaluated-retention context; the NextUse file is correctly excluded. This was an actual separate execution; the first two boundaries were not rerun. [Original report](source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json) · [root review](source-gates/desktop-next-use-evaluation-readback-v1/ROOT_REVIEW.json).
+A separate original diagnostic then ran position 468: **one passed, zero failed/Unknown, zero protected rows**, normal exit 0. The original Evaluation callers are only candidate-stage Evaluation and evaluated-retention context; the NextUse file is correctly excluded. This was an actual separate execution; the first two boundaries were not rerun. [Original report](source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json) · [root review](source-gates/desktop-next-use-evaluation-readback-v1/ROOT_REVIEW.json) · [complete original placement](source-gates/desktop-next-use-evaluation-readback-v1/PLACEMENT.json). Root also reconstructed all four large originals and checked all 36 retained part paths for this separate run.
 
 Both runs retained the full 6,597-file Rust projection and unchanged e8 physical source. Neither supplies a final integrated-source gate result.
 
@@ -95,6 +103,18 @@ All 244 original b298 transport objects were independently checked by bytes/type
 A separate readonly observation found every required object for the current e8, original 726 and fixed b298 snapshots present, with **zero missing among 16,245 unique required objects**. The original e8 physical source, HEAD and index were unchanged. Root reassembled the immutable 77,411-byte native SDK payload and compared all 244 native object readbacks against the independently verified original canonical packet.
 
 This establishes availability of the required current snapshots. It does not assert complete historical repository availability or a passing global fsck. [Original scope result](native-e8-new-diagnostics/b298-object-import/fsck-scope/RESULT.json) · [root review](native-e8-new-diagnostics/b298-object-import/fsck-scope/ROOT_REVIEW.json).
+
+## Actual isolated source application; first maintenance attempt failed before Cargo
+
+The original prepublication attempt ran from 13:12:58 to 13:13:21 UTC. It successfully applied all **146 actual changes from e8 to the complete prepared tree**, retaining the independent untouched e8 checkout. HEAD remained e8 and the staged tree was a8c41.
+
+It then failed with FileNotFoundError for the earlier /data diagnostic target. The original result explicitly records **source_applied=true, commands=[], cargo_command_requested=false, tests_started=false**. The build-cache disappearance cause is Unknown; no source rollback or application replay is implied.
+
+Root independently derived the complete 14,851-entry native five-field inventory from preserved e8 bytes, original b298 objects and reviewed postimages: **3,440,077 bytes**, SHA-256 **5cbe4f67b27b7c57d0bb8d3ec8d3fe6ac75d5b09578c23af7b6179f6546d4aab**. It exactly matches both actual native after-application and final observations; all 146 completed paths match the full source difference.
+
+[Original result](native-fixed-b298-prepublish-v1/RESULT.json) · [root application review](native-fixed-b298-prepublish-v1/ROOT_REVIEW.json). The separately identified v2 continuation creates only a new dedicated build directory and runs the original scoped fix and formatting commands; its [driver](native-fixed-b298-prepublish-v2/driver.py) and [actual launch input](native-fixed-b298-prepublish-v2/actual-process-input.json) are retained. No source application is repeated, no old cache is presumed available, and no compilation or maintenance success is inferred from admission.
+
+The next original source-gate runner is [prepared but not launched](next-exact-source-gates-preparation/PREPARATION_PLAN.json), with null final source identifiers until the new commit is published and the native checkout is exact and clean. Its original source-closure/self-test/full-caller budgets remain 600/300/4800 seconds.
 
 ## Published e8 results and ordinary utility qualification
 

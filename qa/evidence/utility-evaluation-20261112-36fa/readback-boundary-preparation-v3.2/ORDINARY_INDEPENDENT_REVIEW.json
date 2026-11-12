@@ -1,0 +1,833 @@
+{
+  "schema": "hepta.utility.v32-independent-review.v1",
+  "reviewer": "/root/ordinary_path",
+  "status": "approved_static_preparation_with_recorded_limits",
+  "inputs": {
+    "manifest": "dd6141927a3d1bcc6c5174531d8e0ac5951ae1b3",
+    "packet": "79d3f41e016f17815f83832c682a7ac81c2f60aa",
+    "before_callers": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+    "after_callers": "2354abb1eb485629ecdf17a2e8952a529b8df384"
+  },
+  "conclusion": "The exact nine-file preparation preserves the existing verifier and source authorities. No new blocking defect was found in the independently inspected v3.1-to-v3.2 scope. This is a static preparation review, not an executed gate or ordinary learning qualification.",
+  "structure": {
+    "schema": "hepta.utility.v32-independent-structural-review.v1",
+    "status": "static_checks_passed_source_fence_semantics_pending",
+    "reviewer": "/root/ordinary_path",
+    "input_manifest": {
+      "bytes": 92202,
+      "sha256": "5de332ebf622f670c0d180c4cabfc610c8544a0de56c4ba840d06a7903dd0a79",
+      "git_blob_sha": "dd6141927a3d1bcc6c5174531d8e0ac5951ae1b3"
+    },
+    "input_packet": {
+      "bytes": 496761,
+      "sha256": "fcadd5ab05c3b1c48d49f784c085136c2b833e1e482683d99cb2482078a17a74",
+      "git_blob_sha": "79d3f41e016f17815f83832c682a7ac81c2f60aa"
+    },
+    "callers_before": {
+      "bytes": 1198922,
+      "sha256": "9f546f6a12602286916c04c08657d35115b0fc7ffd92f47df80dc7ea74dcbf4a",
+      "git_blob_sha": "155282ec6dd93e2637659a73da10eb2f3936a7b3"
+    },
+    "callers_after": {
+      "bytes": 1255349,
+      "sha256": "42f75c0b463c6793048e3b5afd50b18f57e5e770a3b7fc9e89c1c4c29b532b91",
+      "git_blob_sha": "2354abb1eb485629ecdf17a2e8952a529b8df384"
+    },
+    "boundary_count": 534,
+    "exact_eight_membership_additions": [
+      {
+        "position_zero_based": 335,
+        "added": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+      },
+      {
+        "position_zero_based": 337,
+        "added": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+      },
+      {
+        "position_zero_based": 338,
+        "added": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"
+      },
+      {
+        "position_zero_based": 347,
+        "added": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+      },
+      {
+        "position_zero_based": 365,
+        "added": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"
+      },
+      {
+        "position_zero_based": 459,
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      },
+      {
+        "position_zero_based": 460,
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+      },
+      {
+        "position_zero_based": 461,
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      }
+    ],
+    "old_protected_rows": 399,
+    "new_protected_rows": [
+      {
+        "position_zero_based": 399,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+        "function_count": 1
+      },
+      {
+        "position_zero_based": 400,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+        "function_count": 1
+      },
+      {
+        "position_zero_based": 401,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "function_count": 5
+      },
+      {
+        "position_zero_based": 402,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+        "function_count": 4
+      },
+      {
+        "position_zero_based": 403,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+        "function_count": 3
+      },
+      {
+        "position_zero_based": 404,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs",
+        "function_count": 6
+      },
+      {
+        "position_zero_based": 405,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs",
+        "function_count": 0
+      },
+      {
+        "position_zero_based": 406,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+        "function_count": 2
+      },
+      {
+        "position_zero_based": 407,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "function_count": 1
+      },
+      {
+        "position_zero_based": 408,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "function_count": 2
+      }
+    ],
+    "existing_changed_rows": [
+      279
+    ],
+    "row279_only_changed_field": "required_function_order[fn predecessors(].sequence[0]",
+    "row279_before_mask": {
+      "bytes": 886,
+      "sha256": "5444e04478e14a1891bdc1dd3fbf2df5a841121f0da41558c8ac40de49ae0d2d",
+      "git_blob_sha": "f3889a9cfa9ded6f496f4c3d570341eca3226df4"
+    },
+    "row279_after_mask": {
+      "bytes": 961,
+      "sha256": "5cc5f545d0e33c275efb563b071514e654ab0eabca9fb6938093f1a86a96fcde",
+      "git_blob_sha": "5e80cc2c1893fb6545fca5dd8c6f3746d82c2d56"
+    },
+    "old_qa": [
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "unchanged_function_count": 10,
+        "all_other_source_bytes_equal": true,
+        "expected_changes": [
+          {
+            "boundary": "learning_original_evaluation_host_profile",
+            "before": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+            ]
+          },
+          {
+            "boundary": "learning_original_evaluation_host_receipt_current",
+            "before": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+            ]
+          },
+          {
+            "boundary": "learning_original_evaluation_host_constructor",
+            "before": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "unchanged_function_count": 9,
+        "all_other_source_bytes_equal": true,
+        "expected_changes": [
+          {
+            "boundary": "learning_original_next_use_command_owner_factory",
+            "before": [
+              "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+              "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "unchanged_function_count": 12,
+        "all_other_source_bytes_equal": true,
+        "expected_changes": [
+          {
+            "boundary": "learning_original_selector_command_context",
+            "before": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+              "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "unchanged_function_count": 9,
+        "all_other_source_bytes_equal": true,
+        "expected_changes": [
+          {
+            "boundary": "learning_original_selector_command_context",
+            "before": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+              "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+            ]
+          },
+          {
+            "boundary": "learning_original_selector_command_owner_profile",
+            "before": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+              "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+            ]
+          },
+          {
+            "boundary": "learning_original_selector_command_owner_factory",
+            "before": [
+              "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+              "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "unchanged_function_count": 16,
+        "all_other_source_bytes_equal": true,
+        "expected_changes": [
+          {
+            "boundary": "learning_original_dataset_readback_current",
+            "before": [
+              "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+              "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+              "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+              "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+            ],
+            "added": [
+              "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+            ]
+          }
+        ]
+      }
+    ],
+    "total_original_functions_unchanged": 56,
+    "changed_expected_tuples": 9,
+    "new_qa": [
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluator_readback_source_closure.py",
+        "test_methods": [
+          "test_consuming_host_requires_actual_training_and_original_panel_history",
+          "test_every_member_keeps_the_full_training_attestation_scope_and_original_trust",
+          "test_same_bound_trainer_arc_replaces_only_each_members_readonly_transport",
+          "test_material_export_never_promotes_readback_to_execute",
+          "test_final_original_receipt_is_read_after_all_panel_io",
+          "test_export_authenticates_fresh_clock_panel_and_complete_material_after_io",
+          "test_member_projection_matches_original_signed_cell_manifests_and_scopes",
+          "test_export_has_no_new_claim_signing_key_or_reconnected_owner"
+        ],
+        "method_count": 8,
+        "skip_constructs": 0
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_host_source_closure.py",
+        "test_methods": [
+          "test_host_preserves_fresh_recovered_origins_and_shared_once",
+          "test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining",
+          "test_context_preserves_actual_training_extension_and_complete_original_signatures",
+          "test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit",
+          "test_after_read_reenters_only_original_lane_then_authenticates_both_materials",
+          "test_original_lane_keeps_actual_context_and_purpose",
+          "test_admission_requires_the_actual_candidate_qualified_material_and_current_time",
+          "test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth",
+          "test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty",
+          "test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys",
+          "test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys"
+        ],
+        "method_count": 11,
+        "skip_constructs": 0
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_readback_host_source_closure.py",
+        "test_methods": [
+          "test_selector_rejects_changed_cut_signature_or_observation_time",
+          "test_selector_constructor_keeps_consuming_original_custody",
+          "test_next_use_rejects_different_original_cuts_or_any_full_signature",
+          "test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings",
+          "test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor"
+        ],
+        "method_count": 5,
+        "skip_constructs": 0
+      }
+    ],
+    "new_test_methods": 24,
+    "tests_executed_by_reviewer": false,
+    "production_source_changed_by_reviewer": false,
+    "prior_local_analysis_error": "A previous AST inspection used ast.literal_eval on EXPECTED containing symbolic constants and failed before producing a report. This corrected static analyzer resolves only literal module constants without executing or importing QA modules; original runtime evidence was never modified.",
+    "limitations": [
+      "Static structure alone does not prove source guard adequacy or actual authority.",
+      "Prepared v3.2 is not a published source head or full gate result."
+    ]
+  },
+  "source_fence_identity_inspection": {
+    "schema": "hepta.utility.v32-independent-source-fence-inspection.v1",
+    "status": "static_exact_source_and_full_body_fences_confirmed",
+    "new_protected_rows": [
+      {
+        "position_zero_based": 399,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+        "source": {
+          "bytes": 2169,
+          "sha256": "c1df25ab3c5cd6cbd8f84bc2f76b825bfeaa2e232923dc7268a2f135ddd958cb",
+          "git_blob_sha": "4a46b73bb8200bd61a6eb43a6338f3695d80ee04"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn into_command_owner_from_original_readbacks(",
+            "masked_complete_function": {
+              "bytes": 1190,
+              "sha256": "ea987810f10be8bb9610db3d891c180320e6c5e659d1c0c71745a0dfe29f6541",
+              "git_blob_sha": "9ff6dd6aa31bdad95ec0b71af4c09b3e46d2b0c4"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 21
+      },
+      {
+        "position_zero_based": 400,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+        "source": {
+          "bytes": 3072,
+          "sha256": "e882fd75ef43d769b935cce46342880b05b03bee0179349b982a40d046056adc",
+          "git_blob_sha": "f8cb73a2b9f87e1c866e74771ba10678ef168f90"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn into_command_owner_from_original_readbacks(",
+            "masked_complete_function": {
+              "bytes": 2072,
+              "sha256": "e69ec2036e312ad8d9056fef5e3ee02cf84dac2a3ea353f02f68d87eb674e92c",
+              "git_blob_sha": "78a9cb2308fdaa4e98fedebea1a7c402547d51c5"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 21
+      },
+      {
+        "position_zero_based": 401,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "source": {
+          "bytes": 9119,
+          "sha256": "578c7df9e0391209e63151dafcee53ae1d76d00d4ef6e67da51a98633a2687b6",
+          "git_blob_sha": "0418a532daa7460954bec6d421d608c7aa1f16ee"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn from_original_bootstrap(",
+            "masked_complete_function": {
+              "bytes": 583,
+              "sha256": "796f7633249383a1cea18a1b36fa7a6ff9667b529ef47cf12da3b16f552c038c",
+              "git_blob_sha": "ba2d404cd4afd3c1a36a3a86380a8693349d4f2d"
+            }
+          },
+          {
+            "function": "fn recover_original_bootstrap(",
+            "masked_complete_function": {
+              "bytes": 658,
+              "sha256": "3152c00308eabd52c6a8a1d196316832b24d1464572b1f0386ca0d35e95eec95",
+              "git_blob_sha": "37256e3530ab5014c3aee20bcdcdc5ffe82885de"
+            }
+          },
+          {
+            "function": "fn bind(",
+            "masked_complete_function": {
+              "bytes": 1780,
+              "sha256": "35fd2a37d78d983d7d907696efccac5895f8a1e8b9793d7eeac43c510558f101",
+              "git_blob_sha": "2dec939cd1490defa38f1e085cc326b68ac4a170"
+            }
+          },
+          {
+            "function": "fn original_inputs(",
+            "masked_complete_function": {
+              "bytes": 1910,
+              "sha256": "2c506df78f97041604c85500a8ca3549805820bde312b905f74b87fe27c87713",
+              "git_blob_sha": "44e9bd8110fb0a1ced45c23ecca20d3786644a58"
+            }
+          },
+          {
+            "function": "fn recover_deployment(",
+            "masked_complete_function": {
+              "bytes": 1492,
+              "sha256": "6fd806ae0ec6ca2285fa161e3bbe950168fd6ca6cfb0f5ff8e630ebe4fe24f21",
+              "git_blob_sha": "6ab96f2476878a6f777711359a418a5cae334be5"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 26
+      },
+      {
+        "position_zero_based": 402,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+        "source": {
+          "bytes": 8293,
+          "sha256": "1eb76e4167f345d4dea74ec4b2b495ee73a5450e620b687d24e21f41a2213c06",
+          "git_blob_sha": "7674650c6a44bdd48c32fbb64ce18c1eac483a3d"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn from_original(",
+            "masked_complete_function": {
+              "bytes": 1275,
+              "sha256": "fb4956ba0109c2619deaf593553e0e8c93aa2b675090e42cd2ca8c0108b37dc3",
+              "git_blob_sha": "3eea27f877ba4f199de24cae5fc95c151fffbb2f"
+            }
+          },
+          {
+            "function": "fn authenticate(",
+            "masked_complete_function": {
+              "bytes": 3486,
+              "sha256": "db419a3b85c13e6adf28c1b7ad5a2902b1b188552540f00746e76ebe234cc4d9",
+              "git_blob_sha": "7badc1472a688e2efcba096a3a3eda40058ea965"
+            }
+          },
+          {
+            "function": "fn require_qualified(",
+            "masked_complete_function": {
+              "bytes": 549,
+              "sha256": "4197ca0bcd1e1fb2271406de68d166c3117fa6214637ceebf6ba44fcdef909d0",
+              "git_blob_sha": "89f02932de3a157cfeba3bf5f62ab3523d155868"
+            }
+          },
+          {
+            "function": "fn binding(",
+            "masked_complete_function": {
+              "bytes": 1194,
+              "sha256": "dfb38078beafb627e3cce79bfd7edb53b44a7bd14634f4d36c34b5d6671ee1cc",
+              "git_blob_sha": "550c9ef28f5e3d025ced37254f0a6aa53e0b6793"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 19
+      },
+      {
+        "position_zero_based": 403,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+        "source": {
+          "bytes": 7635,
+          "sha256": "38e95ff0fcd9460a78700b3f8ddc5968cea5a6b966239e83a36dbf1dc5b8e265",
+          "git_blob_sha": "db91e21a0238144c0b0f75dd3b32288fde78d42b"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn observe(",
+            "masked_complete_function": {
+              "bytes": 588,
+              "sha256": "e3e87f7fa402b4da4ad837ae51a775eef565e0f5e04a459b8d270d468a5dbf00",
+              "git_blob_sha": "56175575ec041d5b0204876a622afb6b3480cf46"
+            }
+          },
+          {
+            "function": "fn original_response(",
+            "masked_complete_function": {
+              "bytes": 4714,
+              "sha256": "cb2eda2ff12257dbe38fdb0bec578f4dd14166702e3e96a9bb3ae00c6e98eaba",
+              "git_blob_sha": "729cde17462cd2286c9b0f9003b4b3912b2dd87c"
+            }
+          },
+          {
+            "function": "fn current_after(",
+            "masked_complete_function": {
+              "bytes": 1591,
+              "sha256": "fba6a42fa0c9356c25cdc708d0fd90bb864c5967fa51aa81c30fa70c9551254e",
+              "git_blob_sha": "6eaa867ae8a450aefbb2742409e0634819ea9514"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 19
+      },
+      {
+        "position_zero_based": 404,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs",
+        "source": {
+          "bytes": 4666,
+          "sha256": "fe8fd90dc1a2e300f1643b869048837533ff7c47b76d3d5e98ee082345dd6b1d",
+          "git_blob_sha": "333208cd3f9e2001445289e999409bd7417e4a57"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn read_original_model_training(",
+            "masked_complete_function": {
+              "bytes": 639,
+              "sha256": "48e0fed83c92ff66855486fc557ab01fc22014c19c7060388448bdb01f7bad3c",
+              "git_blob_sha": "d96732c65d8662f930e79abcc0df8402932f3ecd"
+            }
+          },
+          {
+            "function": "fn create_original_model(",
+            "masked_complete_function": {
+              "bytes": 628,
+              "sha256": "bcfbeacd69c2f151183aed50df143c58784f7a0507244f772c172a1c38a3217b",
+              "git_blob_sha": "59ace1f8ef0b98ecadd451f5954a044e5428eee9"
+            }
+          },
+          {
+            "function": "fn recover_original_model(",
+            "masked_complete_function": {
+              "bytes": 630,
+              "sha256": "4e3f7f4eb8ddcce740409f0b34577d8d635fcdaab1b13769f79d9c68b003f4b7",
+              "git_blob_sha": "432ff16f216db784f1947370b0edb28112672d06"
+            }
+          },
+          {
+            "function": "fn commit_original_model(",
+            "masked_complete_function": {
+              "bytes": 594,
+              "sha256": "00cd68dc21258abf51e2a394221d51290733324cc619d02ea2cbcf3b904eda0f",
+              "git_blob_sha": "8a5b2388207bf5025c192f1d10f186f453d4ff82"
+            }
+          },
+          {
+            "function": "fn read_original_model(",
+            "masked_complete_function": {
+              "bytes": 590,
+              "sha256": "db3d2da8a211bb3033dbef748c8330f394ec6931cea9e550f51b294da6d970cc",
+              "git_blob_sha": "71ffbf3b2e6adc57d9c710148c62819b6addd879"
+            }
+          },
+          {
+            "function": "fn require_model_context(",
+            "masked_complete_function": {
+              "bytes": 629,
+              "sha256": "46f58ab7c741d1255c2ce8de702215a3e475c23dccec890073f52752b6c12785",
+              "git_blob_sha": "4433eca9ef03e681a05cf661a99aab17748c2b98"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 18
+      },
+      {
+        "position_zero_based": 405,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs",
+        "source": {
+          "bytes": 4002,
+          "sha256": "975e6ff848fef673679f7fa2a3d094a2d3a11709ed7fd48c08c47fb45292eff5",
+          "git_blob_sha": "3d6a689e30f8b82607ef051490deb91239cf1498"
+        },
+        "full_function_fences": [],
+        "generic_file_order_fences": [
+          {
+            "function": "fn validate_current_material<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 3096,
+              "sha256": "ef27273b7fb3fc5d1ec0f1ec04ef8ebf1425fff995a789d6af87ac48a1813ef5",
+              "git_blob_sha": "4514833530e3c977db3e80c0062210e12c20e882"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          }
+        ],
+        "forbidden_count": 19
+      },
+      {
+        "position_zero_based": 406,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+        "source": {
+          "bytes": 7004,
+          "sha256": "282e58e8a39c29939c1515c54711a08a858d71ebc9b8d6be1b9164deeb1d0e6e",
+          "git_blob_sha": "d32eb1681ce8e51b823ed483955d69257a25d981"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn current_time(",
+            "masked_complete_function": {
+              "bytes": 218,
+              "sha256": "14456012dc78760b0f03735e1a7667070e4c9040601535a2fa2307fb3b9e2665",
+              "git_blob_sha": "50bdbee462aa7243578a7102dfad9d6d42b11a02"
+            }
+          },
+          {
+            "function": "fn require_material(",
+            "masked_complete_function": {
+              "bytes": 369,
+              "sha256": "639fc97f520ee5bb57b5d6a77745ba7d8240cac89a92bbc50a0f61d0790d6bf8",
+              "git_blob_sha": "99f8a1a0d6a40a2a2a763539370f1c8d5727e151"
+            }
+          }
+        ],
+        "generic_file_order_fences": [
+          {
+            "function": "fn create_from_current_material<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 1358,
+              "sha256": "fcc1aea1b8f040e01d8510044f075f547b3f56803bfa58c8162241a98586a89f",
+              "git_blob_sha": "9cf9f6d30724ba82766092a9a27b13a795b98c41"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          },
+          {
+            "function": "fn recover_from_current_material<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 1027,
+              "sha256": "18f244e871938bedfedebeacde2714bce2b97d3f3a05b65bf14c563e43d264e8",
+              "git_blob_sha": "fc5e93e36b687d4505c401fbed719bfc2dd9844e"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          },
+          {
+            "function": "fn commit_current_material_or_readback<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 1717,
+              "sha256": "4fe0fb3cee9dcee5d9e5bb6c4b19f7be59bcdd6c3afbe36022512c6aa648eab6",
+              "git_blob_sha": "9bd28378508f3d2dfad905493aefe14a5681db64"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          },
+          {
+            "function": "fn read_current_material<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 910,
+              "sha256": "8485d5dfc0770d003d1b6635320b731c790012008130e94554bf9a3f5355a9b7",
+              "git_blob_sha": "08344987b8ec200617cdfc09c02ce27516551129"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          },
+          {
+            "function": "fn admit_current_material<T: AnchorWitnessStore>(",
+            "masked_complete_function": {
+              "bytes": 774,
+              "sha256": "d4bf0f1c0903830e51bef183c1c59e0a877e597176858887cdf44711ddfa1cdf",
+              "git_blob_sha": "048ecabc5685482f3faf17d2b240b29190544c95"
+            },
+            "limitation": "Original file-order fallback has weaker function uniqueness and nested-definition rejection than required_function_order."
+          }
+        ],
+        "forbidden_count": 20
+      },
+      {
+        "position_zero_based": 407,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "source": {
+          "bytes": 3464,
+          "sha256": "1b72670f9f5608c4ac099d38661b4080f42fca517e89bbc375f3a1f4733bec54",
+          "git_blob_sha": "6c8e5ae94ff4753a48cb92c6b46b8a7559f00793"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn into_host_from_original_training_readback(",
+            "masked_complete_function": {
+              "bytes": 2491,
+              "sha256": "02d5d5e969a7e97aef20c926b0ec91469e83c23f71068a0aa2e93dcf7ff0299c",
+              "git_blob_sha": "806aec234eed354a490d571ba2bd759fbc366464"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 23
+      },
+      {
+        "position_zero_based": 408,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "source": {
+          "bytes": 7347,
+          "sha256": "e2c9a3665d67019763846fa2b9a290bdea0c6bcbace77ddd73f543eef3a3c2db",
+          "git_blob_sha": "8768614e0da009a3ea5deba932c4a62e6694d79b"
+        },
+        "full_function_fences": [
+          {
+            "function": "fn original_model_material(",
+            "masked_complete_function": {
+              "bytes": 2389,
+              "sha256": "911a49740bce001a8d5c266f914034c82e44e9ab4ac2509ab6bb2bf66dd97bd4",
+              "git_blob_sha": "e6bf5f1bfe859226a347689ca0d310dd706dc863"
+            }
+          },
+          {
+            "function": "fn member(",
+            "masked_complete_function": {
+              "bytes": 3885,
+              "sha256": "7c1bf368926cd1ede5855858ceb2eefffb6b84aaf81b6a65368974d619799456",
+              "git_blob_sha": "e469241f5387d8b82b8b816e7514842b3637e491"
+            }
+          }
+        ],
+        "generic_file_order_fences": [],
+        "forbidden_count": 23
+      }
+    ],
+    "function_scoped_count": 25,
+    "generic_file_order_count": 6,
+    "called_only_original_pure_source_helpers": [
+      "_strip_rust_non_code",
+      "_strip_cfg_test_items",
+      "_rust_item_end"
+    ],
+    "verify_boundary_executed": false,
+    "verify_protected_files_executed": false,
+    "tests_or_mutations_executed": false,
+    "source_writes": 0
+  },
+  "semantic_review": [
+    {
+      "paths": [
+        "circuit_selection_readback_host.rs",
+        "circuit_next_use_readback_host.rs"
+      ],
+      "finding": "Both consuming constructors retain self and reconstruct the exact original D/T or D/T/S cut before binding purpose-fixed predecessor connections. Complete original T and S attestations remain equal to held owner configuration. Selector and Observer factories receive the same original owner, live source and bound read-only transports. The whole masked function bodies are pinned; new file-level prohibitions reject reacquisition of file/key/owner or predecessor execution."
+    },
+    {
+      "paths": [
+        "cell_q24_model_command_host.rs",
+        "cell_q24_model_command_context.rs"
+      ],
+      "finding": "The Fresh versus Recovered branch, shared Bootstrap compare_exchange once, custody.take, initial profile equality, current original D/T/E reads, fixed trust/scope/objective and complete Generator/Evaluator signatures remain in exact pinned bodies. Explicit deployment recovery calls the original recovery path and preserves Execute being consumed. Context keeps the exact 3-cut Training and 4-cut Evaluation progression, original actor separation and Qualified requirement."
+    },
+    {
+      "paths": [
+        "cell_q24_model_command_effect.rs",
+        "cell_q24_model_command_lane.rs",
+        "cell_q24_model_current_admission.rs",
+        "cell_q24_model_current_owner.rs"
+      ],
+      "finding": "Execute and Readback remain separate. Readback does not create a missing Model; the before/after current material reads surround the original lane operation; unchanged original evidence and fresh authentication follow I/O. Pending, Missing, Ineligible and CommitUncertain are not collapsed. The original lane retains context checks, no remote callbacks while holding its owner lane, and no fit/evaluate upgrade. Current-material create/recover/commit/read use the original witness and store; the two existing store UFCS calls remain exact. Failure fences and current-time material revalidation remain pinned."
+    },
+    {
+      "paths": [
+        "neuron_cell_evaluation_host_training_readback.rs"
+      ],
+      "finding": "The consuming host checks the actual Training cut, full Training attestation, scope, trust, scope digest and objective digest for the primary and every retention member. It binds one original Trainer read-only connection, shares that same Arc only into each member's transport, then consumes the unchanged Evaluator and Panel into the original host. It does not replace membership, owner journal, signing key or retained evidence."
+    },
+    {
+      "paths": [
+        "neuron_cell_evaluation_model_material_export.rs"
+      ],
+      "finding": "Export continues through Action::Readback; projection is followed by actual Panel readback, equality and fence-on-divergence, the original Evaluator receipt check, fresh clock, Panel authentication and complete material verification. Members retain original candidate/fixed-expert snapshots, signed manifests/scopes, namespaces and original execution attestation payloads. New source fences prohibit signing/claim/reconnect and promotion to execution."
+    }
+  ],
+  "masked_literal_review": {
+    "actual_span_checks_present": true,
+    "qa_path": "qa/b4-no-bypass/test_original_model_host_source_closure.py",
+    "functions": [
+      "assert_actual_binding_domain",
+      "assert_actual_module_paths"
+    ],
+    "inspected_methods": [
+      "test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys",
+      "test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys"
+    ],
+    "finding": "The Model domain is checked at the unique real let-mut-bytes initializer inside the unique binding function, using mask offsets into original raw text. The effect/service module attributes are checked at their unique actual top-level path/mod spans. Comments and unused old-text decoys do not satisfy these actual-span checks. The unchanged protected-file verifier alone still masks literal contents; these QA checks explicitly document that limitation rather than claiming a new verifier capability.",
+    "methods_executed_by_this_reviewer": false
+  },
+  "remaining_limits": [
+    "Six generic functions use exact masked signature/body file-order sequences because the original function-name parser does not accept generics. The fallback does not have the same function uniqueness and nested-definition guarantees as function-scoped checks; the new QA docstring records this.",
+    "Source fences and their synthetic string mutations establish only the checked mechanism. They do not establish native Rust behavior, real independent data/authorization, ordinary A/B/C work, availability, adoption, or daemon/Root cold recovery.",
+    "No original source-closure, fullcaller, Cargo, mutation test or boundary diagnosis was re-run for this review. The next published immutable source still needs original gates and native validation.",
+    "The CALLERS large-blob allowlist entry remains the integration owner's explicit task. It must admit exactly the frozen 1,255,349-byte CALLERS postimage identity while retaining prior entries."
+  ],
+  "historical_evidence_preserved": {
+    "all534": {
+      "run": "hepta-utility-36fa-all-boundaries-overlay-v1",
+      "placement": "8b46536b7423f817ea57041ef0902916265f7d85",
+      "result": "519 passed / 15 failed / 0 unknown; all 390 protected passed; normal exit 1; unchanged physical source"
+    },
+    "first_two_typed": {
+      "placement": "0a354c8730ea9308052c524dd5d250edf16cc391",
+      "result": "positions 281 and 313 passed; old protected row 279 failed; normal exit 1; unchanged physical source"
+    },
+    "evaluation_typed": {
+      "placement": "710d1177ad4ffa121c70206cbbe7a3f123ce299c",
+      "result": "position 468 alone passed; no protected rows or earlier boundaries repeated; normal exit 0; unchanged physical source"
+    }
+  },
+  "actions": {
+    "production_source_changed": false,
+    "verifier_changed": false,
+    "CALLERS_changed_by_reviewer": false,
+    "refs_changed": false,
+    "tests_executed": false
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.utility.next-exact-source-gates-preparation.v1",
+  "status": "prepared_not_executed",
+  "driver": {
+    "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "bytes": 22946,
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "unchanged_from_independently_reviewed_v2": true
+  },
+  "input_template": {
+    "path": "input.template.json",
+    "state": "PREPARED_WAITING_FOR_FINAL_PUBLISHED_SOURCE_AND_NATIVE_CLEAN",
+    "executable_as_is": false
+  },
+  "awaiting": {
+    "final_published_commit": null,
+    "final_published_tree": null,
+    "native_exact_maintenance_clean_record": null,
+    "final_object_repository": null
+  },
+  "prepared_tree_reference_only": {
+    "tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "run_gate_on_prepared_tree": false
+  },
+  "original_entrypoints": [
+    {
+      "name": "source-closure",
+      "timeout_seconds": 600,
+      "entrypoint": [
+        "python3",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "<new-records>/source-closure/source-closure.json",
+        "--",
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "case_count_not_hardcoded": true
+    },
+    {
+      "name": "self-test",
+      "timeout_seconds": 300,
+      "entrypoint": "original hepta_ci_exec.execute_logged",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ]
+    },
+    {
+      "name": "verify",
+      "timeout_seconds": 4800,
+      "entrypoint": "original hepta_ci_exec.execute_logged",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ]
+    }
+  ],
+  "ready_transition": [
+    "Read root's actual immutable published commit and tree and native's final exact clean, no-diff maintenance result. A prepared tree or earlier source's PASS is insufficient.",
+    "Verify the origin repository really holds the final commit and tree, with its full worktree clean; verify the unchanged driver and original hepta_ci_exec hashes. Keep original source/records and native source-lock ownership separate.",
+    "Create a new frozen input identity with concrete final source_sha/source_tree/object_repository and fresh distinct clone/records paths; change state to READY_FOR_EXACT_SOURCE_RUN only after those observations. The old template and every earlier execution remain immutable.",
+    "Start the unchanged driver once through a durable process-start key bound to that exact final source and frozen config. An ambiguous acknowledgment is reconciled at that same key/arguments, never launched at another identity."
+  ],
+  "driver_behavior_retained": {
+    "full_clone_command": [
+      "git",
+      "clone",
+      "--shared",
+      "--no-checkout",
+      "--no-hardlinks",
+      "<exact-origin>",
+      "<new-isolated-source>"
+    ],
+    "checkout_exact_detached": true,
+    "source_permissions": "The original v2 freeze_owned_clone applies only to the new isolated clone, including its own Git metadata; shared original objects and the native checkout are not chmod-ed.",
+    "original_inventory": "All tracked and filesystem paths, not a Rust subset; index mode/object, working-byte hashes, symlink target, missing/extra files and metadata stability. Require exact clean HEAD/tree and every path matching the Git index.",
+    "before_after": "Complete immutable baseline and before/after inventory for every attempted gate. Source change fails the gate; missing evidence stays Unknown.",
+    "lifecycle": "Original v2 attempted, entrypoint-start, terminal, package and final records are retained. Missing original execution JSON cannot be called retained. A package error downgrades an otherwise passed summary to Unknown.",
+    "scheduling": "Original sequential 600/300/4800 phases. Source change stops subsequent phases. Full verify requires the preceding self-test passed. A closure failure is retained as failed even when the independent caller phases proceed.",
+    "raw_record_semantics": "Original hepta_ci_exec JSON and full raw logs are saved unchanged. gate-summary.json is a prepackage snapshot; gate-final.json and run-result.json carry final lifecycle state.",
+    "classification": "Any timeout, nonzero code or source divergence is never PASS. An unobserved terminal is Unknown, not inferred from a disappearing process.",
+    "no_source_modification_no_compilation_no_ref_update": true
+  },
+  "offhost_retention_plan": {
+    "each_phase": "Immediately after an actual phase terminal, retain its original raw/runner JSON, dispatch/start/terminal records, full before/after inventories, original retained manifest and postpackage gate-final/package-complete records. Do not wait for all phases before archiving already completed evidence.",
+    "transport": "Use bounded complete small-file reads or pinned-version binary chunks; preserve the original native SDK, reconstruct and hash exact bytes before parsing.",
+    "github": "Create immutable blobs with complete UTF-8 readback comparison. For large binary retained parts, retain exact binary Git blobs plus fully readable UTF-8 base64 companions and verify decoded original SHA256. Each repository blob remains below 500000 bytes.",
+    "reconstruction": "Preserve the original retained-manifest unchanged. Place all original part paths and explicit reconstruction mappings. Reuse a prior part only when the new actual before/after record has the identical verified byte identity.",
+    "final": "Preserve the new run-result with precise executed/not-run stages, exact source identity and a complete placement manifest; archive any failure without changing its original status."
+  },
+  "historical_executions_unchanged": [
+    "Cloud 19aa gates with unobserved terminal remain Unknown.",
+    "Old 91d fullcaller failure and 6d source-closure pass retain their own exact sources.",
+    "e8 source-closure and fullcaller failures and self-test pass remain actual e8 results.",
+    "The all534 memory-projection diagnostic remains 519/15/0 plus 390/0/0; the two typed boundaries and 468 followup remain distinct scoped diagnostics."
+  ],
+  "actions": {
+    "clones_created": 0,
+    "source_mutations": 0,
+    "gate_entrypoints_started": 0,
+    "cargo_commands_started": 0,
+    "refs_updated": 0
+  },
+  "limitations": [
+    "This is executable-entrypoint preparation only; no final commit/tree has been supplied or tested.",
+    "All tests and source checks remain mechanism evidence and do not establish actual task A, independent evaluation B, consumer C or daemon/Root recovery."
+  ]
+}

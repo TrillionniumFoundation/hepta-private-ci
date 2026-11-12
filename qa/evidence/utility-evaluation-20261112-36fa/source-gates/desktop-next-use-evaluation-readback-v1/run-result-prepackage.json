@@ -1,0 +1,97 @@
+{
+  "actual_A_B_C_qualification": false,
+  "attempted": true,
+  "cargo_tests": "not_run",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json"
+  ],
+  "comparison_unknown": false,
+  "entrypoint_started": true,
+  "execution_facts": {
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "execution_record_read_error": null,
+  "execution_terminal_observed": true,
+  "finished_at": "2026-11-12T12:38:39.673792+00:00",
+  "frozen_diagnostic_inputs_unchanged": true,
+  "full_gate_status": "not_run",
+  "full_source_tree": null,
+  "gate_package": {
+    "bytes": 9491,
+    "git_blob_sha": "6d482df08087e5329b0dc0bf56d41515c96f365e",
+    "original_files": 14,
+    "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained-manifest.json",
+    "sha256": "8958522951123a05d6bef7842894cff877d9bb504ac42bbdc748964d65a7ff11"
+  },
+  "gate_summary": {
+    "actual_A_B_C_qualification": false,
+    "after_inventory_error": null,
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "elapsed_seconds": 67.56694359495305,
+    "execution_error": null,
+    "finished_at": "2026-11-12T12:38:38.822524+00:00",
+    "gate": "next-use-evaluation-readback-scoped",
+    "lifecycle": {
+      "attempted": true,
+      "entrypoint_started": true,
+      "package": "completed",
+      "terminal_observed": true
+    },
+    "original_record": {
+      "bytes": 980,
+      "path": "next-use-evaluation-readback-scoped.json",
+      "sha256": "8b62f09be95b24bd211603ad464a5b4361e19c4756f15cd1433ecc3434325a1e"
+    },
+    "original_record_retained_unchanged": true,
+    "record_read_error": null,
+    "run_identity": "hepta-utility-36fa-next-use-evaluation-readback-v1",
+    "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+    "source_changed": false,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "passed"
+  },
+  "incomplete_rows_semantics": "Unknown; reconcile complete fsynced row-progress.jsonl lines when a checkpoint is older or execution stopped.",
+  "not_run": [],
+  "package_state": "pending",
+  "report_read_error": null,
+  "report_status": "passed_scoped_diagnostic",
+  "row_checkpoint_attempted_boundaries": 1,
+  "row_checkpoint_attempted_protected": 0,
+  "row_checkpoint_completed_boundaries": 1,
+  "row_checkpoint_completed_protected": 0,
+  "row_counts": {
+    "boundaries": {
+      "failed": 0,
+      "passed": 1,
+      "unknown": 0
+    },
+    "protected": {
+      "failed": 0,
+      "passed": 0,
+      "unknown": 0
+    }
+  },
+  "run_identity": "hepta-utility-36fa-next-use-evaluation-readback-v1",
+  "schema": "hepta.utility.next-use-evaluation-readback-overlay-run.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T12:37:31.122169+00:00",
+  "status": "passed_scoped_diagnostic",
+  "timeout_seconds": 4800,
+  "wrapper_error": null
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.utility.root-final-placement-coverage-review.v1",
+  "reviewed_at": "2026-11-12T13:16:39.673812+00:00",
+  "third468": {
+    "placement_blob": "710d1177ad4ffa121c70206cbbe7a3f123ce299c",
+    "placements": 71,
+    "original_part_paths": 36,
+    "all_four_large_originals_byte_reconstructed": [
+      {
+        "path": "CALLERS.toml",
+        "bytes": 1122002,
+        "sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+        "git_blob_sha": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb"
+      },
+      {
+        "path": "overlay.json",
+        "bytes": 453820,
+        "sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+        "git_blob_sha": "8842e6df5bbb92a042ccf28255fa0aa24809db2c"
+      },
+      {
+        "path": "next-use-evaluation-readback-scoped/source-after.inventory.json",
+        "bytes": 5432085,
+        "sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+        "git_blob_sha": "a2d747fc516e0a5881fde9edea3165b55291fbe2"
+      },
+      {
+        "path": "next-use-evaluation-readback-scoped/source-before.inventory.json",
+        "bytes": 5432085,
+        "sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+        "git_blob_sha": "a2d747fc516e0a5881fde9edea3165b55291fbe2"
+      }
+    ],
+    "actual_single_boundary_result_review": "08311180594857c8753da6bf06dc37441778775e"
+  },
+  "coverage": {
+    "report_blob": "db12282eec3d34eab42d6c5150e1e7874799e242",
+    "prepared_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "all_36_pins_match_complete_prepared_inventory": true,
+    "additional_direct_original_sources_read": [
+      {
+        "sha": "88d0786fe43f21ac82a24cd72f18bb1a530a97f5"
+      },
+      {
+        "sha": "7916d8905db13c6d8d374152c79f6786781d8ecd"
+      },
+      {
+        "sha": "a0afe798571bd01683785236201ea2dca52fedca"
+      },
+      {
+        "sha": "b7a6392ceaf4929714525c6c6e109ec306275957"
+      },
+      {
+        "sha": "a64c659ff63cf38d6704050e633fa65a30848d62"
+      },
+      {
+        "sha": "799af3b9beb9cd12abdad82e7bd7f8aea6cab93c"
+      },
+      {
+        "sha": "792703744b84ab6df841035f1e6652e3c7bd71ad"
+      },
+      {
+        "sha": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
+      }
+    ],
+    "critical_source_observations": [
+      "CellEvaluationCostScopeV1 currently has only TaskLedgersBeforeFinalHoldout; post-cut overhead is explicitly not claimed.",
+      "Published read wire accepts original TrainingNoUpdate prefix modes only.",
+      "Candidate ordinary Selection/NextUse is explicitly refused in Root stage routing."
+    ],
+    "scope": "Coverage matrix is source assessment only, neither runtime completion nor new-source qualification."
+  }
+}

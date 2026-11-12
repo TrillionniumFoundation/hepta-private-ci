@@ -1,0 +1,1034 @@
+{
+  "schema": "hepta.utility.source-diagnostic-complete-placement.v1",
+  "repository_prefix": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1",
+  "source_directory": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1",
+  "job_id": "1a1cfc35ba5-2564-1aa9",
+  "run_identity": "hepta-utility-36fa-next-use-evaluation-readback-v1",
+  "actual_result": {
+    "status": "passed_scoped_diagnostic",
+    "started_at": "2026-11-12T12:37:31.122169+00:00",
+    "finished_at": "2026-11-12T12:38:39.673792+00:00",
+    "execution_facts": {
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "timed_out": false
+    },
+    "row_counts": {
+      "boundaries": {
+        "failed": 0,
+        "passed": 1,
+        "unknown": 0
+      },
+      "protected": {
+        "failed": 0,
+        "passed": 0,
+        "unknown": 0
+      }
+    },
+    "source_changed": false,
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "frozen_diagnostic_inputs_unchanged": true,
+    "comparison_unknown": false,
+    "package_state": "completed",
+    "gate_package": "completed",
+    "original_execution_record": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/diagnostic.py",
+        "--source-root",
+        "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+        "--overlay-json",
+        "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/overlay.json",
+        "--callers",
+        "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/CALLERS.toml",
+        "--callers-sha256",
+        "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+        "--output",
+        "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json"
+      ],
+      "log_bytes": 6491,
+      "log_sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "timed_out": false
+    }
+  },
+  "scope": {
+    "physical_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "physical_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "candidate_tree": null,
+    "overlay_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+    "candidate_postimage_blob": "467831627aaf7833f035804b3c94629739b3a981",
+    "callers_blob": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb",
+    "candidate_rust_files": 6597,
+    "executed_boundary_positions_zero_based": [
+      468
+    ],
+    "executed_protected_row_positions_zero_based": [],
+    "original_timeout_seconds": 4800,
+    "outer_timeout_seconds": 5400,
+    "previous_scope_not_repeated": "Boundary positions 281/313 and original protected row 279 were not run in this followup; their separate actual results are preserved under desktop-next-use-trainer-type-v1."
+  },
+  "original_bytes_preserved": true,
+  "original_statuses_not_modified": true,
+  "raw_manifests": [
+    {
+      "relative_directory": "",
+      "git_blob_sha": "e1a6b4d262769563321abc2359db1f5e8ff7636f",
+      "bytes": 7173,
+      "sha256": "373663f3544ff61206ca6ffd33ab972f8a3391bab7cbdd4e4a992cf9c2ae59d3",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/retained-manifest.json"
+    },
+    {
+      "relative_directory": "next-use-evaluation-readback-scoped",
+      "git_blob_sha": "6d482df08087e5329b0dc0bf56d41515c96f365e",
+      "bytes": 9491,
+      "sha256": "8958522951123a05d6bef7842894cff877d9bb504ac42bbdc748964d65a7ff11",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained-manifest.json"
+    }
+  ],
+  "placements": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/bootstrap-result.json",
+      "relative_path": "bootstrap-result.json",
+      "git_blob_sha": "cf6a2eb8f75279cb8fcd740b5b0524302138b404",
+      "bytes": 2251,
+      "sha256": "97a1428ef4e2d91c7ee2f0ac2ea5188a6eaa2078e2d5b36302ba65229b4c2fe1",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/bootstrap-result.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/bootstrap.py",
+      "relative_path": "bootstrap.py",
+      "git_blob_sha": "063f8ca90a6c413c56bb6ac74e06890cb4fa0839",
+      "bytes": 2584,
+      "sha256": "1088e7fa9c1e6e752a8fa23ee6d53f96ecbc89b108fb533c69142fb032774a2d",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/CALLERS.toml.gz.b64",
+      "relative_path": "CALLERS.toml.gz.b64",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/diagnostic-attempt.json",
+      "relative_path": "diagnostic-attempt.json",
+      "git_blob_sha": "3dc5951566448aaf7e47bb572dfa94e6a47ff91d",
+      "bytes": 865,
+      "sha256": "111721d146f5cd13941b95b87fbacc6bbd0a85de146275adea0d34487aed7d39",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/diagnostic-attempt.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/diagnostic.py",
+      "relative_path": "diagnostic.py",
+      "git_blob_sha": "eb5f11a2295d6b7c051e93473838995ab93e8b30",
+      "bytes": 19830,
+      "sha256": "6d5251a672be13b77482469f9976b3bdf08b7e454ce21f77aefa1b330d1aafb4",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/input.json",
+      "relative_path": "input.json",
+      "git_blob_sha": "b65926144e23ea0df2b632147d15efd2a4f4b75f",
+      "bytes": 2877,
+      "sha256": "6e42f83aa4f0fc7fb2c4e08a4971035b05defc0624cd5041239a64c967af4b96",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json",
+      "relative_path": "next-use-evaluation-readback-scoped/diagnostic-result.json",
+      "git_blob_sha": "0f6aee4bc19797d30f4611355e344e33d25a5ae0",
+      "bytes": 5842,
+      "sha256": "89506f1ec15c640627535777b79c006180ffc4133f3a37e872c3925ccd61b873",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/dispatch.json",
+      "relative_path": "next-use-evaluation-readback-scoped/dispatch.json",
+      "git_blob_sha": "8204ed8a03fd5d328312584c812000eb2bd8afbc",
+      "bytes": 970,
+      "sha256": "edfe54b4ea85c6633272c2abeb6592d82c0bdb84058bb3e9162338c9b249b983",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/dispatch.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-start.json",
+      "relative_path": "next-use-evaluation-readback-scoped/execution-start.json",
+      "git_blob_sha": "48448e0a96930bd853d170a109991a1b06018632",
+      "bytes": 785,
+      "sha256": "3336b1d87b6460e12194e51229aafd1db37626e16f517dfd7bb0d3ca83abb2c6",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-terminal.json",
+      "relative_path": "next-use-evaluation-readback-scoped/execution-terminal.json",
+      "git_blob_sha": "ed2a53f8f6f32c09e4d8c8d053b06f04424e1a54",
+      "bytes": 414,
+      "sha256": "1d4fbd2e919f03e3a5515a4496c363e18a1ba7cb9a2c195b8aee932dd8c939cd",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-terminal.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/forwarded.stdout.log",
+      "relative_path": "next-use-evaluation-readback-scoped/forwarded.stdout.log",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123",
+      "bytes": 6491,
+      "sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-final.json",
+      "relative_path": "next-use-evaluation-readback-scoped/gate-final.json",
+      "git_blob_sha": "bd687a204cb01ced77a133a8c686a6aaebee9760",
+      "bytes": 1077,
+      "sha256": "7a01a2dcc7763522dc9f8ff0606c3499cb28060275389e19180fd8424e4449e6",
+      "mode": "100644",
+      "origin": "actual postpackage final original; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-summary.json",
+      "relative_path": "next-use-evaluation-readback-scoped/gate-summary.json",
+      "git_blob_sha": "db60d40df08cfa7dfa382d7c4a5392a186c4798f",
+      "bytes": 1075,
+      "sha256": "5d2707931183707a58227782b196909ed4db0da4ad072c238e4dd951be9656c1",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-summary.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json",
+      "relative_path": "next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json",
+      "git_blob_sha": "4771a5bb52bf1140410d78955a4165b84b459449",
+      "bytes": 980,
+      "sha256": "8b62f09be95b24bd211603ad464a5b4361e19c4756f15cd1433ecc3434325a1e",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log",
+      "relative_path": "next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123",
+      "bytes": 6491,
+      "sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/package-start.json",
+      "relative_path": "next-use-evaluation-readback-scoped/package-start.json",
+      "git_blob_sha": "48af078dd82fe1103df1c83064be26313af850dc",
+      "bytes": 70,
+      "sha256": "191fb93d5024118255fed0460c090d898a5e89863e947aa29fe46ee50cd3be24",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/package-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained-manifest.json",
+      "relative_path": "next-use-evaluation-readback-scoped/retained-manifest.json",
+      "git_blob_sha": "6d482df08087e5329b0dc0bf56d41515c96f365e",
+      "bytes": 9491,
+      "sha256": "8958522951123a05d6bef7842894cff877d9bb504ac42bbdc748964d65a7ff11",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/diagnostic-result.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/diagnostic-result.json.part0000",
+      "git_blob_sha": "0f6aee4bc19797d30f4611355e344e33d25a5ae0",
+      "bytes": 5842,
+      "sha256": "89506f1ec15c640627535777b79c006180ffc4133f3a37e872c3925ccd61b873",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/dispatch.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "8204ed8a03fd5d328312584c812000eb2bd8afbc",
+      "bytes": 970,
+      "sha256": "edfe54b4ea85c6633272c2abeb6592d82c0bdb84058bb3e9162338c9b249b983",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/dispatch.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/execution-start.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "48448e0a96930bd853d170a109991a1b06018632",
+      "bytes": 785,
+      "sha256": "3336b1d87b6460e12194e51229aafd1db37626e16f517dfd7bb0d3ca83abb2c6",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/execution-terminal.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "ed2a53f8f6f32c09e4d8c8d053b06f04424e1a54",
+      "bytes": 414,
+      "sha256": "1d4fbd2e919f03e3a5515a4496c363e18a1ba7cb9a2c195b8aee932dd8c939cd",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-terminal.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/forwarded.stdout.log.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/forwarded.stdout.log.part0000",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123",
+      "bytes": 6491,
+      "sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/gate-summary.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "db60d40df08cfa7dfa382d7c4a5392a186c4798f",
+      "bytes": 1075,
+      "sha256": "5d2707931183707a58227782b196909ed4db0da4ad072c238e4dd951be9656c1",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-summary.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.json.part0000",
+      "git_blob_sha": "4771a5bb52bf1140410d78955a4165b84b459449",
+      "bytes": 980,
+      "sha256": "8b62f09be95b24bd211603ad464a5b4361e19c4756f15cd1433ecc3434325a1e",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.log.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.log.part0000",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123",
+      "bytes": 6491,
+      "sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/package-start.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "48af078dd82fe1103df1c83064be26313af850dc",
+      "bytes": 70,
+      "sha256": "191fb93d5024118255fed0460c090d898a5e89863e947aa29fe46ee50cd3be24",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/package-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/row-progress.jsonl.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/row-progress.jsonl.part0000",
+      "git_blob_sha": "a24818ea9c796378ed05978627c514f438817818",
+      "bytes": 1069,
+      "sha256": "499c8c72984138f95189525b0505ce0b060e2c08555d0db6515206d305cfdce8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/row-progress.jsonl"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0001",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0002",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0003",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0004",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-after.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0001",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0002",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0003",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0004",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained/source-before.json.part0000",
+      "relative_path": "next-use-evaluation-readback-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/row-progress.jsonl",
+      "relative_path": "next-use-evaluation-readback-scoped/row-progress.jsonl",
+      "git_blob_sha": "a24818ea9c796378ed05978627c514f438817818",
+      "bytes": 1069,
+      "sha256": "499c8c72984138f95189525b0505ce0b060e2c08555d0db6515206d305cfdce8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/row-progress.jsonl"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-after.json",
+      "relative_path": "next-use-evaluation-readback-scoped/source-after.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json",
+      "relative_path": "next-use-evaluation-readback-scoped/source-before.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/original-driver-v2.py",
+      "relative_path": "original-driver-v2.py",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/overlay-packet.json.gz.b64",
+      "relative_path": "overlay-packet.json.gz.b64",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "bytes": 107005,
+      "sha256": "61b0fefe0845a3e086df7453eafcc102f4e78ab52f1c87c326735c837868a8f4",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/reconstruction/source-inventory.part0000.b64",
+      "relative_path": "reconstruction/source-inventory.part0000.b64",
+      "git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "bytes": 349529,
+      "sha256": "368d0661f8a7b11ba40e374dfef857c7c3f121d470bd438f3a7d3ae6691e3eec",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/reconstruction/source-inventory.part0001.b64",
+      "relative_path": "reconstruction/source-inventory.part0001.b64",
+      "git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "bytes": 349529,
+      "sha256": "ee7fdb51c2ea10d4639e6b790837764aad067ce7f4c21226f3e0cdffe5e80a18",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/reconstruction/source-inventory.part0002.b64",
+      "relative_path": "reconstruction/source-inventory.part0002.b64",
+      "git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "bytes": 349529,
+      "sha256": "532bacdf6f61d551c30c692cc77d8ec45d7fc81bb1b6adf4e28941341403e05a",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/reconstruction/source-inventory.part0003.b64",
+      "relative_path": "reconstruction/source-inventory.part0003.b64",
+      "git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "bytes": 349529,
+      "sha256": "3b242fdf81662bbbedd8546e59a6497c657355acb836bd646ead18a141bbc1e9",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/reconstruction/source-inventory.part0004.b64",
+      "relative_path": "reconstruction/source-inventory.part0004.b64",
+      "git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "bytes": 234021,
+      "sha256": "bbdc6c613840aabe0f115ba2e4f8078f1d9fe60f909ee822db5e72d7f34ebfb3",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained-manifest.json",
+      "relative_path": "retained-manifest.json",
+      "git_blob_sha": "e1a6b4d262769563321abc2359db1f5e8ff7636f",
+      "bytes": 7173,
+      "sha256": "373663f3544ff61206ca6ffd33ab972f8a3391bab7cbdd4e4a992cf9c2ae59d3",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/bootstrap-result.json.part0000",
+      "relative_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "cf6a2eb8f75279cb8fcd740b5b0524302138b404",
+      "bytes": 2251,
+      "sha256": "97a1428ef4e2d91c7ee2f0ac2ea5188a6eaa2078e2d5b36302ba65229b4c2fe1",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/bootstrap-result.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/bootstrap.py.part0000",
+      "relative_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "063f8ca90a6c413c56bb6ac74e06890cb4fa0839",
+      "bytes": 2584,
+      "sha256": "1088e7fa9c1e6e752a8fa23ee6d53f96ecbc89b108fb533c69142fb032774a2d",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/CALLERS.toml.gz.b64.part0000",
+      "relative_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/CALLERS.toml.part0000",
+      "relative_path": "retained/CALLERS.toml.part0000",
+      "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "bytes": 175835,
+      "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/diagnostic-attempt.json.part0000",
+      "relative_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "3dc5951566448aaf7e47bb572dfa94e6a47ff91d",
+      "bytes": 865,
+      "sha256": "111721d146f5cd13941b95b87fbacc6bbd0a85de146275adea0d34487aed7d39",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/diagnostic-attempt.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/diagnostic.py.part0000",
+      "relative_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "eb5f11a2295d6b7c051e93473838995ab93e8b30",
+      "bytes": 19830,
+      "sha256": "6d5251a672be13b77482469f9976b3bdf08b7e454ce21f77aefa1b330d1aafb4",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/input.json.part0000",
+      "relative_path": "retained/input.json.part0000",
+      "git_blob_sha": "b65926144e23ea0df2b632147d15efd2a4f4b75f",
+      "bytes": 2877,
+      "sha256": "6e42f83aa4f0fc7fb2c4e08a4971035b05defc0624cd5041239a64c967af4b96",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/original-driver-v2.py.part0000",
+      "relative_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/overlay-packet.json.gz.b64.part0000",
+      "relative_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "bytes": 107005,
+      "sha256": "61b0fefe0845a3e086df7453eafcc102f4e78ab52f1c87c326735c837868a8f4",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/overlay.json.part0000",
+      "relative_path": "retained/overlay.json.part0000",
+      "git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+      "bytes": 80253,
+      "sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5",
+      "mode": "100644",
+      "origin": "exact actual gzip identity; created Git blob SHA matched; existing complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/run-result-prepackage.json.part0000",
+      "relative_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "4c8c238b19f04836e0ff624f2928844634bf7902",
+      "bytes": 3719,
+      "sha256": "d8e137086cea01a736834239c629394595bd5984233415d9979ba17c196b4429",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-result-prepackage.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/run-start.json.part0000",
+      "relative_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "01d48d72f89324f61e1218f9c506b7cf44af4bf7",
+      "bytes": 1184,
+      "sha256": "a8ac1e5ec9ff0be920c235f67cb523782da13073e0966dcfed888ae5577a5104",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "relative_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/SOURCE_DIAGNOSTIC.lock"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/retained/wrapper.py.part0000",
+      "relative_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "bfc30246529719c8e5f34d835b5e02379b8f9a83",
+      "bytes": 10282,
+      "sha256": "85291c9c4909ae77a68e79c06485bad6ed3a5d7dd693174ea5a01f965a6307a6",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/run-result-prepackage.json",
+      "relative_path": "run-result-prepackage.json",
+      "git_blob_sha": "4c8c238b19f04836e0ff624f2928844634bf7902",
+      "bytes": 3719,
+      "sha256": "d8e137086cea01a736834239c629394595bd5984233415d9979ba17c196b4429",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-result-prepackage.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/run-result.json",
+      "relative_path": "run-result.json",
+      "git_blob_sha": "4f49fe09bcd739a63547b492a651fbf0044ec11f",
+      "bytes": 4039,
+      "sha256": "264cc3714914dff04605e2f16f8b61d274c55f1343dc5f14bf1c3989f77a4849",
+      "mode": "100644",
+      "origin": "actual postpackage final original; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/run-start.json",
+      "relative_path": "run-start.json",
+      "git_blob_sha": "01d48d72f89324f61e1218f9c506b7cf44af4bf7",
+      "bytes": 1184,
+      "sha256": "a8ac1e5ec9ff0be920c235f67cb523782da13073e0966dcfed888ae5577a5104",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-start.json"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/sdk/final16-original-sdk.json",
+      "relative_path": "sdk/final16-original-sdk.json",
+      "git_blob_sha": "20e01f923c6c5eeee51a00931d43a8da686a04fb",
+      "bytes": 58229,
+      "sha256": "871b147bb31fe953e879a5e2a4f62cac7eb1f2d20d6f48fecc741908758a1582",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; full payload SHA and embedded original-file hashes verified; GitHub full readback equal"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/sdk/rest4-original-sdk.json",
+      "relative_path": "sdk/rest4-original-sdk.json",
+      "git_blob_sha": "7428e199404b55fcdb48c6adecb93bb8c00790a4",
+      "bytes": 6655,
+      "sha256": "7939dba3604ad1452710e982e5591ca89fa6b8c77bc61bfc214f3cdfac9a6ee4",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; full payload SHA and embedded original-file hashes verified; GitHub full readback equal"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/SOURCE_DIAGNOSTIC.lock",
+      "relative_path": "SOURCE_DIAGNOSTIC.lock",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "actual original file read in immutable native SDK, independently hash checked and fully GitHub read back: /home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/SOURCE_DIAGNOSTIC.lock"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-evaluation-readback-v1/wrapper.py",
+      "relative_path": "wrapper.py",
+      "git_blob_sha": "bfc30246529719c8e5f34d835b5e02379b8f9a83",
+      "bytes": 10282,
+      "sha256": "85291c9c4909ae77a68e79c06485bad6ed3a5d7dd693174ea5a01f965a6307a6",
+      "mode": "100644",
+      "origin": "frozen diagnostic input, full GitHub readback before execution; actual bootstrap and retained manifest match"
+    }
+  ],
+  "reconstruct_large_originals": [
+    {
+      "original_path": "CALLERS.toml",
+      "original_bytes": 1122002,
+      "original_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 175835,
+          "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+          "path": "retained/CALLERS.toml.part0000",
+          "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+        }
+      ]
+    },
+    {
+      "original_path": "overlay.json",
+      "original_bytes": 453820,
+      "original_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 80253,
+          "git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+          "path": "retained/overlay.json.part0000",
+          "sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5"
+        }
+      ]
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/source-after.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "next-use-evaluation-readback-scoped/retained/source-after.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/source-before.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "next-use-evaluation-readback-scoped/retained/source-before.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    }
+  ],
+  "identity_parts": [
+    {
+      "original_path": "CALLERS.toml.gz.b64",
+      "part_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e"
+    },
+    {
+      "original_path": "SOURCE_DIAGNOSTIC.lock",
+      "part_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "original_path": "bootstrap-result.json",
+      "part_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "cf6a2eb8f75279cb8fcd740b5b0524302138b404"
+    },
+    {
+      "original_path": "bootstrap.py",
+      "part_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "063f8ca90a6c413c56bb6ac74e06890cb4fa0839"
+    },
+    {
+      "original_path": "diagnostic-attempt.json",
+      "part_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "3dc5951566448aaf7e47bb572dfa94e6a47ff91d"
+    },
+    {
+      "original_path": "diagnostic.py",
+      "part_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "eb5f11a2295d6b7c051e93473838995ab93e8b30"
+    },
+    {
+      "original_path": "input.json",
+      "part_path": "retained/input.json.part0000",
+      "git_blob_sha": "b65926144e23ea0df2b632147d15efd2a4f4b75f"
+    },
+    {
+      "original_path": "original-driver-v2.py",
+      "part_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "original_path": "overlay-packet.json.gz.b64",
+      "part_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813"
+    },
+    {
+      "original_path": "run-result-prepackage.json",
+      "part_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "4c8c238b19f04836e0ff624f2928844634bf7902"
+    },
+    {
+      "original_path": "run-start.json",
+      "part_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "01d48d72f89324f61e1218f9c506b7cf44af4bf7"
+    },
+    {
+      "original_path": "wrapper.py",
+      "part_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "bfc30246529719c8e5f34d835b5e02379b8f9a83"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/diagnostic-result.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/diagnostic-result.json.part0000",
+      "git_blob_sha": "0f6aee4bc19797d30f4611355e344e33d25a5ae0"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/dispatch.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "8204ed8a03fd5d328312584c812000eb2bd8afbc"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/execution-start.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "48448e0a96930bd853d170a109991a1b06018632"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/execution-terminal.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "ed2a53f8f6f32c09e4d8c8d053b06f04424e1a54"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/forwarded.stdout.log",
+      "part_path": "next-use-evaluation-readback-scoped/retained/forwarded.stdout.log.part0000",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/gate-summary.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "db60d40df08cfa7dfa382d7c4a5392a186c4798f"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.json.part0000",
+      "git_blob_sha": "4771a5bb52bf1140410d78955a4165b84b459449"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log",
+      "part_path": "next-use-evaluation-readback-scoped/retained/next-use-evaluation-readback-scoped.log.part0000",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/package-start.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "48af078dd82fe1103df1c83064be26313af850dc"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/row-progress.jsonl",
+      "part_path": "next-use-evaluation-readback-scoped/retained/row-progress.jsonl.part0000",
+      "git_blob_sha": "a24818ea9c796378ed05978627c514f438817818"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/source-after.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    },
+    {
+      "original_path": "next-use-evaluation-readback-scoped/source-before.json",
+      "part_path": "next-use-evaluation-readback-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    }
+  ],
+  "base64_companions": [
+    {
+      "binary_git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "base64_path": "reconstruction/source-inventory.part0000.b64",
+      "base64_git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+    },
+    {
+      "binary_git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "base64_path": "reconstruction/source-inventory.part0001.b64",
+      "base64_git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+    },
+    {
+      "binary_git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "base64_path": "reconstruction/source-inventory.part0002.b64",
+      "base64_git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+    },
+    {
+      "binary_git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "base64_path": "reconstruction/source-inventory.part0003.b64",
+      "base64_git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+    },
+    {
+      "binary_git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "base64_path": "reconstruction/source-inventory.part0004.b64",
+      "base64_git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "decoded_bytes": 175515,
+      "decoded_sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+    },
+    {
+      "binary_git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "base64_path": "CALLERS.toml.gz.b64",
+      "base64_git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "decoded_bytes": 175835,
+      "decoded_sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+    },
+    {
+      "binary_git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+      "base64_path": "overlay-packet.json.gz.b64",
+      "base64_git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "decoded_bytes": 80253,
+      "decoded_sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5"
+    }
+  ],
+  "completeness": {
+    "original_package_file_entries": 28,
+    "required_retained_part_paths": 36,
+    "all_required_retained_part_paths_placed": true,
+    "all_placed_blob_bytes_below_500000": true,
+    "placements": 71,
+    "large_originals_reconstructible": 4
+  },
+  "reconstruction": "All retained manifests are original. Read each part path relative to its manifest directory; concatenate parts in listed order; gunzip iff encoding=gzip; verify original_bytes and original_sha256. UTF-8 base64 companions have one terminal LF; decode to the exact retained binary bytes before concatenation. Direct identity originals and their retained aliases contain the same immutable blob.",
+  "inventory_reuse": "Before and after inventories are separately recorded by this actual run and both exactly match a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd. Their actual per-part identities equal the already retained five original inventory parts; this placement aliases those unchanged objects at this run's exact before/after paths.",
+  "final_state_rule": "gate-summary.json and run-result-prepackage.json are original prepackage snapshots; use gate-final.json and run-result.json for actual final package and execution status.",
+  "publication": "Prepared exact paths and immutable GitHub objects only; this agent has not created a commit or moved a ref.",
+  "limitations": [
+    "This diagnostic does not run the original complete source-closure/fullcaller entrypoints or Cargo.",
+    "The memory projection has no published candidate source tree.",
+    "This is no evidence of a real authorized A/B/C learning task or daemon/Root cold recovery.",
+    "Immutable content identity alone does not establish future availability, independent operational control, authorization or real adoption."
+  ]
+}
