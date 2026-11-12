@@ -64,6 +64,7 @@ CALLERS = {
     "root_original_registered_ready_serve": (CLI,),
     "root_original_private_sealed_bytes": (
         REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,
+        AGENT + "authority_host_historical_read_session.rs",
     ),
 }
 

@@ -28,7 +28,7 @@ OBJECTIVE = A + "objective_run_start_retention.rs"
 SUBMISSION = A + "objective_submission.rs"
 CALLERS = {
     "root_initial_run_start_enable": (A + "bin/hepta-authority-host.rs",),
-    "root_initial_run_start_fixed_files": (),
+    "root_initial_run_start_fixed_files": (A + "authority_host_historical_read.rs",),
     "root_initial_run_start_original_files": (INPUTS, CONTEXT),
     "root_initial_run_start_register": (A + "authority_host_generation_initial_runtime.rs",),
     "root_initial_run_start_live_retain": (TRANSPORT,),

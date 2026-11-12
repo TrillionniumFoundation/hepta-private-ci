@@ -30,6 +30,8 @@ CALLERS = {
         AGENT + "authority_host_generation_publication_enrollment.rs",
         AGENT + "authority_host_generation_publication_transport.rs",
         AGENT + "authority_host_generation_publication_session.rs",
+        AGENT + "authority_host_historical_read.rs",
+        AGENT + "authority_host_historical_read_session.rs",
     ),
     "q24_publication_original_b_manifest": (
         AGENT + "cell_q24_publication_driver.rs",
