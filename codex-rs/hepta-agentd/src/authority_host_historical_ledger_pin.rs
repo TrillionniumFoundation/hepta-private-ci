@@ -4,6 +4,7 @@
 use super::super::data_refusal::RootDataKind;
 use super::*;
 use crate::cell_q24_task_ledger::history::OriginalTaskLedgerHistoryContextV1;
+use crate::root_historical_ledger_data::RootHistoricalLedgerCutDataV1 as CapturedLedgerCut;
 use crate::root_initial_learning_trust_data::LearningTrustPinV1;
 
 #[path = "authority_host_historical_ledger_files.rs"]
@@ -47,30 +48,6 @@ struct LedgerRecord {
     registered_at: u64,
     trust: LearningTrustPinV1,
     phase: LedgerPhase,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct CapturedLedgerCut {
-    source_pin: String,
-    source_publication: String,
-    cell_decision: String,
-    ledger_binding: String,
-    ledger_sequence: u64,
-    ledger_chain: String,
-    ledger_length: u64,
-    ledger_image: String,
-    witness_length: u64,
-    witness_image: String,
-    signature_binding: String,
-    signature_sequence: u64,
-    signature_checkpoint: String,
-    signature_length: u64,
-    signature_image: String,
-    signature_witness_length: u64,
-    signature_witness_image: String,
-    decision_chain: String,
-    outcome_chain: String,
 }
 
 pub(crate) struct RegisteredOriginalLedgerCaptureV1 {
