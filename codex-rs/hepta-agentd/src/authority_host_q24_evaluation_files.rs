@@ -285,3 +285,7 @@ fn stamp(metadata: &Metadata) -> (u64, i64, i64, i64, i64) {
         metadata.ctime_nsec(),
     )
 }
+
+#[cfg(test)]
+#[path = "authority_host_q24_evaluation_files_tests.rs"]
+mod tests;
