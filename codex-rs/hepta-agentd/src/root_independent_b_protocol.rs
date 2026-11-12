@@ -52,6 +52,7 @@ pub(crate) enum Command {
     PrepareCandidate {
         training_head: String,
         training_attestation: Vec<u8>,
+        training_work: crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1,
     },
     Complete {
         training_head: String,
@@ -182,4 +183,5 @@ pub(crate) struct PreparedPlanData {
     pub(crate) plan_digest: String,
     pub(crate) comparison_digest: String,
     pub(crate) expires_at_seconds: u64,
+    pub(crate) training_work_digest: String,
 }

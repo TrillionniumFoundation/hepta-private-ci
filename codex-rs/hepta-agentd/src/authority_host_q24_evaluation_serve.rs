@@ -134,6 +134,7 @@ fn serve_evaluation_until(
                         Command::PrepareCandidate {
                             training_head,
                             training_attestation,
+                            training_work,
                         } => {
                             let head = digest(&training_head)
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -148,6 +149,7 @@ fn serve_evaluation_until(
                                     frame_end,
                                     head,
                                     &signed,
+                                    &training_work,
                                     |actual| {
                                         encode_response(
                                             sequence,

@@ -31,6 +31,12 @@ impl OriginalRootBPlanChallengeV1<'_> {
             || self.data.profile != original.snapshot().request.evaluation_profile.to_string()
             || self.data.expires_at_seconds
                 != original.snapshot().request.envelope.expiry_unix_seconds
+            || self.data.training_work_digest
+                != original
+                    .original_training_work()?
+                    .digest()
+                    .map_err(unavailable)?
+                    .to_string()
             || now >= self.data.expires_at_seconds
         {
             return Err(Error::WrongScope);
@@ -88,6 +94,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
             let payload = learning_iteration_receipt_signing_bytes_v1(original.receipt())?;
             let Observation::Prepared(data) = self.exchange(Command::PrepareCandidate {
                 training_head: original.snapshot().head_digest.to_string(),
+                training_work: original.original_training_work()?.clone(),
                 training_attestation: learning_owner_evidence::encode(
                     &payload,
                     original.attestation(),

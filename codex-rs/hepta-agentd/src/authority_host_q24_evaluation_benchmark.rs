@@ -44,7 +44,8 @@ pub(super) fn prepare_original_cells(
         .candidate()
         .ok_or_else(|| io::Error::other("original candidate missing"))?;
     let baseline = &training.request.selected_bundle;
-    let (registration, _, _) = protocol.plans(training)?;
+    let work = original_training_work(files, enrollment, training)?;
+    let (registration, _, _) = protocol.plans(training, &work)?;
     if registration
         .comparison
         .cost_coverage
@@ -196,6 +197,8 @@ pub(super) fn require_original_cells(
         .model
         .require_baseline(&training.request.selected_bundle)?;
     files.model.input(protocol.benchmark_input())?;
+    let work = original_training_work(files, enrollment, training)?;
+    protocol.plans(training, &work)?;
     if enrollment.cell_images.as_ref() != Some(&physical_images(files)?) {
         return Err(io::Error::other("original B component images changed"));
     }
@@ -209,6 +212,32 @@ pub(super) fn require_original_cells(
         }
     }
     Ok(())
+}
+
+pub(super) fn original_training_work(
+    files: &OriginalBInputs,
+    enrollment: &OriginalBEnrollment,
+    training: &LearningIterationSnapshotV1,
+) -> io::Result<crate::cell_composed_q24::OriginalQ24TrainingWorkObservedV1> {
+    let work = enrollment
+        .original_training_work
+        .as_ref()
+        .ok_or_else(|| io::Error::other("original authenticated Training work was not retained"))?;
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(training.clone())
+        .map_err(io::Error::other)?;
+    let candidate = coordinator
+        .candidate()
+        .ok_or_else(|| io::Error::other("original Training candidate absent"))?;
+    let heads = files
+        .candidate_data
+        .require_digest(candidate.components.heads, 32_780)?;
+    let actual = files
+        .model
+        .observe_original_training_work(work, training, &heads)?;
+    files
+        .candidate_data
+        .require_digest(candidate.components.heads, 32_780)?;
+    Ok(actual)
 }
 
 fn run_original_arm(

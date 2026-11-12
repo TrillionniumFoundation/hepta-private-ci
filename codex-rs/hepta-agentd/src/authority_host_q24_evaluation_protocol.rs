@@ -129,11 +129,13 @@ impl OriginalBProtocolData {
     pub(super) fn plans(
         &self,
         training: &LearningIterationSnapshotV1,
+        work: &crate::cell_composed_q24::OriginalQ24TrainingWorkObservedV1,
     ) -> io::Result<(
         CellEvaluationRegistrationV1,
         TemporalEvaluationPlan,
         TemporalEvaluationPlan,
     )> {
+        self.comparison.require_original_training_work(work)?;
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(training.clone())
             .map_err(io::Error::other)?;
         if coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation) {

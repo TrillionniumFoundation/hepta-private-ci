@@ -13,6 +13,7 @@ use crate::CellSelectiveUpdateV1;
 use crate::CellTrainingBudgetV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -75,6 +76,7 @@ impl OriginalQ24TrainingWorkDataV1 {
     pub(crate) fn verify_original_training(
         &self,
         training: &LearningIterationSnapshotV1,
+        baseline: &super::super::LoadedCellQ24ModelV1,
         model: &super::super::LoadedCellQ24ModelV1,
         head: CellQ24PrivateHeadV1,
         heads: &[u8],
@@ -122,9 +124,26 @@ impl OriginalQ24TrainingWorkDataV1 {
             optimizer,
         )
         .map_err(CellQ24TrainingErrorV1::from)?;
+        let scope = FrozenLearningScopeV2::freeze(
+            &training.request,
+            &training.owners,
+            LearningUpdateScopeV2::Cell,
+            update,
+        )
+        .map_err(|_| Error::Binding("original frozen Training scope"))?;
+        let binding = Digest32::of_parts(&[
+            b"hepta.cell.q24.original-training-job.v1\0",
+            receipt.predecessor.as_array(),
+            scope.binding().as_array(),
+            baseline.effective_weights_digest().as_array(),
+            header.metrics.batch_digest.as_array(),
+            optimizer.as_array(),
+        ]);
         let mut payload = self.prefix.clone();
         payload.extend_from_slice(heads);
         if header.tag != 1
+            || header.binding != binding
+            || baseline.components() != &training.request.selected_bundle.components
             || header.length != heads.len()
             || header.length > 32_780
             || coordinator.candidate() != Some(candidate.as_ref())
@@ -194,6 +213,8 @@ impl OriginalQ24TrainingWorkDataV1 {
 
 /// Pure units/policy DATA shared with explicit comparison declarations. This
 /// function neither reports completed work nor authenticates a Training job.
+/// `examples_seen` counts distinct original frozen rows; `optimizer_steps`
+/// counts all row visits across epochs. Compute counts gradient coordinates.
 pub(crate) fn original_q24_work_contract(
     head: CellQ24PrivateHeadV1,
     rule: CellQ24SgdRuleV1,

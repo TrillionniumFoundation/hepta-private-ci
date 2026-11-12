@@ -52,6 +52,21 @@ enum CostMetric {
 }
 
 impl ComparisonData {
+    pub(super) fn require_original_training_work(
+        &self,
+        actual: &crate::cell_composed_q24::OriginalQ24TrainingWorkObservedV1,
+    ) -> io::Result<()> {
+        if self.candidate.capacity() != actual.capacity
+            || self.candidate.cumulative() != actual.cumulative
+            || self.candidate.selective_update() != actual.selective_update
+        {
+            return Err(io::Error::other(
+                "declared B candidate budget differs from authenticated native Training work",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn realize(
         &self,
         candidate: StableId,
@@ -86,6 +101,33 @@ impl ComparisonData {
 }
 
 impl ArmData {
+    fn capacity(&self) -> CellParameterCapacityV1 {
+        CellParameterCapacityV1 {
+            total_parameters: self.total_parameters,
+            trainable_parameters: self.trainable_parameters,
+            maximum_active_parameters: self.maximum_active_parameters,
+        }
+    }
+
+    fn cumulative(&self) -> CellTrainingBudgetV1 {
+        CellTrainingBudgetV1 {
+            examples_seen: self.examples_seen,
+            optimizer_steps: self.optimizer_steps,
+            parameter_updates: self.parameter_updates,
+            compute_units: self.compute_units,
+            compute_unit_contract: self.compute_unit_contract,
+        }
+    }
+
+    fn selective_update(&self) -> CellSelectiveUpdateV1 {
+        CellSelectiveUpdateV1 {
+            policy_digest: self.update_policy,
+            eligibility_digest: self.update_eligibility,
+            schedule_digest: self.update_schedule,
+            maximum_parameters_per_step: self.maximum_parameters_per_step,
+        }
+    }
+
     fn convert(
         &self,
         participant_id: StableId,
@@ -93,24 +135,9 @@ impl ArmData {
     ) -> CellTrainingObservationV1 {
         CellTrainingObservationV1 {
             participant_id,
-            capacity: CellParameterCapacityV1 {
-                total_parameters: self.total_parameters,
-                trainable_parameters: self.trainable_parameters,
-                maximum_active_parameters: self.maximum_active_parameters,
-            },
-            cumulative: CellTrainingBudgetV1 {
-                examples_seen: self.examples_seen,
-                optimizer_steps: self.optimizer_steps,
-                parameter_updates: self.parameter_updates,
-                compute_units: self.compute_units,
-                compute_unit_contract: self.compute_unit_contract,
-            },
-            selective_update: CellSelectiveUpdateV1 {
-                policy_digest: self.update_policy,
-                eligibility_digest: self.update_eligibility,
-                schedule_digest: self.update_schedule,
-                maximum_parameters_per_step: self.maximum_parameters_per_step,
-            },
+            capacity: self.capacity(),
+            cumulative: self.cumulative(),
+            selective_update: self.selective_update(),
             structure_before: self.structure_before,
             structure_after: self.structure_after,
             training_receipt_digest,
