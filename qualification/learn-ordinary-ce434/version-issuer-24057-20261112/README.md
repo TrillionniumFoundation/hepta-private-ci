@@ -1,0 +1,9 @@
+# Original Version issuer integration and formatter evidence
+
+Source `24057123b8b502ee9e2bb0bfb800315c36293ef0`, tree `9d6558f34e81402329680485f1df556419959165`, is the actual original H `just fmt` child of Git merge `9437a20bc9e28777745cb6474a09cd377bb1e1de` (tree `20764bd12995880255b8c51614ec0b9b3b64950e`). The real merge parents are `bf1e7a79a3dbb2d1d927a51c487c69253e9e3d78` and `5d6e2f248d04a37a2578f909d86aab4ce0baab26`; the verified actual common base is `7832eef16022f1af233e2a48ef46fb1ac61dcd8f`.
+
+The exact two-parent deltas are disjoint. Every merged changed file equals its corresponding original parent blob. The complete manifest equals the issuer parent's manifest: 483 boundaries and 373 complete protected rows, without deduplication by path. The actual original formatter changed 17 files within the reviewed source delta. The original merge, formatter, diff checks, commits, and branch push returned zero; the exact 12,651-byte original result is retained together with its complete 15,437-byte immutable SDK payload and frozen typed request.
+
+The Cargo diff consists only of opt-level=3 for the two exact crypto packages under profile.dev. Dependencies and Cargo.lock are unchanged. The original-window negative fixture now crosses the inclusive expiration second. This is not a native pass.
+
+The 319-method source qualification is a separately frozen original execution on this exact SHA. It was still running at the evidence snapshot; no result is inferred from admission. This candidate remains separate from PR #5981's 7832 head pending qualification. Root fixtures use explicitly fixture signing material, and the positive mechanism installs a C factory without completing ordinary C. Positive adoption, complete NoUpdate/fallback, and actual daemon+Root cold restart remain zero.
