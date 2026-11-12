@@ -1,5 +1,5 @@
 {
-  "schema": "hcsn-c2-live-resource-hold-v1",
+  "schema": "hcsn-c2-live-resource-hold-v2",
   "overall": "HOLD_NO_GO",
   "all_closed": false,
   "full_independent_training_replay_completed": 0,
@@ -7,18 +7,45 @@
   "known_completed_diagnostic_optimizer_calls": 52,
   "lifetime_optimizer_calls": "UNKNOWN",
   "original_controller_terminal": "UNKNOWN",
+  "cgroup_witness": {
+    "idempotency_key": "hcsn-c2-desktop-cgroup-readonly-witness-c06d-v1",
+    "job_id": "1a1d068d908-2564-1b7c",
+    "sampled_at_utc": "2026-11-12T15:38:23Z",
+    "reused": true,
+    "retried_launch": false,
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "cancelled": false,
+    "stdout_bytes": 7604,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "observable_memory_limits": "memory.max=max and memory.high=max at depths 0 through 4",
+    "job_local_oom": 0,
+    "job_local_oom_kill": 0,
+    "shared_ancestor_cumulative_oom": 315,
+    "shared_ancestor_cumulative_oom_kill": 15,
+    "attribution_of_shared_counters": "UNKNOWN"
+  },
   "closed_by_this_observation": [
     "point-in-time authenticated reachability for desktop and ai395",
-    "point-in-time host MemAvailable/MemTotal for desktop and ai395"
+    "point-in-time host MemAvailable/MemTotal for desktop and ai395",
+    "point-in-time desktop job and observable ancestor cgroup current/limit/event values",
+    "same-key reconciliation of the initially accepted/unknown cgroup witness"
   ],
   "observed": {
-    "desktop_mem_available_kb": 78853476,
-    "desktop_mem_total_kb": 131760804,
-    "ai395_mem_available_kb": 109707308,
-    "ai395_mem_total_kb": 128650956
+    "desktop_initial_mem_available_kb": 78853476,
+    "desktop_initial_mem_total_kb": 131760804,
+    "ai395_initial_mem_available_kb": 109707308,
+    "ai395_initial_mem_total_kb": 128650956,
+    "desktop_cgroup_sample_mem_available_kb": 78596520,
+    "desktop_cgroup_sample_mem_total_kb": 131760804,
+    "desktop_cgroup_sample_swap_free_kb": 252,
+    "desktop_cgroup_sample_swap_total_kb": 8388604
   },
   "still_missing": [
-    "ancestor-cgroup current/limit/headroom and ownership for a selected target",
+    "durable target allocation and safe long-run headroom rather than point-in-time unbounded cgroup values",
     "effective aggregate allocation, per-worker and whole-campaign memory/CPU limits",
     "selected concurrency and calendar reservation for the six original fits",
     "one coherent source/runtime/model/data freeze",
@@ -26,9 +53,10 @@
     "new full-campaign decision binding all of the above"
   ],
   "non_transfer": [
-    "MemAvailable is host-level point-in-time data, not cgroup allocation or long-run feasibility",
-    "runtime configured concurrent_execution=unbounded_by_runtime is not a resource reservation",
-    "host health reachability is not a full-replay admission",
-    "no full replay, feasibility probe, model, optimizer, or native campaign was started"
+    "point-in-time MemAvailable and cgroup current values are not long-run feasibility",
+    "memory.max=max and concurrent_execution=unbounded_by_runtime are not reservations",
+    "shared cumulative OOM counters do not identify this job, a victim, or a cause",
+    "health and cgroup observation are not full-replay admission",
+    "no full replay, model, optimizer, or native training campaign was started"
   ]
 }
