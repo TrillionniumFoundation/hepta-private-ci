@@ -101,10 +101,19 @@ trait NextUseSources {
     fn snapshot(&self) -> &LearningIterationSnapshotV1;
     fn trainer(&self) -> &LearningIterationEvidenceClientV1;
     fn selector(&self) -> &LearningIterationEvidenceClientV1;
+    fn location(&self) -> ObservationLocation;
     async fn observe(
         &self,
         config: &OriginalCircuitNextUseReceiptConfigV1,
     ) -> Result<LearningIterationObservationV1, Error>;
+}
+
+// Only the two concrete source implementations choose this private location.
+// The remote path brackets this Observer's journal with both live predecessor
+// owners. The existing local-owner protocol keeps its original read count.
+enum ObservationLocation {
+    LocalOwner,
+    RemoteOwner,
 }
 
 impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
@@ -118,6 +127,9 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
     }
     fn selector(&self) -> &LearningIterationEvidenceClientV1 {
         self.selector
+    }
+    fn location(&self) -> ObservationLocation {
+        ObservationLocation::LocalOwner
     }
     async fn observe(
         &self,
@@ -136,6 +148,9 @@ impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_> {
     }
     fn selector(&self) -> &LearningIterationEvidenceClientV1 {
         self.selector
+    }
+    fn location(&self) -> ObservationLocation {
+        ObservationLocation::RemoteOwner
     }
     async fn observe(
         &self,
@@ -158,28 +173,6 @@ fn read_local_next_use(
     Ok(cell.read_learning_next_use(&coordinator, source.source, source.identity)?)
 }
 
-async fn remote_predecessors(
-    source: &OriginalCircuitNextUseRemoteSourcesV1<'_>,
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-) -> Result<[SignedLearningEvidenceV1; 2], Error> {
-    let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-    let selector: &LearningIterationEvidenceClientV1 = source.selector;
-    Ok([
-        trainer
-            .readback(
-                source.snapshot,
-                prior(config, LearningIterationStageV1::Training)?,
-            )
-            .await?,
-        selector
-            .readback(
-                source.snapshot,
-                prior(config, LearningIterationStageV1::Selection)?,
-            )
-            .await?,
-    ])
-}
-
 async fn read_remote_next_use(
     source: &OriginalCircuitNextUseRemoteSourcesV1<'_>,
     config: &OriginalCircuitNextUseReceiptConfigV1,
@@ -192,11 +185,7 @@ async fn read_remote_next_use(
         &config.training_evidence,
         Some(&config.selection_evidence),
     )?;
-    let before = remote_predecessors(source, config).await?;
-    authenticate_predecessors(config, &before, now()?)?;
     let original = live.read_current().await?;
-    let after = remote_predecessors(source, config).await?;
-    authenticate_predecessors(config, &after, now()?)?;
     Ok(original.observation().clone())
 }
 
@@ -211,6 +200,7 @@ pub struct OriginalCircuitNextUseReceiptOwnerV1<W: AnchorWitnessStore> {
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
     command_origin: CommandOrigin,
+    completion_fenced: bool,
 }
 
 impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
@@ -228,6 +218,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             key,
             saved,
             command_origin: CommandOrigin::FreshCreate,
+            completion_fenced: false,
         })
     }
 
@@ -247,6 +238,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             key,
             saved,
             command_origin: CommandOrigin::Recovered,
+            completion_fenced: false,
         })
     }
 
@@ -307,6 +299,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         source: impl NextUseSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
+        if self.completion_fenced {
+            return Err(OwnerError::CommitUncertain.into());
+        }
         require_new_attestation(&self.config, started_at, started_at)?;
         let observed = self.prepare(&source).await?;
         // A completed coordinator can only recover an existing owner result.
@@ -342,8 +337,13 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             }
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, true)
-            .await
+        let result = self.finish_original_readback(
+            &source, &observed, &bytes, started_at, /*new_attestation*/ true,
+        ).await;
+        if result.is_err() {
+            self.completion_fenced = true;
+        }
+        result
     }
 
     /// Read the same signature against current original C and predecessor
@@ -374,10 +374,22 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         source: impl NextUseSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
+        if self.completion_fenced {
+            return Err(OwnerError::CommitUncertain.into());
+        }
         let observed = self.prepare(&source).await?;
+        if matches!(source.location(), ObservationLocation::RemoteOwner) {
+            let before = self.predecessors(&source).await?;
+            authenticate_predecessors(&self.config, &before, now()?)?;
+        }
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, false)
-            .await
+        let result = self.finish_original_readback(
+            &source, &observed, &bytes, started_at, /*new_attestation*/ false,
+        ).await;
+        if result.is_err() {
+            self.completion_fenced = true;
+        }
+        result
     }
 
     async fn prepare(
@@ -422,7 +434,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         ])
     }
 
-    async fn authenticate_completed(
+    async fn finish_original_readback(
         &mut self,
         source: &impl NextUseSources,
         observed: &LearningIterationObservationV1,
@@ -430,6 +442,40 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         started_at: u64,
         new_attestation: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let completed = self.decode_completed(source, observed, bytes)?;
+        // Both original owners are reread after the post-C observation and
+        // before the final physical journal read. No nested prepare or role
+        // authentication sends another predecessor request.
+        let evidence = match source.location() {
+            ObservationLocation::LocalOwner => {
+                let evidence = self.predecessors(source).await?;
+                if self.prepare(source).await? != *observed {
+                    return Err(OwnerError::CommitUncertain.into());
+                }
+                evidence
+            }
+            ObservationLocation::RemoteOwner => {
+                if self.prepare(source).await? != *observed {
+                    return Err(OwnerError::CommitUncertain.into());
+                }
+                self.predecessors(source).await?
+            }
+        };
+        if self.journal.read(&self.saved)? != bytes {
+            return Err(OwnerError::CommitUncertain.into());
+        }
+        let current = now()?;
+        self.authenticate_completed(
+            completed, &evidence, started_at, current, new_attestation,
+        )
+    }
+
+    fn decode_completed(
+        &self,
+        source: &impl NextUseSources,
+        observed: &LearningIterationObservationV1,
+        bytes: &[u8],
+    ) -> Result<(LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1), Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
@@ -441,21 +487,25 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("changed original C receipt").into());
         }
-        let evidence = self.predecessors(source).await?;
-        if self.prepare(source).await? != *observed {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        if self.journal.read(&self.saved)? != bytes {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        let current = now()?;
+        Ok((receipt, payload, signed))
+    }
+
+    fn authenticate_completed(
+        &self,
+        completed: (LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1),
+        evidence: &[SignedLearningEvidenceV1; 2],
+        started_at: u64,
+        current: u64,
+        new_attestation: bool,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let (receipt, payload, signed) = completed;
         if current < started_at {
             return Err(OwnerError::Binding("original Observer clock moved backwards").into());
         }
         if new_attestation {
             require_new_attestation(&self.config, started_at, current)?;
         }
-        let predecessors = authenticate_predecessors(&self.config, &evidence, current)?;
+        let predecessors = authenticate_predecessors(&self.config, evidence, current)?;
         let verified = self.config.verifier.verify(
             LearningEvidenceRoleV1::Observer,
             &signed,
