@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.utility-evaluation.retention-guard-independent-review.v1",
+  "base_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "before_blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+      "after_blob": "8a779085dd02536a646415406abcaa471b097c10",
+      "bytes": 9008,
+      "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+      "added_lines": 14,
+      "removed_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "before_blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "after_blob": "aea0027ad5f6e51825469b5d8fb8b14d202da575",
+      "bytes": 10690,
+      "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+      "added_lines": 8,
+      "removed_lines": 0
+    }
+  ],
+  "exact_patch_verified": true,
+  "patch_sha256": "318ca3573e04317d26843e21500845122ec6ad8f667f8c62b3ff9e4471d115e1",
+  "scope": "Two private production predicates only, both after complete existing panel/member bindings and before successful positive result. No removed lines, role changes, owner grants, receipt rewrites, or public codec changes.",
+  "behavioral_execution": "not run",
+  "full_positive_original_panel_fixture": "not established by this preparation"
+}

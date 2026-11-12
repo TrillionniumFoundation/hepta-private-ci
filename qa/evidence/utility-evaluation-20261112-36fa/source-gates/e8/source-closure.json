@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "command_exit_code": 1,
+  "elapsed_seconds": 181.7650869640056,
+  "error": "required tests were not observed passing",
+  "exit_code": 1,
+  "finished_at": "2026-11-12T09:43:19.777316+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 144917,
+  "log_file": "source-closure.json.91d97c55a2564745abb2bed00b577f59.log",
+  "log_sha256": "04249cca368f3e02d4860c7d16c26ee4929d1b2a3f1c9ecc620cc8e137189711",
+  "minimum_tests": 1,
+  "observed_failed_tests": 28,
+  "observed_passed_tests": 329,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "started_at": "2026-11-12T09:40:18.003239+00:00",
+  "status": "failed",
+  "tested_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1"
+}

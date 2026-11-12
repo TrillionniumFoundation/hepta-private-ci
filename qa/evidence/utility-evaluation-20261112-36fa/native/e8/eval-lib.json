@@ -1,0 +1,63 @@
+{
+  "after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final",
+    "--test-threads",
+    "2"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 31.040648347930983,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T09:35:39.515540+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 89152,
+  "log_file": "eval-lib.json.1f309f8ae61e402eb8f6eb81900c1c7f.log",
+  "log_sha256": "d156b6d9298d6d9ac3dfbf5680337445214dee1c0c4b082a26713bd53da30d66",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 163,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "started_at": "2026-11-12T09:35:08.470118+00:00",
+  "status": "passed",
+  "tested_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs"
+}

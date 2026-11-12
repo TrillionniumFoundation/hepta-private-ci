@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.utility.retention-guard-preparation.v1",
+  "status": "PREPARED_ONLY_NOT_APPLIED_NOT_COMPILED_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "base_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "base_parents": [
+    "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "726af8f4a345a2ffb148b971f3fa16c71436862d"
+  ],
+  "scope": "Two existing private production composition boundaries only. No source/ref/worktree mutation, no tests run, no wire/digest/contract/role/visibility/caller-set change.",
+  "issue": {
+    "known_complete_combination": "Primary EligibleForIndependentSelection and one or more retained members Ineligible.",
+    "original_gap": "require_observed_panel rejects unknown members but accepts known Ineligible retention. Original Evaluation receipt owner consumes only the primary qualification. material authenticates all members but derives Qualified solely from primary.qualified.",
+    "no_false_execution_claim": "No valid full-signature positive-primary/negative-retention ordinary execution has been reproduced. The current actual original provider fixtures produce complete negative comparisons.",
+    "semantic_limit": "The comparisons may be complete. Refusal is not missing-data classification, not Objective Fraud, and not a new aggregate NoUpdate. No existing result is rewritten or re-signed. A complete aggregate NoUpdate needs an explicit original-owner aggregate contract in separate work.",
+    "conservative_policy": "Every frozen member currently includes PrimarySuperiority. An Ineligible result may mean lack of required superiority rather than a regression. This preparation does not reinterpret it as a noninferiority pass."
+  },
+  "condition": {
+    "panel": "After all existing unknown/member/complete-retention-digest checks: if primary == EligibleForIndependentSelection and any retention != EligibleForIndependentSelection, return original PanelError::Binding.",
+    "material": "After every member, panel digest and original primary receipt binding is verified: if primary.qualified and any retained member has !qualified, return original CommandError::Binding. member::verify already rejects the InsufficientEvidence disposition tag.",
+    "error_message": "qualified original B requires eligible retention",
+    "preservation": [
+      "Primary Ineligible plus any known, fully authenticated retention results continues through the existing honest NoUpdate path.",
+      "Any InsufficientEvidence member remains refused by the pre-existing unknown checks.",
+      "Primary Eligible plus all Eligible retention passes this new local condition; all other current authority, binding, signature and owner checks remain required.",
+      "Empty, substituted, stale, revoked, incomplete or changed material remains subject to all earlier failures."
+    ]
+  },
+  "integration": {
+    "before_receipt": "Owners::read_original_completion calls read_panel before OriginalCellEvaluationReceiptOwnerV1::attest_original_completion/readback. read_original_panel calls require_observed_panel before sealing.",
+    "after_receipt": "read_original_completion reads the panel again before the final receipt return. The same new guard is therefore rechecked; existing host error/fence semantics remain unchanged.",
+    "export_and_current_use": "original_model_material rechecks verify::material after I/O; OriginalCellEvaluationModelMaterialV1::authenticate_current and require_original_model_input call that same verifier.",
+    "panel_error": "OriginalCellEvaluationPanelErrorV1::Binding -> existing OriginalCellEvaluationCommandErrorV1::Panel wrapper; no Completed response or replacement learning observation.",
+    "material_error": "Existing OriginalCellEvaluationCommandErrorV1::Binding; no Model input.",
+    "no_host_file_needed": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "base_blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+      "base_bytes": 8237,
+      "base_sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+      "post_blob": "8a779085dd02536a646415406abcaa471b097c10",
+      "post_bytes": 9008,
+      "post_sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+      "mode": "100644",
+      "created_blob_sha": "8a779085dd02536a646415406abcaa471b097c10",
+      "full_remote_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "base_blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "base_bytes": 10259,
+      "base_sha256": "5fea425ed508b38f37fc4ac17a377bb8e2629597a497707ad8ee40794dbd3bdc",
+      "post_blob": "aea0027ad5f6e51825469b5d8fb8b14d202da575",
+      "post_bytes": 10690,
+      "post_sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+      "mode": "100644",
+      "created_blob_sha": "aea0027ad5f6e51825469b5d8fb8b14d202da575",
+      "full_remote_readback_equal": true
+    }
+  ],
+  "patch": {
+    "git_blob": "91fdfbe4f9e6f9db60d51c2cb93a7b7daeb26425",
+    "bytes": 1903,
+    "sha256": "318ca3573e04317d26843e21500845122ec6ad8f667f8c62b3ff9e4471d115e1",
+    "full_remote_readback_equal": true
+  },
+  "caller_contract_impact": {
+    "modified": false,
+    "existing_protected_file": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+    "preserved_function_markers": [
+      "validate_original_members",
+      "require_observed_panel",
+      "seal_observed_panel"
+    ],
+    "related_boundaries_unchanged": [
+      "learning_original_evaluation_panel_current",
+      "learning_original_evaluation_receipt_attest",
+      "learning_original_evaluation_receipt_readback",
+      "learning_original_owner_snapshot_decode",
+      "cell_q24_model_material_digest"
+    ],
+    "note": "Only inserted conditionals; no old marker removed or reordered, no new privileged symbol or product caller. Full canonical source gate has not been run for these postimages."
+  },
+  "regression_plan": {
+    "newly_added_rust_tests": [],
+    "reason": "No test-only qualification forging API or visibility expansion was introduced. Existing PanelMemberFixture::complete computes Ineligible from actual original supported policies; its assertion and all source/signature proofs are unchanged. A positive signed aggregate cannot honestly be fabricated from it.",
+    "meaningful_existing_actual_boundary_filters": [
+      "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support"
+    ],
+    "targeted_preservation": "Existing actual negative panel -> original signed NoUpdate -> material readback with rejected Model input, plus missing/withdrawn/unknown evidence refusal.",
+    "unexecuted_positive_coverage_limit": "The new rejection condition needs independent source review. No full-signature positive-primary/negative-retention execution test or actual FAIL control has been run or claimed.",
+    "followup": "After a new frozen candidate is authorized, run the existing original just entry point on the relevant agentd tests and original source gates; preserve the separate e8b6 results. Do not call cargo test."
+  },
+  "validation": {
+    "rustfmt": false,
+    "compile": false,
+    "tests": false,
+    "source_gates": false,
+    "remote_postimage_readback": true,
+    "hashes_computed": true
+  }
+}

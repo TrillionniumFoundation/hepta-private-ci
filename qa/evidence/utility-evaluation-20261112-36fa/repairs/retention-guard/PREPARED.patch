@@ -1,0 +1,40 @@
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
+@@ -137,6 +137,20 @@
+                 "original B signed the complete actual retention panel",
+             ));
+         }
++        // A complete negative retention result cannot authorize a positive B
++        // decision. It is not rewritten as NoUpdate: the original signed
++        // primary decision and every frozen member contract remain unchanged.
++        if observed[0].qualification.product().decision.decision.disposition
++            == IndependentEvaluationDispositionV1::EligibleForIndependentSelection
++            && observed.iter().skip(1).any(|member| {
++                member.qualification.product().decision.decision.disposition
++                    != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
++            })
++        {
++            return Err(Error::Binding(
++                "qualified original B requires eligible retention",
++            ));
++        }
+         Ok(())
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
+@@ -223,6 +223,14 @@
+             "original E binds the entire actual signed retention panel",
+         ));
+     }
++    // Current material cannot turn a positive primary result plus a complete
++    // negative retention result into Model input. Preserve the original
++    // decisions and fail closed; this is not a synthesized NoUpdate.
++    if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified) {
++        return Err(Error::Binding(
++            "qualified original B requires eligible retention",
++        ));
++    }
+     let disposition = if primary.qualified {
+         LearningEvaluationDispositionV1::Qualified
+     } else {
