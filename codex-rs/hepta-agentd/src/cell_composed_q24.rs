@@ -121,6 +121,9 @@ pub struct CellQ24GenerationWorkerV1 {
     clock: Arc<dyn Fn() -> u64 + Send + Sync>,
 }
 
+#[path = "cell_composed_q24_candidate_data.rs"]
+mod candidate_data;
+
 impl LoadedCellQ24ModelV1 {
     /// Consume already opened files. No path is reopened and no executable is
     /// selected by task input. Limits apply before parsing and all shapes must
