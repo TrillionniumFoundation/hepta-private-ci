@@ -1,0 +1,69 @@
+{
+  "schema": "ctrl.readback-provenance.v1",
+  "request": {
+    "host": "ai395",
+    "idempotency_key": "ctrl-1333-v2-final-summary-readback-v1",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-B",
+      "-"
+    ],
+    "stdin": "import hashlib,json,stat\nfrom pathlib import Path\ndirectory=Path('/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ced4f80a-2564-1881')\nsize=847931\ncandidates=[]\nfor p in directory.iterdir():\n s=p.lstat()\n if stat.S_ISREG(s.st_mode) and s.st_size==size:\n  raw=p.read_bytes()\n  if raw.startswith(b'{\"actors_launched\": false'):\n   candidates.append((p,raw))\nif len(candidates)!=1: raise ValueError('Exactly one complete owned observer log required')\npath,raw=candidates[0]\nevents=[json.loads(line) for line in raw.decode('utf-8').splitlines()]\nevent=events[-1]\nif event.get('event')!='CAMPAIGN_COMPLETED_READBACK' or event.get('source_sha')!='3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd': raise ValueError('Unexpected terminal readback event')\nresult={k:event[k] for k in ('event','source_sha','summary','readback_only','actors_launched','campaign_files_modified')}\nresult['observer_log']={'path':str(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}\nresult['originals']=[{k:v for k,v in item.items() if k!='text'} for item in event['originals']]\nresult['report_original']={k:v for k,v in event['report_original'].items() if k!='gzip_base64'}\nbootstrap=Path('/home/qq/ctrl-real-study-20261112-1333/bootstrap-v2')\nresult['bootstrap_originals']=[]\nfor name in ('campaign-TERMINAL.json','FAILED.json'):\n p=bootstrap/name\n body=p.read_bytes()\n result['bootstrap_originals'].append({'path':str(p),'sha256':hashlib.sha256(body).hexdigest(),'bytes':len(body),'text':body.decode('utf-8')})\nprint(json.dumps(result,sort_keys=True,allow_nan=False))\n",
+    "cwd": "/home/qq/ctrl-real-study-20261112-1333",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "timeout_seconds": 60
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794472880304,\n    \"cwd\": \"/home/qq/ctrl-real-study-20261112-1333\",\n    \"env_keys\": [\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1ceeb28b0-2564-190c\",\n    \"idempotency_key\": \"ctrl-1333-v2-final-summary-readback-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ceeb28b0-2564-190c\",\n    \"request_digest\": \"ffcabb5f4e58e9aa8a5c2a01d483a3ee6443d1489aaeb95964eb799dc7037e45\",\n    \"request_fingerprint\": 18431750442977913258,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ceeb28b0-2564-190c\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ceeb28b0-2564-190c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1794472882243,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1ceeb28b0-2564-190c\",\n  \"launch_nonce\": \"beabeeeb6739358d92ada0cb28e3897a\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 20483,\n      \"stored\": 20483\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read_pages": [
+    {
+      "stdout": {
+        "offset": 0,
+        "next_offset": 16384,
+        "size": 20483,
+        "eof": false
+      },
+      "stderr": {
+        "size": 0,
+        "eof": true
+      }
+    },
+    {
+      "stdout": {
+        "offset": 16384,
+        "next_offset": 20483,
+        "size": 20483,
+        "eof": true
+      },
+      "stderr": {
+        "size": 0,
+        "eof": true
+      }
+    }
+  ],
+  "original_observer": {
+    "bytes": 847931,
+    "path": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ced4f80a-2564-1881/stdout.log",
+    "sha256": "ff77dc018cfcf68d6c764bf77b22b03770f81ace409bec6ecd0e1142b1dc5b59"
+  }
+}

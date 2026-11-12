@@ -1,0 +1,67 @@
+{
+  "schema": "ctrl.fit-content-readback-provenance.v1",
+  "job_id": "1a1cee2c8aa-2564-18da",
+  "host": "ai395",
+  "idempotency_key": "ctrl-1333-v2-fit-content-readback-v2",
+  "request_digest": "9531d6aed8d62e78cdc6641226ba55c069dc26512f5b3e61918c0fbb70249da5",
+  "stdout_bytes": 41465,
+  "stdout_sha256": "40d0bee090895e05ad82dcd03a4224000df56d7bf0bc78fbababa5a37411da57",
+  "authoritative_status": {
+    "at_unix_ms": 1794472338975,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cee2c8aa-2564-18da",
+    "launch_nonce": "d409251443de023610427efd6b3f1db3",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 41465,
+        "stored": 41465
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-B",
+      "-"
+    ],
+    "stdin": "import base64,gzip,hashlib,json,math,os,stat\nfrom pathlib import Path\nroot=Path('/home/qq/ctrl-real-study-20261112-1333/run-v2')\ncode=Path('/home/qq/ctrl-real-policy-20261112-1333-v3')\ndef pin(raw):\n return hashlib.sha256(raw).hexdigest()\ndef canonical(value):\n return pin(json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode())\ndef unique(items):\n data=dict(items)\n if len(data)!=len(items): raise ValueError('Duplicate JSON field')\n return data\ndef read(path,limit):\n with path.open('rb') as stream:\n  before=os.fstat(stream.fileno())\n  if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1 or before.st_size>limit: raise ValueError('Read bound, regular single-link file required: '+str(path))\n  raw=stream.read(limit+1)\n  after=os.fstat(stream.fileno())\n if len(raw)>limit or (before.st_ino,before.st_size,before.st_mtime_ns)!=(after.st_ino,after.st_size,after.st_mtime_ns) or len(raw)!=before.st_size: raise ValueError('File changed or exceeded bound: '+str(path))\n return raw,{'path':str(path),'bytes':len(raw),'sha256':pin(raw),'nlink':before.st_nlink}\ndef parse(path,limit):\n raw,meta=read(path,limit)\n return json.loads(raw,object_pairs_hook=unique),raw,meta\ndef source_equal(rows):\n groups={}\n for source,value in rows: groups.setdefault(source,[]).append(value)\n return None if not groups else math.fsum(math.fsum(values)/len(values) for values in groups.values())/len(groups)\ndef independent_summary(report,rows):\n metrics={name:[] for name in ('STOP_quality','READ_quality','STOP_latency_cost','READ_latency_cost','STOP_net','READ_net','quality_delta','latency_cost_delta','net_delta')}\n counts={name:{'true':0,'false':0,'unknown':0} for name in ('acquired','selected_used','effect_occurred')}\n invalid=0\n signs={'READ_net_greater':0,'equal':0,'READ_net_less':0}\n for row in rows:\n  for name in counts:\n   value=row['labels'].get(name)\n   counts[name]['true' if value is True else 'false' if value is False else 'unknown']+=1\n  branches=row['branches'];s,r=branches['STOP'],branches['READ']\n  values=[b.get(k) for b in (s,r) for k in ('quality','cost')]\n  if any(type(v) not in (int,float) or not math.isfinite(v) for v in values):\n   invalid+=1;continue\n  sid=row['source_id'];q=r['quality']-s['quality'];cost=r['cost']-s['cost'];delta=q-cost\n  numeric={'STOP_quality':s['quality'],'READ_quality':r['quality'],'STOP_latency_cost':s['cost'],'READ_latency_cost':r['cost'],'STOP_net':s['quality']-s['cost'],'READ_net':r['quality']-r['cost'],'quality_delta':q,'latency_cost_delta':cost,'net_delta':delta}\n  for name,value in numeric.items(): metrics[name].append((sid,value))\n  signs['READ_net_greater' if delta>0 else 'READ_net_less' if delta<0 else 'equal']+=1\n return {'rows':len(rows),'source_groups':len({r['source_id'] for r in rows}),'invalid_numeric_rows':invalid,'source_equal_means':{name:source_equal(values) for name,values in metrics.items()},'decision_weighted_means':{name:(math.fsum(v for _,v in values)/len(values) if values else None) for name,values in metrics.items()},'net_sign_counts':signs,'label_counts':counts,'scope':'Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.'}\nreceipt_path=root/'content/receipt.json'\nst=receipt_path.lstat()\nprint(json.dumps({'record':'receipt_stat','path':str(receipt_path),'bytes':st.st_size,'regular_file':stat.S_ISREG(st.st_mode),'single_link':st.st_nlink==1,'nlink':st.st_nlink},sort_keys=True),flush=True)\nreceipt,receipt_raw,receipt_meta=parse(receipt_path,8*1024*1024)\n_,weight_meta=read(root/'content/weights.pt',128*1024*1024)\nfiles=[dict(receipt_meta,text=receipt_raw.decode('utf-8')) if len(receipt_raw)<=16384 else dict(receipt_meta,raw_text_omitted=True,top_level_keys=sorted(receipt))]\nfitter_files={}\nfor name in ('macro_policy.py','macro_policy_checkpoint.py','macro_public_state.py','metacontrol.py','critic_context.py','metacontrol_macro_contract.py','controllers.py','objective.py'):\n raw,_=read(code/'scripts/ndu_real_runtime'/name,4*1024*1024)\n fitter_files[name]=pin(raw)\nfitter_pin=canonical(fitter_files)\nstudies={}\nfor mode in ('frozen','adapted'):\n directory=root/mode\n small={}\n for name in ('FIT_STAGE.json','COLD_LOAD.json'):\n  value,raw,meta=parse(directory/name,65536)\n  small[name]=value\n  files.append(dict(meta,text=raw.decode('utf-8')))\n checkpoint,raw,meta=parse(directory/'CHECKPOINT.json',4*1024*1024)\n checkpoint_pin,pin_raw,pin_meta=parse(directory/'CHECKPOINT_PIN.json',8192)\n cold=small['COLD_LOAD.json']\n analysis,analysis_raw,analysis_meta=parse(directory/'COLLECTION_ANALYSIS.json',8*1024*1024)\n compressed=gzip.compress(analysis_raw,mtime=0)\n report,report_raw,report_meta=parse(directory/'EXPORT.json',32*1024*1024)\n partitions={item.get('decision_id'):item['split'] for item in report['planned'] if item.get('decision_id')}\n summaries={}\n for split in ('all','train','calibration'):\n  rows=[row for row in report['rows'] if split=='all' or partitions.get(row['decision_id'])==split]\n  summaries[split]=independent_summary(report,rows)\n studies[mode]={\n  'fit_stage':small['FIT_STAGE.json'],\n  'cold_load':cold,\n  'checkpoint':dict(meta,source_sha256=checkpoint['source_sha256'],computed_current_fitter_sha256=fitter_pin,source_matches_current_fitter=checkpoint['source_sha256']==fitter_pin,shape=checkpoint['shape'],context=checkpoint['context'],context_sha256=canonical(checkpoint['context']),counts=checkpoint['counts'],fit_source_count=len(checkpoint['fit_sources']),calibration_source_count=len(checkpoint['calibration_sources']),calibration=checkpoint['calibration'],full_cost_observed=checkpoint['full_cost_observed'],input_sha256=checkpoint['input_sha256']),\n  'checkpoint_pin':dict(pin_meta,value=checkpoint_pin,raw_sha_matches=checkpoint_pin['sha256']==meta['sha256']),\n  'cold_load_checks':{'checkpoint_matches':cold.get('checkpoint_sha256')==meta['sha256'],'context_matches':cold.get('context_sha256')==canonical(checkpoint['context']),'fresh_process':cold.get('fresh_process')},\n  'collection_analysis_original':dict(analysis_meta,encoding='gzip+base64',gzip_bytes=len(compressed),gzip_sha256=pin(compressed),data=base64.b64encode(compressed).decode(),top_level_keys=sorted(analysis)),\n  'export':dict(report_meta,canonical_sha256=canonical(report),planned_pairs=report['planned_pairs'],exported_pairs=report['exported_pairs'],unknown_pairs=report['unknown_pairs'],row_count_matches=report['exported_pairs']==len(report['rows']),planned_count_matches=report['planned_pairs']==len(report['planned']),planned_status_counts={state:sum(item['status']==state for item in report['planned']) for state in sorted({item['status'] for item in report['planned']})}),\n  'independent_collection_summary':summaries}\n_,inventory=read(root/'preparation/SOURCE_INVENTORY.json',4*1024*1024)\ntraining=receipt.get('training',{})\noutput={'schema':'ctrl.fit-content-readback.v2','run_root':str(root),'expected_source_commit':'3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd','actors_launched':False,'models_loaded':False,'files_written':False,'files':files,'studies':studies,\n 'content_weights':dict(weight_meta,receipt_sha256=receipt.get('weights_sha256'),matches_receipt=weight_meta['sha256']==receipt.get('weights_sha256')),\n 'content_receipt_checks':{'status':receipt.get('status'),'optimizer_steps':training.get('optimizer_steps'),'base_weights_sha256':receipt.get('base_weights_sha256'),'weights_sha256':receipt.get('weights_sha256'),'initial_content_sha256':receipt.get('initial_content_sha256'),'final_content_sha256':receipt.get('final_content_sha256'),'weights_changed':receipt.get('base_weights_sha256')!=receipt.get('weights_sha256'),'content_changed':receipt.get('initial_content_sha256')!=receipt.get('final_content_sha256'),'parameter_sha256':receipt.get('parameter_sha256'),'cold_load_parameter_sha256':receipt.get('cold_load_parameter_sha256'),'cold_load_parameter_matches':receipt.get('parameter_sha256')==receipt.get('cold_load_parameter_sha256'),'fit_sources':receipt.get('fit_sources'),'freeze_sha256':receipt.get('freeze_sha256'),'training_keys':sorted(training),'training_scalar_summary':{key:value for key,value in training.items() if value is None or type(value) in (bool,int,float) or (type(value) is str and len(value)<=512)},\n  'frozen_critic_matches_base_content':studies['frozen']['checkpoint']['context']['answer_sha256']==receipt.get('base_weights_sha256') and studies['frozen']['checkpoint']['context']['encoder_sha256']==receipt.get('base_weights_sha256'),\n  'adapted_critic_matches_actual_content':studies['adapted']['checkpoint']['context']['answer_sha256']==weight_meta['sha256'] and studies['adapted']['checkpoint']['context']['encoder_sha256']==weight_meta['sha256']},\n 'source_inventory':inventory,'fitter_source_manifest':fitter_files}\ntext=json.dumps(output,sort_keys=True,allow_nan=False)\nif len(text.encode())>1024*1024-4096:\n for entry in studies.values():\n  entry['collection_analysis_original'].pop('data',None)\n  entry['collection_analysis_original']['raw_bytes_omitted_reason']='Fixed 1 MiB stdout cap; original remote path and pins retained.'\n text=json.dumps(output,sort_keys=True,allow_nan=False)\nif len(text.encode())>1024*1024-4096: raise ValueError('Metadata exceeds fixed stdout bound')\nprint(text,flush=True)\n",
+    "idempotency_key": "ctrl-1333-v2-fit-content-readback-v2",
+    "timeout_seconds": 60
+  },
+  "original_start_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794472331434,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1cee2c8aa-2564-18da\",\n    \"idempotency_key\": \"ctrl-1333-v2-fit-content-readback-v2\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1cee2c8aa-2564-18da\",\n    \"request_digest\": \"9531d6aed8d62e78cdc6641226ba55c069dc26512f5b3e61918c0fbb70249da5\",\n    \"request_fingerprint\": 10750609831960653432,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1cee2c8aa-2564-18da\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1cee2c8aa-2564-18da\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

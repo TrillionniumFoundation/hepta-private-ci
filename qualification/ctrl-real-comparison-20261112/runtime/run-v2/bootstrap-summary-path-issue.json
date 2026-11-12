@@ -1,0 +1,10 @@
+{
+  "schema": "ctrl.bootstrap-readback-issue.v1",
+  "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "idempotency_key": "ctrl-1333-real-campaign-pty-v2",
+  "exact_submitted_command_uses_output": "/home/qq/ctrl-real-study-20261112-1333/run-v2",
+  "post_campaign_summary_erroneous_pin_path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/COMPLETED.json",
+  "effect": "If run-v2 completes, the outer bootstrap summary can fail while reading the retained failed run-v1 completion. The actual run-v2 campaign output must be independently reconciled. No claimed completion before readback.",
+  "submitted_request_unchanged": true,
+  "observed_execution_outcome": "UNKNOWN"
+}

@@ -3,6 +3,8 @@ name: CTRL native content identity fixture
 on:
   pull_request:
     paths:
+      - scripts/ctrl_macro*.py
+      - scripts/test_ctrl_macro*.py
       - .github/workflows/ctrl-content-identity-native.yml
       - scripts/ndu_real_runtime/content_identity.py
       - scripts/ndu_real_runtime/actor.py

@@ -23,6 +23,7 @@ import unittest
 class NativeContentIdentityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        import PIL
         import torch
         from PIL import Image, ImageDraw, ImageFont
         from ndu_real_materials import evaluator
@@ -120,6 +121,7 @@ class NativeContentIdentityTests(unittest.TestCase):
             raise RuntimeError(
                 "Native integration requires the actual Tesseract executable"
             )
+        tesseract = str(Path(tesseract).resolve(strict=True))
         languages = subprocess.run(
             [tesseract, "--list-langs"],
             check=True,
@@ -133,7 +135,11 @@ class NativeContentIdentityTests(unittest.TestCase):
                 "Native integration requires discoverable English OCR data"
             )
         repository = Path(__file__).resolve().parents[2]
-        dependencies = Path(torch.__file__).resolve().parents[1]
+        dependencies = Path(PIL.__file__).resolve().parents[1]
+        tessdata = Path(match.group(1)).resolve(strict=True)
+        ocr_libraries = Path(
+            os.environ.get("CTRL_NATIVE_OCR_LIBRARY_DIR", "/usr/lib")
+        ).resolve(strict=True)
         runtime = [
             str(path)
             for path in map(
@@ -149,6 +155,10 @@ class NativeContentIdentityTests(unittest.TestCase):
                     sys.base_prefix,
                     repository,
                     dependencies,
+                    Path(torch.__file__).resolve().parents[1],
+                    Path(tesseract).parent,
+                    tessdata,
+                    ocr_libraries,
                 ),
             )
             if path.exists()
@@ -161,8 +171,8 @@ class NativeContentIdentityTests(unittest.TestCase):
             "repository_root": str(repository),
             "runtime_roots": runtime,
             "tesseract": tesseract,
-            "tessdata_dir": match.group(1),
-            "ocr_library_dir": "/usr/lib",
+            "tessdata_dir": str(tessdata),
+            "ocr_library_dir": str(ocr_libraries),
             "episode_wall_seconds": 40,
             "latency_weight": plan.latency_weight,
             "rubric_sha256": rubric_pin,

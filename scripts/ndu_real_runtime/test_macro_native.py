@@ -98,6 +98,10 @@ class NativeMacroTests(unittest.TestCase):
                 finalizer = host.steps[index]
                 selection = finalizer["content_selection"]
                 self.assertEqual(
+                    finalizer["selected_candidate_index"], selection["selected_index"]
+                )
+                self.assertIs(type(host.steps[0]["selected_candidate_index"]), int)
+                self.assertEqual(
                     selection["selected_candidate"],
                     finalizer["candidate_metadata"][selection["selected_index"]],
                 )

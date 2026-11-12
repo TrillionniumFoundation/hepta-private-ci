@@ -165,6 +165,112 @@ class MacroExecutionTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 self.run_plan(plan, root / "run")
 
+    def test_step_iterators_interleave_original_outcomes_and_keep_full_denominators(
+        self,
+    ):
+        with tempfile.TemporaryDirectory() as tmp:
+            runs, expected, streams, observed = [], [], [], []
+            initial_calls = RetainedFixtureHost.calls
+            for name in ("first", "second"):
+                root = Path(tmp) / name
+                root.mkdir()
+                plan = plan_fixture(root)
+                pin = digest(plan)
+                order = [entry[0] for entry in execution._roster(plan, pin)][::-1]
+                output = root / "run"
+                streams.append(
+                    execution.execute_steps(
+                        plan,
+                        output,
+                        expected_plan_sha256=pin,
+                        host_class=RetainedFixtureHost,
+                        allow_fixtures=True,
+                        operation_order=order,
+                    )
+                )
+                runs.append((output, pin))
+                expected.append(order)
+                self.assertTrue((output / "PLAN.json").is_file())
+                self.assertTrue((output / "RUN.json").is_file())
+                self.assertEqual(RetainedFixtureHost.calls, initial_calls)
+                unstarted = execution.reconcile(
+                    output, expected_plan_sha256=pin, allow_fixtures=True
+                )
+                self.assertEqual(
+                    [row["status"] for row in unstarted["rows"]], ["NOT_STARTED"] * 4
+                )
+            for index in range(4):
+                for mode, (output, pin) in enumerate(runs):
+                    operation = next(streams[mode])
+                    self.assertEqual(operation, expected[mode][index])
+                    observed.append((mode, operation))
+                    self.assertTrue((output / operation / "TERMINAL.json").is_file())
+                    report = execution.reconcile(
+                        output, expected_plan_sha256=pin, allow_fixtures=True
+                    )
+                    self.assertEqual(report["cohort"]["planned_executions"], 4)
+                    self.assertEqual(
+                        [r["status"] for r in report["rows"]].count("COMPLETED"),
+                        index + 1,
+                    )
+                    self.assertEqual(
+                        [r["status"] for r in report["rows"]].count("NOT_STARTED"),
+                        3 - index,
+                    )
+            starts = [
+                (
+                    common.strict_json(
+                        (output / operation / "START.json").read_bytes()
+                    )["time_ns"],
+                    mode,
+                    operation,
+                )
+                for mode, (output, _) in enumerate(runs)
+                for operation in expected[mode]
+            ]
+            self.assertEqual(
+                [(mode, operation) for _, mode, operation in sorted(starts)], observed
+            )
+            for stream in streams:
+                with self.assertRaises(StopIteration):
+                    next(stream)
+
+    def test_invalid_step_order_fails_before_output_or_actor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan = plan_fixture(root)
+            pin = digest(plan)
+            order = [entry[0] for entry in execution._roster(plan, pin)]
+            for invalid in (
+                order[:-1],
+                [order[0]] * len(order),
+                [*order, "unknown"],
+                [*order[:-1], "unknown"],
+                [*order[:-1], False],
+                order[0],
+            ):
+                with (
+                    self.subTest(order=invalid),
+                    patch.object(
+                        RetainedFixtureHost,
+                        "__init__",
+                        side_effect=AssertionError("actor before order validation"),
+                    ) as actor,
+                ):
+                    with self.assertRaises(ValueError):
+                        list(
+                            execution.execute_steps(
+                                plan,
+                                root / "run",
+                                expected_plan_sha256=pin,
+                                host_class=RetainedFixtureHost,
+                                allow_fixtures=True,
+                                operation_order=invalid,
+                            )
+                        )
+                    actor.assert_not_called()
+                    self.assertFalse((root / "run").exists())
+
     def test_interruption_keeps_missing_whole_source_and_readonly_reconcile(self):
         class Interrupted(RetainedFixtureHost):
             failure = "interrupt"

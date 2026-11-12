@@ -1,0 +1,176 @@
+{
+  "modes": {
+    "adapted": {
+      "all_four_changed": 29,
+      "analysis_sha256": "96a8eb781bee23c2249c2b10a8694c8837bf00c8954ca24a993fd4c6cb1e3e1d",
+      "cross_table": [
+        {
+          "delivered_content_changed": false,
+          "new_recognized_text": false,
+          "pairs": 5,
+          "selected_text_changed": false,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": false,
+          "pairs": 21,
+          "selected_text_changed": true,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": false,
+          "pairs": 11,
+          "selected_text_changed": true,
+          "terminal_quality_changed": true
+        },
+        {
+          "delivered_content_changed": false,
+          "new_recognized_text": true,
+          "pairs": 28,
+          "selected_text_changed": false,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": true,
+          "pairs": 32,
+          "selected_text_changed": true,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": true,
+          "pairs": 29,
+          "selected_text_changed": true,
+          "terminal_quality_changed": true
+        }
+      ],
+      "matched_pairs": 126,
+      "net_negative": 109,
+      "net_positive": 17,
+      "net_zero": 0,
+      "new_reference_match_and_net_positive": 14,
+      "new_reference_match_and_quality_increased": 14,
+      "observed_counts": {
+        "delivered_content_changed": 93,
+        "new_recognized_text": 89,
+        "new_reference_matching_candidate": 18,
+        "selected_text_changed": 93,
+        "terminal_quality_changed": 40,
+        "within_read_selected_text_changed": 93
+      },
+      "paired_status_counts": {
+        "MATCHED": 126
+      },
+      "planned_pairs": 126,
+      "quality_decreased": 23,
+      "quality_increased": 17,
+      "quality_unchanged": 86,
+      "rows_per_source_histogram": {
+        "3": 42
+      },
+      "source_equal_metrics": {
+        "delivered_content_changed": 0.7380952380952381,
+        "new_recognized_text": 0.7063492063492063,
+        "new_reference_matching_candidate": 0.14285714285714285,
+        "read_minus_stop_observed_latency_cost": 0.0137891246327236,
+        "read_minus_stop_observed_latency_net": -0.03363039447399344,
+        "read_minus_stop_quality": -0.01984126984126984,
+        "selected_text_changed": 0.7380952380952381,
+        "terminal_quality_changed": 0.31746031746031744,
+        "within_read_selected_text_changed": 0.7380952380952381
+      },
+      "source_groups": 42,
+      "unknown_pairs": 0
+    },
+    "frozen": {
+      "all_four_changed": 27,
+      "analysis_sha256": "2fbf351ea2ba329795e2bee12d131d9a5489e6562c6073840c20aa0326406ab5",
+      "cross_table": [
+        {
+          "delivered_content_changed": false,
+          "new_recognized_text": false,
+          "pairs": 1,
+          "selected_text_changed": false,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": false,
+          "pairs": 17,
+          "selected_text_changed": true,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": false,
+          "pairs": 8,
+          "selected_text_changed": true,
+          "terminal_quality_changed": true
+        },
+        {
+          "delivered_content_changed": false,
+          "new_recognized_text": true,
+          "pairs": 33,
+          "selected_text_changed": false,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": true,
+          "pairs": 40,
+          "selected_text_changed": true,
+          "terminal_quality_changed": false
+        },
+        {
+          "delivered_content_changed": true,
+          "new_recognized_text": true,
+          "pairs": 27,
+          "selected_text_changed": true,
+          "terminal_quality_changed": true
+        }
+      ],
+      "matched_pairs": 126,
+      "net_negative": 113,
+      "net_positive": 13,
+      "net_zero": 0,
+      "new_reference_match_and_net_positive": 12,
+      "new_reference_match_and_quality_increased": 12,
+      "observed_counts": {
+        "delivered_content_changed": 92,
+        "new_recognized_text": 100,
+        "new_reference_matching_candidate": 18,
+        "selected_text_changed": 92,
+        "terminal_quality_changed": 35,
+        "within_read_selected_text_changed": 92
+      },
+      "paired_status_counts": {
+        "MATCHED": 126
+      },
+      "planned_pairs": 126,
+      "quality_decreased": 22,
+      "quality_increased": 13,
+      "quality_unchanged": 91,
+      "rows_per_source_histogram": {
+        "3": 42
+      },
+      "source_equal_metrics": {
+        "delivered_content_changed": 0.7301587301587301,
+        "new_recognized_text": 0.7936507936507937,
+        "new_reference_matching_candidate": 0.14285714285714285,
+        "read_minus_stop_observed_latency_cost": 0.014582637255948539,
+        "read_minus_stop_observed_latency_net": -0.05823343090674219,
+        "read_minus_stop_quality": -0.04365079365079365,
+        "selected_text_changed": 0.7301587301587301,
+        "terminal_quality_changed": 0.2777777777777778,
+        "within_read_selected_text_changed": 0.7301587301587301
+      },
+      "source_groups": 42,
+      "unknown_pairs": 0
+    }
+  },
+  "schema": "ctrl.collection-cross-counts.v1",
+  "scope": "Original forced-macro collection, not prospective policy-evaluation efficacy."
+}

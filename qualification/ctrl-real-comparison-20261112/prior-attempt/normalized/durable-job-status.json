@@ -1,0 +1,110 @@
+{
+  "authoritative_status": {
+    "at_unix_ms": 1794463104729,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1ce4e986b-2564-15fa",
+    "launch_nonce": "baa2d7506de62235f10b37e313f69bd8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 1342,
+        "stored": 1342
+      },
+      "stdout": {
+        "seen": 430,
+        "stored": 430
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "host": "ai395",
+  "idempotency_key": "ctrl-20261112-ai395-prospective-run-v1-736c",
+  "independent_prior_readonly_diagnostic_job": "1a1ce6d03cc-2564-165d",
+  "parsed_remote_job_records": {
+    "exit.json": {
+      "at_unix_ms": 1794463104729,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1ce4e986b-2564-15fa",
+      "launch_nonce": "baa2d7506de62235f10b37e313f69bd8",
+      "log_bytes": {
+        "stderr": {
+          "seen": 1342,
+          "stored": 1342
+        },
+        "stdout": {
+          "seen": 430,
+          "stored": 430
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "launch.json": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "unit": "hepta-runtime-job-1a1ce4e986b-2564-15fa"
+    },
+    "owner-intent.json": {
+      "at_unix_ms": 1794462623446,
+      "invocation_id": "c606af28f6d24fbba7cda4ad9cff47fd",
+      "job_id": "1a1ce4e986b-2564-15fa",
+      "launch_nonce": "baa2d7506de62235f10b37e313f69bd8",
+      "supervisor_identity": {
+        "kind": "proc_start_ticks",
+        "value": "b1620269-aaef-43e7-bf47-bc6eb1c1a447:148838507"
+      },
+      "supervisor_pid": 2946905,
+      "supervisor_uid": 1000
+    },
+    "started.json": {
+      "at_unix_ms": 1794462623446,
+      "invocation_id": "c606af28f6d24fbba7cda4ad9cff47fd",
+      "job_id": "1a1ce4e986b-2564-15fa",
+      "launch_nonce": "baa2d7506de62235f10b37e313f69bd8",
+      "supervisor_identity": {
+        "kind": "proc_start_ticks",
+        "value": "b1620269-aaef-43e7-bf47-bc6eb1c1a447:148838507"
+      },
+      "supervisor_pid": 2946905,
+      "supervisor_uid": 1000
+    }
+  },
+  "raw_exit_and_exit_witness_bytes_retrieved": false,
+  "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ce4e986b-2564-15fa",
+  "schema": "ctrl.prior-authoritative-status.v1",
+  "source": "Earlier h.process_status for the original durable job; normalized API response, not raw exit.json bytes."
+}

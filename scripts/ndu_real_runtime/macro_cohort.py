@@ -185,6 +185,8 @@ def validate_plan(plan, *, expected_plan_sha256):
             raise ValueError(
                 "Factorial policies must remain fixed across content modes"
             )
+        if content_pins["off"][0] == content_pins["on"][0]:
+            raise ValueError("Factorial content modes require distinct parameter pins")
     return seen, arm_map
 
 
@@ -261,12 +263,40 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
         means = [sum(v) / len(v) for v in grouped.values()]
         return sum(means) / len(means) if means else None
 
+    def measured_comparison(cells, signs, field):
+        paired = set.intersection(*(set(cell) for cell in cells))
+        values = {
+            c: sum(sign * cell[c] for sign, cell in zip(signs, cells, strict=True))
+            for c in paired
+        }
+        sources = len({c[0] for c in paired})
+        return {
+            "planned_contexts": len(contexts),
+            "paired_contexts": len(paired),
+            "planned_sources": len(plan["partitions"]["evaluation"]),
+            "paired_sources": sources,
+            field: source_mean(values) if len(paired) == len(contexts) else None,
+            "observed_subset": {
+                "contexts": len(paired),
+                "sources": sources,
+                field: source_mean(values),
+            },
+        }
+
     summaries, net_values = {}, {}
+    measured_values = {"quality": {}, "observed_task_cost_net": {}}
     for arm_id in arms:
         rows = {c: records.get((c, arm_id)) for c in contexts}
         counts = Counter(r["status"] if r else "UNKNOWN" for r in rows.values())
         complete = {c: r for c, r in rows.items() if r and r["status"] == "COMPLETED"}
         quality = {c: r["quality"] for c, r in complete.items()}
+        observed_net = {
+            c: r["quality"] - r["task_cost"]
+            for c, r in complete.items()
+            if r["task_cost"] is not None
+        }
+        measured_values["quality"][arm_id] = quality
+        measured_values["observed_task_cost_net"][arm_id] = observed_net
         cost_parts = plan["one_off_costs"][arm_id]
         one_off = (
             sum(cost_parts.values())
@@ -292,6 +322,10 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
             "primary_quality": source_mean(quality)
             if len(quality) == len(contexts)
             else None,
+            "primary_observed_task_cost_net": source_mean(observed_net)
+            if len(observed_net) == len(contexts)
+            else None,
+            "observed_task_cost_net_items": len(observed_net),
             "primary_full_cost_net": source_mean(values)
             if len(values) == len(contexts)
             else None,
@@ -299,6 +333,11 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
                 "contexts": len(quality),
                 "sources": len({c[0] for c in quality}),
                 "quality": source_mean(quality),
+                "observed_task_cost_net": {
+                    "contexts": len(observed_net),
+                    "sources": len({c[0] for c in observed_net}),
+                    "source_equal_mean": source_mean(observed_net),
+                },
                 "full_cost_net": source_mean(values),
             },
             "observed_task_cost_total": sum(known_costs) if known_costs else None,
@@ -322,6 +361,14 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
                 "source_equal_full_cost_difference": (
                     source_mean(paired) if len(paired) == len(contexts) else None
                 ),
+                **{
+                    name: measured_comparison(
+                        [values[candidate], values[baseline]],
+                        [1, -1],
+                        "source_equal_difference",
+                    )
+                    for name, values in measured_values.items()
+                },
             }
         )
     factorial = None
@@ -343,6 +390,17 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
             "source_equal_interaction": (
                 source_mean(interaction) if len(paired) == len(contexts) else None
             ),
+            **{
+                name: measured_comparison(
+                    [
+                        values[plan["factorial"][cell]]
+                        for cell in ("on_on", "on_off", "off_on", "off_off")
+                    ],
+                    [1, -1, -1, 1],
+                    "source_equal_interaction",
+                )
+                for name, values in measured_values.items()
+            },
         }
     return {
         "schema": "ndu.real.macro-cohort-report.v1",
@@ -351,6 +409,14 @@ def evaluate(plan, observations, *, expected_plan_sha256, allow_fixtures=False):
         "arms": summaries,
         "paired_contrasts": contrasts,
         "factorial": factorial,
+        "measured_metric_scope": {
+            "quality": "independently admitted terminal quality",
+            "observed_task_cost_net": "quality minus observed task_cost",
+            "task_cost": "macro executor elapsed seconds times frozen latency tariff",
+            "excluded_costs": ["provider", "energy", "fit", "calibration", "tuning"],
+            "full_cost_metric": False,
+            "weighting": "context mean within each source, then equal source mean",
+        },
         "registered_full_cost_comparison_complete": all(
             len(v) == len(contexts) for v in net_values.values()
         ),

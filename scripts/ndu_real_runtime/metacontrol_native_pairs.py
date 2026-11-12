@@ -77,12 +77,15 @@ def bind_public_intervention(host, budget, condition, seed):
 
 
 def retain_finalizer_input(host, directory, macro):
-    """Keep exact post-intervention bytes before WRITE for later acquisition audit."""
+    """Keep exact initial and pre-WRITE bytes for the later acquisition audit."""
     original = host.public_step
     finalizer_index = SEQUENCES[macro].index("WRITE_TEXT")
 
     def public_step():
         raw = original()
+        if raw is not None and not host.steps:
+            with (Path(directory) / "initial-public-input.json").open("xb") as stream:
+                stream.write(raw)
         if raw is not None and len(host.steps) == finalizer_index:
             with (Path(directory) / "public-input.json").open("xb") as stream:
                 stream.write(raw)

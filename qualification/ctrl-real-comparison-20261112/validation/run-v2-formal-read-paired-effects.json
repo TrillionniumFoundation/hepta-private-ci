@@ -1,0 +1,703 @@
+{
+  "aggregate_counts_only": {
+    "READ_executions": 62,
+    "attribution_counts": {
+      "candidate_inventory_changed": [
+        62,
+        62,
+        0,
+        0
+      ],
+      "new_recognized_text": [
+        62,
+        54,
+        8,
+        0
+      ],
+      "new_reference_matching_candidate": [
+        62,
+        25,
+        37,
+        0
+      ],
+      "observation_bytes_changed": [
+        62,
+        62,
+        0,
+        0
+      ],
+      "selected_candidate_changed": [
+        62,
+        62,
+        0,
+        0
+      ],
+      "selected_text_changed": [
+        62,
+        56,
+        6,
+        0
+      ],
+      "semantic_information_gain": [
+        0,
+        0,
+        0,
+        62
+      ],
+      "terminal_quality_change": [
+        0,
+        0,
+        0,
+        62
+      ],
+      "written_text_differs_from_initial_selection": [
+        62,
+        56,
+        6,
+        0
+      ]
+    },
+    "cross_tabs": {
+      "new_recognized_text": {
+        "false": {
+          "observed_task_net_directions": [
+            2,
+            0,
+            6
+          ],
+          "pairs": 8,
+          "quality_directions": [
+            0,
+            8,
+            0
+          ]
+        },
+        "true": {
+          "observed_task_net_directions": [
+            17,
+            0,
+            37
+          ],
+          "pairs": 54,
+          "quality_directions": [
+            16,
+            38,
+            0
+          ]
+        },
+        "unknown": {
+          "observed_task_net_directions": [
+            0,
+            0,
+            0
+          ],
+          "pairs": 0,
+          "quality_directions": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "new_reference_matching_candidate": {
+        "false": {
+          "observed_task_net_directions": [
+            6,
+            0,
+            31
+          ],
+          "pairs": 37,
+          "quality_directions": [
+            3,
+            34,
+            0
+          ]
+        },
+        "true": {
+          "observed_task_net_directions": [
+            13,
+            0,
+            12
+          ],
+          "pairs": 25,
+          "quality_directions": [
+            13,
+            12,
+            0
+          ]
+        },
+        "unknown": {
+          "observed_task_net_directions": [
+            0,
+            0,
+            0
+          ],
+          "pairs": 0,
+          "quality_directions": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "paired_delivered_text_changed": {
+        "false": {
+          "observed_task_net_directions": [
+            1,
+            0,
+            5
+          ],
+          "pairs": 6,
+          "quality_directions": [
+            0,
+            6,
+            0
+          ]
+        },
+        "true": {
+          "observed_task_net_directions": [
+            18,
+            0,
+            38
+          ],
+          "pairs": 56,
+          "quality_directions": [
+            16,
+            40,
+            0
+          ]
+        },
+        "unknown": {
+          "observed_task_net_directions": [
+            0,
+            0,
+            0
+          ],
+          "pairs": 0,
+          "quality_directions": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "initial_selection_equals_actual_STOP_delivered_text": [
+      62,
+      62,
+      0,
+      0
+    ],
+    "observed_task_net_directions": [
+      19,
+      0,
+      43
+    ],
+    "paired_delivered_text_changed": [
+      62,
+      56,
+      6,
+      0
+    ],
+    "quality_directions": [
+      16,
+      46,
+      0
+    ],
+    "task_cost_directions": [
+      59,
+      0,
+      3
+    ]
+  },
+  "alignment": {
+    "actual_STOP_pair_matches": 62,
+    "all_576_row_action_identities_unique_and_aligned": true,
+    "full_context_checks": {
+      "adapted/STOP": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "adapted/conditional": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "adapted/light": {
+        "non_READ_quality_directions": [
+          0,
+          24,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "adapted/point": {
+        "non_READ_quality_directions": [
+          0,
+          29,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "adapted/tuned-fixed": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "adapted/unconditional": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/STOP": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/conditional": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/light": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/point": {
+        "non_READ_quality_directions": [
+          0,
+          29,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/tuned-fixed": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      },
+      "frozen/unconditional": {
+        "non_READ_quality_directions": [
+          0,
+          48,
+          0
+        ],
+        "paired_contexts": 48,
+        "sources": 16
+      }
+    },
+    "independent_source_units_full_evaluation": 16,
+    "registered_contexts": 48,
+    "registered_source_case_pairs": 48,
+    "selected_READ_executions": 62,
+    "selected_distinct_contexts": 34,
+    "selected_distinct_sources": 15,
+    "selected_pair_evidence_ledger_sha256": "7117cc5a3896d78c091c30097efd7a4fc1c72d2abc6ded75483ae9b1184fa3f2",
+    "source_case_seed_mapping_unique": true
+  },
+  "checks": {
+    "mismatches": 0,
+    "stored_value_checks": 204
+  },
+  "count_order": [
+    "known",
+    "true",
+    "false",
+    "unknown"
+  ],
+  "delivery_scope": "Delivered TEXT change inferred from finalizer_selected_text_sha256 under the previously admitted and byte-audited selection-to-WRITE_TEXT-to-delivery binding; not a raw delivery.json or image-byte comparison.",
+  "direction_order": [
+    "positive",
+    "zero",
+    "negative"
+  ],
+  "inputs": {
+    "analysis_script_sha256": "72cae5876fbb538fd6054a488f5062cae1dd3d384e02181d6e6e40c5a41fae59",
+    "independent_summary": {
+      "bytes": 29784,
+      "file": "run-v2-independent-factorial-summary.json",
+      "sha256": "a69a46a5616a4d9f4bf91c9c91855a927bf16a0e7bc45a8e500e09bc25f330e3"
+    },
+    "payload": {
+      "bytes": 13661075,
+      "file": "evidence-transfer-payload.json",
+      "sha256": "36adf389d81232932980d75852de0792827569abb09ed5a869f928904d02c590"
+    },
+    "prior_original_binding_audit": {
+      "bytes": 8576,
+      "file": "run-v2-terminal-audit.stdout.json",
+      "sha256": "2e1d039b17d828316672a9b53d1dc93d84cbf0bb0baf7aa1d7ba68555a390713"
+    },
+    "report": {
+      "bytes": 3108442,
+      "path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/factorial/REPORT.json",
+      "sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a"
+    }
+  },
+  "limits": {
+    "OCR_or_scores_rerun": false,
+    "actors_or_models_executed": false,
+    "native_artifacts_reread": false,
+    "original_REPORT_modified": false,
+    "original_null_terminal_quality_change_preserved": true,
+    "selected_subset_means_are_not_full_48_context_policy_effects": true,
+    "selected_subset_source_means_use_only_sources_with_selected_READ": true,
+    "semantic_information_gain_known": false
+  },
+  "per_READ_arm": {
+    "adapted/light": {
+      "READ_pairs": 24,
+      "attribution_counts": {
+        "candidate_inventory_changed": [
+          24,
+          24,
+          0,
+          0
+        ],
+        "new_recognized_text": [
+          24,
+          19,
+          5,
+          0
+        ],
+        "new_reference_matching_candidate": [
+          24,
+          5,
+          19,
+          0
+        ],
+        "observation_bytes_changed": [
+          24,
+          24,
+          0,
+          0
+        ],
+        "selected_candidate_changed": [
+          24,
+          24,
+          0,
+          0
+        ],
+        "selected_text_changed": [
+          24,
+          20,
+          4,
+          0
+        ],
+        "semantic_information_gain": [
+          0,
+          0,
+          0,
+          24
+        ],
+        "terminal_quality_change": [
+          0,
+          0,
+          0,
+          24
+        ],
+        "written_text_differs_from_initial_selection": [
+          24,
+          20,
+          4,
+          0
+        ]
+      },
+      "initial_selection_equals_actual_STOP_delivered_text": [
+        24,
+        24,
+        0,
+        0
+      ],
+      "observed_task_net_delta": {
+        "direction_counts": [
+          3,
+          0,
+          21
+        ],
+        "known_pairs": 24,
+        "selected_subset_execution_mean": 0.05599122055631597,
+        "selected_subset_source_equal_mean": 0.05599122055631597,
+        "unknown_pairs": 0
+      },
+      "paired_delivered_text_changed": [
+        24,
+        20,
+        4,
+        0
+      ],
+      "quality_delta": {
+        "direction_counts": [
+          2,
+          22,
+          0
+        ],
+        "known_pairs": 24,
+        "selected_subset_execution_mean": 0.0625,
+        "selected_subset_source_equal_mean": 0.0625,
+        "unknown_pairs": 0
+      },
+      "selected_source_count": 8,
+      "task_cost_delta": {
+        "direction_counts": [
+          23,
+          0,
+          1
+        ],
+        "known_pairs": 24,
+        "selected_subset_execution_mean": 0.006508779443684034,
+        "selected_subset_source_equal_mean": 0.006508779443684034,
+        "unknown_pairs": 0
+      }
+    },
+    "adapted/point": {
+      "READ_pairs": 19,
+      "attribution_counts": {
+        "candidate_inventory_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "new_recognized_text": [
+          19,
+          18,
+          1,
+          0
+        ],
+        "new_reference_matching_candidate": [
+          19,
+          10,
+          9,
+          0
+        ],
+        "observation_bytes_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "selected_candidate_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "selected_text_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "semantic_information_gain": [
+          0,
+          0,
+          0,
+          19
+        ],
+        "terminal_quality_change": [
+          0,
+          0,
+          0,
+          19
+        ],
+        "written_text_differs_from_initial_selection": [
+          19,
+          19,
+          0,
+          0
+        ]
+      },
+      "initial_selection_equals_actual_STOP_delivered_text": [
+        19,
+        19,
+        0,
+        0
+      ],
+      "observed_task_net_delta": {
+        "direction_counts": [
+          8,
+          0,
+          11
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.20553992744069546,
+        "selected_subset_source_equal_mean": 0.2443410580251545,
+        "unknown_pairs": 0
+      },
+      "paired_delivered_text_changed": [
+        19,
+        19,
+        0,
+        0
+      ],
+      "quality_delta": {
+        "direction_counts": [
+          7,
+          12,
+          0
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.21052631578947367,
+        "selected_subset_source_equal_mean": 0.25,
+        "unknown_pairs": 0
+      },
+      "selected_source_count": 13,
+      "task_cost_delta": {
+        "direction_counts": [
+          18,
+          0,
+          1
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.004986388348778219,
+        "selected_subset_source_equal_mean": 0.0056589419748455,
+        "unknown_pairs": 0
+      }
+    },
+    "frozen/point": {
+      "READ_pairs": 19,
+      "attribution_counts": {
+        "candidate_inventory_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "new_recognized_text": [
+          19,
+          17,
+          2,
+          0
+        ],
+        "new_reference_matching_candidate": [
+          19,
+          10,
+          9,
+          0
+        ],
+        "observation_bytes_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "selected_candidate_changed": [
+          19,
+          19,
+          0,
+          0
+        ],
+        "selected_text_changed": [
+          19,
+          17,
+          2,
+          0
+        ],
+        "semantic_information_gain": [
+          0,
+          0,
+          0,
+          19
+        ],
+        "terminal_quality_change": [
+          0,
+          0,
+          0,
+          19
+        ],
+        "written_text_differs_from_initial_selection": [
+          19,
+          17,
+          2,
+          0
+        ]
+      },
+      "initial_selection_equals_actual_STOP_delivered_text": [
+        19,
+        19,
+        0,
+        0
+      ],
+      "observed_task_net_delta": {
+        "direction_counts": [
+          8,
+          0,
+          11
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.20335380150507645,
+        "selected_subset_source_equal_mean": 0.21040519594113963,
+        "unknown_pairs": 0
+      },
+      "paired_delivered_text_changed": [
+        19,
+        17,
+        2,
+        0
+      ],
+      "quality_delta": {
+        "direction_counts": [
+          7,
+          12,
+          0
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.21052631578947367,
+        "selected_subset_source_equal_mean": 0.21666666666666667,
+        "unknown_pairs": 0
+      },
+      "selected_source_count": 15,
+      "task_cost_delta": {
+        "direction_counts": [
+          18,
+          0,
+          1
+        ],
+        "known_pairs": 19,
+        "selected_subset_execution_mean": 0.00717251428439723,
+        "selected_subset_source_equal_mean": 0.006261470725527033,
+        "unknown_pairs": 0
+      }
+    }
+  },
+  "schema": "ctrl.formal-read-paired-effects.v1",
+  "scope": "Descriptive subset of policy-selected READ executions, paired to actually executed same-content STOP at identical source/case/seed; no randomized READ-subset causal effect or new-source/full-cost claim."
+}

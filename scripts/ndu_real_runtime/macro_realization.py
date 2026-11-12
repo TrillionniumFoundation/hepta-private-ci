@@ -10,7 +10,7 @@ import math
 from pathlib import Path
 
 from ndu_real_materials import common, evaluator
-from . import content_identity, metacontrol_macro_contract, metering
+from . import content_identity, macro_attribution, metacontrol_macro_contract, metering
 from .content_identity import SELECTION_SCHEMA, verify_content_identity
 from .metacontrol_macro_contract import SEQUENCES, digest, observe_branch, sha
 
@@ -24,6 +24,7 @@ def source_manifest():
             common,
             evaluator,
             content_identity,
+            macro_attribution,
             metacontrol_macro_contract,
             metering,
         )
@@ -32,16 +33,6 @@ def source_manifest():
         path.resolve().relative_to(root).as_posix(): sha(path.read_bytes())
         for path in paths
     }
-
-
-def _valid_box(value):
-    return (
-        isinstance(value, list)
-        and len(value) == 4
-        and all(type(v) is int and 0 <= v <= 16_000_000 for v in value)
-        and value[0] < value[2]
-        and value[1] < value[3]
-    )
 
 
 def observe_realization(
@@ -54,13 +45,15 @@ def observe_realization(
     *,
     expected_source_sha256,
     public_input=None,
+    initial_public_input=None,
     reference=None,
 ):
     """Observe one complete STOP/READ macro; optional bindings are root-relative.
 
     public_input is the original host reply immediately preceding WRITE_TEXT.
     reference is an original independently scored train/development reference.
-    Both use the closed {path, bytes, sha256} binding; neither reaches an actor.
+    initial_public_input optionally binds the original step-zero host reply.
+    All use closed {path, bytes, sha256} bindings; none reaches an actor.
     Callers retain the planned denominator when admission fails or evidence is
     absent. This function cannot release sealed confirmation/retention-test data.
     """
@@ -122,24 +115,7 @@ def observe_realization(
         expected_payload_sha256=launch["host_exchanges"][index + 1]["event_sha256"],
         require_selection=profile == SELECTION_SCHEMA,
     )
-    candidates = step.get("candidate_metadata")
-    if candidates is not None and (
-        not isinstance(candidates, list)
-        or not 1 <= len(candidates) <= 128
-        or any(
-            not isinstance(c, dict)
-            or set(c) != {"text", "bbox", "origin"}
-            or not isinstance(c["text"], str)
-            or len(c["text"].encode()) > 8192
-            or c["origin"]
-            not in ("pixel_ocr", "registered_public_text", "no_recognized_text")
-            or not isinstance(c["bbox"], list)
-            or len(c["bbox"]) != 4
-            or any(type(v) is not int or not 0 <= v <= 16_000_000 for v in c["bbox"])
-            for c in candidates
-        )
-    ):
-        raise ValueError("Invalid retained candidate inventory")
+    candidates, _ = macro_attribution.candidate_view(step)
     acquisition = {
         "acquired": None,
         "packet_sha256": None,
@@ -148,89 +124,25 @@ def observe_realization(
         "scope": "original_public_input_bytes_missing",
     }
     extra_pins = {}
+    initial_packet = final_packet = None
     if public_input is not None:
-        reply = common.read_bound(root, public_input, limit=131072)
-        exchange = launch["host_exchanges"][index]
-        if sha(reply) != exchange.get("reply_sha256") or len(reply) != exchange.get(
-            "reply_bytes"
-        ):
-            raise ValueError("Retained public input differs from original host reply")
-        public = common.strict_json(reply)
-        if (
-            set(public)
-            != {
-                "schema",
-                "case_id",
-                "step",
-                "remaining_seconds",
-                "prepared_roi",
-                "observation",
-                "delivery",
-                "text_committed",
-                "forced_action",
-            }
-            or public["schema"] != "ndu.real.actor-step.v1"
-            or public["case_id"] != result["case_id"]
-            or public["step"] != index
-            or type(public["step"]) is not int
-            or public["forced_action"] not in (None, "WRITE_TEXT")
-            or type(public["text_committed"]) is not bool
-            or type(public["remaining_seconds"]) not in (int, float)
-            or not math.isfinite(public["remaining_seconds"])
-            or public["remaining_seconds"] < 0
-            or (
-                public["prepared_roi"] is not None
-                and not _valid_box(public["prepared_roi"])
-            )
-        ):
-            raise ValueError(
-                "Public input differs from finalizer state or leaks fields"
-            )
-        packet = public["observation"]
-        if (
-            not isinstance(packet, dict)
-            or set(packet) != {"path", "sha256", "bbox", "kind"}
-            or packet["kind"] not in ("overview", "roi")
-            or not _valid_box(packet["bbox"])
-        ):
-            raise ValueError("Invalid retained public observation")
-        delivery = public["delivery"]
-        if (
-            not isinstance(delivery, dict)
-            or set(delivery) != {"schema", "case_id", "text", "image"}
-            or delivery["schema"] != "ndu.real.delivery.v1"
-            or delivery["case_id"] != result["case_id"]
-            or (
-                delivery["text"] is not None
-                and (
-                    not isinstance(delivery["text"], str)
-                    or len(delivery["text"].encode()) > 8192
-                )
-            )
-        ):
-            raise ValueError("Invalid closed public delivery contract")
-        delivered_image = delivery["image"]
-        if delivered_image is not None:
-            if (
-                not isinstance(delivered_image, dict)
-                or set(delivered_image) != {"path", "sha256", "bytes", "bbox"}
-                or not _valid_box(delivered_image["bbox"])
-            ):
-                raise ValueError("Invalid closed public image contract")
-            common.read_bound(
-                root / "public",
-                {k: delivered_image[k] for k in ("path", "sha256", "bytes")},
-            )
-        image_raw = common.read_relative(root / "public", packet["path"])
-        if sha(image_raw) != packet["sha256"]:
-            raise ValueError("Retained observation bytes differ from host input")
-        evaluator.image_from_bytes(image_raw)
+        final_packet = macro_attribution.public_observation(
+            root, public_input, launch, result["case_id"], index, "WRITE_TEXT"
+        )
         acquisition.update(
             acquired=True,
-            packet_sha256=packet["sha256"],
+            packet_sha256=final_packet,
             scope="original_host_reply_and_retained_decodable_bytes; not_owner_attested",
         )
         extra_pins["public_input"] = dict(public_input)
+    if initial_public_input is not None:
+        initial_packet = macro_attribution.public_observation(
+            root, initial_public_input, launch, result["case_id"], 0, actions[0]
+        )
+        extra_pins["initial_public_input"] = dict(initial_public_input)
+    elif index == 0:
+        initial_packet = final_packet
+    truth = None
     candidate_match = selected_match = delivered_match = reference_pin = None
     if reference is not None:
         # Decide whether reference access is permitted from the already-admitted
@@ -289,6 +201,9 @@ def observe_realization(
                 "Final text score differs from pinned reference normalization"
             )
         extra_pins["reference"] = dict(reference)
+    attribution = macro_attribution.read_changes(
+        steps, index, macro, initial_packet, final_packet, truth
+    )
     if digest(source_manifest()) != expected_source_sha256 or any(
         common.read_relative(root, name, limit=8 * 1024 * 1024) != value
         for name, value in raw.items()
@@ -308,6 +223,19 @@ def observe_realization(
         "artifact_sha256s": {name: sha(value) for name, value in raw.items()},
         "optional_inputs": extra_pins,
         "reference_sha256": reference_pin,
+        "comparison_binding": {
+            "initial_public_state_sha256": branch["initial_public_state_sha256"],
+            "initial_packet_sha256": initial_packet,
+            "source_sha256": result.get("source_sha256"),
+            "model_sha256": result["model_sha256"],
+            "control_profile_sha256": result.get("control_profile_sha256"),
+            "utility_profile_sha256": result.get("utility_profile_sha256"),
+            "evaluator_sha256": config["evaluator_sha256"],
+            "rubric_sha256": config["rubric_sha256"],
+            "scored_reference_sha256": score.get("reference_sha256"),
+            "latency_tariff": tariff,
+        },
+        "read_attribution": attribution,
         "stages": {
             "observation": acquisition,
             "candidates": {
@@ -346,5 +274,66 @@ def observe_realization(
         "full_physical_cost_observed": False,
         "native_owner_authenticated": False,
         "policy_efficacy_evaluated": False,
+        "production_admission": False,
+    }
+
+
+def observe_realization_pair(stop_inputs, read_inputs):
+    """Read both complete originals; a single final score is never a READ effect."""
+    stop, read = (
+        observe_realization(**inputs) for inputs in (stop_inputs, read_inputs)
+    )
+    return compare_realizations(stop, read)
+
+
+def compare_realizations(stop, read):
+    """Compare already-admitted originals; callers retain responsibility for admission."""
+    bindings = stop["comparison_binding"], read["comparison_binding"]
+    if (
+        stop["macro"] != "STOP"
+        or read["macro"] != "READ"
+        or stop["operation_id"] == read["operation_id"]
+        or any(stop[k] != read[k] for k in ("case_id_sha256", "source_group_sha256"))
+        or bindings[0] != bindings[1]
+        or any(
+            type(v) is not str
+            or len(v) != 64
+            or any(c not in "0123456789abcdef" for c in v)
+            for k, v in bindings[0].items()
+            if k != "latency_tariff"
+        )
+    ):
+        raise ValueError(
+            "Complete STOP/READ originals do not share the same frozen frontier"
+        )
+    initial = [
+        r["read_attribution"]["initial_selected_text_sha256"] for r in (stop, read)
+    ]
+    if None not in initial and initial[0] != initial[1]:
+        raise ValueError("Matched macro initial content selections differ")
+    selection = [
+        r["read_attribution"]["finalizer_selected_text_sha256"] for r in (stop, read)
+    ]
+    quality = (
+        read["stages"]["execution"]["quality"] - stop["stages"]["execution"]["quality"]
+    )
+    cost = read["costs"]["latency_cost"] - stop["costs"]["latency_cost"]
+    return {
+        "schema": "ndu.real.matched-read-attribution.v1",
+        "original_report_sha256s": {"STOP": digest(stop), "READ": digest(read)},
+        "comparison_binding": bindings[0],
+        "selected_text_changed": None
+        if None in selection
+        else selection[0] != selection[1],
+        "delivered_content_changed": stop["stages"]["execution"]["delivery_sha256"]
+        != read["stages"]["execution"]["delivery_sha256"],
+        "terminal_quality_changed": quality != 0,
+        "read_minus_stop_quality": quality,
+        "read_minus_stop_observed_latency_cost": cost,
+        "read_minus_stop_observed_latency_net": quality - cost,
+        "full_physical_net_difference": None,
+        "scope": "two matched completed executions; finite observed latency tariff, not a randomized population effect or full physical cost",
+        "native_owner_authenticated": False,
+        "policy_efficacy_proved": False,
         "production_admission": False,
     }

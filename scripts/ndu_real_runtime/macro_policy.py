@@ -279,7 +279,9 @@ def fit(train, calibration, *, context, expected_source_sha256, alpha=0.1, ridge
     mask = np.asarray([_gain(r) is not None for r in train])
     observed = raw[mask]
     weights = _source_weights([r["source_id"] for r in known])
-    center = np.average(observed, axis=0, weights=weights)
+    minimum, maximum = observed.min(axis=0), observed.max(axis=0)
+    # Positive-weight means lie in this envelope; remove floating-point overshoot.
+    center = np.clip(np.average(observed, axis=0, weights=weights), minimum, maximum)
     scale = np.sqrt(np.average((observed - center) ** 2, axis=0, weights=weights))
     scale[scale < 1e-8] = 1
     x = np.column_stack([np.ones(len(train)), (raw - center) / scale])
@@ -296,11 +298,7 @@ def fit(train, calibration, *, context, expected_source_sha256, alpha=0.1, ridge
     for row in calibration:
         v, cell, _ = _state(row["state"])
         gain = _gain(row)
-        if (
-            gain is not None
-            and np.all(v >= observed.min(axis=0))
-            and np.all(v <= observed.max(axis=0))
-        ):
+        if gain is not None and np.all(v >= minimum) and np.all(v <= maximum):
             residual = gain - float(np.r_[1, (v - center) / scale] @ value)
             residuals.append((row["source_id"], residual))
             conditional[cell].append((row["source_id"], residual))
@@ -315,8 +313,8 @@ def fit(train, calibration, *, context, expected_source_sha256, alpha=0.1, ridge
         "shape": list(next(iter(shape_pairs))),
         "center": center.tolist(),
         "scale": scale.tolist(),
-        "minimum": observed.min(axis=0).tolist(),
-        "maximum": observed.max(axis=0).tolist(),
+        "minimum": minimum.tolist(),
+        "maximum": maximum.tolist(),
         "value": value.tolist(),
         "probability_heads": {
             name: _probability_head(

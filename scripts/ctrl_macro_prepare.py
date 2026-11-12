@@ -14,8 +14,8 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def rank(*parts):
-    return sha(":".join((STUDY, *parts)).encode())
+def rank(study, *parts):
+    return sha(":".join((study, *parts)).encode())
 
 
 def load(path):
@@ -34,20 +34,54 @@ def main():
     parser.add_argument("--old-plan", required=True, type=Path)
     parser.add_argument("--new-code", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--study-id", default=STUDY)
     parser.add_argument("--fit-per-field", type=int, default=12)
     parser.add_argument("--calibration-per-field", type=int, default=9)
     parser.add_argument("--evaluation-per-field", type=int, default=8)
+    parser.add_argument(
+        "--evaluation-families", nargs="+", choices=FAMILIES, default=list(FAMILIES)
+    )
     args = parser.parse_args()
+    if (
+        not args.study_id
+        or len(args.study_id) > 128
+        or any(
+            n < 1
+            for n in (
+                args.fit_per_field,
+                args.calibration_per_field,
+                args.evaluation_per_field,
+            )
+        )
+        or len(set(args.evaluation_families)) != len(args.evaluation_families)
+    ):
+        parser.error(
+            "A bounded study identity, positive source counts and unique families are required"
+        )
     root = args.material_root
     catalog_path = root / "pilot-catalog.json"
     registry_path = root / "source-registry.json"
     registry = {s["source_id"]: s for s in load(registry_path)["sources"]}
     cases = load(catalog_path)["cases"]
+    ledger_path = root / "public-source-exposure-20261107-v3.json"
+    ledger = load(ledger_path)
+    excluded = set()
+    for key in (
+        "quarantined_source_groups",
+        "quarantined_confirmation_source_groups",
+        "excluded_pilot_new_source_groups",
+    ):
+        value = ledger.get(key, [])
+        if not isinstance(value, list) or any(not isinstance(s, str) for s in value):
+            raise ValueError("Exposure exclusions must be source identity lists")
+        excluded.update(value)
     # Filter roles before public packet I/O. Do not read reference bodies.
     eligible = [
         c
         for c in cases
-        if c["role"] in {"train", "development"} and c["task_family"] in FAMILIES
+        if c["role"] in {"train", "development"}
+        and c["task_family"] in FAMILIES
+        and c["source_id"] not in excluded
     ]
     grouped = defaultdict(list)
     for case in eligible:
@@ -57,7 +91,8 @@ def main():
     inventory = []
     for (role, source), group in sorted(grouped.items()):
         episodes = sorted(
-            {c["episode_group"] for c in group}, key=lambda x: rank("episode", x)
+            {c["episode_group"] for c in group},
+            key=lambda x: rank(args.study_id, "episode", x),
         )
         episode = episodes[0]
         selected = sorted(
@@ -117,7 +152,7 @@ def main():
     for field in ("date", "total"):
         train = sorted(
             [v for v in inventory if v["role"] == "train" and v["field"] == field],
-            key=lambda v: rank("source", v["source_id"]),
+            key=lambda v: rank(args.study_id, "source", v["source_id"]),
         )
         development = sorted(
             [
@@ -125,7 +160,7 @@ def main():
                 for v in inventory
                 if v["role"] == "development" and v["field"] == field
             ],
-            key=lambda v: rank("source", v["source_id"]),
+            key=lambda v: rank(args.study_id, "source", v["source_id"]),
         )
         available[field] = {
             "train_sources": len(train),
@@ -163,25 +198,14 @@ def main():
         k: [s["source_id"] for s in chosen[k]] for k in ("train", "calibration")
     }
     plan["source_splits"]["future"] = []
-    ledger_path = root / "public-source-exposure-20261107-v3.json"
-    ledger = load(ledger_path)
-    excluded = set()
-    for key in (
-        "quarantined_source_groups",
-        "quarantined_confirmation_source_groups",
-        "excluded_pilot_new_source_groups",
-    ):
-        value = ledger.get(key, [])
-        if isinstance(value, list):
-            excluded.update(s for s in value if isinstance(s, str))
     plan["excluded_sources"] = sorted(excluded)
     if set(all_sources) & excluded:
         raise ValueError("Selected source is quarantined")
     plan["profile"].update(
-        study_id=STUDY,
-        original_operation_id=STUDY,
+        study_id=args.study_id,
+        original_operation_id=args.study_id,
         fit_id="fresh-control-collection",
-        fit_run_id=STUDY,
+        fit_run_id=args.study_id,
         arm="fresh_matched_macro_collection",
         retry_of=None,
     )
@@ -201,7 +225,7 @@ def main():
                 )
     for item in chosen["evaluation"]:
         for case in item["cases"]:
-            if case["task_family"] != "preparation_required":
+            if case["task_family"] not in args.evaluation_families:
                 continue
             evaluation.append(
                 {
@@ -270,7 +294,7 @@ def main():
     }
     report = {
         "schema": "ctrl.material-preparation.v1",
-        "study_id": STUDY,
+        "study_id": args.study_id,
         "actor_launched": False,
         "private_references_opened": False,
         "future_or_sealed_packet_opened": False,
@@ -282,6 +306,7 @@ def main():
         "planned_collection_branches": 2 * len(pairs),
         "evaluation_contexts": len(evaluation),
         "eligible_families": FAMILIES,
+        "evaluation_families": args.evaluation_families,
         "selection": "SHA256(study:source:source_id), canonical image SHA256(study:episode:episode_group); public prompt field",
         "input_metadata_pins": [
             {"path": str(p), "sha256": sha(p.read_bytes()), "bytes": p.stat().st_size}

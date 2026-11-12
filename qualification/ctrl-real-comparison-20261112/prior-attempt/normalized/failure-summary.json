@@ -1,0 +1,147 @@
+{
+  "collection_and_export_completed": true,
+  "completed_pairs": 125,
+  "evaluation": {
+    "cold_load_reached": false,
+    "evaluate_stage_reached": false,
+    "filesystem_absence_limit": "An earlier directory inspection found no checkpoint/cold-load/evaluation output. This package makes no fresh remote filesystem absence claim: subsequent readback attempts timed out.",
+    "launched_by_original_wrapper": 0,
+    "planned_actors": 24,
+    "planned_contexts": 4,
+    "proof": [
+      "The original request loops collect/export/fit/evaluate sequentially, using subprocess.run(..., check=True).",
+      "Complete original stdout finishes collect/export and records fit STARTING; it contains no fit FINISHED or evaluate STARTING.",
+      "Complete original stderr records the fit ValueError and outer subprocess.CalledProcessError.",
+      "Authoritative original job status is terminal failed, exit_code=1, output_complete=true, output_durable=true, with no truncation."
+    ],
+    "scope": "No six-policy benefit estimate and no content-by-control 2x2 outcome can be inferred from this attempt."
+  },
+  "failed_pair": {
+    "branch": "READ",
+    "interpretation": "The WRITE_TEXT decision spent 22.706838862 seconds in the encoder and 22.736716047 seconds total. The actor terminated BudgetStop without STOP. A gross score of 1.0 and native process exit 0 do not establish completion of the declared macro.",
+    "original_pair_record_path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/collection/p0027.json",
+    "pair_id": "p0027",
+    "pair_ledger_observation": {
+      "collector_outer_wall_seconds": 25.52073526685126,
+      "provenance": "Previously inspected original pair ledger; raw bytes not retained in this package.",
+      "read_error": "Actual branch did not complete the declared macro",
+      "read_status": "failed_or_unresolved",
+      "source_group": "merchant-16ac5095cbab37d6a4beeecd",
+      "split": "train",
+      "stop_branch_completed": true,
+      "stop_branch_quality": 1.0
+    },
+    "pair_record_raw_bytes_in_package": false,
+    "parsed_actor_launch_fields": {
+      "callback_error": null,
+      "exit_code": 0,
+      "limit_reason": null,
+      "protocol_error": null,
+      "wall_seconds": 24.70348960906267
+    },
+    "parsed_actor_result_fields": {
+      "actions": [
+        "PREPARE_ROI",
+        "READ_ROI",
+        "WRITE_TEXT"
+      ],
+      "budget_overrun_seconds": 0.0,
+      "error": null,
+      "gross_score": 1.0,
+      "net_latency_utility": 0.75278143792,
+      "startup_seconds": 0.5732234949246049,
+      "terminal_status": "BudgetStop"
+    },
+    "raw_actor_artifacts": [
+      {
+        "path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/collection/p0027-READ/result.json",
+        "pin_provenance": "Prior original pair-ledger artifact pins checked against original files.",
+        "raw_bytes_in_package": false,
+        "sha256": "9d8dc8bbdb0f6dfff27de2c57a8c3d43d2ecec138e07618e5738140efd05126b"
+      },
+      {
+        "path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/collection/p0027-READ/trajectory.json",
+        "pin_provenance": "Prior original pair-ledger artifact pins checked against original files.",
+        "raw_bytes_in_package": false,
+        "sha256": "6d316ac5444a0a992b4bc32eb00abaac4ce57ff8a1e64084b78d7d46ec6110de"
+      },
+      {
+        "path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/collection/p0027-READ/launch.json",
+        "pin_provenance": "Prior original pair-ledger artifact pins checked against original files.",
+        "raw_bytes_in_package": false,
+        "sha256": "d10ee841cef01a1d4ec7df54e1e236eb0eac8ca3abae6c78c2d1de13531039fe"
+      }
+    ],
+    "stop_action_observed": false,
+    "trajectory_decision_meters": [
+      {
+        "action": "PREPARE_ROI",
+        "costs": {
+          "codec": 0.001238447,
+          "critic": 0.0,
+          "decoder": 0.000696116,
+          "encoder": 0.707353415,
+          "failure": 0.0,
+          "planning": 0.0,
+          "retry": 0.0,
+          "shared": 0.002011801,
+          "sync": 0.0
+        },
+        "cpu_seconds": 0.602970824,
+        "observed_unclassified_overhead_seconds": 0.026102215,
+        "wall_seconds": 0.737401994
+      },
+      {
+        "action": "READ_ROI",
+        "costs": {
+          "codec": 0.001073093,
+          "critic": 0.0,
+          "decoder": 0.000502223,
+          "encoder": 0.0,
+          "failure": 0.0,
+          "planning": 0.0,
+          "retry": 0.0,
+          "shared": 0.001134951,
+          "sync": 0.0
+        },
+        "cpu_seconds": 0.001902951,
+        "observed_unclassified_overhead_seconds": 0.003297377,
+        "wall_seconds": 0.006007644
+      },
+      {
+        "action": "WRITE_TEXT",
+        "costs": {
+          "codec": 0.002144827,
+          "critic": 0.0,
+          "decoder": 0.000545281,
+          "encoder": 22.706838862,
+          "failure": 0.0,
+          "planning": 0.0,
+          "retry": 0.0,
+          "shared": 0.001428861,
+          "sync": 0.0
+        },
+        "cpu_seconds": 22.024157149,
+        "observed_unclassified_overhead_seconds": 0.025758216,
+        "wall_seconds": 22.736716047
+      }
+    ]
+  },
+  "fit_completed": false,
+  "fit_error": "Incomplete planned collection cannot supply fitting rows",
+  "fit_error_type": "ValueError",
+  "fit_started": true,
+  "job_id": "1a1ce4e986b-2564-15fa",
+  "original_outcome": "FAILED_AT_FIT_AFTER_INCOMPLETE_COLLECTION",
+  "planned_pairs": 126,
+  "policy_benefit_qualified": false,
+  "preservation": {
+    "failure_reclassified_as_success": false,
+    "new_actor_operations_for_evidence": 0,
+    "original_failed_pair_dropped": false,
+    "original_job_relaunched": false
+  },
+  "production_admission": false,
+  "schema": "ctrl.prior-failed-attempt.v1",
+  "unknown_pairs": 1
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "ctrl.independent-terminal-audit-provenance.v1",
+  "host": "ai395",
+  "idempotency_key": "ctrl-1333-v2-independent-terminal-audit-v1",
+  "job_id": "1a1cef82828-2564-1937",
+  "request_digest": "439d0249cbd912bbf469d706ced483d65b1c9c32da4893bcd6d9b2fa0855a038",
+  "script": {
+    "file": "ctrl_terminal_audit.py",
+    "bytes": 29648,
+    "sha256": "6ecd6cfccf316623ae4c7ff6b71f487fdf932aeff1be16922c15af0ca7a764e0"
+  },
+  "exact_request": {
+    "file": "run-v2-terminal-audit-request.json",
+    "bytes": 31701,
+    "sha256": "93cc1a3b05b595c9c7c1cc8709fecf2048091ab51f76a23dc43e93064c1bb786"
+  },
+  "stdout": {
+    "file": "run-v2-terminal-audit.stdout.json",
+    "bytes": 8576,
+    "sha256": "2e1d039b17d828316672a9b53d1dc93d84cbf0bb0baf7aa1d7ba68555a390713"
+  },
+  "authoritative_status": {
+    "at_unix_ms": 1794473738071,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cef82828-2564-1937",
+    "launch_nonce": "33a90a2b16256ee2c26a3eab7a19a0ca",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 8576,
+        "stored": 8576
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "read_cursors": {
+    "stdout": {
+      "offset": 0,
+      "next_offset": 8576,
+      "eof": true,
+      "size": 8576
+    },
+    "stderr": {
+      "offset": 0,
+      "next_offset": 0,
+      "eof": true,
+      "size": 0
+    }
+  },
+  "original_start_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794473732136,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1cef82828-2564-1937\",\n    \"idempotency_key\": \"ctrl-1333-v2-independent-terminal-audit-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1cef82828-2564-1937\",\n    \"request_digest\": \"439d0249cbd912bbf469d706ced483d65b1c9c32da4893bcd6d9b2fa0855a038\",\n    \"request_fingerprint\": 4872052887860613819,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1cef82828-2564-1937\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1cef82828-2564-1937\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "scope": "Supplemental read-only byte/identity binding audit of exact source-J run-v2 originals; no project imports, OCR/model/actor execution or rescoring, no run-file writes."
+}

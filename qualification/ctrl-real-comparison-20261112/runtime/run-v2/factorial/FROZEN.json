@@ -1,0 +1,2914 @@
+{
+  "adaptation_receipt": {
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/content/receipt.json",
+    "sha256": "9349296f8b051963e2363cb212b44cecb4ce354844dc3853fa839a9278617e85"
+  },
+  "adaptive_control": "content-specific calibrated conditional complete-macro policy",
+  "driver_sha256": "31431f1dc3304b841f54e1e4c321ab065c2216c4664710abd42d8d06a79cd3f7",
+  "execution_order": [
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 18,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 18,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 36,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 36,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 4,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 4,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 16,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 16,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 17,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 17,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 3,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 3,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 37,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 37,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 10,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 10,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 26,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 26,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 31,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 31,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 41,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 41,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 1,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 1,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 8,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 8,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 46,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 46,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 35,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 35,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 13,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 13,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 33,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 33,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 6,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 6,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 28,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 28,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 21,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 21,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 19,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 19,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 20,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 20,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 43,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 43,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 23,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 23,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 42,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 42,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 38,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 38,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 14,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 14,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 30,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 30,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 0,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 0,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 12,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 12,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 25,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 25,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 15,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 15,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 29,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 29,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 11,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 11,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 45,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 45,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 22,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 22,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 39,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 39,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 32,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 32,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 2,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 2,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 9,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 9,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 27,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 27,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 34,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 34,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 24,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 24,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 47,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 47,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 7,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 7,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 40,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 40,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 5,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 5,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "conditional"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "STOP"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "light"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "unconditional"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "light"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "point"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "tuned-fixed"
+    },
+    {
+      "context_index": 44,
+      "mode": "frozen",
+      "policy": "point"
+    },
+    {
+      "context_index": 44,
+      "mode": "adapted",
+      "policy": "tuned-fixed"
+    }
+  ],
+  "execution_order_design": "Williams12; identity-hash context allocation seed 20261112; serial actors",
+  "factorial": {
+    "off_off": "frozen/STOP",
+    "off_on": "frozen/conditional",
+    "on_off": "adapted/STOP",
+    "on_on": "adapted/conditional"
+  },
+  "fixed_control": "identical complete WRITE_TEXT then STOP finalizer",
+  "repository": "/home/qq/ctrl-real-policy-20261112-1333-v3",
+  "schema": "ctrl.content-control-factorial.v1",
+  "scope": "exposed development material; no recursive-NDU or new-source qualification",
+  "studies": {
+    "adapted": {
+      "checkpoint_sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858",
+      "directory": "/home/qq/ctrl-real-study-20261112-1333/run-v2/adapted",
+      "freeze_sha256": "247b1e67b276d27476ad58b0c3c7dedb27b2a74877d6728be52d04875c8ab413"
+    },
+    "frozen": {
+      "checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096",
+      "directory": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen",
+      "freeze_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497"
+    }
+  },
+  "time_ns": 1794471671202582053
+}

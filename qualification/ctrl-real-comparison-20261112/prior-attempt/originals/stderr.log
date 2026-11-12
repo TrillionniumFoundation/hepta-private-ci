@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/qq/ctrl-macro-20261112-736c/scripts/ctrl_macro_study.py", line 485, in <module>
+    main()
+  File "/home/qq/ctrl-macro-20261112-736c/scripts/ctrl_macro_study.py", line 462, in main
+    run_stage(args, m)
+  File "/home/qq/ctrl-macro-20261112-736c/scripts/ctrl_macro_study.py", line 273, in run_stage
+    m["macro_training_pairs"].fit_rows(
+  File "/home/qq/ctrl-macro-20261112-736c/scripts/ndu_real_runtime/macro_training_pairs.py", line 560, in fit_rows
+    raise ValueError("Incomplete planned collection cannot supply fitting rows")
+ValueError: Incomplete planned collection cannot supply fitting rows
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+  File "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python', '/home/qq/ctrl-macro-20261112-736c/scripts/ctrl_macro_study.py', 'fit', '--repository', '/home/qq/ctrl-macro-20261112-736c', '--run-dir', '/home/qq/ctrl-prospective-20261112-736c/run-v1', '--freeze-sha256', '75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0']' returned non-zero exit status 1.

@@ -1,0 +1,21 @@
+{
+  "host": "ai395",
+  "idempotency_key": "ctrl-20261112-ai395-prospective-run-v1-736c",
+  "job_id": "1a1ce4e986b-2564-15fa",
+  "parsed_request_fields": {
+    "args": [
+      "PYTHONPATH=/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+      "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+      "-c",
+      "import subprocess,sys,time,json\nbase=[sys.executable,'/home/qq/ctrl-macro-20261112-736c/scripts/ctrl_macro_study.py']\ncommon=['--repository','/home/qq/ctrl-macro-20261112-736c','--run-dir','/home/qq/ctrl-prospective-20261112-736c/run-v1','--freeze-sha256','75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0']\nfor stage in ['collect','export','fit','evaluate']:\n print(json.dumps({'stage':stage,'state':'STARTING','time_ns':time.time_ns()}),flush=True)\n subprocess.run(base+[stage]+common,check=True)\n print(json.dumps({'stage':stage,'state':'FINISHED','time_ns':time.time_ns()}),flush=True)\n"
+    ],
+    "cwd": null,
+    "executable": "/usr/bin/env",
+    "timeout_seconds": null
+  },
+  "raw_request_bytes_retrieved": false,
+  "remote_request_path": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ce4e986b-2564-15fa/request.json",
+  "remote_request_sha256": "a0646d249b4c1dec5e62603e02d1cb422eab86ffa67ac933015aa7922db94dc9",
+  "schema": "ctrl.prior-launch-request.v1",
+  "source": "Prior read-only diagnostic excerpt, REQUEST_FIELD lines. These selected fields are exact parsed values; they are not the complete request object."
+}

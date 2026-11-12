@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ctrl_macro_study.py", line 544, in <module>
+    main()
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ctrl_macro_study.py", line 521, in main
+    run_stage(args, m)
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ctrl_macro_study.py", line 411, in run_stage
+    model = m["macro_policy"].fit(
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ndu_real_runtime/macro_policy.py", line 363, in fit
+    return load(raw_model, hashlib.sha256(raw_model).hexdigest(), context=context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ndu_real_runtime/macro_policy.py", line 470, in load
+    data = read_checkpoint(
+           ^^^^^^^^^^^^^^^^
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ndu_real_runtime/macro_policy_checkpoint.py", line 93, in read_checkpoint
+    raise ValueError("Invalid normalization or observed envelope")
+ValueError: Invalid normalization or observed envelope

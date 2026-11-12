@@ -1,0 +1,1503 @@
+{
+  "derivation": "Exact summary member of the final original observer JSON line",
+  "derived": true,
+  "original_observer": {
+    "bytes": 847931,
+    "sha256": "ff77dc018cfcf68d6c764bf77b22b03770f81ace409bec6ecd0e1142b1dc5b59",
+    "source_path": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ced4f80a-2564-1881/stdout.log"
+  },
+  "schema": "ctrl.derived-independent-summary.v1",
+  "summary": {
+    "analysis_script_sha256": "1ca3cabb427867ed5d27c5fe713c0f2c1745da0ee7113d8f7382b5b4a1d6ec2d",
+    "arms": {
+      "adapted/STOP": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "baseline": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.17230390806900686,
+          "primary": 0.17230390806900686,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7294124126876704,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.1875,
+          "primary": 0.1875,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "adapted/conditional": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "insufficient_calibration": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.17216143684553875,
+          "primary": 0.17216143684553875,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7362510314141401,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.1875,
+          "primary": 0.1875,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "adapted/light": {
+        "actions": {
+          "READ": 24,
+          "STOP": 24,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              24,
+              24,
+              0,
+              0
+            ],
+            [
+              24,
+              24,
+              0,
+              0
+            ],
+            [
+              24,
+              19,
+              5,
+              0
+            ],
+            [
+              24,
+              24,
+              0,
+              0
+            ],
+            [
+              24,
+              20,
+              4,
+              0
+            ],
+            [
+              24,
+              20,
+              4,
+              0
+            ],
+            [
+              24,
+              16,
+              8,
+              0
+            ],
+            [
+              24,
+              13,
+              11,
+              0
+            ],
+            [
+              24,
+              5,
+              19,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              24
+            ],
+            [
+              0,
+              0,
+              0,
+              24
+            ]
+          ],
+          "reason_counts": {
+            "nonpositive_value": 24,
+            "positive_value": 24
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.2001611438197142,
+          "primary": 0.2001611438197142,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.8922650966537186,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.21875,
+          "primary": 0.21875,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "adapted/point": {
+        "actions": {
+          "READ": 19,
+          "STOP": 29,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              18,
+              1,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              5,
+              14,
+              0
+            ],
+            [
+              19,
+              13,
+              6,
+              0
+            ],
+            [
+              19,
+              10,
+              9,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              19
+            ],
+            [
+              0,
+              0,
+              0,
+              19
+            ]
+          ],
+          "reason_counts": {
+            "nonpositive_value": 29,
+            "positive_value": 19
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.25363112211663974,
+          "primary": 0.25363112211663974,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.8257061384012923,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.2708333333333333,
+          "primary": 0.2708333333333333,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "adapted/tuned-fixed": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "calibration_fixed": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.1720054653190891,
+          "primary": 0.1720054653190891,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7437376646837219,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.1875,
+          "primary": 0.1875,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "adapted/unconditional": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "insufficient_calibration": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.1722728479821429,
+          "primary": 0.1722728479821429,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.730903296857141,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.1875,
+          "primary": 0.1875,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/STOP": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "baseline": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.18257923477644605,
+          "primary": 0.18257923477644605,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7361967307305894,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.19791666666666666,
+          "primary": 0.19791666666666666,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/conditional": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "insufficient_calibration": 46,
+            "outside_observed_feature_envelope": 2
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.18271780000291377,
+          "primary": 0.18271780000291377,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7295455998601392,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.19791666666666666,
+          "primary": 0.19791666666666666,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/light": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "nonpositive_value": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.18267976063114474,
+          "primary": 0.18267976063114474,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7313714897050523,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.19791666666666666,
+          "primary": 0.19791666666666666,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/point": {
+        "actions": {
+          "READ": 19,
+          "STOP": 29,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              17,
+              2,
+              0
+            ],
+            [
+              19,
+              19,
+              0,
+              0
+            ],
+            [
+              19,
+              17,
+              2,
+              0
+            ],
+            [
+              19,
+              17,
+              2,
+              0
+            ],
+            [
+              19,
+              5,
+              14,
+              0
+            ],
+            [
+              19,
+              14,
+              5,
+              0
+            ],
+            [
+              19,
+              10,
+              9,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              19
+            ],
+            [
+              0,
+              0,
+              0,
+              19
+            ]
+          ],
+          "reason_counts": {
+            "nonpositive_value": 27,
+            "outside_observed_feature_envelope": 2,
+            "positive_value": 19
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.2631040072282,
+          "primary": 0.2631040072282,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.8710076530463994,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.28125,
+          "primary": 0.28125,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/tuned-fixed": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "calibration_fixed": 48
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.18277954284412165,
+          "primary": 0.18277954284412165,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.7265819434821605,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.19791666666666666,
+          "primary": 0.19791666666666666,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "frozen/unconditional": {
+        "actions": {
+          "READ": 0,
+          "STOP": 48,
+          "matches_completed_multiset": true,
+          "missing_for_completed": 0,
+          "read_flag_counts": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "reason_counts": {
+            "insufficient_calibration": 46,
+            "outside_observed_feature_envelope": 2
+          },
+          "scope": "admitted_COMPLETED_only",
+          "seed_ambiguous_records": 0,
+          "unresolved_planned": 0
+        },
+        "missing_records": 0,
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "observed_subset": 0.18272289228295752,
+          "primary": 0.18272289228295752,
+          "sources": 16
+        },
+        "observed_task_cost_total_including_failures": 0.729301170418039,
+        "planned": 48,
+        "quality": {
+          "contexts": 48,
+          "observed_subset": 0.19791666666666666,
+          "primary": 0.19791666666666666,
+          "sources": 16
+        },
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 48,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      }
+    },
+    "conditional_contrasts": {
+      "adapted/conditional minus adapted/STOP": {
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "direction_counts": [
+            22,
+            0,
+            26
+          ],
+          "observed_subset": -0.00014247122346811622,
+          "primary": -0.00014247122346811622,
+          "sources": 16
+        },
+        "quality": {
+          "contexts": 48,
+          "direction_counts": [
+            0,
+            48,
+            0
+          ],
+          "observed_subset": 0.0,
+          "primary": 0.0,
+          "sources": 16
+        }
+      },
+      "adapted/conditional minus adapted/tuned-fixed": {
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "direction_counts": [
+            32,
+            0,
+            16
+          ],
+          "observed_subset": 0.0001559715264496241,
+          "primary": 0.0001559715264496241,
+          "sources": 16
+        },
+        "quality": {
+          "contexts": 48,
+          "direction_counts": [
+            0,
+            48,
+            0
+          ],
+          "observed_subset": 0.0,
+          "primary": 0.0,
+          "sources": 16
+        }
+      },
+      "frozen/conditional minus frozen/STOP": {
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "direction_counts": [
+            29,
+            0,
+            19
+          ],
+          "observed_subset": 0.0001385652264677136,
+          "primary": 0.0001385652264677136,
+          "sources": 16
+        },
+        "quality": {
+          "contexts": 48,
+          "direction_counts": [
+            0,
+            48,
+            0
+          ],
+          "observed_subset": 0.0,
+          "primary": 0.0,
+          "sources": 16
+        }
+      },
+      "frozen/conditional minus frozen/tuned-fixed": {
+        "observed_task_cost_net": {
+          "contexts": 48,
+          "direction_counts": [
+            21,
+            0,
+            27
+          ],
+          "observed_subset": -6.174284120788984e-05,
+          "primary": -6.174284120788984e-05,
+          "sources": 16
+        },
+        "quality": {
+          "contexts": 48,
+          "direction_counts": [
+            0,
+            48,
+            0
+          ],
+          "observed_subset": 0.0,
+          "primary": 0.0,
+          "sources": 16
+        }
+      }
+    },
+    "denominators": {
+      "arms": 12,
+      "contexts_completed_all_arms": 48,
+      "contexts_per_source_distribution": {
+        "3": 16
+      },
+      "independent_source_units": 16,
+      "matches_16_sources_48_contexts_576_executions": true,
+      "missing_records": 0,
+      "planned_executions": 576,
+      "provided_rows": 576,
+      "registered_contexts": 48,
+      "sources_completed_all_arms": 16,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 576,
+        "FAILED": 0,
+        "NOT_STARTED": 0,
+        "RUNNING": 0,
+        "UNKNOWN": 0
+      }
+    },
+    "direction_count_order": [
+      "positive",
+      "zero",
+      "negative"
+    ],
+    "execution_order": {
+      "design": "Williams12; identity-hash context allocation seed 20261112; serial actors",
+      "planned_executions": 576,
+      "verified_started_prefix": 576
+    },
+    "external_report_pin_checked": true,
+    "factorial_DID": {
+      "formula": "(adapted/conditional - adapted/STOP) - (frozen/conditional - frozen/STOP)",
+      "observed_task_cost_net": {
+        "contexts": 48,
+        "direction_counts": [
+          18,
+          0,
+          30
+        ],
+        "observed_subset": -0.00028103644993582983,
+        "primary": -0.00028103644993582983,
+        "sources": 16
+      },
+      "quality": {
+        "contexts": 48,
+        "direction_counts": [
+          0,
+          48,
+          0
+        ],
+        "observed_subset": 0.0,
+        "primary": 0.0,
+        "sources": 16
+      }
+    },
+    "factorial_sha256": "f75c44d6092aa1a91af1db859823a7d1e20d9219016d00ce69b843ac5d462325",
+    "limits": {
+      "action_counts_for_unresolved_executions": "unknown; report retains completed action traces only",
+      "action_records_omit_seed": true,
+      "decision": "NoUpdate",
+      "excluded_costs": [
+        "provider",
+        "energy",
+        "fit",
+        "calibration",
+        "tuning"
+      ],
+      "fixture_rows": 0,
+      "full_cost_benefit_established": false,
+      "matched_frontiers_scope": "contexts with at least one completed row, not twelve-arm completion",
+      "native_artifacts_readmitted": false,
+      "new_source_confirmation": false,
+      "observed_net": "terminal quality minus executor task_cost, including initialization/actions/scoring/admission",
+      "original_start_order_rechecked": false,
+      "production_admission": false,
+      "recursive_ndu_qualified": false,
+      "started_prefix_scope": "START count, not COMPLETED count",
+      "within_run_score_change": "unknown; policy contrasts are matched executed outcomes, selected READ subsets are not randomized"
+    },
+    "matched_initial_physical_frontiers": 48,
+    "read_flag_columns": [
+      "observation_bytes_changed",
+      "candidate_inventory_changed",
+      "new_recognized_text",
+      "selected_candidate_changed",
+      "selected_text_changed",
+      "written_text_differs_from_initial_selection",
+      "initial_scorer_match_present",
+      "finalizer_scorer_match_present",
+      "new_reference_matching_candidate",
+      "semantic_information_gain",
+      "terminal_quality_change"
+    ],
+    "read_flag_count_order": [
+      "known",
+      "true",
+      "false",
+      "unknown"
+    ],
+    "read_flag_scope": "admitted READ executions only; zero READ is no READ evidence",
+    "report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "schema": "ctrl.factorial-readonly-summary.v1",
+    "stored_mean_audit": {
+      "all_match": true,
+      "comparisons": 276,
+      "mismatch_count": 0,
+      "mismatches": []
+    },
+    "weighting": "paired contexts within each source, then equal source means; primary requires every planned context"
+  }
+}

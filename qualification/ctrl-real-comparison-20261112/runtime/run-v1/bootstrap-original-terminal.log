@@ -1,0 +1,56 @@
+{"stage": "source-fetch", "status": "STARTED", "source_sha": "0696d242632bd1bad6668267c52b0bd791241504"}
+{"stage": "source-fetch", "exit_code": 0, "elapsed_seconds": 4.121330728987232, "log_sha256": "dea924518b90e8bd5e3e582bd1a62634be108a61870a51707e2ba0ffa2746aa8", "time_ns": 1794467676855679846}
+{"stage": "source-checkout", "status": "STARTED", "source_sha": "0696d242632bd1bad6668267c52b0bd791241504"}
+{"stage": "source-checkout", "exit_code": 0, "elapsed_seconds": 3.9736750710289925, "log_sha256": "afe0d34034c18e88094af2c699417e2dc96ef396d1e158b4fbd61e2c3ba6fa73", "time_ns": 1794467680829653376}
+{"stage": "native-acceptance", "status": "STARTED", "source_sha": "0696d242632bd1bad6668267c52b0bd791241504"}
+{"stage": "native-acceptance", "exit_code": 0, "elapsed_seconds": 5.399081378011033, "log_sha256": "0c15022567a399e3d8ea421348c6fac73bbdd4e91ab3fd6929571b47665953cc", "time_ns": 1794467686580228158}
+{
+  "elapsed_seconds": 5.062160363886505,
+  "errors": [],
+  "failures": [],
+  "method_ids": [
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_actual_ocr_wire_delivery_and_independent_score_bind",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_observed_wire_change_is_rejected",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_wrong_model_pin_fails_before_any_action",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"
+  ],
+  "module_counts": {
+    "ndu_real_runtime.test_content_identity_native": 3,
+    "ndu_real_runtime.test_macro_native": 2
+  },
+  "policy_benefit_qualified": false,
+  "skipped": [],
+  "source_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+  "tests_run": 5,
+  "unique_methods": 5
+}
+{"stage": "campaign", "status": "STARTED", "source_sha": "0696d242632bd1bad6668267c52b0bd791241504"}
+{"stage": "campaign", "exit_code": 1, "elapsed_seconds": 534.7388736000285, "log_sha256": "c1776b7c6aecfc58bae3c7eb5ff66c5569d2592eb1d9ee714086ce8d5b1d0fd9", "time_ns": 1794468221319704616}
+{"stage": "prepare", "status": "STARTED"}
+{"stage": "prepare", "exit_code": 0, "elapsed_seconds": 0.21381590887904167, "log_sha256": "5779412e29a80cc7e4beeec7bebc0a6040c449ba80492a5a27c0bdb1b66440d6", "time_ns": 1794467686836466300}
+{"stage": "frozen_freeze", "status": "STARTED"}
+{"stage": "frozen_freeze", "exit_code": 0, "elapsed_seconds": 0.16408955003134906, "log_sha256": "887ffaea2dae326bf168a18ee2becee55d273b5041877ab0b5025050e81f4573", "time_ns": 1794467687003571631}
+{"stage": "frozen_collect", "status": "STARTED"}
+{"stage": "frozen_collect", "exit_code": 0, "elapsed_seconds": 520.2744100270793, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "time_ns": 1794468207278827478}
+{"stage": "frozen_export", "status": "STARTED"}
+{"stage": "frozen_export", "exit_code": 0, "elapsed_seconds": 13.787164706038311, "log_sha256": "8ae0db18478953af5af11fa4a9f8b594055ae8ff0c869d7531ede8eae164e60b", "time_ns": 1794468221066815364}
+{"stage": "frozen_fit", "status": "STARTED"}
+{"stage": "frozen_fit", "exit_code": 1, "elapsed_seconds": 0.21527201915159822, "log_sha256": "5feaf3de3cb64ec8f9ac1df824b85c83333c0379365bee02ba6ae6acefd5147a", "time_ns": 1794468221282799157}
+Traceback (most recent call last):
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 263, in <module>
+    main()
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 166, in main
+    run(
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 99, in run
+    raise RuntimeError("Original stage failed: " + name)
+RuntimeError: Original stage failed: frozen_fit
+
+{"status": "FAILED", "source_sha": "0696d242632bd1bad6668267c52b0bd791241504", "stages": [{"stage": "source-fetch", "exit_code": 0, "elapsed_seconds": 4.121330728987232, "log_sha256": "dea924518b90e8bd5e3e582bd1a62634be108a61870a51707e2ba0ffa2746aa8", "time_ns": 1794467676855679846}, {"stage": "source-checkout", "exit_code": 0, "elapsed_seconds": 3.9736750710289925, "log_sha256": "afe0d34034c18e88094af2c699417e2dc96ef396d1e158b4fbd61e2c3ba6fa73", "time_ns": 1794467680829653376}, {"stage": "native-acceptance", "exit_code": 0, "elapsed_seconds": 5.399081378011033, "log_sha256": "0c15022567a399e3d8ea421348c6fac73bbdd4e91ab3fd6929571b47665953cc", "time_ns": 1794467686580228158}, {"stage": "campaign", "exit_code": 1, "elapsed_seconds": 534.7388736000285, "log_sha256": "c1776b7c6aecfc58bae3c7eb5ff66c5569d2592eb1d9ee714086ce8d5b1d0fd9", "time_ns": 1794468221319704616}], "error_type": "RuntimeError", "error": "campaign failed", "time_ns": 1794468221320201728}
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m48[0m, in [35m<module>[0m
+    [31mrun[0m[1;31m('campaign',[python,'-B',str(code/'qualification/ctrl-real-comparison-20261112/run_campaign.py'),'--repository',str(code),'--output',str(output/'run-v1'),'--expected-source',source,'--prior-freeze',str(prior),'--prior-freeze-sha256',prior_sha],environment,str(code),14400)[0m
+    [31m~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"<string>"[0m, line [35m28[0m, in [35mrun[0m
+    raise RuntimeError(name+' failed')
+[1;35mRuntimeError[0m: [35mcampaign failed[0m

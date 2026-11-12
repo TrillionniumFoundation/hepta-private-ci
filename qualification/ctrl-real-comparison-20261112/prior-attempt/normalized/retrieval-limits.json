@@ -1,0 +1,31 @@
+{
+  "assembly_policy": "Reuse only already retrieved originals and local records, explicitly identify missing original bytes, preserve every prior business denominator and terminal state.",
+  "bounded_readonly_snapshot_start_attempt": {
+    "host": "ai395",
+    "idempotency_key": "ctrl-1333-prior-attempt-readback-v1",
+    "purpose": "Read existing metadata and receipts only; no actor operation.",
+    "reissued_after_timeout": false,
+    "state": "UNKNOWN_NO_JOB_ID_RETURNED",
+    "tool_response": {
+      "content": [
+        {
+          "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "type": "text"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "remote_read_multiple_files_attempt": {
+    "content": [
+      {
+        "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+        "type": "text"
+      }
+    ],
+    "isError": true
+  },
+  "root_transport_observation": "Root also observed h.process_start and read-only h calls timing out and instructed no further probes.",
+  "schema": "ctrl.prior-evidence-retrieval-limits.v1",
+  "scope": "Diagnostic transport uncertainty is separate from the original business job, whose earlier authoritative status is terminal failed."
+}
