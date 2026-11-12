@@ -135,14 +135,19 @@ impl OriginalCellEvaluationModelMaterialV1 {
         Ok(())
     }
 
-    /// Match the original Selector's already enrolled primary evidence to
-    /// this complete actually read panel. No qualification seal is decoded.
+    /// Require the same complete panel acceptance as Model admission, then
+    /// match the original Selector's already enrolled primary evidence.
+    /// No qualification seal is decoded or upgraded.
     pub(crate) fn require_original_selector_material(
         &self,
         config: &crate::OriginalCircuitModelSelectionReceiptConfigV1,
         current: u64,
     ) -> Result<(), Error> {
-        self.authenticate_current(current)?;
+        self.require_original_model_input(
+            &self.context.training,
+            &self.context.training_evidence,
+            current,
+        )?;
         let body = codec::Body::decode(&self.bytes)?;
         let primary = body.members.first().ok_or(Error::Binding("original primary panel"))?;
         let (_, generator) = crate::learning_owner_evidence::decode(&primary.generator)?;
@@ -206,6 +211,7 @@ impl OriginalCellEvaluationModelMaterialV1 {
         if training != &self.context.training
             || training_evidence != &self.context.training_evidence
             || current < self.observed_at
+            || Digest32::of_bytes(&self.bytes) != self.binding
         {
             return Err(Error::Binding(
                 "same original Model Training cut and full signature",
