@@ -1,0 +1,60 @@
+{
+  "before": {
+    "head": "8f87dc1158d74c86aabae52ff721c54c8c8ba61a",
+    "tree": "46020881c90d69d6a52d207aacfba0b1c52cdfb3",
+    "status": "",
+    "source_files": 8037,
+    "source_digest": "9cc2c13917f63dc32b1ad15f36a19ec39e91497eb069239d67f578cec5ba6dd8"
+  },
+  "after": {
+    "head": "8f87dc1158d74c86aabae52ff721c54c8c8ba61a",
+    "tree": "46020881c90d69d6a52d207aacfba0b1c52cdfb3",
+    "status": "",
+    "source_files": 8037,
+    "source_digest": "9cc2c13917f63dc32b1ad15f36a19ec39e91497eb069239d67f578cec5ba6dd8"
+  },
+  "started_utc": "2026-11-12T13:58:51.533329+00:00",
+  "duration_seconds": 13.93200969696045,
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_successor_root_custody_source_closure",
+        "test_post_a_publication_source_closure",
+        "test_publication_refusal_source_closure",
+        "test_root_historical_capture_source_closure",
+        "test_original_task_data_source_closure",
+        "test_root_publication_existing_owner_source_closure"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "markers": {
+    "status": "PASS",
+    "inventory": 879,
+    "selected_protected": 18,
+    "selected_boundaries": [
+      "root_successor_fixed_custody",
+      "root_successor_fixed_data",
+      "root_successor_baseline",
+      "root_successor_physical",
+      "root_successor_inputs",
+      "root_successor_register",
+      "root_successor_exact",
+      "root_successor_baseline_post",
+      "root_successor_capture_read",
+      "root_successor_finish",
+      "root_successor_reply_data",
+      "root_successor_physical_retirement",
+      "root_successor_cell_physical",
+      "root_successor_readonly_description"
+    ]
+  },
+  "exact_source": true,
+  "native": "NOT_RUN",
+  "full_caller": "NOT_RUN",
+  "whole_protected": "NOT_RUN; client guard migration remains separate"
+}
