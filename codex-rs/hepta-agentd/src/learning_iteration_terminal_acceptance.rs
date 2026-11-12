@@ -2,6 +2,7 @@
 //! The historical stage borrow never leaves its original operation or lane.
 
 use super::*;
+use crate::root_completed_learning_history::OriginalCompletedLearningAcknowledgementV1;
 
 impl RegisteredHistoricalLearningSourceV1 {
     pub(super) async fn accept_original_terminal(
@@ -30,14 +31,16 @@ impl RegisteredHistoricalLearningSourceV1 {
         .await
         .map_err(refused)??;
         require_ready(state).map_err(refused)?;
+        let data = OriginalCompletedLearningAcknowledgementV1::data(&accepted);
         if state.identity() != &self.identity
             || Instant::now() >= self.end
-            || accepted.initial != self.prepared.initial().head_digest.to_string()
-            || accepted.frozen_scope != self.prepared.scope().binding().to_string()
-            || accepted.terminal_head != snapshot.head_digest.to_string()
+            || data.initial != self.prepared.initial().head_digest.to_string()
+            || data.frozen_scope != self.prepared.scope().binding().to_string()
+            || data.terminal_head != snapshot.head_digest.to_string()
         {
             return Err(refused("original terminal Root acceptance differs"));
         }
+        AgentdState::attach_original_q24_terminal_acceptance(state, accepted)?;
         Ok(())
     }
 }
