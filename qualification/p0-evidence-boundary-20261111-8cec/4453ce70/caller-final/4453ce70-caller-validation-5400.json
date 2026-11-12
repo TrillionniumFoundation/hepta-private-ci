@@ -1,0 +1,45 @@
+{
+  "kind": "unmodified_original_complete_verifier",
+  "command": [
+    "python",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work",
+  "timeout_seconds": 5400,
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_verifier_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "source_coverage": "/workspace/scratch/8cec085888c3/4453ce70-caller-source-coverage.json",
+  "started_unix": 1794446472.3952844,
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-caller-verify-5400.log",
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "ended_unix": 1794448312.3158386,
+  "log_sha256": "7299be4003a388eabb5c7b9d769f68b80ef7da9c3987904ddedb508c5faf8651",
+  "log_bytes": 151032,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_verifier_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "source_unchanged": true,
+  "result_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "receipt_counts": {
+    "boundaries": 330,
+    "privilegedInventory": 330,
+    "protectedFiles": 264
+  },
+  "rustFilesScanned": 6370,
+  "authorityGranted": false
+}

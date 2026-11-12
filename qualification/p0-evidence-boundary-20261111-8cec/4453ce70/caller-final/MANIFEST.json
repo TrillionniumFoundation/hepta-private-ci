@@ -1,0 +1,66 @@
+{
+  "schema": "hepta-original-complete-caller-qualification-v1",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "recorded_at_utc": "2026-11-12 01:57:40 UTC",
+  "files": [
+    {
+      "name": "4453ce70-caller-verify-5400.log",
+      "bytes": 151032,
+      "sha256": "7299be4003a388eabb5c7b9d769f68b80ef7da9c3987904ddedb508c5faf8651",
+      "github_blob_sha": "8e800aef72119af9212e9de8c3f4560742ec17b5"
+    },
+    {
+      "name": "4453ce70-caller-validation-5400.json",
+      "bytes": 1773,
+      "sha256": "9f1e533b54d1dc823deadc258e58b1c7ceb1066a40cab8c3e147a7fe4b24f644",
+      "github_blob_sha": "0d2d8e7e9f8156cfa19c90ff52ecc535a7801881"
+    },
+    {
+      "name": "4453ce70-caller-heartbeats.jsonl",
+      "bytes": 214,
+      "sha256": "6abdf66f71b6c73006f66971fe4b422e4e2143426f3e0c46e193125c51076932",
+      "github_blob_sha": "0967f9ca80d3185541681c04b6ae44f41e874a08"
+    }
+  ],
+  "original_command": [
+    "python",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "outer_budget_seconds": 5400,
+  "elapsed_seconds": 1839.9205541610718,
+  "exit_code": 0,
+  "original_receipt": {
+    "schema": "hepta.caller-proof-receipt.v2",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "boundaries": 330,
+    "privileged_inventory": 330,
+    "protected_files": 264,
+    "rust_files_scanned": 6370,
+    "authority_granted": false
+  },
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_verifier_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_verifier_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "source_unchanged": true,
+  "heartbeat_scope": "Exactly one independent intermediate identity observation; not continuous whole-execution monitoring.",
+  "method": "The original unmodified verifier and typed helper executed to a complete terminal receipt on all 6370 materialized Rust sources and all declared inputs. No boundary, parser, source set or business protocol deadline was relaxed.",
+  "prior_attempts": "382 complete scans remain TIMEOUT at 180s and 1800s. Two 445 short diagnostics remain TIMEOUT. None was relabelled as this completed pass.",
+  "acceptance_limit": "A caller closed-set proof grants no authority and is not a real Notes business task, full A/B/C learning chain or independent net-benefit result. P0/P1 business adoption remain HOLD."
+}

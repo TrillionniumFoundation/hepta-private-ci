@@ -1,0 +1,3915 @@
+{
+  "authorityGranted": false,
+  "boundaries": [
+    {
+      "callPattern": null,
+      "id": "root_registered_learning_checkpoint_writer",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "RegisteredWriter",
+      "symbol": "RegisteredWriter::exchange_learning_checkpoint"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_learning_checkpoint_exchange",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "LearningIterationCheckpointOwnerV1",
+      "symbol": "LearningIterationCheckpointOwnerV1::exchange_learning_checkpoint"
+    },
+    {
+      "callPattern": null,
+      "id": "supervisor_authorized_boot",
+      "productCallers": [
+        "codex-rs/hepta-supervisor/src/main.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "run_supervisord_with_grant_verifier"
+    },
+    {
+      "callPattern": null,
+      "id": "memory_production_writer_open",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::open_with_live_verifier"
+    },
+    {
+      "callPattern": null,
+      "id": "cognitive_store_recovery_open",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_protected_host.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::open_with_recovery"
+    },
+    {
+      "callPattern": "\\bcognitive_mutation_capability\\s*\\(",
+      "id": "cognitive_production_mutation_capability",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::cognitive_mutation_capability"
+    },
+    {
+      "callPattern": null,
+      "id": "agentd_production_writer_host",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionWriterHost::open"
+    },
+    {
+      "callPattern": "\\boperations\\s*\\.\\s*attach\\s*\\(",
+      "id": "agentd_production_operation_runtime",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionOperationRuntimeConfig::attach"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_artifact_owner_bootstrap",
+      "productCallers": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningArtifactOwnerHost::open"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_artifact_owner_restart",
+      "productCallers": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningArtifactOwnerHost::open_with_required_current_head"
+    },
+    {
+      "callPattern": "\\bcandidate\\s*\\.\\s*with_current\\s*\\(",
+      "id": "learning_artifact_verified_current_view",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RevalidatingCandidate::with_current"
+    },
+    {
+      "callPattern": null,
+      "id": "provider_effect_coordinator",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProviderEffectCoordinator::new"
+    },
+    {
+      "callPattern": null,
+      "id": "http_provider_effect_adapter",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HttpProviderEffectAdapter::new"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_open_state",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-agentd/src/production_authority.rs",
+        "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ],
+      "receiverMethods": [
+        "open_state_dir",
+        "open_state_dir_with_clock",
+        "open_state_dir_with_trust",
+        "open_state_dir_with_issuer_keys"
+      ],
+      "receiverType": "FinalUseAuthority",
+      "symbol": "FinalUseAuthority::open_state_dir"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_claim",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "claim_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_claim_raw",
+      "productCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "FinalUseAuthority",
+      "symbol": "FinalUseAuthority::claim"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery_witness",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_final_use_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery_raw",
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ],
+      "receiverMethods": [
+        "with_verified_use",
+        "enter_verified_use"
+      ],
+      "receiverType": "FinalUseAuthority",
+      "symbol": "FinalUseAuthority::with_verified_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_dispatch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_dispatch_witness",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_final_use_with_witness"
+    },
+    {
+      "callPattern": "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\(",
+      "id": "final_use_dispatch_raw",
+      "productCallers": [
+        "codex-rs/hepta-operations/src/durable_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_dispatch_boundary"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|FinalUseAuthority\\s*::\\s*)update_revocations\\s*\\(",
+      "id": "final_use_revocation_update",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::update_revocations"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_approval_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseApprovalVerifier::new"
+    },
+    {
+      "callPattern": "approval_verifier\\s*\\.\\s*verify\\s*\\(",
+      "id": "final_use_approval_verify",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseApprovalVerifier::verify"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_revocation_feed_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationFeedVerifier::new"
+    },
+    {
+      "callPattern": "revocation_verifier\\s*\\.\\s*apply\\s*\\(",
+      "id": "final_use_revocation_feed_apply",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationFeedVerifier::apply"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_revocation_convergence_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationConvergenceVerifier::new"
+    },
+    {
+      "callPattern": "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+      "id": "final_use_revocation_convergence_verify",
+      "productCallers": [
+        "codex-rs/hepta-fleet/src/revocation_control.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationConvergenceVerifier::verify"
+    },
+    {
+      "callPattern": "\\.\\s*consume_kv_v2\\s*\\(",
+      "id": "bao_final_use_consumer",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoClient::consume_kv_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "bao_registered_consumer_new",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RegisteredBaoConsumer::new"
+    },
+    {
+      "callPattern": null,
+      "id": "bao_final_use_host_new",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::new"
+    },
+    {
+      "callPattern": "\\.\\s*apply_revocation_update\\s*\\(",
+      "id": "bao_registered_revocation_update",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::apply_revocation_update"
+    },
+    {
+      "callPattern": "(?:bao_host|final_use_host|BaoFinalUseHost)\\s*(?:\\.|::)\\s*consume_kv_v2\\s*\\(",
+      "id": "bao_registered_final_use_host",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::consume_kv_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_open_state",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+      ],
+      "receiverMethods": [
+        "open_state_dir",
+        "open_state_dir_with_frontier_store",
+        "open_state_dir_with_clock",
+        "open_state_dir_with_trust"
+      ],
+      "receiverType": "AuthorityLeaseRegistry",
+      "symbol": "AuthorityLeaseRegistry::open_state_dir"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AuthorityLeaseRegistry\\s*::\\s*)put_lease\\s*\\(",
+      "id": "authority_lease_put",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs",
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::put_lease"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_revoke",
+      "productCallers": [],
+      "receiverMethods": [
+        "revoke"
+      ],
+      "receiverType": "AuthorityLeaseRegistry",
+      "symbol": "AuthorityLeaseRegistry::revoke"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_prune",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::prune_expired_leases"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_epoch_advance",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::advance_epoch"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)verify_use\\s*\\(",
+      "id": "authority_lease_verify_use",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs",
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseVerifier::verify_use"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_delivery",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseVerifier::with_verified_use"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_delivery_witness",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_authority_lease_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_dispatch_raw",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AuthorityLeaseVerifier",
+      "symbol": "AuthorityLeaseVerifier::with_dispatch_boundary"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_dispatch_witness",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_authority_lease_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_async_dispatch_fence",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_verified_use_async"
+    },
+    {
+      "callPattern": null,
+      "id": "automation_taskflow_provider_effect_bridge",
+      "productCallers": [
+        "codex-rs/hepta-automation/src/action_skill_driver.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProviderEffectTaskFlowDriver::new"
+    },
+    {
+      "callPattern": "\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\(",
+      "id": "final_use_guarded_effect",
+      "productCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_verified_effect"
+    },
+    {
+      "callPattern": null,
+      "id": "notes_original_pending_call_proof",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "VerifiedNotesThreadCall::from_original_item"
+    },
+    {
+      "callPattern": null,
+      "id": "notes_original_operation_observation_proof",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_status.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "VerifiedNotesThreadOperation::from_original_item"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdNotesLiteralAdapter\\s*::\\s*)prepare_thread\\s*\\(",
+      "id": "notes_original_thread_prepare",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdNotesLiteralAdapter::prepare_thread"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionDurableWriter\\s*::\\s*)retained_notes_terminal_receipt\\s*\\(",
+      "id": "notes_original_writer_terminal_receipt",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_observe.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::retained_notes_terminal_receipt"
+    },
+    {
+      "callPattern": "(?:\\.\\s*acknowledge_current\\s*\\(\\s*\\)|ProductionDurableWriter\\s*::\\s*acknowledge_current\\s*\\()",
+      "id": "memory_original_owner_current_publication",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_root_composition.rs",
+        "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::acknowledge_current"
+    },
+    {
+      "callPattern": "(?:\\.\\s*observed_current_receipt\\s*\\(\\s*\\)|ProtectedCognitiveCheckpoint\\s*::\\s*observed_current_receipt\\s*\\()",
+      "id": "memory_original_protected_current_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_hos2_owner.rs",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProtectedCognitiveCheckpoint::observed_current_receipt"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HeptaEvidenceStore\\s*::\\s*)retained_authbus_delivery\\s*\\(",
+      "id": "original_authbus_human_delivery_read",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_transport.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HeptaEvidenceStore::retained_authbus_delivery"
+    },
+    {
+      "callPattern": null,
+      "id": "notes_original_human_turn_proof",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_transport.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "VerifiedHumanTurn::from_original_input"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|RegisteredWriter\\s*::\\s*)human_text\\s*\\(",
+      "id": "root_registered_human_text_writer",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_text_ui.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RegisteredWriter::human_text"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)registered_writer_human_text\\s*\\(",
+      "id": "root_registered_human_text_admission",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::registered_writer_human_text"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)text_until_checked\\s*\\(",
+      "id": "root_human_text_same_issuer_cas",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::text_until_checked"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)verify_retained_human_text\\s*\\(",
+      "id": "root_retained_human_text_lookup",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_human_text.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::verify_retained_human_text"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HostAuthorityService\\s*::\\s*)with_live_human_text\\s*\\(",
+      "id": "root_live_human_session_install",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::with_live_human_text"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_human_text_verification",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdUnixFinalUseGrantProvider",
+      "symbol": "AgentdUnixFinalUseGrantProvider::verify_original_human_text"
+    },
+    {
+      "callPattern": null,
+      "id": "notes_original_turn_unprepared_admission",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "require_unprepared_original_turn"
+    },
+    {
+      "callPattern": null,
+      "id": "root_host_original_human_text_verification",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "HostAuthorityService",
+      "symbol": "HostAuthorityService::verify_original_human_text"
+    },
+    {
+      "callPattern": null,
+      "id": "notes_original_human_text_verification",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_human.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdNotesLiteralAdapter",
+      "symbol": "AgentdNotesLiteralAdapter::verify_original_human_text"
+    },
+    {
+      "callPattern": null,
+      "id": "root_prepared_fresh_session",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::prepare_fresh_from_registered"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|PreparedHostAuthoritySession\\s*::\\s*)launch_native\\s*\\(",
+      "id": "root_retained_native_ui_launch",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::launch_native"
+    },
+    {
+      "callPattern": null,
+      "id": "root_prepared_native_ui_execution",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "launch_prepared_native"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_capture_original_image",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::capture_live_checkpoint_image"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_verify_retained_image",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::verify_retained_checkpoint_image"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_install_original_generation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::install_root_checkpoint_image"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_reopen_original_installation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::reopen_root_checkpoint_installation"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)release_to_registered_owner\\s*\\(",
+      "id": "root_material_release_registered_custody",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "InstalledRootCheckpointImage::release_to_registered_owner"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_fresh_registered_session",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::prepare_fresh_with_physical_material"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_recover_registered_session",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::recover_with_physical_material"
+    },
+    {
+      "callPattern": null,
+      "id": "root_material_existing_session_open",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::open_with_physical_material"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)resume_physical_material_handoff\\s*\\(",
+      "id": "root_material_resume_registered_handoff",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::resume_physical_material_handoff"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_physical_current\\s*\\(",
+      "id": "root_material_current_observation_chain",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs",
+        "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+        "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession/HostCognitiveCheckpoint::observe_physical_current"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)original_root_writer_descriptor\\s*\\(",
+      "id": "root_original_writer_descriptor_chain",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession/HostAuthorityService::original_root_writer_descriptor"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)serve_retained\\s*\\(",
+      "id": "root_same_retained_service_serve",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/root.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::serve_retained"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)recover_material_from_registered\\s*\\(",
+      "id": "root_registered_material_recovery",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::recover_material_from_registered"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)resume_registered_material_handoff\\s*\\(",
+      "id": "root_registered_material_handoff_resume",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::resume_registered_material_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_writer_purpose_send",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "send_root_production_writer_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_writer_purpose_receive",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "receive_root_production_writer_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "agentd_original_root_writer_consume",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::from_root_writer_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_registered_writer_rotation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/recovery_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "rotate_host_writer_authorization"
+    },
+    {
+      "callPattern": null,
+      "id": "native_original_operation_host_attach",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "attach_g2_native_operation_host"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)acknowledge_current_receipt\\s*\\(",
+      "id": "native_original_owner_current_ack",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdG2NativeOperationHost::acknowledge_current_receipt"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_retained_native_delivery\\s*\\(",
+      "id": "native_original_terminal_history_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdG2NativeOperationHost::observe_retained_native_delivery"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_authority_initialize",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/provision.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "initialize_host_authority"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_writer_authorize",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/provision.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "register_host_writer_authorization"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_bootstrap\\s*\\(",
+      "id": "root_same_registered_bootstrap_seal",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::seal_bootstrap"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_registered_bootstrap\\s*\\(",
+      "id": "root_same_registered_bootstrap_capture",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::seal_registered_bootstrap"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_original_logind_session\\s*\\(",
+      "id": "root_original_physical_login_install",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::with_original_logind_session"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)validate_successor\\s*\\(",
+      "id": "root_original_writer_successor_shape",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityWriterRegistration::validate_successor"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)rotate_writer_authorization\\s*\\(",
+      "id": "root_original_issuer_writer_rotation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::rotate_writer_authorization"
+    },
+    {
+      "callPattern": null,
+      "id": "root_physical_current_retired_adoption",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
+    },
+    {
+      "callPattern": null,
+      "id": "root_physical_recovery_retirement_admission",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedMaterialRecovery::observe"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)initialize_fresh_heads_with_material\\s*\\(",
+      "id": "root_physical_fresh_service_genesis",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::initialize_fresh_heads_with_material"
+    },
+    {
+      "callPattern": null,
+      "id": "root_physical_registered_checkpoint_genesis",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RegisteredCheckpoint::initialize_fresh_with_material"
+    },
+    {
+      "callPattern": null,
+      "id": "root_physical_current_backend_genesis",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostCognitiveCheckpoint::initialize_fresh_with_material"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_registered_physical_current\\s*\\(",
+      "id": "root_registered_physical_current_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::observe_registered_physical_current"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_two_descriptor_send",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "send_root_production_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_two_descriptor_receive",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "receive_root_production_handoff"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)retained_hos2_terminal\\s*\\(",
+      "id": "native_original_writer_terminal_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter/LocalLeaseOutbox::retained_hos2_terminal"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)next_hos2_delivery_sequence\\s*\\(",
+      "id": "native_original_writer_next_delivery_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter/LocalLeaseOutbox::next_hos2_delivery_sequence"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_notes_startup_from_session_before\\s*\\(",
+      "id": "root_notes_original_startup_before",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_notes_startup_from_session_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_notes_recovery_startup_from_session_before\\s*\\(",
+      "id": "root_notes_recovered_successor_startup_before",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_notes_recovery_startup_from_session_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_registered_notes_from_session\\s*\\(",
+      "id": "root_notes_original_reserved_session_binding",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_registered_notes_from_session"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_notes_policy_for_registered_successor\\s*\\(",
+      "id": "root_notes_registered_successor_policy_replace",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::replace_notes_policy_for_registered_successor"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_desktop_policy\\s*\\(",
+      "id": "root_desktop_original_issuer_pair_policy_cas",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::replace_registered_desktop_policy"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_notes_policy\\s*\\(",
+      "id": "root_notes_original_issuer_policy_cas",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::replace_registered_notes_policy"
+    },
+    {
+      "callPattern": "\\blaunch_native_with_ready\\b",
+      "id": "root_retained_native_ready_launch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::launch_native_with_ready"
+    },
+    {
+      "callPattern": "\\blaunch_prepared_native_with_ready\\s*\\(",
+      "id": "root_prepared_native_ready_execution",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "launch_prepared_native_with_ready"
+    },
+    {
+      "callPattern": "\\bserve_with_text_and_ready\\b",
+      "id": "root_prepared_native_ready_text_session",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_native_launch.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::serve_with_text_and_ready"
+    },
+    {
+      "callPattern": "\\bbind_runtime_lanes\\s*\\(",
+      "id": "root_original_bound_native_lanes",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "bind_runtime_lanes"
+    },
+    {
+      "callPattern": "\\bserve_bound_lanes\\s*\\(",
+      "id": "root_original_bound_native_lane_acceptance",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "serve_bound_lanes"
+    },
+    {
+      "callPattern": "\\bserve_lanes_with_ready\\s*\\(",
+      "id": "root_original_ready_lane_bridge",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "serve_lanes_with_ready"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|VerifiedNotesThreadCall\\s*::\\s*)recorded_reference\\s*\\(",
+      "id": "notes_original_retained_reference_projection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "VerifiedNotesThreadCall",
+      "symbol": "VerifiedNotesThreadCall::recorded_reference"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionObjectiveSender\\s*::\\s*)retained_owner_requests\\s*\\(",
+      "id": "memory_original_sender_read_only_cut",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+        "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_recorded.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionObjectiveSender::retained_owner_requests"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdNotesLiteralAdapter\\s*::\\s*)(?:recorded_thread_operation|latest_recorded_thread_operation|latest_recorded_recovery_operation)\\s*\\(",
+      "id": "notes_recorded_original_observation_proof",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdNotesLiteralAdapter::recorded_thread_operation"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_notes_previous_recovery_request\\s*\\(",
+      "id": "notes_previous_recovery_typed_resolution",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::with_original_notes_previous_recovery_request"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|PreparedHostAuthoritySession\\s*::\\s*)enable_root_admin\\s*\\(",
+      "id": "root_live_admin_enable",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::enable_root_admin"
+    },
+    {
+      "callPattern": null,
+      "id": "root_live_admin_mint",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootAdminRuntime::mint"
+    },
+    {
+      "callPattern": null,
+      "id": "root_live_admin_exchange",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootAdminCapability::exchange"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HostAuthorityService\\s*::\\s*)admin_request\\s*\\(",
+      "id": "root_live_admin_checked_dispatch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::admin_request"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)verify_original_signed_grant\\s*\\(",
+      "id": "root_live_admin_signed_artifact_verify",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::verify_original_signed_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)revoke_at_observed_head\\s*\\(",
+      "id": "root_live_admin_exact_issuer_head_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::revoke_at_observed_head"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|RootNotesGrantAdmission\\s*::\\s*)prepare_original_grant_revocation\\s*\\(",
+      "id": "root_live_admin_fixed_notes_revoke_prepare",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootNotesGrantAdmission::prepare_original_grant_revocation"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|PreparedNotesGrantRevocation\\s*::\\s*)revoke_effect_lease\\s*\\(",
+      "id": "root_live_admin_existing_effect_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedNotesGrantRevocation::revoke_effect_lease"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|EffectLeaseRevoked\\s*::\\s*)revoke_original_grant\\s*\\(",
+      "id": "root_live_admin_existing_signed_grant_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "EffectLeaseRevoked::revoke_original_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HostAuthorityService\\s*::\\s*)revoke_original_notes_grant\\s*\\(",
+      "id": "root_live_admin_same_service_signed_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::revoke_original_notes_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|RootNotesGrantAdmission\\s*::\\s*)enable_original_issued_observations\\s*\\(",
+      "id": "root_live_admin_original_issue_observer_enable",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootNotesGrantAdmission::enable_original_issued_observations"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|RootNotesGrantAdmission\\s*::\\s*)observe_original_issued_grant\\s*\\(",
+      "id": "root_live_admin_original_issue_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootNotesGrantAdmission::observe_original_issued_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AuthorityLeaseRegistry\\s*::\\s*)revoke_before\\s*\\(",
+      "id": "root_live_admin_original_bounded_lease_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::revoke_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)observe_original_signed_grant\\s*\\(",
+      "id": "root_live_admin_retained_artifact_observe",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "DeploymentFinalUseIssuer::observe_original_signed_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|RootNotesGrantAdmission\\s*::\\s*)observe_original_grant_state\\s*\\(",
+      "id": "root_live_admin_original_effect_state_observe",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RootNotesGrantAdmission::observe_original_grant_state"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HostAuthorityService\\s*::\\s*)observe_original_notes_grant\\s*\\(",
+      "id": "root_live_admin_same_service_effect_state_observe",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::observe_original_notes_grant"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdConfig\\s*::\\s*)retain_production_verifier\\s*\\(",
+      "id": "agentd_original_registered_writer_custody",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::retain_production_verifier"
+    },
+    {
+      "callPattern": "(?:\\.|::)\\s*from_recovered_store\\s*\\(",
+      "id": "agentd_original_recovered_writer_custody_factory",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_protected_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionWriterHost::from_recovered_store"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdConfig\\s*::\\s*)prepare_root_handoff\\s*\\(",
+      "id": "agentd_original_root_handoff_unique_file",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::prepare_root_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "desktop_original_retained_reference_projection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_tool.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "VerifiedDesktopThreadCall",
+      "symbol": "VerifiedDesktopThreadCall::recorded_reference"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionDurableWriter\\s*::\\s*)calculator_recovery_target_for_retained_operation\\s*\\(",
+      "id": "calculator_previous_recovery_owner_target",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::calculator_recovery_target_for_retained_operation"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdProductionWriterHost\\s*::\\s*)attach_explicit_previous_calculator_recovery\\s*\\(",
+      "id": "calculator_previous_recovery_host_attach",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/calculator_recovery_process.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionWriterHost::attach_explicit_previous_calculator_recovery"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdProductionWriterHost\\s*::\\s*)attach_previous_calculator_recovery_process\\s*\\(",
+      "id": "calculator_previous_recovery_process_attach",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionWriterHost::attach_previous_calculator_recovery_process"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdProductionOperationRuntimeConfig\\s*::\\s*)select_previous_calculator_process\\s*\\(",
+      "id": "calculator_previous_recovery_runtime_selection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionOperationRuntimeConfig::select_previous_calculator_process"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_calculator_previous_recovery\\s*\\(",
+      "id": "calculator_previous_recovery_config_selection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_desktop.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::with_original_calculator_previous_recovery"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_issuer_renewal_prepare",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "prepare_host_issuer_lease_renewal"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_issuer_renewal_commit",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "commit_host_issuer_lease_renewal"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_desktop_startup_from_session_before\\s*\\(",
+      "id": "root_desktop_original_startup_before",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_desktop_startup_from_session_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_desktop_recovery_startup_from_session_before\\s*\\(",
+      "id": "root_desktop_recovered_successor_startup_before",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_desktop_recovery_startup_from_session_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_desktop_policy_for_registered_successor\\s*\\(",
+      "id": "root_desktop_registered_successor_policy_replace",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_desktop_startup.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::replace_desktop_policy_for_registered_successor"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdNotesLiteralAdapter\\s*::\\s*)desktop_previous_operation_ids\\s*\\(",
+      "id": "desktop_previous_original_cut_selection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdNotesLiteralAdapter::desktop_previous_operation_ids"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_desktop_previous_recovery_requests\\s*\\(",
+      "id": "desktop_previous_joint_config_selection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::with_original_desktop_previous_recovery_requests"
+    },
+    {
+      "callPattern": "ProductionRetirementAck\\s*::\\s*from_validated_target\\s*\\(",
+      "id": "memory_original_validated_target_retirement_ack",
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_calculator_retire.rs",
+        "codex-rs/hepta-memory/src/production_notes.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionRetirementAck::from_validated_target"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionDurableWriter\\s*::\\s*)retained_notes_retirement_ack\\s*\\(",
+      "id": "memory_original_notes_retirement_ack",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::retained_notes_retirement_ack"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionDurableWriter\\s*::\\s*)retained_calculator_retirement_ack\\s*\\(",
+      "id": "memory_original_calculator_retirement_ack",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::retained_calculator_retirement_ack"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|LocalLeaseOutbox\\s*::\\s*)record_application_retirement_ack\\s*\\(",
+      "id": "memory_original_retirement_ack_commit",
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_retirement_ack.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LocalLeaseOutbox::record_application_retirement_ack"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|ProductionDurableWriter\\s*::\\s*)observed_current_owner_receipt\\s*\\(",
+      "id": "memory_original_owner_current_readonly_receipt",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::observed_current_owner_receipt"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|AuthorityLeaseRegistry\\s*::\\s*)revoke_exact_before\\s*\\(",
+      "id": "authority_lease_exact_bounded_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_issuer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::revoke_exact_before"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|HostAuthorityService\\s*::\\s*)revoke_original_issuer\\s*\\(",
+      "id": "root_live_admin_exact_issuer_revoke",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::revoke_original_issuer"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|LiveRootAdminRequest\\s*::\\s*)finish_committed_issuer_revocation\\s*\\(",
+      "id": "root_live_admin_committed_issuer_reply",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LiveRootAdminRequest::finish_committed_issuer_revocation"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|CommittedIssuerRevocation\\s*::\\s*)confirm_original_issuer_revocation_response\\s*\\(",
+      "id": "root_live_admin_exact_issuer_reply_record",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CommittedIssuerRevocation::confirm_original_issuer_revocation_response"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_explicit_registration",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "register_host_learning_checkpoint"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)register_learning_checkpoint\\s*\\(",
+      "id": "root_learning_original_store_registration",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::register_learning_checkpoint"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_registered_learning_checkpoint\\s*\\(",
+      "id": "root_learning_original_store_reopen",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::open_registered_learning_checkpoint"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_registered_learning\\s*\\(",
+      "id": "root_learning_original_owner_install",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_registered_learning"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_bootstrap\\s*\\(",
+      "id": "root_learning_original_scope_seal",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::seal_learning_bootstrap"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_checkpoint\\s*\\(",
+      "id": "root_learning_original_scope_capture",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::seal_learning_checkpoint"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_learning_checkpoint\\s*\\(",
+      "id": "root_learning_same_service_serve",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::serve_learning_checkpoint"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_registered_checkpoint_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningIterationCheckpointOwnerV1::from_registered"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_client_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdLearningCheckpointClientV1::from_root_stream"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_purpose_send",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "send_root_learning_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_purpose_receive",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "receive_root_learning_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_handoff_consume",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "RootLearningHandoffV1",
+      "symbol": "RootLearningHandoffV1::connect"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_inputs\\s*\\(",
+      "id": "root_learning_original_config_hold",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::with_root_learning_inputs"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_stage_owners\\s*\\(",
+      "id": "root_learning_original_stage_assembly",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdConfig::with_root_learning_stage_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_runtime_consume",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootLearningInputsV1",
+      "symbol": "AgentdRootLearningInputsV1::into_learning_runtime"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_with_ready\\s*\\(",
+      "id": "root_original_registered_ready_serve",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::serve_with_ready"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_private_sealed_bytes",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "seal_bytes"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_scoped_checkpoint_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_scoped_client_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_scoped_runtime_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "learning_iteration_channel_scoped_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_frozen_update_scope_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FrozenLearningScopeV2::freeze"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_scoped_profile_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityLearningProfileV1::new_scoped_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_scoped_checkpoint_record",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningIterationCheckpointRecordV1::vacant_scoped_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_evidence_original_owner_constructor",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningIterationEvidenceClientV1::from_owner_stream"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_evidence_original_owner_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "LearningIterationEvidenceClientV1",
+      "symbol": "LearningIterationEvidenceClientV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "original_pinned_stream_explicit_uid",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "RootObservationStream",
+      "symbol": "RootObservationStream::from_stream_for_uid"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_learning_evaluation_profile_freeze",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "freeze_cell_learning_evaluation_plan_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_learning_evaluation_receipt_prepare",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "prepare_cell_learning_evaluation_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_learning_evaluation_original_readback",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "read_cell_learning_evaluation_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "generation_learning_original_stage_readback",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "read_generation_learning_stage_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_original_evaluation_execution",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "CellEvaluationRunnerV1",
+      "symbol": "CellEvaluationRunnerV1::evaluate_or_readback"
+    },
+    {
+      "callPattern": null,
+      "id": "product_original_evaluation_execution",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "ProductEvaluationRunnerV1",
+      "symbol": "ProductEvaluationRunnerV1::evaluate_or_readback_temporal_comparison"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_completed_evaluation_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellEvaluationRunnerV1",
+      "symbol": "CellEvaluationRunnerV1::readback_completed"
+    },
+    {
+      "callPattern": null,
+      "id": "product_completed_evaluation_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "ProductEvaluationRunnerV1",
+      "symbol": "ProductEvaluationRunnerV1::readback_temporal_comparison"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_original_delivery_source",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "LearningIterationRuntimeBootstrapV1",
+      "symbol": "LearningIterationRuntimeBootstrapV1::with_original_circuit_learning_delivery"
+    },
+    {
+      "callPattern": null,
+      "id": "root_learning_completed_circuit_source",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdState",
+      "symbol": "AgentdState::require_circuit_learning_source"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_single_head_training_plan",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_single_head_candidate_validation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "CellQ24SingleHeadTrainingPlanV1",
+      "symbol": "CellQ24SingleHeadTrainingPlanV1::validate_training_candidate"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_learning_exact_ack_retirement",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AutomationStore",
+      "symbol": "AutomationStore::retire_acknowledged_circuit_learning"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_native_training_fit",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24SingleHeadTrainingPlanV1",
+      "symbol": "CellQ24SingleHeadTrainingPlanV1::fit"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_training_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::read_learning_observation"
+    },
+    {
+      "callPattern": "\\.\\s*attest_execution\\s*\\(",
+      "id": "learning_original_evaluator_attestation",
+      "productCallers": [
+        "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "OriginalCellEvaluationExecutionOwnerV1::attest_execution"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_key",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "product_evaluation_execution_key_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_original_initial_publication",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitFeatureTaskV1",
+      "symbol": "PublishedCircuitFeatureTaskV1::from_initial"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_original_update_publication",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitFeatureTaskV1",
+      "symbol": "PublishedCircuitFeatureTaskV1::from_update"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_guarded_private_cell",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellOwnerJournalV1",
+      "symbol": "CellOwnerJournalV1::open_guarded"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_private_cell_writer",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitCellOwnerV1",
+      "symbol": "PublishedCircuitCellOwnerV1::writer"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_original_task_control",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitFeatureTaskV1",
+      "symbol": "PublishedCircuitFeatureTaskV1::control"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_q24_ordinary_profile_assembly",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "circuit_q24_task_channel_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_original_predecessor_recovery",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "recover_predecessor"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_acknowledged_readonly_history",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellOwnerJournalReadbackV1",
+      "symbol": "CellOwnerJournalReadbackV1::open_guarded"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_receipt_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+      "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_receipt_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+      "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_receipt_attest",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+      "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::attest_original_completion"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_receipt_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+      "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_training_execute",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::fit_or_readback"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_training_pair_binding",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::require_original_dataset_scope"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_stage_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::from_original_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_stage_execute",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::execute_training"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_stage_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_material.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_stage_attestation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::receipt_attestation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_snapshot_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "read_cell_q24_training_snapshot_v1"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_model_material_owner_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24ModelProposalOwnerV1",
+      "symbol": "CellQ24ModelProposalOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_model_material_owner_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24ModelProposalOwnerV1",
+      "symbol": "CellQ24ModelProposalOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_model_material_owner_commit",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24ModelProposalOwnerV1",
+      "symbol": "CellQ24ModelProposalOwnerV1::commit_or_readback"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_model_material_owner_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24ModelProposalOwnerV1",
+      "symbol": "CellQ24ModelProposalOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_receipt_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_receipt_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_receipt_attest",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_receipt_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_batch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CellQ24TrainingBatchV1::from_original_dataset"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_task",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CellQ24DatasetTaskV1::capture"
+    },
+    {
+      "callPattern": null,
+      "id": "circuit_feature_original_committed_decision",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitCellOwnerV1",
+      "symbol": "PublishedCircuitCellOwnerV1::committed"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_revalidation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingBatchV1",
+      "symbol": "CellQ24TrainingBatchV1::revalidate_source"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_capability",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingBatchV1",
+      "symbol": "CellQ24TrainingBatchV1::require_original_dataset_provenance"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_trainer_dataset_capability",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::require_original_dataset_provenance"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_freeze_create",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_freeze_recover",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_freeze_authorize",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24DatasetFreezeOwnerV1",
+      "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::authorize_or_readback"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_dataset_freeze_readback",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24DatasetFreezeOwnerV1",
+      "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_explicit_reserve",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "register_host_q24_model_factory"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_q24_model_factory\\s*\\(",
+      "id": "root_q24_factory_open_original",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::open_q24_model_factory"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_registered_q24_model_factory\\s*\\(",
+      "id": "root_q24_factory_install_original",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::with_registered_q24_model_factory"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_q24_model_factory_offer\\s*\\(",
+      "id": "root_q24_factory_capture_original",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::seal_q24_model_factory_offer"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)take_q24_model_factory_offer\\s*\\(",
+      "id": "root_q24_factory_take_offer",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "PreparedHostAuthoritySession::take_q24_model_factory_offer"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_q24_model_factory\\s*\\(",
+      "id": "root_q24_factory_serve_original",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::serve_q24_model_factory"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_purpose_send",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "send_root_q24_model_factory_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_purpose_receive",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "receive_root_q24_model_factory_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_original_handoff_connect",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "RootQ24ModelFactoryHandoffV1",
+      "symbol": "RootQ24ModelFactoryHandoffV1::connect"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_original_constructor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdRootQ24ModelFactoryV1::from_original_handoff"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_live_observation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootQ24ModelFactoryV1",
+      "symbol": "AgentdRootQ24ModelFactoryV1::require_current"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_original_commit",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootQ24ModelFactoryV1",
+      "symbol": "AgentdRootQ24ModelFactoryV1::commit_or_readback"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_original_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootQ24ModelFactoryV1",
+      "symbol": "AgentdRootQ24ModelFactoryV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_learning_scope",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootQ24ModelFactoryV1",
+      "symbol": "AgentdRootQ24ModelFactoryV1::require_learning_scope"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_local_policy",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootQ24ModelFactoryV1",
+      "symbol": "AgentdRootQ24ModelFactoryV1::require_local_policy"
+    },
+    {
+      "callPattern": null,
+      "id": "root_q24_factory_original_material",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "prepare_original_q24_model_material"
+    },
+    {
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_learning_profile\\s*\\(",
+      "id": "root_learning_live_profile_action",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HostAuthorityService::with_learning_profile"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_attest_experience",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::attest_experience"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_read_experience",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::read_experience"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_attest_dataset",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::attest_dataset"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_read_dataset",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::read_dataset"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_files_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceFilesV1",
+      "symbol": "OriginalCellQ24SourceFilesV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_files_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceFilesV1",
+      "symbol": "OriginalCellQ24SourceFilesV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_source_prepared_handoff",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+      "symbol": "OriginalCellQ24SourceReceiptOwnerV1::require_prepared"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_native_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "cell_q24_original_native_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24TrainingOwnerV1",
+      "symbol": "CellQ24TrainingOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_require_original_pair",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::require_original_pair"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_training_with_original_trainer",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingStageV1",
+      "symbol": "OriginalCellQ24TrainingStageV1::with_original_trainer"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_require_original_training",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::require_original_training"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_evaluation_read_original_execution",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+      "symbol": "OriginalCellEvaluationReceiptOwnerV1::read_original_execution"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_generation_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_generation_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_attest_original_completion",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::attest_original_completion"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_require_context",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::require_context"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_generation_receipt_observe_original_selection",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::observe_original_selection"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::create"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::recover"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_attest_original_decision",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::attest_original_decision"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::readback"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_require_context",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::require_context"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_local_policy_policy_digest",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+      "symbol": "OriginalCellQ24LocalDecisionOwnerV1::policy_digest"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_stage_from_original_owners",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::from_original_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_stage_require_current",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::require_current"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_stage_prepared",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::prepared"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_model_dispatch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24ModelDispatchV1",
+      "symbol": "OriginalCellQ24ModelDispatchV1::commit_for"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_inputs",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationInputsV1",
+      "symbol": "OriginalCellQ24EvaluationInputsV1::into_stage"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_generation_inputs",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24GenerationHandoffV1",
+      "symbol": "OriginalCellQ24GenerationHandoffV1::into_receipt_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_source_inputs",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SourceInputsV1",
+      "symbol": "OriginalCellQ24SourceInputsV1::open_original_source_pair"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_training_inputs",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingInputsV1",
+      "symbol": "OriginalCellQ24TrainingInputsV1::open_original_training_pair"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_policy_inputs",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LocalDecisionFilesV1",
+      "symbol": "OriginalCellQ24LocalDecisionFilesV1::open_original_local_decision"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_q24_require_prepared_q24",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootLearningInputsV1",
+      "symbol": "AgentdRootLearningInputsV1::require_prepared_q24"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_q24_into_q24_learning_runtime",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/config_root_learning.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdRootLearningInputsV1",
+      "symbol": "AgentdRootLearningInputsV1::into_q24_learning_runtime"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_with_original_q24_stage_owners",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "LearningIterationRuntimeBootstrapV1",
+      "symbol": "LearningIterationRuntimeBootstrapV1::with_original_q24_stage_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_require_proposal_owner",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "LearningIterationRuntimeBootstrapV1",
+      "symbol": "LearningIterationRuntimeBootstrapV1::require_proposal_owner"
+    },
+    {
+      "callPattern": null,
+      "id": "root_original_q24_stage_assembly",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdConfig",
+      "symbol": "AgentdConfig::with_root_q24_learning_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "production_original_q24_receive",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "AgentdProductionStartup",
+      "symbol": "AgentdProductionStartup::receive_q24_learning"
+    },
+    {
+      "callPattern": null,
+      "id": "production_original_q24_assemble",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "AgentdProductionLaunch",
+      "symbol": "AgentdProductionLaunch::assemble_q24_learning"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_receipt_create",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::create_feature"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_receipt_recover",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+      "symbol": "OriginalGenerationLearningReceiptOwnerV1::recover_feature"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_source_capture",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCircuitFeatureLearningSourcesV1",
+      "symbol": "OriginalCircuitFeatureLearningSourcesV1::capture"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_source_binding",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCircuitFeatureLearningSourcesV1",
+      "symbol": "OriginalCircuitFeatureLearningSourcesV1::require_original_feature_binding"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_source_observe",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCircuitFeatureLearningSourcesV1",
+      "symbol": "OriginalCircuitFeatureLearningSourcesV1::read_original_feature_observation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_stage_install_generation",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::install_generation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_dataset_feedback",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCircuitFeatureLearningSourcesV1",
+      "symbol": "OriginalCircuitFeatureLearningSourcesV1::original_dataset_task"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_original_b_manifest",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::original_publication_manifest"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_original_lane",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::with_original_publication"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_original_predecessor",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "PublishedCircuitFeatureCompletionV1",
+      "symbol": "PublishedCircuitFeatureCompletionV1::require_publication_predecessor"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_embedded_admission",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24PublicationDriverV1",
+      "symbol": "OriginalCellQ24PublicationDriverV1::from_original_owners"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_actual_artifact",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24PublicationDriverV1",
+      "symbol": "OriginalCellQ24PublicationDriverV1::publish_candidate"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_actual_preparation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24SelectionDriverV1",
+      "symbol": "OriginalCellQ24SelectionDriverV1::prepare_feature"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_actual_final_use",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24PreparedPublicationV1",
+      "symbol": "OriginalCellQ24PreparedPublicationV1::publish"
+    },
+    {
+      "callPattern": null,
+      "id": "q24_publication_original_recovery",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24PublicationDriverV1",
+      "symbol": "OriginalCellQ24PublicationDriverV1::recover_feature"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_stage_require_training",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationStageV1",
+      "symbol": "OriginalCellQ24EvaluationStageV1::require_training"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_stage_require_original_training_evidence",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationStageV1",
+      "symbol": "OriginalCellQ24EvaluationStageV1::require_original_training_evidence"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_stage_read_execution",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationStageV1",
+      "symbol": "OriginalCellQ24EvaluationStageV1::read_execution"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_stage_qualification_request",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationStageV1",
+      "symbol": "OriginalCellQ24EvaluationStageV1::qualification_request"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_evaluation_stage_complete",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24EvaluationStageV1",
+      "symbol": "OriginalCellQ24EvaluationStageV1::complete"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_install_evaluation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::install_evaluation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_install_independent_evaluation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_install_published_generation",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::install_published_generation"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_training_files",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingFilesV1",
+      "symbol": "OriginalCellQ24TrainingFilesV1::open"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_training_material_export",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+      "symbol": "OriginalCellQ24LearningStageOwnersV1::read_original_training_material"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_q24_training_material_assembly",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": "OriginalCellQ24TrainingMaterialV1",
+      "symbol": "OriginalCellQ24TrainingMaterialV1::from_original_readbacks"
+    },
+    {
+      "callPattern": "\\brequire_executable_feature\\s*\\(",
+      "id": "q24_publication_executable_feature_preflight",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "validation::require_executable_feature"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_original_feature_objective_reply",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+        "codex-rs/hepta-agentd/src/client.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "AgentdClient",
+      "symbol": "AgentdClient::objective_start_once"
+    }
+  ],
+  "privilegedInventory": [
+    "agentd_original_recovered_writer_custody_factory",
+    "agentd_original_registered_writer_custody",
+    "agentd_original_root_handoff_unique_file",
+    "agentd_original_root_writer_consume",
+    "agentd_production_operation_runtime",
+    "agentd_production_writer_host",
+    "authority_lease_delivery",
+    "authority_lease_delivery_witness",
+    "authority_lease_dispatch_raw",
+    "authority_lease_dispatch_witness",
+    "authority_lease_epoch_advance",
+    "authority_lease_exact_bounded_revoke",
+    "authority_lease_open_state",
+    "authority_lease_prune",
+    "authority_lease_put",
+    "authority_lease_revoke",
+    "authority_lease_verify_use",
+    "automation_taskflow_provider_effect_bridge",
+    "bao_final_use_consumer",
+    "bao_final_use_host_new",
+    "bao_registered_consumer_new",
+    "bao_registered_final_use_host",
+    "bao_registered_revocation_update",
+    "calculator_previous_recovery_config_selection",
+    "calculator_previous_recovery_host_attach",
+    "calculator_previous_recovery_owner_target",
+    "calculator_previous_recovery_process_attach",
+    "calculator_previous_recovery_runtime_selection",
+    "cell_completed_evaluation_readback",
+    "cell_learning_evaluation_original_readback",
+    "cell_learning_evaluation_profile_freeze",
+    "cell_learning_evaluation_receipt_prepare",
+    "cell_original_evaluation_execution",
+    "cell_q24_model_material_owner_commit",
+    "cell_q24_model_material_owner_create",
+    "cell_q24_model_material_owner_readback",
+    "cell_q24_model_material_owner_recover",
+    "cell_q24_native_training_fit",
+    "cell_q24_original_dataset_batch",
+    "cell_q24_original_dataset_capability",
+    "cell_q24_original_dataset_freeze_authorize",
+    "cell_q24_original_dataset_freeze_create",
+    "cell_q24_original_dataset_freeze_readback",
+    "cell_q24_original_dataset_freeze_recover",
+    "cell_q24_original_dataset_revalidation",
+    "cell_q24_original_dataset_task",
+    "cell_q24_original_native_create",
+    "cell_q24_original_native_recover",
+    "cell_q24_original_trainer_dataset_capability",
+    "cell_q24_original_training_execute",
+    "cell_q24_original_training_observation",
+    "cell_q24_original_training_pair_binding",
+    "cell_q24_single_head_candidate_validation",
+    "cell_q24_single_head_training_plan",
+    "circuit_feature_acknowledged_readonly_history",
+    "circuit_feature_guarded_private_cell",
+    "circuit_feature_original_committed_decision",
+    "circuit_feature_original_initial_publication",
+    "circuit_feature_original_predecessor_recovery",
+    "circuit_feature_original_task_control",
+    "circuit_feature_original_update_publication",
+    "circuit_feature_private_cell_writer",
+    "circuit_learning_exact_ack_retirement",
+    "circuit_q24_ordinary_profile_assembly",
+    "cognitive_production_mutation_capability",
+    "cognitive_store_recovery_open",
+    "desktop_original_retained_reference_projection",
+    "desktop_previous_joint_config_selection",
+    "desktop_previous_original_cut_selection",
+    "final_use_approval_trust",
+    "final_use_approval_verify",
+    "final_use_async_dispatch_fence",
+    "final_use_claim",
+    "final_use_claim_raw",
+    "final_use_delivery",
+    "final_use_delivery_raw",
+    "final_use_delivery_witness",
+    "final_use_dispatch",
+    "final_use_dispatch_raw",
+    "final_use_dispatch_witness",
+    "final_use_guarded_effect",
+    "final_use_open_state",
+    "final_use_revocation_convergence_trust",
+    "final_use_revocation_convergence_verify",
+    "final_use_revocation_feed_apply",
+    "final_use_revocation_feed_trust",
+    "final_use_revocation_update",
+    "generation_learning_original_stage_readback",
+    "http_provider_effect_adapter",
+    "learning_artifact_owner_bootstrap",
+    "learning_artifact_owner_restart",
+    "learning_artifact_verified_current_view",
+    "learning_evidence_original_owner_constructor",
+    "learning_evidence_original_owner_readback",
+    "learning_frozen_update_scope_constructor",
+    "learning_original_evaluation_key",
+    "learning_original_evaluation_read_original_execution",
+    "learning_original_evaluation_receipt_attest",
+    "learning_original_evaluation_receipt_create",
+    "learning_original_evaluation_receipt_readback",
+    "learning_original_evaluation_receipt_recover",
+    "learning_original_evaluation_require_original_training",
+    "learning_original_evaluator_attestation",
+    "learning_original_feature_dataset_feedback",
+    "learning_original_feature_objective_reply",
+    "learning_original_feature_receipt_create",
+    "learning_original_feature_receipt_recover",
+    "learning_original_feature_source_binding",
+    "learning_original_feature_source_capture",
+    "learning_original_feature_source_observe",
+    "learning_original_generation_receipt_attest_original_completion",
+    "learning_original_generation_receipt_create",
+    "learning_original_generation_receipt_observe_original_selection",
+    "learning_original_generation_receipt_readback",
+    "learning_original_generation_receipt_recover",
+    "learning_original_generation_receipt_require_context",
+    "learning_original_local_policy_attest_original_decision",
+    "learning_original_local_policy_create",
+    "learning_original_local_policy_policy_digest",
+    "learning_original_local_policy_readback",
+    "learning_original_local_policy_recover",
+    "learning_original_local_policy_require_context",
+    "learning_original_q24_evaluation_inputs",
+    "learning_original_q24_evaluation_stage_complete",
+    "learning_original_q24_evaluation_stage_qualification_request",
+    "learning_original_q24_evaluation_stage_read_execution",
+    "learning_original_q24_evaluation_stage_require_original_training_evidence",
+    "learning_original_q24_evaluation_stage_require_training",
+    "learning_original_q24_generation_inputs",
+    "learning_original_q24_install_evaluation",
+    "learning_original_q24_install_independent_evaluation",
+    "learning_original_q24_install_published_generation",
+    "learning_original_q24_model_dispatch",
+    "learning_original_q24_policy_inputs",
+    "learning_original_q24_require_proposal_owner",
+    "learning_original_q24_source_inputs",
+    "learning_original_q24_stage_from_original_owners",
+    "learning_original_q24_stage_install_generation",
+    "learning_original_q24_stage_prepared",
+    "learning_original_q24_stage_require_current",
+    "learning_original_q24_training_files",
+    "learning_original_q24_training_inputs",
+    "learning_original_q24_training_material_assembly",
+    "learning_original_q24_training_material_export",
+    "learning_original_q24_with_original_q24_stage_owners",
+    "learning_original_source_attest_dataset",
+    "learning_original_source_attest_experience",
+    "learning_original_source_create",
+    "learning_original_source_files_create",
+    "learning_original_source_files_recover",
+    "learning_original_source_prepared_handoff",
+    "learning_original_source_read_dataset",
+    "learning_original_source_read_experience",
+    "learning_original_source_recover",
+    "learning_original_training_receipt_attest",
+    "learning_original_training_receipt_create",
+    "learning_original_training_receipt_readback",
+    "learning_original_training_receipt_recover",
+    "learning_original_training_require_original_pair",
+    "learning_original_training_snapshot_readback",
+    "learning_original_training_stage_attestation",
+    "learning_original_training_stage_constructor",
+    "learning_original_training_stage_execute",
+    "learning_original_training_stage_readback",
+    "learning_original_training_with_original_trainer",
+    "memory_original_calculator_retirement_ack",
+    "memory_original_notes_retirement_ack",
+    "memory_original_owner_current_publication",
+    "memory_original_owner_current_readonly_receipt",
+    "memory_original_protected_current_readback",
+    "memory_original_retirement_ack_commit",
+    "memory_original_sender_read_only_cut",
+    "memory_original_validated_target_retirement_ack",
+    "memory_production_writer_open",
+    "native_original_operation_host_attach",
+    "native_original_owner_current_ack",
+    "native_original_terminal_history_observation",
+    "native_original_writer_next_delivery_observation",
+    "native_original_writer_terminal_observation",
+    "notes_original_human_text_verification",
+    "notes_original_human_turn_proof",
+    "notes_original_operation_observation_proof",
+    "notes_original_pending_call_proof",
+    "notes_original_retained_reference_projection",
+    "notes_original_thread_prepare",
+    "notes_original_turn_unprepared_admission",
+    "notes_original_writer_terminal_receipt",
+    "notes_previous_recovery_typed_resolution",
+    "notes_recorded_original_observation_proof",
+    "original_authbus_human_delivery_read",
+    "original_pinned_stream_explicit_uid",
+    "product_completed_evaluation_readback",
+    "product_original_evaluation_execution",
+    "production_original_q24_assemble",
+    "production_original_q24_receive",
+    "provider_effect_coordinator",
+    "q24_publication_actual_artifact",
+    "q24_publication_actual_final_use",
+    "q24_publication_actual_preparation",
+    "q24_publication_embedded_admission",
+    "q24_publication_executable_feature_preflight",
+    "q24_publication_original_b_manifest",
+    "q24_publication_original_lane",
+    "q24_publication_original_predecessor",
+    "q24_publication_original_recovery",
+    "root_desktop_original_issuer_pair_policy_cas",
+    "root_desktop_original_startup_before",
+    "root_desktop_recovered_successor_startup_before",
+    "root_desktop_registered_successor_policy_replace",
+    "root_host_original_human_text_verification",
+    "root_human_text_same_issuer_cas",
+    "root_learning_completed_circuit_source",
+    "root_learning_explicit_registration",
+    "root_learning_live_profile_action",
+    "root_learning_original_client_constructor",
+    "root_learning_original_config_hold",
+    "root_learning_original_delivery_source",
+    "root_learning_original_handoff_consume",
+    "root_learning_original_owner_install",
+    "root_learning_original_purpose_receive",
+    "root_learning_original_purpose_send",
+    "root_learning_original_runtime_consume",
+    "root_learning_original_scope_capture",
+    "root_learning_original_scope_seal",
+    "root_learning_original_stage_assembly",
+    "root_learning_original_store_registration",
+    "root_learning_original_store_reopen",
+    "root_learning_registered_checkpoint_constructor",
+    "root_learning_same_service_serve",
+    "root_learning_scoped_checkpoint_constructor",
+    "root_learning_scoped_checkpoint_record",
+    "root_learning_scoped_client_constructor",
+    "root_learning_scoped_profile_constructor",
+    "root_learning_scoped_runtime_constructor",
+    "root_live_admin_checked_dispatch",
+    "root_live_admin_committed_issuer_reply",
+    "root_live_admin_enable",
+    "root_live_admin_exact_issuer_head_revoke",
+    "root_live_admin_exact_issuer_reply_record",
+    "root_live_admin_exact_issuer_revoke",
+    "root_live_admin_exchange",
+    "root_live_admin_existing_effect_revoke",
+    "root_live_admin_existing_signed_grant_revoke",
+    "root_live_admin_fixed_notes_revoke_prepare",
+    "root_live_admin_mint",
+    "root_live_admin_original_bounded_lease_revoke",
+    "root_live_admin_original_effect_state_observe",
+    "root_live_admin_original_issue_observation",
+    "root_live_admin_original_issue_observer_enable",
+    "root_live_admin_retained_artifact_observe",
+    "root_live_admin_same_service_effect_state_observe",
+    "root_live_admin_same_service_signed_revoke",
+    "root_live_admin_signed_artifact_verify",
+    "root_live_human_session_install",
+    "root_material_capture_original_image",
+    "root_material_current_observation_chain",
+    "root_material_existing_session_open",
+    "root_material_fresh_registered_session",
+    "root_material_install_original_generation",
+    "root_material_recover_registered_session",
+    "root_material_release_registered_custody",
+    "root_material_reopen_original_installation",
+    "root_material_resume_registered_handoff",
+    "root_material_verify_retained_image",
+    "root_notes_original_issuer_policy_cas",
+    "root_notes_original_reserved_session_binding",
+    "root_notes_original_startup_before",
+    "root_notes_recovered_successor_startup_before",
+    "root_notes_registered_successor_policy_replace",
+    "root_original_authority_initialize",
+    "root_original_bound_native_lane_acceptance",
+    "root_original_bound_native_lanes",
+    "root_original_human_text_verification",
+    "root_original_issuer_renewal_commit",
+    "root_original_issuer_renewal_prepare",
+    "root_original_issuer_writer_rotation",
+    "root_original_learning_checkpoint_exchange",
+    "root_original_physical_login_install",
+    "root_original_private_sealed_bytes",
+    "root_original_q24_into_q24_learning_runtime",
+    "root_original_q24_require_prepared_q24",
+    "root_original_q24_stage_assembly",
+    "root_original_ready_lane_bridge",
+    "root_original_registered_ready_serve",
+    "root_original_two_descriptor_receive",
+    "root_original_two_descriptor_send",
+    "root_original_writer_authorize",
+    "root_original_writer_descriptor_chain",
+    "root_original_writer_purpose_receive",
+    "root_original_writer_purpose_send",
+    "root_original_writer_successor_shape",
+    "root_physical_current_backend_genesis",
+    "root_physical_current_retired_adoption",
+    "root_physical_fresh_service_genesis",
+    "root_physical_recovery_retirement_admission",
+    "root_physical_registered_checkpoint_genesis",
+    "root_prepared_fresh_session",
+    "root_prepared_native_ready_execution",
+    "root_prepared_native_ready_text_session",
+    "root_prepared_native_ui_execution",
+    "root_q24_factory_capture_original",
+    "root_q24_factory_explicit_reserve",
+    "root_q24_factory_install_original",
+    "root_q24_factory_learning_scope",
+    "root_q24_factory_live_observation",
+    "root_q24_factory_local_policy",
+    "root_q24_factory_open_original",
+    "root_q24_factory_original_commit",
+    "root_q24_factory_original_constructor",
+    "root_q24_factory_original_handoff_connect",
+    "root_q24_factory_original_material",
+    "root_q24_factory_original_readback",
+    "root_q24_factory_purpose_receive",
+    "root_q24_factory_purpose_send",
+    "root_q24_factory_serve_original",
+    "root_q24_factory_take_offer",
+    "root_registered_human_text_admission",
+    "root_registered_human_text_writer",
+    "root_registered_learning_checkpoint_writer",
+    "root_registered_material_handoff_resume",
+    "root_registered_material_recovery",
+    "root_registered_physical_current_observation",
+    "root_registered_writer_rotation",
+    "root_retained_human_text_lookup",
+    "root_retained_native_ready_launch",
+    "root_retained_native_ui_launch",
+    "root_same_registered_bootstrap_capture",
+    "root_same_registered_bootstrap_seal",
+    "root_same_retained_service_serve",
+    "supervisor_authorized_boot"
+  ],
+  "protectedFiles": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+    "codex-rs/hepta-supervisor/src/main.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-learning-artifacts/src/selection.rs",
+    "codex-rs/model-provider/src/provider_effect.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-agentd/src/production_protected_host.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs",
+    "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+    "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+    "codex-rs/hepta-agentd/src/production_authority.rs",
+    "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes.rs",
+    "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_proof.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_status.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+    "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+    "codex-rs/hepta-memory/src/production_notes_owner.rs",
+    "codex-rs/hepta-objective/src/notes_thread_source.rs",
+    "codex-rs/hepta-memory/src/production_owner_publication.rs",
+    "codex-rs/hepta-agentd/src/native_hos2_owner.rs",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+    "codex-rs/hepta-agentd/src/notes_literal_prepare.rs",
+    "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+    "codex-rs/hepta-agentd/src/deployment_text.rs",
+    "codex-rs/hepta-agentd/src/deployment_text_human.rs",
+    "codex-rs/hepta-agentd/src/authority_host_human_text.rs",
+    "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+    "codex-rs/hepta-agentd/src/root_human_text_client.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session.rs",
+    "codex-rs/hepta-agentd/src/authority_host_native_launch.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_seed.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+    "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+    "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs",
+    "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+    "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+    "codex-rs/hepta-memory/src/local_hos2_ordering.rs",
+    "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+    "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs",
+    "codex-rs/hepta-agentd/src/authority_host_logind.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+    "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs",
+    "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+    "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+    "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs",
+    "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_execution.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+    "codex-rs/hepta-memory/src/objective_sender_read.rs",
+    "codex-rs/hepta-memory/src/objective_sender_store.rs",
+    "codex-rs/hepta-memory/src/objective_sender_model.rs",
+    "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+    "codex-rs/hepta-agentd/src/notes_recovery_selection.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/production_launcher.rs",
+    "codex-rs/hepta-agentd/src/production_notes_deployment.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+    "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes_observation.rs",
+    "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+    "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+    "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/production_protected_host.rs",
+    "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+    "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_observe.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_transport.rs",
+    "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes.rs",
+    "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs",
+    "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+    "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+    "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+    "codex-rs/hepta-memory/src/production_calculator_previous.rs",
+    "codex-rs/hepta-agentd/src/calculator_recovery_process.rs",
+    "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs",
+    "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+    "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs",
+    "codex-rs/hepta-agentd/src/desktop_root_composition.rs",
+    "codex-rs/hepta-agentd/src/desktop_previous_recovery.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs",
+    "codex-rs/hepta-memory/src/production_retirement_ack.rs",
+    "codex-rs/hepta-memory/src/local_retirement_ack.rs",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs",
+    "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin_issuer.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+    "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+    "codex-rs/hepta-operations/src/durable_dispatch.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+    "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_barrier.rs",
+    "codex-rs/hepta-automation/src/action_skill_driver.rs",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+    "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+    "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+    "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+    "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+    "codex-rs/hepta-agentd/src/config_root_learning.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session.rs",
+    "codex-rs/hepta-agentd/src/production_launcher.rs",
+    "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+    "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs",
+    "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+    "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+    "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+    "codex-rs/hepta-automation/src/circuit_learning_outbox.rs",
+    "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_observation.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+    "codex-rs/hepta-agentd/src/learning_owner_journal.rs",
+    "codex-rs/hepta-agentd/src/learning_owner_evidence.rs",
+    "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+    "codex-rs/hepta-neuron/src/cell_inference.rs",
+    "codex-rs/hepta-neuron/src/feature_control.rs",
+    "codex-rs/hepta-neuron/src/feature_control_codec.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+    "codex-rs/hepta-neuron/src/cell_journal_readback.rs",
+    "codex-rs/hepta-neuron/src/cell_journal.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+    "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs",
+    "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+    "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+    "codex-rs/hepta-agentd/src/root_production_q24_model_handoff.rs",
+    "codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs",
+    "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_owner_error.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_publication.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_material.rs",
+    "codex-rs/hepta-agentd/src/client_control.rs",
+    "codex-rs/hepta-agentd/src/control.rs",
+    "codex-rs/hepta-agentd/src/control_frames.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+  ],
+  "rustFilesScanned": 6370,
+  "schema": "hepta.caller-proof-receipt.v2",
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+}
