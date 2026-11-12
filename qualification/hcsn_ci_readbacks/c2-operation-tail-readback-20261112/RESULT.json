@@ -1,0 +1,51 @@
+{
+  "schema": "hcsn-c2-operation-tail-readback-v1",
+  "operation_id": "185441d37ac6e5e976f67a3a142304d21f618234183b12ef17c1152a15d57f7d",
+  "operation_pages": 6,
+  "operation_payload_bytes": 87789,
+  "operation_payload_sha256": "d3c201e61f9b5e0511883431ed136c05c1f426bd175f83ece9921aeec3703051",
+  "nested_path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
+  "nested_version": "2050:49963775:11397159:1794465747885470553:1794465747955468536",
+  "zip_tail_sha256": "ba3c005f7ed325d96a6863f429b5b4cb9f8244f76633e4d8097c8a3392d21d18",
+  "central_directory": {
+    "zip_total_bytes": 11397159,
+    "eocd_absolute_offset": 11397137,
+    "central_directory_offset": 11313513,
+    "central_directory_bytes": 83624,
+    "central_directory_total_entries": 556,
+    "returned_tail_offset": 11331623,
+    "returned_tail_bytes": 65536,
+    "missing_central_prefix_bytes": 18110,
+    "complete_visible_entries": 441,
+    "entries_outside_returned_range": 115,
+    "first_visible_entry": "root/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data/episodes/A03-0.json",
+    "last_visible_entry": "INDEX.json",
+    "index_entry": {
+      "name": "INDEX.json",
+      "method": 8,
+      "crc32": "60528f9a",
+      "compressed_size": 34268,
+      "uncompressed_size": 206124,
+      "local_header_offset": 11279205
+    },
+    "index_data_available_in_returned_tail": false
+  },
+  "bounded_result": {
+    "existing_operation_result_fully_recovered": true,
+    "full_zip_recovered_by_this_operation_result": false,
+    "six_start_parent_identities_closed": false,
+    "per_fit_active_wall_closed": false,
+    "per_fit_remaining_wall_closed": false,
+    "full_independent_training_replay_completed": "0/6",
+    "lifetime_optimizer_calls": "UNKNOWN",
+    "original_controller_terminal": "UNKNOWN",
+    "global_status": "HOLD_NO_GO",
+    "all_closed": false
+  },
+  "execution_counts": {
+    "new_h_operations": 0,
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "native_training_calls": 0
+  }
+}
