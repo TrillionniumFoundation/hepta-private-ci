@@ -40,3 +40,6 @@ pub(crate) use host::serve_optional_until;
 
 #[path = "authority_host_q24_evaluation_model_data.rs"]
 mod model_data;
+
+#[path = "authority_host_q24_evaluation_benchmark.rs"]
+mod benchmark;

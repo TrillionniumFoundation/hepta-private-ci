@@ -68,6 +68,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         ])
                         .into_array(),
                         heads: None,
+                        cell_images: None,
                         realized_training_head: None,
                         realized_plan: None,
                         completed_receipt: None,
