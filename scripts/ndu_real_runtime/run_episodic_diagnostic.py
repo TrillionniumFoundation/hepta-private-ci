@@ -21,6 +21,7 @@ import sys
 import time
 import uuid
 
+from .episodic_diagnostic_bindings import verify_writer
 from .episodic_diagnostic_report import build_report, selected_text
 from .episodic_isolation import run_isolated_actor
 from .episodic_local_provider import LocalProviderProfile, run_local_provider
@@ -64,6 +65,7 @@ print(json.dumps({"model": task["model"], "input": prompt, "store": False,
 SOURCES = (
     "ndu_real_runtime/run_episodic_diagnostic.py",
     "ndu_real_runtime/episodic_diagnostic_report.py",
+    "ndu_real_runtime/episodic_diagnostic_bindings.py",
     "ndu_real_runtime/episodic_memory.py",
     "ndu_real_runtime/episodic_retrieval.py",
     "ndu_real_runtime/episodic_receipt.py",
@@ -230,7 +232,13 @@ def _writer_observation(output, plan, case):
             else {"status": "UNKNOWN"}
         )
     root.mkdir(parents=True)
-    save(root / "REQUEST.json", {"case": case, "cohort_id": plan["cohort_id"]})
+    save(
+        root / "REQUEST.json",
+        {
+            "case": {key: case[key] for key in ("case_id", "source_id", "facts")},
+            "cohort_id": plan["cohort_id"],
+        },
+    )
     started = time.time_ns()
     scripts = str(Path(__file__).resolve().parents[1])
     command = [
@@ -271,14 +279,16 @@ def _writer_observation(output, plan, case):
     return receipt
 
 
-def reader_store(output, arm_root, case, mutation):
+def reader_store(output, arm_root, plan, case, mutation):
     """Fork independent research worlds; this is not original-owner recovery."""
     target = arm_root / "authority.sqlite"
     if mutation != "empty":
+        verify_writer(output, plan, case)
         source = output / case["case_id"] / "writer" / "authority.sqlite"
         with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as old:
             with sqlite3.connect(target) as new:
                 old.backup(new)
+        verify_writer(output, plan, case)
     store = EpisodicStore(
         target, namespace="mem12", max_records=16, max_serialized_bytes=32768
     )
@@ -322,8 +332,11 @@ def run_arm(output, plan, plan_sha, case, arm, writer_receipt):
         if writer_receipt["status"] != "EXITED":
             row["status"] = "WRITER_UNAVAILABLE"
             return
+        verify_writer(output, plan, case)
         mode, strategy, mutation = ARMS[arm]
-        store = None if mode == "off" else reader_store(output, root, case, mutation)
+        store = (
+            None if mode == "off" else reader_store(output, root, plan, case, mutation)
+        )
         row["reader_store_bytes"] = 0 if store is None else store.path.stat().st_size
         memory = read_memory(
             store,

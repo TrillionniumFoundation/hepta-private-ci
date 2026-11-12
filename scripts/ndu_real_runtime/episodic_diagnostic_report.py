@@ -7,10 +7,12 @@ this is consistency checking and does not authenticate a production observer.
 import hashlib
 import json
 import re
+import sqlite3
 from collections import Counter
 
+from .episodic_diagnostic_bindings import verify_actor, verify_admission, verify_writer
 from .episodic_local_worker import verify_returned_generation
-from .episodic_memory import canonical_bytes
+from .episodic_memory import canonical_bytes, digest
 from .episodic_provider_handoff import _pin as pin, _read_regular
 from .episodic_retrieval import verify_read_receipt
 
@@ -30,13 +32,17 @@ def build_report(output, plan, plan_sha):
     """Every planned row remains; bounds concern missing labels, not confidence."""
     rows, writers = [], []
     for case in plan["cases"]:
-        writer_path = output / case["case_id"] / "writer" / "RECEIPT.json"
+        try:
+            writer = verify_writer(output, plan, case)
+        except (OSError, ValueError, KeyError, TypeError, sqlite3.Error):
+            writer = None
         writers.append(
             {
                 "case_id": case["case_id"],
-                "receipt": json.loads(writer_path.read_bytes())
-                if writer_path.exists()
-                else None,
+                "receipt": writer,
+                "custody_status": "VERIFIED_CONSISTENT"
+                if writer is not None
+                else "UNAVAILABLE_OR_INVALID",
             }
         )
         for arm in plan["arms"]:
@@ -62,6 +68,10 @@ def build_report(output, plan, plan_sha):
                         raise ValueError("row identity mismatch")
                     row.update(retained, correct=None)
                     if row["status"] == "RETURNED":
+                        if writer is None:
+                            raise ValueError(
+                                "A writer original is unavailable or invalid"
+                            )
                         raw = _read_regular(root / "PROVIDER.json", 1048576)
                         request = _read_regular(
                             root / "actor" / "actor-output.bin", 65536
@@ -81,6 +91,7 @@ def build_report(output, plan, plan_sha):
                         )
                         launch, delivered = json.loads(launch_raw), json.loads(memory)
                         mode, strategy, _ = plan["arms"][arm]
+                        verify_actor(root, plan, case, mode, delivered, writer)
                         request_id = ":".join((plan["cohort_id"], case["case_id"], arm))
                         if (
                             not verify_read_receipt(delivered)
@@ -102,6 +113,12 @@ def build_report(output, plan, plan_sha):
                                     "strategy": strategy,
                                     "source_ids": [case["source_id"]],
                                     "replay_seed": case["replay_seed"],
+                                    "query_sha256": digest(
+                                        {
+                                            key: case["public_task"][key]
+                                            for key in ("query", "key")
+                                        }
+                                    ),
                                     "limit": plan["limits"]["retrieval_records"],
                                     "max_context_bytes": plan["limits"][
                                         "context_bytes"
@@ -115,6 +132,9 @@ def build_report(output, plan, plan_sha):
                             root
                             / "provider"
                             / hashlib.sha256(row["request_id"].encode()).hexdigest()
+                        )
+                        verify_admission(
+                            directory, provider, plan, request_id, launch_raw, request
                         )
                         if (
                             _read_regular(directory / "RECEIPT.json", 1048576) != raw
