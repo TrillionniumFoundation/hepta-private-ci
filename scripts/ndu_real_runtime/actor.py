@@ -506,7 +506,7 @@ def run():
         if macro_control is not None:
             with meter.stage("planning", "frozen complete-macro controller"):
                 action, details = macro_control.next(
-                    public_state.features, public_input, legal
+                    public_state.features, public_input, legal, public_metadata=meta
                 )
         elif state["forced_action"] is not None:
             if not args.training_exploration or state["forced_action"] not in legal:

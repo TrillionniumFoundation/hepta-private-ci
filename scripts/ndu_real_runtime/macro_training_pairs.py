@@ -16,6 +16,7 @@ from .controllers import ACTIONS, ControlPlan
 from .critic_context import context_digest, require_context
 from .macro_actor import codec_sha256, host_context
 from .macro_policy import ACTION_SHA256, LABELS, _pairs, _state
+from .macro_public_state import project
 from .metacontrol_macro_contract import (
     INITIAL_FIELDS,
     SEQUENCES,
@@ -34,6 +35,7 @@ def source_manifest():
         "macro_actor.py",
         "macro_policy.py",
         "macro_policy_checkpoint.py",
+        "macro_public_state.py",
         "metacontrol.py",
         "critic_context.py",
         "controllers.py",
@@ -170,14 +172,12 @@ def _project(step, budget):
         or step["remaining_seconds"] != budget
     ):
         raise ValueError("Original state lacks the frozen budget or both legal macros")
-    state = {
-        "features": step["public_features"],
-        "context_belief": [1.0],
-        "pending_evidence": False,
-        "freshness_seconds": 0.0,
-        "remaining_seconds": step["remaining_seconds"],
-        "legal_macros": ["STOP", "READ"],
-    }
+    state = project(
+        step["public_features"],
+        step["public_metadata"],
+        step["remaining_seconds"],
+        legal,
+    )
     _state(state)
     detail = step.get("controller", {})
     if type(detail) is not dict:

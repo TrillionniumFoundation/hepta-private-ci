@@ -35,6 +35,7 @@ def source_sha256():
     names = (
         "macro_policy.py",
         "macro_policy_checkpoint.py",
+        "macro_public_state.py",
         "metacontrol.py",
         "critic_context.py",
         "metacontrol_macro_contract.py",
