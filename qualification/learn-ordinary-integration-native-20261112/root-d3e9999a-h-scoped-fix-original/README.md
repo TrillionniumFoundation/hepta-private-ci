@@ -1,0 +1,5 @@
+# Actual H scoped fix on exact d3e9999a
+
+The original H run executed the repository `just fix --locked --offline -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-hepta-learning-ledger` recipe on clean source d3e9999a8e91b6626b894a1eb6b5ecb4a62d9fd1, tree 83f315463a473562df1585ce57415e11fe0c9aa9. It reached Agentd type checking and exited 101 after 351.8606541219633 seconds. The compiler reported six concrete Rust errors: two unresolved module paths, two double-Arc type mismatches, an unsupported digest string conversion, and an insufficiently general lifetime on a Prepared-operation callback.
+
+The exact result metadata and complete 69,687-byte stderr are preserved and hash checked. Before and after, all 15,337 tracked files have the same SHA-256 manifest and the worktree is clean; the fix command made no source changes. This was an observed compile failure, not a timeout or an unavailable-owner test. No tests ran and no fresh JUnit was produced. Later fixes are separate candidate source and cannot change this outcome. Complete positive, NoUpdate and daemon plus Root cold restart counts remain 0/0/0.

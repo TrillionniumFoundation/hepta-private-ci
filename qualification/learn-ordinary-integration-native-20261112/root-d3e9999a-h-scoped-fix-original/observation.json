@@ -1,0 +1,61 @@
+{
+  "source": "d3e9999a8e91b6626b894a1eb6b5ecb4a62d9fd1",
+  "tree": "83f315463a473562df1585ce57415e11fe0c9aa9",
+  "host": "ai395",
+  "uid": 1000,
+  "command": [
+    "/home/qq/hepta-learn-ff41-tools/bin/just",
+    "fix",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "cwd": "/home/qq/hepta-learn-ff41-native-root-d3e9999a-v1/codex-rs",
+  "started": "2026-11-12T14:42:28.693695+00:00",
+  "finished": "2026-11-12T14:48:20.558397+00:00",
+  "elapsed_seconds": 351.8606541219633,
+  "exit_code": 101,
+  "tracked_source_files": 15337,
+  "tracked_source_sha256": "76ed7cd4f84af5a47ee0f29c6d9bf0b63b996db70a05b76e511bd27f84b2354f",
+  "source_before_after_equal_clean": true,
+  "autofix_changed_source": false,
+  "type_errors": 6,
+  "tests_executed": 0,
+  "junit": 0,
+  "actual_errors": [
+    "unresolved root_generation_publication_connection import",
+    "unresolved crate::circuit_task_source_data path",
+    "Arc<Arc<RootAuthorityDirectory>> passed to register",
+    "Arc<Arc<RootAuthorityDirectory>> passed to open",
+    "Sha256Digest does not implement Display for to_string",
+    "Prepared operation method reference is not lifetime-general enough"
+  ],
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 13943,
+    "sha256": "2abb0b91e5efdc351f4f9991f0fac5a81f0d37cdbb15e950e3fa381c380f3bca",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "result.json",
+      "bytes": 1474,
+      "sha256": "40c68fe31c6784a3a2bf8f2fd9c64437569e8be6031228615518f00328ea7118"
+    },
+    {
+      "path": "stderr.log",
+      "bytes": 69687,
+      "sha256": "cec180c7e299a59eedfb90244c23098e0c6b600a5e0914de36b369f17b7352b6"
+    }
+  ]
+}
