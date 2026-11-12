@@ -278,3 +278,9 @@ fn decode_frontier(bytes: &[u8]) -> Result<LedgerWitnessFrontier, DurableLedgerE
 #[cfg(test)]
 #[path = "witness_tests.rs"]
 mod tests;
+
+#[cfg(unix)]
+#[path = "witness_read_only.rs"]
+mod read_only;
+#[cfg(unix)]
+pub(crate) use read_only::inspect_ordinary_witness;
