@@ -13,10 +13,13 @@ fn child(
     target: &CellGenerationOwnerBindingV1,
     phase: &str,
 ) -> anyhow::Result<()> {
-    let status = std::process::Command::new(std::env::current_exe()?)
+    let (_, child_name) = concat!(module_path!(), "::root_source_pin_refusal_child")
+        .split_once("::")
+        .ok_or_else(|| io::Error::other("original child test path missing"))?;
+    let output = std::process::Command::new(std::env::current_exe()?)
         .args([
             "--exact",
-            concat!(module_path!(), "::root_source_pin_refusal_child"),
+            child_name,
             "--ignored",
             "--nocapture",
         ])
@@ -26,8 +29,16 @@ fn child(
             serde_json::to_string(target)?,
         )
         .env("HEPTA_SOURCE_PIN_TEST_PHASE", phase)
-        .status()?;
-    assert!(status.success(), "Root source pin child failed: {phase}");
+        .output()?;
+    let receipt = format!("hepta-root-source-pin-child:{phase}");
+    assert!(
+        output.status.success()
+            && String::from_utf8_lossy(&output.stdout).contains(receipt.as_str()),
+        "Root source pin child failed: {phase}; status={:?}; stdout={}; stderr={}",
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
     Ok(())
 }
 
@@ -125,5 +136,7 @@ fn root_source_pin_refusal_child() -> anyhow::Result<()> {
         }
         _ => anyhow::bail!("unknown Source pin child phase: {phase}"),
     }
+    println!("hepta-root-source-pin-child:{phase}");
+    std::io::stdout().flush()?;
     Ok(())
 }
