@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.historical-read.connection-stage.v1",
+  "head": "ec373ae82d4bf281e1927a78514c0f719f10ee3f",
+  "tree": "4b638164145c6cbd894b99aaa8da0c8ab83dcc00",
+  "prerequisite": "82c895ceb49732ccd7097cde39d1c4da232e8507",
+  "bundle": {
+    "path": "qa/evidence/historical-read-ec373ae8.bundle",
+    "bytes": 63178,
+    "sha256": "e933250508faceba1395a148354ed3391ade3e16636a832b517df44920b97d9c"
+  },
+  "stage": "Only the independent read-only connection slot is captured in the real five-lane receiver. No historical listener, complete-task provider, Dataset factory, or historical access grant is supplied by this stage.",
+  "changes": [
+    "Retain private original bootstrap and actual session verifier Arc at real receive.",
+    "Retain the receiver's original absolute end.",
+    "Consume the independent slot once; compare the same actual verifier Arc.",
+    "Leave original generation publication slot independent.",
+    "Custody-only fixture defaults to an empty historical slot."
+  ],
+  "actual_checks": {
+    "rustfmt_exit_code": 0,
+    "diff_check_exit_code": 0,
+    "native_executed": false
+  },
+  "qualification_not_inherited": true
+}
