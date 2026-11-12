@@ -25,7 +25,7 @@ def _check_sensitivity_shape(model, content):
     if marked.ndim != 2 or not 1 <= marked.shape[1] <= 16:
         raise ValueError("one to sixteen fixed signed channels required")
     cells, channels = model.spatial.intervals + 5, marked.shape[1] + 1
-    if 6 * cells * channels > 32768 or 10 * cells * cells > 12_000_000:
+    if 6 * cells * channels > 32768 or 20 * cells * cells > 12_000_000:
         raise ValueError("declared augmented-state/dense-coefficient budget exceeded")
 
 

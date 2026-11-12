@@ -1,55 +1,66 @@
 {
-  "schema": "hcsn-large-physical-stage-source-freeze-v1",
-  "status": "UNQUALIFIED",
+  "schema": "hcsn-large-physical-stage-v2",
+  "status": "HOLD_LARGE_PHYSICAL_GATE_OPEN",
   "base_commit": "d4e7ecd239988790936f21407be1ba05c318c6d8",
-  "change": "Actual per-partial sparse instantaneous support plus exact time-dependent linear Jacobian callback for BDF.",
-  "scope": "Fixed relative prior/content/phase; no migration derivative, history replay, continuum accuracy, network AD, training or production qualification.",
-  "execution": {
-    "exact_callback": "NOT_EXECUTED: scratch transport unavailable before patch verification",
-    "prior_numeric_pattern_attempt": {
-      "grid": 128,
-      "exit_code": 137,
-      "stdout_bytes": 0,
-      "stderr_bytes": 0,
-      "result_produced": false,
-      "cause": "Unknown; shell reported Killed, no authoritative OOM evidence."
+  "candidate_prior_freeze": "d3722803590428997ceccaa6776d253f13c63832",
+  "checks": {
+    "captured_actual_rhs": {
+      "times": [
+        0,
+        0.007,
+        0.019
+      ],
+      "state_fd_steps": [
+        0.000002,
+        0.000001
+      ],
+      "matrix_shape": [
+        630,
+        630
+      ],
+      "coordinate_comparisons": 2381400,
+      "failures": 0,
+      "maximum_absolute_error": 1.3477698335151445e-7,
+      "maximum_gate_ratio": 0.9366462559447425,
+      "wall_seconds": 0.6666450720000512,
+      "ode_solves": 0,
+      "optimizer_updates": 0
     },
-    "prior_numeric_pattern_preflight": {
-      "state_scalars": 3990,
-      "instantaneous_nnz": 23665,
-      "color_groups": 256,
-      "query": [
-        0,
-        0.02
-      ],
-      "first_segment": [
-        0,
-        0.02
-      ],
-      "source_endpoints": [
-        0,
-        0.025,
-        0.05,
-        0.075,
-        0.1,
-        0.125,
-        0.15,
-        0.175,
-        0.2
-      ],
-      "source_packets": 8,
-      "initial_rhs_finite": true,
-      "initial_rhs_max": 425.26166427630767,
-      "maximum_rss_kib": 63792
+    "regression": {
+      "tests": 8,
+      "success": true,
+      "wall_seconds": 25.85,
+      "warning": "SciPy BDF invalid value encountered in subtract at bdf.py:416; full stderr retained. Returned finite guards and physical FD checks passed."
     }
   },
-  "format": "Not yet formatted or tested. This branch is a durable candidate freeze and is not a green qualification.",
-  "remaining": [
-    "Independent instantaneous-Jacobian versus captured RHS finite differences",
-    "Uniform/graded regression after source changes",
-    "Original migrated fixed-prior n128 full physical two-step finite differences and cost",
-    "Only after n128 passes, the same n512 new qualification",
-    "Preserve source/input original bytes and format AST receipts"
-  ],
-  "no_new_optimizer_calls": true
+  "source_budget": {
+    "augmented_state_scalars_max": 32768,
+    "dense_coefficient_conservative_scalars": "20*(N+5)^2 <= 12000000",
+    "instantaneous_support_nonzeros_max": 2000000,
+    "snapshot_scalars_max": 2000000,
+    "maximum_rss_guaranteed": false,
+    "nonzeros_reporting": "instantaneous_jacobian_nonzeros is the sparsity support upper bound, not callback.nnz at any chosen time"
+  },
+  "execution_incident": {
+    "original_numeric_pattern_n128": {
+      "exit_code": 137,
+      "result_produced": false,
+      "cause": "Unknown; no authoritative OOM evidence"
+    },
+    "subsequent_environment": "Executor became unavailable; after reconnect original scratch directory was absent. Original first-attempt local receipt/input exports were lost. Only previously observed tool outputs and committed source summaries survive.",
+    "exact_callback_large_grid": "NOT_EXECUTED"
+  },
+  "raw_archive": {
+    "sha256": "44a52f91e1e46dff2681c518a8a1216bb256be6b54ee465f85a738f7a9705a0d",
+    "size": 214317,
+    "members": 17
+  },
+  "format": "Not yet final-formatted. Exact tested sources and complete stdout/stderr are in STAGE-ORIGINALS.tar.gz. Large fixed-prior physical qualification still OPEN.",
+  "scope": "Fixed relative initial law/content/phase of this finite discrete model; no migration derivative, original historical replay, continuum rare-tail accuracy, full-network AD, training or production qualification.",
+  "next": [
+    "Reconstruct original exported fixed-prior inputs from hash-bound original journal/sidecar, disclose new identity if bytes differ.",
+    "Run all five physical partials with two central FD steps at n128 and preserve original arrays/cost.",
+    "Only after n128 passes, qualify n512 independently.",
+    "Final format with pre/post AST receipt, source freeze and independent review."
+  ]
 }
