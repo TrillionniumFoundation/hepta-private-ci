@@ -96,6 +96,20 @@ fn digest_role_contracts(
     contracts: &mut [MetricContractV1],
     metric_roles: &mut [MetricRoleContractV2],
 ) -> Result<Digest32, EvaluationClosureError> {
+    Ok(Digest32::of_bytes(&role_contract_commitment_bytes(contracts, metric_roles)?))
+}
+
+pub(crate) fn evaluation_role_commitment_bytes(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+) -> Result<Vec<u8>, EvaluationClosureError> {
+    role_contract_commitment_bytes(&mut metric_contracts(&bundle.metrics), &mut roles.to_vec())
+}
+
+fn role_contract_commitment_bytes(
+    contracts: &mut [MetricContractV1],
+    metric_roles: &mut [MetricRoleContractV2],
+) -> Result<Vec<u8>, EvaluationClosureError> {
     let legacy_digest = digest_metric_contracts(contracts)?;
     if metric_roles.len() != contracts.len() {
         return Err(EvaluationClosureError::FrozenPlanBindingMismatch(
@@ -152,5 +166,5 @@ fn digest_role_contracts(
             "missing primary objective",
         ));
     }
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }

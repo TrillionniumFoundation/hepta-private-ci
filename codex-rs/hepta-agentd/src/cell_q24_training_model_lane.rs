@@ -104,6 +104,77 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         })
     }
 
+
+    /// The remote material was read outside this lane. Fresh authentication
+    /// follows Native and witness I/O before the original Model header is made.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn create_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self, file: File, witness: MW,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
+        self.in_model_lane(|training, completed| {
+            require_current_training(training_cut, training_attestation, completed)?;
+            CellQ24ModelProposalOwnerV1::create_from_current_material(
+                file, witness, training, self.dataset.clone(), training_cut, training_attestation, material,
+            ).map_err(Error::from)
+        })
+    }
+
+    /// Explicit original-host deployment recovery; never called by a Model
+    /// command readback. Preserve the original minimum-anchor suffix semantics.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn recover_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self, file: File, witness: MW,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
+        self.in_model_lane(|training, completed| {
+            require_current_training(training_cut, training_attestation, completed)?;
+            CellQ24ModelProposalOwnerV1::recover_from_current_material(
+                file, witness, training, self.dataset.clone(), training_cut, training_attestation, material,
+            ).map_err(Error::from)
+        })
+    }
+
+    /// The caller completed its original Evaluation read before entering this
+    /// lane. Only pure material verification and original owner I/O run here.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn commit_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self,
+        model: &mut CellQ24ModelProposalOwnerV1<MW>,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
+        self.in_model_lane(|training, completed| {
+            require_current_training(training_cut, training_attestation, completed)?;
+            CellQ24ModelProposalOwnerV1::commit_current_material_or_readback(
+                model, training, training_cut, training_attestation, material,
+            ).map_err(Error::from)
+        })
+    }
+
+    /// Re-enter the same lane after the independent Evaluator read. Missing,
+    /// Pending, changed source or a different original signature remain errors.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self,
+        model: &mut CellQ24ModelProposalOwnerV1<MW>,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
+        self.in_model_lane(|training, completed| {
+            require_current_training(training_cut, training_attestation, completed)?;
+            CellQ24ModelProposalOwnerV1::read_current_material(
+                model, training, training_cut, training_attestation, material,
+            ).map_err(Error::from)
+        })
+    }
+
     fn in_model_lane<T>(
         &self,
         work: impl FnOnce(
@@ -173,6 +244,20 @@ fn require_original_training(
         return Err(Error::Binding(
             "exact retained Training receipt and attestation",
         ));
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn require_current_training(
+    cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+    attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+    completed: &OriginalCellQ24TrainingCompletionV1,
+) -> Result<(), Error> {
+    if cut.receipts.last() != Some(&completed.receipt)
+        || attestation != &completed.attestation
+    {
+        return Err(Error::Binding("exact retained Training receipt and attestation"));
     }
     Ok(())
 }

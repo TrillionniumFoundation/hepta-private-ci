@@ -285,3 +285,10 @@ fn require_clock(started_at: u64, current: u64) -> Result<(), Error> {
     }
     Ok(())
 }
+
+#[path = "neuron_cell_evaluation_model_material.rs"]
+mod model_material;
+pub use model_material::OriginalCellEvaluationModelMaterialV1;
+pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
+pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
+pub(crate) use model_material::OriginalCellEvaluationModelInputV1;

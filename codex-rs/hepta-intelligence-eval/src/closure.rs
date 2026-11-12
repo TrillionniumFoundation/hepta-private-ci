@@ -27,6 +27,7 @@ pub use metric_roles::MetricRoleContractV2;
 pub use metric_roles::MetricRoleV2;
 pub(crate) use metric_roles::decide_independently_v2;
 pub(crate) use metric_roles::digest_evaluation_roles;
+pub(crate) use metric_roles::evaluation_role_commitment_bytes;
 pub use metric_roles::freeze_cross_fold_plan_v2;
 
 #[path = "holdout_codec.rs"]
@@ -534,10 +535,14 @@ impl HoldoutBindingV1 {
     }
 
     fn use_digest(&self, registry_digest: Digest32) -> Digest32 {
+        Digest32::of_bytes(&self.use_commitment(registry_digest))
+    }
+
+    fn use_commitment(&self, registry_digest: Digest32) -> Vec<u8> {
         let mut bytes = b"hepta.intelligence-eval.final-holdout-use.v2".to_vec();
         self.append_to(&mut bytes);
         bytes.extend_from_slice(registry_digest.as_array());
-        Digest32::of_bytes(&bytes)
+        bytes
     }
 }
 
@@ -816,6 +821,16 @@ pub(crate) fn digest_evaluation_bundle(
     disposition: IndependentEvaluationDispositionV1,
     failed_metrics: &[StableId],
 ) -> Result<Digest32, EvaluationClosureError> {
+    Ok(Digest32::of_bytes(&evaluation_bundle_commitment_bytes(
+        bundle, disposition, failed_metrics,
+    )?))
+}
+
+pub(crate) fn evaluation_bundle_commitment_bytes(
+    bundle: &IndependentEvaluationBundleV1,
+    disposition: IndependentEvaluationDispositionV1,
+    failed_metrics: &[StableId],
+) -> Result<Vec<u8>, EvaluationClosureError> {
     let mut bytes = b"hepta.intelligence-eval.independent-decision.v1".to_vec();
     push_id(&mut bytes, &bundle.evaluation_id);
     push_id(&mut bytes, &bundle.candidate_id);
@@ -859,7 +874,7 @@ pub(crate) fn digest_evaluation_bundle(
     }
     bytes.push(disposition.tag());
     push_id_vec(&mut bytes, failed_metrics)?;
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }
 
 fn validate_frozen_evaluation_binding(
@@ -1113,3 +1128,16 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "closure_tests.rs"]
 mod tests;
+
+pub(crate) fn original_holdout_commitment_bytes(
+    plan: &CrossFoldPlanReceiptV1,
+    holdout: &HoldoutUseReceiptV1,
+) -> Result<Vec<u8>, EvaluationClosureError> {
+    validate_frozen_plan_receipt_integrity(plan)?;
+    validate_holdout_use_receipt_integrity(holdout)?;
+    let bytes = HoldoutBindingV1::from_plan(plan).use_commitment(holdout.registry_digest);
+    if Digest32::of_bytes(&bytes) != holdout.use_digest {
+        return Err(EvaluationClosureError::HoldoutUseBindingMismatch("original holdout commitment"));
+    }
+    Ok(bytes)
+}

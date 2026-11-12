@@ -39,6 +39,11 @@ pub use ordinary_stage_owners::OriginalCellQ24NoUpdateTaskStreamV1;
 
 #[path = "cell_q24_training_command.rs"]
 mod training_command;
+pub use training_command::OriginalCellQ24ModelCommandClientV1;
+pub use training_command::OriginalCellQ24ModelCommandConnectionV1;
+pub use training_command::OriginalCellQ24ModelCommandErrorV1;
+pub use training_command::OriginalCellQ24ModelCommandHostV1;
+pub use training_command::OriginalCellQ24ModelCommandReceiptV1;
 pub use training_command::OriginalCellQ24CandidateReadbackClientV1;
 pub use training_command::OriginalCellQ24CandidateReadbackErrorV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;

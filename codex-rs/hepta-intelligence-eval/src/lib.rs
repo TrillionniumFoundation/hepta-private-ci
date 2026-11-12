@@ -160,6 +160,7 @@ pub use product_runner::ProductProviderErrorV1;
 pub use product_runner::ProductQualificationContextV1;
 pub use product_runner::ProductQualificationEvidenceSinkV1;
 pub use product_runner::ProductQualificationReceiptV1;
+pub use product_runner::OriginalProductQualificationCommitmentsV1;
 pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
