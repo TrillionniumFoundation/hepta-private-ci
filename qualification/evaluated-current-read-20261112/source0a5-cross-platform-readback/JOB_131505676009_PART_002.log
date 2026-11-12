@@ -1,0 +1,487 @@
+26-11-12T21:43:00.1515866Z 
+2026-11-12T21:43:00.1516218Z ---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----
+2026-11-12T21:43:00.1517451Z Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T21:43:00.1518223Z 
+2026-11-12T21:43:00.1518664Z ---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----
+2026-11-12T21:43:00.1520525Z Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T21:43:00.1521478Z 
+2026-11-12T21:43:00.1521942Z ---- token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells stdout ----
+2026-11-12T21:43:00.1523811Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Neither\\file" identity=(1825950003, 3211264, 180877) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1526986Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Neither\\directory" identity=(1825950003, 2949120, 180878) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1529519Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Neither" identity=(1825950003, 3473408, 180876) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1531820Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\TargetOnly\\file" identity=(1825950003, 2490368, 180880) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1533963Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\TargetOnly\\directory" identity=(1825950003, 2490368, 180881) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1536447Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\TargetOnly" identity=(1825950003, 2621440, 180879) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1538860Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\ParentOnly\\file" identity=(1825950003, 1835008, 180883) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1541363Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\ParentOnly\\directory" identity=(1825950003, 1703936, 180884) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1543741Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\ParentOnly" identity=(1825950003, 2162688, 180882) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1545958Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Both\\file" identity=(1825950003, 1376256, 180886) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1548045Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Both\\directory" identity=(1825950003, 1245184, 180887) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1550672Z delete_matrix ordinary-host path="D:\\tmp\\.tmp3uwSYA\\host\\Both" identity=(1825950003, 1441792, 180885) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-12T21:43:00.1553476Z delete_matrix ordinary-host after_release=[DeleteOutcome { route: Neither, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]
+2026-11-12T21:43:00.1555838Z delete_matrix host_native_errors=[[None, None], [None, None], [None, None], [None, None]]
+2026-11-12T21:43:00.1556323Z 
+2026-11-12T21:43:00.1557034Z thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (5336) panicked at windows-sandbox-rs/src\token_tests.rs:499:5:
+2026-11-12T21:43:00.1558014Z assertion failed: `(left == right)`
+2026-11-12T21:43:00.1558282Z 
+2026-11-12T21:43:00.1558463Z Diff < left / right > :
+2026-11-12T21:43:00.1558905Z  [
+2026-11-12T21:43:00.1559222Z      [
+2026-11-12T21:43:00.1559541Z <        None,
+2026-11-12T21:43:00.1559898Z <        None,
+2026-11-12T21:43:00.1560193Z >        Some(
+2026-11-12T21:43:00.1560514Z >            (
+2026-11-12T21:43:00.1560864Z >                PermissionDenied,
+2026-11-12T21:43:00.1561291Z >                Some(
+2026-11-12T21:43:00.1561644Z >                    5,
+2026-11-12T21:43:00.1562036Z >                ),
+2026-11-12T21:43:00.1562375Z >            ),
+2026-11-12T21:43:00.1562693Z >        ),
+2026-11-12T21:43:00.1562999Z >        Some(
+2026-11-12T21:43:00.1563342Z >            (
+2026-11-12T21:43:00.1563680Z >                PermissionDenied,
+2026-11-12T21:43:00.1564072Z >                Some(
+2026-11-12T21:43:00.1564493Z >                    5,
+2026-11-12T21:43:00.1564846Z >                ),
+2026-11-12T21:43:00.1565437Z >            ),
+2026-11-12T21:43:00.1565792Z >        ),
+2026-11-12T21:43:00.1566118Z      ],
+2026-11-12T21:43:00.1566429Z      [
+2026-11-12T21:43:00.1566741Z          None,
+2026-11-12T21:43:00.1567091Z          None,
+2026-11-12T21:43:00.1567414Z      ],
+2026-11-12T21:43:00.1567696Z      [
+2026-11-12T21:43:00.1567999Z          None,
+2026-11-12T21:43:00.1568312Z          None,
+2026-11-12T21:43:00.1568660Z      ],
+2026-11-12T21:43:00.1568977Z      [
+2026-11-12T21:43:00.1569275Z          None,
+2026-11-12T21:43:00.1569630Z          None,
+2026-11-12T21:43:00.1569954Z      ],
+2026-11-12T21:43:00.1570280Z  ]
+2026-11-12T21:43:00.1570492Z 
+2026-11-12T21:43:00.1570499Z 
+2026-11-12T21:43:00.1570505Z 
+2026-11-12T21:43:00.1571006Z ---- unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-12T21:43:00.1571622Z 
+2026-11-12T21:43:00.1572348Z thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (7768) panicked at windows-sandbox-rs/src\unified_exec\acl_setup_tests.rs:346:9:
+2026-11-12T21:43:00.1573374Z assertion failed: `(left == right)`
+2026-11-12T21:43:00.1573613Z 
+2026-11-12T21:43:00.1573782Z Diff < left / right > :
+2026-11-12T21:43:00.1574109Z  (
+2026-11-12T21:43:00.1574943Z <    "legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+2026-11-12T21:43:00.1576095Z <    None,
+2026-11-12T21:43:00.1576751Z >    "apply legacy deny-write ACL to D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpHQ9vlA\\protected.txt",
+2026-11-12T21:43:00.1577426Z >    Some(
+2026-11-12T21:43:00.1577719Z >        5,
+2026-11-12T21:43:00.1578005Z >    ),
+2026-11-12T21:43:00.1578283Z      false,
+2026-11-12T21:43:00.1578642Z  )
+2026-11-12T21:43:00.1578825Z 
+2026-11-12T21:43:00.1578830Z 
+2026-11-12T21:43:00.1578836Z 
+2026-11-12T21:43:00.1579780Z ---- unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-12T21:43:00.1580299Z 
+2026-11-12T21:43:00.1580998Z thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (7568) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:62:10:
+2026-11-12T21:43:00.1582018Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-12T21:43:00.1582406Z 
+2026-11-12T21:43:00.1582872Z ---- unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells stdout ----
+2026-11-12T21:43:00.1583512Z 
+2026-11-12T21:43:00.1584258Z thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (2708) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:62:10:
+2026-11-12T21:43:00.1586648Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-12T21:43:00.1587112Z 
+2026-11-12T21:43:00.1587889Z ---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----
+2026-11-12T21:43:00.1588437Z 
+2026-11-12T21:43:00.1589091Z thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (4764) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:62:10:
+2026-11-12T21:43:00.1590156Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-12T21:43:00.1590557Z 
+2026-11-12T21:43:00.1590905Z ---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----
+2026-11-12T21:43:00.1591338Z 
+2026-11-12T21:43:00.1591931Z thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (4176) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:62:10:
+2026-11-12T21:43:00.1592925Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-12T21:43:00.1593389Z 
+2026-11-12T21:43:00.1593743Z ---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----
+2026-11-12T21:43:00.1594154Z 
+2026-11-12T21:43:00.1594740Z thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (6656) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:62:10:
+2026-11-12T21:43:00.1595929Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-12T21:43:00.1596385Z 
+2026-11-12T21:43:00.1596391Z 
+2026-11-12T21:43:00.1596518Z failures:
+2026-11-12T21:43:00.1597002Z     spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite
+2026-11-12T21:43:00.1597772Z     token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes
+2026-11-12T21:43:00.1598675Z     token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces
+2026-11-12T21:43:00.1599543Z     token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells
+2026-11-12T21:43:00.1600480Z     unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn
+2026-11-12T21:43:00.1601477Z     unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn
+2026-11-12T21:43:00.1602597Z     unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells
+2026-11-12T21:43:00.1603589Z     unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit
+2026-11-12T21:43:00.1604282Z     unified_exec::tests::legacy_non_tty_cmd_emits_output
+2026-11-12T21:43:00.1605114Z     unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides
+2026-11-12T21:43:00.1605586Z 
+2026-11-12T21:43:00.1606057Z test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 0.71s
+2026-11-12T21:43:00.1606611Z 
+2026-11-12T21:43:00.1606617Z 
+2026-11-12T21:43:00.1606837Z running 17 tests
+2026-11-12T21:43:00.1607861Z test unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-12T21:43:00.1610854Z test unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-12T21:43:00.1612065Z test unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input ... ok
+2026-11-12T21:43:00.1612903Z test unified_exec::tests::restricted_token_rejects_managed_network_before_spawn ... FAILED
+2026-11-12T21:43:00.1613793Z test unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants ... ok
+2026-11-12T21:43:00.1614694Z test unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots ... FAILED
+2026-11-12T21:43:00.1615607Z test wfp::tests::filter_names_are_unique ... ok
+2026-11-12T21:43:00.1616163Z test wfp::tests::filter_keys_are_unique ... ok
+2026-11-12T21:43:00.1616827Z test windows_impl::tests::applies_network_block_for_read_only ... ok
+2026-11-12T21:43:00.1617609Z test windows_impl::tests::applies_network_block_when_access_is_disabled ... ok
+2026-11-12T21:43:00.1618409Z test unified_exec::tests::runner_resizer_sends_resize_frame ... ok
+2026-11-12T21:43:00.1619168Z test windows_impl::tests::skips_network_block_when_access_is_allowed ... ok
+2026-11-12T21:43:00.1620083Z test winutil::tests::argv_to_command_line_quotes_each_argument_independently ... ok
+2026-11-12T21:43:00.1621130Z test unified_exec::tests::runner_stdin_writer_sends_close_stdin_after_input_eof ... ok
+2026-11-12T21:43:00.1622111Z test windows_impl::tests::legacy_preflight_skips_profiles_without_managed_filesystem_permissions ... ok
+2026-11-12T21:43:00.1623064Z test winutil::tests::argv_to_command_line_quotes_regular_program_args ... ok
+2026-11-12T21:43:00.1623821Z test wrapper::tests::windows_wrapper_args_round_trip ... ok
+2026-11-12T21:43:00.1624240Z 
+2026-11-12T21:43:00.1624371Z failures:
+2026-11-12T21:43:00.1624610Z 
+2026-11-12T21:43:00.1625260Z ---- unified_exec::tests::restricted_token_rejects_managed_network_before_spawn stdout ----
+2026-11-12T21:43:00.1625802Z 
+2026-11-12T21:43:00.1626572Z thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (3208) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:263:9:
+2026-11-12T21:43:00.1627612Z assertion failed: `(left == right)`
+2026-11-12T21:43:00.1627932Z 
+2026-11-12T21:43:00.1628073Z Diff < left / right > :
+2026-11-12T21:43:00.1629016Z <legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T21:43:00.1630209Z >managed networking requires the elevated Windows sandbox backend
+2026-11-12T21:43:00.1630613Z 
+2026-11-12T21:43:00.1630619Z 
+2026-11-12T21:43:00.1630624Z 
+2026-11-12T21:43:00.1631042Z ---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----
+2026-11-12T21:43:00.1631625Z 
+2026-11-12T21:43:00.1632328Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6736) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:777:10:
+2026-11-12T21:43:00.1634079Z spawn legacy delete session: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T21:43:00.1636563Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T21:43:00.1638224Z 
+2026-11-12T21:43:00.1638230Z 
+2026-11-12T21:43:00.1638418Z failures:
+2026-11-12T21:43:00.1638984Z     unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots
+2026-11-12T21:43:00.1640114Z     unified_exec::tests::restricted_token_rejects_managed_network_before_spawn
+2026-11-12T21:43:00.1641332Z 
+2026-11-12T21:43:00.1649112Z test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.12s
+2026-11-12T21:43:00.1649863Z 
+2026-11-12T21:43:00.1650132Z ================================================================================
+2026-11-12T21:43:00.1673225Z [3,906 / 3,987] 71 / 151 tests, 1 failed; Testing //codex-rs/thread-manager-sample:codex-thread-manager-sample-bin-unit-tests; 275s local, remote-cache ... (30 actions, 15 running)
+2026-11-12T21:43:00.7312253Z [3,908 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 2 of 8); 262s local, remote-cache ... (30 actions, 15 running)
+2026-11-12T21:43:01.7278979Z [3,909 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 2 of 8); 263s local, remote-cache ... (30 actions, 14 running)
+2026-11-12T21:43:02.7763926Z [3,910 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 2 of 8); 264s local, remote-cache ... (30 actions, 13 running)
+2026-11-12T21:43:03.8890548Z [3,911 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 133s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:04.9011238Z [3,911 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 134s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:06.0224192Z [3,911 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 135s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:14.0245619Z [3,911 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 143s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:16.1000725Z [3,911 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 145s local, remote-cache ... (30 actions, 13 running)
+2026-11-12T21:43:18.0437356Z [3,912 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 147s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:19.0880221Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 148s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:20.0954066Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 149s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:22.3941387Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 151s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:23.4547475Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 152s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:24.4476510Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 153s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:25.3636029Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 154s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:28.7910627Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 157s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:29.9350261Z [3,913 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/exec:exec-all-test (shard 6 of 8); 159s local, remote-cache ... (30 actions, 13 running)
+2026-11-12T21:43:31.5190453Z [3,914 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 157s local, remote-cache ... (30 actions, 13 running)
+2026-11-12T21:43:32.6744900Z [3,915 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 158s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:33.1190465Z FAIL: //codex-rs/app-server:app-server-all-test (shard 1 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_1_of_16/test_attempts/attempt_1.log)
+2026-11-12T21:43:33.6212800Z [3,915 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 159s local, remote-cache ... (30 actions, 12 running)
+2026-11-12T21:43:34.6052240Z [3,916 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 160s local, remote-cache ... (30 actions, 11 running)
+2026-11-12T21:43:38.1275918Z [3,916 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 163s local, remote-cache ... (30 actions, 11 running)
+2026-11-12T21:43:39.2731601Z [3,917 / 3,987] 72 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 165s local, remote-cache ... (30 actions, 11 running)
+2026-11-12T21:43:40.4692818Z [3,920 / 3,988] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 166s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:43:40.8588953Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files):
+2026-11-12T21:43:40.9331606Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T21:43:40.9670359Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T21:43:41.0242478Z     |
+2026-11-12T21:43:41.0654329Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T21:43:41.0912219Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.1103833Z     |
+2026-11-12T21:43:41.1264701Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:43:41.1595581Z 
+2026-11-12T21:43:41.1777022Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:43:41.1945022Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:43:41.2098376Z    |
+2026-11-12T21:43:41.2137656Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:43:41.2163598Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.2338177Z 
+2026-11-12T21:43:41.2478263Z warning: unused import: `crate::RunPhase`
+2026-11-12T21:43:41.2527968Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T21:43:41.2624319Z    |
+2026-11-12T21:43:41.2724006Z 43 | use crate::RunPhase;
+2026-11-12T21:43:41.2897130Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.3217207Z 
+2026-11-12T21:43:41.3269577Z warning: variable does not need to be mutable
+2026-11-12T21:43:41.3348554Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T21:43:41.3638282Z     |
+2026-11-12T21:43:41.3784232Z 795 |     let (mut store, initial) =
+2026-11-12T21:43:41.3997332Z     |          ----^^^^^
+2026-11-12T21:43:41.4090197Z     |          |
+2026-11-12T21:43:41.4169990Z     |          help: remove this `mut`
+2026-11-12T21:43:41.4374047Z     |
+2026-11-12T21:43:41.4750807Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:43:41.4784155Z 
+2026-11-12T21:43:41.4960536Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:43:41.5118930Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:43:41.5168416Z   |
+2026-11-12T21:43:41.5299586Z 4 | impl AgentdConfig {
+2026-11-12T21:43:41.5334254Z   | ----------------- method in this implementation
+2026-11-12T21:43:41.5529241Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:43:41.5697985Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.5858415Z   |
+2026-11-12T21:43:41.5878569Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:43:41.6047790Z 
+2026-11-12T21:43:41.6232016Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:43:41.6273991Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:43:41.6400262Z     |
+2026-11-12T21:43:41.6630666Z  84 | impl LedgerFixture {
+2026-11-12T21:43:41.6714671Z     | ------------------ associated items in this implementation
+2026-11-12T21:43:41.6889009Z ...
+2026-11-12T21:43:41.7074294Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:43:41.7088224Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.7258414Z ...
+2026-11-12T21:43:41.7438945Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:43:41.7452606Z     |                   ^^^^^
+2026-11-12T21:43:41.7474318Z 
+2026-11-12T21:43:41.7636511Z warning: function `append_decision` is never used
+2026-11-12T21:43:41.7798497Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:43:41.7864666Z     |
+2026-11-12T21:43:41.7899592Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:43:41.8328434Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:43:41.8955127Z 
+2026-11-12T21:43:41.9121561Z warning: function `closure` is never used
+2026-11-12T21:43:41.9573717Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:43:42.0011649Z     |
+2026-11-12T21:43:42.0589883Z 212 | pub(super) fn closure(
+2026-11-12T21:43:42.1130759Z     |               ^^^^^^^
+2026-11-12T21:43:42.1264426Z 
+2026-11-12T21:43:42.1518807Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:43:42.1635884Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:43:42.1945434Z    |
+2026-11-12T21:43:42.2167463Z 84 | impl LedgerFixture {
+2026-11-12T21:43:42.2241179Z    | ------------------ associated function in this implementation
+2026-11-12T21:43:42.2463811Z ...
+2026-11-12T21:43:42.2474369Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:43:42.2640569Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.2725669Z 
+2026-11-12T21:43:42.2761716Z warning: function `original_evaluation_source` is never used
+2026-11-12T21:43:42.2899994Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T21:43:42.3040837Z   |
+2026-11-12T21:43:42.3076891Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T21:43:42.3126448Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3134644Z 
+2026-11-12T21:43:42.3140050Z warning: method `require_decision` is never used
+2026-11-12T21:43:42.3141807Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:43:42.3142620Z     |
+2026-11-12T21:43:42.3145466Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:43:42.3146558Z     | ----------------------------------- method in this implementation
+2026-11-12T21:43:42.3147369Z ...
+2026-11-12T21:43:42.3147968Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:43:42.3148684Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3149195Z 
+2026-11-12T21:43:42.3149647Z warning: function `require_decision` is never used
+2026-11-12T21:43:42.3150458Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:43:42.3152432Z     |
+2026-11-12T21:43:42.3153056Z 443 | pub(super) fn require_decision(
+2026-11-12T21:43:42.3153758Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3154299Z 
+2026-11-12T21:43:42.3154795Z warning: method `require_original_input` is never used
+2026-11-12T21:43:42.3155969Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:43:42.3156747Z    |
+2026-11-12T21:43:42.3157480Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:43:42.3159756Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:43:42.3160688Z ...
+2026-11-12T21:43:42.3161301Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:43:42.3162023Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3162545Z 
+2026-11-12T21:43:42.3162896Z warning: field `at` is never read
+2026-11-12T21:43:42.3163871Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:43:42.3164799Z    |
+2026-11-12T21:43:42.3165370Z 91 | pub(super) struct Fixture {
+2026-11-12T21:43:42.3166430Z    |                   ------- field in this struct
+2026-11-12T21:43:42.3168820Z 92 |     root: PathBuf,
+2026-11-12T21:43:42.3170004Z 93 |     pub(super) at: u64,
+2026-11-12T21:43:42.3170883Z    |                ^^
+2026-11-12T21:43:42.3171289Z 
+2026-11-12T21:43:42.3171933Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T21:43:42.3173000Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T21:43:42.3175138Z     |
+2026-11-12T21:43:42.3278194Z 108 | enum MaterialFixtureProfile {
+2026-11-12T21:43:42.3308539Z     |      ---------------------- variants in this enum
+2026-11-12T21:43:42.3325266Z 109 |     NoUpdate,
+2026-11-12T21:43:42.3386260Z 110 |     CandidatePages,
+2026-11-12T21:43:42.3401611Z     |     ^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3413213Z 111 |     CandidateMaximumPages,
+2026-11-12T21:43:42.3428784Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.3449599Z     |
+2026-11-12T21:43:42.3461830Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:43:42.3478301Z 
+2026-11-12T21:43:42.3493687Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T21:43:42.3515791Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T21:43:42.3582063Z     |
+2026-11-12T21:43:42.3600113Z 114 | impl Fixture {
+2026-11-12T21:43:42.3781328Z     | ------------ associated functions in this implementation
+2026-11-12T21:43:42.3971351Z ...
+2026-11-12T21:43:42.3998033Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T21:43:42.4025703Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.4034552Z ...
+2026-11-12T21:43:42.4054981Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T21:43:42.4106394Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.4172968Z ...
+2026-11-12T21:43:42.4268731Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T21:43:42.4279198Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.4298684Z 
+2026-11-12T21:43:42.4324510Z warning: method `set_test_clock` is never used
+2026-11-12T21:43:42.4357707Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T21:43:42.4363805Z     |
+2026-11-12T21:43:42.4364456Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T21:43:42.4423659Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:43:42.4734381Z ...
+2026-11-12T21:43:42.4925479Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T21:43:42.4965092Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T21:43:42.5119292Z 
+2026-11-12T21:43:42.5504208Z warning: fields `executions` and `now` are never read
+2026-11-12T21:43:42.5504936Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T21:43:42.5506043Z    |
+2026-11-12T21:43:42.5506475Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T21:43:42.5507099Z    |                   --------------- fields in this struct
+2026-11-12T21:43:42.5507627Z ...
+2026-11-12T21:43:42.5508309Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T21:43:42.5655268Z    |     ^^^^^^^^^^
+2026-11-12T21:43:42.5985862Z 63 |     now: u64,
+2026-11-12T21:43:42.6110763Z    |     ^^^
+2026-11-12T21:43:42.6403860Z 
+2026-11-12T21:43:42.6536470Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T21:43:42.6818205Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T21:43:42.7192694Z     |
+2026-11-12T21:43:42.7518758Z  66 | impl LearningFixture {
+2026-11-12T21:43:42.7712537Z     | -------------------- methods in this implementation
+2026-11-12T21:43:42.7865371Z ...
+2026-11-12T21:43:42.8108335Z 241 |     pub(crate) fn with_training(
+2026-11-12T21:43:42.8392152Z     |                   ^^^^^^^^^^^^^
+2026-11-12T21:43:42.8458047Z ...
+2026-11-12T21:43:42.8490582Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T21:43:42.8497216Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.8498168Z 
+2026-11-12T21:43:42.8499490Z warning: method `original_model_commitments` is never used
+2026-11-12T21:43:42.8500637Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:43:42.8502353Z   |
+2026-11-12T21:43:42.8503023Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:43:42.8503963Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:43:42.8504837Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:43:42.8505613Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.8506025Z 
+2026-11-12T21:43:42.8506347Z warning: variant `Notes` is never constructed
+2026-11-12T21:43:42.8506975Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:43:42.8507539Z     |
+2026-11-12T21:43:42.8510429Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:43:42.8511558Z     |      ------------------------- variant in this enum
+2026-11-12T21:43:42.8512217Z 632 |     Full,
+2026-11-12T21:43:42.8512783Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:43:42.8514327Z     |     ^^^^^
+2026-11-12T21:43:42.8514682Z 
+2026-11-12T21:43:42.8515179Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:43:42.8515984Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:43:42.8516623Z     |
+2026-11-12T21:43:42.8517288Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:43:42.8518020Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.8518525Z 
+2026-11-12T21:43:42.8518905Z warning: method `circuit_learning_source` is never used
+2026-11-12T21:43:42.8519673Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T21:43:42.8520388Z    |
+2026-11-12T21:43:42.8520895Z 49 | impl AgentdState {
+2026-11-12T21:43:42.8521510Z    | ---------------- method in this implementation
+2026-11-12T21:43:42.8522163Z ...
+2026-11-12T21:43:42.8525264Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T21:43:42.8526268Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.8526657Z 
+2026-11-12T21:43:42.8527083Z warning: method `close_expired_original` is never used
+2026-11-12T21:43:42.8527807Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:43:42.8528431Z     |
+2026-11-12T21:43:42.8528926Z   3 | impl AgentdTextRequests {
+2026-11-12T21:43:42.8529593Z     | ----------------------- method in this implementation
+2026-11-12T21:43:42.8530493Z ...
+2026-11-12T21:43:42.8531717Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:43:42.8532412Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:43:42.8532888Z 
+2026-11-12T21:43:42.8533182Z warning: 24 warnings emitted
+2026-11-12T21:43:42.8535357Z 
+2026-11-12T21:43:42.8536628Z [3,927 / 3,989] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 167s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:43:43.3013718Z [3,927 / 3,989] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 169s local, remote-cache ... (30 actions, 11 running)
+2026-11-12T21:43:44.7833612Z [3,928 / 3,989] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 170s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:43:45.8589173Z [3,928 / 3,989] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 171s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:43:46.8606006Z [3,929 / 3,989] 73 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 172s local, remote-cache ... (30 actions, 11 running)
+2026-11-12T21:43:47.9970377Z [3,930 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 173s local, remote-cache ... (29 actions, 10 running)
+2026-11-12T21:43:48.9351380Z [3,930 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 174s local, remote-cache ... (29 actions, 10 running)
+2026-11-12T21:43:49.9819693Z [3,930 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 175s local, remote-cache ... (29 actions, 10 running)
+2026-11-12T21:43:50.9662379Z [3,930 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 176s local, remote-cache ... (29 actions, 11 running)
+2026-11-12T21:43:52.0031117Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 177s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:43:54.0531457Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 179s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:43:55.0917480Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 180s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:43:56.0827390Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 181s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:44:00.1346651Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 185s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:44:01.1401470Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 186s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:44:03.0279879Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 188s local, remote-cache ... (28 actions, 10 running)
+2026-11-12T21:44:04.1523478Z [3,931 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 189s local, remote-cache ... (28 actions, 11 running)
+2026-11-12T21:44:05.1859439Z [3,932 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 191s local, remote-cache ... (27 actions, 10 running)
+2026-11-12T21:44:09.6474272Z [3,932 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 195s local, remote-cache ... (27 actions, 10 running)
+2026-11-12T21:44:10.9972898Z FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test_attempts/attempt_1.log)
+2026-11-12T21:44:11.0340159Z [3,933 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 196s local, remote-cache ... (26 actions, 10 running)
+2026-11-12T21:44:12.3791577Z [3,934 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 198s local, remote-cache ... (25 actions, 9 running)
+2026-11-12T21:44:15.3208438Z [3,934 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 201s local, remote-cache ... (25 actions, 10 running)
+2026-11-12T21:44:16.4412987Z [3,934 / 3,989] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 202s local, remote-cache ... (25 actions, 10 running)
+2026-11-12T21:44:17.4516148Z [3,936 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 203s local, remote-cache ... (25 actions, 10 running)
+2026-11-12T21:44:18.4572346Z [3,936 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 204s local, remote-cache ... (25 actions, 10 running)
+2026-11-12T21:44:19.4755317Z [3,937 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 205s local, remote-cache ... (24 actions, 9 running)
+2026-11-12T21:44:20.4771249Z [3,937 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 206s local, remote-cache ... (24 actions, 9 running)
+2026-11-12T21:44:29.6400527Z [3,937 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 215s local, remote-cache ... (24 actions, 9 running)
+2026-11-12T21:44:30.8493122Z [3,937 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 216s local, remote-cache ... (24 actions, 9 running)
+2026-11-12T21:44:31.6646142Z [3,938 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 217s local, remote-cache ... (23 actions, 9 running)
+2026-11-12T21:44:32.6848709Z [3,938 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 218s local, remote-cache ... (23 actions, 9 running)
+2026-11-12T21:44:33.6797966Z [3,938 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 219s local, remote-cache ... (23 actions, 10 running)
+2026-11-12T21:44:35.2003003Z [3,938 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 221s local, remote-cache ... (23 actions, 10 running)
+2026-11-12T21:44:36.6975308Z [3,938 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 222s local, remote-cache ... (23 actions, 11 running)
+2026-11-12T21:44:37.7465442Z [3,939 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 223s local, remote-cache ... (22 actions, 10 running)
+2026-11-12T21:44:38.7327189Z [3,939 / 3,990] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 224s local, remote-cache ... (22 actions, 10 running)
+2026-11-12T21:44:39.7453687Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 225s local, remote-cache ... (30 actions, 9 running)
+2026-11-12T21:44:40.7668770Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 226s local, remote-cache ... (30 actions, 9 running)
+2026-11-12T21:44:41.7670652Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 227s local, remote-cache ... (30 actions, 9 running)
+2026-11-12T21:44:43.3926778Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 229s local, remote-cache ... (30 actions, 9 running)
+2026-11-12T21:44:44.9047560Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 230s local, remote-cache ... (30 actions, 9 running)
+2026-11-12T21:44:46.0213816Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 231s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:44:46.9373221Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 232s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:44:47.9412527Z [3,961 / 4,018] 74 / 151 tests, 1 failed; Testing //codex-rs/app-server:app-server-all-test (shard 1 of 16); 233s local, remote-cache ... (30 actions, 10 running)
+2026-11-12T21:44:48.4438971Z ##[error]The operation was canceled.
+2026-11-12T21:44:48.8479705Z Post job cleanup.
+2026-11-12T21:44:48.8492159Z ##[start-action display=Set up Bazel;id=__c4ecfa20-5fe7-4e6f-af3f-2f97574691a2.__bazel-contrib_setup-bazel]
+2026-11-12T21:44:48.8497613Z ##[end-action id=__c4ecfa20-5fe7-4e6f-af3f-2f97574691a2.__bazel-contrib_setup-bazel;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:44:49.3871081Z Post job cleanup.
+2026-11-12T21:44:50.3862665Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T21:44:50.4250670Z git version 2.56.0.windows.4
+2026-11-12T21:44:50.4361925Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\682c48fc-3dde-4909-9019-24efc5aa4fbd\.gitconfig'
+2026-11-12T21:44:50.4391449Z Temporarily overriding HOME='D:\a\_temp\682c48fc-3dde-4909-9019-24efc5aa4fbd' before making global git config changes
+2026-11-12T21:44:50.4392710Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T21:44:50.4404921Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:44:50.4812582Z Removing SSH command configuration
+2026-11-12T21:44:50.4825894Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:44:50.5250960Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T21:44:51.1447414Z Removing HTTP extra header
+2026-11-12T21:44:51.1471174Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:44:51.1984452Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T21:44:51.7983778Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:44:51.7998041Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:44:51.8372380Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:44:51.8373376Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:44:51.8427643Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:44:51.8792053Z D:\a\_temp\git-credentials-11ef3d16-584f-47ab-a87b-ebae85979244.config
+2026-11-12T21:44:51.8848007Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-11ef3d16-584f-47ab-a87b-ebae85979244.config
+2026-11-12T21:44:51.9285162Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:44:51.9657032Z D:\a\_temp\git-credentials-11ef3d16-584f-47ab-a87b-ebae85979244.config
+2026-11-12T21:44:51.9709985Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-11ef3d16-584f-47ab-a87b-ebae85979244.config
+2026-11-12T21:44:52.0141131Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T21:44:52.5735367Z Removing credentials config 'D:\a\_temp\git-credentials-11ef3d16-584f-47ab-a87b-ebae85979244.config'
+2026-11-12T21:44:52.6168442Z Cleaning up orphan processes
+2026-11-12T21:44:52.6743107Z Terminate orphan process: pid (10088) (java)

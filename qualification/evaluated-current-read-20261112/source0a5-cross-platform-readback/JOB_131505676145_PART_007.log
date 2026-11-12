@@ -1,0 +1,408 @@
+5.2418690Z 61 | |     ) -> Result<Self, Error> {
+2026-11-12T21:36:05.2418789Z    | |____________________________^
+2026-11-12T21:36:05.2418865Z    |
+2026-11-12T21:36:05.2419220Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2419232Z 
+2026-11-12T21:36:05.2419358Z warning: this function has too many arguments (9/7)
+2026-11-12T21:36:05.2419527Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+2026-11-12T21:36:05.2419603Z    |
+2026-11-12T21:36:05.2419711Z 76 | /     pub fn recover_from_original_stream(
+2026-11-12T21:36:05.2419809Z 77 | |         stream: UnixStream,
+2026-11-12T21:36:05.2419936Z 78 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:36:05.2420051Z 79 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:36:05.2420127Z ...  |
+2026-11-12T21:36:05.2420211Z 85 | |         lifetime: Duration,
+2026-11-12T21:36:05.2420305Z 86 | |     ) -> Result<Self, Error> {
+2026-11-12T21:36:05.2420386Z    | |____________________________^
+2026-11-12T21:36:05.2420456Z    |
+2026-11-12T21:36:05.2420814Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2420818Z 
+2026-11-12T21:36:05.2420952Z warning: this function has too many arguments (10/7)
+2026-11-12T21:36:05.2421132Z    --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+2026-11-12T21:36:05.2421203Z     |
+2026-11-12T21:36:05.2421294Z 101 | /     fn bind_initial(
+2026-11-12T21:36:05.2421385Z 102 | |         stream: UnixStream,
+2026-11-12T21:36:05.2421724Z 103 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:36:05.2421837Z 104 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:36:05.2421919Z ...   |
+2026-11-12T21:36:05.2422004Z 111 | |         origin: Origin,
+2026-11-12T21:36:05.2422104Z 112 | |     ) -> Result<Self, Error> {
+2026-11-12T21:36:05.2422189Z     | |____________________________^
+2026-11-12T21:36:05.2422260Z     |
+2026-11-12T21:36:05.2422622Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2422627Z 
+2026-11-12T21:36:05.2422757Z warning: this function has too many arguments (9/7)
+2026-11-12T21:36:05.2422974Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+2026-11-12T21:36:05.2423050Z    |
+2026-11-12T21:36:05.2423152Z 47 | /     pub fn from_original_stream(
+2026-11-12T21:36:05.2423239Z 48 | |         stream: UnixStream,
+2026-11-12T21:36:05.2423365Z 49 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:36:05.2423491Z 50 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:36:05.2423571Z ...  |
+2026-11-12T21:36:05.2423659Z 56 | |         lifetime: Duration,
+2026-11-12T21:36:05.2423756Z 57 | |     ) -> Result<Self, Error> {
+2026-11-12T21:36:05.2423839Z    | |____________________________^
+2026-11-12T21:36:05.2423909Z    |
+2026-11-12T21:36:05.2424269Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2424272Z 
+2026-11-12T21:36:05.2424400Z warning: this function has too many arguments (9/7)
+2026-11-12T21:36:05.2424603Z    --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+2026-11-12T21:36:05.2424682Z     |
+2026-11-12T21:36:05.2424781Z 300 | / pub(super) fn publication(
+2026-11-12T21:36:05.2424864Z 301 | |     member: &Member,
+2026-11-12T21:36:05.2424959Z 302 | |     context: &Context,
+2026-11-12T21:36:05.2425047Z 303 | |     bundle: &Bundle,
+2026-11-12T21:36:05.2425255Z ...   |
+2026-11-12T21:36:05.2425398Z 309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+2026-11-12T21:36:05.2425494Z 310 | | ) -> Result<(), Error> {
+2026-11-12T21:36:05.2425697Z     | |______________________^
+2026-11-12T21:36:05.2425776Z     |
+2026-11-12T21:36:05.2426138Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2426142Z 
+2026-11-12T21:36:05.2426260Z warning: large size difference between variants
+2026-11-12T21:36:05.2426386Z   --> hepta-agentd/src/notes_thread_status.rs:82:1
+2026-11-12T21:36:05.2426461Z    |
+2026-11-12T21:36:05.2426564Z 82 | / pub(super) enum StatusDiscovery {
+2026-11-12T21:36:05.2426687Z 83 | |     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:36:05.2426897Z    | |     ----------------------------------- the largest variant contains at least 224 bytes
+2026-11-12T21:36:05.2426997Z 84 | |     Unknown(StatusUnknownReason),
+2026-11-12T21:36:05.2427210Z    | |     ---------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:36:05.2427291Z 85 | | }
+2026-11-12T21:36:05.2427399Z    | |_^ the entire enum is at least 224 bytes
+2026-11-12T21:36:05.2427475Z    |
+2026-11-12T21:36:05.2427831Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:36:05.2428181Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:36:05.2428257Z    |
+2026-11-12T21:36:05.2428379Z 83 -     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:36:05.2428505Z 83 +     Found(Box<VerifiedNotesThreadOperation>),
+2026-11-12T21:36:05.2428584Z    |
+2026-11-12T21:36:05.2428587Z 
+2026-11-12T21:36:05.2428709Z warning: large size difference between variants
+2026-11-12T21:36:05.2428925Z    --> hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs:140:1
+2026-11-12T21:36:05.2429123Z     |
+2026-11-12T21:36:05.2429231Z 140 | / enum RetainedIssuerReplyV1 {
+2026-11-12T21:36:05.2429330Z 141 | |     Signed(SignedFinalUseGrant),
+2026-11-12T21:36:05.2429520Z     | |     --------------------------- the largest variant contains at least 280 bytes
+2026-11-12T21:36:05.2429604Z 142 | |     Denied,
+2026-11-12T21:36:05.2429766Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:36:05.2429843Z 143 | |     LoseAck,
+2026-11-12T21:36:05.2429922Z 144 | | }
+2026-11-12T21:36:05.2430027Z     | |_^ the entire enum is at least 280 bytes
+2026-11-12T21:36:05.2430106Z     |
+2026-11-12T21:36:05.2430471Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:36:05.2430822Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:36:05.2430896Z     |
+2026-11-12T21:36:05.2431002Z 141 -     Signed(SignedFinalUseGrant),
+2026-11-12T21:36:05.2431118Z 141 +     Signed(Box<SignedFinalUseGrant>),
+2026-11-12T21:36:05.2431188Z     |
+2026-11-12T21:36:05.2431193Z 
+2026-11-12T21:36:05.2431330Z warning: this function has too many arguments (8/7)
+2026-11-12T21:36:05.2431548Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:1
+2026-11-12T21:36:05.2431621Z     |
+2026-11-12T21:36:05.2431724Z 302 | / pub(super) fn material(
+2026-11-12T21:36:05.2431829Z 303 | |     root: &std::path::Path,
+2026-11-12T21:36:05.2431925Z 304 | |     writer: &mut LedgerWriter,
+2026-11-12T21:36:05.2432027Z 305 | |     credentials: &Credentials,
+2026-11-12T21:36:05.2432108Z ...   |
+2026-11-12T21:36:05.2432258Z 310 | |     publication: &CircuitTaskSourcePublicationV1,
+2026-11-12T21:36:05.2432363Z 311 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:36:05.2432451Z     | |_____________________________^
+2026-11-12T21:36:05.2432524Z     |
+2026-11-12T21:36:05.2432905Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2432914Z 
+2026-11-12T21:36:05.2433055Z warning: this function has too many arguments (10/7)
+2026-11-12T21:36:05.2433357Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:325:1
+2026-11-12T21:36:05.2433437Z     |
+2026-11-12T21:36:05.2433578Z 325 | / pub(super) fn unstarted_material_with_profile(
+2026-11-12T21:36:05.2433671Z 326 | |     _root: &std::path::Path,
+2026-11-12T21:36:05.2433769Z 327 | |     writer: &mut LedgerWriter,
+2026-11-12T21:36:05.2433867Z 328 | |     credentials: &Credentials,
+2026-11-12T21:36:05.2433938Z ...   |
+2026-11-12T21:36:05.2434035Z 338 | |     crate::CellQ24SgdRuleV1,
+2026-11-12T21:36:05.2434119Z 339 | | )> {
+2026-11-12T21:36:05.2434192Z     | |__^
+2026-11-12T21:36:05.2434270Z     |
+2026-11-12T21:36:05.2434633Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2434637Z 
+2026-11-12T21:36:05.2434762Z warning: this function has too many arguments (9/7)
+2026-11-12T21:36:05.2434980Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:1
+2026-11-12T21:36:05.2435186Z     |
+2026-11-12T21:36:05.2435307Z 437 | / pub(super) fn material_with_profile(
+2026-11-12T21:36:05.2435408Z 438 | |     root: &std::path::Path,
+2026-11-12T21:36:05.2435507Z 439 | |     writer: &mut LedgerWriter,
+2026-11-12T21:36:05.2435600Z 440 | |     credentials: &Credentials,
+2026-11-12T21:36:05.2435716Z ...   |
+2026-11-12T21:36:05.2435824Z 446 | |     evaluation_profile: Digest32,
+2026-11-12T21:36:05.2435923Z 447 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:36:05.2436013Z     | |_____________________________^
+2026-11-12T21:36:05.2436095Z     |
+2026-11-12T21:36:05.2436449Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2436453Z 
+2026-11-12T21:36:05.2436589Z warning: this function has too many arguments (10/7)
+2026-11-12T21:36:05.2436934Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:464:1
+2026-11-12T21:36:05.2437007Z     |
+2026-11-12T21:36:05.2437162Z 464 | / pub(super) fn material_with_profile_and_observer(
+2026-11-12T21:36:05.2437259Z 465 | |     root: &std::path::Path,
+2026-11-12T21:36:05.2437351Z 466 | |     writer: &mut LedgerWriter,
+2026-11-12T21:36:05.2437450Z 467 | |     credentials: &Credentials,
+2026-11-12T21:36:05.2437526Z ...   |
+2026-11-12T21:36:05.2437624Z 474 | |     next_use_observer: StableId,
+2026-11-12T21:36:05.2437729Z 475 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:36:05.2437814Z     | |_____________________________^
+2026-11-12T21:36:05.2437885Z     |
+2026-11-12T21:36:05.2438239Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:05.2438243Z 
+2026-11-12T21:36:05.2438367Z warning: large size difference between variants
+2026-11-12T21:36:05.2438574Z   --> hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs:34:1
+2026-11-12T21:36:05.2438657Z    |
+2026-11-12T21:36:05.2438762Z 34 | /  enum TrainingComposition {
+2026-11-12T21:36:05.2438840Z 35 | |      Fixture,
+2026-11-12T21:36:05.2439008Z    | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:36:05.2439094Z 36 | |/     Original {
+2026-11-12T21:36:05.2439302Z 37 | ||         connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
+2026-11-12T21:36:05.2439485Z 38 | ||         dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
+2026-11-12T21:36:05.2439665Z 39 | ||         training: crate::OriginalCellQ24TrainingCommandReceiptV1,
+2026-11-12T21:36:05.2439740Z 40 | ||     },
+2026-11-12T21:36:05.2439888Z    | ||_____- the largest variant contains at least 4968 bytes
+2026-11-12T21:36:05.2439968Z 41 | |  }
+2026-11-12T21:36:05.2440078Z    | |__^ the entire enum is at least 4968 bytes
+2026-11-12T21:36:05.2440156Z    |
+2026-11-12T21:36:05.2440518Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:36:05.2440990Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:36:05.2441072Z    |
+2026-11-12T21:36:05.2441302Z 37 ~         connection: Box<crate::OriginalCellQ24TrainingReadbackConnectionV1>,
+2026-11-12T21:36:05.2441490Z 38 ~         dataset: Box<crate::OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:36:05.2441691Z 39 ~         training: Box<crate::OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:36:05.2441771Z    |
+2026-11-12T21:36:05.2441775Z 
+2026-11-12T21:36:05.2441913Z warning: local variable doesn't need to be boxed here
+2026-11-12T21:36:05.2442112Z    --> hepta-agentd/src/circuit_evaluated_selection_command_tests.rs:109:31
+2026-11-12T21:36:05.2442191Z     |
+2026-11-12T21:36:05.2442414Z 109 |     fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
+2026-11-12T21:36:05.2442499Z     |                               ^^^^
+2026-11-12T21:36:05.2442582Z     |
+2026-11-12T21:36:05.2442925Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#boxed_local
+2026-11-12T21:36:05.2443064Z     = note: `#[warn(clippy::boxed_local)]` on by default
+2026-11-12T21:36:05.2443068Z 
+2026-11-12T21:36:05.2443166Z warning: 88 warnings emitted
+2026-11-12T21:36:05.2443170Z 
+2026-11-12T21:36:05.4256770Z [38,905 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 99s remote, remote-cache
+2026-11-12T21:36:16.4289137Z [38,905 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 110s remote, remote-cache
+2026-11-12T21:36:19.9688726Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files):
+2026-11-12T21:36:19.9689925Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:36:19.9691102Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:36:19.9691747Z     |
+2026-11-12T21:36:19.9692076Z  84 | impl LedgerFixture {
+2026-11-12T21:36:19.9692592Z     | ------------------ associated items in this implementation
+2026-11-12T21:36:19.9693109Z ...
+2026-11-12T21:36:19.9693528Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:36:19.9694030Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:19.9694387Z ...
+2026-11-12T21:36:19.9694725Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:36:19.9695404Z     |                   ^^^^^
+2026-11-12T21:36:19.9695716Z     |
+2026-11-12T21:36:19.9696090Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:19.9696464Z 
+2026-11-12T21:36:19.9696639Z warning: function `append_decision` is never used
+2026-11-12T21:36:19.9697191Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:36:19.9697687Z     |
+2026-11-12T21:36:19.9698204Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:36:19.9698926Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:36:19.9699193Z 
+2026-11-12T21:36:19.9699367Z warning: function `closure` is never used
+2026-11-12T21:36:19.9699995Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:36:19.9700578Z     |
+2026-11-12T21:36:19.9700866Z 212 | pub(super) fn closure(
+2026-11-12T21:36:19.9701232Z     |               ^^^^^^^
+2026-11-12T21:36:19.9701471Z 
+2026-11-12T21:36:19.9701777Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:36:19.9702562Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:36:19.9703153Z    |
+2026-11-12T21:36:19.9703474Z 84 | impl LedgerFixture {
+2026-11-12T21:36:19.9703992Z    | ------------------ associated function in this implementation
+2026-11-12T21:36:19.9704556Z ...
+2026-11-12T21:36:19.9705008Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:36:19.9705947Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:19.9706262Z 
+2026-11-12T21:36:19.9706707Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:36:19.9707311Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:36:19.9707896Z    |
+2026-11-12T21:36:19.9708209Z 22 | pub(super) enum Status {
+2026-11-12T21:36:19.9708625Z    |                 ------ variant in this enum
+2026-11-12T21:36:19.9709038Z ...
+2026-11-12T21:36:19.9709324Z 26 |     Unavailable = 4,
+2026-11-12T21:36:19.9709648Z    |     ^^^^^^^^^^^
+2026-11-12T21:36:19.9709934Z    |
+2026-11-12T21:36:19.9710645Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:36:19.9711439Z 
+2026-11-12T21:36:19.9711580Z warning: field `at` is never read
+2026-11-12T21:36:19.9712164Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:36:19.9712793Z    |
+2026-11-12T21:36:19.9713122Z 91 | pub(super) struct Fixture {
+2026-11-12T21:36:19.9713584Z    |                   ------- field in this struct
+2026-11-12T21:36:19.9714065Z 92 |     root: PathBuf,
+2026-11-12T21:36:19.9714445Z 93 |     pub(super) at: u64,
+2026-11-12T21:36:19.9714830Z    |                ^^
+2026-11-12T21:36:19.9715054Z 
+2026-11-12T21:36:19.9715560Z warning: associated function `from_research_store` is never used
+2026-11-12T21:36:19.9716306Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:36:19.9716871Z     |
+2026-11-12T21:36:19.9717259Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:36:19.9717968Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:36:19.9718613Z ...
+2026-11-12T21:36:19.9718957Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:36:19.9719433Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:19.9719934Z 
+2026-11-12T21:36:19.9720108Z warning: field `estimand` is never read
+2026-11-12T21:36:19.9720958Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:36:19.9721624Z    |
+2026-11-12T21:36:19.9721955Z 19 | pub(super) struct Checked {
+2026-11-12T21:36:19.9722415Z    |                   ------- field in this struct
+2026-11-12T21:36:19.9722876Z ...
+2026-11-12T21:36:19.9723210Z 23 |     pub estimand: Digest32,
+2026-11-12T21:36:19.9723611Z    |         ^^^^^^^^
+2026-11-12T21:36:19.9723832Z 
+2026-11-12T21:36:19.9724002Z warning: method `context` is never used
+2026-11-12T21:36:19.9724670Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:36:19.9725483Z    |
+2026-11-12T21:36:19.9725788Z 30 | impl Request {
+2026-11-12T21:36:19.9726182Z    | ------------ method in this implementation
+2026-11-12T21:36:19.9726660Z ...
+2026-11-12T21:36:19.9727086Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:36:19.9727671Z    |                   ^^^^^^^
+2026-11-12T21:36:19.9727929Z 
+2026-11-12T21:36:19.9728107Z warning: function `ledger` is never used
+2026-11-12T21:36:19.9728806Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:36:19.9729479Z    |
+2026-11-12T21:36:19.9729795Z 80 | pub(super) fn ledger(
+2026-11-12T21:36:19.9730186Z    |               ^^^^^^
+2026-11-12T21:36:19.9730430Z 
+2026-11-12T21:36:19.9730605Z warning: function `material` is never used
+2026-11-12T21:36:19.9731354Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:36:19.9732079Z     |
+2026-11-12T21:36:19.9732411Z 302 | pub(super) fn material(
+2026-11-12T21:36:19.9732789Z     |               ^^^^^^^^
+2026-11-12T21:36:19.9733013Z 
+2026-11-12T21:36:19.9733238Z warning: function `material_with_profile` is never used
+2026-11-12T21:36:19.9733978Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:36:19.9734605Z     |
+2026-11-12T21:36:19.9734960Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:36:19.9735689Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:19.9736014Z 
+2026-11-12T21:36:19.9736439Z warning: type alias `Selector` is never used
+2026-11-12T21:36:19.9737201Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:36:19.9737893Z    |
+2026-11-12T21:36:19.9738558Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:36:19.9739341Z    |                 ^^^^^^^^
+2026-11-12T21:36:19.9739574Z 
+2026-11-12T21:36:19.9739728Z warning: 13 warnings emitted
+2026-11-12T21:36:19.9740019Z 
+2026-11-12T21:36:19.9746769Z [38,906 / 38,908] [Prepa] runfiles for //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin ... (2 actions, 0 running)
+2026-11-12T21:36:20.0103613Z INFO: Found 1296 targets...
+2026-11-12T21:36:20.3456962Z INFO: Elapsed time: 387.297s, Critical Path: 263.49s
+2026-11-12T21:36:20.3459139Z INFO: 38908 processes: 25931 remote cache hit, 12828 internal, 149 remote.
+2026-11-12T21:36:20.3459929Z INFO: Build completed successfully, 38908 total actions
+2026-11-12T21:36:20.3460439Z INFO: 
+2026-11-12T21:36:21.4277920Z INFO: 
+2026-11-12T21:36:31.4499146Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/aa0e95ed-c073-483a-9880-7af3336b7ad3
+2026-11-12T21:36:31.4699011Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T21:36:31.4699481Z with:
+2026-11-12T21:36:31.4699778Z   name: bazel-execution-logs-clippy-x86_64-unknown-linux-gnu
+2026-11-12T21:36:31.4700185Z   path: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:36:31.4700514Z   if-no-files-found: ignore
+2026-11-12T21:36:31.4700766Z   compression-level: 6
+2026-11-12T21:36:31.4700990Z   overwrite: false
+2026-11-12T21:36:31.4701219Z   include-hidden-files: false
+2026-11-12T21:36:31.4701475Z   archive: true
+2026-11-12T21:36:31.4701674Z env:
+2026-11-12T21:36:31.4701895Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:36:31.4702492Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:36:31.4702943Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:36:31.4703303Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:36:31.4703778Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:36:31.4704391Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-clippy
+2026-11-12T21:36:31.4704953Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:36:31.4705530Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:31.4705827Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:31.4706110Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:36:31.4708495Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:36:31.4708913Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:36:31.4709355Z ##[endgroup]
+2026-11-12T21:36:31.6590679Z With the provided path, there will be 1 file uploaded
+2026-11-12T21:36:31.6597292Z Artifact name is valid!
+2026-11-12T21:36:31.6598247Z Root directory input is valid!
+2026-11-12T21:36:31.8593050Z Uploading artifact: bazel-execution-logs-clippy-x86_64-unknown-linux-gnu.zip
+2026-11-12T21:36:31.8635762Z Beginning upload of artifact content to blob storage
+2026-11-12T21:36:32.3980239Z Uploaded bytes 8388608
+2026-11-12T21:36:32.6408928Z Uploaded bytes 15359575
+2026-11-12T21:36:32.6597177Z Finished uploading artifact content to blob storage!
+2026-11-12T21:36:32.6601842Z SHA256 digest of uploaded artifact is b38b0e3de728cae6e0b38dad4182314bf1c614ed8c9d004a7f625750bd7b6b24
+2026-11-12T21:36:32.6603301Z Finalizing artifact upload
+2026-11-12T21:36:33.0376331Z Artifact bazel-execution-logs-clippy-x86_64-unknown-linux-gnu successfully finalized. Artifact ID 13986791644
+2026-11-12T21:36:33.0378696Z Artifact bazel-execution-logs-clippy-x86_64-unknown-linux-gnu has been successfully uploaded! Final size is 15359575 bytes. Artifact ID is 13986791644
+2026-11-12T21:36:33.0381774Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43310500072/artifacts/13986791644
+2026-11-12T21:36:33.0557248Z Prepare all required actions
+2026-11-12T21:36:33.0585807Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T21:36:33.0586136Z env:
+2026-11-12T21:36:33.0586367Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:36:33.0586785Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:36:33.0587207Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:36:33.0587578Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:36:33.0588023Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:36:33.0588637Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-clippy
+2026-11-12T21:36:33.0589190Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:36:33.0589563Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:33.0589854Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:33.0590167Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:36:33.0592569Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:36:33.0593095Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:36:33.0593535Z ##[endgroup]
+2026-11-12T21:36:33.0596991Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T21:36:33.0613513Z ##[group]Run set -euo pipefail
+2026-11-12T21:36:33.0613825Z [36;1mset -euo pipefail[0m
+2026-11-12T21:36:33.0614064Z [36;1m[0m
+2026-11-12T21:36:33.0614544Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T21:36:33.0615349Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T21:36:33.0615637Z [36;1m  exit 0[0m
+2026-11-12T21:36:33.0616041Z [36;1mfi[0m
+2026-11-12T21:36:33.0616238Z [36;1m[0m
+2026-11-12T21:36:33.0616631Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T21:36:33.0617101Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T21:36:33.0617367Z [36;1mexit 1[0m
+2026-11-12T21:36:33.0696252Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:36:33.0696630Z env:
+2026-11-12T21:36:33.0696867Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:36:33.0697312Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:36:33.0697764Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:36:33.0698168Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:36:33.0698649Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:36:33.0699303Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-clippy
+2026-11-12T21:36:33.0699906Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:36:33.0700288Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:33.0700600Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:36:33.0700904Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:36:33.0703461Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:36:33.0703904Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:36:33.0704364Z ##[endgroup]
+2026-11-12T21:36:34.5513772Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=1491]
+2026-11-12T21:36:34.5636279Z Post job cleanup.
+2026-11-12T21:36:34.5639965Z ##[start-action display=Set up Bazel;id=__1032cd21-2ce6-415d-ba8c-a926f3c9adf1.__bazel-contrib_setup-bazel]
+2026-11-12T21:36:34.5686601Z Post job cleanup.
+2026-11-12T21:36:34.7321440Z ##[end-action id=__1032cd21-2ce6-415d-ba8c-a926f3c9adf1.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=168]
+2026-11-12T21:36:34.7410480Z Post job cleanup.
+2026-11-12T21:36:34.8404001Z [command]/usr/bin/git version
+2026-11-12T21:36:34.8450948Z git version 2.56.1
+2026-11-12T21:36:34.8499576Z Temporarily overriding HOME='/home/runner/work/_temp/b1dd2af2-eaf7-4717-a239-55cba52d2253' before making global git config changes
+2026-11-12T21:36:34.8500972Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T21:36:34.8506006Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:36:34.8546050Z Removing SSH command configuration
+2026-11-12T21:36:34.8557809Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:36:34.8608455Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T21:36:34.8903652Z Removing HTTP extra header
+2026-11-12T21:36:34.8913762Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:36:34.8960733Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T21:36:34.9293320Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:36:34.9304422Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:36:34.9355901Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T21:36:34.9857290Z Cleaning up orphan processes
+2026-11-12T21:36:35.0277791Z Terminate orphan process: pid (2637) (java.lang=ALL-UNNAMED)

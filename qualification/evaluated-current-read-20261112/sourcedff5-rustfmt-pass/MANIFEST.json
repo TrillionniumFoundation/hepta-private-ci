@@ -1,0 +1,67 @@
+{
+  "schema": "actual-rustfmt-success-v1",
+  "source_commit": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "source_tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "actual_checkout_commit": "e095f0aafe92e9248c9283faffcbc4cb84b4d54e",
+  "actual_checkout_parents": [
+    "1cb195e590f7f5038a38625a943f259badea489a",
+    "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a"
+  ],
+  "actual_checkout_tree_matches_source": true,
+  "run_id": 43313237694,
+  "job_id": 131515291238,
+  "conclusion": "success",
+  "started_at": "2026-11-12T21:46:08Z",
+  "completed_at": "2026-11-12T21:46:51Z",
+  "command": [
+    "cargo",
+    "fmt",
+    "--",
+    "--config",
+    "imports_granularity=Item",
+    "--check"
+  ],
+  "format_step": {
+    "name": "cargo fmt",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 5,
+    "started_at": "2026-11-12T21:46:25Z",
+    "completed_at": "2026-11-12T21:46:49Z"
+  },
+  "clean_step": {
+    "name": "Check for a clean worktree",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 6,
+    "started_at": "2026-11-12T21:46:49Z",
+    "completed_at": "2026-11-12T21:46:49Z"
+  },
+  "full_original_log": {
+    "job_id": 131515291238,
+    "bytes": 134490,
+    "sha256": "85546f995318faf6a0f46c5cea63282a6ffde72d805a9b5bc38695d885fa2e0d",
+    "git_blob": "e02892147a897ab9b5b77daac9cebb6a1791521b"
+  },
+  "qualification_boundary": "Actual formatter and clean-worktree success for this exact tree only. Does not establish source-closure, caller, native, Root or scientific qualification.",
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-rustfmt-pass/JOB.log",
+      "blob": "e02892147a897ab9b5b77daac9cebb6a1791521b",
+      "bytes": 134490,
+      "sha256": "85546f995318faf6a0f46c5cea63282a6ffde72d805a9b5bc38695d885fa2e0d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-rustfmt-pass/JOBS_API.json",
+      "blob": "5640cb439cf45d87f54e1de2c733b8c4a36a3721",
+      "bytes": 66989,
+      "sha256": "19f7b7169743ba4ca44e55a9a6cbbe330ef4413a8b5c9cee17a153ac5bcdce67"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-rustfmt-pass/CHECKOUT_COMMIT_API.json",
+      "blob": "0c2a8ecef0fa715be04f9b4cd073738e8e36bbad",
+      "bytes": 2798,
+      "sha256": "9cd0f1478d91796ea9c821aec236b69644c749e715121f3a923f1501d055b898"
+    }
+  ]
+}

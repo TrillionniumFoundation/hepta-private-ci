@@ -1,0 +1,887 @@
+{
+  "schema": "hepta.source-dff5-cross-platform-log-progress.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "head_tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "run_id": 43313237694,
+  "run_attempt": 1,
+  "representation": "Original decoded GitHub tool content as UTF-8; BOM and ANSI bytes retained in original parts. Derived lines remove ANSI only for reading.",
+  "logs_retrieved": [
+    {
+      "job_id": 131515141066,
+      "log": {
+        "bytes": 827964,
+        "sha256": "13c7abceefd4521636505c9ba49441fb01002ffaa4ecf621899950dea922ef40",
+        "git_blob": "7d405b28aa755c958e22f2436ca8e97b12032c3c"
+      },
+      "characters": 827962,
+      "lines": 8752,
+      "parts": [
+        {
+          "path": "JOB_131515141066_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "80afb790b0de299f03668bea55444cc2cd5871822156215b483c7dc193568c32",
+          "git_blob": "6903483ff0853ddf3d7d034f58e4988a8f53d8f7"
+        },
+        {
+          "path": "JOB_131515141066_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "4857b09a9e60d66454abeff0e0bbad19c057ad12ece43318ba77536fdb60160f",
+          "git_blob": "f5d85eccd11e95aef7658a362b30881906be3933"
+        },
+        {
+          "path": "JOB_131515141066_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "7db9d965161343a15eae5b943096dda7d094fc9e209cc815827032a47f75dc07",
+          "git_blob": "371a6b97e41acf46e92a717fb170bebf4bee2f59"
+        },
+        {
+          "path": "JOB_131515141066_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "3ac40d9a83a303bc1e90a0a5fba407020977c8d836e017f55820306f3f032760",
+          "git_blob": "77a5bb4816de9bf6f0a0b764acf20e021801bbfb"
+        },
+        {
+          "path": "JOB_131515141066_PART_004.log",
+          "start_character": 720000,
+          "characters": 107962,
+          "bytes": 107962,
+          "sha256": "3424b9f2216e8d55da9f2f67d4b13aacef9cb078d37381033e0a5f42c239ef78",
+          "git_blob": "97e19556a43753a98f7509fd8acf325a5143c9a5"
+        }
+      ],
+      "checkout_commits_observed": [
+        "e095f0aafe92e9248c9283faffcbc4cb84b4d54e"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 8581,
+          "line": "2026-11-12T21:52:27.7108096Z INFO: Build completed successfully, 37480 total actions"
+        },
+        {
+          "original_line_1_based": 8646,
+          "line": "2026-11-12T21:53:12.6783569Z INFO: Build completed successfully, 11 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 838790,
+        "sha256": "a270a4bfb507863933a9bbb4c60e041aec031eb2e75ecfaf9452f009ce77b53b",
+        "git_blob": "ba419190f0f5681ec811e6b6d1ec812b7cd9368c"
+      },
+      "parts_reassemble_exactly": true,
+      "original_job_metadata": {
+        "id": 131515141066,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:45:53Z",
+        "completed_at": "2026-11-12T21:53:18Z",
+        "runner_id": 1000135590,
+        "runner_name": "GitHub Actions 1000135590",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-12T21:45:54Z",
+          "completed_at": "2026-11-12T21:45:55Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-12T21:45:55Z",
+          "completed_at": "2026-11-12T21:46:03Z"
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-12T21:46:03Z",
+          "completed_at": "2026-11-12T21:46:27Z"
+        },
+        {
+          "name": "bazel build verify-release-build targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-12T21:46:27Z",
+          "completed_at": "2026-11-12T21:52:32Z"
+        },
+        {
+          "name": "Verify Bazel builds bwrap",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-12T21:52:32Z",
+          "completed_at": "2026-11-12T21:53:13Z"
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-12T21:53:13Z",
+          "completed_at": "2026-11-12T21:53:15Z"
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-11-12T21:53:15Z",
+          "completed_at": "2026-11-12T21:53:15Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-12T21:53:15Z",
+          "completed_at": "2026-11-12T21:53:16Z"
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-12T21:53:16Z",
+          "completed_at": "2026-11-12T21:53:16Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-12T21:53:16Z",
+          "completed_at": "2026-11-12T21:53:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-12T21:53:16Z",
+          "completed_at": "2026-11-12T21:53:16Z"
+        }
+      ]
+    },
+    {
+      "job_id": 131515141069,
+      "log": {
+        "bytes": 1280150,
+        "sha256": "5d32bf9c074c848160add11828dc30c2eb99193156c248becdc35c2a489bb4b1",
+        "git_blob": "7a3d2a5e8f21c9e362f1624f19626b5103cab6f1"
+      },
+      "characters": 1280148,
+      "lines": 14965,
+      "parts": [
+        {
+          "path": "JOB_131515141069_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "a263b369cf306a0bf7d0c4917b7711416af05712936faab8c0c3640d1a240149",
+          "git_blob": "f59461b5023311e1914389ff195648abc107915c"
+        },
+        {
+          "path": "JOB_131515141069_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "8e97be58a99777714b92de43fe10218023f4916822f27c40535f34c25b54345b",
+          "git_blob": "73f9ba0b3157dd887f75509e24f397381959cdb3"
+        },
+        {
+          "path": "JOB_131515141069_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "aff812533fc14cf2124ed8726edb1a41819b32805cebe359331f91c5cd53aa57",
+          "git_blob": "00f182689fd27eb7c96c78ecf82d40846cba0370"
+        },
+        {
+          "path": "JOB_131515141069_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "b3673802f96542659a158c474b1318c605af483663d185e17ca3daf62988a92a",
+          "git_blob": "789adf0e009757855423d38a6fed238c6555e1f7"
+        },
+        {
+          "path": "JOB_131515141069_PART_004.log",
+          "start_character": 720000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "4080ed8d79ee2f1db689515f861225848c9216bfa420bfa4f98f4ce035f4c900",
+          "git_blob": "ca818d7204a0cb7e284cc8249c0f85b7c0797f10"
+        },
+        {
+          "path": "JOB_131515141069_PART_005.log",
+          "start_character": 900000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "0a0aacb14578e908d160c3297ba431028d039a6b6b7b050391c2543dfc5d5eeb",
+          "git_blob": "034dfa919c0cac0e971ccb9bd03ba25911919d07"
+        },
+        {
+          "path": "JOB_131515141069_PART_006.log",
+          "start_character": 1080000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "9a148ca82f628539f74204b5887e9772e6af511cac551475c0a3dc8b607b5b37",
+          "git_blob": "74b84107af00329c9613fe1e65085e2174a2f401"
+        },
+        {
+          "path": "JOB_131515141069_PART_007.log",
+          "start_character": 1260000,
+          "characters": 20148,
+          "bytes": 20148,
+          "sha256": "8387ff41f381360179208f340eb72de36c60fbdbf0957179d47f766eef75b6a3",
+          "git_blob": "f264b6de97490deed204b3a21494ef901491b1ce"
+        }
+      ],
+      "checkout_commits_observed": [
+        "e095f0aafe92e9248c9283faffcbc4cb84b4d54e"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 14861,
+          "line": "2026-11-12T21:52:10.6423945Z INFO: Build completed successfully, 38908 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 1296868,
+        "sha256": "b2c48ba0f33cfc8cdc029020c7648eb651135c636770c4d6b2c635c782cde2e4",
+        "git_blob": "020aed7e979141228fa184d0ad37c805a6dea2e1"
+      },
+      "parts_reassemble_exactly": true,
+      "original_job_metadata": {
+        "id": 131515141069,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:45:54Z",
+        "completed_at": "2026-11-12T21:52:24Z",
+        "runner_id": 1000135588,
+        "runner_name": "GitHub Actions 1000135588",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-12T21:45:55Z",
+          "completed_at": "2026-11-12T21:45:56Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-12T21:45:56Z",
+          "completed_at": "2026-11-12T21:46:04Z"
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-12T21:46:04Z",
+          "completed_at": "2026-11-12T21:46:24Z"
+        },
+        {
+          "name": "bazel build --config=clippy lint targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-12T21:46:24Z",
+          "completed_at": "2026-11-12T21:52:15Z"
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-12T21:52:15Z",
+          "completed_at": "2026-11-12T21:52:17Z"
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-11-12T21:52:17Z",
+          "completed_at": "2026-11-12T21:52:18Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-12T21:52:18Z",
+          "completed_at": "2026-11-12T21:52:21Z"
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-12T21:52:21Z",
+          "completed_at": "2026-11-12T21:52:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-12T21:52:21Z",
+          "completed_at": "2026-11-12T21:52:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-12T21:52:22Z",
+          "completed_at": "2026-11-12T21:52:22Z"
+        }
+      ]
+    },
+    {
+      "job_id": 131515141142,
+      "log": {
+        "bytes": 1240416,
+        "sha256": "a4884e4ca297ed8ec4469e8e2571ea3d6595bbb0b4f868583ab270ebb6785af7",
+        "git_blob": "609752bc2e9bb888ba36c6584f5cc0b8d4fb9165"
+      },
+      "characters": 1240414,
+      "lines": 11116,
+      "parts": [
+        {
+          "path": "JOB_131515141142_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "6752b6c489303200988bdc209222ad043d96a925aadc8469b4b4d12e937c81b6",
+          "git_blob": "6eef04f6b2cf54802904f17663c98fa66f7302e0"
+        },
+        {
+          "path": "JOB_131515141142_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "3a5cb9d16398814a9dcb8265521066e934936939348c0e51be2c0983b4efd1f3",
+          "git_blob": "d415553b337092507e0f3b2e6a6b5ccdc06593a4"
+        },
+        {
+          "path": "JOB_131515141142_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "c783ccfce8e00ada9da8626a09536793663ae455263637727989807db87130cf",
+          "git_blob": "f5a1672435e4720e82ae839152316be4e672a69c"
+        },
+        {
+          "path": "JOB_131515141142_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "5921f004fe5e90829cb270640f902c8503f793790f339af94a3007a0b4bbaa58",
+          "git_blob": "0b09bb6f58aca268d165d79f1763d6234c25846d"
+        },
+        {
+          "path": "JOB_131515141142_PART_004.log",
+          "start_character": 720000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "0d177e1a28817edf3e47932155ed8b1cad01b3c72eb5d974f29ea5e651567220",
+          "git_blob": "fdc44c1c285492e585582081ab36547c8df98974"
+        },
+        {
+          "path": "JOB_131515141142_PART_005.log",
+          "start_character": 900000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "c4f30ffe1dd855e055d100a046eb590f3f479f9495c156bcb8812165ec20fc77",
+          "git_blob": "c382a0fad4a679c8ac902eae555ceb2339adc9e0"
+        },
+        {
+          "path": "JOB_131515141142_PART_006.log",
+          "start_character": 1080000,
+          "characters": 160414,
+          "bytes": 160414,
+          "sha256": "1745532cccbf53c4d207a6915f1d0b8c6265fb27df1fb23e36a0cc143f66773c",
+          "git_blob": "30a5656d76e5edcbc3ce772c2b4a026e5e532763"
+        }
+      ],
+      "checkout_commits_observed": [
+        "e095f0aafe92e9248c9283faffcbc4cb84b4d54e"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 8674,
+          "line": "2026-11-12T21:55:17.4755227Z test result: FAILED. 135 passed; 4 failed; 14 ignored; 0 measured; 1086 filtered out; finished in 203.08s"
+        },
+        {
+          "original_line_1_based": 10731,
+          "line": "2026-11-12T21:56:53.3576007Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 7 out of 8 in 300.0s"
+        },
+        {
+          "original_line_1_based": 10741,
+          "line": "2026-11-12T21:56:53.3581128Z Executed 2 out of 583 tests: 415 tests pass, 1 fails remotely, and 167 were skipped."
+        },
+        {
+          "original_line_1_based": 10944,
+          "line": "2026-11-12T21:57:08.1274410Z test result: FAILED. 135 passed; 4 failed; 14 ignored; 0 measured; 1086 filtered out; finished in 203.08s"
+        },
+        {
+          "original_line_1_based": 10947,
+          "line": "2026-11-12T21:57:08.1279054Z ##[error]Process completed with exit code 3."
+        },
+        {
+          "original_line_1_based": 11008,
+          "line": "2026-11-12T21:57:38.6636669Z INFO: Build completed successfully, 6 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 1255464,
+        "sha256": "dcf88b81636a6277d6c1917cd938f65d3277ad9efa3ffb47236161d65e84ca74",
+        "git_blob": "c0b35e8a4279625bb33145f1c34bff151b6a9bb3"
+      },
+      "parts_reassemble_exactly": true,
+      "original_job_metadata": {
+        "id": 131515141142,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:45:53Z",
+        "completed_at": "2026-11-12T21:57:47Z",
+        "runner_id": 1000135589,
+        "runner_name": "GitHub Actions 1000135589",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-12T21:45:54Z",
+          "completed_at": "2026-11-12T21:45:55Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-12T21:45:55Z",
+          "completed_at": "2026-11-12T21:46:03Z"
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-12T21:46:03Z",
+          "completed_at": "2026-11-12T21:46:23Z"
+        },
+        {
+          "name": "Check rusty_v8 MODULE.bazel checksums",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-11-12T21:46:23Z",
+          "completed_at": "2026-11-12T21:46:23Z"
+        },
+        {
+          "name": "Check MODULE.bazel.lock is up to date",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-11-12T21:46:23Z",
+          "completed_at": "2026-11-12T21:46:23Z"
+        },
+        {
+          "name": "Install OpenSSH for the native operator-acceptance test action",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-12T21:46:23Z",
+          "completed_at": "2026-11-12T21:46:32Z"
+        },
+        {
+          "name": "bazel test //...",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7,
+          "started_at": "2026-11-12T21:46:32Z",
+          "completed_at": "2026-11-12T21:57:08Z"
+        },
+        {
+          "name": "Run operator acceptance with native OpenSSH",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-12T21:57:08Z",
+          "completed_at": "2026-11-12T21:57:42Z"
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-12T21:57:42Z",
+          "completed_at": "2026-11-12T21:57:44Z"
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-11-12T21:57:44Z",
+          "completed_at": "2026-11-12T21:57:44Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-12T21:57:44Z",
+          "completed_at": "2026-11-12T21:57:45Z"
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-12T21:57:45Z",
+          "completed_at": "2026-11-12T21:57:45Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-12T21:57:45Z",
+          "completed_at": "2026-11-12T21:57:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-12T21:57:45Z",
+          "completed_at": "2026-11-12T21:57:45Z"
+        }
+      ]
+    },
+    {
+      "job_id": 131515141372,
+      "log": {
+        "bytes": 1246071,
+        "sha256": "0d9d2849971de2b03c6fa54dd5411458830f2384923989d900dce36e9f753fe8",
+        "git_blob": "41852d82cde62f15cefcf28c57d24110e887566d"
+      },
+      "characters": 1246069,
+      "lines": 11240,
+      "parts": [
+        {
+          "path": "JOB_131515141372_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "af579dfd5c82589054c164fd0a74094e4eddf857db3aff2d7b74007fade7696e",
+          "git_blob": "cba05b2a9fa7bffacea116cc2600ca481d3562dd"
+        },
+        {
+          "path": "JOB_131515141372_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "50d0f6426f2955a4775adcd3b1771847f266f21ecbff6210b3f3ee1dbb9c0855",
+          "git_blob": "9dc68c8818ab58736c9e888db5665b76741ffc60"
+        },
+        {
+          "path": "JOB_131515141372_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "46aef06fa0ffb60071c421345ed74a2de2334fea5cd2a8f65b05b88a4573f0f0",
+          "git_blob": "e02d9d9387be53c1b77525f3de100326242646a0"
+        },
+        {
+          "path": "JOB_131515141372_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "94d6709a52ff331d06fa5ef454199b1308d88eefb12a8d1f20d808fc37fd775a",
+          "git_blob": "08d40148540f6d82ec31131fb818ad30d4a75d1e"
+        },
+        {
+          "path": "JOB_131515141372_PART_004.log",
+          "start_character": 720000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "3f0224ff8252d31c9bdd674205052303a203e90d38eb4959bdee7d40e9117b91",
+          "git_blob": "e90f50ba95f83bf0da27f00e76d9f20440589d1a"
+        },
+        {
+          "path": "JOB_131515141372_PART_005.log",
+          "start_character": 900000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "cb3e8f57751720e6adb85325d071082e0df48be7c08a1552234031a4dadb038f",
+          "git_blob": "db562cf1a0c0cd81f2ea51adeb1e17372d8684fb"
+        },
+        {
+          "path": "JOB_131515141372_PART_006.log",
+          "start_character": 1080000,
+          "characters": 166069,
+          "bytes": 166069,
+          "sha256": "e17dc0adb69dc13d0acc9a00b546cc0a410e782eaee50f55488ad2031d62291c",
+          "git_blob": "354e02ab97b76f03fce7bc6c8340cd966a59e65b"
+        }
+      ],
+      "checkout_commits_observed": [
+        "e095f0aafe92e9248c9283faffcbc4cb84b4d54e"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 8795,
+          "line": "2026-11-12T21:55:17.4878871Z test result: FAILED. 135 passed; 4 failed; 14 ignored; 0 measured; 1086 filtered out; finished in 203.08s"
+        },
+        {
+          "original_line_1_based": 10853,
+          "line": "2026-11-12T21:56:53.4525423Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 7 out of 8 in 300.0s"
+        },
+        {
+          "original_line_1_based": 10863,
+          "line": "2026-11-12T21:56:53.4541968Z Executed 2 out of 583 tests: 415 tests pass, 1 fails remotely, and 167 were skipped."
+        },
+        {
+          "original_line_1_based": 11066,
+          "line": "2026-11-12T21:57:08.9782511Z test result: FAILED. 135 passed; 4 failed; 14 ignored; 0 measured; 1086 filtered out; finished in 203.08s"
+        },
+        {
+          "original_line_1_based": 11069,
+          "line": "2026-11-12T21:57:08.9787938Z ##[error]Process completed with exit code 3."
+        },
+        {
+          "original_line_1_based": 11132,
+          "line": "2026-11-12T21:57:37.0468143Z INFO: Build completed successfully, 6 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 1261451,
+        "sha256": "a315a44d3f930cc6170f4692ac6eedf26dda2a389facefcb8c8babaa96215697",
+        "git_blob": "ae2fca1cea17069a9a0dca4aa980fa2ecda6f859"
+      },
+      "parts_reassemble_exactly": true,
+      "original_job_metadata": {
+        "id": 131515141372,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:45:54Z",
+        "completed_at": "2026-11-12T21:57:50Z",
+        "runner_id": 1000135591,
+        "runner_name": "GitHub Actions 1000135591",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-12T21:45:55Z",
+          "completed_at": "2026-11-12T21:45:55Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-12T21:45:55Z",
+          "completed_at": "2026-11-12T21:46:03Z"
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-12T21:46:03Z",
+          "completed_at": "2026-11-12T21:46:22Z"
+        },
+        {
+          "name": "Check rusty_v8 MODULE.bazel checksums",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-12T21:46:22Z",
+          "completed_at": "2026-11-12T21:46:25Z"
+        },
+        {
+          "name": "Check MODULE.bazel.lock is up to date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-12T21:46:25Z",
+          "completed_at": "2026-11-12T21:46:41Z"
+        },
+        {
+          "name": "Install OpenSSH for the native operator-acceptance test action",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-12T21:46:41Z",
+          "completed_at": "2026-11-12T21:46:47Z"
+        },
+        {
+          "name": "bazel test //...",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7,
+          "started_at": "2026-11-12T21:46:47Z",
+          "completed_at": "2026-11-12T21:57:08Z"
+        },
+        {
+          "name": "Run operator acceptance with native OpenSSH",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-12T21:57:08Z",
+          "completed_at": "2026-11-12T21:57:42Z"
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-12T21:57:42Z",
+          "completed_at": "2026-11-12T21:57:44Z"
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-11-12T21:57:44Z",
+          "completed_at": "2026-11-12T21:57:44Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-12T21:57:44Z",
+          "completed_at": "2026-11-12T21:57:47Z"
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-12T21:57:47Z",
+          "completed_at": "2026-11-12T21:57:47Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-12T21:57:47Z",
+          "completed_at": "2026-11-12T21:57:47Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-12T21:57:47Z",
+          "completed_at": "2026-11-12T21:57:47Z"
+        }
+      ]
+    }
+  ],
+  "method_denominator": null,
+  "whole_matrix_complete": false,
+  "manual_dispatches": 0,
+  "manual_cancels": 0,
+  "manual_reruns": 0,
+  "owner_decision": null,
+  "research_outcome": "HOLD",
+  "metadata_files": [
+    {
+      "path": "SNAPSHOT_0001.json",
+      "bytes": 194067,
+      "sha256": "b7a5aaa621bfee25ad0c5d788cd437c2fb79da84dee356df208ce6f07e5d288c",
+      "git_blob": "04544728f1a6eeb5300368aeaedfa5b0bf337b96"
+    },
+    {
+      "path": "SNAPSHOT_0004.json",
+      "bytes": 180173,
+      "sha256": "479a2645283e5cfcd51f2d90c439008d91f2a73a4fc614444276d655e70d0585",
+      "git_blob": "26dcd2bd983c586f57fbfc346a1b1172eecc6d14"
+    },
+    {
+      "path": "COMMIT_e095f0aafe92e9248c9283faffcbc4cb84b4d54e_ORIGINAL_API.json",
+      "bytes": 6697,
+      "sha256": "87b269dc2ba97abaf28221f8d4a47b28798557584f2b7b06d8a01f5aae95e99b",
+      "git_blob": "ce946f4fb337b6ebb32b91c724e6e45ad3791ba5"
+    },
+    {
+      "path": "DERIVED_AGENTD_FAILURES_0004.json",
+      "bytes": 33431,
+      "sha256": "229f345c56e335686b08cf9b2264c60af587a0376e8d3e4921f6218c9a775bcf",
+      "git_blob": "32e16221e231640ede8de7aeccf6e0bcd769e523"
+    },
+    {
+      "path": "COMPLETE_SHARD6_FAILURE_DETAILS.json",
+      "bytes": 5375,
+      "sha256": "51b25dfc592cbd392d3f36f1bce2e7b4342012f67865e9d600c767d4c64d7633",
+      "git_blob": "742a8b10d0eb8ebe1aebd2d8eda5a984f9e4e0a8"
+    }
+  ],
+  "observed_at_utc": "2026-11-12 21:58:49 UTC",
+  "actual_checkout": "e095f0aafe92e9248c9283faffcbc4cb84b4d54e",
+  "checkout_tree_verified_equal": true,
+  "readback_validation": "Separate GIT_READBACK.json records exact original part verification after Git creation.",
+  "whole_matrix_result": "GNU and musl actual test failure; other platforms not complete at this snapshot."
+}

@@ -1,0 +1,2129 @@
+ex acquired here
+2026-11-12T21:32:52.2158816Z   232 |         m->lock();
+2026-11-12T21:32:52.2159196Z       |            ^
+2026-11-12T21:32:52.2160285Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2161674Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2162373Z       |                                                             ^
+2026-11-12T21:32:52.2162876Z 2 warnings generated.
+2026-11-12T21:32:52.2163366Z INFO: From Compiling source/common/locdistance.cpp [for tool]:
+2026-11-12T21:32:52.2164227Z In file included from external/v8++git_repository+icu/source/common/locdistance.cpp:19:
+2026-11-12T21:32:52.2165742Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2167011Z   233 |     }
+2026-11-12T21:32:52.2167326Z       |     ^
+2026-11-12T21:32:52.2167948Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2168681Z   232 |         m->lock();
+2026-11-12T21:32:52.2169083Z       |            ^
+2026-11-12T21:32:52.2170167Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2171588Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2172322Z       |                                                             ^
+2026-11-12T21:32:52.2172821Z 2 warnings generated.
+2026-11-12T21:32:52.2173315Z INFO: From Compiling source/common/sharedobject.cpp [for tool]:
+2026-11-12T21:32:52.2174172Z In file included from external/v8++git_repository+icu/source/common/sharedobject.cpp:10:
+2026-11-12T21:32:52.2175379Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:52.2176713Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2177765Z   233 |     }
+2026-11-12T21:32:52.2178071Z       |     ^
+2026-11-12T21:32:52.2178661Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2179406Z   232 |         m->lock();
+2026-11-12T21:32:52.2179763Z       |            ^
+2026-11-12T21:32:52.2180832Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2182185Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2182847Z       |                                                             ^
+2026-11-12T21:32:52.2183339Z 2 warnings generated.
+2026-11-12T21:32:52.2183802Z INFO: From Compiling source/common/ustr_cnv.cpp [for tool]:
+2026-11-12T21:32:52.2184761Z In file included from external/v8++git_repository+icu/source/common/ustr_cnv.cpp:29:
+2026-11-12T21:32:52.2186200Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2187207Z   233 |     }
+2026-11-12T21:32:52.2187498Z       |     ^
+2026-11-12T21:32:52.2188129Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2188853Z   232 |         m->lock();
+2026-11-12T21:32:52.2189212Z       |            ^
+2026-11-12T21:32:52.2190326Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2191731Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2192428Z       |                                                             ^
+2026-11-12T21:32:52.2192925Z 2 warnings generated.
+2026-11-12T21:32:52.2193408Z INFO: From Compiling source/common/emojiprops.cpp [for tool]:
+2026-11-12T21:32:52.2194246Z In file included from external/v8++git_repository+icu/source/common/emojiprops.cpp:17:
+2026-11-12T21:32:52.2195758Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2196773Z   233 |     }
+2026-11-12T21:32:52.2197074Z       |     ^
+2026-11-12T21:32:52.2197671Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2198404Z   232 |         m->lock();
+2026-11-12T21:32:52.2198758Z       |            ^
+2026-11-12T21:32:52.2199836Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2201469Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2202165Z       |                                                             ^
+2026-11-12T21:32:52.2202675Z 2 warnings generated.
+2026-11-12T21:32:52.2203140Z INFO: From Compiling source/common/uloc.cpp [for tool]:
+2026-11-12T21:32:52.2203895Z In file included from external/v8++git_repository+icu/source/common/uloc.cpp:48:
+2026-11-12T21:32:52.2205397Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2206451Z   233 |     }
+2026-11-12T21:32:52.2206754Z       |     ^
+2026-11-12T21:32:52.2207359Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2208089Z   232 |         m->lock();
+2026-11-12T21:32:52.2208449Z       |            ^
+2026-11-12T21:32:52.2209576Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2211011Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2211695Z       |                                                             ^
+2026-11-12T21:32:52.2212205Z 2 warnings generated.
+2026-11-12T21:32:52.2212677Z INFO: From Compiling source/i18n/dangical.cpp [for tool]:
+2026-11-12T21:32:52.2213471Z In file included from external/v8++git_repository+icu/source/i18n/dangical.cpp:22:
+2026-11-12T21:32:52.2214777Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2216004Z   233 |     }
+2026-11-12T21:32:52.2216311Z       |     ^
+2026-11-12T21:32:52.2216906Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2217647Z   232 |         m->lock();
+2026-11-12T21:32:52.2218016Z       |            ^
+2026-11-12T21:32:52.2219325Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2220722Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2221404Z       |                                                             ^
+2026-11-12T21:32:52.2221973Z 2 warnings generated.
+2026-11-12T21:32:52.2222448Z INFO: From Compiling source/i18n/brktrans.cpp [for tool]:
+2026-11-12T21:32:52.2223243Z In file included from external/v8++git_repository+icu/source/i18n/brktrans.cpp:27:
+2026-11-12T21:32:52.2224168Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2225629Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2226681Z   233 |     }
+2026-11-12T21:32:52.2226999Z       |     ^
+2026-11-12T21:32:52.2227606Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2228352Z   232 |         m->lock();
+2026-11-12T21:32:52.2228702Z       |            ^
+2026-11-12T21:32:52.2229809Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2231201Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2231873Z       |                                                             ^
+2026-11-12T21:32:52.2232387Z 2 warnings generated.
+2026-11-12T21:32:52.2232873Z INFO: From Compiling source/common/unormcmp.cpp [for tool]:
+2026-11-12T21:32:52.2233688Z In file included from external/v8++git_repository+icu/source/common/unormcmp.cpp:30:
+2026-11-12T21:32:52.2234677Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:52.2236027Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2237255Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2238214Z   233 |     }
+2026-11-12T21:32:52.2238515Z       |     ^
+2026-11-12T21:32:52.2239089Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2239763Z   232 |         m->lock();
+2026-11-12T21:32:52.2240101Z       |            ^
+2026-11-12T21:32:52.2241164Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2242492Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2243138Z       |                                                             ^
+2026-11-12T21:32:52.2243603Z 2 warnings generated.
+2026-11-12T21:32:52.2244072Z INFO: From Compiling source/common/servslkf.cpp [for tool]:
+2026-11-12T21:32:52.2244875Z In file included from external/v8++git_repository+icu/source/common/servslkf.cpp:18:
+2026-11-12T21:32:52.2245986Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:52.2246866Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:52.2247726Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:52.2248613Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2249846Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2250874Z   233 |     }
+2026-11-12T21:32:52.2251178Z       |     ^
+2026-11-12T21:32:52.2251744Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2252504Z   232 |         m->lock();
+2026-11-12T21:32:52.2252875Z       |            ^
+2026-11-12T21:32:52.2254135Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2255708Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2256368Z       |                                                             ^
+2026-11-12T21:32:52.2256854Z 2 warnings generated.
+2026-11-12T21:32:52.2257355Z INFO: From Compiling source/common/uloc_keytype.cpp [for tool]:
+2026-11-12T21:32:52.2258182Z In file included from external/v8++git_repository+icu/source/common/uloc_keytype.cpp:24:
+2026-11-12T21:32:52.2259472Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2260476Z   233 |     }
+2026-11-12T21:32:52.2260788Z       |     ^
+2026-11-12T21:32:52.2261377Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2262135Z   232 |         m->lock();
+2026-11-12T21:32:52.2262488Z       |            ^
+2026-11-12T21:32:52.2263612Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2265035Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2265969Z       |                                                             ^
+2026-11-12T21:32:52.2266464Z 2 warnings generated.
+2026-11-12T21:32:52.2266942Z INFO: From Compiling source/common/usprep.cpp [for tool]:
+2026-11-12T21:32:52.2267753Z In file included from external/v8++git_repository+icu/source/common/usprep.cpp:29:
+2026-11-12T21:32:52.2269074Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2270330Z   233 |     }
+2026-11-12T21:32:52.2270644Z       |     ^
+2026-11-12T21:32:52.2271251Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2271993Z   232 |         m->lock();
+2026-11-12T21:32:52.2272367Z       |            ^
+2026-11-12T21:32:52.2273484Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2274900Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2275795Z       |                                                             ^
+2026-11-12T21:32:52.2276300Z 2 warnings generated.
+2026-11-12T21:32:52.2276769Z INFO: From Compiling source/common/servrbf.cpp [for tool]:
+2026-11-12T21:32:52.2277590Z In file included from external/v8++git_repository+icu/source/common/servrbf.cpp:18:
+2026-11-12T21:32:52.2278535Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:52.2279447Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:52.2280361Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:52.2281272Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2282535Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2283568Z   233 |     }
+2026-11-12T21:32:52.2283875Z       |     ^
+2026-11-12T21:32:52.2284475Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2285419Z   232 |         m->lock();
+2026-11-12T21:32:52.2285780Z       |            ^
+2026-11-12T21:32:52.2286906Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2288525Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2289209Z       |                                                             ^
+2026-11-12T21:32:52.2289700Z 2 warnings generated.
+2026-11-12T21:32:52.2290181Z INFO: From Compiling source/common/resbund.cpp [for tool]:
+2026-11-12T21:32:52.2290978Z In file included from external/v8++git_repository+icu/source/common/resbund.cpp:55:
+2026-11-12T21:32:52.2291892Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2293219Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2294267Z   233 |     }
+2026-11-12T21:32:52.2294572Z       |     ^
+2026-11-12T21:32:52.2295381Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2296140Z   232 |         m->lock();
+2026-11-12T21:32:52.2296506Z       |            ^
+2026-11-12T21:32:52.2297604Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2298977Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2299657Z       |                                                             ^
+2026-11-12T21:32:52.2300149Z 2 warnings generated.
+2026-11-12T21:32:52.2300617Z INFO: From Compiling source/common/rbbirb.cpp [for tool]:
+2026-11-12T21:32:52.2301400Z In file included from external/v8++git_repository+icu/source/common/rbbirb.cpp:35:
+2026-11-12T21:32:52.2302314Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.h:23:
+2026-11-12T21:32:52.2303224Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:52.2304700Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2305934Z   233 |     }
+2026-11-12T21:32:52.2306253Z       |     ^
+2026-11-12T21:32:52.2306842Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2307559Z   232 |         m->lock();
+2026-11-12T21:32:52.2307924Z       |            ^
+2026-11-12T21:32:52.2308983Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2310354Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2311026Z       |                                                             ^
+2026-11-12T21:32:52.2311509Z 2 warnings generated.
+2026-11-12T21:32:52.2311970Z INFO: From Compiling source/common/unames.cpp [for tool]:
+2026-11-12T21:32:52.2312754Z In file included from external/v8++git_repository+icu/source/common/unames.cpp:27:
+2026-11-12T21:32:52.2314025Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2315031Z   233 |     }
+2026-11-12T21:32:52.2315533Z       |     ^
+2026-11-12T21:32:52.2316111Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2316846Z   232 |         m->lock();
+2026-11-12T21:32:52.2317224Z       |            ^
+2026-11-12T21:32:52.2318324Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2319697Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2320369Z       |                                                             ^
+2026-11-12T21:32:52.2320865Z 2 warnings generated.
+2026-11-12T21:32:52.2321334Z INFO: From Compiling source/i18n/tridpars.cpp [for tool]:
+2026-11-12T21:32:52.2322389Z In file included from external/v8++git_repository+icu/source/i18n/tridpars.cpp:19:
+2026-11-12T21:32:52.2323333Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2324619Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2325889Z   233 |     }
+2026-11-12T21:32:52.2338597Z       |     ^
+2026-11-12T21:32:52.2339270Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2340052Z   232 |         m->lock();
+2026-11-12T21:32:52.2340462Z       |            ^
+2026-11-12T21:32:52.2341618Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2343109Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2343813Z       |                                                             ^
+2026-11-12T21:32:52.2344319Z 2 warnings generated.
+2026-11-12T21:32:52.2344795Z INFO: From Compiling source/common/servls.cpp [for tool]:
+2026-11-12T21:32:52.2345832Z In file included from external/v8++git_repository+icu/source/common/servls.cpp:18:
+2026-11-12T21:32:52.2346789Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:52.2347704Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:52.2348620Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:52.2349545Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2350831Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2352185Z   233 |     }
+2026-11-12T21:32:52.2352483Z       |     ^
+2026-11-12T21:32:52.2353114Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2353871Z   232 |         m->lock();
+2026-11-12T21:32:52.2354259Z       |            ^
+2026-11-12T21:32:52.2355584Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2357017Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2357714Z       |                                                             ^
+2026-11-12T21:32:52.2358231Z 2 warnings generated.
+2026-11-12T21:32:52.2358699Z INFO: From Compiling source/common/unorm.cpp [for tool]:
+2026-11-12T21:32:52.2359483Z In file included from external/v8++git_repository+icu/source/common/unorm.cpp:37:
+2026-11-12T21:32:52.2360457Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:52.2361415Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2362700Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2363757Z   233 |     }
+2026-11-12T21:32:52.2364072Z       |     ^
+2026-11-12T21:32:52.2364679Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2365602Z   232 |         m->lock();
+2026-11-12T21:32:52.2365963Z       |            ^
+2026-11-12T21:32:52.2367069Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2368457Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2369144Z       |                                                             ^
+2026-11-12T21:32:52.2369649Z 2 warnings generated.
+2026-11-12T21:32:52.2370391Z INFO: From Compiling source/common/ucurr.cpp [for tool]:
+2026-11-12T21:32:52.2371181Z In file included from external/v8++git_repository+icu/source/common/ucurr.cpp:30:
+2026-11-12T21:32:52.2372497Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2373529Z   233 |     }
+2026-11-12T21:32:52.2373836Z       |     ^
+2026-11-12T21:32:52.2374472Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2375423Z   232 |         m->lock();
+2026-11-12T21:32:52.2375796Z       |            ^
+2026-11-12T21:32:52.2376914Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2378326Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2379020Z       |                                                             ^
+2026-11-12T21:32:52.2379535Z 2 warnings generated.
+2026-11-12T21:32:52.2380023Z INFO: From Compiling source/i18n/uspoof_conf.cpp [for tool]:
+2026-11-12T21:32:52.2380855Z In file included from external/v8++git_repository+icu/source/i18n/uspoof_conf.cpp:30:
+2026-11-12T21:32:52.2381821Z In file included from external/v8++git_repository+icu/source/i18n/uspoof_impl.h:31:
+2026-11-12T21:32:52.2383158Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2384193Z   233 |     }
+2026-11-12T21:32:52.2384511Z       |     ^
+2026-11-12T21:32:52.2385302Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2386052Z   232 |         m->lock();
+2026-11-12T21:32:52.2386604Z       |            ^
+2026-11-12T21:32:52.2387700Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2389067Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2389763Z       |                                                             ^
+2026-11-12T21:32:52.2390260Z 2 warnings generated.
+2026-11-12T21:32:52.2390964Z Analyzing: 1296 targets (1399 packages loaded, 213921 targets configured, 1655 aspect applications)
+2026-11-12T21:32:52.2392301Z [29,271 / 38,737] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 23s remote, remote-cache ... (800 actions, 7 running)
+2026-11-12T21:32:52.2393448Z INFO: From Compiling source/common/locavailable.cpp [for tool]:
+2026-11-12T21:32:52.2394327Z In file included from external/v8++git_repository+icu/source/common/locavailable.cpp:31:
+2026-11-12T21:32:52.2395898Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2396959Z   233 |     }
+2026-11-12T21:32:52.2397276Z       |     ^
+2026-11-12T21:32:52.2397877Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2398629Z   232 |         m->lock();
+2026-11-12T21:32:52.2398999Z       |            ^
+2026-11-12T21:32:52.2400099Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2401520Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2402213Z       |                                                             ^
+2026-11-12T21:32:52.2402717Z 2 warnings generated.
+2026-11-12T21:32:52.2403184Z INFO: From Compiling source/common/serv.cpp [for tool]:
+2026-11-12T21:32:52.2403961Z In file included from external/v8++git_repository+icu/source/common/serv.cpp:15:
+2026-11-12T21:32:52.2404867Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:52.2406171Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:52.2407123Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2408423Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2409485Z   233 |     }
+2026-11-12T21:32:52.2409793Z       |     ^
+2026-11-12T21:32:52.2410390Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2411137Z   232 |         m->lock();
+2026-11-12T21:32:52.2411502Z       |            ^
+2026-11-12T21:32:52.2412605Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2414031Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2414726Z       |                                                             ^
+2026-11-12T21:32:52.2415519Z 2 warnings generated.
+2026-11-12T21:32:52.2416001Z INFO: From Compiling source/common/brkeng.cpp [for tool]:
+2026-11-12T21:32:52.2416806Z In file included from external/v8++git_repository+icu/source/common/brkeng.cpp:32:
+2026-11-12T21:32:52.2417732Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2419025Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2420075Z   233 |     }
+2026-11-12T21:32:52.2420388Z       |     ^
+2026-11-12T21:32:52.2420990Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2422009Z   232 |         m->lock();
+2026-11-12T21:32:52.2422375Z       |            ^
+2026-11-12T21:32:52.2423499Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2424915Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2425809Z       |                                                             ^
+2026-11-12T21:32:52.2426310Z 2 warnings generated.
+2026-11-12T21:32:52.2426878Z INFO: From Compiling source/i18n/utf16collationiterator.cpp [for tool]:
+2026-11-12T21:32:52.2427823Z In file included from external/v8++git_repository+icu/source/i18n/utf16collationiterator.cpp:21:
+2026-11-12T21:32:52.2428895Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:52.2429942Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:52.2430938Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2432244Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2433290Z   233 |     }
+2026-11-12T21:32:52.2433596Z       |     ^
+2026-11-12T21:32:52.2434184Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2434918Z   232 |         m->lock();
+2026-11-12T21:32:52.2435474Z       |            ^
+2026-11-12T21:32:52.2436598Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2438004Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2438672Z       |                                                             ^
+2026-11-12T21:32:52.2439158Z 2 warnings generated.
+2026-11-12T21:32:52.2439701Z INFO: From Compiling source/common/static_unicode_sets.cpp [for tool]:
+2026-11-12T21:32:52.2440816Z In file included from external/v8++git_repository+icu/source/common/static_unicode_sets.cpp:13:
+2026-11-12T21:32:52.2442231Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2443283Z   233 |     }
+2026-11-12T21:32:52.2443588Z       |     ^
+2026-11-12T21:32:52.2444189Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2444919Z   232 |         m->lock();
+2026-11-12T21:32:52.2445495Z       |            ^
+2026-11-12T21:32:52.2446615Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2448042Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2448741Z       |                                                             ^
+2026-11-12T21:32:52.2449240Z 2 warnings generated.
+2026-11-12T21:32:52.2449710Z INFO: From Compiling source/common/putil.cpp [for tool]:
+2026-11-12T21:32:52.2450089Z In file included from external/v8++git_repository+icu/source/common/putil.cpp:63:
+2026-11-12T21:32:52.2450817Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2450946Z   233 |     }
+2026-11-12T21:32:52.2451062Z       |     ^
+2026-11-12T21:32:52.2451487Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2451625Z   232 |         m->lock();
+2026-11-12T21:32:52.2451749Z       |            ^
+2026-11-12T21:32:52.2452655Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2453182Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2453376Z       |                                                             ^
+2026-11-12T21:32:52.2453527Z 2 warnings generated.
+2026-11-12T21:32:52.2453777Z INFO: From Compiling source/common/uprops.cpp [for tool]:
+2026-11-12T21:32:52.2454141Z In file included from external/v8++git_repository+icu/source/common/uprops.cpp:36:
+2026-11-12T21:32:52.2454494Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.2455430Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2455567Z   233 |     }
+2026-11-12T21:32:52.2455695Z       |     ^
+2026-11-12T21:32:52.2456111Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2456234Z   232 |         m->lock();
+2026-11-12T21:32:52.2456366Z       |            ^
+2026-11-12T21:32:52.2457255Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2457567Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2457753Z       |                                                             ^
+2026-11-12T21:32:52.2457891Z 2 warnings generated.
+2026-11-12T21:32:52.2458140Z INFO: From Compiling source/i18n/uspoof_impl.cpp [for tool]:
+2026-11-12T21:32:52.2458515Z In file included from external/v8++git_repository+icu/source/i18n/uspoof_impl.cpp:19:
+2026-11-12T21:32:52.2459278Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2459409Z   233 |     }
+2026-11-12T21:32:52.2459532Z       |     ^
+2026-11-12T21:32:52.2459951Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.2460097Z   232 |         m->lock();
+2026-11-12T21:32:52.2460217Z       |            ^
+2026-11-12T21:32:52.2461259Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2461584Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.2461770Z       |                                                             ^
+2026-11-12T21:32:52.2461907Z 2 warnings generated.
+2026-11-12T21:32:52.2462145Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:32:52.2462520Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:52.2462814Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:52.2463337Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2463421Z   147 |   }
+2026-11-12T21:32:52.2463510Z       |   ^
+2026-11-12T21:32:52.2464357Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:32:52.2464445Z    32 |     __m_.lock();
+2026-11-12T21:32:52.2464518Z       |          ^
+2026-11-12T21:32:52.2465373Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:32:52.2465625Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2465766Z       |                           ^
+2026-11-12T21:32:52.2466351Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:52.2466643Z   138 |       impl.lock();
+2026-11-12T21:32:52.2466720Z       |            ^
+2026-11-12T21:32:52.2467260Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2467357Z   151 |       impl.unlock();
+2026-11-12T21:32:52.2467431Z       |            ^
+2026-11-12T21:32:52.2468299Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:32:52.2468552Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:52.2468680Z       |                                                                         ^
+2026-11-12T21:32:52.2469306Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:32:52.2469455Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2469545Z       |                           ^
+2026-11-12T21:32:52.2469802Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:52.2470082Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:52.2470602Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2470677Z   119 |   }
+2026-11-12T21:32:52.2470755Z       |   ^
+2026-11-12T21:32:52.2471594Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:32:52.2471816Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:52.2471903Z       |           ^
+2026-11-12T21:32:52.2472505Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:32:52.2472643Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2472733Z       |                           ^
+2026-11-12T21:32:52.2473068Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:52.2473166Z   111 |       impl.lock_shared();
+2026-11-12T21:32:52.2473243Z       |            ^
+2026-11-12T21:32:52.2473740Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2473844Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:52.2473918Z       |            ^
+2026-11-12T21:32:52.2474761Z bazel-out/rbe_platform-opt-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:32:52.2474866Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:52.2474944Z       |             ^
+2026-11-12T21:32:52.2475809Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:32:52.2475962Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2476045Z       |                           ^
+2026-11-12T21:32:52.2476136Z 4 warnings generated.
+2026-11-12T21:32:52.2476636Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:32:52.2476906Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:52.2477193Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:52.2477831Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2477916Z   147 |   }
+2026-11-12T21:32:52.2477989Z       |   ^
+2026-11-12T21:32:52.2479208Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:32:52.2479334Z    32 |     __m_.lock();
+2026-11-12T21:32:52.2479436Z       |          ^
+2026-11-12T21:32:52.2480281Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:32:52.2480487Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2480599Z       |                           ^
+2026-11-12T21:32:52.2481068Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:52.2481190Z   138 |       impl.lock();
+2026-11-12T21:32:52.2481295Z       |            ^
+2026-11-12T21:32:52.2482000Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2482127Z   151 |       impl.unlock();
+2026-11-12T21:32:52.2482232Z       |            ^
+2026-11-12T21:32:52.2483480Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:32:52.2483888Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:52.2484028Z       |                                                                         ^
+2026-11-12T21:32:52.2484625Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:32:52.2484770Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2484856Z       |                           ^
+2026-11-12T21:32:52.2485363Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:52.2485665Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:52.2486209Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2486293Z   119 |   }
+2026-11-12T21:32:52.2486373Z       |   ^
+2026-11-12T21:32:52.2487239Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:32:52.2487326Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:52.2487406Z       |           ^
+2026-11-12T21:32:52.2487994Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:32:52.2488138Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2488216Z       |                           ^
+2026-11-12T21:32:52.2488706Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:52.2488810Z   111 |       impl.lock_shared();
+2026-11-12T21:32:52.2488884Z       |            ^
+2026-11-12T21:32:52.2489387Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.2489482Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:52.2489555Z       |            ^
+2026-11-12T21:32:52.2490429Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:32:52.2490525Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:52.2490599Z       |             ^
+2026-11-12T21:32:52.2491199Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:32:52.2491354Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:52.2491440Z       |                           ^
+2026-11-12T21:32:52.2491523Z 4 warnings generated.
+2026-11-12T21:32:52.3060700Z Analyzing: 1296 targets (1399 packages loaded, 213926 targets configured, 1659 aspect applications)
+2026-11-12T21:32:52.3191118Z [29,920 / 38,761] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 24s remote, remote-cache ... (343 actions, 4 running)
+2026-11-12T21:32:52.4373721Z INFO: From Compiling source/common/ucnvmbcs.cpp [for tool]:
+2026-11-12T21:32:52.4374753Z In file included from external/v8++git_repository+icu/source/common/ucnvmbcs.cpp:61:
+2026-11-12T21:32:52.4376686Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.4377812Z   233 |     }
+2026-11-12T21:32:52.4378155Z       |     ^
+2026-11-12T21:32:52.4379192Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.4379997Z   232 |         m->lock();
+2026-11-12T21:32:52.4380397Z       |            ^
+2026-11-12T21:32:52.4381561Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.4383041Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.4383778Z       |                                                             ^
+2026-11-12T21:32:52.4384323Z 2 warnings generated.
+2026-11-12T21:32:52.4833305Z INFO: From Compiling source/common/ucnv_bld.cpp [for tool]:
+2026-11-12T21:32:52.4887598Z In file included from external/v8++git_repository+icu/source/common/ucnv_bld.cpp:32:
+2026-11-12T21:32:52.4902023Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:52.4939604Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:52.5066051Z   233 |     }
+2026-11-12T21:32:52.5119035Z       |     ^
+2026-11-12T21:32:52.5313463Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:52.5454476Z   232 |         m->lock();
+2026-11-12T21:32:52.5616896Z       |            ^
+2026-11-12T21:32:52.5660009Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:52.5787895Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:52.5827517Z       |                                                             ^
+2026-11-12T21:32:52.5876001Z 2 warnings generated.
+2026-11-12T21:32:53.4345426Z Analyzing: 1296 targets (1399 packages loaded, 213931 targets configured, 1664 aspect applications)
+2026-11-12T21:32:53.7677314Z [30,177 / 38,785] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 25s remote, remote-cache ... (516 actions, 8 running)
+2026-11-12T21:32:55.8278035Z Analyzing: 1296 targets (1399 packages loaded, 213931 targets configured, 1664 aspect applications)
+2026-11-12T21:32:55.8296348Z [30,180 / 38,786] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 27s remote, remote-cache ... (786 actions, 6 running)
+2026-11-12T21:32:56.7679470Z INFO: From Compiling Rust bin //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin (95 files):
+2026-11-12T21:32:56.7846373Z warning: variable does not need to be mutable
+2026-11-12T21:32:56.8046493Z    --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+2026-11-12T21:32:56.8286653Z     |
+2026-11-12T21:32:56.8456421Z 310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+2026-11-12T21:32:56.8636265Z     |         ----^^^^^^^^
+2026-11-12T21:32:56.8926303Z     |         |
+2026-11-12T21:32:56.9326673Z     |         help: remove this `mut`
+2026-11-12T21:32:56.9647487Z     |
+2026-11-12T21:32:56.9866414Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:32:57.0105706Z 
+2026-11-12T21:32:57.0492573Z warning: 1 warning emitted
+2026-11-12T21:32:57.0775772Z 
+2026-11-12T21:32:57.1058229Z Analyzing: 1296 targets (1399 packages loaded, 213942 targets configured, 1673 aspect applications)
+2026-11-12T21:32:57.1119889Z [30,212 / 38,817] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 28s remote, remote-cache ... (792 actions, 8 running)
+2026-11-12T21:32:57.1626962Z INFO: From Compiling source/i18n/zonemeta.cpp [for tool]:
+2026-11-12T21:32:57.1726622Z In file included from external/v8++git_repository+icu/source/i18n/zonemeta.cpp:21:
+2026-11-12T21:32:57.1938132Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:57.2046019Z   233 |     }
+2026-11-12T21:32:57.2218263Z       |     ^
+2026-11-12T21:32:57.2462259Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:57.2766438Z   232 |         m->lock();
+2026-11-12T21:32:57.2841538Z       |            ^
+2026-11-12T21:32:57.3071523Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:57.3138636Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:57.3376218Z       |                                                             ^
+2026-11-12T21:32:57.3506389Z 2 warnings generated.
+2026-11-12T21:32:57.3746371Z INFO: From Clippy //codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin:
+2026-11-12T21:32:57.4066616Z warning: variable does not need to be mutable
+2026-11-12T21:32:57.4166264Z    --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+2026-11-12T21:32:57.4396863Z     |
+2026-11-12T21:32:57.4606608Z 310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+2026-11-12T21:32:57.4679693Z     |         ----^^^^^^^^
+2026-11-12T21:32:57.4766269Z     |         |
+2026-11-12T21:32:57.4886428Z     |         help: remove this `mut`
+2026-11-12T21:32:57.5080113Z     |
+2026-11-12T21:32:57.5186369Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:32:57.5407592Z 
+2026-11-12T21:32:57.5636277Z warning: 1 warning emitted
+2026-11-12T21:32:57.5759630Z 
+2026-11-12T21:32:57.5845652Z INFO: From Compiling external/+new_local_repository+v8_targets/binding_150_4_0.cc:
+2026-11-12T21:32:57.5896739Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:32:57.6006909Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:32:57.6166345Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:32:57.6276542Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:32:57.6312155Z external/v8+/include/v8-template.h:800:16: warning: 'ConvertSetter' is deprecated: Use NamedPropertySetterCallbackV2 setter instead [-Wdeprecated-declarations]
+2026-11-12T21:32:57.6341768Z   800 |         setter(ConvertSetter(setter)),
+2026-11-12T21:32:57.6365648Z       |                ^
+2026-11-12T21:32:57.6423366Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1489:35: note: in instantiation of function template specialization 'v8::NamedPropertyHandlerConfiguration::NamedPropertyHandlerConfiguration<v8::Intercepted (*)(v8::Local<v8::Name>, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(v8::Local<v8::Name>, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T21:32:57.6463980Z  1489 |   ptr_to_local(&self)->SetHandler(v8::NamedPropertyHandlerConfiguration(
+2026-11-12T21:32:57.6534632Z       |                                   ^
+2026-11-12T21:32:57.6557807Z external/v8+/include/v8-template.h:759:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T21:32:57.6626307Z   759 |   V8_DEPRECATE_SOON("Use NamedPropertySetterCallbackV2 setter instead")
+2026-11-12T21:32:57.6695819Z       |   ^
+2026-11-12T21:32:57.6736224Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:32:57.6775812Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:32:57.6823233Z       |                                       ^
+2026-11-12T21:32:57.6895389Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:32:57.6926014Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:32:57.7016293Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:32:57.7145588Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:32:57.7176993Z external/v8+/include/v8-template.h:804:17: warning: 'ConvertDefiner' is deprecated: Use NamedPropertyDefinerCallbackV2 definer instead [-Wdeprecated-declarations]
+2026-11-12T21:32:57.7368580Z   804 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:32:57.7412700Z       |                 ^
+2026-11-12T21:32:57.7538351Z external/v8+/include/v8-template.h:772:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:32:57.7565936Z   772 |   V8_DEPRECATE_SOON("Use NamedPropertyDefinerCallbackV2 definer instead")
+2026-11-12T21:32:57.7656335Z       |   ^
+2026-11-12T21:32:57.7675995Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:32:57.7805025Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:32:57.7863027Z       |                                       ^
+2026-11-12T21:32:57.7922290Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:32:57.8004012Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:32:57.8066432Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:32:57.8125890Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:32:57.8166651Z external/v8+/include/v8-template.h:931:16: warning: 'ConvertSetter' is deprecated: Use IndexedPropertySetterCallback setter instead [-Wdeprecated-declarations]
+2026-11-12T21:32:57.8215773Z   931 |         setter(ConvertSetter(setter)),
+2026-11-12T21:32:57.8255836Z       |                ^
+2026-11-12T21:32:57.8309123Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1503:35: note: in instantiation of function template specialization 'v8::IndexedPropertyHandlerConfiguration::IndexedPropertyHandlerConfiguration<v8::Intercepted (*)(unsigned int, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(unsigned int, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T21:32:57.8346095Z  1503 |   ptr_to_local(&self)->SetHandler(v8::IndexedPropertyHandlerConfiguration(
+2026-11-12T21:32:57.8404919Z       |                                   ^
+2026-11-12T21:32:57.8446476Z external/v8+/include/v8-template.h:890:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T21:32:57.8488124Z   890 |   V8_DEPRECATE_SOON("Use IndexedPropertySetterCallback setter instead")
+2026-11-12T21:32:57.8566886Z       |   ^
+2026-11-12T21:32:57.8656716Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:32:57.8706043Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:32:57.8755718Z       |                                       ^
+2026-11-12T21:32:57.8836945Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:32:57.8886315Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:32:57.8946419Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:32:57.9026277Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:32:57.9086934Z external/v8+/include/v8-template.h:935:17: warning: 'ConvertDefiner' is deprecated: Use IndexedPropertyDefinerCallback definer instead [-Wdeprecated-declarations]
+2026-11-12T21:32:57.9166172Z   935 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:32:57.9235807Z       |                 ^
+2026-11-12T21:32:57.9256163Z external/v8+/include/v8-template.h:903:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:32:57.9295871Z   903 |   V8_DEPRECATE_SOON("Use IndexedPropertyDefinerCallback definer instead")
+2026-11-12T21:32:57.9355939Z       |   ^
+2026-11-12T21:32:57.9416540Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:32:57.9417472Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:32:57.9466025Z       |                                       ^
+2026-11-12T21:32:57.9493663Z 4 warnings generated.
+2026-11-12T21:32:57.9556635Z Analyzing: 1296 targets (1399 packages loaded, 213947 targets configured, 1677 aspect applications)
+2026-11-12T21:32:57.9606254Z [30,372 / 38,857] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 29s remote, remote-cache ... (799 actions, 2 running)
+2026-11-12T21:32:58.8446625Z Analyzing: 1296 targets (1399 packages loaded, 213956 targets configured, 1686 aspect applications)
+2026-11-12T21:32:58.8497858Z [30,436 / 38,884] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 30s remote, remote-cache ... (794 actions, 2 running)
+2026-11-12T21:32:59.7476996Z INFO: Analyzed 1296 targets (1399 packages loaded, 213956 targets configured, 1686 aspect applications).
+2026-11-12T21:32:59.8357889Z [30,485 / 38,902] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 31s remote, remote-cache ... (799 actions, 2 running)
+2026-11-12T21:33:00.8416890Z [30,555 / 38,908] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 32s remote, remote-cache ... (798 actions, 2 running)
+2026-11-12T21:33:01.9497746Z [30,635 / 38,908] [Prepa] Generating Torque files [for tool]; 9s ... (799 actions, 0 running)
+2026-11-12T21:33:02.9567370Z [30,706 / 38,908] [Prepa] Generating Torque files [for tool]; 10s ... (798 actions, 0 running)
+2026-11-12T21:33:03.9529698Z [30,791 / 38,908] [Prepa] Generating Torque files [for tool]; 11s ... (799 actions, 0 running)
+2026-11-12T21:33:04.9586662Z [30,889 / 38,908] [Prepa] Generating Torque files [for tool]; 12s ... (796 actions, 0 running)
+2026-11-12T21:33:05.9554243Z [30,994 / 38,908] [Prepa] Generating Torque files [for tool]; 13s ... (797 actions, 0 running)
+2026-11-12T21:33:06.9636611Z [31,113 / 38,908] [Prepa] Generating Torque files [for tool]; 14s ... (795 actions, 0 running)
+2026-11-12T21:33:07.9646518Z [31,220 / 38,908] [Prepa] Generating Torque files [for tool]; 15s ... (798 actions, 0 running)
+2026-11-12T21:33:08.9689255Z [31,324 / 38,908] [Prepa] Generating Torque files [for tool]; 16s ... (713 actions, 0 running)
+2026-11-12T21:33:09.9723351Z [31,468 / 38,908] [Prepa] Generating Torque files [for tool]; 17s ... (569 actions, 0 running)
+2026-11-12T21:33:10.9728406Z [31,576 / 38,908] [Prepa] Executing genrule @@v8+//:generated_bytecode_builtins_list [for tool]; 13s ... (461 actions, 0 running)
+2026-11-12T21:33:11.2779561Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T21:33:11.2862171Z external/aws-lc+/crypto/thread_win.c:186:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:33:11.2933588Z   186 | #pragma const_seg(".CRT$XLC")
+2026-11-12T21:33:11.2979579Z       |         ^
+2026-11-12T21:33:11.3259638Z external/aws-lc+/crypto/thread_win.c:192:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:33:11.3396374Z   192 | #pragma const_seg()
+2026-11-12T21:33:11.3444505Z       |         ^
+2026-11-12T21:33:11.3580638Z 2 warnings generated.
+2026-11-12T21:33:11.9834424Z [32,455 / 38,908] Compiling external/v8+/icu/torque-generated/src/objects/js-proxy-tq.cc; 1s remote, remote-cache ... (466 actions, 0 running)
+2026-11-12T21:33:13.0288539Z [33,120 / 38,908] Compiling external/v8+/icu/torque-generated/src/objects/js-struct-tq.cc; 2s remote, remote-cache ... (572 actions, 0 running)
+2026-11-12T21:33:15.8446591Z [33,125 / 38,908] Compiling external/v8+/icu/torque-generated/src/objects/js-struct-tq.cc; 4s remote, remote-cache ... (733 actions, 0 running)
+2026-11-12T21:33:16.0421951Z [33,239 / 38,908] Compiling external/v8+/icu/torque-generated/src/objects/js-struct-tq.cc; 5s remote, remote-cache ... (796 actions, 0 running)
+2026-11-12T21:33:16.1287097Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h:
+2026-11-12T21:33:16.1357097Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:33:16.1630814Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:33:16.1712496Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:33:17.0437169Z [33,411 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-is-extensible-tq.cc [for tool]; 4s ... (793 actions, 0 running)
+2026-11-12T21:33:18.0426972Z [33,469 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-is-extensible-tq.cc [for tool]; 5s ... (799 actions, 0 running)
+2026-11-12T21:33:19.0417429Z [33,556 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-is-extensible-tq.cc [for tool]; 6s ... (799 actions, 0 running)
+2026-11-12T21:33:20.0457238Z [33,652 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-is-extensible-tq.cc [for tool]; 7s ... (798 actions, 0 running)
+2026-11-12T21:33:21.0497026Z [33,727 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-is-extensible-tq.cc [for tool]; 8s ... (800 actions, 0 running)
+2026-11-12T21:33:22.0416716Z [33,805 / 38,908] [Prepa] Compiling src/ast/ast-function-literal-id-reindexer.cc [for tool]; 9s ... (797 actions, 0 running)
+2026-11-12T21:33:23.0576838Z [33,869 / 38,908] [Prepa] Compiling src/ast/variables.cc [for tool]; 10s ... (800 actions, 0 running)
+2026-11-12T21:33:24.0668856Z [33,946 / 38,908] [Prepa] Compiling src/builtins/builtins-sharedarraybuffer.cc [for tool]; 11s ... (796 actions, 0 running)
+2026-11-12T21:33:25.0597371Z [34,023 / 38,908] [Prepa] Compiling external/v8+/icu/torque-generated/src/builtins/promise-abstract-operations-tq-csa.cc [for tool]; 12s ... (798 actions, 0 running)
+2026-11-12T21:33:26.0648681Z [34,143 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 9s ... (796 actions, 0 running)
+2026-11-12T21:33:27.0626519Z [34,237 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 10s ... (793 actions, 0 running)
+2026-11-12T21:33:28.0756713Z [34,369 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 11s ... (757 actions, 0 running)
+2026-11-12T21:33:29.0792621Z [34,460 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 12s ... (666 actions, 0 running)
+2026-11-12T21:33:30.0926667Z [34,559 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 13s ... (567 actions, 0 running)
+2026-11-12T21:33:31.0896721Z [34,664 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 14s ... (462 actions, 0 running)
+2026-11-12T21:33:32.0916933Z [34,799 / 38,908] [Prepa] Running Cargo build script @@rules_rs++crate+crates__parking_lot_core-0.9.12//:_bs; 15s ... (328 actions, 0 running)
+2026-11-12T21:33:33.0922037Z [34,914 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 16s remote, remote-cache ... (259 actions, 0 running)
+2026-11-12T21:33:33.3076545Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-12T21:33:33.3096857Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:33.3311079Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T21:33:33.3618886Z    |
+2026-11-12T21:33:33.3782812Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:33.3916029Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:33.5266223Z    |
+2026-11-12T21:33:33.6143274Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:33.6605491Z 
+2026-11-12T21:33:33.6716435Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:33.6749319Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T21:33:33.6850479Z     |
+2026-11-12T21:33:33.6875708Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:33.6905918Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:33.6937280Z 
+2026-11-12T21:33:33.7933101Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:33.8288385Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T21:33:33.8396014Z     |
+2026-11-12T21:33:33.8496406Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:33.8536055Z     |         ^^^^^^^^^^
+2026-11-12T21:33:33.8820065Z 
+2026-11-12T21:33:33.8896482Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:33.9077171Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T21:33:33.9203004Z    |
+2026-11-12T21:33:33.9249465Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:33.9336018Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:33.9474893Z 
+2026-11-12T21:33:33.9549356Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:33.9729658Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T21:33:33.9774796Z      |
+2026-11-12T21:33:33.9854042Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:33.9869304Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:33.9987055Z 
+2026-11-12T21:33:34.0100584Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.0139393Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T21:33:34.0343877Z      |
+2026-11-12T21:33:34.0436463Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.0600207Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.0610160Z 
+2026-11-12T21:33:34.0846805Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.1036397Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T21:33:34.1226337Z    |
+2026-11-12T21:33:34.1367469Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.1606189Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.1709316Z 
+2026-11-12T21:33:34.1916536Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.2206628Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T21:33:34.2507993Z      |
+2026-11-12T21:33:34.2785767Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.3187539Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.3315667Z 
+2026-11-12T21:33:34.3407889Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.3446066Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T21:33:34.3447861Z      |
+2026-11-12T21:33:34.3701880Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.4100614Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.4335724Z 
+2026-11-12T21:33:34.4502447Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.4656398Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T21:33:34.4789063Z    |
+2026-11-12T21:33:34.4896274Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.5036409Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.5183313Z 
+2026-11-12T21:33:34.5372763Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.5558653Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T21:33:34.5748023Z     |
+2026-11-12T21:33:34.5936118Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.5956826Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.5957423Z 
+2026-11-12T21:33:34.5957998Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.5959130Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T21:33:34.5977660Z     |
+2026-11-12T21:33:34.5979872Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:33:34.5980854Z     |                        ^^^^^^^^^^
+2026-11-12T21:33:34.5981356Z 
+2026-11-12T21:33:34.5981954Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.5983035Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T21:33:34.5983872Z    |
+2026-11-12T21:33:34.5997652Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.5998537Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.5999010Z 
+2026-11-12T21:33:34.5999653Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6000748Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T21:33:34.6001515Z     |
+2026-11-12T21:33:34.6002042Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6002712Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6003188Z 
+2026-11-12T21:33:34.6003834Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6004931Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T21:33:34.6005943Z     |
+2026-11-12T21:33:34.6006627Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6007423Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6007827Z 
+2026-11-12T21:33:34.6008419Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6009438Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T21:33:34.6010118Z    |
+2026-11-12T21:33:34.6010608Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6011196Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6012069Z 
+2026-11-12T21:33:34.6012764Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6013845Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T21:33:34.6014595Z     |
+2026-11-12T21:33:34.6015336Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6016079Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6016638Z 
+2026-11-12T21:33:34.6017301Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6018413Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T21:33:34.6019152Z     |
+2026-11-12T21:33:34.6020036Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:33:34.6021150Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6021669Z 
+2026-11-12T21:33:34.6022363Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6023581Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T21:33:34.6024415Z     |
+2026-11-12T21:33:34.6025402Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6026122Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6026607Z 
+2026-11-12T21:33:34.6027226Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6028293Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T21:33:34.6029023Z     |
+2026-11-12T21:33:34.6029518Z 858 |         ServerInfo::new(
+2026-11-12T21:33:34.6030081Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6030485Z 
+2026-11-12T21:33:34.6031106Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6032247Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T21:33:34.6033110Z    |
+2026-11-12T21:33:34.6033724Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6034415Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6034846Z 
+2026-11-12T21:33:34.6035959Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6037118Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T21:33:34.6037835Z      |
+2026-11-12T21:33:34.6038376Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6039050Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6039544Z 
+2026-11-12T21:33:34.6040164Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6041480Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T21:33:34.6042288Z      |
+2026-11-12T21:33:34.6043107Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6044062Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6044527Z 
+2026-11-12T21:33:34.6045417Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6046513Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T21:33:34.6047232Z    |
+2026-11-12T21:33:34.6047841Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6048430Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6048858Z 
+2026-11-12T21:33:34.6049454Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6050504Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T21:33:34.6051189Z      |
+2026-11-12T21:33:34.6051737Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6052360Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6052807Z 
+2026-11-12T21:33:34.6053381Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6054391Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T21:33:34.6055060Z      |
+2026-11-12T21:33:34.6055957Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6057188Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6057569Z 
+2026-11-12T21:33:34.6057883Z warning: 26 warnings emitted
+2026-11-12T21:33:34.6058302Z 
+2026-11-12T21:33:34.6058759Z INFO: From Clippy //codex-rs/app-server:app-server-all-test-bin:
+2026-11-12T21:33:34.6059812Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6060844Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T21:33:34.6061531Z    |
+2026-11-12T21:33:34.6062003Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6062576Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6063110Z    |
+2026-11-12T21:33:34.6063602Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:34.6064107Z 
+2026-11-12T21:33:34.6064656Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6065860Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T21:33:34.6066541Z     |
+2026-11-12T21:33:34.6067035Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6067680Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6068102Z 
+2026-11-12T21:33:34.6068695Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6069714Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T21:33:34.6070362Z     |
+2026-11-12T21:33:34.6071061Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6071918Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6072291Z 
+2026-11-12T21:33:34.6072877Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6073844Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T21:33:34.6074487Z    |
+2026-11-12T21:33:34.6074949Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6075802Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6076222Z 
+2026-11-12T21:33:34.6076809Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6078029Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T21:33:34.6078718Z      |
+2026-11-12T21:33:34.6079209Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6079842Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6080297Z 
+2026-11-12T21:33:34.6080880Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6081840Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T21:33:34.6082471Z      |
+2026-11-12T21:33:34.6083152Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6083974Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6096991Z 
+2026-11-12T21:33:34.6097731Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6098780Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T21:33:34.6099437Z    |
+2026-11-12T21:33:34.6099922Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6100512Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6100940Z 
+2026-11-12T21:33:34.6101517Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6102512Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T21:33:34.6103163Z      |
+2026-11-12T21:33:34.6103640Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6104256Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6104714Z 
+2026-11-12T21:33:34.6105584Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6107097Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T21:33:34.6107814Z      |
+2026-11-12T21:33:34.6108787Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6110347Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6110736Z 
+2026-11-12T21:33:34.6111312Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6112347Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T21:33:34.6113053Z    |
+2026-11-12T21:33:34.6113610Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6114248Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6114681Z 
+2026-11-12T21:33:34.6115500Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6116574Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T21:33:34.6117264Z     |
+2026-11-12T21:33:34.6118087Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6118933Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6119574Z 
+2026-11-12T21:33:34.6120182Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6121209Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T21:33:34.6121881Z     |
+2026-11-12T21:33:34.6122733Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:33:34.6123692Z     |                        ^^^^^^^^^^
+2026-11-12T21:33:34.6124141Z 
+2026-11-12T21:33:34.6124725Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6126009Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T21:33:34.6126720Z    |
+2026-11-12T21:33:34.6127192Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6127790Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6128200Z 
+2026-11-12T21:33:34.6128836Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6129953Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T21:33:34.6131251Z     |
+2026-11-12T21:33:34.6131901Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6132714Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6133306Z 
+2026-11-12T21:33:34.6134196Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6135598Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T21:33:34.6136448Z     |
+2026-11-12T21:33:34.6137307Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6142973Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6143389Z 
+2026-11-12T21:33:34.6143985Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6144990Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T21:33:34.6145938Z    |
+2026-11-12T21:33:34.6146418Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6146972Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6147364Z 
+2026-11-12T21:33:34.6147925Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6148985Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T21:33:34.6149714Z     |
+2026-11-12T21:33:34.6150203Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6150827Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6151321Z 
+2026-11-12T21:33:34.6151939Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6153041Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T21:33:34.6153796Z     |
+2026-11-12T21:33:34.6154600Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:33:34.6155787Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6156210Z 
+2026-11-12T21:33:34.6156847Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6158221Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T21:33:34.6158960Z     |
+2026-11-12T21:33:34.6159484Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6160165Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6160627Z 
+2026-11-12T21:33:34.6161205Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6162245Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T21:33:34.6162910Z     |
+2026-11-12T21:33:34.6163367Z 858 |         ServerInfo::new(
+2026-11-12T21:33:34.6163887Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6164268Z 
+2026-11-12T21:33:34.6164841Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6166131Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T21:33:34.6166874Z    |
+2026-11-12T21:33:34.6167417Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6168032Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6168491Z 
+2026-11-12T21:33:34.6169066Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6170062Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T21:33:34.6170720Z      |
+2026-11-12T21:33:34.6171244Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6171979Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6172394Z 
+2026-11-12T21:33:34.6172911Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6173815Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T21:33:34.6174416Z      |
+2026-11-12T21:33:34.6175404Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6176203Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6176559Z 
+2026-11-12T21:33:34.6177095Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6178032Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T21:33:34.6178720Z    |
+2026-11-12T21:33:34.6179201Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6180036Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6180463Z 
+2026-11-12T21:33:34.6181063Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6182104Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T21:33:34.6182860Z      |
+2026-11-12T21:33:34.6183437Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6184178Z      |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6184709Z 
+2026-11-12T21:33:34.6185700Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6186762Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T21:33:34.6187529Z      |
+2026-11-12T21:33:34.6188219Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6189055Z      |         ^^^^^^^^^^
+2026-11-12T21:33:34.6189434Z 
+2026-11-12T21:33:34.6189718Z warning: 26 warnings emitted
+2026-11-12T21:33:34.6190104Z 
+2026-11-12T21:33:34.6190480Z INFO: From Clippy //codex-rs/tui:tui-unit-tests-bin:
+2026-11-12T21:33:34.6191414Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6192350Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:33:34.6192940Z    |
+2026-11-12T21:33:34.6193425Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6194018Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6194582Z    |
+2026-11-12T21:33:34.6195301Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:34.6195861Z 
+2026-11-12T21:33:34.6196492Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6200538Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:33:34.6201265Z     |
+2026-11-12T21:33:34.6201817Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6202743Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6203218Z 
+2026-11-12T21:33:34.6203813Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6204885Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:33:34.6205823Z     |
+2026-11-12T21:33:34.6206594Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6207768Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6208215Z 
+2026-11-12T21:33:34.6208533Z warning: 3 warnings emitted
+2026-11-12T21:33:34.6208996Z 
+2026-11-12T21:33:34.6209333Z INFO: From Clippy //codex-rs/tui:tui:
+2026-11-12T21:33:34.6210277Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6211320Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:33:34.6211994Z    |
+2026-11-12T21:33:34.6212478Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6213081Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6213703Z    |
+2026-11-12T21:33:34.6214243Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:34.6214773Z 
+2026-11-12T21:33:34.6215596Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6216658Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:33:34.6217353Z     |
+2026-11-12T21:33:34.6217889Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6218538Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6218999Z 
+2026-11-12T21:33:34.6219594Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6220607Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:33:34.6221270Z     |
+2026-11-12T21:33:34.6221964Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6222815Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6223203Z 
+2026-11-12T21:33:34.6223512Z warning: 3 warnings emitted
+2026-11-12T21:33:34.6223948Z 
+2026-11-12T21:33:34.6225074Z [35,339 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 17s remote, remote-cache ... (792 actions, 0 running)
+2026-11-12T21:33:34.6226669Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T21:33:34.6227782Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6228792Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:33:34.6229478Z    |
+2026-11-12T21:33:34.6230008Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:34.6230617Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:34.6231168Z    |
+2026-11-12T21:33:34.6231674Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:34.6232176Z 
+2026-11-12T21:33:34.6232774Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6233779Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:33:34.6234458Z     |
+2026-11-12T21:33:34.6234952Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:34.6235827Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:34.6236243Z 
+2026-11-12T21:33:34.6236819Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:34.6237795Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:33:34.6238464Z     |
+2026-11-12T21:33:34.6239214Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:34.6240102Z     |         ^^^^^^^^^^
+2026-11-12T21:33:34.6240497Z 
+2026-11-12T21:33:34.6240799Z warning: 3 warnings emitted
+2026-11-12T21:33:34.6241248Z 
+2026-11-12T21:33:35.0967130Z [35,656 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 18s remote, remote-cache ... (797 actions, 0 running)
+2026-11-12T21:33:36.3302186Z [35,682 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 19s remote, remote-cache ... (800 actions, 0 running)
+2026-11-12T21:33:36.4088886Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T21:33:36.4336614Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:33:36.4409611Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:33:36.4587022Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:33:36.4896455Z   119 |   }
+2026-11-12T21:33:36.5130601Z       |   ^
+2026-11-12T21:33:36.5271763Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T21:33:36.5336037Z   310 |     __m_->lock_shared();
+2026-11-12T21:33:36.5373074Z       |           ^
+2026-11-12T21:33:36.5418173Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T21:33:36.5487016Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:33:36.5505854Z       |                                ^
+2026-11-12T21:33:36.5523098Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:33:36.5545598Z   111 |       impl.lock_shared();
+2026-11-12T21:33:36.5606795Z       |            ^
+2026-11-12T21:33:36.5636653Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:33:36.5654029Z   123 |       impl.unlock_shared();
+2026-11-12T21:33:36.5685679Z       |            ^
+2026-11-12T21:33:36.5838153Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T21:33:36.6156269Z   332 |       __m_->unlock_shared();
+2026-11-12T21:33:36.6429450Z       |             ^
+2026-11-12T21:33:36.6621121Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T21:33:36.6894128Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:33:36.7081410Z       |                                ^
+2026-11-12T21:33:36.7341746Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:33:36.7716853Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:33:36.7824558Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:33:36.8194770Z   147 |   }
+2026-11-12T21:33:36.8228963Z       |   ^
+2026-11-12T21:33:36.8448108Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T21:33:36.8585769Z    32 |     __m_.lock();
+2026-11-12T21:33:36.8622019Z       |          ^
+2026-11-12T21:33:36.8678150Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T21:33:36.8713788Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:33:36.8719614Z       |                                ^
+2026-11-12T21:33:36.8721265Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:33:36.8722350Z   138 |       impl.lock();
+2026-11-12T21:33:36.8722994Z       |            ^
+2026-11-12T21:33:36.8724230Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:33:36.8725729Z   151 |       impl.unlock();
+2026-11-12T21:33:36.8726088Z       |            ^
+2026-11-12T21:33:36.8727803Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T21:33:36.8730049Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:33:36.8730796Z       |                                                                         ^
+2026-11-12T21:33:36.8732269Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T21:33:36.8733699Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:33:36.8734195Z       |                                ^
+2026-11-12T21:33:36.8734558Z 4 warnings generated.
+2026-11-12T21:33:37.3457065Z [35,994 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 0s remote, remote-cache ... (797 actions, 1 running)
+2026-11-12T21:33:38.3350848Z [36,194 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 1s remote, remote-cache ... (799 actions, 1 running)
+2026-11-12T21:33:38.8684367Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-12T21:33:38.8797322Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:38.8885961Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:33:38.8995983Z    |
+2026-11-12T21:33:38.9108332Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:33:38.9147041Z    |                  ^^^^^^^^^^
+2026-11-12T21:33:38.9173979Z    |
+2026-11-12T21:33:38.9215856Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:33:38.9246021Z 
+2026-11-12T21:33:38.9276149Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:38.9308517Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:33:38.9335682Z     |
+2026-11-12T21:33:38.9365703Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:33:38.9414676Z     |                           ^^^^^^^^^^
+2026-11-12T21:33:38.9455853Z 
+2026-11-12T21:33:38.9626529Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:33:38.9675336Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:33:38.9817802Z     |
+2026-11-12T21:33:38.9960561Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:33:39.0160431Z     |         ^^^^^^^^^^
+2026-11-12T21:33:39.0265605Z 
+2026-11-12T21:33:39.0326341Z warning: 3 warnings emitted
+2026-11-12T21:33:39.0355527Z 
+2026-11-12T21:33:39.3463077Z [36,406 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 2s remote, remote-cache ... (798 actions, 1 running)
+2026-11-12T21:33:40.3447066Z [36,612 / 38,908] Compiling Rust bin //codex-rs/app-server:exec-server (124 files); 0s remote, remote-cache ... (796 actions, 6 running)
+2026-11-12T21:33:41.3705647Z [36,804 / 38,908] Compiling Rust bin //codex-rs/app-server:exec-server (124 files); 1s remote, remote-cache ... (799 actions, 6 running)
+2026-11-12T21:33:42.3744039Z [36,998 / 38,908] Compiling Rust bin //codex-rs/app-server:exec-server (124 files); 2s remote, remote-cache ... (790 actions, 7 running)
+2026-11-12T21:33:43.3836840Z [37,185 / 38,908] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 3s remote, remote-cache ... (793 actions, 7 running)
+2026-11-12T21:33:44.3777252Z [37,391 / 38,908] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 4s remote, remote-cache ... (767 actions, 10 running)
+2026-11-12T21:33:45.3760656Z [37,644 / 38,908] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 5s remote, remote-cache ... (539 actions, 8 running)
+2026-11-12T21:33:46.3825079Z [37,850 / 38,908] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 6s remote, remote-cache ... (335 actions, 8 running)
+2026-11-12T21:33:47.4061532Z [38,157 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 7s remote, remote-cache ... (124 actions, 7 running)
+2026-11-12T21:33:48.3797077Z [38,468 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 8s remote, remote-cache ... (70 actions, 7 running)
+2026-11-12T21:33:50.3798270Z [38,547 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 10s remote, remote-cache ... (41 actions, 8 running)
+2026-11-12T21:33:51.9727837Z [38,557 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 12s remote, remote-cache ... (32 actions, 8 running)
+2026-11-12T21:33:53.2095570Z [38,600 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 13s remote, remote-cache ... (29 actions, 8 running)
+2026-11-12T21:33:54.2152142Z [38,614 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 14s remote, remote-cache ... (25 actions, 8 running)
+2026-11-12T21:33:55.3805862Z [38,625 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 15s remote, remote-cache ... (19 actions, 12 running)
+2026-11-12T21:33:56.3808990Z [38,627 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 16s remote, remote-cache ... (17 actions, 13 running)
+2026-11-12T21:33:57.8234480Z [38,638 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 18s remote, remote-cache ... (13 actions, 11 running)
+2026-11-12T21:33:58.8750212Z [38,652 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 16s remote, remote-cache ... (13 actions, 11 running)
+2026-11-12T21:34:00.3821944Z [38,658 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 17s remote, remote-cache ... (11 actions running)
+2026-11-12T21:34:01.3824659Z [38,662 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 18s remote, remote-cache ... (10 actions running)
+2026-11-12T21:34:02.8097451Z [38,663 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 19s remote, remote-cache ... (10 actions, 9 running)
+2026-11-12T21:34:04.3830471Z [38,671 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 21s remote, remote-cache ... (9 actions running)
+2026-11-12T21:34:06.3835792Z [38,729 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 23s remote, remote-cache ... (8 actions running)
+2026-11-12T21:34:13.6049254Z [38,730 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 30s remote, remote-cache ... (10 actions, 7 running)
+2026-11-12T21:34:15.1198990Z [38,754 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 32s remote, remote-cache ... (7 actions, 6 running)
+2026-11-12T21:34:15.8892329Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (966 files):
+2026-11-12T21:34:15.8893141Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:34:15.8893801Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:34:15.8894724Z    |
+2026-11-12T21:34:15.8895044Z 22 | pub(super) enum Status {
+2026-11-12T21:34:15.8895721Z    |                 ------ variant in this enum
+2026-11-12T21:34:15.8896107Z ...
+2026-11-12T21:34:15.8896363Z 26 |     Unavailable = 4,
+2026-11-12T21:34:15.8896665Z    |     ^^^^^^^^^^^
+2026-11-12T21:34:15.8896938Z    |
+2026-11-12T21:34:15.8897616Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:34:15.8898516Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:34:15.8898886Z 
+2026-11-12T21:34:15.8899030Z warning: field `estimand` is never read
+2026-11-12T21:34:15.8899601Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:34:15.8900178Z    |
+2026-11-12T21:34:15.8900440Z 19 | pub(super) struct Checked {
+2026-11-12T21:34:15.8900864Z    |                   ------- field in this struct
+2026-11-12T21:34:15.8901288Z ...
+2026-11-12T21:34:15.8901860Z 23 |     pub estimand: Digest32,
+2026-11-12T21:34:15.8902363Z    |         ^^^^^^^^
+2026-11-12T21:34:15.8902658Z 
+2026-11-12T21:34:15.8903045Z warning: method `context` is never used
+2026-11-12T21:34:15.8903759Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:34:15.8905626Z    |
+2026-11-12T21:34:15.8905927Z 30 | impl Request {
+2026-11-12T21:34:15.8906370Z    | ------------ method in this implementation
+2026-11-12T21:34:15.8906843Z ...
+2026-11-12T21:34:15.8907279Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:34:15.8907807Z    |                   ^^^^^^^
+2026-11-12T21:34:15.8908036Z 
+2026-11-12T21:34:15.8908182Z warning: 3 warnings emitted
+2026-11-12T21:34:15.8908432Z 
+2026-11-12T21:34:16.3848408Z [38,761 / 38,908] Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files); 33s remote, remote-cache ... (23 actions, 5 running)
+2026-11-12T21:34:16.5097613Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd:
+2026-11-12T21:34:16.5101852Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:34:16.5103342Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:34:16.5104657Z    |
+2026-11-12T21:34:16.5105507Z 22 | pub(super) enum Status {
+2026-11-12T21:34:16.5106144Z    |                 ------ variant in this enum
+2026-11-12T21:34:16.5106762Z ...
+2026-11-12T21:34:16.5107236Z 26 |     Unavailable = 4,
+2026-11-12T21:34:16.5107751Z    |     ^^^^^^^^^^^
+2026-11-12T21:34:16.5108255Z    |
+2026-11-12T21:34:16.5109241Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:34:16.5110442Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:34:16.5110979Z 
+2026-11-12T21:34:16.5111285Z warning: field `estimand` is never read
+2026-11-12T21:34:16.5112053Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:34:16.5112807Z    |
+2026-11-12T21:34:16.5113237Z 19 | pub(super) struct Checked {
+2026-11-12T21:34:16.5113776Z    |                   ------- field in this struct
+2026-11-12T21:34:16.5114311Z ...
+2026-11-12T21:34:16.5114730Z 23 |     pub estimand: Digest32,
+2026-11-12T21:34:16.5115466Z    |         ^^^^^^^^
+2026-11-12T21:34:16.5116106Z 
+2026-11-12T21:34:16.5116468Z warning: method `context` is never used
+2026-11-12T21:34:16.5117373Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:34:16.5118206Z    |
+2026-11-12T21:34:16.5118724Z 30 | impl Request {
+2026-11-12T21:34:16.5119348Z    | ------------ method in this implementation
+2026-11-12T21:34:16.5120023Z ...
+2026-11-12T21:34:16.5120646Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:34:16.5121430Z    |                   ^^^^^^^
+2026-11-12T21:34:16.5121867Z 
+2026-11-12T21:34:16.5122245Z warning: large size difference between variants
+2026-11-12T21:34:16.5123467Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+2026-11-12T21:34:16.5124323Z    |
+2026-11-12T21:34:16.5124823Z 33 | / pub(super) enum ResidentAuthorizationV3 {
+2026-11-12T21:34:16.5125729Z 34 | |     Fresh,
+2026-11-12T21:34:16.5126302Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5127645Z 35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:34:16.5129374Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:34:16.5130301Z 36 | | }
+2026-11-12T21:34:16.5130842Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:34:16.5131835Z    |
+2026-11-12T21:34:16.5132855Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5134134Z    = note: `#[warn(clippy::large_enum_variant)]` on by default
+2026-11-12T21:34:16.5135624Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5136756Z    |
+2026-11-12T21:34:16.5137415Z 35 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:34:16.5138406Z 35 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:34:16.5139229Z    |
+2026-11-12T21:34:16.5140974Z 
+2026-11-12T21:34:16.5141636Z warning: large size difference between variants
+2026-11-12T21:34:16.5142622Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+2026-11-12T21:34:16.5143505Z    |
+2026-11-12T21:34:16.5144045Z 71 | / pub(super) enum ResidentStoreValueV3 {
+2026-11-12T21:34:16.5144740Z 72 | |     Store(ResidentCheckpointV3),
+2026-11-12T21:34:16.5145820Z    | |     --------------------------- the largest variant contains at least 2576 bytes
+2026-11-12T21:34:16.5146693Z 73 | |     Snapshot(ResidentSnapshotV3),
+2026-11-12T21:34:16.5147682Z    | |     ---------------------------- the second-largest variant contains at least 1312 bytes
+2026-11-12T21:34:16.5152898Z 74 | |     Fresh(Option<FreshResidentCheckpointV3>),
+2026-11-12T21:34:16.5156213Z 75 | |     Checked,
+2026-11-12T21:34:16.5156761Z 76 | | }
+2026-11-12T21:34:16.5157252Z    | |_^ the entire enum is at least 2576 bytes
+2026-11-12T21:34:16.5157878Z    |
+2026-11-12T21:34:16.5158909Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5160385Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5161356Z    |
+2026-11-12T21:34:16.5161715Z 72 -     Store(ResidentCheckpointV3),
+2026-11-12T21:34:16.5162236Z 72 +     Store(Box<ResidentCheckpointV3>),
+2026-11-12T21:34:16.5162741Z    |
+2026-11-12T21:34:16.5162912Z 
+2026-11-12T21:34:16.5163129Z warning: large size difference between variants
+2026-11-12T21:34:16.5163897Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:143:1
+2026-11-12T21:34:16.5164575Z     |
+2026-11-12T21:34:16.5164920Z 143 | / enum GateActionV3 {
+2026-11-12T21:34:16.5165617Z 144 | |     Current,
+2026-11-12T21:34:16.5166036Z 145 | |     Begin(LearningIterationStageV1),
+2026-11-12T21:34:16.5166938Z     | |     ------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:34:16.5167724Z 146 | |     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:34:16.5168460Z     | |     --------------------------------------- the largest variant contains at least 1304 bytes
+2026-11-12T21:34:16.5169171Z 147 | | }
+2026-11-12T21:34:16.5169533Z     | |_^ the entire enum is at least 1304 bytes
+2026-11-12T21:34:16.5170010Z     |
+2026-11-12T21:34:16.5170842Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5172350Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5173747Z     |
+2026-11-12T21:34:16.5174166Z 146 -     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:34:16.5175543Z 146 +     Checkpoint(Box<LearningIterationSnapshotV1>),
+2026-11-12T21:34:16.5176105Z     |
+2026-11-12T21:34:16.5176290Z 
+2026-11-12T21:34:16.5176502Z warning: large size difference between variants
+2026-11-12T21:34:16.5177301Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:57:1
+2026-11-12T21:34:16.5178021Z    |
+2026-11-12T21:34:16.5178353Z 57 | / enum ResidentStagesV3 {
+2026-11-12T21:34:16.5178916Z 58 | |     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:34:16.5179777Z    | |     -------------------------------------------------- the largest variant contains at least 3184 bytes
+2026-11-12T21:34:16.5180786Z 59 | |     Installed(Arc<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:34:16.5181645Z    | |     --------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:34:16.5182398Z 60 | | }
+2026-11-12T21:34:16.5182764Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:34:16.5183250Z    |
+2026-11-12T21:34:16.5184081Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5185734Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5186688Z    |
+2026-11-12T21:34:16.5187130Z 58 -     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:34:16.5187866Z 58 +     Uninstalled(Box<Option<ResidentOriginalStageOwnersV3>>),
+2026-11-12T21:34:16.5188464Z    |
+2026-11-12T21:34:16.5188635Z 
+2026-11-12T21:34:16.5188852Z warning: large size difference between variants
+2026-11-12T21:34:16.5189600Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:25:1
+2026-11-12T21:34:16.5190305Z    |
+2026-11-12T21:34:16.5190736Z 25 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+2026-11-12T21:34:16.5191398Z 26 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+2026-11-12T21:34:16.5192494Z    | |     ---------------------------------------------- the second-largest variant contains at least 2920 bytes
+2026-11-12T21:34:16.5193416Z 27 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:34:16.5194262Z    | |     ------------------------------------------------ the largest variant contains at least 3184 bytes
+2026-11-12T21:34:16.5194992Z 28 | | }
+2026-11-12T21:34:16.5195547Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:34:16.5196030Z    |
+2026-11-12T21:34:16.5196851Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5198317Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5199252Z    |
+2026-11-12T21:34:16.5199713Z 27 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:34:16.5200446Z 27 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+2026-11-12T21:34:16.5201030Z    |
+2026-11-12T21:34:16.5201211Z 
+2026-11-12T21:34:16.5201418Z warning: large size difference between variants
+2026-11-12T21:34:16.5202199Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+2026-11-12T21:34:16.5202915Z    |
+2026-11-12T21:34:16.5203236Z 72 | / enum ClientOriginV3 {
+2026-11-12T21:34:16.5203633Z 73 | |     Fresh,
+2026-11-12T21:34:16.5204099Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5204826Z 74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:34:16.5205919Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:34:16.5206675Z 75 | | }
+2026-11-12T21:34:16.5207028Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:34:16.5207754Z    |
+2026-11-12T21:34:16.5208584Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5210040Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5210979Z    |
+2026-11-12T21:34:16.5211452Z 74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:34:16.5212256Z 74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:34:16.5212881Z    |
+2026-11-12T21:34:16.5213051Z 
+2026-11-12T21:34:16.5213253Z warning: large size difference between variants
+2026-11-12T21:34:16.5214024Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+2026-11-12T21:34:16.5214728Z    |
+2026-11-12T21:34:16.5215062Z 77 | / enum ResidentExchangeV3 {
+2026-11-12T21:34:16.5215768Z 78 | |     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:34:16.5216548Z    | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+2026-11-12T21:34:16.5217290Z 79 | |     Refused(Error),
+2026-11-12T21:34:16.5217863Z    | |     -------------- the second-largest variant contains at least 48 bytes
+2026-11-12T21:34:16.5218490Z 80 | | }
+2026-11-12T21:34:16.5218848Z    | |_^ the entire enum is at least 1480 bytes
+2026-11-12T21:34:16.5219324Z    |
+2026-11-12T21:34:16.5220141Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5221585Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5222527Z    |
+2026-11-12T21:34:16.5222936Z 78 -     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:34:16.5223604Z 78 +     Observed(Box<RootResidentLearningObservationV3>),
+2026-11-12T21:34:16.5224147Z    |
+2026-11-12T21:34:16.5224321Z 
+2026-11-12T21:34:16.5224546Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5225552Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+2026-11-12T21:34:16.5226273Z     |
+2026-11-12T21:34:16.5226855Z 131 | /     pub fn recover_original_root_stream(
+2026-11-12T21:34:16.5227390Z 132 | |         stream: UnixStream,
+2026-11-12T21:34:16.5227885Z 133 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:34:16.5228415Z 134 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:34:16.5228862Z ...   |
+2026-11-12T21:34:16.5229190Z 140 | |         lifetime: Duration,
+2026-11-12T21:34:16.5229640Z 141 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5230091Z     | |____________________________^
+2026-11-12T21:34:16.5230498Z     |
+2026-11-12T21:34:16.5231315Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5232428Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:34:16.5232856Z 
+2026-11-12T21:34:16.5233089Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5233876Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+2026-11-12T21:34:16.5234601Z     |
+2026-11-12T21:34:16.5234900Z 159 | /     fn bind(
+2026-11-12T21:34:16.5235467Z 160 | |         stream: UnixStream,
+2026-11-12T21:34:16.5235964Z 161 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:34:16.5236484Z 162 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:34:16.5236930Z ...   |
+2026-11-12T21:34:16.5237249Z 168 | |         lifetime: Duration,
+2026-11-12T21:34:16.5237703Z 169 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5238148Z     | |____________________________^
+2026-11-12T21:34:16.5238561Z     |
+2026-11-12T21:34:16.5239378Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5240200Z 
+2026-11-12T21:34:16.5240426Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5241432Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+2026-11-12T21:34:16.5242178Z    |
+2026-11-12T21:34:16.5242566Z 20 | /     pub fn recover_original_model_root_stream(
+2026-11-12T21:34:16.5243102Z 21 | |         stream: UnixStream,
+2026-11-12T21:34:16.5243584Z 22 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:34:16.5244098Z 23 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:34:16.5244536Z ...  |
+2026-11-12T21:34:16.5244870Z 33 | |         lifetime: Duration,
+2026-11-12T21:34:16.5245697Z 34 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5246153Z    | |____________________________^
+2026-11-12T21:34:16.5246590Z    |
+2026-11-12T21:34:16.5247423Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5248276Z 
+2026-11-12T21:34:16.5248520Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5249170Z    --> codex-rs/hepta-agentd/src/cell_q24_dataset.rs:193:5
+2026-11-12T21:34:16.5249739Z     |
+2026-11-12T21:34:16.5250074Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:34:16.5250523Z 194 | |         &mut self,
+2026-11-12T21:34:16.5251011Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:34:16.5251595Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:34:16.5252072Z ...   |
+2026-11-12T21:34:16.5252556Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:34:16.5253365Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:34:16.5254086Z     | |________________________________________________________________^
+2026-11-12T21:34:16.5254584Z     |
+2026-11-12T21:34:16.5255681Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5256500Z 
+2026-11-12T21:34:16.5256712Z warning: large size difference between variants
+2026-11-12T21:34:16.5257396Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs:30:1
+2026-11-12T21:34:16.5258014Z    |
+2026-11-12T21:34:16.5258294Z 30 | / enum OriginalCut {
+2026-11-12T21:34:16.5259053Z 31 | |     Selection(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:34:16.5260050Z    | |     ----------------------------------------------------- the second-largest variant contains at least 3536 bytes
+2026-11-12T21:34:16.5261020Z 32 | |     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:34:16.5261969Z    | |     --------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:34:16.5262711Z 33 | | }
+2026-11-12T21:34:16.5263068Z    | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:34:16.5263543Z    |
+2026-11-12T21:34:16.5264366Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5266056Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5266990Z    |
+2026-11-12T21:34:16.5267458Z 32 -     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:34:16.5268246Z 32 +     NextUse(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:34:16.5268858Z    |
+2026-11-12T21:34:16.5269031Z 
+2026-11-12T21:34:16.5269235Z warning: large size difference between variants
+2026-11-12T21:34:16.5269918Z   --> codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs:18:1
+2026-11-12T21:34:16.5270592Z    |
+2026-11-12T21:34:16.5270915Z 18 | / pub(super) enum ReadProfile {
+2026-11-12T21:34:16.5271526Z 19 | |     TrainingNoUpdate(OriginalCircuitLearningReadContextV1),
+2026-11-12T21:34:16.5272457Z    | |     ------------------------------------------------------ the second-largest variant contains at least 2496 bytes
+2026-11-12T21:34:16.5273427Z 20 | |     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:34:16.5274382Z    | |     -------------------------------------------------------- the largest variant contains at least 6016 bytes
+2026-11-12T21:34:16.5275550Z 21 | | }
+2026-11-12T21:34:16.5275891Z    | |_^ the entire enum is at least 6016 bytes
+2026-11-12T21:34:16.5276322Z    |
+2026-11-12T21:34:16.5277095Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5278517Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5279431Z    |
+2026-11-12T21:34:16.5279914Z 20 -     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:34:16.5280748Z 20 +     Evaluated(Box<OriginalCircuitEvaluatedLearningReadContextV1>),
+2026-11-12T21:34:16.5281384Z    |
+2026-11-12T21:34:16.5281553Z 
+2026-11-12T21:34:16.5281769Z warning: large size difference between variants
+2026-11-12T21:34:16.5282496Z   --> codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+2026-11-12T21:34:16.5283162Z    |
+2026-11-12T21:34:16.5283493Z 68 | / pub(super) enum Readiness {
+2026-11-12T21:34:16.5283914Z 69 | |     NotReady,
+2026-11-12T21:34:16.5284392Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5285040Z 70 | |     Ready { read: original::OriginalRead },
+2026-11-12T21:34:16.5285959Z    | |     -------------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:34:16.5286620Z 71 | | }
+2026-11-12T21:34:16.5286975Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:34:16.5287424Z    |
+2026-11-12T21:34:16.5288210Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5289632Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5290541Z    |
+2026-11-12T21:34:16.5290896Z 70 -     Ready { read: original::OriginalRead },
+2026-11-12T21:34:16.5291471Z 70 +     Ready { read: Box<original::OriginalRead> },
+2026-11-12T21:34:16.5291996Z    |
+2026-11-12T21:34:16.5292172Z 
+2026-11-12T21:34:16.5292598Z warning: large size difference between variants
+2026-11-12T21:34:16.5293327Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs:82:1
+2026-11-12T21:34:16.5294003Z    |
+2026-11-12T21:34:16.5294318Z 82 | / pub(super) enum Readiness {
+2026-11-12T21:34:16.5294738Z 83 | |     NotReady,
+2026-11-12T21:34:16.5295417Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5296033Z 84 | |     Ready { read: wire::OriginalRead },
+2026-11-12T21:34:16.5296702Z    | |     ---------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:34:16.5297359Z 85 | | }
+2026-11-12T21:34:16.5297701Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:34:16.5298149Z    |
+2026-11-12T21:34:16.5298948Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5300380Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5301314Z    |
+2026-11-12T21:34:16.5301656Z 84 -     Ready { read: wire::OriginalRead },
+2026-11-12T21:34:16.5302129Z 84 +     Ready { read: Box<wire::OriginalRead> },
+2026-11-12T21:34:16.5314174Z    |
+2026-11-12T21:34:16.5314407Z 
+2026-11-12T21:34:16.5314631Z warning: large size difference between variants
+2026-11-12T21:34:16.5315515Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_client.rs:69:1
+2026-11-12T21:34:16.5316164Z    |
+2026-11-12T21:34:16.5316504Z 69 | / enum OriginalVersionValue {
+2026-11-12T21:34:16.5316941Z 70 | |     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:34:16.5317735Z    | |     -------------------------------------------------- the largest variant contains at least 216 bytes
+2026-11-12T21:34:16.5318272Z 71 | |     Progress(OriginalCircuitEvaluatedVersionProgressV1),
+2026-11-12T21:34:16.5319040Z    | |     --------------------------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:34:16.5319510Z 72 | | }
+2026-11-12T21:34:16.5319740Z    | |_^ the entire enum is at least 216 bytes
+2026-11-12T21:34:16.5320021Z    |
+2026-11-12T21:34:16.5320504Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5321356Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5321899Z    |
+2026-11-12T21:34:16.5322173Z 70 -     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:34:16.5322620Z 70 +     Readback(Box<OriginalCircuitRetainedVersionReadbackV1>),
+2026-11-12T21:34:16.5322975Z    |
+2026-11-12T21:34:16.5323073Z 
+2026-11-12T21:34:16.5323211Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5323625Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs:57:5
+2026-11-12T21:34:16.5324008Z    |
+2026-11-12T21:34:16.5324233Z 57 | /     pub fn from_original_evaluated_owners(
+2026-11-12T21:34:16.5324602Z 58 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:34:16.5325012Z 59 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:34:16.5325734Z 60 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:34:16.5326071Z ...  |
+2026-11-12T21:34:16.5326270Z 66 | |         lifetime: Duration,
+2026-11-12T21:34:16.5326528Z 67 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5326783Z    | |____________________________^
+2026-11-12T21:34:16.5327014Z    |
+2026-11-12T21:34:16.5327491Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5327950Z 
+2026-11-12T21:34:16.5328084Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5328504Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_service.rs:76:5
+2026-11-12T21:34:16.5328876Z    |
+2026-11-12T21:34:16.5329092Z 76 | /     pub async fn serve_original_ordinary(
+2026-11-12T21:34:16.5329520Z 77 | |         self: Arc<Self>,
+2026-11-12T21:34:16.5329784Z 78 | |         stream: UnixStream,
+2026-11-12T21:34:16.5330062Z 79 | |         consumer: AgentdRootAuthorityPeer,
+2026-11-12T21:34:16.5330341Z ...  |
+2026-11-12T21:34:16.5330584Z 84 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+2026-11-12T21:34:16.5330894Z 85 | |     ) -> Result<u64, Error> {
+2026-11-12T21:34:16.5331150Z    | |___________________________^
+2026-11-12T21:34:16.5331379Z    |
+2026-11-12T21:34:16.5331841Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5332307Z 
+2026-11-12T21:34:16.5332440Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5332846Z    --> codex-rs/hepta-agentd/src/circuit_retained_version_host.rs:183:5
+2026-11-12T21:34:16.5333218Z     |
+2026-11-12T21:34:16.5333422Z 183 | /     pub fn from_original_owners(
+2026-11-12T21:34:16.5333771Z 184 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:34:16.5334186Z 185 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:34:16.5334599Z 186 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:34:16.5334932Z ...   |
+2026-11-12T21:34:16.5335384Z 191 | |         lifetime: Duration,
+2026-11-12T21:34:16.5335651Z 192 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5335905Z     | |____________________________^
+2026-11-12T21:34:16.5336133Z     |
+2026-11-12T21:34:16.5336606Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5337058Z 
+2026-11-12T21:34:16.5337185Z warning: large size difference between variants
+2026-11-12T21:34:16.5337590Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_profile.rs:21:1
+2026-11-12T21:34:16.5338105Z    |
+2026-11-12T21:34:16.5338307Z 21 | / pub(super) enum VersionCut {
+2026-11-12T21:34:16.5338607Z 22 | |     TrainingNoUpdate(OriginalVersionCut),
+2026-11-12T21:34:16.5339068Z    | |     ------------------------------------ the second-largest variant contains at least 6480 bytes
+2026-11-12T21:34:16.5339530Z 23 | |     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:34:16.5339957Z    | |     -------------------------------------- the largest variant contains at least 7792 bytes
+2026-11-12T21:34:16.5340349Z 24 | | }
+2026-11-12T21:34:16.5340560Z    | |_^ the entire enum is at least 7792 bytes
+2026-11-12T21:34:16.5340833Z    |
+2026-11-12T21:34:16.5341301Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5342109Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5342625Z    |
+2026-11-12T21:34:16.5342860Z 23 -     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:34:16.5343213Z 23 +     Evaluated(Box<OriginalEvaluatedVersionCut>),
+2026-11-12T21:34:16.5343511Z    |
+2026-11-12T21:34:16.5343616Z 
+2026-11-12T21:34:16.5343735Z warning: large size difference between variants
+2026-11-12T21:34:16.5344119Z    --> codex-rs/hepta-agentd/src/circuit_feature_current.rs:134:1
+2026-11-12T21:34:16.5344459Z     |
+2026-11-12T21:34:16.5344660Z 134 | /  enum Publication {
+2026-11-12T21:34:16.5344981Z 135 | |      Initial(PublishedNeuronGenerationInitialV1),
+2026-11-12T21:34:16.5345646Z     | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+2026-11-12T21:34:16.5346196Z 136 | |/     Update {
+2026-11-12T21:34:16.5346560Z 137 | ||         original: PublishedNeuronGenerationUpdateV1,
+2026-11-12T21:34:16.5347062Z 138 | ||         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:34:16.5347399Z 139 | ||     },
+2026-11-12T21:34:16.5347663Z     | ||_____- the largest variant contains at least 2744 bytes
+2026-11-12T21:34:16.5347977Z 140 | |  }
+2026-11-12T21:34:16.5348198Z     | |__^ the entire enum is at least 2744 bytes
+2026-11-12T21:34:16.5348703Z     |
+2026-11-12T21:34:16.5349324Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5350579Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5351114Z     |
+2026-11-12T21:34:16.5351394Z 138 -         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:34:16.5351810Z 138 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+2026-11-12T21:34:16.5352138Z     |
+2026-11-12T21:34:16.5352242Z 
+2026-11-12T21:34:16.5352376Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5352834Z    --> codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+2026-11-12T21:34:16.5353245Z     |
+2026-11-12T21:34:16.5353512Z 143 | /     pub(crate) fn require_original_member(
+2026-11-12T21:34:16.5353797Z 144 | |         &self,
+2026-11-12T21:34:16.5354159Z 145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+2026-11-12T21:34:16.5354601Z 146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+2026-11-12T21:34:16.5354917Z ...   |
+2026-11-12T21:34:16.5355428Z 151 | |         verifier: &LearningEvidenceVerifierV1,
+2026-11-12T21:34:16.5355751Z 152 | |     ) -> Result<(), Error> {
+2026-11-12T21:34:16.5356015Z     | |__________________________^
+2026-11-12T21:34:16.5356247Z     |
+2026-11-12T21:34:16.5356711Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5357168Z 
+2026-11-12T21:34:16.5357298Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5357748Z   --> codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+2026-11-12T21:34:16.5358151Z    |
+2026-11-12T21:34:16.5358575Z 48 | / pub(super) fn assemble(
+2026-11-12T21:34:16.5358883Z 49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:34:16.5359224Z 50 | |     ledger: &LedgerWriter,
+2026-11-12T21:34:16.5359504Z 51 | |     dataset: &DatasetSnapshotReceiptV3,
+2026-11-12T21:34:16.5359773Z ...  |
+2026-11-12T21:34:16.5359957Z 56 | |     current: u64,
+2026-11-12T21:34:16.5360233Z 57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+2026-11-12T21:34:16.5360566Z    | |______________________________________________^
+2026-11-12T21:34:16.5360828Z    |
+2026-11-12T21:34:16.5361280Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5361742Z 
+2026-11-12T21:34:16.5361871Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5362313Z    --> codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+2026-11-12T21:34:16.5362717Z     |
+2026-11-12T21:34:16.5362910Z 227 | /     fn read_episode(
+2026-11-12T21:34:16.5363228Z 228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:34:16.5363571Z 229 | |         ledger: &LedgerWriter,
+2026-11-12T21:34:16.5363903Z 230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+2026-11-12T21:34:16.5364221Z ...   |
+2026-11-12T21:34:16.5364404Z 236 | |         current: u64,
+2026-11-12T21:34:16.5364656Z 237 | |     ) -> Result<Episode<'a>, Error> {
+2026-11-12T21:34:16.5364941Z     | |___________________________________^
+2026-11-12T21:34:16.5365374Z     |
+2026-11-12T21:34:16.5365853Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5366315Z 
+2026-11-12T21:34:16.5366653Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:34:16.5367263Z    --> codex-rs/hepta-agentd/src/circuit_task_source_codec.rs:508:36
+2026-11-12T21:34:16.5367616Z     |
+2026-11-12T21:34:16.5367905Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:34:16.5368523Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:34:16.5368894Z     |
+2026-11-12T21:34:16.5369394Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:34:16.5370131Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:34:16.5370469Z 
+2026-11-12T21:34:16.5370597Z warning: large size difference between variants
+2026-11-12T21:34:16.5371023Z   --> codex-rs/hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+2026-11-12T21:34:16.5371401Z    |
+2026-11-12T21:34:16.5371656Z 17 | / pub(super) enum OriginalCommandEvidenceV1 {
+2026-11-12T21:34:16.5372018Z 18 | |     Training(OriginalTrainingReadbackV1),
+2026-11-12T21:34:16.5372479Z    | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+2026-11-12T21:34:16.5372949Z 19 | |     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:34:16.5373383Z    | |     -------------------------------------- the largest variant contains at least 8776 bytes
+2026-11-12T21:34:16.5373769Z 20 | | }
+2026-11-12T21:34:16.5373987Z    | |_^ the entire enum is at least 8776 bytes
+2026-11-12T21:34:16.5374258Z    |
+2026-11-12T21:34:16.5374723Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5375679Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5376201Z    |
+2026-11-12T21:34:16.5376419Z 19 -     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:34:16.5376766Z 19 +     Selection(Box<OriginalSelectionReadbackV1>),
+2026-11-12T21:34:16.5377058Z    |
+2026-11-12T21:34:16.5377155Z 
+2026-11-12T21:34:16.5377275Z warning: large size difference between variants
+2026-11-12T21:34:16.5377807Z   --> codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+2026-11-12T21:34:16.5378178Z    |
+2026-11-12T21:34:16.5378361Z 41 | / enum Origin {
+2026-11-12T21:34:16.5378565Z 42 | |     Fresh,
+2026-11-12T21:34:16.5378830Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5379313Z 43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:34:16.5379922Z    | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+2026-11-12T21:34:16.5380375Z 44 | | }
+2026-11-12T21:34:16.5380584Z    | |_^ the entire enum is at least 656 bytes
+2026-11-12T21:34:16.5380849Z    |
+2026-11-12T21:34:16.5381300Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5382100Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5382627Z    |
+2026-11-12T21:34:16.5382958Z 43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:34:16.5383525Z 43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+2026-11-12T21:34:16.5383941Z    |
+2026-11-12T21:34:16.5384036Z 
+2026-11-12T21:34:16.5384161Z warning: large size difference between variants
+2026-11-12T21:34:16.5384547Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+2026-11-12T21:34:16.5384904Z    |
+2026-11-12T21:34:16.5385244Z 13 | / pub(super) enum Observed {
+2026-11-12T21:34:16.5385505Z 14 | |     Missing,
+2026-11-12T21:34:16.5385788Z    | |     ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5386121Z 15 | |     Pending,
+2026-11-12T21:34:16.5386380Z 16 | |     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:34:16.5386821Z    | |     ---------------------------------------- the largest variant contains at least 384 bytes
+2026-11-12T21:34:16.5387220Z 17 | | }
+2026-11-12T21:34:16.5387431Z    | |_^ the entire enum is at least 384 bytes
+2026-11-12T21:34:16.5387815Z    |
+2026-11-12T21:34:16.5388292Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5389098Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5389616Z    |
+2026-11-12T21:34:16.5389854Z 16 -     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:34:16.5390229Z 16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+2026-11-12T21:34:16.5390533Z    |
+2026-11-12T21:34:16.5390634Z 
+2026-11-12T21:34:16.5390741Z warning: this `if` has identical blocks
+2026-11-12T21:34:16.5391138Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+2026-11-12T21:34:16.5391518Z     |
+2026-11-12T21:34:16.5391700Z 135 | /         {
+2026-11-12T21:34:16.5391961Z 136 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:34:16.5392467Z 137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:34:16.5392926Z     | |_________^
+2026-11-12T21:34:16.5393127Z     |
+2026-11-12T21:34:16.5393312Z note: same as this
+2026-11-12T21:34:16.5393656Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+2026-11-12T21:34:16.5394048Z     |
+2026-11-12T21:34:16.5394418Z 137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:34:16.5394990Z     |  ____________________________________________________________________________________________________^
+2026-11-12T21:34:16.5395609Z 138 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:34:16.5395917Z 139 | |         } else {
+2026-11-12T21:34:16.5396137Z     | |_________^
+2026-11-12T21:34:16.5396619Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+2026-11-12T21:34:16.5397343Z     = note: `#[warn(clippy::if_same_then_else)]` on by default
+2026-11-12T21:34:16.5397593Z 
+2026-11-12T21:34:16.5397716Z warning: large size difference between variants
+2026-11-12T21:34:16.5398114Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+2026-11-12T21:34:16.5398471Z     |
+2026-11-12T21:34:16.5398746Z  96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+2026-11-12T21:34:16.5399209Z  97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:34:16.5399776Z     | |     ----------------------------------------------------------- the largest variant contains at least 22984 bytes
+2026-11-12T21:34:16.5400218Z  98 | |     Starting,
+2026-11-12T21:34:16.5400531Z  99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+2026-11-12T21:34:16.5401082Z     | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:34:16.5401533Z 100 | |     Fenced,
+2026-11-12T21:34:16.5401734Z 101 | | }
+2026-11-12T21:34:16.5401967Z     | |_^ the entire enum is at least 22984 bytes
+2026-11-12T21:34:16.5402248Z     |
+2026-11-12T21:34:16.5402711Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5403520Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5404041Z     |
+2026-11-12T21:34:16.5404332Z  97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:34:16.5404835Z  97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+2026-11-12T21:34:16.5405368Z     |
+2026-11-12T21:34:16.5405473Z 
+2026-11-12T21:34:16.5405595Z warning: large size difference between variants
+2026-11-12T21:34:16.5406006Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+2026-11-12T21:34:16.5406381Z    |
+2026-11-12T21:34:16.5406564Z 26 | / enum Origin {
+2026-11-12T21:34:16.5406770Z 27 | |     Fresh,
+2026-11-12T21:34:16.5407166Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5407597Z 28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:34:16.5408122Z    | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+2026-11-12T21:34:16.5408558Z 29 | | }
+2026-11-12T21:34:16.5408770Z    | |_^ the entire enum is at least 1336 bytes
+2026-11-12T21:34:16.5409041Z    |
+2026-11-12T21:34:16.5409506Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5410301Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5410818Z    |
+2026-11-12T21:34:16.5411102Z 28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:34:16.5411584Z 28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+2026-11-12T21:34:16.5411953Z    |
+2026-11-12T21:34:16.5412058Z 
+2026-11-12T21:34:16.5412191Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5412606Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+2026-11-12T21:34:16.5412972Z    |
+2026-11-12T21:34:16.5413180Z 61 | /     pub fn recover_from_original_stream(
+2026-11-12T21:34:16.5413473Z 62 | |         stream: UnixStream,
+2026-11-12T21:34:16.5413779Z 63 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5414109Z 64 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5414378Z ...  |
+2026-11-12T21:34:16.5414573Z 69 | |         lifetime: Duration,
+2026-11-12T21:34:16.5414837Z 70 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5415236Z    | |____________________________^
+2026-11-12T21:34:16.5415480Z    |
+2026-11-12T21:34:16.5416077Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5416527Z 
+2026-11-12T21:34:16.5416689Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5417099Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+2026-11-12T21:34:16.5417465Z    |
+2026-11-12T21:34:16.5417657Z 82 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5417918Z 83 | |         stream: UnixStream,
+2026-11-12T21:34:16.5418221Z 84 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5418548Z 85 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5418818Z ...  |
+2026-11-12T21:34:16.5419006Z 90 | |         origin: Origin,
+2026-11-12T21:34:16.5419266Z 91 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5419520Z    | |____________________________^
+2026-11-12T21:34:16.5419755Z    |
+2026-11-12T21:34:16.5420218Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5420676Z 
+2026-11-12T21:34:16.5420807Z warning: large size difference between variants
+2026-11-12T21:34:16.5421209Z    --> codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+2026-11-12T21:34:16.5421577Z     |
+2026-11-12T21:34:16.5421785Z 141 | /  pub(super) enum CommandResult {
+2026-11-12T21:34:16.5422057Z 142 | |/     Completed {
+2026-11-12T21:34:16.5422293Z 143 | ||         snapshot: String,
+2026-11-12T21:34:16.5422580Z 144 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5422862Z 145 | ||     },
+2026-11-12T21:34:16.5423116Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:34:16.5423439Z 146 | |      Missing,
+2026-11-12T21:34:16.5423723Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5424052Z ...   |
+2026-11-12T21:34:16.5424246Z 152 | |      Unavailable,
+2026-11-12T21:34:16.5424466Z 153 | |  }
+2026-11-12T21:34:16.5424685Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:34:16.5424970Z     |
+2026-11-12T21:34:16.5425696Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5426520Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5427043Z     |
+2026-11-12T21:34:16.5427266Z 144 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5427596Z 144 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:34:16.5427885Z     |
+2026-11-12T21:34:16.5427989Z 
+2026-11-12T21:34:16.5428123Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5428514Z    --> codex-rs/hepta-agentd/src/cell_q24_training_command.rs:234:5
+2026-11-12T21:34:16.5428853Z     |
+2026-11-12T21:34:16.5429050Z 234 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5429325Z 235 | |         stream: UnixStream,
+2026-11-12T21:34:16.5429639Z 236 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5429978Z 237 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5430249Z ...   |
+2026-11-12T21:34:16.5430543Z 242 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:34:16.5430940Z 243 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5431204Z     | |____________________________^
+2026-11-12T21:34:16.5431445Z     |
+2026-11-12T21:34:16.5431920Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5432378Z 
+2026-11-12T21:34:16.5432506Z warning: large size difference between variants
+2026-11-12T21:34:16.5432942Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_wire.rs:140:1
+2026-11-12T21:34:16.5433348Z     |
+2026-11-12T21:34:16.5433549Z 140 | /  pub(super) enum CommandResult {
+2026-11-12T21:34:16.5433823Z 141 | |/     Completed {
+2026-11-12T21:34:16.5434061Z 142 | ||         snapshot: String,
+2026-11-12T21:34:16.5434466Z 143 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5434748Z 144 | ||     },
+2026-11-12T21:34:16.5435005Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:34:16.5435460Z 145 | |      Missing,
+2026-11-12T21:34:16.5435734Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5436051Z ...   |
+2026-11-12T21:34:16.5436237Z 151 | |      Unavailable,
+2026-11-12T21:34:16.5436446Z 152 | |  }
+2026-11-12T21:34:16.5436654Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:34:16.5436926Z     |
+2026-11-12T21:34:16.5437380Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5438180Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5438699Z     |
+2026-11-12T21:34:16.5438905Z 143 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5439231Z 143 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:34:16.5439517Z     |
+2026-11-12T21:34:16.5439616Z 
+2026-11-12T21:34:16.5439748Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5440165Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs:184:5
+2026-11-12T21:34:16.5440541Z     |
+2026-11-12T21:34:16.5440732Z 184 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5440987Z 185 | |         stream: UnixStream,
+2026-11-12T21:34:16.5441281Z 186 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5441611Z 187 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5441878Z ...   |
+2026-11-12T21:34:16.5442176Z 192 | |         retained: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+2026-11-12T21:34:16.5442567Z 193 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5442825Z     | |____________________________^
+2026-11-12T21:34:16.5443056Z     |
+2026-11-12T21:34:16.5443514Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5443976Z 
+2026-11-12T21:34:16.5444220Z warning: large size difference between variants
+2026-11-12T21:34:16.5444619Z    --> codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+2026-11-12T21:34:16.5444971Z     |
+2026-11-12T21:34:16.5445334Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:34:16.5445611Z 137 | |/     Completed {
+2026-11-12T21:34:16.5445850Z 138 | ||         snapshot: String,
+2026-11-12T21:34:16.5446138Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5446420Z 140 | ||     },
+2026-11-12T21:34:16.5446674Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:34:16.5446985Z 141 | |      Missing,
+2026-11-12T21:34:16.5447269Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5447595Z ...   |
+2026-11-12T21:34:16.5447785Z 147 | |      Unavailable,
+2026-11-12T21:34:16.5448013Z 148 | |  }
+2026-11-12T21:34:16.5448227Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:34:16.5448499Z     |
+2026-11-12T21:34:16.5448973Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5449778Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5450296Z     |
+2026-11-12T21:34:16.5450518Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5450851Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:34:16.5451136Z     |
+2026-11-12T21:34:16.5451243Z 
+2026-11-12T21:34:16.5451377Z warning: this function has too many arguments (10/7)
+2026-11-12T21:34:16.5451785Z    --> codex-rs/hepta-agentd/src/circuit_selection_command.rs:272:5
+2026-11-12T21:34:16.5452129Z     |
+2026-11-12T21:34:16.5452341Z 272 | /     pub fn recover_from_original_stream(
+2026-11-12T21:34:16.5452638Z 273 | |         stream: UnixStream,
+2026-11-12T21:34:16.5453066Z 274 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5453394Z 275 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5453680Z ...   |
+2026-11-12T21:34:16.5453875Z 282 | |         lifetime: Duration,
+2026-11-12T21:34:16.5454132Z 283 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5454415Z     | |____________________________^
+2026-11-12T21:34:16.5454684Z     |
+2026-11-12T21:34:16.5455279Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5455744Z 
+2026-11-12T21:34:16.5455870Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5456259Z    --> codex-rs/hepta-agentd/src/circuit_selection_command.rs:307:5
+2026-11-12T21:34:16.5456594Z     |
+2026-11-12T21:34:16.5456780Z 307 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5457044Z 308 | |         stream: UnixStream,
+2026-11-12T21:34:16.5457330Z 309 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5457669Z 310 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5457942Z ...   |
+2026-11-12T21:34:16.5458233Z 315 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+2026-11-12T21:34:16.5458617Z 316 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5458867Z     | |____________________________^
+2026-11-12T21:34:16.5459103Z     |
+2026-11-12T21:34:16.5459555Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5460009Z 
+2026-11-12T21:34:16.5460127Z warning: large size difference between variants
+2026-11-12T21:34:16.5460514Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+2026-11-12T21:34:16.5460862Z     |
+2026-11-12T21:34:16.5461055Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:34:16.5461329Z 137 | |/     Completed {
+2026-11-12T21:34:16.5461559Z 138 | ||         snapshot: String,
+2026-11-12T21:34:16.5461839Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5462119Z 140 | ||     },
+2026-11-12T21:34:16.5462485Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:34:16.5462796Z 141 | |      Missing,
+2026-11-12T21:34:16.5463068Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5463395Z ...   |
+2026-11-12T21:34:16.5463582Z 147 | |      Unavailable,
+2026-11-12T21:34:16.5463794Z 148 | |  }
+2026-11-12T21:34:16.5464012Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:34:16.5464278Z     |
+2026-11-12T21:34:16.5464733Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5465710Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5466231Z     |
+2026-11-12T21:34:16.5466448Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5466783Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:34:16.5467079Z     |
+2026-11-12T21:34:16.5467171Z 
+2026-11-12T21:34:16.5467311Z warning: this function has too many arguments (11/7)
+2026-11-12T21:34:16.5467704Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command.rs:291:5
+2026-11-12T21:34:16.5468045Z     |
+2026-11-12T21:34:16.5468251Z 291 | /     pub fn recover_from_original_stream(
+2026-11-12T21:34:16.5468544Z 292 | |         stream: UnixStream,
+2026-11-12T21:34:16.5468845Z 293 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5469165Z 294 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5469432Z ...   |
+2026-11-12T21:34:16.5469624Z 302 | |         lifetime: Duration,
+2026-11-12T21:34:16.5469882Z 303 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5470140Z     | |____________________________^
+2026-11-12T21:34:16.5470369Z     |
+2026-11-12T21:34:16.5470829Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5471415Z 
+2026-11-12T21:34:16.5471548Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5471930Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command.rs:328:5
+2026-11-12T21:34:16.5472263Z     |
+2026-11-12T21:34:16.5472448Z 328 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5472701Z 329 | |         stream: UnixStream,
+2026-11-12T21:34:16.5472994Z 330 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5473312Z 331 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5473574Z ...   |
+2026-11-12T21:34:16.5473855Z 336 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+2026-11-12T21:34:16.5474237Z 337 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5474484Z     | |____________________________^
+2026-11-12T21:34:16.5474712Z     |
+2026-11-12T21:34:16.5475338Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5475800Z 
+2026-11-12T21:34:16.5475923Z warning: large size difference between variants
+2026-11-12T21:34:16.5476349Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs:142:1
+2026-11-12T21:34:16.5476748Z     |
+2026-11-12T21:34:16.5476945Z 142 | /  pub(super) enum CommandResult {
+2026-11-12T21:34:16.5477219Z 143 | |/     Completed {
+2026-11-12T21:34:16.5477452Z 144 | ||         snapshot: String,
+2026-11-12T21:34:16.5477726Z 145 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5478001Z 146 | ||     },
+2026-11-12T21:34:16.5478251Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:34:16.5478566Z 147 | |      Missing,
+2026-11-12T21:34:16.5478843Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5479165Z ...   |
+2026-11-12T21:34:16.5479352Z 153 | |      Unavailable,
+2026-11-12T21:34:16.5479565Z 154 | |  }
+2026-11-12T21:34:16.5479786Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:34:16.5480071Z     |
+2026-11-12T21:34:16.5480778Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5481584Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5482112Z     |
+2026-11-12T21:34:16.5482321Z 145 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:34:16.5482643Z 145 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:34:16.5482924Z     |
+2026-11-12T21:34:16.5483024Z 
+2026-11-12T21:34:16.5483151Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5483561Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs:182:5
+2026-11-12T21:34:16.5483932Z     |
+2026-11-12T21:34:16.5484119Z 182 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5484378Z 183 | |         stream: UnixStream,
+2026-11-12T21:34:16.5484669Z 184 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5485003Z 185 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5485427Z ...   |
+2026-11-12T21:34:16.5485727Z 190 | |         retained: Option<OriginalCircuitEvaluatedNextUseReceiptV1>,
+2026-11-12T21:34:16.5486115Z 191 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5486367Z     | |____________________________^
+2026-11-12T21:34:16.5486597Z     |
+2026-11-12T21:34:16.5487050Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5487513Z 
+2026-11-12T21:34:16.5487641Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5488045Z    --> codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+2026-11-12T21:34:16.5488407Z     |
+2026-11-12T21:34:16.5488596Z 119 | /     fn serve_role_commands(
+2026-11-12T21:34:16.5488840Z 120 | |         &self,
+2026-11-12T21:34:16.5489048Z 121 | |         role: Role,
+2026-11-12T21:34:16.5489411Z 122 | |         stream: UnixStream,
+2026-11-12T21:34:16.5489647Z ...   |
+2026-11-12T21:34:16.5489831Z 127 | |         lifetime: Duration,
+2026-11-12T21:34:16.5490078Z 128 | |     ) -> Result<u64, Error> {
+2026-11-12T21:34:16.5490331Z     | |___________________________^
+2026-11-12T21:34:16.5490551Z     |
+2026-11-12T21:34:16.5490997Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5491464Z 
+2026-11-12T21:34:16.5491593Z warning: this function has too many arguments (9/7)
+2026-11-12T21:34:16.5491967Z    --> codex-rs/hepta-agentd/src/cell_q24_material_command.rs:236:5
+2026-11-12T21:34:16.5492299Z     |
+2026-11-12T21:34:16.5492490Z 236 | /     fn bind_original_stream(
+2026-11-12T21:34:16.5492738Z 237 | |         stream: UnixStream,
+2026-11-12T21:34:16.5493024Z 238 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5493357Z 239 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5493629Z ...   |
+2026-11-12T21:34:16.5493920Z 245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:34:16.5494299Z 246 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5494563Z     | |____________________________^
+2026-11-12T21:34:16.5494793Z     |
+2026-11-12T21:34:16.5495405Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5495864Z 
+2026-11-12T21:34:16.5495994Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5496400Z   --> codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+2026-11-12T21:34:16.5496763Z    |
+2026-11-12T21:34:16.5496958Z 35 | /     pub fn from_original_stream(
+2026-11-12T21:34:16.5497225Z 36 | |         stream: UnixStream,
+2026-11-12T21:34:16.5497510Z 37 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:34:16.5497834Z 38 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:34:16.5498099Z ...  |
+2026-11-12T21:34:16.5498290Z 43 | |         lifetime: Duration,
+2026-11-12T21:34:16.5498537Z 44 | |     ) -> Result<Self, Error> {
+2026-11-12T21:34:16.5498789Z    | |____________________________^
+2026-11-12T21:34:16.5499134Z    |
+2026-11-12T21:34:16.5499590Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5500048Z 
+2026-11-12T21:34:16.5500171Z warning: large size difference between variants
+2026-11-12T21:34:16.5500553Z   --> codex-rs/hepta-agentd/src/artifact_original_head_client.rs:31:1
+2026-11-12T21:34:16.5500902Z    |
+2026-11-12T21:34:16.5501080Z 31 | / enum Origin {
+2026-11-12T21:34:16.5501280Z 32 | |     Fresh,
+2026-11-12T21:34:16.5501540Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5501929Z 33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:34:16.5502387Z    | |     --------------------------------------------- the largest variant contains at least 304 bytes
+2026-11-12T21:34:16.5502790Z 34 | | }
+2026-11-12T21:34:16.5502996Z    | |_^ the entire enum is at least 304 bytes
+2026-11-12T21:34:16.5503266Z    |
+2026-11-12T21:34:16.5503721Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5504522Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5505041Z    |
+2026-11-12T21:34:16.5505415Z 33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:34:16.5505796Z 33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+2026-11-12T21:34:16.5506113Z    |
+2026-11-12T21:34:16.5506205Z 
+2026-11-12T21:34:16.5506337Z warning: this function has too many arguments (8/7)
+2026-11-12T21:34:16.5506742Z   --> codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+2026-11-12T21:34:16.5507103Z    |
+2026-11-12T21:34:16.5507405Z 20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+2026-11-12T21:34:16.5508010Z 21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+2026-11-12T21:34:16.5508357Z 22 | |     dataset_cut: &LearningIterationSnapshotV1,
+2026-11-12T21:34:16.5508669Z 23 | |     scope: Digest32,
+2026-11-12T21:34:16.5508894Z ...  |
+2026-11-12T21:34:16.5509072Z 28 | |     now: u64,
+2026-11-12T21:34:16.5509296Z 29 | | ) -> Result<Admission, Error> {
+2026-11-12T21:34:16.5509554Z    | |_____________________________^
+2026-11-12T21:34:16.5509783Z    |
+2026-11-12T21:34:16.5510240Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:34:16.5510692Z 
+2026-11-12T21:34:16.5510818Z warning: large size difference between variants
+2026-11-12T21:34:16.5511188Z    --> codex-rs/hepta-agentd/src/cell_q24_training_source.rs:146:1
+2026-11-12T21:34:16.5511523Z     |
+2026-11-12T21:34:16.5511718Z 146 | / enum OriginalMaterialSource {
+2026-11-12T21:34:16.5512019Z 147 | |     Local(Box<dyn OriginalMaterialReadback>),
+2026-11-12T21:34:16.5512472Z     | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+2026-11-12T21:34:16.5512961Z 148 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:34:16.5513419Z     | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+2026-11-12T21:34:16.5513912Z 149 | | }
+2026-11-12T21:34:16.5514129Z     | |_^ the entire enum is at least 3056 bytes
+2026-11-12T21:34:16.5514399Z     |
+2026-11-12T21:34:16.5514856Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5515773Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5516290Z     |
+2026-11-12T21:34:16.5516538Z 148 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:34:16.5516942Z 148 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+2026-11-12T21:34:16.5517269Z     |
+2026-11-12T21:34:16.5517368Z 
+2026-11-12T21:34:16.5517484Z warning: large size difference between variants
+2026-11-12T21:34:16.5518024Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:180:1
+2026-11-12T21:34:16.5518404Z     |
+2026-11-12T21:34:16.5518594Z 180 | / pub(super) enum Profile {
+2026-11-12T21:34:16.5518836Z 181 | |     Legacy,
+2026-11-12T21:34:16.5519112Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:34:16.5519535Z 182 | |     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:34:16.5520047Z     | |     ----------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:34:16.5520471Z 183 | | }
+2026-11-12T21:34:16.5520684Z     | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:34:16.5520955Z     |
+2026-11-12T21:34:16.5521526Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5522739Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5523268Z     |
+2026-11-12T21:34:16.5523557Z 182 -     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:34:16.5524020Z 182 +     Evaluated(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:34:16.5524375Z     |
+2026-11-12T21:34:16.5524476Z 
+2026-11-12T21:34:16.5524613Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:34:16.5525021Z    --> codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:150:1
+2026-11-12T21:34:16.5525652Z     |
+2026-11-12T21:34:16.5525855Z 150 | / enum ObservationLocation {
+2026-11-12T21:34:16.5526108Z 151 | |     LocalOwner,
+2026-11-12T21:34:16.5526325Z 152 | |     RemoteOwner,
+2026-11-12T21:34:16.5526547Z 153 | |     EvaluatedOwner,
+2026-11-12T21:34:16.5526769Z 154 | | }
+2026-11-12T21:34:16.5526939Z     | |_^
+2026-11-12T21:34:16.5527270Z     |
+2026-11-12T21:34:16.5527611Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:34:16.5528310Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:34:16.5528918Z     = note: `#[warn(clippy::enum_variant_names)]` on by default
+2026-11-12T21:34:16.5529159Z 
+2026-11-12T21:34:16.5529280Z warning: large size difference between variants
+2026-11-12T21:34:16.5529695Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs:145:1
+2026-11-12T21:34:16.5530071Z     |
+2026-11-12T21:34:16.5530260Z 145 | / pub(super) enum Profile {
+2026-11-12T21:34:16.5530520Z 146 | |     TrainingNoUpdate,
+2026-11-12T21:34:16.5530847Z     | |     ---------------- the second-largest variant carries no data at all
+2026-11-12T21:34:16.5531292Z 147 | |     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:34:16.5531809Z     | |     ----------------------------------------------------- the largest variant contains at least 3536 bytes
+2026-11-12T21:34:16.5532235Z 148 | | }
+2026-11-12T21:34:16.5532445Z     | |_^ the entire enum is at least 3536 bytes
+2026-11-12T21:34:16.5532717Z     |
+2026-11-12T21:34:16.5533164Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:34:16.5533962Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:34:16.5534481Z     |
+2026-11-12T21:34:16.5534753Z 147 -     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:34:16.5535341Z 147 +     Evaluated(Box<OriginalCircuitEvaluatedRetentionContextV1>),
+2026-11-12T21:34:16.5535711Z     |
+2026-11-12T21:34:16.5535804Z 
+2026-11-12T21:34:16.5535947Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:34:16.5536358Z    --> codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:130:1
+2026-11-12T21:34:16.5536730Z     |
+2026-11-12T21:34:16.5536922Z 130 | / enum ObservationLocation {
+2026-11-12T21:34:16.5537174Z 131 | |     LocalOwner,
+2026-11-12T21:34:16.5537568Z 132 | |     RemoteOwner,
+2026-11-12T21:34:16.5537812Z 133 | |     EvaluatedOwner,
+2026-11-12T21:34:16.5538031Z 134 | | }
+2026-11-12T21:34:16.5538203Z     | |_^
+2026-11-12T21:34:16.5538374Z     |
+2026-11-12T21:34:16.5546841Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:34:16.5547602Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:34:16.5548080Z 
+2026-11-12T21:34:16.5548490Z warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+2026-11-12T21:34:16.5549195Z   --> codex-rs/hepta-age
