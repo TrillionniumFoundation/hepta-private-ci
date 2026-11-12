@@ -24,6 +24,8 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 PIN = AGENT + "authority_host_historical_source_pin.rs"
+RECORD = AGENT + "authority_host_historical_source_record.rs"
+REFUSAL = AGENT + "authority_host_data_refusal.rs"
 INPUTS = AGENT + "authority_host_historical_source_inputs.rs"
 SESSION = AGENT + "authority_host_historical_source_session.rs"
 RUNTIME = AGENT + "authority_host_generation_initial_runtime.rs"
@@ -46,9 +48,15 @@ CALLERS = {
     "root_historical_source_handoff_begin": (TRANSPORT,),
     "root_historical_source_handoff_ack": (TRANSPORT,),
     "root_historical_source_handoff_finalize": (TRANSPORT,),
-    "root_historical_source_handoff_existing": (TRANSPORT,),
+    "root_historical_source_handoff_existing": (),
     "root_historical_source_handoff_fence": (TRANSPORT,),
     "root_historical_source_pin_publisher": (HANDOFF,),
+    "root_initial_data_refusal_fresh": (RECORD, HANDOFF),
+    "root_initial_data_refusal_existing": (RECORD, HANDOFF),
+    "root_initial_data_refusal_inspect": (RECORD, HANDOFF),
+    "root_initial_data_refusal_refuse": (RECORD, HANDOFF),
+    "root_historical_source_armed_capture": (PIN,),
+    "root_historical_source_armed_record": (PIN,),
     "root_generation_current_original_broker_head": (
         AGENT + "authority_host_generation_publication_enrollment.rs",
         AGENT + "authority_host_generation_publication_transport.rs",
@@ -76,8 +84,8 @@ def function_code(source, name):
 
 
 def require_read_only_recovery(source):
-    # The same file legitimately initializes a *new* pin in retain(). Check
-    # recovery/readback specifically so that its sibling cannot authorize a write.
+    # Recovery never creates or overwrites the primary data. Its independent
+    # durable refusal arm is allowed; a sibling fresh initializer is not.
     for name in ("open_existing", "readback_digest"):
         code = function_code(source, name)
         if re.search(
@@ -104,7 +112,7 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
             def verify(source):
                 target.write_text(source)
                 PROOF._verify_protected_files(root, {"protected_file": rows})
-                if path == PIN:
+                if path == RECORD:
                     require_read_only_recovery(source)
 
             verify(original)
@@ -148,12 +156,12 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
             "observed.original_identity() != &self.identity",
             "observed.original_fence() != &inputs.fence",
             "observed.original_source() != &inputs.source",
-            "observed.publication().bundle_digest() != inputs.definition.bundle_digest",
-            "RootHistoricalSourcePinV1::retain(", "!= observed",
+            "observed.publication().bundle_digest()", "!= inputs.definition.bundle_digest",
+            "RootHistoricalSourcePinV1::retain_unchecked(", "!= observed",
             "slot.target.observe().map_err(io::Error::other)? != target",
             "current.original_broker_head().map_err(io::Error::other)? != head",
             "FilePin::read(&inputs.journal", "FilePin::read(&inputs.witness",
-            "pin.fence()?", "RootHistoricalSourcePinV1::open_existing(",
+            "RootHistoricalSourcePinV1::capture(", "retained.ok_or_else(",
         ))
 
     def test_descriptor_custody_does_not_borrow_the_writer_lock(self):
@@ -189,26 +197,33 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
             self.check_mutation(INPUTS, lambda source: source + "\n" + marker)
 
     def test_pin_recovery_does_not_initialize_and_refuses_fenced_or_different_records(self):
-        self.rejects_removal(PIN, "open_existing", (
-            "original_root()?", "HostAuthorityFrontierStore::open(root, owner.clone())",
+        self.rejects_removal(RECORD, "open_existing", (
+            "original_root()?", "RootDataRefusalV1::open_existing(",
+            "refusal.inspect(|| {", "HostAuthorityFrontierStore::open(root, owner.clone())",
             "expected.fenced", "expected.pin.schema != 1",
             "expected.pin.purpose != PIN_PURPOSE", "&expected.pin.target != target",
         ))
-        self.rejects_removal(PIN, "readback_digest", (
-            "if *poisoned", "record == self.expected", "*poisoned = true",
+        self.rejects_removal(RECORD, "readback_digest", ("self.inspect_exact(|| {",))
+        self.rejects_removal(RECORD, "inspect_exact<T>", (
+            "original_root()?", "if *poisoned", "self.refusal.inspect(|| {",
+            "self.store.load(&self.owner).map_err(io::Error::other)? != self.expected",
+            "action()", "if result.is_err()", "*poisoned = true",
         ))
-        self.rejects_removal(PIN, "fence", (
-            "original_root()?", "next.fenced = true",
+        self.rejects_removal(RECORD, "fence", (
+            "original_root()?", "self.refusal.refuse()?", "next.fenced = true",
             "self.store.load(&self.owner).map_err(io::Error::other)? == next",
             "compare_and_set(&self.owner, &self.expected, &next)",
         ))
-        self.rejects_removal(PIN, "retain", ("retained.readback_digest()?",))
+        self.rejects_removal(RECORD, "retain_unchecked", (
+            "original_root()?", "PinRecordAccess::Fresh", "PinRecordAccess::Existing",
+            "store.load(&owner).map_err(io::Error::other)? != expected",
+        ))
         for name in ("open_existing", "readback_digest"):
             def insert_write(source):
                 start = source.index("fn " + name + "(")
-                offset = source.index("original_root()?;", start) + len("original_root()?;")
+                offset = source.index("{", start) + 1
                 return source[:offset] + "\nHostAuthorityFrontierStore::initialize(root, owner, fake);" + source[offset:]
-            self.check_mutation(PIN, insert_write)
+            self.check_mutation(RECORD, insert_write)
 
     def test_root_lifetime_is_the_actual_process_and_boot(self):
         self.rejects_removal(SESSION, "require_current", (
@@ -298,6 +313,20 @@ class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
              "fn unregistered(cap: RootHistoricalSourceCaptureCapabilityV1) { cap.capture(); }"),
             ("root_historical_source_deployment_enable",
              "fn unregistered(host: &mut PreparedHostAuthoritySession) { host.enable_initial_source_capture_from_deployment(path); }"),
+            ("root_initial_data_refusal_fresh",
+             "fn unregistered() { RootDataRefusalV1::create_fresh(root, kind, target, action); }"),
+            ("root_initial_data_refusal_existing",
+             "fn unregistered() { RootDataRefusalV1::open_existing(root, kind, target); }"),
+            ("root_initial_data_refusal_inspect",
+             "fn unregistered(refusal: &RootDataRefusalV1) { refusal.inspect(action); }"),
+            ("root_initial_data_refusal_refuse",
+             "fn unregistered(refusal: &RootDataRefusalV1) { refusal.refuse(); }"),
+            ("root_historical_source_armed_capture",
+             "fn unregistered() { RootHistoricalSourcePinV1::capture(root, target, action); }"),
+            ("root_historical_source_armed_record",
+             "fn unregistered() { RootHistoricalSourcePinV1::retain_unchecked(root, pin, access); }"),
+            ("root_historical_source_handoff_existing",
+             "fn unregistered() { RootHistoricalSourceHandoffV1::open_finalized(root, target); }"),
         ):
             sources = dict(self.sources)
             sources[AGENT + "unregistered_source_capture.rs"] = call

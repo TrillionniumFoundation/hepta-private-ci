@@ -90,6 +90,13 @@ jobs:
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced",
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes",
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization",
+              "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_sequences_block_stale_cross_handle_completion",
+              "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope",
+              "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore",
+              "authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes",
+              "authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_unfinished_capture_cannot_initialize_after_restart",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
