@@ -53,6 +53,8 @@ mod artifacts;
 mod child;
 #[path = "authority_host_generation_publication_root_fixture_tests.rs"]
 mod fixture;
+#[path = "authority_host_publication_root_snapshot_tests.rs"]
+mod snapshot;
 #[path = "authority_host_generation_publication_root_support_tests.rs"]
 mod support;
 
@@ -67,7 +69,9 @@ enum Phase {
     Publish,
     Recover,
     RetiredSession,
+    StalePrepare,
     Revoked,
+    RefusedReopen,
 }
 
 fn now_ms() -> anyhow::Result<u64> {
@@ -175,52 +179,55 @@ fn record_component_decision(
 fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow::Result<()> {
     // SAFETY: only observe this test process's actual credentials.
     assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
-    let mut fixture = fixture::Fixture::new().context("publication component fixture setup")?;
-    let initial_current = fixture.current.original_broker_head()?;
-    fixture
-        .run_phase(Phase::Publish)
-        .context("publication component Publish phase")?;
-    let published = fixture.current.original_broker_head()?;
-    assert_eq!(published.current, fixture.intent.target);
-    assert_eq!(published.prepared, None);
-    assert_eq!(
-        published.published.as_ref().map(|p| &p.intent),
-        Some(&fixture.intent)
-    );
-    assert_ne!(published, initial_current);
-    let protected = support::protected_files(&fixture.current_path)?;
-    let claims_path = fixture.local.join("device/authority.claims");
-    let claimed = std::fs::read(&claims_path)?;
-    anyhow::ensure!(!claimed.is_empty(), "real original nonce append required");
-    fixture
-        .run_phase(Phase::Recover)
-        .context("publication component Recover phase")?;
-    assert_eq!(fixture.current.original_broker_head()?, published);
-    assert_eq!(support::protected_files(&fixture.current_path)?, protected);
-    assert_eq!(std::fs::read(&claims_path)?, claimed);
-
-    fixture
-        .run_phase(Phase::RetiredSession)
-        .context("publication component RetiredSession phase")?;
-    assert_eq!(fixture.current.original_broker_head()?, published);
-    assert_eq!(support::protected_files(&fixture.current_path)?, protected);
-    assert_eq!(std::fs::read(&claims_path)?, claimed);
-
-    // The Revoked phase first opens its original five lanes and restores the
-    // registered publication. Its same serving issuer then revokes this exact
-    // published FinalUse grant; the child waits for the original consumer feed.
-    fixture
-        .run_phase(Phase::Revoked)
-        .context("publication component Revoked phase")?;
-    assert_eq!(fixture.current.original_broker_head()?, published);
-    assert_eq!(support::protected_files(&fixture.current_path)?, protected);
-    assert_eq!(std::fs::read(&claims_path)?, claimed);
-    fixture.child.release()?;
-    let output = fixture.child.finish()?;
-    assert!(
-        output.contains("ROOT_PUBLICATION_ORIGINAL lifecycle=passed"),
-        "{output}"
-    );
-    println!("{output}");
+    // Each real terminal refusal owns an independent protected scope. The
+    // successful reopen path precedes it; no rejected slot is reset for another
+    // negative case or treated as eligible for a later positive recovery.
+    for terminal in [Phase::StalePrepare, Phase::Revoked] {
+        let mut fixture =
+            fixture::Fixture::new(terminal).context("publication component fixture setup")?;
+        let initial_current = fixture.current.original_broker_head()?;
+        fixture
+            .run_phase(Phase::Publish)
+            .context("publication component Publish phase")?;
+        let published = fixture.current.original_broker_head()?;
+        assert_eq!(published.current, fixture.intent.target);
+        assert_eq!(published.prepared, None);
+        assert_eq!(
+            published.published.as_ref().map(|p| &p.intent),
+            Some(&fixture.intent)
+        );
+        assert_ne!(published, initial_current);
+        let mut protected = fixture.protected_snapshot()?;
+        protected.require_ready();
+        let claims_path = fixture.local.join("device/authority.claims");
+        let claimed = std::fs::read(&claims_path)?;
+        anyhow::ensure!(!claimed.is_empty(), "real original nonce append required");
+        for phase in [Phase::Recover, Phase::RetiredSession, terminal] {
+            fixture
+                .run_phase(phase)
+                .with_context(|| format!("publication component {phase:?} phase"))?;
+            assert_eq!(fixture.current.original_broker_head()?, published);
+            let after = fixture.protected_snapshot()?;
+            after.require_later_phase(&protected, phase)?;
+            assert_eq!(std::fs::read(&claims_path)?, claimed);
+            protected = after;
+        }
+        protected.require_refused();
+        fixture
+            .run_phase(Phase::RefusedReopen)
+            .context("publication component refused original Reopen phase")?;
+        assert_eq!(fixture.current.original_broker_head()?, published);
+        assert_eq!(fixture.protected_snapshot()?, protected);
+        assert_eq!(std::fs::read(&claims_path)?, claimed);
+        fixture.child.release()?;
+        let output = fixture.child.finish()?;
+        assert!(
+            output.contains(&format!(
+                "ROOT_PUBLICATION_ORIGINAL lifecycle=passed terminal={terminal:?}"
+            )),
+            "{output}"
+        );
+        println!("{output}");
+    }
     Ok(())
 }

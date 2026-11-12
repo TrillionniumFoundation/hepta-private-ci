@@ -42,35 +42,41 @@ pub(super) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
         .parse()?)
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct ProtectedFile {
-    device: u64,
-    inode: u64,
-    owner: u32,
-    mode: u32,
-    bytes: Vec<u8>,
+    pub(super) device: u64,
+    pub(super) inode: u64,
+    pub(super) owner: u32,
+    pub(super) group: u32,
+    pub(super) mode: u32,
+    pub(super) links: u64,
+    pub(super) bytes: Vec<u8>,
 }
 
 pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
     std::fs::read_dir(path)?
         .map(|entry| {
             let path = entry?.path();
-            let mut file = File::open(&path)?;
-            let metadata = file.metadata()?;
-            let mut bytes = Vec::new();
-            file.read_to_end(&mut bytes)?;
-            Ok((
-                path,
-                ProtectedFile {
-                    device: metadata.dev(),
-                    inode: metadata.ino(),
-                    owner: metadata.uid(),
-                    mode: metadata.mode(),
-                    bytes,
-                },
-            ))
+            let file = protected_file(&path)?;
+            Ok((path, file))
         })
         .collect()
+}
+
+pub(super) fn protected_file(path: &Path) -> anyhow::Result<ProtectedFile> {
+    let mut file = File::open(path)?;
+    let metadata = file.metadata()?;
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)?;
+    Ok(ProtectedFile {
+        device: metadata.dev(),
+        inode: metadata.ino(),
+        owner: metadata.uid(),
+        group: metadata.gid(),
+        mode: metadata.mode(),
+        links: metadata.nlink(),
+        bytes,
+    })
 }
 
 pub(super) struct ChildOwner {
@@ -81,7 +87,11 @@ pub(super) struct ChildOwner {
 }
 
 impl ChildOwner {
-    pub(super) fn spawn(receive: UnixDatagram, state: &Path) -> anyhow::Result<Self> {
+    pub(super) fn spawn(
+        receive: UnixDatagram,
+        state: &Path,
+        terminal: Phase,
+    ) -> anyhow::Result<Self> {
         let executable = File::open(std::env::current_exe()?)?;
         let inherited = [receive.as_raw_fd(), executable.as_raw_fd()];
         // Anonymous files preserve both original streams even when a parent
@@ -118,6 +128,10 @@ impl ChildOwner {
                 std::process::id().to_string(),
             )
             .env("HEPTA_LEARNING_SERVICE_STATE", state)
+            .env(
+                "HEPTA_PUBLICATION_COMPONENT_TERMINAL",
+                format!("{terminal:?}"),
+            )
             .current_dir("/")
             .stdin(Stdio::piped())
             .stdout(Stdio::from(stdout.try_clone()?))
