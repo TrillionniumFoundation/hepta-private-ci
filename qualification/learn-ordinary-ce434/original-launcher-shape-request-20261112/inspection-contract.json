@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.service-root01.safe-static-locator-shape.contract.v2",
+  "status": "prepared_only_not_executed",
+  "purpose": "Narrowly identify syntactic executable/cwd/file-use slots in the one already observed possible launcher, without exporting source values or treating a filename or variable as production custody.",
+  "prior_evidence": {
+    "result_git_blob": "ec6d9be38af816b8e74bd6746193547b0b671ae9",
+    "execution_git_blob": "8baea33e71490a9e4150d60cf4abbed1ebec3e24",
+    "commit": "b4e16702ce860b0fbee057592227407049dec93d",
+    "tree": "c130e20f8afc327ae205bc54d9212e50030a8bf0",
+    "inspector_git_blob": "9831f0f57ba089708a6ccd2f184a88427e744fd9",
+    "inspector_contract_git_blob": "5586ed06b5e88cd501bad4156929cac271247586",
+    "parser_warning_audit_git_blob": "d66972eecc6afc52a689e6f8ff9b9972202eca75",
+    "actual_observation": {
+      "target_bytes": 1379,
+      "result_json_bytes": 7176,
+      "ast_nodes": 233,
+      "definitions": 0,
+      "calls": 17,
+      "imports": [
+        "pathlib",
+        "json",
+        "subprocess",
+        "os",
+        "time",
+        "hashlib"
+      ],
+      "only_exported_interface_marker": "root identifier spelling at line 2; not proof of a Root owner",
+      "assessment": "unknown_from_static_ast",
+      "ordinary_execution_authority_proven": false,
+      "runtime_owner_custody_observed": false
+    }
+  },
+  "script": {
+    "git_blob": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+    "bytes": 15226,
+    "full_git_api_readback_equal": true,
+    "independent_git_blob_sha1_equal": true,
+    "suggested_argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "ROOT_OWNED_ABSOLUTE_SCRIPT_PATH"
+    ],
+    "materialization": "Root alone supplies a new file inside its own evidence directory after reading and verifying this exact blob. The script accepts no target or source arguments.",
+    "output": "One safe JSON document on stdout. Preserve complete stdout bytes/hash and actual exit. Keep the prior stderr-to-DEVNULL policy; a crash without a complete document remains unknown.",
+    "source_worktree_mutation": false,
+    "dependencies": [
+      "ast",
+      "hashlib",
+      "json",
+      "os",
+      "stat",
+      "sys",
+      "warnings"
+    ]
+  },
+  "exact_input": {
+    "path": "/data/hepta-service-root-01.py",
+    "device": 2067,
+    "inode": 83,
+    "permission_mode": "0o664",
+    "nlink": 1,
+    "size_bytes": 1379,
+    "sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "mtime_ns_decimal": "1792775306676468050",
+    "ctime_ns_decimal": "1792775306676468050",
+    "wide_integer_policy": "The Python script contains these exact original decimal integer literals copied from raw result bytes, never IEEE-754-rounded JSON numbers.",
+    "changed_identity_or_content": "Reject as unknown before parsing; do not adapt the pin, read another path, execute the target or infer that the target is unrelated."
+  },
+  "stable_read": {
+    "inherited_exact_function_bodies": [
+      "InspectionRejected",
+      "checked_stat",
+      "identity",
+      "read_stable_source",
+      "identifier",
+      "dotted_name",
+      "location",
+      "callee_name"
+    ],
+    "checks": "Same prior lstat regular/no final symlink/nlink1/0..64KiB; O_RDONLY|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK; fstat equals original lstat; bounded original-size read; final fstat+lstat and size equal; then compare all fixed observed source fields before parsing.",
+    "flags_fail_closed": true,
+    "sample_limit": "No lock is taken and no universal defense against a privileged concurrent adversary is claimed.",
+    "parse": "UTF-8 optional BOM; warning-as-error ast.parse grammar only. No imported target, evaluation or compilation/execution."
+  },
+  "output_allowlist": {
+    "import_names": [
+      "pathlib",
+      "json",
+      "subprocess",
+      "os",
+      "time",
+      "hashlib"
+    ],
+    "call_names": [
+      "pathlib.Path",
+      "p.exists",
+      "p.rename",
+      "str",
+      "time.monotonic",
+      "subprocess.run",
+      "dict",
+      "hashlib.sha256",
+      "binary.read_bytes",
+      "json.dumps",
+      "print"
+    ],
+    "path_reference_names": [
+      "root",
+      "p",
+      "binary"
+    ],
+    "path_use_categories": [
+      "path_constructor_argument",
+      "existence_probe",
+      "rename_source",
+      "rename_destination",
+      "file_read",
+      "file_open",
+      "text_output",
+      "hash_input_syntax"
+    ],
+    "process_projection": [
+      "subprocess.run location",
+      "sanitized first command expression and sequence length",
+      "sanitized first sequence element only",
+      "sanitized cwd/stdout/stderr expression origins",
+      "env keyword presence only",
+      "shell keyword presence only",
+      "unpacked keyword presence only"
+    ],
+    "source_values": "Constant.value is not accessed, rendered, hashed or classified by the projector. Dict/subscript/attribute/formatted-string values and unknown call arguments are not expanded.",
+    "identity_names": "Only the fixed already-observed name allowlists may be emitted. Unlisted names are null or omitted; remaining data are fixed labels, AST class names, coordinates, counts and source file metadata.",
+    "syntactic_origin_limit": "Only unique simple module-level assignments with one recorded Name store and a preceding source location are followed, at depth <=6. This is a syntactic candidate relation; control flow, aliases, operator methods, subprocess wrappers and runtime values are not resolved.",
+    "caps": {
+      "source_bytes": 65536,
+      "ast_nodes": 50000,
+      "records_per_kind": 64,
+      "origin_depth": 6,
+      "identifier_characters": 256
+    },
+    "exclusions": [
+      "arbitrary source literal values",
+      "source lines/comments/docstrings",
+      "argv contents or whole argv",
+      "environment names or values",
+      "credential values",
+      "source-referenced file contents or directory listings",
+      "AST dump/unparse",
+      "exception/warning messages or tracebacks"
+    ],
+    "environment_traversal_limit": "The complete AST walk may still report fixed allowlisted call names, syntax locations and counts occurring inside an environment expression. It never reads Constant.value, resolves environment contents or outputs values. The special subprocess origin projection does not follow the env keyword expression."
+  },
+  "non_actions": [
+    "no H call in preparation",
+    "no target execution/import/eval/exec",
+    "no subprocess in inspector",
+    "no source-referenced path open/stat/read",
+    "no recursive search",
+    "no network",
+    "no sudo",
+    "no signal/kill",
+    "no source/config/key/grant/policy mutation"
+  ],
+  "interpretation": {
+    "can_establish": "The fixed source's syntactic path slot locations and their apparent uses, including whether a named binary expression feeds a child command, hash, cwd or output operation.",
+    "cannot_establish": "The runtime executable, actual service registration, existing configuration contents, independent principals, original owner streams/custody, authority, deployed ordinary A/B/C entrypoint, or absence of an external launcher.",
+    "if_inconclusive": "Retain unknown and stop this one-file inspection. Do not label it fixture or production solely from syntax. Any later locator selection must use an independently provided existing deployment path or explicit safe token allowlist and separate bounded authorization.",
+    "existing_contract": "The ordinary handoff contract still requires the actual original Root enrollment, owners, admitted streams, B-before-adoption inference/task custody, C FinalUse and real restart evidence.",
+    "ordinary_acceptance_credit": 0
+  },
+  "preparation_validation": {
+    "static_only": true,
+    "python_not_run": true,
+    "h_not_run": true,
+    "target_not_read_by_this_subtask": true,
+    "rust_not_run": true,
+    "no_git_source_commit_changed": true
+  },
+  "peer_review": {
+    "audit_git_blob": "c155eafb8fe3fc23ccf29e7db251db61bc3d36cb",
+    "reviewed_script": "ce5445fa171b819b1d485df8048a5f568ada3088",
+    "result": "No new value-disclosure, target-execution or path-expansion finding in static review.",
+    "final_script_delta": "One output field renamed from environment_expression_not_inspected to environment_argument_value_not_resolved to distinguish full AST traversal from value resolution; all inspection/control logic remains byte-identical."
+  },
+  "supersedes": {
+    "script_git_blob": "ce5445fa171b819b1d485df8048a5f568ada3088",
+    "contract_git_blob": "07882056091dda28ef3fdb375653aab134a8dad7",
+    "reason": "Narrow output-description correction only; no new H dispatch or source observation."
+  }
+}

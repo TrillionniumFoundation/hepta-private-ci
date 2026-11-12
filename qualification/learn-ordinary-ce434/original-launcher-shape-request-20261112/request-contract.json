@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.learn.existing-launcher-shape.readonly-request-contract.v2",
+  "status": "prepared_only_not_dispatched",
+  "process_api": "h_process_start",
+  "request": {
+    "git_blob": "ece6b9a4bda6c2a95dc02dfe40146a354c26b91e",
+    "bytes": 25104,
+    "sha256": "d5874f1674e5eda9b988bfd7e512d6ad5e34b6f46bb8377bd6aecd565e7abb6d",
+    "full_readback": true,
+    "exact_fields": [
+      "args",
+      "cwd",
+      "env",
+      "executable",
+      "host",
+      "idempotency_key"
+    ],
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "idempotency_key": "learn-ce434-existing-launcher-shape-readonly-v2"
+  },
+  "wrapper": {
+    "git_blob": "bd006f3762bda50e40ca389f9eeb5b616e4477d7",
+    "bytes": 23037,
+    "sha256": "3f297aa02e50afca5a4768d06f4f46e21597225573a871bfee533f6af99af050",
+    "full_readback": true
+  },
+  "inspector": {
+    "git_blob": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+    "bytes": 15226,
+    "sha256": "e061c2f77eadcdae4c695042c6c25dece3f93a0919a006ca4b6d241479ad642c",
+    "contract_git_blob": "f2704db8cdcaf2ef2b6c80b3e5fa51d7dd2a3ad3",
+    "peer_review_git_blob": "c155eafb8fe3fc23ccf29e7db251db61bc3d36cb",
+    "exact_nested_bytes": true
+  },
+  "prior_wrapper": {
+    "git_blob": "21dda61b93933e3ed7ec6b7da816ee1bebc46756",
+    "request_git_blob": "04f0a23e803ca37de9a8190d3b49e02dfa388015",
+    "reuse": "Same explicit /usr/bin/python3 -I -S -B inspected-file command, exact embedded inspector materialization check, child stderr DEVNULL and full original stdout/result record. The old C7 source/inspection result is not reused as a new pass.",
+    "adaptation": [
+      "Bind current e5c SHA/tree and new exclusive output directory.",
+      "Replace only the embedded inspected program with the reviewed shape projector and its exact two hashes.",
+      "Remove previous forward/service config read, remote Git calls, isolated index/object writes, commit and push.",
+      "Use direct Popen/communicate or Popen/wait without subprocess.run/check_output timeout or exceptional kill cleanup.",
+      "Always retain actual child return code/terminal flag and full output bytes/hash before checking JSON status.",
+      "Record source HEAD/tree/status before and after; GIT_OPTIONAL_LOCKS=0 and core.fsmonitor=false avoid index-refresh writes and the configured fsmonitor hook.",
+      "Use durable execution checkpoints; preserve unknown instead of retrying or signalling an unobserved child."
+    ]
+  },
+  "source": {
+    "repository": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+    "reads": [
+      "git rev-parse HEAD",
+      "git rev-parse HEAD^{tree}",
+      "git status --porcelain=v1 --untracked-files=all",
+      "git rev-parse HEAD again"
+    ],
+    "each_snapshot": "Complete status stdout is retained without strip; both head samples and tree must equal the fixed source and status must be empty.",
+    "concurrent_native": "The current native compilation is left running. No checkout/fetch/format/build/test command, index mutation or process signal is part of this request.",
+    "observation_limit": "Two sampled snapshots, not a source lock or proof against every external concurrent actor."
+  },
+  "evidence": {
+    "directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-shape-root01-v2",
+    "creation": "Require existing real parent directory owned by the current original user; reject any preexisting output path, then create one exclusive mode0700 directory. No UID, key, grant or policy is created.",
+    "files": [
+      "inspect.py",
+      "result.json",
+      "execution.json"
+    ],
+    "transient_file": "execution.pending.json exists only during an atomic checkpoint replacement.",
+    "result": "Inspector stdout is streamed directly to a new result.json; stderr is DEVNULL. After the original child wait returns, hash the complete file and record byte count and actual return code. Before JSON interpretation, the complete reread must match the recorded bytes/hash. Oversized output remains preserved with its complete hash but is rejected.",
+    "execution": "Actual inspector PID/return code/terminal state, source before/after, exact inspector/contract pins, output bytes/hash, elapsed seconds and separate wrapper return code. Wrapper stdout reports the final execution.json byte count/hash.",
+    "original_process_uncertain": "No retry, signal or cleanup occurs. actual_returncode stays null unless the direct child was actually waited/reaped; stdout_complete stays false unless the complete terminal output was hashed.",
+    "json_size_validation": 2097152
+  },
+  "limits": {
+    "explicit_supervisor_timeout_absent": true,
+    "cpu_quota_field_absent": true,
+    "memory_limit_field_absent": true,
+    "nice_field_absent": true,
+    "pty_rows_cols_absent": true,
+    "no_signal_calls": true,
+    "no_process_group_actions": true,
+    "no_timer_or_sleep": true,
+    "no_target_execution": true,
+    "no_source_referenced_path_reads": true,
+    "no_sudo": true,
+    "no_network_or_remote_git": true,
+    "external_lifecycle": "These facts describe this wrapper and frozen request. They do not assert how an external host shutdown or independent supervisor would act."
+  },
+  "interpretation": {
+    "state_if_recorded": "inspection-recorded-unknown-purpose",
+    "wrapper_zero": "Only the reviewed inspector returned zero with an ok safe projection and the sampled source remained fixed and clean.",
+    "classification": "unknown_from_static_ast",
+    "ordinary_acceptance": {
+      "positive": 0,
+      "no_update": 0,
+      "fresh_C": 0,
+      "daemon_root_cold_restart": 0
+    },
+    "no_production_inference": "Neither a wrapper zero nor a name/path-use shape proves an existing launcher, a live original owner, B execution custody, C FinalUse authority or actual ordinary A/B/C."
+  },
+  "preparation_validation": {
+    "exact_wrapper_and_request_full_api_readback": true,
+    "independent_git_blob_and_sha256": true,
+    "request_wrapper_inspector_nested_bytes_equal": true,
+    "static_source_review": true,
+    "python_executed": false,
+    "h_dispatched": false,
+    "original_verifier_and_source_unmodified": true,
+    "wrapper_peer_review": "No independent wrapper approval is claimed; Root reviews and solely dispatches. The prior inspector peer review remains separately scoped."
+  }
+}

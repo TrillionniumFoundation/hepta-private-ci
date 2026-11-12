@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.learn.safe-static-locator-shape-peer-review.v1",
+  "scope": "Narrow read-only review of value disclosure, execution and target scope. No H dispatch, Python execution, target read or runtime authority assertion.",
+  "script": {
+    "blob": "ce5445fa171b819b1d485df8048a5f568ada3088",
+    "bytes": 15223,
+    "sha256": "227f9c887bfaaadbf1ee3c4beae01341fb5f1b283131db659af3862d72979b36"
+  },
+  "predecessor_script": "9831f0f57ba089708a6ccd2f184a88427e744fd9",
+  "original_result": "ec6d9be38af816b8e74bd6746193547b0b671ae9",
+  "unchanged_helpers": [
+    {
+      "name": "checked_stat",
+      "exact_equal": true
+    },
+    {
+      "name": "identity",
+      "exact_equal": true
+    },
+    {
+      "name": "read_stable_source",
+      "exact_equal": true
+    },
+    {
+      "name": "identifier",
+      "exact_equal": true
+    },
+    {
+      "name": "dotted_name",
+      "exact_equal": true
+    },
+    {
+      "name": "location",
+      "exact_equal": true
+    },
+    {
+      "name": "callee_name",
+      "exact_equal": true
+    }
+  ],
+  "identity_integer_tokens_exact": [
+    "1792775306676468050",
+    "1792775306676468050"
+  ],
+  "findings": [],
+  "observed_controls": [
+    "The only data-path file open is the fixed TARGET using O_RDONLY|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK; fd/path identity is checked before and after.",
+    "The exact prior device/inode/mode/nlink/size/mtime_ns/ctime_ns/SHA is compared before AST parsing. Raw integer timestamp tokens match without JS Number roundtrip.",
+    "Only the inspector's fixed standard-library imports execute. The target is UTF-8 decoded and ast.parse'd, never imported, evaluated, executed, compiled to executable bytecode, or spawned.",
+    "Constant.value is never accessed. Source lines, exception text/args/reprs, docstrings, literal values, argv element values and environment values are not emitted.",
+    "AST names emitted from the target are limited to fixed observed call/import/path-name allowlists. Other names are internal lookup keys only and are replaced with null/unknown in output.",
+    "The env keyword is recorded only as present; its expression is not followed by origin(). All kwargs not explicitly categorized are omitted.",
+    "Bounded origin traversal reports syntax/locations, does not resolve referenced filesystem paths or open them, and marks receiver type/runtime dataflow as unproved.",
+    "Dynamic/unknown calls are kept unknown; file-method labels and path-join syntax do not establish actual runtime object types or grants.",
+    "The prior sampled filesystem stability limitation and explicit ordinary_execution_authority_proven=false/runtime_owner_custody_observed=false remain."
+  ],
+  "limitations": [
+    "This is source review of the inspector, not a Python parse/test or an actual target observation.",
+    "The fixed same-file identity check does not provide a filesystem lock or a process/deployment authority.",
+    "Global AST call-shape/count observation can describe calls nested within any expression, including an env expression; no argument value is exported and no runtime value is evaluated."
+  ]
+}
