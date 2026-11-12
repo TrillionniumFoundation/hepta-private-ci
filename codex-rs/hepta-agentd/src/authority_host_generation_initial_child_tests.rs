@@ -89,7 +89,14 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 control(&socket, b"CHECKED")
                     .with_context(|| format!("initial child {phase:?}: awaiting parent CHECKED"))?;
                 assert_eq!(socket.send(b"DONE")?, 4);
+                control(&socket, b"STOP")
+                    .with_context(|| format!("initial child {phase:?}: awaiting parent STOP"))?;
+                // These original refusal paths may already have fenced their
+                // purpose. Do not demand fresh authority to close them.
                 drop(production);
+                assert_eq!(socket.send(b"CLOSED")?, 6);
+                control(&socket, b"PHASE_COMPLETE")
+                    .with_context(|| format!("initial child {phase:?}: awaiting original server completion"))?;
                 continue;
             }
             assert!(enrolled);
@@ -127,9 +134,19 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(std::fs::read(&claims)?, before);
                 if phase == Phase::RetiredSession {
-                    // This actual session drop fences the shared live verifier;
-                    // retaining the task/Current Arc cannot extend its authority.
-                    drop(production);
+                    assert_eq!(socket.send(b"RETIRE_READY")?, 12);
+                    control(&socket, b"RETIRE")
+                        .with_context(|| format!("initial child {phase:?}: awaiting parent RETIRE"))?;
+                    // Validate the retained task under the original serial
+                    // permit, then let actual inputs/session Drop fence it.
+                    crate::root_authority_session::tests::drop_original_production_after_idle(
+                        production,
+                        TIMEOUT,
+                        || {
+                            task.require_bundle(&bundle).map_err(io::Error::other)?;
+                            Ok(())
+                        },
+                    ).await.with_context(|| format!("initial child {phase:?}: retiring original idle session"))?;
                     assert!(task.require_bundle(&bundle).is_err());
                     assert_eq!(std::fs::read(&claims)?, before);
                     drop(task);
@@ -137,6 +154,13 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                     control(&socket, b"CHECKED")
                     .with_context(|| format!("initial child {phase:?}: awaiting parent CHECKED"))?;
                     assert_eq!(socket.send(b"DONE")?, 4);
+                    control(&socket, b"STOP")
+                        .with_context(|| format!("initial child {phase:?}: awaiting parent STOP"))?;
+                    // The retained task was dropped before STABLE. No original
+                    // purpose client or target file is held while waiting.
+                    assert_eq!(socket.send(b"CLOSED")?, 6);
+                    control(&socket, b"PHASE_COMPLETE")
+                        .with_context(|| format!("initial child {phase:?}: awaiting original server completion"))?;
                     continue;
                 }
                 drop(task);
@@ -146,7 +170,21 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                     .with_context(|| format!("initial child {phase:?}: awaiting parent CHECKED"))?;
             assert_eq!(Some(std::fs::read(&claims)?), original_claims);
             assert_eq!(socket.send(b"DONE")?, 4);
-            drop(production);
+            control(&socket, b"STOP")
+                .with_context(|| format!("initial child {phase:?}: awaiting parent STOP"))?;
+            if phase == Phase::Publish && plan.lose_ack {
+                // The original controlled ACK-loss lane must remain an error.
+                drop(production);
+            } else {
+                crate::root_authority_session::tests::drop_original_production_after_idle(
+                    production,
+                    TIMEOUT,
+                    || Ok(()),
+                ).await.with_context(|| format!("initial child {phase:?}: closing original idle session"))?;
+            }
+            assert_eq!(socket.send(b"CLOSED")?, 6);
+            control(&socket, b"PHASE_COMPLETE")
+                .with_context(|| format!("initial child {phase:?}: awaiting original server completion"))?;
         }
         Ok::<(), anyhow::Error>(())
     })?;

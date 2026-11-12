@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-not-execution",
+  "reviewer": "runtime_access",
+  "scope": "Remove only the now-unused stored Fixture.config after the original pre-bootstrap offline revoke was removed.",
+  "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+  "preimage": {
+    "git_blob": "4d302f702181a832329ded730541107bf2ddad92",
+    "bytes": 32457,
+    "sha256": "039906fd235388fa7971bee37dc8e4464c0ccdc218569ae38cae83fcf3f613d6"
+  },
+  "postimage": {
+    "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+    "bytes": 32386,
+    "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+  },
+  "cleanup_manifest": {
+    "git_blob": "913ed0da843cbeff94c37d84f41c440c279b99e6",
+    "bytes": 1466,
+    "sha256": "ce32c40fcf6c57e5b5fc39d5bb1a989555b4510ce0b49ef7253506f3b370c9a3"
+  },
+  "checks": {
+    "exact_source_change": "Exactly two unique lines removed: pub(super) config: HostAuthorityServiceConfig, and the Ok(Self { ... }) config, entry.",
+    "whole_source_matches_two_removals": true,
+    "local_host_config_construction_preserved": true,
+    "original_write_json_config_file_preserved": true,
+    "run_phase_reads_original_config_file_unchanged": true,
+    "remaining_field_readers": "None in the frozen parent15137d8, childbb9f, fixture4d302f, or the fixed0c896 Artifact/support child modules.",
+    "assertions_unchanged": true,
+    "callers_unchanged": true,
+    "ownership_permissions_protocol_unchanged": true
+  },
+  "disposition": "No confirmed static blocker; the proposed cleanup is precisely the independently reconstructed postimage.",
+  "prior_patch_manifest": "f2dbe1740ad85804f8750719f6bf32831ca5f45d",
+  "relationship": "Additive cleanup review only. It does not rewrite or supersede the five-file patch manifest.",
+  "validation": {
+    "native": false,
+    "cargo": false,
+    "tests_executed": false,
+    "refs_changed": false
+  }
+}

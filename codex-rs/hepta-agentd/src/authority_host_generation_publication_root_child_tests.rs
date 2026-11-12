@@ -103,6 +103,11 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             assert_eq!(intent.operation_id, operation.as_str());
             let claims = production.bootstrap.consumers.device.local_state_dir.join("authority.claims");
             if matches!(phase, Phase::Revoked) {
+                let revoked: codex_hepta_contracts::FinalUseRevocations = data(&socket)
+                    .context("publication Revoked: receive original issuer revocation head")?;
+                production.session.component_wait_for_original_revocations(
+                    [&production.device, &production.notes], &revoked, TIMEOUT,
+                ).await.context("publication Revoked: await original consumer and public feed barrier")?;
                 let record = published_head.as_ref().and_then(|head| head.published.as_ref())
                     .ok_or_else(|| anyhow::anyhow!("original retained published record"))?;
                 assert_eq!(production.device.verify_retained_use(&record.signed, &intent.binding()?, &record.witness).err(),
