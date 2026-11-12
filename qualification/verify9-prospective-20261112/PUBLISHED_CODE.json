@@ -1,0 +1,201 @@
+{
+  "schema": "hepta.verify9.published-code.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "4b6ce81c8ebe26844a54b8458cee054025ba36ac",
+  "final_code_head": "58035205857c154530ba249cb3494cfe739e1875",
+  "final_code_tree": "365f354cc71e5d83133b5b9679a103f657d92502",
+  "records_are": "derived summary of completed GitHub API mutations and readback comparisons; not original provider API envelopes",
+  "stages": [
+    {
+      "stage": 1,
+      "number": 6160,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6160",
+      "branch": "research/verify9-cost-metrics-20261112-456f",
+      "head": "3b241f8bfd344be8c3eb580bf17e6e2d1647061c",
+      "tree": "4fff0da563516b364d090fab88fef188f969d0ec",
+      "parent": "4b6ce81c8ebe26844a54b8458cee054025ba36ac",
+      "base": "research/verify8-ci-followup-20261112-f00a",
+      "changed_lines": 383,
+      "draft": true,
+      "merged": false
+    },
+    {
+      "stage": 2,
+      "number": 6161,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6161",
+      "branch": "research/verify9-check-opportunities-20261112-456f",
+      "head": "c0c4088918e0949be94c828ace37d32327265719",
+      "tree": "3c69d8e6d237c423f955d0f8612d97d19d8d5803",
+      "parent": "3b241f8bfd344be8c3eb580bf17e6e2d1647061c",
+      "base": "research/verify9-cost-metrics-20261112-456f",
+      "changed_lines": 784,
+      "draft": true,
+      "merged": false
+    },
+    {
+      "stage": 3,
+      "number": 6162,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6162",
+      "branch": "research/verify9-opportunity-controls-20261112-456f",
+      "head": "5738dc141eb5a8945c5cc03cf88f418375ff73f4",
+      "tree": "7d452974c26eccdafa5b3076ebbb6288dc50d75e",
+      "parent": "c0c4088918e0949be94c828ace37d32327265719",
+      "base": "research/verify9-check-opportunities-20261112-456f",
+      "changed_lines": 340,
+      "draft": true,
+      "merged": false
+    },
+    {
+      "stage": 4,
+      "number": 6164,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6164",
+      "branch": "research/verify9-policy-evaluation-20261112-456f",
+      "head": "58035205857c154530ba249cb3494cfe739e1875",
+      "tree": "365f354cc71e5d83133b5b9679a103f657d92502",
+      "parent": "5738dc141eb5a8945c5cc03cf88f418375ff73f4",
+      "base": "research/verify9-opportunity-controls-20261112-456f",
+      "changed_lines": 789,
+      "draft": true,
+      "merged": false
+    }
+  ],
+  "commit_readback": [
+    {
+      "number": 6160,
+      "head": "3b241f8bfd344be8c3eb580bf17e6e2d1647061c",
+      "tree": "4fff0da563516b364d090fab88fef188f969d0ec",
+      "parent": "4b6ce81c8ebe26844a54b8458cee054025ba36ac",
+      "draft": true,
+      "verified": true
+    },
+    {
+      "number": 6161,
+      "head": "c0c4088918e0949be94c828ace37d32327265719",
+      "tree": "3c69d8e6d237c423f955d0f8612d97d19d8d5803",
+      "parent": "3b241f8bfd344be8c3eb580bf17e6e2d1647061c",
+      "draft": true,
+      "verified": true
+    },
+    {
+      "number": 6162,
+      "head": "5738dc141eb5a8945c5cc03cf88f418375ff73f4",
+      "tree": "7d452974c26eccdafa5b3076ebbb6288dc50d75e",
+      "parent": "c0c4088918e0949be94c828ace37d32327265719",
+      "draft": true,
+      "verified": true
+    },
+    {
+      "number": 6164,
+      "head": "58035205857c154530ba249cb3494cfe739e1875",
+      "tree": "365f354cc71e5d83133b5b9679a103f657d92502",
+      "parent": "5738dc141eb5a8945c5cc03cf88f418375ff73f4",
+      "draft": true,
+      "verified": true
+    }
+  ],
+  "final_file_readback": [
+    {
+      "path": "experiments/verification_cell_verify1/CHECK_OPPORTUNITIES.md",
+      "sha": "4304b1f6fcb7a35ab730dccd32c94d2281c74fb9",
+      "exact_bytes_match": true,
+      "bytes": 4908,
+      "sha256": "d4df1ee7a116f295c49eb166832306eb56237ee12212b405bbaa3efe49d0ef07"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/POLICY_EVALUATION.md",
+      "sha": "61b8b393cd6107da3de0f8e8ce22dfbda9610d60",
+      "exact_bytes_match": true,
+      "bytes": 3910,
+      "sha256": "6280c3750f68a99942add2870402ef5c169ea8fdcb5576898327f7c59d18679e"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/check_opportunities.py",
+      "sha": "6c55511bd5e2e105ad150c4193899db7e62960c3",
+      "exact_bytes_match": true,
+      "bytes": 26354,
+      "sha256": "e8ac32220c8f66a28c3b746e58c7a7c8f10ce26c0ab16eb754b13df63e0ccdc5"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/cost_ledger.py",
+      "sha": "3308abbd7b14fc78a69db0df971a54afedc7f95b",
+      "exact_bytes_match": true,
+      "bytes": 10274,
+      "sha256": "0044c7515792ef14dd3ff511240ad41addd90a2591f054f587cb4683ac28f42a"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/policy_costs.py",
+      "sha": "73e42d3d896b7ded5473f079d09585fa709f6e1f",
+      "exact_bytes_match": true,
+      "bytes": 3000,
+      "sha256": "ca545b5541c21f28504f568e00cd38902f109c2f7b99385960b7de6691d8369a"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/policy_evaluation.py",
+      "sha": "e46d419e03cbadbfe1f9a0098675f5bd0139ecb9",
+      "exact_bytes_match": true,
+      "bytes": 12659,
+      "sha256": "97cefb8369b145371345e348388c62b3ddc31e89ae60b1463fa3dad5a51445a5"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/policy_metrics.py",
+      "sha": "c3dade636499bbd6b1562323a45e65c0f41eb35f",
+      "exact_bytes_match": true,
+      "bytes": 4872,
+      "sha256": "4c8e088a761d331f0f1f8dc62d3f4c6db2f08e5ee3a888df950b34926fb47ef1"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_check_opportunities.py",
+      "sha": "f2136bbd5342a56afd68046315611440937db480",
+      "exact_bytes_match": true,
+      "bytes": 16593,
+      "sha256": "91547a3431023b4d47ed2297059c9a3dd372c6bd82b738643a03238d9d917b5b"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_cost_ledger.py",
+      "sha": "482f3322a2424887b2dbd5e09f9d6cd598a825d1",
+      "exact_bytes_match": true,
+      "bytes": 7676,
+      "sha256": "b1169322ecf9a7d9b959744d1d4fb759cc666fc1fb01a6c42bd6824727d101ab"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_policy_evaluation.py",
+      "sha": "72b72a9960173467c672df45a00d70cdcef1f934",
+      "exact_bytes_match": true,
+      "bytes": 16238,
+      "sha256": "1624f38902d4706e054be73f7c08e8ac6193f1f2585c9f23a36333f9a12e4435"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_policy_metrics.py",
+      "sha": "08b525b7c85c286c379e22b1b817749afec97942",
+      "exact_bytes_match": true,
+      "bytes": 3302,
+      "sha256": "6a180801b427d7f9da8c0f256514819959d2f7a1c3a75f78c3f908031d430531"
+    }
+  ],
+  "source_binding": "SOURCE_BINDING.json binds nine formatted Python postimages to the retained preformat executed capsule through equal ASTs.",
+  "final_11_postimages_read_back_byte_for_byte": true,
+  "exact_final_published_bytes_reexecuted": true,
+  "local_tests_rerun_after_format": false,
+  "old_platform_results_inherited": false,
+  "scientific_admission": "HOLD",
+  "learning_decision": "NoUpdate",
+  "production_authority": "NONE",
+  "exact_final_published_bytes_reexecuted_scope": "macOS hosted Python engineering job only; local/desktop retained preformat sources separately",
+  "published_head_ci": {
+    "head": "58035205857c154530ba249cb3494cfe739e1875",
+    "run_id": 43169903848,
+    "attempt": 1,
+    "job_id": 131020438882,
+    "platform": "macos-15",
+    "status": "completed",
+    "conclusion": "success",
+    "unique_test_methods": 314,
+    "unittest_seconds": 16.392,
+    "log_bytes_utf8": 110040,
+    "log_sha256": "ea17eef47d534c115325132211289fee1529f0b48d015eacebaa529b253cc5a8",
+    "archive": "NEW_HEAD_CI_ORIGINALS.zip",
+    "other_eight_jobs_at_capture": "queued, runner_id=0",
+    "full_required_ci_complete": false,
+    "native_product_qualification": false
+  }
+}
