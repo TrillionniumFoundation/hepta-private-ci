@@ -1,0 +1,443 @@
+{
+  "call_denominator": {
+    "full_amplitude_api_calls": 16,
+    "independent_expm_per_geometry": "2 atom-front (including duration0) +32+64 uniform quadrature =98",
+    "independent_expm_total": 196,
+    "new_forward_dde_basis_torch_optimizer_in_original_stage": 0,
+    "scalar_reverse_engine_calls": 2,
+    "static_perpetual_total": 2,
+    "zero_horizon_calls_included": 2
+  },
+  "compared_scalar_count": 345,
+  "comparisons": [
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 27,
+      "failures": 0,
+      "maximum_absolute_error": 1.2818290873184424e-10,
+      "maximum_mixed_gate_ratio": 1.057886801999147e-05,
+      "name": "uniform_old_basis_vjp",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.1251694020941727e-12,
+      "maximum_mixed_gate_ratio": 5.577355067193101e-07,
+      "name": "uniform_old_0_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.2137513216714524e-13,
+      "maximum_mixed_gate_ratio": 6.016447009419894e-08,
+      "name": "uniform_old_0_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.4989703922552167e-11,
+      "maximum_mixed_gate_ratio": 7.435631955124496e-06,
+      "name": "uniform_old_1_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.3901949036387862e-11,
+      "maximum_mixed_gate_ratio": 6.8960519184666036e-06,
+      "name": "uniform_old_1_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 5.270062164441924e-12,
+      "maximum_mixed_gate_ratio": 5.592690991678583e-07,
+      "name": "uniform_old_2_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 8.127221118314765e-12,
+      "maximum_mixed_gate_ratio": 8.624762842871809e-07,
+      "name": "uniform_old_2_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 4.979655576775599e-12,
+      "maximum_mixed_gate_ratio": 2.084553931107728e-06,
+      "name": "uniform_old_3_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 2.466221671326707e-13,
+      "maximum_mixed_gate_ratio": 1.0323951126514924e-07,
+      "name": "uniform_old_3_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 9.802381129020432e-12,
+      "maximum_mixed_gate_ratio": 8.516034835303938e-07,
+      "name": "uniform_old_4_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 6.582845379909941e-12,
+      "maximum_mixed_gate_ratio": 5.718992133906263e-07,
+      "name": "uniform_old_4_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-07,
+      "coordinates": 27,
+      "failures": 0,
+      "maximum_absolute_error": 4.5134229686993876e-11,
+      "maximum_mixed_gate_ratio": 2.0569134673568446e-05,
+      "name": "uniform_time_tightening",
+      "relative_gate": 1e-05
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 9,
+      "failures": 0,
+      "maximum_absolute_error": 0.0,
+      "maximum_mixed_gate_ratio": 0.0,
+      "name": "uniform_mass_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 9,
+      "failures": 0,
+      "maximum_absolute_error": 3.4418246031009403e-10,
+      "maximum_mixed_gate_ratio": 3.661420942123328e-05,
+      "name": "uniform_bellman_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "absolute_gate": 1e-12,
+      "coordinates": 16,
+      "failures": 0,
+      "maximum_absolute_error": 4.163336342344337e-17,
+      "maximum_mixed_gate_ratio": 3.8707198630856555e-05,
+      "name": "uniform_atom_zero_sides",
+      "relative_gate": 1e-12
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "failures": 0,
+      "maximum_absolute_error": 3.148720173484776e-11,
+      "maximum_mixed_gate_ratio": 9.406772155886696e-06,
+      "name": "uniform_atom_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-11,
+      "coordinates": 36,
+      "failures": 0,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_mixed_gate_ratio": 1.5087369674856898e-06,
+      "name": "uniform_reference_quadrature",
+      "relative_gate": 1e-10
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "failures": 0,
+      "maximum_absolute_error": 5.289532700736288e-12,
+      "maximum_mixed_gate_ratio": 2.8210197934193413e-06,
+      "name": "uniform_uniform_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.4106049661677389e-11,
+      "maximum_mixed_gate_ratio": 0.0023144406285283054,
+      "name": "uniform_upper_occupation",
+      "relative_gate": 1e-08
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 42,
+      "failures": 0,
+      "maximum_absolute_error": 4.865925440356023e-09,
+      "maximum_mixed_gate_ratio": 0.00037106092075360453,
+      "name": "graded_old_basis_vjp",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 4.470240844156592e-11,
+      "maximum_mixed_gate_ratio": 1.1183485508631287e-05,
+      "name": "graded_old_0_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 6.396574936395893e-11,
+      "maximum_mixed_gate_ratio": 1.6002717886322155e-05,
+      "name": "graded_old_0_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 3.420897176642512e-10,
+      "maximum_mixed_gate_ratio": 0.00010783042339606218,
+      "name": "graded_old_1_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 3.401238735101231e-10,
+      "maximum_mixed_gate_ratio": 0.00010721076780260223,
+      "name": "graded_old_1_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.8477774865743868e-11,
+      "maximum_mixed_gate_ratio": 2.3901590775604746e-06,
+      "name": "graded_old_2_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 8.305134358010946e-12,
+      "maximum_mixed_gate_ratio": 1.074295602141903e-06,
+      "name": "graded_old_2_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 2.457917203102511e-11,
+      "maximum_mixed_gate_ratio": 3.493702895976916e-06,
+      "name": "graded_old_3_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 3.570499451654996e-11,
+      "maximum_mixed_gate_ratio": 5.075136078212857e-06,
+      "name": "graded_old_3_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 3.177154650479963e-10,
+      "maximum_mixed_gate_ratio": 0.00017455019508988835,
+      "name": "graded_old_4_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 3.1317065607439076e-10,
+      "maximum_mixed_gate_ratio": 0.00017205331538779683,
+      "name": "graded_old_4_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-07,
+      "coordinates": 42,
+      "failures": 0,
+      "maximum_absolute_error": 9.663603250942288e-11,
+      "maximum_mixed_gate_ratio": 3.474500048311282e-05,
+      "name": "graded_time_tightening",
+      "relative_gate": 1e-05
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 14,
+      "failures": 0,
+      "maximum_absolute_error": 0.0,
+      "maximum_mixed_gate_ratio": 0.0,
+      "name": "graded_mass_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 14,
+      "failures": 0,
+      "maximum_absolute_error": 3.2147084993994213e-10,
+      "maximum_mixed_gate_ratio": 3.40712704622658e-05,
+      "name": "graded_bellman_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "absolute_gate": 1e-12,
+      "coordinates": 26,
+      "failures": 0,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "maximum_mixed_gate_ratio": 0.00013381836378427984,
+      "name": "graded_atom_zero_sides",
+      "relative_gate": 1e-12
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "failures": 0,
+      "maximum_absolute_error": 2.44582132324922e-12,
+      "maximum_mixed_gate_ratio": 1.8235072726217915e-07,
+      "name": "graded_atom_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-11,
+      "coordinates": 51,
+      "failures": 0,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_mixed_gate_ratio": 5.195319803390637e-06,
+      "name": "graded_reference_quadrature",
+      "relative_gate": 1e-10
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "failures": 0,
+      "maximum_absolute_error": 3.3850700020821023e-13,
+      "maximum_mixed_gate_ratio": 4.180761330861812e-08,
+      "name": "graded_uniform_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 8.209877222498108e-12,
+      "maximum_mixed_gate_ratio": 0.0013470300938043943,
+      "name": "graded_upper_occupation",
+      "relative_gate": 1e-08
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.3322676295501878e-15,
+      "maximum_mixed_gate_ratio": 6.436075505073371e-07,
+      "name": "scalar_delay",
+      "relative_gate": 1e-09
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "failures": 0,
+      "maximum_absolute_error": 1.6345397257921945e-11,
+      "maximum_mixed_gate_ratio": 0.006782278599976954,
+      "name": "scalar_clock",
+      "relative_gate": 1e-08
+    }
+  ],
+  "format_full_ast_equal_files": 2,
+  "geometries": [
+    {
+      "adjoint_vs_fsum_old_vjp_error": 1.2818290873184424e-10,
+      "bellman_resolvent_residual_without_new_solve": 2.7755575615628914e-15,
+      "fsum_old_reference_error": 8.881784197001252e-16,
+      "geometry": "uniform",
+      "intervals": 7,
+      "old_fd_projection_comparisons": 10,
+      "old_vjp_coordinates": 27,
+      "phase_side_and_weight_identities_checked": true,
+      "reset_value_residual": 0.0
+    },
+    {
+      "adjoint_vs_fsum_old_vjp_error": 4.865925440356023e-09,
+      "bellman_resolvent_residual_without_new_solve": 9.758860386455126e-14,
+      "fsum_old_reference_error": 8.881784197001252e-16,
+      "geometry": "graded",
+      "intervals": 12,
+      "old_fd_projection_comparisons": 10,
+      "old_vjp_coordinates": 42,
+      "phase_side_and_weight_identities_checked": true,
+      "reset_value_residual": 8.881784197001252e-16
+    }
+  ],
+  "git_archives": [
+    {
+      "bytes": 43582,
+      "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/adjoint6246/GIT-LOCAL001-ORIGINALS.tar.gz",
+      "sha256": "b25571b3acbfd52e6a85d81d54acc0b48a731c0b31bed6a1ac3d6d69a86ff736"
+    },
+    {
+      "bytes": 125877,
+      "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/adjoint6246/GIT-BASELINE-ORIGINALS.tar.gz",
+      "sha256": "85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e"
+    }
+  ],
+  "git_head": "06856b0bba5c26c8aa72dc15a4f2a6e34e253bc5",
+  "inspector_source": {
+    "bytes": 17167,
+    "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/adjoint6246/inspect_retained.py",
+    "sha256": "61a73056a1edd29f14ae8d1bdc8ffd224b0b5cadc86eb3e5d46ea306a3989ca9"
+  },
+  "limits": [
+    "Snapshot-corruption rejection logic is present but no recorded call exercises that negative control; only mutation of live caller metadata was actually exercised.",
+    "Reference matrix exponentials and static solves were not re-executed. Their frozen source/counters, saved arrays and independent algebraic identities were inspected.",
+    "These are 345 retained scalar comparisons, including20 projections of old FD data; not a new3480-coordinate FD run.",
+    "Continuous finite-DDE initial VJP on two fixed small meshes only; adaptive-BDF program reverse, Torch adapter/guards, broad domains, physical/support/migration gradients and n512 remain unqualified.",
+    "The coefficient budget bounds a declared stored payload, not process RSS or complete solver complexity. All caps are per call.",
+    "Mixed absolute-relative gates do not qualify rare-tail pure relative precision."
+  ],
+  "passed": true,
+  "resource_observations": {
+    "maximum_current_jacobian_nonzeros": 147,
+    "maximum_per_call_rhs": 6142,
+    "maximum_per_call_steps": 3056,
+    "maximum_per_call_stored_scalars": 934247,
+    "reported_process_peak_rss_kib": 72760,
+    "reported_stage_cpu_seconds": 2.6486159,
+    "reported_stage_wall_seconds": 2.664148922000095,
+    "sum_rhs": 19161,
+    "sum_steps": 9536
+  },
+  "review_cpu_seconds": 0.6077210039999998,
+  "review_new_candidate_imports_ode_adjoint_expm_static_torch_optimizer_calls": 0,
+  "review_wall_seconds": 0.10265737999907287,
+  "schema": "hcsn-independent-initial-adjoint-review-v1",
+  "source_count": 9,
+  "tested_source_commit": "caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772"
+}
