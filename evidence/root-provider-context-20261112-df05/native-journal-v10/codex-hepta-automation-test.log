@@ -1,0 +1,1263 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling cfg-if v1.0.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+   Compiling serde_core v1.0.229
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling syn v2.0.117
+   Compiling syn v3.0.3
+   Compiling serde v1.0.229
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+   Compiling memchr v2.8.1
+   Compiling serde_derive v1.0.229
+   Compiling libc v0.2.186
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling parking_lot_core v0.9.12
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+   Compiling thiserror-impl v2.0.21
+   Compiling smallvec v1.15.1
+   Compiling thiserror v2.0.21
+   Compiling itoa v1.0.17
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+   Compiling parking_lot v0.12.5
+   Compiling portable-atomic v1.13.1
+   Compiling regex-syntax v0.8.11
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+   Compiling version_check v0.9.5
+   Compiling critical-section v1.2.0
+   Compiling once_cell v1.21.4
+   Compiling equivalent v1.0.2
+   Compiling aho-corasick v1.1.4
+   Compiling typenum v1.20.0
+   Compiling pin-project-lite v0.2.17
+   Compiling stable_deref_trait v1.2.1
+   Compiling jobserver v0.1.34
+   Compiling regex-automata v0.4.18
+   Compiling synstructure v0.13.2
+   Compiling shlex v1.3.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling cc v1.2.55
+   Compiling generic-array v0.14.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling autocfg v1.5.0
+   Compiling futures-core v0.3.34
+   Compiling log v0.4.29
+   Compiling zerofrom-derive v0.1.6
+   Compiling bytes v1.12.1
+   Compiling displaydoc v0.2.5
+   Compiling cpufeatures v0.2.17
+   Compiling zmij v1.0.19
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+   Compiling yoke-derive v0.8.2
+   Compiling allocator-api2 v0.2.21
+   Compiling foldhash v0.2.0
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling zerovec-derive v0.11.3
+   Compiling fastrand v2.3.0
+   Compiling num-traits v0.2.19
+   Compiling errno v0.3.14
+   Compiling signal-hook-registry v1.4.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling mio v1.2.0
+   Compiling socket2 v0.6.3
+   Compiling tokio-macros v2.7.0
+   Compiling bitflags v2.13.2
+   Compiling pkg-config v0.3.32
+   Compiling tokio v1.53.1
+   Compiling getrandom v0.4.3
+   Compiling serde_json v1.0.151
+   Compiling rand_core v0.10.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+   Compiling futures-sink v0.3.34
+   Compiling bstr v1.12.1
+   Compiling tracing-attributes v0.1.31
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.10.0
+   Compiling futures-io v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling percent-encoding v2.3.2
+   Compiling utf8_iter v1.0.4
+   Compiling tracing-core v0.1.36
+   Compiling zeroize v1.9.0
+   Compiling byteorder v1.5.0
+   Compiling slab v0.4.12
+   Compiling zerofrom v0.1.6
+   Compiling fnv v1.0.7
+   Compiling yoke v0.8.2
+   Compiling tracing v0.1.44
+   Compiling futures-channel v0.3.34
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling hashbrown v0.16.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling futures-macro v0.3.34
+   Compiling crc32fast v1.5.0
+   Compiling futures-util v0.3.34
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+   Compiling zerovec v0.11.6
+   Compiling writeable v0.6.2
+   Compiling either v1.15.0
+   Compiling spin v0.9.8
+   Compiling tinystr v0.8.3
+   Compiling form_urlencoded v1.2.2
+   Compiling sha1 v0.10.6
+   Compiling ring v0.17.14
+   Compiling gix-trace v0.1.21
+   Compiling dunce v1.0.5
+   Compiling litemap v0.8.1
+   Compiling icu_locale_core v2.2.0
+   Compiling potential_utf v0.1.4
+   Compiling zerotrie v0.2.4
+   Compiling gix-validate v0.11.4
+   Compiling hashbrown v0.17.1
+   Compiling regex v1.13.1
+   Compiling crossbeam-utils v0.8.21
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling gix-path v0.11.3
+   Compiling icu_provider v2.2.0
+   Compiling indexmap v2.14.2
+   Compiling icu_collections v2.2.0
+   Compiling unicode-normalization v0.1.25
+   Compiling http v1.5.0
+   Compiling gix-utils v0.3.1
+   Compiling tokio-util v0.7.19
+   Compiling winnow v1.0.4
+   Compiling untrusted v0.9.0
+   Compiling unicode-xid v0.2.6
+   Compiling semver v1.0.27
+   Compiling rustc_version v0.4.1
+   Compiling http-body v1.0.1
+   Compiling rustls-pki-types v1.14.0
+   Compiling sha2 v0.10.9
+   Compiling ipnet v2.11.0
+   Compiling same-file v1.0.6
+   Compiling time-core v0.1.9
+   Compiling subtle v2.6.1
+   Compiling num-conv v0.2.2
+   Compiling walkdir v2.5.0
+   Compiling time-macros v0.2.32
+   Compiling cmake v0.1.57
+   Compiling prodash v31.0.0
+   Compiling fs_extra v1.3.0
+   Compiling deranged v0.5.8
+   Compiling getrandom v0.3.4
+   Compiling powerfmt v0.2.0
+   Compiling zlib-rs v0.6.3
+   Compiling zerocopy v0.8.37
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+   Compiling time v0.3.55
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+   Compiling aws-lc-sys v0.45.0
+   Compiling gix-features v0.46.2
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling vcpkg v0.2.15
+   Compiling rustix v1.1.4
+   Compiling base64 v0.22.1
+   Compiling heapless v0.8.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+   Compiling idna_adapter v1.2.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling futures-executor v0.3.34
+   Compiling itertools v0.14.0
+   Compiling hash32 v0.3.1
+   Compiling uuid v1.26.1
+   Compiling cmov v0.5.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling cpufeatures v0.3.0
+   Compiling lazy_static v1.5.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling winnow v0.7.14
+   Compiling toml_edit v0.23.10+spec-1.0.0
+   Compiling ctutils v0.4.6
+   Compiling idna v1.1.0
+   Compiling gix-error v0.2.1
+   Compiling sync_wrapper v1.0.2
+   Compiling nibble_vec v0.1.0
+   Compiling crossbeam-epoch v0.9.20
+   Compiling mime v0.3.17
+   Compiling unicase v2.9.0
+   Compiling psl-types v2.0.11
+   Compiling aws-lc-rs v1.18.1
+   Compiling mime_guess v2.0.5
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+   Compiling faster-hex v0.10.0
+   Compiling hybrid-array v0.4.15
+   Compiling proc-macro-crate v3.4.0
+   Compiling chacha20 v0.10.0
+   Compiling http-body-util v0.1.3
+   Compiling const_format_proc_macros v0.2.34
+   Compiling ahash v0.8.12
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+   Compiling const_format v0.2.35
+   Compiling rand v0.10.3
+   Compiling rama-macros v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+   Compiling url v2.5.8
+   Compiling futures v0.3.31
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_core v0.9.5
+   Compiling wildcard v0.3.0
+   Compiling getrandom v0.2.17
+   Compiling untrusted v0.7.1
+   Compiling hex v0.4.3
+   Compiling smol_str v0.3.5
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling rand_chacha v0.9.0
+   Compiling sha1-checked v0.10.0
+   Compiling flume v0.12.0
+   Compiling tokio-graceful v0.2.2
+   Compiling asynk-strim v0.1.5
+   Compiling rama-error v0.3.0-alpha.4
+   Compiling iana-time-zone v0.1.65
+   Compiling crc-catalog v2.4.0
+   Compiling crc v3.4.0
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling gix-hash v0.23.0
+   Compiling rand v0.9.3
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.0
+   Compiling nom v8.0.0
+   Compiling endian-type v0.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+   Compiling radix_trie v0.3.0
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling digest v0.11.3
+   Compiling psl v2.1.184
+   Compiling num-integer v0.1.46
+   Compiling async-trait v0.1.92
+   Compiling jiff v0.2.23
+   Compiling md5 v0.8.0
+   Compiling anyhow v1.0.103
+   Compiling rustls v0.23.46
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling gix-date v0.15.1
+   Compiling num-bigint v0.4.6
+   Compiling httparse v1.10.1
+   Compiling data-encoding v2.10.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+   Compiling gix-actor v0.40.0
+   Compiling gix-hashtable v0.13.0
+   Compiling tempfile v3.27.0
+   Compiling openssl-sys v0.9.117
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling heck v0.5.0
+   Compiling try-lock v0.2.5
+   Compiling atomic-waker v1.1.2
+   Compiling want v0.3.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+   Compiling gix-object v0.58.0
+   Compiling rustls-webpki v0.103.16
+   Compiling webpki-roots v1.0.10
+   Compiling memmap2 v0.9.10
+   Compiling serde_derive_internals v0.29.1
+   Compiling strsim v0.11.1
+   Compiling syn v1.0.109
+   Compiling ryu v1.0.22
+   Compiling minimal-lexical v0.2.1
+   Compiling rayon-core v1.13.0
+   Compiling schemars v0.8.22
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+   Compiling nom v7.1.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+   Compiling schemars_derive v0.8.22
+   Compiling h2 v0.4.16
+   Compiling chrono v0.4.43
+   Compiling prefix-trie v0.8.4
+   Compiling heapless v0.7.17
+   Compiling env_filter v1.0.0
+   Compiling bytemuck_derive v1.10.2
+   Compiling option-ext v0.2.0
+   Compiling ref-cast v1.0.25
+   Compiling typeid v1.0.3
+   Compiling utf8parse v0.2.2
+   Compiling cfg_aliases v0.1.1
+   Compiling dyn-clone v1.0.20
+   Compiling termcolor v1.4.1
+   Compiling ts-rs-macros v11.1.0
+   Compiling nix v0.28.0
+   Compiling bytemuck v1.25.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+   Compiling dirs-sys v0.5.0
+   Compiling env_logger v0.11.9
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+   Compiling hickory-proto v0.26.3
+   Compiling rusticata-macros v4.1.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling logos-codegen v0.15.1
+   Compiling crossbeam-channel v0.5.15
+   Compiling hash32 v0.2.1
+   Compiling tokio-stream v0.1.19
+   Compiling blake3 v1.8.7
+   Compiling asn1-rs-derive v0.6.0
+   Compiling asn1-rs-impl v0.2.0
+   Compiling dupe_derive v0.9.1
+   Compiling ref-cast-impl v1.0.25
+   Compiling linktime-proc-macro v0.1.0
+   Compiling unicode-segmentation v1.12.0
+   Compiling allocative v0.3.6
+   Compiling openssl v0.10.81
+   Compiling bit-vec v0.8.0
+   Compiling iri-string v0.7.10
+   Compiling tower-service v0.3.3
+   Compiling tagptr v0.2.0
+   Compiling erased-serde v0.4.10
+   Compiling link-section v0.17.2
+   Compiling atomic v0.5.3
+   Compiling foreign-types-shared v0.1.1
+   Compiling foreign-types v0.3.2
+   Compiling lock_free_hashtable v0.1.4
+   Compiling ctor v1.0.6
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+   Compiling moka v0.12.13
+   Compiling bit-set v0.8.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+   Compiling dupe v0.9.1
+   Compiling asn1-rs v0.7.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+   Compiling hickory-net v0.26.3
+   Compiling quickcheck v1.1.0
+   Compiling dirs v6.0.0
+   Compiling ts-rs v11.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+   Compiling gix-fs v0.19.2
+   Compiling zstd-sys v2.1.2+zstd.1.5.7
+   Compiling cobs v0.3.0
+   Compiling openssl-macros v0.1.1
+   Compiling allocative_derive v0.3.6
+   Compiling strong_hash_derive v0.1.0
+   Compiling serde_repr v0.1.20
+   Compiling hashbrown v0.14.5
+   Compiling simd-adler32 v0.3.8
+   Compiling openssl-probe v0.2.1
+   Compiling oid-registry v0.8.1
+   Compiling beef v0.5.2
+   Compiling resolv-conf v0.7.6
+   Compiling arrayvec v0.7.8
+   Compiling unicode-width v0.1.14
+   Compiling native-tls v0.2.14
+   Compiling bumpalo v3.19.1
+   Compiling pin-utils v0.1.0
+   Compiling constant_time_eq v0.4.2
+   Compiling rama-http-headers v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+   Compiling hyper v1.8.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+   Compiling hickory-resolver v0.26.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+   Compiling dashmap v6.1.0
+   Compiling rustls-native-certs v0.8.3
+   Compiling strong_hash v0.1.0
+   Compiling postcard v1.1.3
+   Compiling codex-utils-absolute-path v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/absolute-path)
+   Compiling sorted_vector_map v0.2.1
+   Compiling Inflector v0.11.4
+   Compiling fancy-regex v0.16.2
+   Compiling static_interner v0.1.2
+   Compiling convert_case v0.6.0
+   Compiling anstyle-parse v0.2.7
+   Compiling tokio-rustls v0.26.4
+   Compiling schemafy_core v0.5.2
+   Compiling gix-chunk v0.7.0
+   Compiling triomphe v0.1.15
+   Compiling cookie v0.18.1
+   Compiling csv-core v0.1.13
+   Compiling pagable_derive v0.4.2
+   Compiling sequence_trie v0.3.6
+   Compiling colorchoice v1.0.4
+   Compiling bitflags v1.3.2
+   Compiling anstyle v1.0.13
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling inventory v0.3.24
+   Compiling static_assertions v1.1.0
+   Compiling ident_case v1.0.1
+   Compiling openssl-probe v0.1.6
+   Compiling adler2 v2.0.1
+   Compiling nonempty v0.12.0
+   Compiling take_mut v0.2.2
+   Compiling httpdate v1.0.3
+   Compiling starlark_map v0.14.2
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v0.6.21
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+   Compiling pagable v0.4.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+   Compiling miniz_oxide v0.8.9
+   Compiling darling_core v0.21.3
+   Compiling fluent-uri v0.1.4
+   Compiling csv v1.4.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling schemafy_lib v0.5.2
+   Compiling derive_more-impl v1.0.0
+   Compiling logos-derive v0.15.1
+   Compiling rama-dns v0.3.0-alpha.4 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/third_party/rama-dns-0.3.0-alpha.4)
+   Compiling hyper-util v0.1.20
+   Compiling gix-tempfile v21.0.2
+   Compiling der-parser v10.0.0
+   Compiling serde_html_form v0.3.2
+   Compiling fxhash v0.2.1
+   Compiling memoffset v0.9.1
+   Compiling clap_lex v1.0.0
+   Compiling endian-type v0.1.2
+   Compiling tower-layer v0.3.3
+   Compiling icu_locale_data v2.2.0
+   Compiling litrs v1.0.0
+   Compiling matchit v0.9.1
+   Compiling paste v1.0.15
+   Compiling http-range-header v0.4.2
+   Compiling parking v2.2.1
+   Compiling zstd-safe v8.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+   Compiling event-listener v5.4.2
+   Compiling rama-http v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling document-features v0.2.12
+   Compiling tower v0.5.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling radix_trie v0.2.1
+   Compiling clap_builder v4.5.58
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+   Compiling x509-parser v0.18.1
+   Compiling gix-lock v21.0.2
+   Compiling derive_more v1.0.0
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling logos v0.15.1
+   Compiling darling_macro v0.21.3
+   Compiling schemafy v0.5.2
+   Compiling lsp-types v0.97.0
+   Compiling tokio-native-tls v0.3.1
+   Compiling flate2 v1.1.8
+   Compiling annotate-snippets v0.9.2
+   Compiling fdeflate v0.3.7
+   Compiling derivative v2.2.0
+   Compiling tokio-test v0.4.5
+   Compiling clap_derive v4.5.55
+   Compiling publicsuffix v2.3.0
+   Compiling fd-lock v4.0.4
+   Compiling sharded-slab v0.1.7
+   Compiling pem v3.0.6
+   Compiling libsqlite3-sys v0.38.2
+   Compiling yasna v0.5.2
+   Compiling hashlink v0.11.0
+   Compiling tracing-log v0.2.0
+   Compiling pxfm v0.1.27
+   Compiling encoding_rs v0.8.35
+   Compiling thread_local v1.1.9
+   Compiling nu-ansi-term v0.50.3
+   Compiling indenter v0.3.4
+   Compiling home v0.5.12
+   Compiling color_quant v1.1.0
+   Compiling quick-error v2.0.1
+   Compiling byteorder-lite v0.1.0
+   Compiling const-oid v0.9.6
+   Compiling starlark v0.14.2 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/third_party/starlark-0.14.2)
+   Compiling zune-core v0.5.1
+   Compiling icu_decimal_data v2.2.0
+   Compiling weezl v0.1.12
+   Compiling shell-words v1.1.1
+   Compiling zune-jpeg v0.5.12
+   Compiling gif v0.14.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2` which wasn't produced by cargo metadata
+   Compiling der v0.7.10
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+   Compiling image-webp v0.2.4
+   Compiling rustyline v14.0.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling display_container v0.9.0
+   Compiling tracing-subscriber v0.3.23
+   Compiling moxcms v0.7.11
+   Compiling starlark_syntax v0.14.2
+   Compiling rcgen v0.14.7
+   Compiling cookie_store v0.22.1
+   Compiling clap v4.5.58
+   Compiling rama-http-core v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.38.2` which wasn't produced by cargo metadata
+   Compiling png v0.18.0
+   Compiling hyper-tls v0.6.0
+   Compiling debugserver-types v0.5.0
+   Compiling darling v0.21.3
+   Compiling tower-http v0.6.8
+   Compiling hyper-rustls v0.27.7
+   Compiling gix-commitgraph v0.35.0
+   Compiling textwrap v0.11.0
+   Compiling starlark_derive v0.14.2
+   Compiling codex-utils-rustls-provider v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/rustls-provider)
+   Compiling serde_urlencoded v0.7.1
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling gix-quote v0.7.0
+   Compiling lru v0.18.2
+   Compiling opentelemetry v0.31.0
+   Compiling gix-sec v0.13.3
+   Compiling erased-serde v0.3.31
+   Compiling enumflags2_derive v0.7.12
+   Compiling strsim v0.10.0
+   Compiling cmp_any v0.8.1
+   Compiling rustversion v1.0.22
+   Compiling thiserror v1.0.69
+   Compiling maplit v1.0.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+   Compiling enumflags2 v0.7.12
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling codex-utils-cache v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/cache)
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling reqwest v0.12.28
+   Compiling gix-revwalk v0.29.0
+   Compiling crossbeam-queue v0.3.12
+   Compiling icu_locale v2.2.0
+   Compiling serde_with_macros v3.17.0
+   Compiling zstd v0.14.3
+   Compiling image v0.25.9
+   Compiling futures-intrusive v0.5.0
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling spki v0.7.3
+   Compiling gix-ref v0.61.0
+   Compiling codex-utils-home-dir v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/home-dir)
+   Compiling strum_macros v0.27.2
+   Compiling curve25519-dalek v4.1.3
+   Compiling fixed_decimal v0.7.2
+   Compiling globset v0.4.18
+   Compiling multimap v0.10.1
+   Compiling thiserror-impl v1.0.69
+   Compiling regex-lite v0.1.8
+   Compiling urlencoding v2.1.3
+   Compiling codex-utils-path-uri v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/path-uri)
+   Compiling sqlx-core v0.9.0
+   Compiling codex-utils-string v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/string)
+   Compiling codex-execpolicy v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/execpolicy)
+   Compiling codex-network-proxy v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/network-proxy)
+   Compiling icu_decimal v2.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling strum v0.27.2
+   Compiling pkcs8 v0.10.2
+   Compiling codex-utils-image v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/image)
+   Compiling codex-http-client v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/http-client)
+   Compiling serde_with v3.17.0
+   Compiling landlock v0.4.4
+   Compiling gix-command v0.8.0
+   Compiling chardetng v0.1.17
+   Compiling atoi v2.0.0
+   Compiling codex-extension-items v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/ext/items)
+   Compiling codex-utils-redacted-string v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/redacted-string)
+   Compiling strum_macros v0.28.0
+   Compiling gix-packetline v0.21.5
+   Compiling gix-glob v0.24.0
+   Compiling codex-async-utils v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/async-utils)
+   Compiling gix-url v0.35.2
+   Compiling clru v0.6.3
+   Compiling quick-xml v0.41.0
+   Compiling seccompiler v0.5.0
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling keccak v0.2.2
+   Compiling wildmatch v2.6.1
+   Compiling sys-locale v0.3.2
+   Compiling sponge-cursor v0.1.0
+   Compiling signature v2.2.0
+   Compiling shake v0.1.0
+   Compiling ed25519 v2.2.3
+   Compiling codex-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/protocol)
+   Compiling gix-pack v0.68.0
+   Compiling gix-transport v0.55.1
+   Compiling sqlx-sqlite v0.9.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+   Compiling arc-swap v1.9.0
+   Compiling filedescriptor v0.8.3
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling signature v3.0.0
+   Compiling module-lattice v0.2.3
+   Compiling gix-config-value v0.17.1
+   Compiling serial2 v0.2.33
+   Compiling maybe-async v0.2.10
+   Compiling downcast-rs v1.2.1
+   Compiling unicode-bom v2.0.3
+   Compiling dotenvy v0.15.7
+   Compiling sqlx-macros-core v0.9.0
+   Compiling gix-config v0.54.0
+   Compiling portable-pty v0.9.0
+   Compiling gix-protocol v0.59.0
+   Compiling ml-dsa v0.1.1
+   Compiling gix-refspec v0.39.0
+   Compiling gix-odb v0.78.0
+   Compiling ed25519-dalek v2.2.0
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling gix-diff v0.61.0
+   Compiling gix v0.81.0
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-hepta-contracts v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-contracts)
+   Compiling codex-file-system v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/file-system)
+   Compiling codex-utils-pty v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/utils/pty)
+   Compiling sqlx-macros v0.9.0
+   Compiling similar v2.7.0
+   Compiling codex-git-utils v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/git-utils)
+   Compiling sqlx v0.9.0
+   Compiling codex-history v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/history)
+   Compiling codex-hepta-paths v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-paths)
+   Compiling codex-hepta-types v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-types)
+   Compiling codex-state v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/state)
+   Compiling serde_spanned v1.1.1
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling yansi v1.0.1
+   Compiling codex-hepta-operations v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-operations)
+   Compiling diff v0.1.13
+   Compiling codex-hepta-automation v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-automation)
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-fleet v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs/hepta-fleet)
+    Finished `test` profile [unoptimized] target(s) in 7m 04s
+────────────
+ Nextest run ID 7e6ec866-710a-4446-a31a-acbdbeeb51c1 with nextest profile: local
+    Starting 135 tests across 12 binaries
+        PASS [   0.049s] (  1/135) codex-hepta-automation authorized_effect::intent_tests::canonical_effect_intent_binds_every_execution_dimension
+        PASS [   0.051s] (  2/135) codex-hepta-automation authorized_effect::intent_tests::canonical_effect_intent_rejects_noncanonical_dependencies
+        PASS [   0.783s] (  3/135) codex-hepta-automation effect_dispatch_ledger::tests::effect_dispatch_barrier_absence_cut_requires_settlement_and_new_fence
+        PASS [   0.011s] (  4/135) codex-hepta-automation effect_executor::tests::current_fence_executes_once
+        PASS [   0.800s] (  5/135) codex-hepta-automation effect_dispatch_ledger::tests::indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch
+        PASS [   0.012s] (  6/135) codex-hepta-automation effect_executor::tests::stale_fence_and_unknown_effect_fail_closed
+        PASS [   0.010s] (  7/135) codex-hepta-automation lifecycle::tests::deterministic_occurrence_identity_binds_revision_and_instant
+        PASS [   0.010s] (  8/135) codex-hepta-automation lifecycle::tests::missed_run_math_is_bounded_and_deterministic
+        PASS [   0.012s] (  9/135) codex-hepta-automation neural_circuit::tests::circuit_compiles_to_existing_taskflow_without_authority
+        PASS [   0.011s] ( 10/135) codex-hepta-automation neural_circuit::tests::circuit_reuses_taskflow_cycle_and_terminal_rejection
+        PASS [   0.013s] ( 11/135) codex-hepta-automation neural_circuit::tests::structural_successor_cannot_rebind_predecessor_or_widen_capabilities
+        PASS [   0.011s] ( 12/135) codex-hepta-automation neural_circuit::tests::successor_binds_exact_predecessor_and_can_change_route_and_parameters
+        PASS [   0.009s] ( 13/135) codex-hepta-automation schedule_v2::tests::dst_gap_policy_is_explicit_and_deterministic
+        PASS [   0.009s] ( 14/135) codex-hepta-automation schedule_v2::tests::dst_overlap_selects_first_or_second_utc_instant
+        PASS [   0.660s] ( 15/135) codex-hepta-automation schedule_v2::tests::calendar_policy_revision_preserves_authoritative_schedule_bytes
+        PASS [   0.707s] ( 16/135) codex-hepta-automation schedule_v2::tests::missed_run_catch_up_is_bounded_then_skips_the_remaining_backlog
+        PASS [   0.773s] ( 17/135) codex-hepta-automation schedule_v2::tests::missed_run_coalesce_materializes_only_the_latest_past_instant
+        PASS [   0.709s] ( 18/135) codex-hepta-automation schedule_v2::tests::missed_run_skip_jumps_past_the_observation_frontier
+        PASS [   0.012s] ( 19/135) codex-hepta-automation schedule_v2::tests::tzdb_identity_changes_schedule_digest
+        PASS [   0.730s] ( 20/135) codex-hepta-automation store::migration_convergence_tests::canonical_cut_after_rebind_reopens
+        PASS [   1.201s] ( 21/135) codex-hepta-automation store::migration_convergence_tests::both_historical_branches_converge_without_rewriting_checksums
+        PASS [   0.723s] ( 22/135) codex-hepta-automation store::migration_convergence_tests::canonical_cut_before_rebind_reopens
+        PASS [   0.739s] ( 23/135) codex-hepta-automation store::migration_convergence_tests::displaced_cut_after_rebind_reopens
+        PASS [   0.202s] ( 24/135) codex-hepta-automation store::migration_convergence_tests::occupied_relocation_rolls_back_all_history_rebinding
+        PASS [   0.752s] ( 25/135) codex-hepta-automation store::migration_convergence_tests::displaced_cut_before_rebind_reopens
+        PASS [   0.383s] ( 26/135) codex-hepta-automation store::migration_convergence_tests::unknown_or_dirty_history_is_not_relabelled
+        PASS [   0.828s] ( 27/135) codex-hepta-automation store::provider_append_migration_tests::pre_upgrade_open_connection_cannot_append_through_old_insert_statements
+        PASS [   0.678s] ( 28/135) codex-hepta-automation store::provider_append_migration_tests::schema_tests::preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile
+        PASS [   0.755s] ( 29/135) codex-hepta-automation store::provider_append_migration_tests::v20_existing_terminal_evidence_survives_migration_without_new_binding
+        PASS [   0.736s] ( 30/135) codex-hepta-automation store::provider_append_migration_tests::v20_lost_accepted_cannot_acquire_a_replacement_operation_after_migration
+        PASS [   0.831s] ( 31/135) codex-hepta-automation store::provider_append_migration_tests::v21_full_typed_binding_continues_after_migration_and_restart
+        PASS [   0.805s] ( 32/135) codex-hepta-automation::authorized_effect async_provider_effect_binds_exact_wire_bytes_before_burning_grant
+        PASS [   0.834s] ( 33/135) codex-hepta-automation::authorized_effect async_provider_unknown_and_lookup_not_found_stay_unresolved
+        PASS [   5.631s] ( 34/135) codex-hepta-automation store::provider_append_migration_tests::schema_tests::altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact
+        PASS [   0.959s] ( 35/135) codex-hepta-automation::authorized_effect compensation_crash_preserves_intent_identity_and_requires_reconciliation
+        PASS [   0.885s] ( 36/135) codex-hepta-automation::authorized_effect crash_after_provider_contact_before_observation_requires_recovery_without_redispatch
+        PASS [   0.842s] ( 37/135) codex-hepta-automation::authorized_effect final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
+        PASS [   0.900s] ( 38/135) codex-hepta-automation::authorized_effect indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally
+        PASS [   0.837s] ( 39/135) codex-hepta-automation::authorized_effect proven_pre_contact_failure_never_blindly_redispatches_same_attempt
+        PASS [   1.760s] ( 40/135) codex-hepta-automation::authorized_effect owner_recovery_tests::stale_recovery_cannot_poison_original_attempt_after_reopen
+        PASS [   0.899s] ( 41/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_post_send_cancel_retains_ack_without_redispatch
+        PASS [   3.165s] ( 42/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_cancelled_or_expired_claim_never_contacts_provider
+        PASS [   1.906s] ( 43/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_attempt_cannot_repeat_unknown_or_accepted
+        PASS [   0.994s] ( 44/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_race_allows_one_physical_contact
+        PASS [   1.150s] ( 45/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_keeps_first_key_and_wire
+        PASS [   1.053s] ( 46/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_lookup_retains_original_key_wire_without_dispatch
+        PASS [   2.069s] ( 47/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_rejects_replacement_payload_or_scope
+        PASS [   0.852s] ( 48/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_missing_material_and_changed_scope_never_query
+        PASS [   1.737s] ( 49/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen
+        PASS [   3.464s] ( 50/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_async_uses_durable_owner_and_separate_fields
+        PASS [   1.820s] ( 51/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_cannot_replace_or_reject_accepted_operation
+        PASS [   0.950s] ( 52/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_completion_after_lookup_is_retained
+        PASS [   3.454s] ( 53/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_sync_uses_durable_owner_and_separate_fields
+        PASS [   0.905s] ( 54/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_same_attempt
+        PASS [   1.878s] ( 55/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_preserves_original_unknown_and_cancellation
+        PASS [   1.092s] ( 56/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_dispatch_barrier_explicit_absence_allows_new_fence_and_preserves_history
+        PASS [   1.050s] ( 57/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_first_binding_on_retry_preserves_earlier_absence
+  TRY 1 FAIL [   1.025s] (───────) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 1.01s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material' (902446) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:372:14:
+    actual v20 to latest migration: Unavailable
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.803s] (───────) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 0.79s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty' (902455) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:308:6:
+    import inconsistent reconciliation: Database(SqliteError { code: 1811, message: "TaskFlow effect requires the provider context writer" })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.829s] ( 58/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 0.82s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty' (902530) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:308:6:
+    import inconsistent reconciliation: Database(SqliteError { code: 1811, message: "TaskFlow effect requires the provider context writer" })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   1.039s] ( 59/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 1.03s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material' (902524) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:372:14:
+    actual v20 to latest migration: Unavailable
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.835s] (───────) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 0.82s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation' (902570) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:269:14:
+    import canonical terminal binding without its observation: Database(SqliteError { code: 1811, message: "TaskFlow effect requires the provider context writer" })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.837s] ( 60/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation
+  stdout ───
+
+    running 1 test
+    test provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation ... FAILED
+
+    failures:
+
+    failures:
+        provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 0.82s
+
+  stderr ───
+
+    thread 'provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation' (902593) panicked at hepta-automation/tests/support/authorized_provider_reopen_tests.rs:269:14:
+    import canonical terminal binding without its observation: Database(SqliteError { code: 1811, message: "TaskFlow effect requires the provider context writer" })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.823s] ( 61/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_storage_rejects_oversized_binding_without_partial_write
+        PASS [   1.108s] ( 62/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe
+        PASS [   1.041s] ( 63/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_pins_accepted_identity_and_blocks_opaque_bypass
+        PASS [   0.891s] ( 64/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_reopen_rejects_canonical_substitution
+        PASS [   0.904s] ( 65/135) codex-hepta-automation::authorized_effect revocation_race_is_fenced_across_the_physical_provider_call
+        PASS [   0.853s] ( 66/135) codex-hepta-automation::authorized_effect successful_effect_is_at_most_once_for_one_durable_step_attempt
+        PASS [   7.545s] ( 67/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_requires_all_append_only_guards
+        PASS [   0.832s] ( 68/135) codex-hepta-automation::authorized_effect wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant
+        PASS [   0.652s] ( 69/135) codex-hepta-automation::automation copied_database_cannot_cross_agent_owner_boundary
+        PASS [   0.808s] ( 70/135) codex-hepta-automation::automation crash_after_external_acceptance_keeps_unknown_intent_across_reopen
+        PASS [   0.791s] ( 71/135) codex-hepta-automation::automation disabling_an_inflight_lease_never_resurrects_the_task
+        PASS [   0.798s] ( 72/135) codex-hepta-automation::automation drain_blockers_require_classification_but_allow_durable_uncertainty
+        PASS [   0.899s] ( 73/135) codex-hepta-automation::automation duplicate_provider_receipt_is_rejected_by_local_outcome_fence
+        PASS [   0.957s] ( 74/135) codex-hepta-automation::automation explicit_dispatch_failure_retries_same_occurrence_and_client_id
+        PASS [   0.823s] ( 75/135) codex-hepta-automation::automation in_flight_unknown_intent_fences_stale_generation_and_second_claim
+        PASS [   0.809s] ( 76/135) codex-hepta-automation::automation legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim
+        PASS [   1.095s] ( 77/135) codex-hepta-automation::automation one_shot_periodic_disable_and_cancel_are_durable
+        PASS [   4.190s] ( 78/135) codex-hepta-automation::automation five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_starve_peers
+        PASS [   0.775s] ( 79/135) codex-hepta-automation::automation owner_or_generation_fence_is_not_downgraded_to_a_dispatch_retry
+        PASS [   0.994s] ( 80/135) codex-hepta-automation::automation pre_admission_dispatch_error_clears_intent_and_allows_next_generation_retry
+        PASS [   0.665s] ( 81/135) codex-hepta-automation::automation stale_generation_recovery_is_owner_fenced
+        PASS [   0.742s] ( 82/135) codex-hepta-automation::automation successful_dispatch_upgrades_pre_admission_intent_atomically
+        PASS [   3.067s] ( 83/135) codex-hepta-automation::automation restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_old_lease
+        PASS [   2.697s] ( 84/135) codex-hepta-automation::automation uncertain_dispatch_requires_explicit_negative_provider_proof_before_retry
+        PASS [   3.926s] ( 85/135) codex-hepta-automation::automation unknown_provider_outcome_is_quarantined_across_store_recovery_until_reconciled
+        PASS [   2.590s] ( 86/135) codex-hepta-automation::automation v1_store_migrates_atomically_to_dispatch_outcome_schema
+        PASS [   0.987s] ( 87/135) codex-hepta-automation::durable_causal_chain allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence
+        PASS [   0.642s] ( 88/135) codex-hepta-automation::durable_causal_chain claim_freezes_schedule_revision_before_occurrence_materialization
+        PASS [   0.874s] ( 89/135) codex-hepta-automation::durable_causal_chain forbid_overlap_parks_recurrence_until_terminal_observation
+        PASS [   1.030s] ( 90/135) codex-hepta-automation::durable_causal_chain proven_absent_unknown_dispatch_reuses_same_occurrence_identity
+        PASS [   0.871s] ( 91/135) codex-hepta-automation::durable_causal_chain queue_submission_is_not_occurrence_or_taskflow_success
+        PASS [   0.662s] ( 92/135) codex-hepta-automation::durable_causal_chain reopen_rejects_tampered_canonical_occurrence_identity
+        PASS [   0.806s] ( 93/135) codex-hepta-automation::durable_causal_chain retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence
+        PASS [   0.801s] ( 94/135) codex-hepta-automation::durable_causal_chain retired_stale_generation_before_uncertainty_closes_without_provider_contact
+        PASS [   0.867s] ( 95/135) codex-hepta-automation::durable_causal_chain stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence
+        PASS [   0.838s] ( 96/135) codex-hepta-automation::durable_causal_chain terminal_observer_cursor_is_durable_bounded_progress
+        PASS [   0.683s] ( 97/135) codex-hepta-automation::kernel_operations_destination destination_dedupe_and_task_survive_store_reopen
+        PASS [   0.641s] ( 98/135) codex-hepta-automation::kernel_operations_destination exact_operation_replay_returns_one_task_and_one_destination_receipt
+        PASS [   0.598s] ( 99/135) codex-hepta-automation::kernel_operations_destination mismatched_destination_or_scope_is_denied_before_domain_mutation
+        PASS [   0.652s] (100/135) codex-hepta-automation::kernel_operations_destination same_operation_identity_with_changed_task_payload_conflicts
+        PASS [   0.645s] (101/135) codex-hepta-automation::operation_timer_fence kernel_destination_rejects_new_schedule_while_timer_is_draining
+        PASS [   0.673s] (102/135) codex-hepta-automation::operation_timer_fence predecessor_kernel_destination_cannot_write_after_timer_handoff
+        PASS [   0.658s] (103/135) codex-hepta-automation::operation_timer_fence retirement_blocks_new_effects_after_restart_but_preserves_old_receipts
+        PASS [   0.776s] (104/135) codex-hepta-automation::retirement_recovery receipt_replay_retains_later_control_decisions_and_rejects_substitution
+        PASS [   2.644s] (105/135) codex-hepta-automation::retirement_recovery all_release_paths_preserve_disable_and_cancel_across_restart
+        PASS [   0.749s] (106/135) codex-hepta-automation::retirement_recovery unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry
+        PASS [   2.342s] (107/135) codex-hepta-automation::retirement_recovery reopen_rejects_mismatched_durable_receipt_copies
+        PASS [   0.673s] (108/135) codex-hepta-automation::taskflow automation_opener_rejects_foreign_taskflow_rows
+        PASS [   0.693s] (109/135) codex-hepta-automation::taskflow automation_opener_rejects_hash_valid_taskflow_event_fence_tamper
+        PASS [   0.669s] (110/135) codex-hepta-automation::taskflow automation_opener_rejects_tampered_taskflow_event_history
+        PASS [   0.687s] (111/135) codex-hepta-automation::taskflow automation_opener_rejects_taskflow_event_generation_drift
+        PASS [   0.714s] (112/135) codex-hepta-automation::taskflow automation_opener_rejects_uncomputed_persisted_definition_digest
+        PASS [   0.673s] (113/135) codex-hepta-automation::taskflow command_writer_enforces_graph_resume_target_and_advances_current_node
+        PASS [   0.656s] (114/135) codex-hepta-automation::taskflow definition_registration_is_idempotent_and_generation_scoped
+        PASS [   0.011s] (115/135) codex-hepta-automation::taskflow invalid_graph_and_effect_contract_fail_closed
+        PASS [   0.724s] (116/135) codex-hepta-automation::taskflow indeterminate_requires_explicit_receipt_reconcile
+        PASS [   0.649s] (117/135) codex-hepta-automation::taskflow invalid_transition_does_not_advance_projection_or_event_tail
+        PASS [   0.692s] (118/135) codex-hepta-automation::taskflow run_lifecycle_is_fenced_and_command_deduplicated
+        PASS [   0.701s] (119/135) codex-hepta-automation::taskflow taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append
+        PASS [   0.013s] (120/135) codex-hepta-automation::taskflow_execution_boundary callers_cannot_add_verified_use_approval_or_graph_completeness_claims
+        PASS [   0.012s] (121/135) codex-hepta-automation::taskflow_execution_boundary canonical_digest_has_independent_golden_values
+        PASS [   0.014s] (122/135) codex-hepta-automation::taskflow_execution_boundary every_digest_is_nonzero_lowercase_and_bound
+        PASS [   0.011s] (123/135) codex-hepta-automation::taskflow_execution_boundary every_proposed_terminal_state_requires_a_trusted_external_observer
+        PASS [   0.012s] (124/135) codex-hepta-automation::taskflow_execution_boundary json_shape_version_and_enums_are_exact
+        PASS [   0.012s] (125/135) codex-hepta-automation::taskflow_execution_boundary numeric_and_identifier_bounds_fail_closed
+        PASS [   0.014s] (126/135) codex-hepta-automation::taskflow_execution_boundary predecessor_count_identity_and_order_are_strictly_bounded
+        PASS [   0.009s] (127/135) codex-hepta-automation::taskflow_execution_boundary rejected_requests_are_failure_atomic_and_do_not_poison_later_results
+        PASS [   0.010s] (128/135) codex-hepta-automation::taskflow_execution_boundary request_digest_binds_identity_count_and_action_shape
+        PASS [   0.011s] (129/135) codex-hepta-automation::taskflow_execution_boundary valid_effect_request_is_deterministically_unavailable_and_deny_all
+        PASS [   0.010s] (130/135) codex-hepta-automation::taskflow_execution_boundary validation_errors_do_not_reflect_untrusted_values
+        PASS [   0.666s] (131/135) codex-hepta-automation::taskflow taskflow_read_rejects_tampered_event_history
+        PASS [   0.751s] (132/135) codex-hepta-automation::taskflow_step reconciled_step_remains_readable_after_run_projection_refence
+        PASS [   0.729s] (133/135) codex-hepta-automation::taskflow_step step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
+        PASS [   0.704s] (134/135) codex-hepta-automation::taskflow_step step_outbox_rejects_wrong_order_and_append_only_tamper
+        PASS [   0.774s] (135/135) codex-hepta-automation::taskflow_step step_outbox_lifecycle_is_durable_fenced_and_idempotent
+────────────
+     Summary [  66.274s] 135 tests run: 132 passed, 3 failed, 0 skipped
+        PASS [   0.049s] (  1/135) codex-hepta-automation authorized_effect::intent_tests::canonical_effect_intent_binds_every_execution_dimension
+        PASS [   0.051s] (  2/135) codex-hepta-automation authorized_effect::intent_tests::canonical_effect_intent_rejects_noncanonical_dependencies
+        PASS [   0.783s] (  3/135) codex-hepta-automation effect_dispatch_ledger::tests::effect_dispatch_barrier_absence_cut_requires_settlement_and_new_fence
+        PASS [   0.011s] (  4/135) codex-hepta-automation effect_executor::tests::current_fence_executes_once
+        PASS [   0.800s] (  5/135) codex-hepta-automation effect_dispatch_ledger::tests::indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch
+        PASS [   0.012s] (  6/135) codex-hepta-automation effect_executor::tests::stale_fence_and_unknown_effect_fail_closed
+        PASS [   0.010s] (  7/135) codex-hepta-automation lifecycle::tests::deterministic_occurrence_identity_binds_revision_and_instant
+        PASS [   0.010s] (  8/135) codex-hepta-automation lifecycle::tests::missed_run_math_is_bounded_and_deterministic
+        PASS [   0.012s] (  9/135) codex-hepta-automation neural_circuit::tests::circuit_compiles_to_existing_taskflow_without_authority
+        PASS [   0.011s] ( 10/135) codex-hepta-automation neural_circuit::tests::circuit_reuses_taskflow_cycle_and_terminal_rejection
+        PASS [   0.013s] ( 11/135) codex-hepta-automation neural_circuit::tests::structural_successor_cannot_rebind_predecessor_or_widen_capabilities
+        PASS [   0.011s] ( 12/135) codex-hepta-automation neural_circuit::tests::successor_binds_exact_predecessor_and_can_change_route_and_parameters
+        PASS [   0.009s] ( 13/135) codex-hepta-automation schedule_v2::tests::dst_gap_policy_is_explicit_and_deterministic
+        PASS [   0.009s] ( 14/135) codex-hepta-automation schedule_v2::tests::dst_overlap_selects_first_or_second_utc_instant
+        PASS [   0.660s] ( 15/135) codex-hepta-automation schedule_v2::tests::calendar_policy_revision_preserves_authoritative_schedule_bytes
+        PASS [   0.707s] ( 16/135) codex-hepta-automation schedule_v2::tests::missed_run_catch_up_is_bounded_then_skips_the_remaining_backlog
+        PASS [   0.773s] ( 17/135) codex-hepta-automation schedule_v2::tests::missed_run_coalesce_materializes_only_the_latest_past_instant
+        PASS [   0.709s] ( 18/135) codex-hepta-automation schedule_v2::tests::missed_run_skip_jumps_past_the_observation_frontier
+        PASS [   0.012s] ( 19/135) codex-hepta-automation schedule_v2::tests::tzdb_identity_changes_schedule_digest
+        PASS [   0.730s] ( 20/135) codex-hepta-automation store::migration_convergence_tests::canonical_cut_after_rebind_reopens
+        PASS [   1.201s] ( 21/135) codex-hepta-automation store::migration_convergence_tests::both_historical_branches_converge_without_rewriting_checksums
+        PASS [   0.723s] ( 22/135) codex-hepta-automation store::migration_convergence_tests::canonical_cut_before_rebind_reopens
+        PASS [   0.739s] ( 23/135) codex-hepta-automation store::migration_convergence_tests::displaced_cut_after_rebind_reopens
+        PASS [   0.202s] ( 24/135) codex-hepta-automation store::migration_convergence_tests::occupied_relocation_rolls_back_all_history_rebinding
+        PASS [   0.752s] ( 25/135) codex-hepta-automation store::migration_convergence_tests::displaced_cut_before_rebind_reopens
+        PASS [   0.383s] ( 26/135) codex-hepta-automation store::migration_convergence_tests::unknown_or_dirty_history_is_not_relabelled
+        PASS [   0.828s] ( 27/135) codex-hepta-automation store::provider_append_migration_tests::pre_upgrade_open_connection_cannot_append_through_old_insert_statements
+        PASS [   0.678s] ( 28/135) codex-hepta-automation store::provider_append_migration_tests::schema_tests::preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile
+        PASS [   0.755s] ( 29/135) codex-hepta-automation store::provider_append_migration_tests::v20_existing_terminal_evidence_survives_migration_without_new_binding
+        PASS [   0.736s] ( 30/135) codex-hepta-automation store::provider_append_migration_tests::v20_lost_accepted_cannot_acquire_a_replacement_operation_after_migration
+        PASS [   0.831s] ( 31/135) codex-hepta-automation store::provider_append_migration_tests::v21_full_typed_binding_continues_after_migration_and_restart
+        PASS [   0.805s] ( 32/135) codex-hepta-automation::authorized_effect async_provider_effect_binds_exact_wire_bytes_before_burning_grant
+        PASS [   0.834s] ( 33/135) codex-hepta-automation::authorized_effect async_provider_unknown_and_lookup_not_found_stay_unresolved
+        PASS [   5.631s] ( 34/135) codex-hepta-automation store::provider_append_migration_tests::schema_tests::altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact
+        PASS [   0.959s] ( 35/135) codex-hepta-automation::authorized_effect compensation_crash_preserves_intent_identity_and_requires_reconciliation
+        PASS [   0.885s] ( 36/135) codex-hepta-automation::authorized_effect crash_after_provider_contact_before_observation_requires_recovery_without_redispatch
+        PASS [   0.842s] ( 37/135) codex-hepta-automation::authorized_effect final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
+        PASS [   0.900s] ( 38/135) codex-hepta-automation::authorized_effect indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally
+        PASS [   0.837s] ( 39/135) codex-hepta-automation::authorized_effect proven_pre_contact_failure_never_blindly_redispatches_same_attempt
+        PASS [   1.760s] ( 40/135) codex-hepta-automation::authorized_effect owner_recovery_tests::stale_recovery_cannot_poison_original_attempt_after_reopen
+        PASS [   0.899s] ( 41/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_post_send_cancel_retains_ack_without_redispatch
+        PASS [   3.165s] ( 42/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_cancelled_or_expired_claim_never_contacts_provider
+        PASS [   1.906s] ( 43/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_attempt_cannot_repeat_unknown_or_accepted
+        PASS [   0.994s] ( 44/135) codex-hepta-automation::authorized_effect provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_race_allows_one_physical_contact
+        PASS [   1.150s] ( 45/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_keeps_first_key_and_wire
+        PASS [   1.053s] ( 46/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_lookup_retains_original_key_wire_without_dispatch
+        PASS [   2.069s] ( 47/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_rejects_replacement_payload_or_scope
+        PASS [   0.852s] ( 48/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_missing_material_and_changed_scope_never_query
+        PASS [   1.737s] ( 49/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen
+        PASS [   3.464s] ( 50/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_async_uses_durable_owner_and_separate_fields
+        PASS [   1.820s] ( 51/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_cannot_replace_or_reject_accepted_operation
+        PASS [   0.950s] ( 52/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_completion_after_lookup_is_retained
+        PASS [   3.454s] ( 53/135) codex-hepta-automation::authorized_effect provider_receipt_tests::identity_tests::taskflow_provider_identity_sync_uses_durable_owner_and_separate_fields
+        PASS [   0.905s] ( 54/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_same_attempt
+        PASS [   1.878s] ( 55/135) codex-hepta-automation::authorized_effect provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_preserves_original_unknown_and_cancellation
+        PASS [   1.092s] ( 56/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_dispatch_barrier_explicit_absence_allows_new_fence_and_preserves_history
+        PASS [   1.050s] ( 57/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_first_binding_on_retry_preserves_earlier_absence
+        PASS [   0.823s] ( 61/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_storage_rejects_oversized_binding_without_partial_write
+        PASS [   1.108s] ( 62/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe
+        PASS [   1.041s] ( 63/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_pins_accepted_identity_and_blocks_opaque_bypass
+        PASS [   0.891s] ( 64/135) codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_reopen_rejects_canonical_substitution
+        PASS [   0.904s] ( 65/135) codex-hepta-automation::authorized_effect revocation_race_is_fenced_across_the_physical_provider_call
+        PASS [   0.853s] ( 66/135) codex-hepta-automation::authorized_effect successful_effect_is_at_most_once_for_one_durable_step_attempt
+        PASS [   7.545s] ( 67/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_requires_all_append_only_guards
+        PASS [   0.832s] ( 68/135) codex-hepta-automation::authorized_effect wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant
+        PASS [   0.652s] ( 69/135) codex-hepta-automation::automation copied_database_cannot_cross_agent_owner_boundary
+        PASS [   0.808s] ( 70/135) codex-hepta-automation::automation crash_after_external_acceptance_keeps_unknown_intent_across_reopen
+        PASS [   0.791s] ( 71/135) codex-hepta-automation::automation disabling_an_inflight_lease_never_resurrects_the_task
+        PASS [   0.798s] ( 72/135) codex-hepta-automation::automation drain_blockers_require_classification_but_allow_durable_uncertainty
+        PASS [   0.899s] ( 73/135) codex-hepta-automation::automation duplicate_provider_receipt_is_rejected_by_local_outcome_fence
+        PASS [   0.957s] ( 74/135) codex-hepta-automation::automation explicit_dispatch_failure_retries_same_occurrence_and_client_id
+        PASS [   0.823s] ( 75/135) codex-hepta-automation::automation in_flight_unknown_intent_fences_stale_generation_and_second_claim
+        PASS [   0.809s] ( 76/135) codex-hepta-automation::automation legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim
+        PASS [   1.095s] ( 77/135) codex-hepta-automation::automation one_shot_periodic_disable_and_cancel_are_durable
+        PASS [   4.190s] ( 78/135) codex-hepta-automation::automation five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_starve_peers
+        PASS [   0.775s] ( 79/135) codex-hepta-automation::automation owner_or_generation_fence_is_not_downgraded_to_a_dispatch_retry
+        PASS [   0.994s] ( 80/135) codex-hepta-automation::automation pre_admission_dispatch_error_clears_intent_and_allows_next_generation_retry
+        PASS [   0.665s] ( 81/135) codex-hepta-automation::automation stale_generation_recovery_is_owner_fenced
+        PASS [   0.742s] ( 82/135) codex-hepta-automation::automation successful_dispatch_upgrades_pre_admission_intent_atomically
+        PASS [   3.067s] ( 83/135) codex-hepta-automation::automation restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_old_lease
+        PASS [   2.697s] ( 84/135) codex-hepta-automation::automation uncertain_dispatch_requires_explicit_negative_provider_proof_before_retry
+        PASS [   3.926s] ( 85/135) codex-hepta-automation::automation unknown_provider_outcome_is_quarantined_across_store_recovery_until_reconciled
+        PASS [   2.590s] ( 86/135) codex-hepta-automation::automation v1_store_migrates_atomically_to_dispatch_outcome_schema
+        PASS [   0.987s] ( 87/135) codex-hepta-automation::durable_causal_chain allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence
+        PASS [   0.642s] ( 88/135) codex-hepta-automation::durable_causal_chain claim_freezes_schedule_revision_before_occurrence_materialization
+        PASS [   0.874s] ( 89/135) codex-hepta-automation::durable_causal_chain forbid_overlap_parks_recurrence_until_terminal_observation
+        PASS [   1.030s] ( 90/135) codex-hepta-automation::durable_causal_chain proven_absent_unknown_dispatch_reuses_same_occurrence_identity
+        PASS [   0.871s] ( 91/135) codex-hepta-automation::durable_causal_chain queue_submission_is_not_occurrence_or_taskflow_success
+        PASS [   0.662s] ( 92/135) codex-hepta-automation::durable_causal_chain reopen_rejects_tampered_canonical_occurrence_identity
+        PASS [   0.806s] ( 93/135) codex-hepta-automation::durable_causal_chain retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence
+        PASS [   0.801s] ( 94/135) codex-hepta-automation::durable_causal_chain retired_stale_generation_before_uncertainty_closes_without_provider_contact
+        PASS [   0.867s] ( 95/135) codex-hepta-automation::durable_causal_chain stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence
+        PASS [   0.838s] ( 96/135) codex-hepta-automation::durable_causal_chain terminal_observer_cursor_is_durable_bounded_progress
+        PASS [   0.683s] ( 97/135) codex-hepta-automation::kernel_operations_destination destination_dedupe_and_task_survive_store_reopen
+        PASS [   0.641s] ( 98/135) codex-hepta-automation::kernel_operations_destination exact_operation_replay_returns_one_task_and_one_destination_receipt
+        PASS [   0.598s] ( 99/135) codex-hepta-automation::kernel_operations_destination mismatched_destination_or_scope_is_denied_before_domain_mutation
+        PASS [   0.652s] (100/135) codex-hepta-automation::kernel_operations_destination same_operation_identity_with_changed_task_payload_conflicts
+        PASS [   0.645s] (101/135) codex-hepta-automation::operation_timer_fence kernel_destination_rejects_new_schedule_while_timer_is_draining
+        PASS [   0.673s] (102/135) codex-hepta-automation::operation_timer_fence predecessor_kernel_destination_cannot_write_after_timer_handoff
+        PASS [   0.658s] (103/135) codex-hepta-automation::operation_timer_fence retirement_blocks_new_effects_after_restart_but_preserves_old_receipts
+        PASS [   0.776s] (104/135) codex-hepta-automation::retirement_recovery receipt_replay_retains_later_control_decisions_and_rejects_substitution
+        PASS [   2.644s] (105/135) codex-hepta-automation::retirement_recovery all_release_paths_preserve_disable_and_cancel_across_restart
+        PASS [   0.749s] (106/135) codex-hepta-automation::retirement_recovery unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry
+        PASS [   2.342s] (107/135) codex-hepta-automation::retirement_recovery reopen_rejects_mismatched_durable_receipt_copies
+        PASS [   0.673s] (108/135) codex-hepta-automation::taskflow automation_opener_rejects_foreign_taskflow_rows
+        PASS [   0.693s] (109/135) codex-hepta-automation::taskflow automation_opener_rejects_hash_valid_taskflow_event_fence_tamper
+        PASS [   0.669s] (110/135) codex-hepta-automation::taskflow automation_opener_rejects_tampered_taskflow_event_history
+        PASS [   0.687s] (111/135) codex-hepta-automation::taskflow automation_opener_rejects_taskflow_event_generation_drift
+        PASS [   0.714s] (112/135) codex-hepta-automation::taskflow automation_opener_rejects_uncomputed_persisted_definition_digest
+        PASS [   0.673s] (113/135) codex-hepta-automation::taskflow command_writer_enforces_graph_resume_target_and_advances_current_node
+        PASS [   0.656s] (114/135) codex-hepta-automation::taskflow definition_registration_is_idempotent_and_generation_scoped
+        PASS [   0.011s] (115/135) codex-hepta-automation::taskflow invalid_graph_and_effect_contract_fail_closed
+        PASS [   0.724s] (116/135) codex-hepta-automation::taskflow indeterminate_requires_explicit_receipt_reconcile
+        PASS [   0.649s] (117/135) codex-hepta-automation::taskflow invalid_transition_does_not_advance_projection_or_event_tail
+        PASS [   0.692s] (118/135) codex-hepta-automation::taskflow run_lifecycle_is_fenced_and_command_deduplicated
+        PASS [   0.701s] (119/135) codex-hepta-automation::taskflow taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append
+        PASS [   0.013s] (120/135) codex-hepta-automation::taskflow_execution_boundary callers_cannot_add_verified_use_approval_or_graph_completeness_claims
+        PASS [   0.012s] (121/135) codex-hepta-automation::taskflow_execution_boundary canonical_digest_has_independent_golden_values
+        PASS [   0.014s] (122/135) codex-hepta-automation::taskflow_execution_boundary every_digest_is_nonzero_lowercase_and_bound
+        PASS [   0.011s] (123/135) codex-hepta-automation::taskflow_execution_boundary every_proposed_terminal_state_requires_a_trusted_external_observer
+        PASS [   0.012s] (124/135) codex-hepta-automation::taskflow_execution_boundary json_shape_version_and_enums_are_exact
+        PASS [   0.012s] (125/135) codex-hepta-automation::taskflow_execution_boundary numeric_and_identifier_bounds_fail_closed
+        PASS [   0.014s] (126/135) codex-hepta-automation::taskflow_execution_boundary predecessor_count_identity_and_order_are_strictly_bounded
+        PASS [   0.009s] (127/135) codex-hepta-automation::taskflow_execution_boundary rejected_requests_are_failure_atomic_and_do_not_poison_later_results
+        PASS [   0.010s] (128/135) codex-hepta-automation::taskflow_execution_boundary request_digest_binds_identity_count_and_action_shape
+        PASS [   0.011s] (129/135) codex-hepta-automation::taskflow_execution_boundary valid_effect_request_is_deterministically_unavailable_and_deny_all
+        PASS [   0.010s] (130/135) codex-hepta-automation::taskflow_execution_boundary validation_errors_do_not_reflect_untrusted_values
+        PASS [   0.666s] (131/135) codex-hepta-automation::taskflow taskflow_read_rejects_tampered_event_history
+        PASS [   0.751s] (132/135) codex-hepta-automation::taskflow_step reconciled_step_remains_readable_after_run_projection_refence
+        PASS [   0.729s] (133/135) codex-hepta-automation::taskflow_step step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
+        PASS [   0.704s] (134/135) codex-hepta-automation::taskflow_step step_outbox_rejects_wrong_order_and_append_only_tamper
+        PASS [   0.774s] (135/135) codex-hepta-automation::taskflow_step step_outbox_lifecycle_is_durable_fenced_and_idempotent
+  TRY 2 FAIL [   0.829s] ( 58/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty
+  TRY 2 FAIL [   1.039s] ( 59/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material
+  TRY 2 FAIL [   0.837s] ( 60/135) codex-hepta-automation::authorized_effect provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

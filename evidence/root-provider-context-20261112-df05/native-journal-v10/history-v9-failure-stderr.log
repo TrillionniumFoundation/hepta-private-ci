@@ -1,0 +1,11 @@
+fatal: cannot lock ref 'HEAD': 无法创建 '/home/qian-qi/work/ctrl-cargo-security-20261110-gpt6/.git/refs/heads/fix/hepta-provider-context-journal-20261112-df05.lock'：权限不够
+Traceback (most recent call last):
+  File "<string>", line 660, in <module>
+  File "<string>", line 155, in apply_candidate
+  File "<exact-reviewed-v6-helpers>", line 28, in git
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/git', '--no-replace-objects', '-C', '/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal', '-c', 'core.sparseCheckout=false', '-c', 'core.sparseCheckoutCone=false', '-c', 'core.ignorestat=false', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false', 'commit', '-m', 'fix(automation): make provider context schema regressions compile with SQLx']' returned non-zero exit status 128.

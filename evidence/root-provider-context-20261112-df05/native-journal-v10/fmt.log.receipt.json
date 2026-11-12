@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fmt",
+    "--base",
+    "d5b51f9e72cd69cc07d0bdbcad9b4e692a1d0136"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 2712492261,
+  "log": "fmt.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "813488082862657935e6d8a71e4c19b2d520d6a2",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "813488082862657935e6d8a71e4c19b2d520d6a2",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "813488082862657935e6d8a71e4c19b2d520d6a2",
+      "source_tree": "2f591ae975ad48f8cd0299648ba089006d02dbc3",
+      "tracked_entries": 10788,
+      "tracked_bytes": 132078920,
+      "complete_map_sha256": "2bd60b7ff61cb97d3875e0b59dcd992d59b1d96ec160e0335de8f85786a54885",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "813488082862657935e6d8a71e4c19b2d520d6a2",
+      "source_tree": "2f591ae975ad48f8cd0299648ba089006d02dbc3",
+      "tracked_entries": 10788,
+      "tracked_bytes": 132078920,
+      "complete_map_sha256": "2bd60b7ff61cb97d3875e0b59dcd992d59b1d96ec160e0335de8f85786a54885",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+}
