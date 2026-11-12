@@ -1,4 +1,4 @@
-name: Hepta EVOLVE-1 CPU contracts
+name: Hepta EVOLVE-1 and F/L/R CPU contracts
 
 on:
   pull_request:
@@ -35,7 +35,7 @@ env:
 
 jobs:
   contracts:
-    name: EVOLVE-1 inherited and transfer regressions
+    name: EVOLVE-1 and F/L/R contract regressions
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -87,7 +87,7 @@ jobs:
           PY
           cat "$RUNNER_TEMP/evolve1-ci/runtime.json"
 
-      - name: Run all three suites with separate non-skipped test minima
+      - name: Run all four suites with separate non-skipped test minima
         shell: bash
         run: |
           set -euo pipefail
@@ -102,6 +102,7 @@ jobs:
           25 scripts.ndu_real_runtime.test_causal_ace
           20 scripts.ndu_real_runtime.test_evolve1
           3 scripts.ndu_real_runtime.test_evolve1_pilot
+          19 scripts.ndu_real_runtime.test_flr_contract
           CASES
           exit "$status"
 
@@ -116,6 +117,9 @@ jobs:
             scripts/ndu_real_runtime/evolve1_reference.py
             scripts/ndu_real_runtime/evolve1_pilot.py
             scripts/ndu_real_runtime/test_evolve1_pilot.py
+            scripts/ndu_real_runtime/flr_plan.py
+            scripts/ndu_real_runtime/flr_contract.py
+            scripts/ndu_real_runtime/test_flr_contract.py
           )
           uv run --frozen --project scripts --python 3.12.14 \
             ruff format --check "${files[@]}"
