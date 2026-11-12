@@ -68,6 +68,39 @@ pub struct AgentdLearningCheckpointClientV1 {
 }
 
 impl AgentdLearningCheckpointClientV1 {
+    /// The production handoff carries its already fixed end through all file
+    /// and peer checks; conversion cannot restart the original session budget.
+    pub(crate) fn from_original_stream_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        initial: LearningIterationSnapshotV1,
+        timeout: Duration,
+        end: std::time::Instant,
+        scope: Option<FrozenLearningScopeV2>,
+    ) -> Result<Self, Error> {
+        let expected =
+            LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())
+                .map_err(Error::Snapshot)?;
+        if expected.snapshot() != &initial {
+            return Err(Error::WrongScope);
+        }
+        if let Some(scope) = &scope {
+            scope.validate_snapshot(&initial).map_err(Error::Snapshot)?;
+        }
+        let transport =
+            RootObservationStream::from_stream_until(stream, peer, root_pidfd, timeout, end)
+                .map_err(|_| Error::Store(AuthorityTrustError::Unavailable))?;
+        Ok(Self {
+            channel: Mutex::new(Some(Channel {
+                transport,
+                next_request_id: 1,
+            })),
+            initial,
+            scope,
+        })
+    }
+
     /// The exact empty initial snapshot is a public scope pin, not authority.
     /// Timing retains the existing 500 ms exchange / 300 s lifetime bounds.
     pub fn from_root_stream(

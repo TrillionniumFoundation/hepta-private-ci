@@ -34,7 +34,7 @@ pub struct AgentdRootLearningInputsV1 {
 
 impl RootLearningHandoffV1 {
     pub(crate) async fn connect(
-        mut self,
+        self,
         production: &AgentdRootProductionInputs,
         expected: &AgentdIdentity,
         timeout: Duration,
@@ -47,7 +47,23 @@ impl RootLearningHandoffV1 {
         {
             return Err(refused("bounded original learning timing required"));
         }
-        let end = Instant::now() + lifetime;
+        self.connect_until(production, expected, timeout, Instant::now() + lifetime)
+            .await
+    }
+
+    pub(crate) async fn connect_until(
+        mut self,
+        production: &AgentdRootProductionInputs,
+        expected: &AgentdIdentity,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<AgentdRootLearningInputsV1, AgentdError> {
+        if timeout.is_zero()
+            || timeout > Duration::from_millis(500)
+            || remaining(end)? > Duration::from_secs(300)
+        {
+            return Err(refused("bounded original learning timing required"));
+        }
         let length = self.bootstrap.metadata()?.len();
         if length == 0 || length > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
             return Err(refused("learning descriptor exceeds its bound"));
@@ -90,25 +106,15 @@ impl RootLearningHandoffV1 {
             boot_id: bundle.root.boot_id,
             process_start_ticks: bundle.root.process_start_ticks,
         };
-        let client = match scope.clone() {
-            Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
-                stream.into_std()?,
-                peer,
-                self.root_pidfd,
-                initial.clone(),
-                timeout,
-                remaining(end)?,
-                scope,
-            ),
-            None => AgentdLearningCheckpointClientV1::from_root_stream(
-                stream.into_std()?,
-                peer,
-                self.root_pidfd,
-                initial.clone(),
-                timeout,
-                remaining(end)?,
-            ),
-        }
+        let client = AgentdLearningCheckpointClientV1::from_original_stream_until(
+            stream.into_std()?,
+            peer,
+            self.root_pidfd,
+            initial.clone(),
+            timeout,
+            end,
+            scope.clone(),
+        )
         .map_err(|error| refused(format!("learning Root transport: {error}")))?;
         // Confirm the actual registered CURRENT through its live writer before
         // retaining the capability. This observation is not a stage attestation.

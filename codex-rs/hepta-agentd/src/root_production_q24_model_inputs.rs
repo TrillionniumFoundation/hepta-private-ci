@@ -4,6 +4,7 @@
 use std::io::Read;
 use std::io::Seek;
 use std::time::Duration;
+use std::time::Instant;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -17,7 +18,7 @@ use crate::root_observation_stream::RootObservationStream;
 
 impl RootQ24ModelFactoryHandoffV1 {
     pub(crate) async fn connect(
-        mut self,
+        self,
         production: &AgentdRootProductionInputs,
         learning: &AgentdRootLearningInputsV1,
         identity: &AgentdIdentity,
@@ -31,7 +32,30 @@ impl RootQ24ModelFactoryHandoffV1 {
         {
             return Err(refused("bounded original factory timing required"));
         }
-        let end = std::time::Instant::now() + lifetime;
+        self.connect_until(
+            production,
+            learning,
+            identity,
+            timeout,
+            Instant::now() + lifetime,
+        )
+        .await
+    }
+
+    pub(crate) async fn connect_until(
+        mut self,
+        production: &AgentdRootProductionInputs,
+        learning: &AgentdRootLearningInputsV1,
+        identity: &AgentdIdentity,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<AgentdRootQ24ModelFactoryV1, AgentdError> {
+        if timeout.is_zero()
+            || timeout > Duration::from_millis(500)
+            || remaining(end)? > Duration::from_secs(300)
+        {
+            return Err(refused("bounded original factory timing required"));
+        }
         let length = self.bootstrap.metadata()?.len();
         if length == 0 || length > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
             return Err(refused("factory descriptor exceeds its bound"));
@@ -86,14 +110,14 @@ impl RootQ24ModelFactoryHandoffV1 {
             ],
             unsafe { libc::getegid() },
         )?;
-        let stream = tokio::time::timeout(timeout, tokio::net::UnixStream::connect(&socket))
-            .await
-            .map_err(|_| refused("factory Root connection timed out"))??;
-        let remaining = end
-            .checked_duration_since(std::time::Instant::now())
-            .filter(|value| !value.is_zero())
-            .ok_or_else(|| refused("factory handoff expired"))?;
-        let transport = RootObservationStream::from_stream(
+        let stream = tokio::time::timeout(
+            timeout.min(remaining(end)?),
+            tokio::net::UnixStream::connect(&socket),
+        )
+        .await
+        .map_err(|_| refused("factory Root connection timed out"))??;
+        remaining(end)?;
+        let transport = RootObservationStream::from_stream_until(
             stream.into_std()?,
             AgentdRootAuthorityPeer {
                 pid: bundle.root.pid,
@@ -102,7 +126,7 @@ impl RootQ24ModelFactoryHandoffV1 {
             },
             self.root_pidfd,
             timeout,
-            remaining,
+            end,
         )
         .map_err(|error| refused(format!("factory Root peer: {error}")))?;
         AgentdRootQ24ModelFactoryV1::from_original_handoff(
@@ -116,6 +140,12 @@ impl RootQ24ModelFactoryHandoffV1 {
         )
         .await
     }
+}
+
+fn remaining(end: Instant) -> Result<Duration, AgentdError> {
+    end.checked_duration_since(Instant::now())
+        .filter(|value| !value.is_zero())
+        .ok_or_else(|| refused("original factory session expired"))
 }
 
 fn refused(message: impl Into<String>) -> AgentdError {

@@ -62,13 +62,47 @@ impl RootObservationStream {
         lifetime: Duration,
         uid: u32,
     ) -> Result<Self, AgentdRootAuthorityError> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        Self::from_stream_for_uid_until(
+            stream,
+            peer,
+            root_pidfd,
+            timeout,
+            Instant::now() + lifetime,
+            uid,
+        )
+    }
+
+    pub(crate) fn from_stream_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, /*uid*/ 0)
+    }
+
+    fn from_stream_for_uid_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+        uid: u32,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        let remaining = end
+            .checked_duration_since(Instant::now())
+            .ok_or(AgentdRootAuthorityError::Refused)?;
         if peer.pid == 0
             || peer.pid > i32::MAX as u32
             || peer.process_start_ticks == 0
             || timeout.is_zero()
             || timeout > Duration::from_millis(500)
-            || lifetime.is_zero()
-            || lifetime > Duration::from_secs(300)
+            || remaining.is_zero()
+            || remaining > Duration::from_secs(300)
         {
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -107,12 +141,15 @@ impl RootObservationStream {
             unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         check_lifetime(root.get_ref())?;
+        if Instant::now() >= end {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
         Ok(Self {
             exchange: tokio::sync::Semaphore::new(1),
             stream: Mutex::new(Some(stream)),
             root: Arc::new(root),
             timeout,
-            end: Instant::now() + lifetime,
+            end,
         })
     }
 }
@@ -243,3 +280,7 @@ fn unavailable(_: std::io::Error) -> AgentdRootAuthorityError {
 #[cfg(test)]
 #[path = "root_observation_stream_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "root_observation_stream_absolute_end_tests.rs"]
+mod absolute_end_tests;
