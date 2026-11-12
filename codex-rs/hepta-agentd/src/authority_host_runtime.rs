@@ -41,6 +41,8 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
+pub(crate) use session::PreparedPublicationData;
+pub(crate) use session::PublicationInputData;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
 pub use session::RootGenerationInitialDeploymentV1;
@@ -54,6 +56,7 @@ pub use session::RootHistoricalSourceCaptureCapabilityV1;
 pub use session::RootHistoricalSourceCaptureReceiptV1;
 pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
+pub(crate) use session::publication_data;
 
 #[path = "authority_host_writer_rotate.rs"]
 mod writer_rotation;
