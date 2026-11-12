@@ -8,6 +8,10 @@ use super::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 
+#[path = "authority_host_successor_files_read.rs"]
+mod read;
+pub(crate) use read::RootSuccessorTaskCutV1;
+
 /// All eight files are supplied by the private Root deployment before its
 /// sealed offer. The daemon cannot choose an additional journal or ingress.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -84,6 +88,8 @@ pub(crate) struct RootOriginalSuccessorFilesV1 {
     // Cold execution files are opened only inside the publication refusal arm.
     // Their expected identities still come from the same fixed Root metadata.
     files: Option<[RetainedMaterial; 8]>,
+    uid: u32,
+    gid: u32,
 }
 
 impl RootOriginalSuccessorFilesV1 {
@@ -108,7 +114,12 @@ impl RootOriginalSuccessorFilesV1 {
                 }
                 Mode::Recover => None,
             };
-        let held = Arc::new(Self { data, files });
+        let held = Arc::new(Self {
+            data,
+            files,
+            uid,
+            gid,
+        });
         held.require_original()?;
         Ok(held)
     }

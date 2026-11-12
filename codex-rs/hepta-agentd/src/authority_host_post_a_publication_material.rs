@@ -81,6 +81,17 @@ impl RetainedMaterial {
         self.require_original()
     }
 
+    pub(super) fn original_readonly_description(&self) -> io::Result<File> {
+        self.require_original()?;
+        let original = self.original.original_descriptor()?;
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NONBLOCK)
+            .open(format!("/proc/self/fd/{}", original.as_raw_fd()))?;
+        self.require_descriptor(&file)?;
+        Ok(file)
+    }
+
     pub(super) fn observe_ready(&self) -> io::Result<Option<MaterialObservation<'_>>> {
         self.require_original()?;
         let original = self.original.original_descriptor()?;
