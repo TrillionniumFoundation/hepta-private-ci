@@ -3,3 +3,9 @@
 
 #[path = "authority_host_q24_evaluation_source.rs"]
 mod source;
+
+#[path = "authority_host_q24_evaluation_files.rs"]
+mod files;
+
+#[path = "authority_host_q24_evaluation_admission.rs"]
+mod admission;
