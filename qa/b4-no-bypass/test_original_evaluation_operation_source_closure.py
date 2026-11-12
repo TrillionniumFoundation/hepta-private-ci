@@ -40,9 +40,9 @@ EXPECTED = {
     "learning_original_evaluation_receipt_operation_read": (OWNER, HOST),
     "learning_original_evaluation_panel_operation_current": (HOST,),
     "learning_original_evaluation_shared_training_host": (),
-    "learning_original_evaluation_model_read_begin": (),
-    "learning_original_evaluation_model_read_finish": (),
-    "learning_original_evaluation_model_read_borrow": (),
+    "learning_original_evaluation_model_read_begin": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs'),
+    "learning_original_evaluation_model_read_finish": ('codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs',),
+    "learning_original_evaluation_model_read_borrow": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs'),
 }
 
 

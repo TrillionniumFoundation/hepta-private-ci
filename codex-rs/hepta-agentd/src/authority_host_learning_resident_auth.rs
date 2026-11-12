@@ -140,6 +140,32 @@ pub(super) fn verify_original_evidence(
     }
 }
 
+/// A checkpoint has already happened. Its original post-CAS clock must still
+/// authenticate every complete role signature and Model record before the
+/// same continuation may enter another stage. Failure never undoes that CAS.
+pub(super) fn verify_checkpoint_evidence(
+    profile: &RootResidentLearningProfileV3,
+    verifier: &LearningEvidenceVerifierV1,
+    snapshot: &LearningIterationSnapshotV1,
+    signatures: &[SignedLearningEvidenceV1],
+    model: Option<&ResidentOriginalModelProofV3>,
+    before_ms: u64,
+    committed_at_ms: u64,
+) -> Result<(), Error> {
+    if committed_at_ms < before_ms {
+        return Err(Error::CommitUncertain);
+    }
+    verify_original_evidence(
+        profile,
+        verifier,
+        snapshot,
+        signatures,
+        model,
+        committed_at_ms / 1_000,
+    )
+    .map_err(|_| Error::CommitUncertain)
+}
+
 /// A saved cold tuple is only a comparison pin. This function never returns
 /// an original Model receipt or proof, and is reachable only in readonly bind.
 pub(super) fn verify_model_comparison_pin(

@@ -369,8 +369,20 @@ async fn continue_original(
             evidence.model.as_ref(),
             fresh / 1_000,
         )?;
-        gate.checkpoint(&predecessor, coordinator.snapshot().clone())
+        let committed_at = gate.checkpoint(&predecessor, coordinator.snapshot().clone())
             .await?;
+        // The checkpoint is already durable. An expired original role window
+        // at its actual post-CAS clock is uncertain; retain those bytes and
+        // drop this continuation without dispatching the next stage.
+        authentication::verify_checkpoint_evidence(
+            profile,
+            &verifier,
+            coordinator.snapshot(),
+            &evidence.signatures,
+            evidence.model.as_ref(),
+            fresh,
+            committed_at,
+        )?;
     }
     // Dropping the continuation permanently disables its installed effect gate.
     // The complete result is returned only through the independent readback path.
