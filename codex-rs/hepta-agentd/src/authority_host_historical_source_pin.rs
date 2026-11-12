@@ -21,18 +21,22 @@ use crate::HistoricalCircuitTaskSourceV1;
 
 const PIN_PURPOSE: &str = "runtime.circuit.historical-source-pin.v1";
 
-/// Only the trusted Root host supplies original descriptors/configuration.
+#[path = "authority_host_historical_source_inputs.rs"]
+mod inputs;
+pub(crate) use inputs::RetainedRootHistoricalSourceInputsV1;
+
+/// Original single-published-task Q24 configuration and Root-held descriptors.
 /// There is no serialized observation, generic witness or caller-authored pin.
-pub(crate) struct RootHistoricalSourceInputsV1 {
-    pub(crate) journal: File,
-    pub(crate) witness: File,
-    pub(crate) witness_scope: JournalScope,
-    pub(crate) witness_generation: Generation,
-    pub(crate) witness_records: usize,
-    pub(crate) fence: TaskFlowFence,
-    pub(crate) registry: CircuitCellRegistryV1,
-    pub(crate) definition: CellDefinitionV1,
-    pub(crate) source: CircuitTaskSourceInputV1,
+pub struct RootHistoricalSourceInputsV1 {
+    pub journal: File,
+    pub witness: File,
+    pub witness_scope: JournalScope,
+    pub witness_generation: Generation,
+    pub witness_records: usize,
+    pub fence: TaskFlowFence,
+    pub registry: CircuitCellRegistryV1,
+    pub definition: CellDefinitionV1,
+    pub source: CircuitTaskSourceInputV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -181,7 +185,8 @@ impl RootHistoricalSourcePinV1 {
         Ok(retained)
     }
 
-    fn fence(&self) -> io::Result<()> {
+    pub(crate) fn fence(&self) -> io::Result<()> {
+        original_root()?;
         *self
             .poisoned
             .lock()
@@ -207,7 +212,7 @@ impl HostAuthorityService {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         publisher_pidfd: &OwnedFd,
-        inputs: RootHistoricalSourceInputsV1,
+        inputs: RetainedRootHistoricalSourceInputsV1,
     ) -> io::Result<RootHistoricalSourcePinV1> {
         original_root()?;
         let mut retained = None;
@@ -215,6 +220,12 @@ impl HostAuthorityService {
         let result =
             self.with_initial_publication_context(config, registration, publisher_pidfd, |proof| {
                 entered = true;
+                let inputs = inputs.into_registered(
+                    &self.identity,
+                    &slot.profile.deployment.target,
+                    config.peer_uid,
+                    config.peer_gid,
+                )?;
                 if slot.mode != RootGenerationInitialModeV1::Reserve
                     || slot.profile.writer != proof
                     || slot.profile.identity

@@ -95,7 +95,7 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
     let named = tempfile::NamedTempFile::new()?;
     let file = named.as_file();
     file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
-    let file_pin = FilePin::read(&file, /*uid*/ 0, /*gid*/ 0)?;
+    let file_pin = FilePin::read(file, /*uid*/ 0, /*gid*/ 0)?;
     let pin = SourcePin {
         schema: 1,
         purpose: PIN_PURPOSE.into(),
@@ -135,7 +135,11 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
         digest
     );
     retained.fence()?;
+    retained.fence()?;
     assert!(retained.readback_digest().is_err());
+    assert!(
+        RootHistoricalSourcePinV1::retain(root.clone(), retained.expected.pin.clone()).is_err()
+    );
     assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
     Ok(())
 }
