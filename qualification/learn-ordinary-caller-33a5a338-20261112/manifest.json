@@ -1,0 +1,228 @@
+{
+  "recorded_at": "2026-11-12T22:16:41.781398+00:00",
+  "source": {
+    "head": "33a5a338637a4787237bc4154b23a06f6ad34357",
+    "tree": "9434660576cf6269db9606d5962b1b33c07a4b82",
+    "status": "",
+    "tracked_files": 15492,
+    "tracked_bytes": 234344172,
+    "tracked_sha256": "e2e390a2ba16baac7b39ac7bc96df83970c90a7a22bb3eb0c9bbf7c2f7827978",
+    "callers_sha256": "0abbaf3c3ea1f96ebaa6a290a093c36b25a2afb3577497afa1c98312ba772991"
+  },
+  "source_unchanged": true,
+  "historical_capture_qa": {
+    "tests": 14,
+    "exit_code": 0,
+    "source_unchanged": true
+  },
+  "full_cli": {
+    "name": "fullcallers",
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify",
+      "--root",
+      "/workspace/scratch/ff41dfc0f7bf/hepta-retirement-barrier-cloud"
+    ],
+    "cwd": "/workspace/scratch/ff41dfc0f7bf/hepta-retirement-barrier-cloud",
+    "started": "2026-11-12T22:00:19.628299+00:00",
+    "status": "completed",
+    "before": {
+      "head": "33a5a338637a4787237bc4154b23a06f6ad34357",
+      "tree": "9434660576cf6269db9606d5962b1b33c07a4b82",
+      "status": "",
+      "tracked_files": 15492,
+      "tracked_bytes": 234344172,
+      "tracked_sha256": "e2e390a2ba16baac7b39ac7bc96df83970c90a7a22bb3eb0c9bbf7c2f7827978",
+      "callers_sha256": "0abbaf3c3ea1f96ebaa6a290a093c36b25a2afb3577497afa1c98312ba772991"
+    },
+    "pid": 101,
+    "exit_code": 1,
+    "finished": "2026-11-12T22:11:04.602644+00:00",
+    "elapsed_seconds": 644.9741566559969,
+    "after": {
+      "head": "33a5a338637a4787237bc4154b23a06f6ad34357",
+      "tree": "9434660576cf6269db9606d5962b1b33c07a4b82",
+      "status": "",
+      "tracked_files": 15492,
+      "tracked_bytes": 234344172,
+      "tracked_sha256": "e2e390a2ba16baac7b39ac7bc96df83970c90a7a22bb3eb0c9bbf7c2f7827978",
+      "callers_sha256": "0abbaf3c3ea1f96ebaa6a290a093c36b25a2afb3577497afa1c98312ba772991"
+    },
+    "source_unchanged": true,
+    "files": {
+      "fullcallers.stderr.log": {
+        "bytes": 195,
+        "sha256": "d79af8c93972a029c11b34917d599a466be951b9fd060d17c72a37d2a48d7800"
+      },
+      "fullcallers.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "passed": false
+  },
+  "archive": {
+    "bytes": 6400,
+    "sha256": "54d1d00022e8b8c8dbd839afc24e39970848f3171edd926bc784ec7079021f18",
+    "members": {
+      "artifact-open-diagnostic/driver.py": {
+        "bytes": 2096,
+        "sha256": "2e61f734292dd604d64768de3cb19415adb9312c395b3c1d53f5120303945636"
+      },
+      "artifact-open-diagnostic/result.json": {
+        "bytes": 2284,
+        "sha256": "d8d5e289486558c73706db752dd885a338b8cc229d5df5b175f916ee3f9587a8"
+      },
+      "driver.py": {
+        "bytes": 5974,
+        "sha256": "7fb374dc492fc033ab2d065234efddaa8ff9313236f66f44dd4bc923b2b56a82"
+      },
+      "fullcallers.json": {
+        "bytes": 1591,
+        "sha256": "f0a753bd96527c10a9d2ebf1902bc7a97ccd3af7bb0cb1348e88fa2c89d3d71d"
+      },
+      "fullcallers.stderr.log": {
+        "bytes": 195,
+        "sha256": "d79af8c93972a029c11b34917d599a466be951b9fd060d17c72a37d2a48d7800"
+      },
+      "fullcallers.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "historical-capture-qa.json": {
+        "bytes": 1633,
+        "sha256": "3c717bb12f11bf9129cf2d21dbec507620b2cc0f4ad6f24021e2d0e3daebc2e6"
+      },
+      "historical-capture-qa.stderr.log": {
+        "bytes": 3214,
+        "sha256": "dcd9dda2b0317b3b091204952f7fd6e5e5e8bfeff38e4a6722cdc07837d45777"
+      },
+      "historical-capture-qa.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "repair.patch": {
+        "bytes": 3199,
+        "sha256": "d7f838922ae947b61ae60e868c856e7c1f94a011af1ea7c7b03fda2495221b8d"
+      },
+      "result.json": {
+        "bytes": 4913,
+        "sha256": "f50d78a836dbe747875053f924cfaeba6f7c3ac1dc5e9b392ee3b45c0808cc77"
+      },
+      "review.json": {
+        "bytes": 2062,
+        "sha256": "29e754fbeddabbfb64b1e5e8cbdc255a23c2b6cd84a97c75402f6dd4da082373"
+      },
+      "source-before.json": {
+        "bytes": 359,
+        "sha256": "38cb26dd91ef2a42b96a681271a87aef334bb6fc73a6fdee09326f3f7cebc231"
+      }
+    },
+    "roundtrip_equal": true
+  },
+  "single_boundary_diagnostic": {
+    "rust_files": 6885,
+    "scope": "exact original typed method over all original Rust source; not complete CLI",
+    "unresolved_helpers": 5,
+    "elapsed_seconds": 18.048945526999887,
+    "source_unchanged": true
+  },
+  "fixture_scope_repair": {
+    "head": "65c32e639e99912fc5a437afe5dd128271ec05ae",
+    "tree": "ae158ee0f2e611a6b9fd5f01e07728102811dd17",
+    "changes": "only explicit test-only cfg in five existing test helpers plus removal/comment/production-condition negative controls; no CALLERS or scanner changes",
+    "validation": "Original 65c32 ordinary-callers QA: 4 tests, 5 failing fixture subtests; file-cfg QA: 5 tests PASS; source unchanged. Full CLI remains a separate running gate.",
+    "bundle": "fixture-scope-65c32e63.bundle",
+    "bundle_bytes": 12933,
+    "bundle_sha256": "9d92e42eb194c94eae83d44c26061b1479c7c8525337751218d93ff7fcb0c4ff",
+    "bundle_verify": "The bundle contains this ref:\n65c32e639e99912fc5a437afe5dd128271ec05ae refs/heads/codex/learn-integrated-qa-fixtures-32a7-20261112-ff41\nThe bundle requires this ref:\n33a5a338637a4787237bc4154b23a06f6ad34357 \nThe bundle uses this hash algorithm: sha1\n/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-32a7d4df-broker-head-caller-repair-v1/fixture-scope-65c32e63.bundle is okay\n"
+  },
+  "native_tests_executed": 0,
+  "fixture_scope_qa_originals": {
+    "bytes": 8096,
+    "sha256": "161a5826be82571ce909778176262a1025e23c776b974ac39ea9fa460a99c498",
+    "members": {
+      "candidate-fields-commit.json": {
+        "bytes": 859,
+        "sha256": "46771fb98b5346ee9765669b35e3140114fff04339261e9866ba7d568e822091"
+      },
+      "candidate-full-fields-qa.json": {
+        "bytes": 1241,
+        "sha256": "d7dcfc9a2bb6ce80037acd2bb84fb81405336ce974a771773b593c79c1e3047e"
+      },
+      "candidate-full-fields-qa.stderr.log": {
+        "bytes": 905,
+        "sha256": "ab94b0a0a507308b849a96bfcbccfd199dd9c20e128d36b42aea26b03eef5966"
+      },
+      "candidate-full-fields-qa.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "driver.py": {
+        "bytes": 6090,
+        "sha256": "b157e5f8b23f3c2161b3e67ae0f8ea98a22d1cdc2430166512c999a69ca802e8"
+      },
+      "file-test-cfg-qa.json": {
+        "bytes": 1609,
+        "sha256": "d5db9d826aed5c2b858313bef0ad5e24f973043f79e8fcdd54262c7ff8ccf8a5"
+      },
+      "file-test-cfg-qa.stderr.log": {
+        "bytes": 1006,
+        "sha256": "67df9f6335e526b3f301f417eb005731bf837489bbe8432fb0a8692084062d90"
+      },
+      "file-test-cfg-qa.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "ordinary-callers-full-fields-candidate.patch": {
+        "bytes": 2152,
+        "sha256": "88b7b2dea90ad78982b9c9fd290bd8aacf8ce58915d4a34ee61edde20936b1e3"
+      },
+      "ordinary-callers-full-fields-candidate.py": {
+        "bytes": 10044,
+        "sha256": "815f62ee145fa9f812526c31a89ec875c14600f59caffaa4a820acb8119f5b5d"
+      },
+      "ordinary-callers-qa.json": {
+        "bytes": 1630,
+        "sha256": "f13a9df0dad6b1b4ff597b7b0e8dd62b0349e02ed5bc43391ce10f248e300c72"
+      },
+      "ordinary-callers-qa.stderr.log": {
+        "bytes": 6649,
+        "sha256": "a2905f80670c6dd27c48474f07d8a420e71b8abe69cdd1dcbbef5a4c62af7f10"
+      },
+      "ordinary-callers-qa.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "repair.patch": {
+        "bytes": 4738,
+        "sha256": "af97b8de46d8b95c6e1c5ee1afd7555faf9df2c282d8812ea2db79cbea3cdbfa"
+      },
+      "review.json": {
+        "bytes": 1807,
+        "sha256": "3798455256168fac6c845d89f7cbf6155d0a488cbb88729f54d0db64e28308b6"
+      },
+      "source-before.json": {
+        "bytes": 359,
+        "sha256": "ce7c31dd8e0e787ac7e04c81e9bbe24807d0df5c28419d21475855e1299f0830"
+      }
+    },
+    "roundtrip_equal": true
+  },
+  "full_field_candidate": {
+    "commit": "31a67f4782d5279034d4c90786d3b944d5da629d",
+    "tree": "c6b3a1a7cc5471bab3c8afc9782ea338dfc6afed",
+    "parent": "65c32e639e99912fc5a437afe5dd128271ec05ae",
+    "ref": "refs/heads/codex/learn-fixture-fields-candidate-20261112-ff41",
+    "candidate_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-full-fields-candidate.py",
+    "candidate_sha256": "815f62ee145fa9f812526c31a89ec875c14600f59caffaa4a820acb8119f5b5d",
+    "blob": "9c1ede75983de9f9c9264d5ba5620e84ed86f862",
+    "tracked_checkout_head_unchanged": "65c32e639e99912fc5a437afe5dd128271ec05ae",
+    "tracked_checkout_status": "",
+    "source_file_unchanged_during_active_cli": true,
+    "validation": "Explicit tooling postimage loaded against frozen65 sources; 4/4 QA methods passed. Not yet an in-repository full gate on this commit.",
+    "bundle_sha256": "d6e9ee8ded0d016fd3f24c78142a8b1454ef6954fe7488557eaae9976559ac09",
+    "bundle_bytes": 1206
+  }
+}
