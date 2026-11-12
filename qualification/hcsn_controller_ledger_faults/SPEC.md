@@ -80,7 +80,9 @@ after execution; it is not an OS hard filesystem or RSS cap.
 
 Every supervisor launch intent and observed PID/exit is persisted. An incomplete
 protocol reports exact process totals as null, keeping only separately labeled
-observed PIDs/completed-case toys. It never labels an unreported actor as zero.
+observed PIDs/completed-case toys. The planned three SIGKILL cases are
+separate from the observed authoritative SIGKILL exits; unadmitted cases are
+never counted as actual kills. It never labels an unreported actor as zero.
 RUSAGE_CHILDREN CPU/max-RSS and wall time are measured for the fixture process
 tree; reported max RSS is not simultaneous aggregate RSS. Source bytes are
 checked before/after, all raw stdout/stderr/events/ACTORS/admissions are retained,

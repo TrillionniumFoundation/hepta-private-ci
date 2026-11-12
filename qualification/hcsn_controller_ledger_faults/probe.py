@@ -550,7 +550,14 @@ def supervisor(args):
         else "UNKNOWN_INCOMPLETE_PROTOCOL",
         actual_numerical_calls=dict(ZERO),
         torch_numpy_scipy_imports=0,
-        intentional_SIGKILL_cases=len(KILLED),
+        planned_intentional_SIGKILL_cases=len(KILLED),
+        observed_authoritative_SIGKILL_exits=[
+            dict(scenario=a["scenario"], pid=a["pid"], exit_code=a["exit_code"])
+            for a in admissions
+            if a["scenario"] in KILLED
+            and a["state"] == "TERMINAL"
+            and a["exit_code"] == -signal.SIGKILL
+        ],
         payload_bytes_before_report=payload,
         wall_seconds=time.perf_counter() - started,
         child_cpu_seconds=(usage_after.ru_utime + usage_after.ru_stime)
