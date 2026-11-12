@@ -67,6 +67,54 @@ impl OriginalCellEvaluationModelInputV1 {
 }
 
 impl OriginalCellEvaluationModelMaterialV1 {
+    /// Canonical signed data only, borrowed inside the same native response.
+    /// No Cell, Runner, Qualification or evidence owner is reconstructed.
+    pub(crate) fn original_model_transfer_body(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    /// Only the private original Model response decoder calls this after its
+    /// admitted peer exchange. Provisional material stays inside that transfer
+    /// until actual native Model/Training and E Finish are acknowledged.
+    pub(crate) fn from_original_model_response(
+        material: &crate::OriginalCellQ24MaterialReceiptConfigV1,
+        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+        dataset: &crate::OriginalCellQ24MaterialCommandReceiptV1,
+        training: &crate::OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &Receipt,
+        bytes: Vec<u8>,
+        lower: u64,
+    ) -> Result<Self, Error> {
+        crate::OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            dataset, material,
+        ).map_err(|_| Error::Binding("original Model transfer Dataset context"))?;
+        let context = Context::from_original_training(
+            dataset.snapshot().clone(),
+            material.scope.clone(),
+            registration.clone(),
+            material.verifier.clone(),
+            training,
+        )?;
+        if context.initial()? != material.initial {
+            return Err(Error::Binding("original Model transfer initial context"));
+        }
+        let body = codec::Body::decode(&bytes)?;
+        if body.encode()? != bytes {
+            return Err(Error::Binding("canonical complete original Model transfer"));
+        }
+        let current = super::now()?;
+        super::require_clock(lower, current)?;
+        verify::material(&context, evaluation, &bytes, current)?;
+        let binding = Digest32::of_bytes(&bytes);
+        Ok(Self {
+            context,
+            evaluation: evaluation.clone(),
+            bytes,
+            binding,
+            observed_at: current,
+        })
+    }
+
     pub fn binding(&self) -> Digest32 {
         self.binding
     }
