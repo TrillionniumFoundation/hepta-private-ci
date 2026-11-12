@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "kind": "derived-index-with-verbatim-joblog-excerpts",
+  "source_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "source_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "tested_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "run_id": 43243479903,
+  "job_id": 131269839345,
+  "full_joblog_bytes": 3729153,
+  "full_joblog_sha256": "8a4a6593e70fb2f2104e37ec44d91e70bcfa419f30e3c99d3fe5ab97a37a48bb",
+  "ordinary": {
+    "total": 1733,
+    "passed": 1697,
+    "failed": 36,
+    "exit": 100,
+    "elapsed_seconds_original": "579.314821929",
+    "test_retries": 0
+  },
+  "failures": [
+    {
+      "status": "FAIL",
+      "seconds": "2.428",
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions",
+      "block": "2026-11-12T15:23:06.9854907Z         FAIL [   2.428s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions\n2026-11-12T15:23:06.9855102Z   stdout ───\n2026-11-12T15:23:06.9855106Z \n2026-11-12T15:23:06.9855172Z     running 1 test\n2026-11-12T15:23:06.9855542Z     test learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions ... FAILED\n2026-11-12T15:23:06.9855549Z \n2026-11-12T15:23:06.9855630Z     failures:\n2026-11-12T15:23:06.9855633Z \n2026-11-12T15:23:06.9855697Z     failures:\n2026-11-12T15:23:06.9856005Z         learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions\n2026-11-12T15:23:06.9856010Z \n2026-11-12T15:23:06.9856210Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1184 filtered out; finished in 2.42s\n2026-11-12T15:23:06.9856221Z \n2026-11-12T15:23:06.9856351Z   stderr ───\n2026-11-12T15:23:06.9856536Z     Error: original evaluation has insufficient evidence for a learning decision\n2026-11-12T15:23:06.9856544Z "
+    },
+    {
+      "status": "FAIL",
+      "seconds": "3.452",
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+      "block": "2026-11-12T15:23:06.9856931Z         FAIL [   3.452s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes\n2026-11-12T15:23:06.9857034Z   stdout ───\n2026-11-12T15:23:06.9857038Z \n2026-11-12T15:23:06.9857103Z     running 1 test\n2026-11-12T15:23:06.9857487Z     test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes ... FAILED\n2026-11-12T15:23:06.9857494Z \n2026-11-12T15:23:06.9857567Z     failures:\n2026-11-12T15:23:06.9857571Z \n2026-11-12T15:23:06.9857637Z     failures:\n2026-11-12T15:23:06.9857978Z         learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes\n2026-11-12T15:23:06.9857986Z \n2026-11-12T15:23:06.9858194Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1184 filtered out; finished in 3.44s\n2026-11-12T15:23:06.9858202Z \n2026-11-12T15:23:06.9858290Z   stderr ───\n2026-11-12T15:23:06.9858512Z     Error: original qualification: original evaluation has insufficient evidence for a learning decision\n2026-11-12T15:23:06.9858519Z \n2026-11-12T15:23:06.9858585Z     Caused by:\n2026-11-12T15:23:06.9858741Z         original evaluation has insufficient evidence for a learning decision\n2026-11-12T15:23:06.9858745Z "
+    },
+    {
+      "status": "FAIL",
+      "seconds": "31.831",
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+      "block": "2026-11-12T15:23:06.9859248Z         FAIL [  31.831s] codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel\n2026-11-12T15:23:06.9859344Z   stdout ───\n2026-11-12T15:23:06.9859348Z \n2026-11-12T15:23:06.9859420Z     running 1 test\n2026-11-12T15:23:06.9859870Z     test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel ... FAILED\n2026-11-12T15:23:06.9859913Z \n2026-11-12T15:23:06.9859978Z     failures:\n2026-11-12T15:23:06.9859981Z \n2026-11-12T15:23:06.9860081Z     failures:\n2026-11-12T15:23:06.9860486Z         learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel\n2026-11-12T15:23:06.9860503Z \n2026-11-12T15:23:06.9860700Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1184 filtered out; finished in 31.82s\n2026-11-12T15:23:06.9860704Z \n2026-11-12T15:23:06.9860805Z   stderr ───\n2026-11-12T15:23:06.9860808Z \n2026-11-12T15:23:06.9861493Z     thread 'learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel' (26689) panicked at hepta-agentd/src/cell_q24_training_candidate_tests.rs:426:5:\n2026-11-12T15:23:06.9861752Z     assertion failed: wire::authenticate_receipt(&context, run.training.receipt().clone(),\n2026-11-12T15:23:06.9861870Z             run.training.attestation().clone(),\n2026-11-12T15:23:06.9862008Z             run.training.attestation().expires_at).is_err()\n2026-11-12T15:23:06.9862183Z     note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-12T15:23:06.9862187Z "
+    },
+    {
+      "status": "FAIL",
+      "seconds": "2.858",
+      "package": "codex-hepta-agentd",
+      "test": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+      "block": "2026-11-12T15:23:06.9862786Z         FAIL [   2.858s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal\n2026-11-12T15:23:06.9862898Z   stdout ───\n2026-11-12T15:23:06.9862902Z \n2026-11-12T15:23:06.9862972Z     running 1 test\n2026-11-12T15:23:06.9863371Z     test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal ... FAILED\n2026-11-12T15:23:06.9863384Z \n2026-11-12T15:23:06.9863449Z     failures:\n2026-11-12T15:23:06.9863456Z \n2026-11-12T15:23:06.9863528Z     failures:\n2026-11-12T15:23:06.9863921Z         neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal\n2026-11-12T15:23:06.9863930Z \n2026-11-12T15:23:06.9864133Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1184 filtered out; finished in 2.85s\n2026-11-12T15:23:06.9864137Z \n2026-11-12T15:23:06.9864240Z   stderr ───\n2026-11-12T15:23:06.9864244Z \n2026-11-12T15:23:06.9864835Z     thread 'neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal' (27826) panicked at hepta-agentd/src/cell_q24_model_proposal_tests.rs:263:9:\n2026-11-12T15:23:06.9864982Z     assertion failed: matches!(fixture.commit(&mut owner, now),\n2026-11-12T15:23:06.9865133Z         Err(ProposalError::Binding(\"NoUpdate has no model proposal\")))\n2026-11-12T15:23:06.9865290Z     note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-12T15:23:06.9865294Z "
+    },
+    {
+      "status": "FAIL",
+      "seconds": "3.967",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "block": "2026-11-12T15:23:06.9865810Z         FAIL [   3.967s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n2026-11-12T15:23:06.9865916Z   stdout ───\n2026-11-12T15:23:06.9865921Z \n2026-11-12T15:23:06.9865987Z     running 1 test\n2026-11-12T15:23:06.9866457Z     test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED\n2026-11-12T15:23:06.9866465Z \n2026-11-12T15:23:06.9866529Z     failures:\n2026-11-12T15:23:06.9866535Z \n2026-11-12T15:23:06.9866608Z     failures:\n2026-11-12T15:23:06.9867050Z         runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n2026-11-12T15:23:06.9867393Z \n2026-11-12T15:23:06.9867586Z     test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1184 filtered out; finished in 3.96s\n2026-11-12T15:23:06.9867590Z \n2026-11-12T15:23:06.9867693Z   stderr ───\n2026-11-12T15:23:06.9867781Z     Error: InvalidBinding\n2026-11-12T15:23:06.9867785Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.166",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners",
+      "block": "2026-11-12T15:23:06.9868454Z      SIGABRT [   0.166s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners\n2026-11-12T15:23:06.9868559Z   stdout ───\n2026-11-12T15:23:06.9868563Z \n2026-11-12T15:23:06.9868660Z     running 1 test\n2026-11-12T15:23:06.9868765Z   stderr ───\n2026-11-12T15:23:06.9868768Z \n2026-11-12T15:23:06.9869516Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners' (29949) has overflowed its stack\n2026-11-12T15:23:06.9869672Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9869676Z \n2026-11-12T15:23:06.9869773Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9869776Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.132",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "block": "2026-11-12T15:23:06.9870433Z      SIGABRT [   0.132s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c\n2026-11-12T15:23:06.9870535Z   stdout ───\n2026-11-12T15:23:06.9870539Z \n2026-11-12T15:23:06.9870615Z     running 1 test\n2026-11-12T15:23:06.9870703Z   stderr ───\n2026-11-12T15:23:06.9870716Z \n2026-11-12T15:23:06.9871413Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (29969) has overflowed its stack\n2026-11-12T15:23:06.9871539Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9871543Z \n2026-11-12T15:23:06.9871639Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9871642Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.141",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "block": "2026-11-12T15:23:06.9872290Z      SIGABRT [   0.141s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant\n2026-11-12T15:23:06.9872405Z   stdout ───\n2026-11-12T15:23:06.9872409Z \n2026-11-12T15:23:06.9872477Z     running 1 test\n2026-11-12T15:23:06.9872569Z   stderr ───\n2026-11-12T15:23:06.9872578Z \n2026-11-12T15:23:06.9873313Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (29987) has overflowed its stack\n2026-11-12T15:23:06.9873421Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9873425Z \n2026-11-12T15:23:06.9873546Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9873553Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.125",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "block": "2026-11-12T15:23:06.9874177Z      SIGABRT [   0.125s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication\n2026-11-12T15:23:06.9874269Z   stdout ───\n2026-11-12T15:23:06.9874273Z \n2026-11-12T15:23:06.9874375Z     running 1 test\n2026-11-12T15:23:06.9874487Z   stderr ───\n2026-11-12T15:23:06.9874498Z \n2026-11-12T15:23:06.9875103Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (30005) has overflowed its stack\n2026-11-12T15:23:06.9875309Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9875313Z \n2026-11-12T15:23:06.9875398Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9875402Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.135",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "block": "2026-11-12T15:23:06.9876027Z      SIGABRT [   0.135s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b\n2026-11-12T15:23:06.9876140Z   stdout ───\n2026-11-12T15:23:06.9876143Z \n2026-11-12T15:23:06.9876215Z     running 1 test\n2026-11-12T15:23:06.9876296Z   stderr ───\n2026-11-12T15:23:06.9876366Z \n2026-11-12T15:23:06.9877008Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (30023) has overflowed its stack\n2026-11-12T15:23:06.9877149Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9877161Z \n2026-11-12T15:23:06.9877240Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9877243Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.130",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "block": "2026-11-12T15:23:06.9877902Z      SIGABRT [   0.130s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners\n2026-11-12T15:23:06.9878002Z   stdout ───\n2026-11-12T15:23:06.9878005Z \n2026-11-12T15:23:06.9878081Z     running 1 test\n2026-11-12T15:23:06.9878175Z   stderr ───\n2026-11-12T15:23:06.9878179Z \n2026-11-12T15:23:06.9878845Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (30044) has overflowed its stack\n2026-11-12T15:23:06.9878957Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9878961Z \n2026-11-12T15:23:06.9879047Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9879050Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.129",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "block": "2026-11-12T15:23:06.9879685Z      SIGABRT [   0.129s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch\n2026-11-12T15:23:06.9879789Z   stdout ───\n2026-11-12T15:23:06.9879793Z \n2026-11-12T15:23:06.9879868Z     running 1 test\n2026-11-12T15:23:06.9879951Z   stderr ───\n2026-11-12T15:23:06.9879955Z \n2026-11-12T15:23:06.9880603Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (30064) has overflowed its stack\n2026-11-12T15:23:06.9880706Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9880717Z \n2026-11-12T15:23:06.9880796Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9880799Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.160",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "block": "2026-11-12T15:23:06.9881522Z      SIGABRT [   0.160s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed\n2026-11-12T15:23:06.9881617Z   stdout ───\n2026-11-12T15:23:06.9881629Z \n2026-11-12T15:23:06.9881701Z     running 1 test\n2026-11-12T15:23:06.9881786Z   stderr ───\n2026-11-12T15:23:06.9881792Z \n2026-11-12T15:23:06.9882509Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed' (30084) has overflowed its stack\n2026-11-12T15:23:06.9882766Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9882775Z \n2026-11-12T15:23:06.9882865Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9882869Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.125",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "block": "2026-11-12T15:23:06.9883560Z      SIGABRT [   0.125s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion\n2026-11-12T15:23:06.9883677Z   stdout ───\n2026-11-12T15:23:06.9883738Z \n2026-11-12T15:23:06.9883813Z     running 1 test\n2026-11-12T15:23:06.9883921Z   stderr ───\n2026-11-12T15:23:06.9883926Z \n2026-11-12T15:23:06.9884643Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion' (30104) has overflowed its stack\n2026-11-12T15:23:06.9884746Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9884750Z \n2026-11-12T15:23:06.9884830Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9884835Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.154",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "block": "2026-11-12T15:23:06.9885604Z      SIGABRT [   0.154s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut\n2026-11-12T15:23:06.9885709Z   stdout ───\n2026-11-12T15:23:06.9885715Z \n2026-11-12T15:23:06.9885778Z     running 1 test\n2026-11-12T15:23:06.9885870Z   stderr ───\n2026-11-12T15:23:06.9885873Z \n2026-11-12T15:23:06.9886557Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut' (30126) has overflowed its stack\n2026-11-12T15:23:06.9886656Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9886659Z \n2026-11-12T15:23:06.9886744Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9886747Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.124",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "block": "2026-11-12T15:23:06.9887493Z      SIGABRT [   0.124s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion\n2026-11-12T15:23:06.9887591Z   stdout ───\n2026-11-12T15:23:06.9887598Z \n2026-11-12T15:23:06.9887671Z     running 1 test\n2026-11-12T15:23:06.9887748Z   stderr ───\n2026-11-12T15:23:06.9887751Z \n2026-11-12T15:23:06.9888497Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion' (30149) has overflowed its stack\n2026-11-12T15:23:06.9888601Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9888605Z \n2026-11-12T15:23:06.9888683Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9888687Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.156",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "block": "2026-11-12T15:23:06.9889408Z      SIGABRT [   0.156s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs\n2026-11-12T15:23:06.9889553Z   stdout ───\n2026-11-12T15:23:06.9889557Z \n2026-11-12T15:23:06.9889650Z     running 1 test\n2026-11-12T15:23:06.9889766Z   stderr ───\n2026-11-12T15:23:06.9889770Z \n2026-11-12T15:23:06.9890476Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (30164) has overflowed its stack\n2026-11-12T15:23:06.9890576Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9890579Z \n2026-11-12T15:23:06.9890667Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9890671Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.124",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "block": "2026-11-12T15:23:06.9891453Z      SIGABRT [   0.124s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim\n2026-11-12T15:23:06.9891571Z   stdout ───\n2026-11-12T15:23:06.9891575Z \n2026-11-12T15:23:06.9891652Z     running 1 test\n2026-11-12T15:23:06.9891732Z   stderr ───\n2026-11-12T15:23:06.9891736Z \n2026-11-12T15:23:06.9892465Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim' (30185) has overflowed its stack\n2026-11-12T15:23:06.9892570Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9892574Z \n2026-11-12T15:23:06.9892747Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9892754Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.134",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_read_corruption_and_cancellation_consume_original_connections",
+      "block": "2026-11-12T15:23:06.9895459Z      SIGABRT [   0.134s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_read_corruption_and_cancellation_consume_original_connections\n2026-11-12T15:23:06.9895558Z   stdout ───\n2026-11-12T15:23:06.9895562Z \n2026-11-12T15:23:06.9895637Z     running 1 test\n2026-11-12T15:23:06.9895723Z   stderr ───\n2026-11-12T15:23:06.9895726Z \n2026-11-12T15:23:06.9896461Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_read_corruption_and_cancellation_consume_original_connections' (30206) has overflowed its stack\n2026-11-12T15:23:06.9896567Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9896577Z \n2026-11-12T15:23:06.9896661Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9896712Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.177",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "block": "2026-11-12T15:23:06.9893474Z      SIGABRT [   0.177s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response\n2026-11-12T15:23:06.9893586Z   stdout ───\n2026-11-12T15:23:06.9893590Z \n2026-11-12T15:23:06.9893684Z     running 1 test\n2026-11-12T15:23:06.9893789Z   stderr ───\n2026-11-12T15:23:06.9893793Z \n2026-11-12T15:23:06.9894502Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (30191) has overflowed its stack\n2026-11-12T15:23:06.9894609Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9894613Z \n2026-11-12T15:23:06.9894709Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9894712Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.170",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_cold_missing_cannot_claim_or_reinterpret_legacy",
+      "block": "2026-11-12T15:23:06.9897427Z      SIGABRT [   0.170s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_cold_missing_cannot_claim_or_reinterpret_legacy\n2026-11-12T15:23:06.9897533Z   stdout ───\n2026-11-12T15:23:06.9897537Z \n2026-11-12T15:23:06.9897640Z     running 1 test\n2026-11-12T15:23:06.9897736Z   stderr ───\n2026-11-12T15:23:06.9897739Z \n2026-11-12T15:23:06.9898461Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_cold_missing_cannot_claim_or_reinterpret_legacy' (30230) has overflowed its stack\n2026-11-12T15:23:06.9898633Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9898669Z \n2026-11-12T15:23:06.9898753Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9898757Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.177",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_fences_committed_journal_if_final_source_read_fails",
+      "block": "2026-11-12T15:23:06.9899484Z      SIGABRT [   0.177s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_fences_committed_journal_if_final_source_read_fails\n2026-11-12T15:23:06.9899593Z   stdout ───\n2026-11-12T15:23:06.9899597Z \n2026-11-12T15:23:06.9899663Z     running 1 test\n2026-11-12T15:23:06.9899750Z   stderr ───\n2026-11-12T15:23:06.9899753Z \n2026-11-12T15:23:06.9900489Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_fences_committed_journal_if_final_source_read_fails' (30234) has overflowed its stack\n2026-11-12T15:23:06.9900593Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9900600Z \n2026-11-12T15:23:06.9900685Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9900689Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.156",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_evaluation",
+      "block": "2026-11-12T15:23:06.9903414Z      SIGABRT [   0.156s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_evaluation\n2026-11-12T15:23:06.9903516Z   stdout ───\n2026-11-12T15:23:06.9903521Z \n2026-11-12T15:23:06.9903585Z     running 1 test\n2026-11-12T15:23:06.9903669Z   stderr ───\n2026-11-12T15:23:06.9903672Z \n2026-11-12T15:23:06.9904383Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_evaluation' (30269) has overflowed its stack\n2026-11-12T15:23:06.9904523Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9904526Z \n2026-11-12T15:23:06.9904610Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9904613Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.169",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+      "block": "2026-11-12T15:23:06.9901400Z      SIGABRT [   0.169s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut\n2026-11-12T15:23:06.9901503Z   stdout ───\n2026-11-12T15:23:06.9901507Z \n2026-11-12T15:23:06.9901578Z     running 1 test\n2026-11-12T15:23:06.9901690Z   stderr ───\n2026-11-12T15:23:06.9901698Z \n2026-11-12T15:23:06.9902389Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut' (30256) has overflowed its stack\n2026-11-12T15:23:06.9902532Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9902540Z \n2026-11-12T15:23:06.9902697Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9902704Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.167",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "block": "2026-11-12T15:23:06.9907182Z      SIGABRT [   0.167s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut\n2026-11-12T15:23:06.9907306Z   stdout ───\n2026-11-12T15:23:06.9907317Z \n2026-11-12T15:23:06.9907394Z     running 1 test\n2026-11-12T15:23:06.9907489Z   stderr ───\n2026-11-12T15:23:06.9907493Z \n2026-11-12T15:23:06.9908119Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (30291) has overflowed its stack\n2026-11-12T15:23:06.9908234Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9908238Z \n2026-11-12T15:23:06.9908322Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9908325Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.185",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_training",
+      "block": "2026-11-12T15:23:06.9905302Z      SIGABRT [   0.185s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_training\n2026-11-12T15:23:06.9905397Z   stdout ───\n2026-11-12T15:23:06.9905400Z \n2026-11-12T15:23:06.9905471Z     running 1 test\n2026-11-12T15:23:06.9905551Z   stderr ───\n2026-11-12T15:23:06.9905554Z \n2026-11-12T15:23:06.9906331Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_training' (30298) has overflowed its stack\n2026-11-12T15:23:06.9906461Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9906464Z \n2026-11-12T15:23:06.9906581Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9906588Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.161",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "block": "2026-11-12T15:23:06.9910692Z      SIGABRT [   0.161s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute\n2026-11-12T15:23:06.9910801Z   stdout ───\n2026-11-12T15:23:06.9910805Z \n2026-11-12T15:23:06.9910871Z     running 1 test\n2026-11-12T15:23:06.9910956Z   stderr ───\n2026-11-12T15:23:06.9910962Z \n2026-11-12T15:23:06.9911591Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (30335) has overflowed its stack\n2026-11-12T15:23:06.9911720Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9911724Z \n2026-11-12T15:23:06.9911807Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9911811Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.182",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "block": "2026-11-12T15:23:06.9908879Z      SIGABRT [   0.182s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature\n2026-11-12T15:23:06.9909023Z   stdout ───\n2026-11-12T15:23:06.9909028Z \n2026-11-12T15:23:06.9909100Z     running 1 test\n2026-11-12T15:23:06.9909180Z   stderr ───\n2026-11-12T15:23:06.9909183Z \n2026-11-12T15:23:06.9909823Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (30321) has overflowed its stack\n2026-11-12T15:23:06.9909967Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9909972Z \n2026-11-12T15:23:06.9910068Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9910072Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.170",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "block": "2026-11-12T15:23:06.9912431Z      SIGABRT [   0.170s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest\n2026-11-12T15:23:06.9912525Z   stdout ───\n2026-11-12T15:23:06.9912529Z \n2026-11-12T15:23:06.9912604Z     running 1 test\n2026-11-12T15:23:06.9912996Z   stderr ───\n2026-11-12T15:23:06.9913004Z \n2026-11-12T15:23:06.9913698Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (30363) has overflowed its stack\n2026-11-12T15:23:06.9913876Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9913882Z \n2026-11-12T15:23:06.9913960Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9913964Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.172",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "block": "2026-11-12T15:23:06.9914590Z      SIGABRT [   0.172s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression\n2026-11-12T15:23:06.9914696Z   stdout ───\n2026-11-12T15:23:06.9914699Z \n2026-11-12T15:23:06.9914777Z     running 1 test\n2026-11-12T15:23:06.9914867Z   stderr ───\n2026-11-12T15:23:06.9914871Z \n2026-11-12T15:23:06.9915508Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (30367) has overflowed its stack\n2026-11-12T15:23:06.9915611Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9915615Z \n2026-11-12T15:23:06.9915698Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9915701Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.169",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "block": "2026-11-12T15:23:06.9917936Z      SIGABRT [   0.169s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature\n2026-11-12T15:23:06.9918035Z   stdout ───\n2026-11-12T15:23:06.9918039Z \n2026-11-12T15:23:06.9918107Z     running 1 test\n2026-11-12T15:23:06.9918194Z   stderr ───\n2026-11-12T15:23:06.9918197Z \n2026-11-12T15:23:06.9918784Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (30398) has overflowed its stack\n2026-11-12T15:23:06.9918884Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9918934Z \n2026-11-12T15:23:06.9919019Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9919022Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.179",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "block": "2026-11-12T15:23:06.9916276Z      SIGABRT [   0.179s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect\n2026-11-12T15:23:06.9916418Z   stdout ───\n2026-11-12T15:23:06.9916421Z \n2026-11-12T15:23:06.9916493Z     running 1 test\n2026-11-12T15:23:06.9916571Z   stderr ───\n2026-11-12T15:23:06.9916574Z \n2026-11-12T15:23:06.9917164Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (30399) has overflowed its stack\n2026-11-12T15:23:06.9917277Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9917281Z \n2026-11-12T15:23:06.9917359Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9917363Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.163",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "block": "2026-11-12T15:23:06.9919587Z      SIGABRT [   0.163s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence\n2026-11-12T15:23:06.9919696Z   stdout ───\n2026-11-12T15:23:06.9919700Z \n2026-11-12T15:23:06.9919773Z     running 1 test\n2026-11-12T15:23:06.9919853Z   stderr ───\n2026-11-12T15:23:06.9919856Z \n2026-11-12T15:23:06.9920567Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (30430) has overflowed its stack\n2026-11-12T15:23:06.9920674Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9920703Z \n2026-11-12T15:23:06.9920787Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9920790Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.494",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "block": "2026-11-12T15:23:06.9921332Z      SIGABRT [   0.494s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures\n2026-11-12T15:23:06.9921434Z   stdout ───\n2026-11-12T15:23:06.9921437Z \n2026-11-12T15:23:06.9921504Z     running 1 test\n2026-11-12T15:23:06.9921591Z   stderr ───\n2026-11-12T15:23:06.9921594Z \n2026-11-12T15:23:06.9922132Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (30433) has overflowed its stack\n2026-11-12T15:23:06.9922235Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9922245Z \n2026-11-12T15:23:06.9922330Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9922338Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.442",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "block": "2026-11-12T15:23:06.9922956Z      SIGABRT [   0.442s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures\n2026-11-12T15:23:06.9923066Z   stdout ───\n2026-11-12T15:23:06.9923070Z \n2026-11-12T15:23:06.9923142Z     running 1 test\n2026-11-12T15:23:06.9923222Z   stderr ───\n2026-11-12T15:23:06.9923225Z \n2026-11-12T15:23:06.9923785Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (30460) has overflowed its stack\n2026-11-12T15:23:06.9923883Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9923894Z \n2026-11-12T15:23:06.9923978Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9923982Z "
+    },
+    {
+      "status": "SIGABRT",
+      "seconds": "0.450",
+      "package": "codex-hepta-agentd",
+      "test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "block": "2026-11-12T15:23:06.9924533Z      SIGABRT [   0.450s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback\n2026-11-12T15:23:06.9924637Z   stdout ───\n2026-11-12T15:23:06.9924642Z \n2026-11-12T15:23:06.9924716Z     running 1 test\n2026-11-12T15:23:06.9924803Z   stderr ───\n2026-11-12T15:23:06.9924806Z \n2026-11-12T15:23:06.9925355Z     thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (30494) has overflowed its stack\n2026-11-12T15:23:06.9925459Z     fatal runtime error: stack overflow, aborting\n2026-11-12T15:23:06.9925462Z \n2026-11-12T15:23:06.9925547Z     (test aborted with signal 6: SIGABRT)\n2026-11-12T15:23:06.9925551Z "
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "original-panel-fixture-stack-repair-candidate.v1",
+  "base": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "base_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "state": "STATIC_CANDIDATE_NOT_EXECUTED",
+  "tests": "NOT_RUN",
+  "format": "NOT_RUN",
+  "original_evidence": {
+    "run_id": 43243479903,
+    "job_id": 131269839345,
+    "full_joblog_bytes": 3729153,
+    "full_joblog_sha256": "8a4a6593e70fb2f2104e37ec44d91e70bcfa419f30e3c99d3fe5ab97a37a48bb",
+    "verbatim_failure_index_blob": "827fbbee6453cc2b796c7bff6a54f86bac392cf9",
+    "ordinary": {
+      "total": 1733,
+      "passed": 1697,
+      "failed": 36,
+      "retries": 0
+    },
+    "stack_overflow_methods": [
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_read_corruption_and_cancellation_consume_original_connections",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_cold_missing_cannot_claim_or_reinterpret_legacy",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_fences_committed_journal_if_final_source_read_fails",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_evaluation",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_refuses_withdrawn_original_training",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback"
+    ]
+  },
+  "reasoning": "All 31 aborts share PanelFixture/HostFixture. Existing Box::pin child futures still return/retain large complete native owner aggregates by value. This candidate stores those same aggregates behind Boxes and returns boxed Host/member outputs, reducing the parent future layout and moves. Source inference only; the allocation hypothesis and all existing cases still need actual exact-source verification.",
+  "changes": [
+    "PanelFixture holds the same Panel, PositiveFixture, two BFixture and two completed member objects behind Boxes",
+    "completed_member and actual PanelMemberFixture::complete return Box of the same completed owner aggregate",
+    "HostFixture retains those same Boxes, returns Box<Self>; PublicationFixture.host matches Box<HostFixture>",
+    "the same PositiveFixture::finish future is pinned without changing teardown order"
+  ],
+  "preserved": [
+    "all 31 method names and every original assertion",
+    "panel test bodies byte-identical from first tokio test to EOF",
+    "actual retention-first B order, signer keys, all owner calls and request-count expectations",
+    "original thread stack settings, native minimum, retries and source gates",
+    "no production source or owner permissions"
+  ],
+  "verification_required": "Full original ordinary native suite on new exact source; all 31 original methods must execute and pass, no ignore/filter/count reduction. Formatting/source gates unchanged.",
+  "owner_decision": null,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "base_blob": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+      "blob": "02a46c7735336689df347040f34dd2aeeb30d345",
+      "bytes": 9720,
+      "sha256": "0a7b94ff4cad4f9816ebfffcf156c3944ccb3714e152167e3861f289d87eace0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "base_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "blob": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "bytes": 11754,
+      "sha256": "19699b454033bbaf21748f7b8fc0b87f9e78d268e00c1d5e16848c8b14600adc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "base_blob": "d15d23cbab985ef52d9490c1c00349c8892d44e2",
+      "blob": "b251f72da8c5a6640c0cb4b00502de155d27e4ff",
+      "bytes": 6884,
+      "sha256": "ee1c7e50cf2a36be22adb23582dcec66cb0f9c6444fe73d70ee63885d846a643"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "base_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "blob": "1158844757e5eaac308922eba2476db88442a207",
+      "bytes": 12750,
+      "sha256": "e7f6a493ea703a6026895360338a1c2222583bf63f0477f66fd188a3702ac96e"
+    }
+  ]
+}

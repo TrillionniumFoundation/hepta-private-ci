@@ -1,0 +1,50 @@
+﻿2026-11-12T15:46:53.2749591Z Current runner version: '2.338.2'
+2026-11-12T15:46:53.2776066Z ##[group]Runner Image Provisioner
+2026-11-12T15:46:53.2777043Z Hosted Compute Agent
+2026-11-12T15:46:53.2777717Z Version: 20261028.624
+2026-11-12T15:46:53.2778333Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T15:46:53.2779232Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T15:46:53.2779937Z Worker ID: {f9ddccef-c96d-4f4d-aebd-fb46d96f4ee5}
+2026-11-12T15:46:53.2780694Z Region: centralus
+2026-11-12T15:46:53.2781282Z Cloud: Azure
+2026-11-12T15:46:53.2781826Z ##[endgroup]
+2026-11-12T15:46:53.2783919Z ##[group]Operating System
+2026-11-12T15:46:53.2785035Z Ubuntu
+2026-11-12T15:46:53.2785614Z 24.04.5
+2026-11-12T15:46:53.2786295Z LTS
+2026-11-12T15:46:53.2786851Z ##[endgroup]
+2026-11-12T15:46:53.2787463Z ##[group]Runner Image
+2026-11-12T15:46:53.2788074Z Image: ubuntu-24.04
+2026-11-12T15:46:53.2788630Z Version: 20261101.360.1
+2026-11-12T15:46:53.2789960Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T15:46:53.2791684Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T15:46:53.2792669Z ##[endgroup]
+2026-11-12T15:46:53.2794048Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T15:46:53.2796574Z Contents: read
+2026-11-12T15:46:53.2797224Z Metadata: read
+2026-11-12T15:46:53.2797901Z ##[endgroup]
+2026-11-12T15:46:53.2800076Z Secret source: Actions
+2026-11-12T15:46:53.2801160Z Cache mode: write
+2026-11-12T15:46:53.2802190Z Prepare workflow directory
+2026-11-12T15:46:53.3193380Z Prepare all required actions
+2026-11-12T15:46:53.3262733Z Getting action download info
+2026-11-12T15:46:53.6303161Z Download action repository 'openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63' (SHA:e6b39c80c51cb2b2a39448ddeff74b3b886c0a63)
+2026-11-12T15:47:06.4329603Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T15:47:06.5569426Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/blob-size-policy.yml@refs/pull/6213/merge (4f19396c9e45920c982b4aba795605684eabe7a2)
+2026-11-12T15:47:06.5574279Z Complete job name: Blob size policy / Blob size policy
+2026-11-12T15:47:06.6513141Z ##[group]Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63
+2026-11-12T15:47:06.6513960Z with:
+2026-11-12T15:47:06.6514221Z   mode: audit
+2026-11-12T15:47:06.6515124Z ##[endgroup]
+2026-11-12T15:47:06.9510538Z 🛡️ Fence v0.10.0
+2026-11-12T15:47:06.9511146Z 👀 Mode: audit
+2026-11-12T15:47:06.9511600Z 🌐 Policy: observing GitHub workflow traffic + 0 allowlist entries
+2026-11-12T15:47:07.2151240Z 🚀 Starting resident service
+2026-11-12T15:47:08.5580649Z ##[error]Fence setup failed: Fence resident service exited before readiness: LoadState=loaded; ActiveState=failed; SubState=failed; Result=exit-code; ExecMainCode=1; ExecMainStatus=1; MainPID=0
+2026-11-12T15:47:08.5623837Z ##[warning]Fence service state for fence-fence-43251474257-1.service: MainPID=0; Result=exit-code; ExecMainCode=1; ExecMainStatus=1; LoadState=loaded; ActiveState=failed; SubState=failed
+2026-11-12T15:47:08.5690891Z ##[warning]Fence resident error code: local_control_inventory_unavailable
+2026-11-12T15:47:08.6964122Z ##[error]Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under '/home/runner/work/hepta-private-ci/hepta-private-ci/.github/actions/check-clean-worktree'. Did you forget to run actions/checkout before running your local action?
+2026-11-12T15:47:08.7059727Z Post job cleanup.
+2026-11-12T15:47:08.8181245Z 📋 Validating Fence evidence
+2026-11-12T15:47:08.8197342Z ##[error]Fence post-job evidence failed: Fence active Action mount evidence is unavailable
+2026-11-12T15:47:08.8334827Z Cleaning up orphan processes
