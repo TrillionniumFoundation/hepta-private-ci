@@ -16,6 +16,7 @@ use crate::CellEvaluationRunnerV1;
 use crate::OriginalCellEvaluationPanelMemberOwnersV1;
 use crate::OriginalCellEvaluationPanelMemberReadbackV1;
 use crate::OriginalCircuitEvaluationCohortReadbackV1;
+use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_evidence;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
@@ -42,9 +43,20 @@ impl Owners {
             members,
         };
         let bytes = body.encode()?;
+        // The complete original snapshots were read between two actual Panel
+        // CURRENT observations. Neither a cached scope nor its unsigned digest
+        // can substitute for the snapshot committed by the signed arm record.
+        let after = self.read_panel().await?;
+        if after != observed {
+            self.fenced = true;
+            return Err(Error::CommitUncertain);
+        }
+        OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(
+            &mut self.evaluator, evaluation.receipt(), evaluation.attestation(),
+        )?;
         let current = self.current_time()?;
         require_clock(started_at, current)?;
-        self.authenticate_panel(&observed, current)?;
+        self.authenticate_panel(&after, current)?;
         // Revalidate every complete original payload after all actual I/O and
         // projection work. These checks do not construct or deserialize seals.
         super::verify::material(context, &evaluation, &bytes, current)?;
@@ -73,13 +85,29 @@ fn member(
         OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(&owner.cohort, &observed.cohort)
             .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?;
     let execution: &OriginalProductEvaluationExecutionEvidenceV1 = observed.execution_evidence();
+    let snapshots = [
+        owner.candidate.snapshot().map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?,
+        owner.fixed_expert.snapshot().map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?,
+    ];
+    let record = observed.qualification().comparison();
+    for ((snapshot, arm), scope) in snapshots.iter()
+        .zip([&record.candidate, &record.fixed_expert]).zip(&observed.scopes)
+    {
+        if snapshot.digest().map_err(crate::OriginalCellEvaluationPanelErrorV1::from)? != arm.snapshot_digest
+            || snapshot.manifest_digest != arm.manifest.digest()
+                .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?
+            || &snapshot.scope != scope
+        {
+            return Err(Error::Binding("same original recorded Cell snapshot"));
+        }
+    }
     Ok(Member {
         binding, execution_namespace: config.execution_namespace,
         qualification_namespace: config.qualification_namespace,
         metrics: u32::try_from(observed.prepared.bundle.metrics.len())
             .map_err(|_| Error::Binding("original metric count"))?,
         record: serde_json::to_vec(observed.qualification().comparison())?,
-        scopes: serde_json::to_vec(&observed.scopes)?,
+        snapshots: serde_json::to_vec(&snapshots)?,
         holdout: projection.holdout().to_vec(), plan: projection.plan().to_vec(), request: projection.request().to_vec(),
         decision: projection.decision().to_vec(), qualification: projection.qualification().to_vec(),
         estimand: projection.estimand().to_vec(), roles: projection.roles().to_vec(),

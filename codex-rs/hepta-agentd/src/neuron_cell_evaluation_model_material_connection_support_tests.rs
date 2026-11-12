@@ -4,6 +4,7 @@ use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_neuron::CellBackendManifestV2;
+use codex_hepta_neuron::CellRuntimeSnapshotV2;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
@@ -67,6 +68,23 @@ impl OriginalCellEvaluationHostV1 {
         )?;
         assert_ne!(&renewed, original);
         Ok(renewed)
+    }
+
+    pub(crate) fn fixture_model_material_advance_original_cell(&self) -> anyhow::Result<()> {
+        let mut owners = self.owners.try_lock()
+            .map_err(|_| anyhow::anyhow!("original Evaluator lock"))?;
+        let cell = &mut owners.panel.primary.candidate;
+        let before = cell.read_current_checkpoint()?;
+        let snapshot = cell.snapshot()?.clone();
+        let mut charge = cell.task_cost()?.entries().first().cloned()
+            .ok_or_else(|| anyhow::anyhow!("original Cell cost evidence"))?;
+        charge.event_id = Digest32::of_bytes(b"explicit-late-Model-material-cost").into_array();
+        cell.record_cost(charge)?;
+        assert_ne!(cell.read_current_checkpoint()?, before);
+        // A real, acknowledged CURRENT change must be rejected even when
+        // every byte of the originally signed snapshot remains unchanged.
+        assert_eq!(cell.snapshot()?, &snapshot);
+        Ok(())
     }
 
     pub(crate) async fn fixture_model_material_cancel_queued(self: &Arc<Self>) -> anyhow::Result<()> {
@@ -158,7 +176,7 @@ impl OriginalCellEvaluationModelMaterialV1 {
         )?);
         // Alter a byte in each authenticated preimage independently; keeping
         // claimed digests and the original signatures cannot make it valid.
-        for field in 0..15 {
+        for field in 0..16 {
             let mut body = Body::decode(&self.bytes)?;
             let member = &mut body.members[0];
             let value = match field {
@@ -167,6 +185,7 @@ impl OriginalCellEvaluationModelMaterialV1 {
                 6 => &mut member.estimand, 7 => &mut member.roles, 8 => &mut member.generator,
                 9 => &mut member.evaluator, 10 => &mut member.execution,
                 11 => &mut member.execution_record, 12 => &mut member.cohort, 13 => &mut member.freeze,
+                14 => &mut member.snapshots,
                 _ => &mut body.evaluation,
             };
             let last = value.last_mut().expect("nonempty original preimage");
@@ -174,6 +193,83 @@ impl OriginalCellEvaluationModelMaterialV1 {
             assert!(verify::material(&self.context, &self.evaluation, &body.encode()?, current).is_err(),
                 "changed original preimage {field}");
         }
+        // Merely well-formed scopes are not evidence. Each complete snapshot
+        // must hash to the original signed arm using the pre-existing domain.
+        for arm in 0..2 {
+            for mutation in ["scope", "state", "prefix", "generation"] {
+                let mut changed = Body::decode(&self.bytes)?;
+                let snapshots: [CellRuntimeSnapshotV2; 2] =
+                    serde_json::from_slice(&changed.members[0].snapshots)?;
+                let mut substitute = snapshots.clone();
+                match mutation {
+                    "scope" => substitute[arm].scope.run_id = "substituted-original-run".into(),
+                    "state" => substitute[arm].state.push(1),
+                    "prefix" => substitute[arm].prefix.push(1),
+                    "generation" => substitute[arm].generation += 1,
+                    _ => unreachable!(),
+                }
+                if mutation != "scope" {
+                    assert_eq!(substitute[arm].scope, snapshots[arm].scope);
+                }
+                changed.members[0].snapshots = serde_json::to_vec(&substitute)?;
+                assert!(matches!(verify::material(
+                    &self.context, &self.evaluation, &changed.encode()?, current,
+                ), Err(Error::Binding("same signed original Cell snapshot preimage"))),
+                    "changed original arm {arm} {mutation}");
+            }
+        }
+        let mut incomplete = Body::decode(&self.bytes)?;
+        let snapshots: [CellRuntimeSnapshotV2; 2] =
+            serde_json::from_slice(&incomplete.members[0].snapshots)?;
+        incomplete.members[0].snapshots = serde_json::to_vec(&[&snapshots[0]])?;
+        assert!(verify::material(&self.context, &self.evaluation, &incomplete.encode()?, current).is_err());
+        let mut truncated = Body::decode(&self.bytes)?;
+        truncated.members[0].snapshots.pop();
+        assert!(verify::material(&self.context, &self.evaluation, &truncated.encode()?, current).is_err());
+        let mut oversized = Body::decode(&self.bytes)?;
+        oversized.members[0].snapshots = vec![b' '; 65_537];
+        assert!(matches!(oversized.encode(), Err(Error::Binding("bounded original material field"))));
+        let mut legacy = self.bytes.clone();
+        legacy[..8].copy_from_slice(b"HECMM001");
+        assert!(Body::decode(&legacy).is_err(), "no legacy unsigned-scope fallback");
+
+        // A valid new Evaluator envelope naming a different snapshot is still
+        // not the original completed E. This is an adversarial signed value,
+        // not a manufactured Qualification, Cell, or accepted owner result.
+        let mut substituted = Body::decode(&self.bytes)?;
+        let mut snapshots: [CellRuntimeSnapshotV2; 2] =
+            serde_json::from_slice(&substituted.members[0].snapshots)?;
+        snapshots[0].state.push(1);
+        substituted.members[0].snapshots = serde_json::to_vec(&snapshots)?;
+        let mut record: serde_json::Value = serde_json::from_slice(&substituted.members[0].record)?;
+        record["candidate"]["snapshot_digest"] = serde_json::to_value(snapshots[0].digest()?)?;
+        substituted.members[0].record = serde_json::to_vec(&record)?;
+        let mut changed_receipt = self.evaluation.receipt().clone();
+        changed_receipt.evidence_digest = Digest32::of_bytes(&substituted.members[0].record);
+        let payload = learning_iteration_receipt_signing_bytes_v1(&changed_receipt)?;
+        let mut signed = self.evaluation.attestation().clone();
+        signed.payload_digest = Digest32::of_bytes(&payload);
+        signed.signature = SigningKey::from_bytes(&[42; 32]).sign(&signed.signing_bytes()).to_bytes();
+        self.context.verifier.verify(codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator,
+            &signed, &payload, current)?;
+        let mut changed_cut = codex_hepta_learning_artifacts::LearningIterationCoordinatorV1::from_snapshot(
+            self.context.training.clone(),
+        )?;
+        changed_cut.record(changed_receipt, signed.issued_at)?;
+        let changed_evaluation = super::super::super::wire::authenticate_completed(
+            &self.context, changed_cut.snapshot().clone(), signed, current,
+        )?;
+        assert_ne!(&changed_evaluation, &self.evaluation);
+        substituted.context = wire::binding(&self.context, &changed_evaluation, current)?;
+        substituted.snapshot = crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1(
+            changed_evaluation.snapshot(),
+        )?;
+        substituted.evaluation = crate::learning_owner_evidence::encode(
+            &payload, changed_evaluation.attestation(),
+        )?;
+        assert!(matches!(verify::material(
+            &self.context, &self.evaluation, &substituted.encode()?, current,
+        ), Err(Error::Binding("exact original Evaluation payload in material"))));
         let mut missing = Body::decode(&self.bytes)?;
         missing.members.pop();
         assert!(missing.encode().is_err());
