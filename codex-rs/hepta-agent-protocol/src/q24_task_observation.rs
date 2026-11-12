@@ -25,3 +25,7 @@ pub struct Q24OriginalTaskObservationV1 {
     pub observer_principal_id: String,
     pub observer_controller_id: String,
 }
+
+#[cfg(test)]
+#[path = "q24_task_observation_tests.rs"]
+mod tests;
