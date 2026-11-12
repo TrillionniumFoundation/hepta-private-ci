@@ -1,0 +1,296 @@
+{
+  "schema": "hepta.learn.panel-single-await-stack-peer.v1",
+  "reviewer": "learn_readonly_bootstrap",
+  "kind": "static_peer_review_no_execution",
+  "source_ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+  "source_tree": "71382739c728e026f1d3ae4aab146eb770074c7e",
+  "candidate_commit_reported_by_author": "9a42e63adfbfe84a474712ed2df5f8c409a24907",
+  "independently_read_candidate_blob": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "bytes": 8740,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "blob": "35fbdac0b826f2de1b780ece31b64d34d29c379e",
+      "bytes": 14632,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "blob": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "bytes": 24531,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "5cb29191378daab7890e2024e7837cca66dbd3eb",
+      "bytes": 11471,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "blob": "4afd556d729875e5e9e1a415535118ce26714266",
+      "bytes": 6334,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "bytes": 11188,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "bytes": 8277,
+      "full_blob_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "bytes": 12932,
+      "full_blob_readback_verified": true
+    }
+  ],
+  "observed_evidence": {
+    "failed_run_source": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "failed_run_result": {
+      "blob": "2cf7c33e6061041a898085ada79e4bb577a5bd54",
+      "bytes": 62645
+    },
+    "failed_run_execution": {
+      "blob": "a63c88170a768f85e4e5fcec1eea76ec118c9691",
+      "bytes": 189143
+    },
+    "exact_stack_overflow_threads": 13,
+    "thread_name_scope": "Original stderr names are Rust test names. They do not establish Tokio worker stack identity or effective thread-stack allocation.",
+    "layout_source": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "layout_execution": {
+      "blob": "b47f12c4658e9e73a4b9e53c9aae581409a0fbba",
+      "bytes": 61032
+    },
+    "layout_function_blob": "7a2f281dae35eb9be01cbcb983c77a41a20edb3a",
+    "layout_function": "original_panel_fixture_future_layout_diagnostic",
+    "layout_is_type_size_only": true,
+    "measured_bytes": {
+      "panel_fixture": 212040,
+      "positive_fixture": 88760,
+      "b_fixture": 3552,
+      "panel_member": 38368,
+      "panel_owner": 39432,
+      "preregistered_future": 232144,
+      "positive_future": 208816,
+      "panel_future": 328176
+    },
+    "measurement_limit": "future_bytes accepts FnOnce() -> F but never calls it; size_of::<F>() neither constructs nor polls any original fixture future.",
+    "source_drift_limit": "a757 retains the same original Panel file but includes the subsequent same-admission provider and PositiveFixture changes; e5c type sizes are not a new-candidate measurement."
+  },
+  "common_paths": [
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "call": "HostFixture::new(",
+      "function_line": 226,
+      "occurrences": 2,
+      "call_lines": [
+        229,
+        278
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "call": "HostFixture::new(",
+      "function_line": 31,
+      "occurrences": 1,
+      "call_lines": [
+        33
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "call": "HostFixture::new(",
+      "function_line": 84,
+      "occurrences": 3,
+      "call_lines": [
+        93,
+        126,
+        174
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "call": "HostFixture::new(",
+      "function_line": 139,
+      "occurrences": 2,
+      "call_lines": [
+        141,
+        168
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "call": "HostFixture::new(",
+      "function_line": 21,
+      "occurrences": 1,
+      "call_lines": [
+        23
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "call": "HostFixture::new(",
+      "function_line": 86,
+      "occurrences": 1,
+      "call_lines": [
+        88
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "call": "HostFixture::new(",
+      "function_line": 100,
+      "occurrences": 1,
+      "call_lines": [
+        102
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "call": "HostFixture::new(",
+      "function_line": 29,
+      "occurrences": 1,
+      "call_lines": [
+        31
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "call": "HostFixture::new(",
+      "function_line": 80,
+      "occurrences": 1,
+      "call_lines": [
+        82
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "call": "HostFixture::new(",
+      "function_line": 129,
+      "occurrences": 1,
+      "call_lines": [
+        132
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "call": "PanelFixture::completed(",
+      "function_line": 133,
+      "occurrences": 1,
+      "call_lines": [
+        135
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "call": "PanelFixture::completed(",
+      "function_line": 227,
+      "occurrences": 1,
+      "call_lines": [
+        229
+      ]
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "call": "PanelFixture::completed(",
+      "function_line": 187,
+      "occurrences": 1,
+      "call_lines": [
+        190
+      ]
+    }
+  ],
+  "common_host_edge": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+    "blob": "4afd556d729875e5e9e1a415535118ce26714266",
+    "function": "HostFixture::new",
+    "call": "PanelFixture::completed(TrainingPeer::Original).await?",
+    "line": 44
+  },
+  "proposed_delta": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+    "before_blob": "528524868a98207dd2b6c10904251d6db68969ca",
+    "after_blob": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+    "before": "let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;",
+    "after": "let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;",
+    "entire_remaining_file_exact": true
+  },
+  "findings": [
+    {
+      "status": "supported_static_candidate",
+      "statement": "All 13 observed stack-overflow test methods have an actual body-scoped call to PanelFixture::completed, directly for the 3 panel tests or via HostFixture::new for the remaining 10. The proposed single await boundary is shared by this path."
+    },
+    {
+      "status": "no_semantic_obstruction_found",
+      "statement": "Box::pin keeps the same preregistered future, one await, result/error propagation, original owners and subsequent member order. It adds no task spawn, runtime, connection, identity, grants or alternate effect route."
+    },
+    {
+      "status": "not_a_peak_stack_proof",
+      "statement": "Box::pin receives a constructed future by value; constructing or moving it may still need stack temporaries. This source-only review cannot guarantee elimination of the construction peak."
+    },
+    {
+      "status": "not_an_outer_size_guarantee",
+      "statement": "completed has two subsequent completed_member awaits retaining original and member values. Those states may determine its maximum layout, so boxing only preregistered does not guarantee that completed's full future size decreases."
+    },
+    {
+      "status": "return_and_other_states_unchanged",
+      "statement": "The returned PanelFixture, the large local owners, PositiveFixture's nested futures and ordinary synchronous call frames are unchanged. No recursion or exact failing stack frame is established by these measurements."
+    },
+    {
+      "status": "test_custody_only",
+      "statement": "These are explicit mechanism fixtures and synthetic admissions/principals. Neither the source change nor their eventual result is evidence of deployed ordinary A/B/C authority."
+    }
+  ],
+  "constraints_preserved": [
+    "Original 8 MiB test-stack setting is not changed by this candidate.",
+    "No broad boxing or struct-layout rewrite.",
+    "No test method, assertion, negative case, owner group, retry, deadline or command change.",
+    "No H, Rust, native test, Python execution or source edit by this reviewer."
+  ],
+  "recommendation": "Accept the one-line cfg(test) indirection as a bounded hypothesis for the original fixed-source native rerun. Require real results for all original 13 cases and the unchanged full 201-case set before claiming a repair. Do not call source review or type-size diagnostic a native pass.",
+  "ordinary_acceptance": {
+    "task_a": 0,
+    "independent_b_and_retention": 0,
+    "original_selection_and_version": 0,
+    "new_session_different_content_c": 0,
+    "daemon_root_cold_restart": 0
+  }
+}
