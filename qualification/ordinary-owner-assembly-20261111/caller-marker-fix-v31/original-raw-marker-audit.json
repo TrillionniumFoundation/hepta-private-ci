@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.changed-source-raw-marker-static-audit.v1",
+  "source": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+  "scope": "Pure V8 raw textual marker-presence check only for the retained changed source map; not original full caller/typed verification.",
+  "source_paths": 178,
+  "boundaries_total": 504,
+  "definition_rows_with_source": 232,
+  "raw_marker_checks": 619,
+  "unparsed": [],
+  "missing": [
+    {
+      "id": "root_live_admin_original_bounded_lease_revoke",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "field": "definition_markers",
+      "marker": ".try_lock()"
+    },
+    {
+      "id": "q24_root_current_connect",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "field": "definition_markers",
+      "marker": "self.original.require_current().await?"
+    }
+  ]
+}

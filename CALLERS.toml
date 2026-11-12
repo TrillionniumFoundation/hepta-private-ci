@@ -1667,7 +1667,7 @@ id = "root_live_admin_original_bounded_lease_revoke"
 symbol = "AuthorityLeaseRegistry::revoke_before"
 call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)revoke_before\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease_revoke.rs"
-definition_markers = ["pub fn revoke_before(", "Deadline::Before(before)", ".try_lock()", "registry.persist_or_fence(&mut state, next)?"]
+definition_markers = ["pub fn revoke_before(", "Deadline::Before(before)", "registry.try_lock_state()?", "registry.persist_or_fence(&mut state, next)?"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs", "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"]
 caller_markers = ["revoke_before"]
 
@@ -5234,7 +5234,7 @@ receiver_type = "OriginalCellQ24RetainedArtifactForRootV1"
 id = "q24_root_current_connect"
 symbol = "OriginalCellQ24SelectedArtifactForRootV1::connect_current"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn connect_current(", "current.require_original_root_selection(", "self.original.require_current().await?"]
+definition_markers = ["fn connect_current(", "current.require_original_root_selection(", "OriginalDecision::require_current(&self.original).await?"]
 product_callers = []
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)connect_current\\s*\\("
