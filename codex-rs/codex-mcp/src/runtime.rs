@@ -245,6 +245,21 @@ impl McpRuntime {
         runtime
     }
 
+    /// The explicitly selected local Legacy runtime keeps its actual startup
+    /// and service owners in the externally retained cleanup custody.
+    pub async fn new_with_owned_shutdown(
+        mut input: McpRuntimeInput,
+        owner: &Arc<crate::OriginalMcpRuntimeShutdown>,
+    ) -> anyhow::Result<Self> {
+        let construction = owner.reserve_original_input(&input)?;
+        input.runtime_context.original_owned_shutdown = Some(Arc::clone(owner));
+        let runtime = Self::empty(input.config.prefix_mcp_tool_names);
+        runtime.publish(input, None).await;
+        owner.require_original_construction()?;
+        drop(construction);
+        Ok(runtime)
+    }
+
     /// Reconciles configured servers and publishes their immutable runtime snapshot.
     pub async fn replace(&self, input: McpRuntimeInput) {
         let current = self.current.load_full();
@@ -602,6 +617,7 @@ pub struct McpRuntimeContext {
     selected_environments: HashMap<String, Arc<Environment>>,
     local_process_cwd: PathBuf,
     local_http_client: Arc<dyn HttpClient>,
+    original_owned_shutdown: Option<Arc<crate::OriginalMcpRuntimeShutdown>>,
 }
 
 /// Applies the local HTTP headers helper configured for an MCP server.
@@ -646,6 +662,7 @@ impl McpRuntimeContext {
             selected_environments: HashMap::new(),
             local_process_cwd,
             local_http_client,
+            original_owned_shutdown: None,
         }
     }
 
@@ -660,6 +677,10 @@ impl McpRuntimeContext {
 
     pub(crate) fn local_process_cwd(&self) -> PathBuf {
         self.local_process_cwd.clone()
+    }
+
+    pub(crate) fn original_owned_shutdown(&self) -> Option<Arc<crate::OriginalMcpRuntimeShutdown>> {
+        self.original_owned_shutdown.as_ref().map(Arc::clone)
     }
 
     fn local_http_client(&self) -> Arc<dyn HttpClient> {

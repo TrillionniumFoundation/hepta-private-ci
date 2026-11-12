@@ -34,6 +34,31 @@ pub(crate) enum AppServerSocket {
     Bind,
     #[cfg(target_os = "linux")]
     RootBound(std::os::fd::OwnedFd),
+    #[cfg(target_os = "linux")]
+    OriginalOwned {
+        socket: std::os::fd::OwnedFd,
+        custody: Arc<codex_app_server::OriginalAppServerOwnerCustody>,
+    },
+}
+
+impl AppServerSocket {
+    pub(crate) fn with_original_custody(
+        self,
+        profile: AppServerModelToolProfile,
+        custody: Arc<codex_app_server::OriginalAppServerOwnerCustody>,
+    ) -> Result<Self, crate::AgentdError> {
+        #[cfg(target_os = "linux")]
+        if matches!(profile, AppServerModelToolProfile::Standard)
+            && let Self::RootBound(socket) = self
+        {
+            return Ok(Self::OriginalOwned { socket, custody });
+        }
+        #[cfg(not(target_os = "linux"))]
+        let _ = (self, profile, custody);
+        Err(crate::AgentdError::Invalid(
+            "strict App Server custody requires the original Standard inherited listener".into(),
+        ))
+    }
 }
 
 /// The original Notes adapter owns its three dynamic tools outside Core's
@@ -101,6 +126,32 @@ pub(crate) async fn run_app_server(
                 .map_err(std::io::Error::other)?;
             let listener =
                 codex_app_server::InheritedControlSocket::from_inherited(socket, socket_path)?;
+            codex_app_server::run_main_with_inherited_unix_listener(
+                arg0_paths,
+                config_overrides,
+                LoaderOverrides::default(),
+                /*strict_config*/ true,
+                /*default_analytics_enabled*/ false,
+                listener,
+                SessionSource::Custom("hepta-agentd".to_string()),
+                AppServerWebsocketAuthSettings::default(),
+                runtime_options,
+            )
+            .await
+        }
+        #[cfg(target_os = "linux")]
+        AppServerSocket::OriginalOwned { socket, custody } => {
+            if !matches!(model_tools, AppServerModelToolProfile::Standard) {
+                return Err(std::io::Error::other(
+                    "original App Server custody cannot change the selected profile",
+                ));
+            }
+            let socket = crate::listen_root_bound_socket(socket, socket_path.as_path())
+                .map_err(std::io::Error::other)?;
+            let listener =
+                codex_app_server::InheritedControlSocket::from_inherited(socket, socket_path)?;
+            let mut runtime_options = runtime_options;
+            runtime_options.original_owner_custody = Some(custody);
             codex_app_server::run_main_with_inherited_unix_listener(
                 arg0_paths,
                 config_overrides,
@@ -457,5 +508,63 @@ mod tests {
         );
         assert!(features.enabled(Feature::HeptaGovernance));
         assert!(!features.enabled(Feature::HeptaCognitiveWrite));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn strict_app_server_rejects_bind_and_other_original_profiles() {
+        use std::io::Read;
+        use std::os::unix::net::UnixStream;
+
+        let original = codex_app_server::OriginalAppServerOwnerCustody::new();
+        assert!(super::AppServerSocket::with_original_custody(
+            super::AppServerSocket::Bind,
+            super::AppServerModelToolProfile::Standard,
+            std::sync::Arc::clone(&original),
+        ).is_err());
+        for profile in [
+            super::AppServerModelToolProfile::OriginalNotes,
+            super::AppServerModelToolProfile::OriginalDesktop,
+        ] {
+            let (owned, mut peer) = UnixStream::pair().expect("actual socketpair");
+            let socket = super::AppServerSocket::RootBound(owned.into());
+            assert!(super::AppServerSocket::with_original_custody(
+                socket,
+                profile,
+                std::sync::Arc::clone(&original),
+            ).is_err());
+            let mut byte = [0_u8; 1];
+            assert_eq!(peer.read(&mut byte).expect("rejected descriptor closed"), 0);
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn standard_socket_custody_transfers_the_same_actual_descriptor() {
+        use std::io::Read;
+        use std::io::Write;
+        use std::os::fd::AsRawFd;
+        use std::os::unix::net::UnixStream;
+
+        // A real socket tests only this private transfer. It does not claim
+        // Root listener authentication, which remains in the actual runtime.
+        let (owned, mut peer) = UnixStream::pair().expect("actual socketpair");
+        let descriptor = owned.as_raw_fd();
+        let original = codex_app_server::OriginalAppServerOwnerCustody::new();
+        let result = super::AppServerSocket::with_original_custody(
+            super::AppServerSocket::RootBound(owned.into()),
+            super::AppServerModelToolProfile::Standard,
+            std::sync::Arc::clone(&original),
+        ).expect("strict Standard descriptor transfer");
+        let super::AppServerSocket::OriginalOwned { socket, custody } = result else {
+            panic!("actual descriptor was not retained in the selected branch");
+        };
+        assert_eq!(socket.as_raw_fd(), descriptor);
+        assert!(std::sync::Arc::ptr_eq(&custody, &original));
+        let mut actual = UnixStream::from(socket);
+        peer.write_all(b"x").expect("write actual peer");
+        let mut byte = [0_u8; 1];
+        actual.read_exact(&mut byte).expect("read same descriptor");
+        assert_eq!(byte, *b"x");
     }
 }

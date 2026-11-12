@@ -23,6 +23,13 @@ use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 mod work;
 #[path = "same_actor_q24_phase_learning_worker.rs"]
 mod worker;
+pub(crate) use work::OriginalJobReceiveError;
+pub(crate) use work::OriginalLearningStop;
+pub(crate) use work::OriginalLearningWorkJoined;
+pub(crate) use worker::OriginalRetiredLearningOwners;
+pub(crate) use worker::OriginalRetiredLearningPurposes;
+pub(crate) use worker::OriginalSameActorLearningPurposesRetired;
+pub(crate) use worker::OriginalSameActorLearningJoined;
 pub(crate) use work::OriginalSameActorLearningCleanup;
 pub(crate) use work::OriginalSameActorLearningWork;
 pub(crate) use worker::OriginalSameActorLearningWorker;
@@ -110,12 +117,14 @@ impl PreparedLearningBuilder {
         )
         .await
         .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
-        let (handle, learning) = AgentdRootLearningInputsV1::into_q24_learning_runtime(
-            self.learning,
-            Arc::clone(&owners),
-            verifier,
-            capacity,
-        )?;
+        let (handle, learning, checkpoint) =
+            AgentdRootLearningInputsV1::into_original_retirable_learning_runtime(
+                self.learning,
+                Arc::clone(&owners),
+                verifier,
+                capacity,
+                &self.work,
+            )?;
         // The original successor constructor requires this exact retained
         // source while the original delivery registry is still in bootstrap.
         let learning = LearningIterationRuntimeBootstrapV1::with_retained_q24_source(
@@ -141,6 +150,7 @@ impl PreparedLearningBuilder {
             learning,
             delivery,
             pending,
+            checkpoint,
         )?;
         self.closing.disarm();
         Ok(PreparedLearningActivation {

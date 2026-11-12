@@ -44,6 +44,11 @@ pub(super) struct OriginalCFlow {
     pub(super) work: Arc<OriginalSameActorLearningWork>,
 }
 
+pub(super) struct OriginalObservedC {
+    pub(super) installed: OriginalQ24InstalledSuccessorV1,
+    pub(super) status: OriginalCellQ24TaskLedgerStatusV1,
+}
+
 enum OriginalArtifact {
     Published(OriginalCellQ24PublishedArtifactForRootV1),
     Retained(OriginalCellQ24RetainedArtifactForRootV1),
@@ -59,7 +64,7 @@ impl OriginalPhaseExecution {
         &self,
         flow: OriginalCFlow,
         host: &mut OriginalSameActorPhaseHostV1,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<OriginalObservedC, AgentdError> {
         self.require_original_execution()?;
         let OriginalCFlow {
             owners,
@@ -307,9 +312,11 @@ impl OriginalPhaseExecution {
         self.require_original_execution()?;
         host.notify_original(
             &self.context,
-            OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted(Box::new(status)),
+            OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted(Box::new(status.clone())),
         )?;
-        Ok(())
+        // Transfer the actual owners to the closing controller. The data
+        // notification above cannot construct or replace this private value.
+        Ok(OriginalObservedC { installed, status })
     }
 }
 

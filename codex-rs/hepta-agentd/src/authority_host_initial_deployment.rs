@@ -262,3 +262,6 @@ fn initial_registration_uncertain(error: io::Error) -> io::Error {
 #[cfg(test)]
 #[path = "authority_host_initial_deployment_tests.rs"]
 mod tests;
+
+#[path = "authority_host_initial_phase_deployment.rs"]
+mod phase_inputs;

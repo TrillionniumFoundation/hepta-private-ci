@@ -9,6 +9,9 @@
 #[path = "rmcp_client/status.rs"]
 mod status;
 
+#[path = "rmcp_client_owned_shutdown.rs"]
+mod original_owned;
+
 use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -335,7 +338,23 @@ impl ManagedClientStartup {
                     return Err(error.into());
                 }
 
-                let client = match tokio::time::timeout(
+                let client = if let Some(owner) = McpRuntimeContext::original_owned_shutdown(&runtime_context) {
+                    match tokio::time::timeout(
+                        startup_timeout,
+                        original_owned::make_original_owned_rmcp_client(
+                            &server_name, server.clone(), resolved_environment,
+                            protocol_mode, owner,
+                        ),
+                    ).await {
+                        Ok(result) => result?,
+                        Err(_) => {
+                            return Err(StartupOutcomeError::from(anyhow!(
+                                "MCP client startup timed out after {startup_timeout:?}"
+                            )));
+                        }
+                    }
+                } else {
+                    match tokio::time::timeout(
                     startup_timeout,
                     make_rmcp_client(
                         &server_name,
@@ -356,6 +375,7 @@ impl ManagedClientStartup {
                             "MCP client startup timed out after {startup_timeout:?}"
                         )));
                     }
+                }
                 };
                 start_server_task(
                     server_name,

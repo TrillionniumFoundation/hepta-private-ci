@@ -39,6 +39,37 @@ impl AgentdRootQ24ModelFactoryV1 {
         Ok(factory)
     }
 
+    /// Close only this actual required Model purpose after the real worker
+    /// and local owner lanes have joined. Keep the factory, files, stream and
+    /// failure guard held; this is not a new Observe or a Model operation.
+    pub(crate) fn retire_original_model_after_root_intent(
+        &mut self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(gate);
+        intent.require_original_origin(identity, gate)?;
+        let phase = self.phase.as_ref()
+            .ok_or_else(|| refused("Model retirement has no original phase channel"))?;
+        if !std::sync::Arc::ptr_eq(phase.gate(), gate) || self.fenced {
+            return Err(refused("Model retirement is foreign or already fenced"));
+        }
+        phase.require_open().map_err(refused)?;
+        let transport = self.transport.as_ref()
+            .ok_or_else(|| refused("Model retirement has an uncertain exchange"))?;
+        let root = RootObservationStream::root_lifetime(transport);
+        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;
+        // Exclusive &mut self and the populated transport slot exclude any
+        // in-flight factory exchange. Fence before changing the real socket.
+        self.fenced = true;
+        phase.shutdown_original_after_root_intent(intent)?;
+        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;
+        intent.require_original_origin(identity, gate)?;
+        closing.disarm();
+        Ok(())
+    }
+
     pub(super) fn original_phase_failure_scope(&self) -> Option<CloseSameActorPhaseOnDrop> {
         self.phase
             .as_ref()

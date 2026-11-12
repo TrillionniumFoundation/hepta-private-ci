@@ -27,6 +27,8 @@ enum Checkpoint {
     },
     #[cfg(target_os = "linux")]
     RootClient(Box<AgentdLearningCheckpointClientV1>),
+    #[cfg(target_os = "linux")]
+    SameActorRootClient(Arc<AgentdLearningCheckpointClientV1>),
 }
 
 struct CheckpointedIterationPorts {
@@ -73,6 +75,37 @@ impl AgentdLearningCheckpointClientV1 {
     }
 }
 
+#[cfg(target_os = "linux")]
+impl AgentdLearningCheckpointClientV1 {
+    pub(crate) fn with_original_retirable_stage_owners(
+        self,
+        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+        identity: &crate::AgentdIdentity,
+        work: &Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>,
+    ) -> Result<
+        (
+            Arc<dyn LearningIterationOwnerPortsV1>,
+            super::OriginalLearningCheckpointRetirement,
+        ),
+        crate::AgentdError,
+    > {
+        crate::OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(
+            &stages, work,
+        )
+        .map_err(|error| crate::AgentdError::GenerationFenced(error.to_string()))?;
+        let (client, retirement) =
+            AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint(
+                self, identity, work,
+            )?;
+        let ports = Arc::new(CheckpointedIterationPorts {
+            initial: client.initial.clone(),
+            checkpoint: Checkpoint::SameActorRootClient(client),
+            stages,
+        });
+        Ok((ports, retirement))
+    }
+}
+
 impl CheckpointedIterationPorts {
     fn require_scope(
         &self,
@@ -91,6 +124,8 @@ impl LearningIterationOwnerPortsV1 for CheckpointedIterationPorts {
             Checkpoint::Registered { owner, .. } => owner.frozen_scope_binding(),
             #[cfg(target_os = "linux")]
             Checkpoint::RootClient(client) => client.frozen_scope_binding(),
+            #[cfg(target_os = "linux")]
+            Checkpoint::SameActorRootClient(client) => client.frozen_scope_binding(),
         }
     }
 
@@ -116,6 +151,12 @@ impl LearningIterationOwnerPortsV1 for CheckpointedIterationPorts {
                 #[cfg(target_os = "linux")]
                 Checkpoint::RootClient(client) => {
                     client.restore(request).await.map_err(checkpoint_error)?
+                }
+                #[cfg(target_os = "linux")]
+                Checkpoint::SameActorRootClient(client) => {
+                    AgentdLearningCheckpointClientV1::restore(client, request)
+                        .await
+                        .map_err(checkpoint_error)?
                 }
             };
             if let Some(snapshot) = &restored {
@@ -152,6 +193,12 @@ impl LearningIterationOwnerPortsV1 for CheckpointedIterationPorts {
                     .checkpoint(expected_head, snapshot)
                     .await
                     .map_err(checkpoint_error),
+                #[cfg(target_os = "linux")]
+                Checkpoint::SameActorRootClient(client) => {
+                    AgentdLearningCheckpointClientV1::checkpoint(client, expected_head, snapshot)
+                        .await
+                        .map_err(checkpoint_error)
+                }
             }
         })
     }

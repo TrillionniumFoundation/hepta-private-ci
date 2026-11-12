@@ -1,0 +1,228 @@
+//! Retire the actual Learning command owner only after its real terminal
+//! checkpoint and durable delivery acknowledgement authorized this stop.
+//! The bootstrap, original ports and stage owners remain held in the result.
+
+use super::*;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_learning::OriginalLearningStop;
+
+pub(crate) struct OriginalLearningLoopRetired {
+    _closing: CloseSameActorPhaseOnDrop,
+    bootstrap: LearningIterationRuntimeBootstrapV1,
+    stop: OriginalLearningStop,
+}
+
+struct OriginalRetirableLearningAttempt {
+    closing: CloseSameActorPhaseOnDrop,
+    bootstrap: LearningIterationRuntimeBootstrapV1,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+    work: Arc<OriginalSameActorLearningWork>,
+}
+
+impl OriginalLearningLoopRetired {
+    pub(crate) fn require_original_work(
+        &self,
+        work: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<(), AgentdError> {
+        OriginalLearningStop::require_original_work(&self.stop, work)?;
+        let snapshot = self.stop.snapshot();
+        if self.bootstrap.owners != snapshot.owners
+            || self.bootstrap.original_q24.is_none()
+            || !self.bootstrap.enforce_circuit_admission
+            || !matches!(
+                self.bootstrap.circuit_delivery_source,
+                CircuitLearningSourceV1::OriginalQ24
+            )
+        {
+            work.gate().close();
+            return Err(refused("retired Learning bootstrap differs from its terminal owner"));
+        }
+        // This is the retained immutable scope/ports binding. It does not
+        // reopen a stopped lane or request a new current-authority observation.
+        self.bootstrap
+            .require_frozen_scope(&snapshot.request)
+            .map_err(refused)
+    }
+}
+
+impl OriginalLearningLoopRetired {
+    pub(crate) fn retire_original_model_purpose(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        work: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<(), AgentdError> {
+        OriginalLearningLoopRetired::require_original_work(self, work)?;
+        intent.require_original_origin(identity, work.gate())?;
+        let owners = self.bootstrap.original_q24.as_ref()
+            .ok_or_else(|| refused("retired Learning lost its actual aggregate"))?;
+        OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(
+            owners, intent, identity, work,
+        )?;
+        intent.require_original_origin(identity, work.gate())
+    }
+}
+
+impl LearningIterationRuntimeBootstrapV1 {
+    pub(crate) fn run_original_retirable(
+        self,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+        work: Arc<OriginalSameActorLearningWork>,
+    ) -> impl std::future::Future<Output = Result<OriginalLearningLoopRetired, AgentdError>>
+    + Send
+    + 'static {
+        let attempt = OriginalRetirableLearningAttempt {
+            closing: work.original_failure_scope(),
+            bootstrap: self,
+            state,
+            cancellation,
+            work,
+        };
+        async move {
+            // An unpolled or cancelled future still owns the ordered guard.
+            let mut attempt = attempt;
+            let result = LearningIterationRuntimeBootstrapV1::run_original_retirable_commands(
+                &mut attempt.bootstrap,
+                &attempt.state,
+                &attempt.cancellation,
+                &attempt.work,
+            ).await;
+            let stop = match result {
+                Ok(stop) => stop,
+                Err(error) => {
+                    attempt.work.gate().close();
+                    let joined = attempt.work.close_and_join_original_work().await;
+                    return Err(match joined {
+                        Ok(()) => error,
+                        Err(join) => refused(format!("{error}; original Learning cleanup: {join}")),
+                    });
+                }
+            };
+            if attempt.cancellation.is_cancelled() {
+                attempt.work.gate().close();
+                let joined = attempt.work.close_and_join_original_work().await;
+                return Err(refused(match joined {
+                    Ok(()) => "fault cancellation during Learning retirement".into(),
+                    Err(join) => format!("fault cancellation during Learning retirement; {join}"),
+                }));
+            }
+            OriginalLearningStop::require_original_work(&stop, &attempt.work)?;
+            Ok(OriginalLearningLoopRetired {
+                _closing: attempt.closing,
+                bootstrap: attempt.bootstrap,
+                stop,
+            })
+        }
+    }
+
+    async fn run_original_retirable_commands(
+        &mut self,
+        state: &Arc<AgentdState>,
+        cancellation: &CancellationToken,
+        work: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<OriginalLearningStop, AgentdError> {
+        self.require_identity(state.identity())?;
+        work.require_identity_and_gate(state.identity(), work.gate())?;
+        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> =
+            self.original_q24.as_ref().ok_or_else(|| {
+                refused("retirable Learning requires its actual original Q24 aggregate")
+            })?;
+        OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(original, work)
+            .map_err(refused)?;
+        loop {
+            let changed = work.original_normal_retirement_change().notified();
+            tokio::pin!(changed);
+            changed.as_mut().enable();
+            work.require_original_work_entry().map_err(refused)?;
+            if cancellation.is_cancelled() {
+                return Err(refused("original Learning fault cancellation"));
+            }
+            if let Some(stop) = work.take_original_learning_stop()? {
+                // Receiver::close is the actual admission cut. Existing
+                // reservations may still send; recv == None waits for those
+                // real permits as well as the existing queue. A late command
+                // is refused, never silently counted as drained.
+                self.receiver.close();
+                let remaining = tokio::select! {
+                    _ = cancellation.cancelled() =>
+                        return Err(refused("Learning fault cancellation during queue retirement")),
+                    _ = work.gate().cancelled() =>
+                        return Err(refused("Learning phase closed during queue retirement")),
+                    _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                        work.gate().deadline().instant(),
+                    )) => return Err(refused("Learning phase ended during queue retirement")),
+                    command = self.receiver.recv() => command,
+                };
+                if let Some(command) = remaining {
+                    let _ = command.response.send(Err(
+                        LearningIterationRuntimeErrorV1::CommitUncertain,
+                    ));
+                    return Err(refused("an original Learning reservation survived the terminal cut"));
+                }
+                OriginalLearningStop::require_original_work(&stop, work)?;
+                return Ok(stop);
+            }
+            let command = tokio::select! {
+                _ = cancellation.cancelled() =>
+                    return Err(refused("original Learning fault cancellation")),
+                _ = work.gate().cancelled() =>
+                    return Err(refused("original Learning phase closed")),
+                _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                    work.gate().deadline().instant(),
+                )) => return Err(refused("original Learning phase ended")),
+                _ = changed => continue,
+                command = self.receiver.recv() => command,
+            };
+            let Some(command) = command else {
+                return Err(refused("original Learning queue closed without its terminal stop"));
+            };
+            let LearningIterationCommandV1 {
+                mode,
+                request,
+                mut response,
+            } = command;
+            if response.is_closed() {
+                return Err(refused("original Learning caller disappeared before dispatch"));
+            }
+            // Keep the original process and original per-request budget. This
+            // outer bound is the unchanged receive's absolute phase end.
+            let result = {
+                let process = tokio::time::timeout_at(
+                    tokio::time::Instant::from_std(work.gate().deadline().instant()),
+                    self.process_with_deadline(state, *request, mode),
+                );
+                tokio::pin!(process);
+                tokio::select! {
+                    _ = cancellation.cancelled() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
+                    _ = work.gate().cancelled() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
+                    _ = response.closed() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
+                    result = &mut process => result
+                        .map_err(|_| LearningIterationRuntimeErrorV1::CommitUncertain)
+                        .and_then(|result| result),
+                }
+            };
+            if let Err(error) = &result {
+                let cause = error.to_string();
+                work.gate().close();
+                // Dropping the process above ran its original Training and
+                // aggregate cancellation guards. Actual handles remain here.
+                let joined = work.close_and_join_original_work().await;
+                let _ = response.send(result);
+                return Err(refused(match joined {
+                    Ok(()) => cause,
+                    Err(join) => format!("{cause}; original Learning cleanup: {join}"),
+                }));
+            }
+            work.require_original_work_entry().map_err(refused)?;
+            if response.send(result).is_err() {
+                return Err(refused("original Learning result acknowledgement was lost"));
+            }
+        }
+    }
+}
+
+fn refused(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::GenerationFenced(error.to_string())
+}

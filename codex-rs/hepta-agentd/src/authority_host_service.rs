@@ -302,8 +302,23 @@ impl HostAuthorityService {
         {
             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                record_original_lane_failure(lane, "channel-open", _error);
+            })?;
+        while channel
+            .exchange(|bytes| {
+                self.handle(lane, bytes).inspect_err(|_error| {
+                    #[cfg(test)]
+                    record_original_lane_failure(lane, "handler-return", _error);
+                })
+            })
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                record_original_lane_failure(lane, "exchange-return", _error);
+            })?
+        {}
         Ok(())
     }
 
@@ -613,6 +628,20 @@ fn encode_bounded(
 
 fn unavailable(_: impl std::fmt::Display) -> HostIssuerTransportError {
     HostIssuerTransportError::Unavailable
+}
+
+#[cfg(test)]
+fn record_original_lane_failure(
+    lane: HostAuthorityLane,
+    stage: &'static str,
+    error: &HostIssuerTransportError,
+) {
+    use std::io::Write as _;
+
+    let _ = writeln!(
+        std::io::stderr(),
+        "ROOT_AUTHORITY_LANE_FAILURE lane={lane:?} stage={stage} error={error:?}"
+    );
 }
 
 #[cfg(test)]

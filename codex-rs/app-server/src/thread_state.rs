@@ -331,6 +331,7 @@ pub(crate) struct ConnectionCapabilities {
 
 #[derive(Clone, Default)]
 pub(crate) struct ThreadStateManager {
+    original_owner: Option<Arc<crate::OriginalAppServerOwnerCustody>>,
     state: Arc<Mutex<ThreadStateManagerInner>>,
     // Extension event sinks are synchronous, so they need an await-free way to
     // enqueue work on the active per-thread listener.
@@ -341,6 +342,19 @@ pub(crate) struct ThreadStateManager {
 impl ThreadStateManager {
     pub(crate) fn new() -> Self {
         Self::default()
+    }
+
+    pub(crate) fn new_original_owner(
+        original: Arc<crate::OriginalAppServerOwnerCustody>,
+    ) -> Self {
+        Self {
+            original_owner: Some(original),
+            ..Self::default()
+        }
+    }
+
+    pub(crate) fn original_owner(&self) -> Option<Arc<crate::OriginalAppServerOwnerCustody>> {
+        self.original_owner.as_ref().map(Arc::clone)
     }
 
     pub(crate) async fn connection_initialized(

@@ -43,6 +43,7 @@ async fn forward_events_filters_private_events_before_blocked_send_is_cancelled(
         rx_event: rx_events,
         agent_status,
         session_loop_termination: completed_session_loop_termination(),
+        original_loop_outcome: None,
     });
 
     let (tx_out, rx_out) = bounded(1);
@@ -138,6 +139,7 @@ async fn forward_ops_preserves_submission_trace_context() {
         rx_event: rx_events,
         agent_status,
         session_loop_termination: completed_session_loop_termination(),
+        original_loop_outcome: None,
     });
     let (tx_ops, rx_ops) = bounded(1);
     let cancel = CancellationToken::new();

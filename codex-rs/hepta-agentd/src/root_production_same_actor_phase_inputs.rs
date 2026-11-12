@@ -14,6 +14,10 @@ use codex_hepta_types::Digest32;
 use crate::root_production_handoff::same_actor_phase::OriginalSameActorPhaseHandoff;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
+use crate::same_actor_q24_phase_gate::OriginalRequiredPurposeRetirement;
+
+#[path = "root_production_same_actor_retirement.rs"]
+mod retirement;
 use crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 use crate::same_actor_q24_phase_protocol::OriginalPhaseBootstrap;
@@ -120,10 +124,13 @@ pub(crate) struct OriginalSameActorRootContext {
     device: FinalUseAuthority,
     notes: FinalUseAuthority,
     grants: Arc<AgentdUnixFinalUseGrantProvider>,
+    checkpoint_transport: Arc<AgentdUnixCognitiveCheckpointTransport>,
+    device_retirement: OriginalRequiredPurposeRetirement,
+    notes_retirement: OriginalRequiredPurposeRetirement,
     scoped_consumed: AtomicBool,
     initial_lifetime: Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
     _closing: CloseSameActorPhaseOnDrop,
-    _deadline_watch: crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch,
+    _deadline_watch: std::sync::Mutex<Option<crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch>>,
 }
 
 pub(crate) struct OriginalSameActorProductionInputs {
@@ -240,6 +247,7 @@ pub(crate) async fn receive_original_same_actor_inputs(
     expected: &AgentdIdentity,
     timeout: Duration,
     mut receiver: OriginalPhaseReceiveDeadline,
+    custody: &crate::production_launcher::OriginalPhaseRunControl,
 ) -> Result<OriginalSameActorProductionInputs, AgentdError> {
     if timeout.is_zero() || timeout > Duration::from_millis(500) {
         return Err(refused("bounded original phase five-lane timeout required"));
@@ -262,6 +270,7 @@ pub(crate) async fn receive_original_same_actor_inputs(
             descriptor.original.root_end_boottime_ns,
         )?)?;
     let mut closing = CloseSameActorPhaseOnDrop::new(&gate);
+    custody.retain_original_receive_gate(&gate)?;
     receiver.remaining()?;
     let deadline_watch =
         crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::start(&gate)?;
@@ -289,6 +298,7 @@ pub(crate) async fn receive_original_same_actor_inputs(
         receiver.boottime_ns,
         trust,
         Arc::clone(&gate),
+        custody.session_slot(),
     )
     .await
     .map_err(protocol)?;
@@ -328,7 +338,8 @@ pub(crate) async fn receive_original_same_actor_inputs(
     .await
     .map_err(protocol)?;
     gate.require_open()?;
-    let device = open_original_phase_consumer(
+    let checkpoint_transport = Arc::clone(&checkpoint.transport);
+    let (device, device_retirement) = open_original_phase_consumer(
         device,
         bundle.consumers.device.clone(),
         &bundle,
@@ -336,9 +347,11 @@ pub(crate) async fn receive_original_same_actor_inputs(
         session.clock(),
         timeout,
         &gate,
+        custody,
+        crate::production_launcher::OriginalBootstrapConsumerKind::Device,
     )
     .await?;
-    let notes = open_original_phase_consumer(
+    let (notes, notes_retirement) = open_original_phase_consumer(
         notes,
         bundle.consumers.notes.clone(),
         &bundle,
@@ -346,8 +359,11 @@ pub(crate) async fn receive_original_same_actor_inputs(
         session.clock(),
         timeout,
         &gate,
+        custody,
+        crate::production_launcher::OriginalBootstrapConsumerKind::Notes,
     )
     .await?;
+    session.require_original_phase_task_custody(custody.session_slot()).map_err(protocol)?;
     session
         .activate_original_phase_final_use_owners(vec![device.clone(), notes.clone()])
         .await
@@ -386,10 +402,13 @@ pub(crate) async fn receive_original_same_actor_inputs(
         device: device.clone(),
         notes: notes.clone(),
         grants: Arc::clone(&grants),
+        checkpoint_transport,
+        device_retirement,
+        notes_retirement,
         scoped_consumed: AtomicBool::new(false),
         initial_lifetime,
         _closing: CloseSameActorPhaseOnDrop::new(&gate),
-        _deadline_watch: deadline_watch,
+        _deadline_watch: std::sync::Mutex::new(Some(deadline_watch)),
     });
     let root = AgentdRootProductionInputs {
         session,
@@ -522,8 +541,13 @@ async fn open_original_phase_consumer(
     clock: Arc<dyn AuthorityClock>,
     timeout: Duration,
     gate: &Arc<SameActorPhaseGate>,
-) -> Result<FinalUseAuthority, AgentdError> {
+    custody: &crate::production_launcher::OriginalPhaseRunControl,
+    kind: crate::production_launcher::OriginalBootstrapConsumerKind,
+) -> Result<(FinalUseAuthority, OriginalRequiredPurposeRetirement), AgentdError> {
     let phase = gate.retain_required_original_stream(&stream)?;
+    // This is a reference to that exact required registration, not a new FD
+    // or authority. The same phase object moves into the actual frontier.
+    let retirement = phase.original_retirement_custody();
     let root = RootPeerIdentity {
         pid: bundle.root.pid,
         boot_id: bundle.root.boot_id.clone(),
@@ -534,7 +558,8 @@ async fn open_original_phase_consumer(
     let gate = Arc::clone(gate);
     let mut closing = CloseSameActorPhaseOnDrop::new(&gate);
     let worker_gate = Arc::clone(&gate);
-    let owner = tokio::task::spawn_blocking(move || {
+    let admission = custody.reserve_original_consumer(kind, &gate)?;
+    let worker = tokio::task::spawn_blocking(move || {
         let mut closing = CloseSameActorPhaseOnDrop::new(&worker_gate);
         worker_gate.require_open()?;
         let frontier = Arc::new(OriginalPhaseFinalUseFrontier {
@@ -566,10 +591,10 @@ async fn open_original_phase_consumer(
         worker_gate.require_open()?;
         closing.disarm();
         Ok(owner)
-    })
-    .await
-    .map_err(protocol)??;
+    });
+    let job = admission.retain_original_bootstrap_consumer_handle(worker);
+    let owner = job.receive_original().await?;
     gate.require_open()?;
     closing.disarm();
-    Ok(owner)
+    Ok((owner, retirement))
 }

@@ -224,6 +224,37 @@ impl AgentdUnixFinalUseGrantProvider {
         }
     }
 
+    /// Preserve the exact idle original issuer stream and peer custody while
+    /// an actual Root Intent permanently closes this required purpose.
+    pub(crate) fn retire_original_root_grant_purpose(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+    ) -> Result<(), crate::AgentdError> {
+        let phase = self.phase.as_ref().ok_or_else(|| {
+            crate::AgentdError::GenerationFenced("original grant phase is absent".into())
+        })?;
+        let mut closing = phase.failure_scope();
+        intent.require_original_gate(phase.gate())?;
+        let slot = self.stream.try_lock().map_err(|_| {
+            crate::AgentdError::GenerationFenced("original grant purpose is not idle".into())
+        })?;
+        if slot.is_none() || self.protected_root.is_none() {
+            return Err(crate::AgentdError::GenerationFenced(
+                "original protected grant stream is unavailable".into(),
+            ));
+        }
+        self.check_root().map_err(|error| {
+            crate::AgentdError::Protocol(format!("original grant peer: {error}"))
+        })?;
+        phase.shutdown_original_after_root_intent(intent)?;
+        self.check_root().map_err(|error| {
+            crate::AgentdError::Protocol(format!("original grant peer: {error}"))
+        })?;
+        intent.require_original_gate(phase.gate())?;
+        closing.disarm();
+        Ok(())
+    }
+
     fn check_root(&self) -> Result<(), AgentdFinalUseIssuerError> {
         if let Some(root) = &self.protected_root {
             root.channel

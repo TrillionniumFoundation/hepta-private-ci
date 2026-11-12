@@ -192,6 +192,41 @@ impl AgentdUnixCognitiveCheckpointTransport {
             phase: Some(held),
         })
     }
+    /// Only the actual stopped Runtime and acknowledged Root Intent reach
+    /// this close. Keep the real transport/guards, but permanently stop its
+    /// original idle lane before closing the same socket registration.
+    pub(crate) fn retire_original_root_checkpoint_purpose(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+    ) -> Result<(), crate::AgentdError> {
+        let phase = self.phase.as_ref().ok_or_else(|| {
+            crate::AgentdError::GenerationFenced("original checkpoint phase is absent".into())
+        })?;
+        let mut closing = phase.failure_scope();
+        intent.require_original_gate(phase.gate())?;
+        let _exchange = self.exchange.try_acquire().map_err(|_| {
+            crate::AgentdError::GenerationFenced("original checkpoint is not idle".into())
+        })?;
+        let slot = self.stream.try_lock().map_err(|_| {
+            crate::AgentdError::GenerationFenced("original checkpoint slot is unavailable".into())
+        })?;
+        if slot.is_none() || Instant::now() >= self.end {
+            return Err(crate::AgentdError::GenerationFenced(
+                "original checkpoint stream or deadline is unavailable".into(),
+            ));
+        }
+        check_lifetime(self.root.get_ref()).map_err(|error| {
+            crate::AgentdError::Protocol(format!("original checkpoint peer: {error}"))
+        })?;
+        self.exchange.close();
+        phase.shutdown_original_after_root_intent(intent)?;
+        check_lifetime(self.root.get_ref()).map_err(|error| {
+            crate::AgentdError::Protocol(format!("original checkpoint peer: {error}"))
+        })?;
+        intent.require_original_gate(phase.gate())?;
+        closing.disarm();
+        Ok(())
+    }
 }
 
 impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {

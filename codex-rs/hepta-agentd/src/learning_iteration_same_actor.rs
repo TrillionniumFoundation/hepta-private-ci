@@ -154,3 +154,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         Ok(())
     }
 }
+
+#[path = "learning_iteration_same_actor_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalLearningLoopRetired;

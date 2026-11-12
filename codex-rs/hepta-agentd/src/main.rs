@@ -5,6 +5,8 @@ use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 #[cfg(target_os = "linux")]
 use codex_hepta_agentd::AgentdProductionStartup;
+#[cfg(target_os = "linux")]
+use codex_hepta_agentd::AgentdOriginalSameActorDeploymentStartupV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_neuron_generation_process_bootstrap_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
@@ -19,18 +21,40 @@ fn main() -> anyhow::Result<()> {
         // process-wide credential drop must precede arg0's first runtime thread.
         let arguments = std::env::args_os().skip(1).collect::<Vec<_>>();
         #[cfg(target_os = "linux")]
-        let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;
+        let (phase, arguments) =
+            AgentdOriginalSameActorDeploymentStartupV1::select_from_process_environment(arguments)?;
+        #[cfg(target_os = "linux")]
+        let (startup, arguments) = if phase.is_some() {
+            (None, arguments)
+        } else {
+            let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;
+            (Some(startup), arguments)
+        };
         #[cfg(not(target_os = "linux"))]
         let mut config = AgentdConfig::from_process_environment()?;
         #[cfg(target_os = "linux")]
-        let identity = startup.identity();
+        let identity = match (&phase, &startup) {
+            (Some(phase), None) => phase.identity(),
+            (None, Some(startup)) => startup.identity(),
+            _ => return Err(anyhow::anyhow!("exactly one actual Agentd startup is required")),
+        };
         #[cfg(not(target_os = "linux"))]
         let identity = config.identity();
         let codex_home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
         Ok(move |arg0_paths| async move {
             #[cfg(target_os = "linux")]
-            let (mut config, production) = startup.receive().await?;
+            if let Some(phase) = phase {
+                // This actual selected entry owns the sealed-context receiver,
+                // concrete material coordinator and original signed ingress.
+                // It returns no successful completion without terminal proof.
+                phase.run_original_deployment(arg0_paths).await?;
+                return Ok(());
+            }
+            #[cfg(target_os = "linux")]
+            let (mut config, production) = startup
+                .ok_or_else(|| anyhow::anyhow!("original startup was not retained"))?
+                .receive().await?;
             let mut args = arguments.into_iter();
             let mut authbus_trust = None;
             let mut intelligence_authority_file = None;

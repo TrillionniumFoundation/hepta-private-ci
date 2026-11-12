@@ -279,7 +279,8 @@ pub(super) async fn ensure_listener_task_running(
         ..
     } = listener_task_context;
     let outgoing_for_task = Arc::clone(&outgoing);
-    tokio::spawn(async move {
+    let original_owner = ThreadStateManager::original_owner(&thread_state_manager);
+    let original_listener = tokio::spawn(async move {
         loop {
             tokio::select! {
                 biased;
@@ -417,6 +418,13 @@ pub(super) async fn ensure_listener_task_running(
             thread_state.clear_listener();
         }
     });
+    if let Some(original) = original_owner {
+        crate::OriginalAppServerOwnerCustody::retain_original_task(
+            &original,
+            crate::original_owned_shutdown::OriginalAppServerTaskKind::ThreadListener,
+            original_listener,
+        );
+    }
     Ok(())
 }
 
@@ -446,7 +454,8 @@ pub(super) async fn unload_thread_without_subscribers(
         .await;
     thread_state_manager.remove_thread_state(thread_id).await;
 
-    tokio::spawn(async move {
+    let original_owner = ThreadStateManager::original_owner(&thread_state_manager);
+    let original_unload = tokio::spawn(async move {
         match wait_for_thread_shutdown(&thread).await {
             ThreadShutdownResult::Complete => {
                 // A delayed unload can finish after thread/revert replaces this runtime under
@@ -481,6 +490,13 @@ pub(super) async fn unload_thread_without_subscribers(
             }
         }
     });
+    if let Some(original) = original_owner {
+        crate::OriginalAppServerOwnerCustody::retain_original_task(
+            &original,
+            crate::original_owned_shutdown::OriginalAppServerTaskKind::ThreadUnload,
+            original_unload,
+        );
+    }
 }
 
 #[allow(clippy::too_many_arguments)]

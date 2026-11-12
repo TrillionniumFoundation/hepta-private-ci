@@ -50,6 +50,7 @@ pub async fn run_with_shutdown(
 ) -> Result<(), AgentdError> {
     #[cfg(target_os = "linux")]
     config.require_root_learning_assembled()?;
+    let original_app_server_custody = config.take_original_app_server_custody();
     let circuit_task = config.take_circuit_task_bootstrap()?;
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
@@ -379,6 +380,14 @@ pub async fn run_with_shutdown(
             )?,
             crate::app_runtime::AppServerSocket::RootBound(app_server),
         ),
+    };
+    let app_server_socket = match original_app_server_custody {
+        Some(original) => crate::app_runtime::AppServerSocket::with_original_custody(
+            app_server_socket,
+            app_server_model_tools,
+            original,
+        )?,
+        None => app_server_socket,
     };
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.

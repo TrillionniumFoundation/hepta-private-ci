@@ -35,6 +35,18 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
 }
 
 impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+    /// Identity of the held original owner, without opening, reading or
+    /// replacing a journal. Data equality cannot substitute for this custody.
+    pub(crate) fn require_original_source_custody(
+        &self,
+        original: &DurableCircuitTaskSourceV1<W>,
+    ) -> Result<(), Error> {
+        if !std::sync::Arc::ptr_eq(&self.original.0, &original.0) {
+            return Err(Error::InvalidBinding);
+        }
+        Ok(())
+    }
+
     pub fn read_publication(
         &self,
         identity: &AgentdIdentity,

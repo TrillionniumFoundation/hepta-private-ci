@@ -38,6 +38,10 @@ mod retained_source;
 mod same_actor;
 pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
 pub(crate) use delivery::CircuitLearningSourceV1;
+#[cfg(target_os = "linux")]
+pub(crate) use delivery::OriginalLearningDeliveryRetired;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor::OriginalLearningLoopRetired;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;
 pub use registry::CircuitLearningDeliveryRegistryV1;

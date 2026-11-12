@@ -80,6 +80,7 @@ impl HostAuthorityService {
             next_request_id,
             None,
         )
+        .map(drop)
     }
 
     pub(crate) fn serve_q24_model_factory_until(
@@ -111,7 +112,7 @@ impl HostAuthorityService {
             pin,
             channel,
             next_request_id,
-            Some(phase),
+            Some((phase, None)),
         )?;
         Err(io::Error::other("required original phase Model lane ended"))
     }
@@ -124,10 +125,20 @@ impl HostAuthorityService {
         pin: OwnedFd,
         mut channel: HostAuthorityPeerChannel,
         mut next_request_id: u64,
-        phase: Option<&std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
-    ) -> io::Result<()> {
+        phase: Option<(
+            &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+            Option<&crate::OriginalRootRetirementLane>,
+        )>,
+    ) -> io::Result<HostAuthorityPeerChannel> {
+        let retirement = phase.and_then(|(_, retirement)| retirement);
+        let phase = phase.map(|(phase, _)| phase);
+        let mut retirement_admission = None;
         while channel
             .exchange(|bytes| {
+                retirement_admission = retirement
+                    .map(crate::OriginalRootRetirementLane::enter_original_request)
+                    .transpose()
+                    .map_err(|_| HostIssuerTransportError::Unavailable)?;
                 let _admission = phase
                     .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
                     .transpose()
@@ -228,8 +239,9 @@ impl HostAuthorityService {
             if let Some(gate) = phase {
                 gate.require_open()?;
             }
+            drop(retirement_admission.take());
         }
-        Ok(())
+        Ok(channel)
     }
 }
 
@@ -294,3 +306,44 @@ fn transition(
 #[cfg(test)]
 #[path = "authority_host_q24_model_transport_tests.rs"]
 mod tests;
+
+impl HostAuthorityService {
+    pub(crate) fn serve_q24_model_factory_for_root_retirement(
+        &self,
+        factory: &RegisteredQ24ModelFactory,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        retirement: &std::sync::Arc<crate::OriginalRootRetirementScope>,
+    ) -> io::Result<crate::OriginalRootRetiredChannel> {
+        let phase = retirement.gate();
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
+        phase.require_open()?;
+        let stream_stop = phase.retain_original_stream(&stream)?;
+        let next_request_id = 1;
+        let pin = owner_pidfd.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream,
+            policy,
+            owner_pidfd,
+            phase.deadline().instant(),
+        )
+        .map_err(io::Error::other)?;
+        let retirement_lane = retirement
+            .register_original_lane(crate::OriginalRootRetirementPurpose::Model, phase)?;
+        let channel = self.serve_original_q24_model_channel(
+            factory,
+            config,
+            registration,
+            pin,
+            channel,
+            next_request_id,
+            Some((phase, Some(&retirement_lane))),
+        )?;
+        let retired = retirement_lane.accept_original_clean_eof(channel, stream_stop)?;
+        closing.disarm();
+        Ok(retired)
+    }
+}

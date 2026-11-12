@@ -29,6 +29,7 @@ struct OriginalPhasePublicationChannel {
     >,
     _stop: crate::same_actor_q24_phase_gate::SameActorPhaseStream,
     gate: std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    retired: bool,
 }
 
 impl Drop for OriginalPhasePublicationChannel {
@@ -245,8 +246,44 @@ impl OriginalPublicationStream {
                 initial_retirement,
                 _stop: stop,
                 gate: std::sync::Arc::clone(gate),
+                retired: false,
             }),
         })
+    }
+
+    /// Only the already-joined concrete CURRENT owner can call this path.
+    /// The original stream and its Gate shutdown alias both remain owned.
+    pub(crate) fn retire_original_scoped_purpose_after_root_intent(
+        &mut self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), crate::AgentdError> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        intent.require_original_origin(identity, gate)?;
+        let phase = self.phase.as_mut().ok_or_else(unavailable)?;
+        let mut original_closing =
+            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&phase.gate);
+        if !std::sync::Arc::ptr_eq(&phase.gate, gate)
+            || phase.initial_retirement.is_some()
+            || phase.retired
+            || self.end != gate.deadline().instant()
+        {
+            return Err(unavailable().into());
+        }
+        phase.gate.require_open()?;
+        crate::root_observation_stream::check_lifetime(&self.root)
+            .map_err(io::Error::other)?;
+        // The concrete CURRENT client holds its full lane mutex and has
+        // permanently fenced new exchanges before this exclusive borrow.
+        phase.retired = true;
+        self.stream.shutdown(std::net::Shutdown::Both)?;
+        crate::root_observation_stream::check_lifetime(&self.root)
+            .map_err(io::Error::other)?;
+        intent.require_original_origin(identity, gate)?;
+        original_closing.disarm();
+        closing.disarm();
+        Ok(())
     }
 
     pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {

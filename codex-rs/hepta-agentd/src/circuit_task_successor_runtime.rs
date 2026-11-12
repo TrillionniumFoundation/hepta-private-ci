@@ -22,6 +22,7 @@ impl CircuitTaskRuntimeBootstrapV1 {
         Self {
             identity: identity.clone(),
             handle: CircuitTaskHandleV1::original_pending_successor_handle(slot),
+            original_phase_custody: None,
             owner: Box::new(move |store, state, cancellation| {
                 Box::pin(pending.run(store, state, cancellation))
             }),

@@ -7,6 +7,17 @@ use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use super::*;
 
 impl NeuronGenerationCurrentOwnerV1 {
+    pub(crate) fn retire_original_root_purpose_after_intent(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        store::CurrentStore::retire_original_root_client_after_intent(
+            &self.store, intent, identity, gate,
+        )
+    }
+
     pub(crate) fn original_broker_head(&self) -> Result<CurrentHead, AgentdError> {
         if !self.store.is_original_host() {
             return Err(invalid(

@@ -18,6 +18,8 @@ use crate::same_actor_q24_phase::phase_owner_error;
 use crate::same_actor_q24_phase::phase_refused;
 use crate::same_actor_q24_phase_join_client::OriginalJoinedSameActorA;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningCleanup;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWorker;
 use crate::same_actor_q24_phase_learning::PreparedLearningActivation;
 use crate::same_actor_q24_phase_learning::PreparedLearningBuilder;
@@ -28,7 +30,7 @@ use publish::OriginalCFlow;
 
 enum OriginalScopedExit {
     Progress(Result<(), AgentdError>),
-    Worker(Result<(), AgentdError>),
+    Worker(Result<OriginalSameActorLearningJoined, AgentdError>),
     Cancelled,
     Closed,
 }
@@ -40,7 +42,7 @@ impl OriginalPhaseExecution {
         authorities: AgentdGenerationUpdateAuthoritiesV1,
         socket: UnixDatagram,
         host: &mut OriginalSameActorPhaseHostV1,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<OriginalSameActorLearningJoined, AgentdError> {
         self.require_original_execution()?;
         let prepared = Arc::clone(OriginalJoinedSameActorA::prepared(&original.joined));
         let scoped = {
@@ -118,11 +120,23 @@ impl OriginalPhaseExecution {
         let result = self
             .run_original_activated(activation, &cleanup, original.completion, authorities, host)
             .await;
-        self.close_original_execution();
-        // The concrete lane worker and the publication future have both ended
-        // before this final cleanup can wait for their last retained job Arc.
-        let joined = cleanup.close_and_join_original_work().await;
-        preserve_scoped_result(result, joined, "retained Learning blocking work")
+        match result {
+            Ok(joined) => {
+                OriginalSameActorLearningJoined::require_original_phase(
+                    &joined,
+                    self.context.identity(),
+                    self.context.gate(),
+                )?;
+                // The actual normal bundle now retains all lane owners and
+                // joined-work facts. Fault cleanup must not close its Gate.
+                Ok(joined)
+            }
+            Err(error) => {
+                self.close_original_execution();
+                let joined = cleanup.close_and_join_original_work().await;
+                preserve_scoped_result(Err(error), joined, "retained Learning blocking work")
+            }
+        }
     }
 
     async fn run_original_activated(
@@ -132,7 +146,7 @@ impl OriginalPhaseExecution {
         completion: PublishedCircuitFeatureCompletionV1,
         authorities: AgentdGenerationUpdateAuthoritiesV1,
         host: &mut OriginalSameActorPhaseHostV1,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<OriginalSameActorLearningJoined, AgentdError> {
         self.require_original_execution()?;
         let (_handle, owners, publication, handoff, successor, worker) =
             activation.into_original_parts()?;
@@ -140,7 +154,7 @@ impl OriginalPhaseExecution {
         self.require_original_execution()?;
         let stop = self.cancellation.child_token();
         let _cancel_on_drop = stop.clone().drop_guard();
-        let mut work = Box::pin(OriginalSameActorLearningWorker::run(
+        let mut work = Box::pin(OriginalSameActorLearningWorker::run_original_retirable(
             worker,
             self.store.clone(),
             Arc::clone(&self.state),
@@ -155,7 +169,23 @@ impl OriginalPhaseExecution {
             work: Arc::clone(cleanup.work()),
         };
         let first = {
-            let progress = self.publish_and_observe_original_c(flow, host);
+            let progress = async {
+                let observed = self.publish_and_observe_original_c(flow, host).await?;
+                self.require_original_execution()?;
+                let quiescence = SameActorTaskRoute::quiesce_original_c(
+                    &self.route,
+                    observed.installed,
+                    observed.status,
+                    Arc::clone(cleanup.work()),
+                )
+                .await?;
+                self.require_original_execution()?;
+                OriginalSameActorLearningWork::request_original_normal_retirement(
+                    cleanup.work(),
+                    quiescence,
+                )?;
+                Ok(())
+            };
             tokio::pin!(progress);
             tokio::select! {
                 result = work.as_mut() => OriginalScopedExit::Worker(result),
@@ -168,9 +198,9 @@ impl OriginalPhaseExecution {
         };
         let exit = match first {
             OriginalScopedExit::Progress(Ok(())) => {
-                // C really ran and its independent Outcome was accepted.
-                // Keep serving under the same original deadlines. This is no
-                // new phase, rearm, Root shutdown ACK, or successful EOF proof.
+                // C's real task drain and admitted observer joins have been
+                // handed to the same Work. That worker must still prove its
+                // terminal checkpoint, durable ACK and actual three lane joins.
                 tokio::select! {
                     result = work.as_mut() => OriginalScopedExit::Worker(result),
                     _ = self.cancellation.cancelled() => OriginalScopedExit::Cancelled,
@@ -179,33 +209,51 @@ impl OriginalPhaseExecution {
             }
             other => other,
         };
+        let error = match exit {
+            OriginalScopedExit::Worker(result) => {
+                // Never poll a completed worker twice. Its private normal
+                // result follows our exact C capability and actual joins.
+                drop(work);
+                return result.and_then(|joined| {
+                    OriginalSameActorLearningJoined::require_original_phase(
+                        &joined,
+                        self.context.identity(),
+                        self.context.gate(),
+                    )?;
+                    Ok(joined)
+                });
+            }
+            OriginalScopedExit::Progress(Err(error)) => error,
+            OriginalScopedExit::Progress(Ok(())) => phase_refused(
+                "original C retirement was not acknowledged by its owners",
+            ),
+            OriginalScopedExit::Cancelled => phase_refused(
+                "original C phase was cancelled",
+            ),
+            OriginalScopedExit::Closed => phase_refused(
+                "original C phase is closed",
+            ),
+        };
         self.close_original_execution();
         stop.cancel();
-        let result = match exit {
-            OriginalScopedExit::Worker(result) => {
-                // Already completed and internally joined by the concrete
-                // worker. Never poll its future a second time.
-                drop(work);
-                return result
-                    .and_then(|()| Err(phase_refused("original required C worker stopped")));
-            }
-            OriginalScopedExit::Progress(result) => result,
-            OriginalScopedExit::Cancelled => Err(phase_refused("original C phase was cancelled")),
-            OriginalScopedExit::Closed => Err(phase_refused("original C phase is closed")),
-        };
-        let joined = work.as_mut().await;
+        let joined = work.as_mut().await.map(drop);
         drop(work);
-        preserve_scoped_result(result, joined, "concrete Learning/delivery/C worker")
+        preserve_scoped_result(
+            Err(error),
+            joined,
+            "concrete Learning/delivery/C worker",
+        )
     }
 }
 
-fn preserve_scoped_result(
-    original: Result<(), AgentdError>,
+fn preserve_scoped_result<T>(
+    original: Result<T, AgentdError>,
     cleanup: Result<(), AgentdError>,
     stage: &'static str,
-) -> Result<(), AgentdError> {
+) -> Result<T, AgentdError> {
     match (original, cleanup) {
-        (Ok(()), result) => result,
+        (Ok(value), Ok(())) => Ok(value),
+        (Ok(_), Err(error)) => Err(error),
         (Err(error), Ok(())) => Err(error),
         (Err(original), Err(cleanup)) => Err(phase_owner_error(OriginalScopedCleanupFailure {
             stage,

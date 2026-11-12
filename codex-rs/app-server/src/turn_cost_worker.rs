@@ -140,6 +140,11 @@ impl TurnCostWorker {
     pub(crate) fn shutdown(&self) {
         self.shutdown.cancel();
     }
+
+    pub(crate) async fn join_original(&mut self) -> Result<(), tokio::task::JoinError> {
+        self.shutdown.cancel();
+        (&mut self._task).await
+    }
 }
 
 impl Drop for TurnCostWorker {

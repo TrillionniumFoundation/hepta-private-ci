@@ -110,6 +110,9 @@ pub(crate) struct ListedAgent {
 /// An `AgentControl` instance is intended to be created at most once per root thread/session
 /// tree. That same `AgentControl` is then shared with every sub-agent spawned from that root,
 /// which keeps the registry scoped to that root thread rather than the entire `ThreadManager`.
+#[path = "control_original_shutdown.rs"]
+mod original_shutdown;
+
 #[derive(Clone)]
 pub(crate) struct AgentControl {
     /// ID shared by the whole agent control session. This means every sub-agents from a common
@@ -119,6 +122,7 @@ pub(crate) struct AgentControl {
     /// This is `Weak` to avoid reference cycles and shadow persistence of the form
     /// `ThreadManagerState -> CodexThread -> Session -> SessionServices -> ThreadManagerState`.
     manager: Weak<ThreadManagerState>,
+    original_shutdown: Option<crate::thread_manager::OriginalSessionShutdownOrigin>,
     /// Captured at construction so delegates retain their manager's allocation policy.
     thread_id_generator: ThreadIdGenerator,
     state: Arc<AgentRegistry>,
@@ -145,9 +149,12 @@ impl AgentControl {
         thread_id_generator: ThreadIdGenerator,
         rollout_budget: Option<RolloutBudgetConfig>,
     ) -> Self {
+        let original_shutdown = manager.upgrade()
+            .map(|manager| manager.original_session_shutdown_origin());
         let control = Self {
             session_id: SessionId::default(),
             manager,
+            original_shutdown,
             thread_id_generator,
             state: Arc::default(),
             v2_residency: Arc::default(),

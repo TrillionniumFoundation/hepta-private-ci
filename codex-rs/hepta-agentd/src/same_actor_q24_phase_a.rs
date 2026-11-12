@@ -226,6 +226,11 @@ impl OriginalPhaseExecution {
                 profile: Box::new(profile),
             },
         )?;
+        // No original retirement frame or request_started has been created
+        // yet. A remains owned by this actual controller until the concrete
+        // host reports externally supplied material ready for Root to inspect.
+        host.wait_original_deployment_materials(&self.context, &prepared).await?;
+        self.require_original_execution()?;
         let retirement = OriginalDaemonPhaseRetirement::begin_original_retirement(
             Arc::clone(&self.context),
             prepared,

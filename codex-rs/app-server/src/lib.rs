@@ -109,6 +109,9 @@ mod config_manager;
 mod configured_mcp_runtime;
 pub use configured_mcp_runtime::ConfiguredMcpRuntime;
 pub use configured_mcp_runtime::initialize_configured_mcp_server;
+pub use configured_mcp_runtime::initialize_configured_mcp_server_with_owned_shutdown;
+pub use codex_mcp::OriginalMcpRuntimeShutdown;
+pub use codex_mcp::OriginalMcpRuntimeShutdownObservation;
 mod config_manager_service;
 mod connection_cleanup;
 mod connection_rpc_gate;
@@ -132,6 +135,10 @@ mod models;
 mod models_refresh_worker;
 mod otel_reloader;
 mod outgoing_message;
+mod original_owned_shutdown;
+pub use original_owned_shutdown::OriginalAppServerJoined;
+pub use original_owned_shutdown::OriginalAppServerOwnerCustody;
+use original_owned_shutdown::OriginalAppServerTaskKind;
 mod request_processors;
 mod request_serialization;
 mod server_request_error;
@@ -506,6 +513,9 @@ pub struct AppServerRuntimeOptions {
     /// Server closes new per-connection RPC admission and waits for the exact
     /// running assistant-turn count to reach zero before declaring drained.
     pub graceful_drain: Option<AppServerDrainHandle>,
+    /// Explicit actual-task custody for the original inherited Unix embedding.
+    /// None keeps ordinary behavior and never supplies a joined observation.
+    pub original_owner_custody: Option<Arc<OriginalAppServerOwnerCustody>>,
     /// Optional maximum pending turn rows in this runtime's queue database.
     ///
     /// Ordinary Codex leaves this unset and retains only its historical
@@ -575,6 +585,7 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 &self.install_shutdown_signal_handler,
             )
             .field("graceful_drain", &self.graceful_drain.is_some())
+            .field("original_owner_custody", &self.original_owner_custody.is_some())
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
@@ -622,6 +633,11 @@ impl PartialEq for AppServerRuntimeOptions {
                 (None, None) => true,
                 _ => false,
             }
+            && match (&self.original_owner_custody, &other.original_owner_custody) {
+                (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+                (None, None) => true,
+                _ => false,
+            }
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
@@ -654,6 +670,7 @@ impl Default for AppServerRuntimeOptions {
             remote_control_startup_mode: RemoteControlStartupMode::ResolvePersisted,
             install_shutdown_signal_handler: true,
             graceful_drain: None,
+            original_owner_custody: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
@@ -670,6 +687,67 @@ impl Default for AppServerRuntimeOptions {
 }
 
 #[allow(clippy::too_many_arguments)]
+async fn run_main_with_original_owner_options(
+    arg0_paths: Arg0DispatchPaths,
+    cli_config_overrides: CliConfigOverrides,
+    loader_overrides: LoaderOverrides,
+    strict_config: bool,
+    default_analytics_enabled: bool,
+    transport: AppServerTransport,
+    session_source: SessionSource,
+    auth: AppServerWebsocketAuthSettings,
+    runtime_options: AppServerRuntimeOptions,
+    inherited_socket: Option<InheritedControlSocket>,
+) -> IoResult<()> {
+    if let Some(original) = runtime_options.original_owner_custody.as_ref().map(Arc::clone) {
+        if !cfg!(target_os = "linux")
+            || inherited_socket.is_none()
+            || !matches!(transport, AppServerTransport::UnixSocket { .. })
+            || runtime_options.install_shutdown_signal_handler
+            || runtime_options.remote_control_startup_mode
+                != RemoteControlStartupMode::DisabledEphemeral
+        {
+            return Err(std::io::Error::other(
+                "original task custody requires the inherited Unix embedding profile",
+            ));
+        }
+        let drain = runtime_options.graceful_drain.clone().ok_or_else(|| {
+            std::io::Error::other("original App Server needs its actual graceful drain")
+        })?;
+        return OriginalAppServerOwnerCustody::run_original_main(
+            &original,
+            drain,
+            run_main_with_transport_options_inner(
+                arg0_paths,
+                cli_config_overrides,
+                loader_overrides,
+                strict_config,
+                default_analytics_enabled,
+                transport,
+                session_source,
+                auth,
+                runtime_options,
+                inherited_socket,
+            ),
+        )
+        .await;
+    }
+    run_main_with_transport_options_inner(
+        arg0_paths,
+        cli_config_overrides,
+        loader_overrides,
+        strict_config,
+        default_analytics_enabled,
+        transport,
+        session_source,
+        auth,
+        runtime_options,
+        inherited_socket,
+    )
+    .await
+}
+
+#[allow(clippy::too_many_arguments)]
 async fn run_main_with_transport_options_inner(
     arg0_paths: Arg0DispatchPaths,
     cli_config_overrides: CliConfigOverrides,
@@ -682,6 +760,7 @@ async fn run_main_with_transport_options_inner(
     runtime_options: AppServerRuntimeOptions,
     mut inherited_socket: Option<InheritedControlSocket>,
 ) -> IoResult<()> {
+    let original_owner = runtime_options.original_owner_custody.as_ref().map(Arc::clone);
     validate_hepta_local_lifecycle_runtime_options(&runtime_options)?;
     let loader_overrides = loader_overrides_with_test_user_config_file(
         loader_overrides,
@@ -953,6 +1032,12 @@ async fn run_main_with_transport_options_inner(
     }
     let installation_id = resolve_installation_id(&config.codex_home).await?;
     let transport_shutdown_token = CancellationToken::new();
+    if let Some(original) = &original_owner {
+        OriginalAppServerOwnerCustody::retain_original_transport(
+            original,
+            &transport_shutdown_token,
+        );
+    }
     // An embedding owns the inherited listener's lifetime, including startup
     // errors after the acceptor has been spawned and cancellation of this
     // future. Dropping a JoinHandle alone detaches that acceptor. Keep the
@@ -1015,6 +1100,14 @@ async fn run_main_with_transport_options_inner(
         }
         AppServerTransport::Off => {}
     }
+    let mut transport_accept_handles = transport_accept_handles
+        .into_iter()
+        .map(|handle| OriginalAppServerOwnerCustody::optional_original_task(
+            original_owner.as_ref(),
+            OriginalAppServerTaskKind::Acceptor,
+            handle,
+        ))
+        .collect::<Vec<_>>();
     drop(unix_socket_startup_lock);
 
     let auth_manager =
@@ -1085,7 +1178,13 @@ async fn run_main_with_transport_options_inner(
             ));
         }
     }
-    transport_accept_handles.push(remote_control_accept_handle);
+    transport_accept_handles.push(
+        OriginalAppServerOwnerCustody::optional_original_task(
+            original_owner.as_ref(),
+            OriginalAppServerTaskKind::Acceptor,
+            remote_control_accept_handle,
+        ),
+    );
 
     let otel_reloader_handle = otel_reloader::spawn(
         otel,
@@ -1094,6 +1193,12 @@ async fn run_main_with_transport_options_inner(
         Arc::clone(&auth_manager),
         default_analytics_enabled,
         transport_shutdown_token.clone(),
+    );
+
+    let otel_reloader_handle = OriginalAppServerOwnerCustody::optional_original_task(
+        original_owner.as_ref(),
+        OriginalAppServerTaskKind::Telemetry,
+        otel_reloader_handle,
     );
 
     let outbound_handle = tokio::spawn(async move {
@@ -1150,8 +1255,14 @@ async fn run_main_with_transport_options_inner(
         }
         info!("outbound router task exited (channel closed)");
     });
+    let outbound_handle = OriginalAppServerOwnerCustody::optional_original_task(
+        original_owner.as_ref(),
+        OriginalAppServerTaskKind::Outbound,
+        outbound_handle,
+    );
 
     let processor_handle = tokio::spawn({
+        let original_owner = original_owner.as_ref().map(Arc::clone);
         let auth_manager = Arc::clone(&auth_manager);
         let analytics_events_client =
             analytics_events_client_from_config(Arc::clone(&auth_manager), &config);
@@ -1162,7 +1273,7 @@ async fn run_main_with_transport_options_inner(
         let graceful_drain = runtime_options.graceful_drain.clone();
         let initialize_notification_sender = outgoing_message_sender.clone();
         let outbound_control_tx = outbound_control_tx;
-        let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
+        let processor_args = MessageProcessorArgs {
             outgoing: outgoing_message_sender,
             analytics_events_client,
             arg0_paths,
@@ -1193,11 +1304,27 @@ async fn run_main_with_transport_options_inner(
                 qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
                 prompt_runtime_host: runtime_options.hepta_prompt_runtime_host,
             },
-        }));
+        };
+        let processor = Arc::new(match &original_owner {
+            Some(original) => {
+                MessageProcessor::new_original_owner(processor_args, Arc::clone(original))
+            }
+            None => MessageProcessor::new(processor_args),
+        });
+        if let Some(original) = &original_owner {
+            OriginalAppServerOwnerCustody::retain_original_processor(
+                original,
+                Arc::clone(&processor),
+            );
+            MessageProcessor::prepare_original_shutdown(&processor, original).await?;
+        }
         let mut thread_created_rx = processor.thread_created_receiver();
         let mut running_turn_count_rx = processor.subscribe_running_assistant_turn_count();
         let mut connections = HashMap::<ConnectionId, ConnectionState>::new();
-        let mut connection_cleanup_tasks = ConnectionCleanupTasks::new();
+        let mut connection_cleanup_tasks = match &original_owner {
+            Some(original) => ConnectionCleanupTasks::new_original(Arc::clone(original)),
+            None => ConnectionCleanupTasks::new(),
+        };
         let mut remote_control_status_rx = remote_control_handle.status_receiver();
         let mut remote_control_status = remote_control_status_rx.borrow().clone();
         let transport_shutdown_token = transport_shutdown_token.clone();
@@ -1325,10 +1452,19 @@ async fn run_main_with_transport_options_inner(
                                     .await
                                     .is_ok();
                                 let processor = Arc::clone(&processor);
+                                let original_connection = original_owner.is_some();
                                 connection_cleanup_tasks.spawn(async move {
-                                    processor
-                                        .connection_closed(connection_id, &connection_state.session)
-                                        .await;
+                                    if original_connection {
+                                        MessageProcessor::connection_closed_original(
+                                            &processor,
+                                            connection_id,
+                                            &connection_state.session,
+                                        ).await;
+                                    } else {
+                                        processor
+                                            .connection_closed(connection_id, &connection_state.session)
+                                            .await;
+                                    }
                                 });
                                 if !outbound_closed {
                                     break "outbound_router_closed";
@@ -1475,7 +1611,27 @@ async fn run_main_with_transport_options_inner(
                 }
             };
 
-            if !shutdown_state.forced() {
+            if let Some(original) = &original_owner {
+                for connection in connections.values() {
+                    connection.session.rpc_gate.close().await;
+                }
+                futures::future::join_all(connections.iter().map(
+                    |(&connection_id, connection)| {
+                        MessageProcessor::connection_closed_original(
+                            &processor,
+                            connection_id,
+                            &connection.session,
+                        )
+                    },
+                )).await;
+                connection_cleanup_tasks.drain().await;
+                if shutdown_state.forced() {
+                    OriginalAppServerOwnerCustody::record_original_failure(
+                        original,
+                        std::io::Error::other("original App Server was forcibly stopped"),
+                    );
+                }
+            } else if !shutdown_state.forced() {
                 futures::future::join_all(connections.iter().map(
                     |(&connection_id, connection_state)| {
                         processor.connection_closed(connection_id, &connection_state.session)
@@ -1497,9 +1653,17 @@ async fn run_main_with_transport_options_inner(
         }
     });
 
+    let processor_handle = OriginalAppServerOwnerCustody::optional_original_task(
+        original_owner.as_ref(),
+        OriginalAppServerTaskKind::Processor,
+        processor_handle,
+    );
     drop(transport_event_tx);
 
     let _ = processor_handle.await;
+    if let Some(original) = &original_owner {
+        OriginalAppServerOwnerCustody::finish_original_processor(original).await?;
+    }
     let _ = outbound_handle.await;
 
     transport_shutdown_token.cancel();

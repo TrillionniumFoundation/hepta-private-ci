@@ -93,6 +93,27 @@ pub(crate) struct LiveGenerationCurrent {
 }
 
 impl LiveGenerationCurrent {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn retire_original_current_purpose(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        intent.require_original_origin(identity, gate)?;
+        // Preserve the original artifact -> selection lock order, but perform
+        // no revalidation, clock sampling, FinalUse claim or new Current read.
+        let _artifacts = self.authorities.artifacts.try_lock().map_err(invalid)?;
+        let _selected = self.selected.try_lock().map_err(invalid)?;
+        NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(
+            &self.current, intent, identity, gate,
+        )?;
+        intent.require_original_origin(identity, gate)?;
+        closing.disarm();
+        Ok(())
+    }
+
     pub(crate) fn new(
         current: Arc<NeuronGenerationCurrentOwnerV1>,
         authorities: AgentdGenerationUpdateAuthoritiesV1,

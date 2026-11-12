@@ -11,7 +11,7 @@ pub(crate) fn install_original_initial_task(
     initial: OriginalRootGenerationInitialV1,
     inputs: OriginalSameActorBusinessInputsV1,
     scoped: UnixDatagram,
-) -> Result<AgentdConfig, AgentdError> {
+) -> Result<(AgentdConfig, Arc<crate::circuit_task::OriginalCircuitOwnerCustody>), AgentdError> {
     let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
     OriginalSameActorRootContext::require_current(&context)?;
     if config.identity() != context.identity()
@@ -122,8 +122,12 @@ pub(crate) fn install_original_initial_task(
         route,
         worker,
     )?;
+    // Capture before Config consumes the actual Bootstrap. The selected
+    // Startup retains this same capability across receive/run/cancellation.
+    let custody = bootstrap.original_same_actor_owner_custody()?;
+    crate::circuit_task::OriginalCircuitOwnerCustody::require_original_origin(&custody, context.identity(), context.gate())?;
     let config = config.with_circuit_task_bootstrap(bootstrap, invocation)?;
     OriginalSameActorRootContext::require_current(&context)?;
     closing.disarm();
-    Ok(config)
+    Ok((config, custody))
 }

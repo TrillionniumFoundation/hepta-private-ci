@@ -70,6 +70,7 @@ impl HostAuthorityService {
             sequence,
             None,
         )
+        .map(drop)
     }
 
     pub(crate) fn serve_generation_publication_until(
@@ -102,7 +103,7 @@ impl HostAuthorityService {
             pin,
             channel,
             1,
-            Some(phase),
+            Some((phase, None)),
         )?;
         Err(io::Error::other(
             "required original phase publication lane ended",
@@ -118,10 +119,20 @@ impl HostAuthorityService {
         pin: OwnedFd,
         mut channel: HostAuthorityPeerChannel,
         mut sequence: u64,
-        phase: Option<&crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>>,
-    ) -> io::Result<()> {
+        phase: Option<(
+            &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+            Option<&crate::OriginalRootRetirementLane>,
+        )>,
+    ) -> io::Result<HostAuthorityPeerChannel> {
+        let retirement = phase.and_then(|(_, retirement)| retirement);
+        let phase = phase.map(|(phase, _)| phase);
+        let mut retirement_admission = None;
         while channel
             .exchange(|bytes| {
+                retirement_admission = retirement
+                    .map(crate::OriginalRootRetirementLane::enter_original_request)
+                    .transpose()
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 let _admission = phase
                     .map(|context| context.gate.enter_original_lane())
                     .transpose()
@@ -375,8 +386,9 @@ impl HostAuthorityService {
             if let Some(context) = phase {
                 context.require_original(slot)?;
             }
+            drop(retirement_admission.take());
         }
-        Ok(())
+        Ok(channel)
     }
 }
 
@@ -396,4 +408,51 @@ fn require_fresh_window(
         ));
     }
     Ok(())
+}
+
+impl HostAuthorityService {
+    pub(crate) fn serve_generation_publication_for_root_retirement(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        mode: (
+            &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+            &std::sync::Arc<crate::OriginalRootRetirementScope>,
+        ),
+    ) -> io::Result<crate::OriginalRootRetiredChannel> {
+        let (phase, retirement) = mode;
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+        retirement.require_original(phase.gate)?;
+        phase.require_original(slot)?;
+        let stream_stop = phase.gate.retain_original_stream(&stream)?;
+        let pin = owner.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream,
+            policy,
+            owner,
+            phase.gate.deadline().instant(),
+        )
+        .map_err(io::Error::other)?;
+        let retirement_lane = retirement
+            .register_original_lane(crate::OriginalRootRetirementPurpose::Publication, phase.gate)?;
+        let channel = self.serve_original_publication_channel(
+            slot,
+            learning,
+            config,
+            registration,
+            pin,
+            channel,
+            1,
+            Some((phase, Some(&retirement_lane))),
+        )?;
+        let retired = retirement_lane.accept_original_clean_eof(channel, stream_stop)?;
+        phase.require_original(slot)?;
+        closing.disarm();
+        Ok(retired)
+    }
 }

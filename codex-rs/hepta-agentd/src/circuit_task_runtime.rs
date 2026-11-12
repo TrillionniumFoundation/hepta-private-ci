@@ -56,6 +56,29 @@ mod successor;
 #[path = "circuit_task_same_actor_phase.rs"]
 mod same_actor_phase;
 #[cfg(target_os = "linux")]
+#[path = "circuit_task_runtime_lifecycle.rs"]
+mod lifecycle;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitNaturalJoin;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitJoinObservation;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitJoinStatus;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitOwnerCustody;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitOwnerOutcome;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitResultDelivery;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::OriginalCQuiescenceOrigin;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::OriginalSameActorCJoined;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::OriginalSameActorCPurposesRetired;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::OriginalSameActorCQuiescence;
+#[cfg(target_os = "linux")]
 pub(crate) use same_actor_phase::SameActorTaskAdmission;
 #[cfg(target_os = "linux")]
 pub(crate) use same_actor_phase::SameActorTaskRoute;
@@ -185,6 +208,8 @@ pub struct CircuitTaskRuntimeBootstrapV1 {
     identity: AgentdIdentity,
     handle: CircuitTaskHandleV1,
     owner: OwnerLoop,
+    #[cfg(target_os = "linux")]
+    original_phase_custody: Option<Arc<OriginalCircuitOwnerCustody>>,
 }
 
 /// Uses Agentd's original AutomationStore at startup. The injected clock keeps
@@ -238,6 +263,8 @@ where
     let bootstrap = CircuitTaskRuntimeBootstrapV1 {
         identity: identity.clone(),
         handle: handle.clone(),
+        #[cfg(target_os = "linux")]
+        original_phase_custody: None,
         owner: Box::new(move |store, state, cancellation| {
             Box::pin(async move {
                 let mut driver = CircuitTaskDriverV1 {
@@ -341,6 +368,17 @@ impl CircuitTaskRuntimeBootstrapV1 {
         let runtime = tokio::runtime::Handle::current();
         let worker_cancellation = cancellation.child_token();
         let _cancel_on_drop = worker_cancellation.clone().drop_guard();
+        #[cfg(target_os = "linux")]
+        if let Some(custody) = self.original_phase_custody.as_ref().map(Arc::clone) {
+            let admission = custody.reserve_original_start(worker_cancellation.clone())?;
+            let worker = tokio::task::spawn_blocking(move || {
+                runtime.block_on((self.owner)(store, state, worker_cancellation))
+            });
+            let job = lifecycle::OriginalCircuitStartAdmission::retain_original_circuit_owner_handle(
+                admission, worker,
+            );
+            return job.receive_original_result().await;
+        }
         tokio::task::spawn_blocking(move || {
             runtime.block_on((self.owner)(store, state, worker_cancellation))
         })

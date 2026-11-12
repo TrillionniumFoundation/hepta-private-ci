@@ -57,7 +57,7 @@ pub(super) struct LateMaterial {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct ObserverData {
+pub(crate) struct ObserverData {
     pub generation: CellGenerationConfigV2,
     pub journal_records: u64,
     pub witness_scope: [u8; 32],
@@ -67,7 +67,7 @@ pub(in crate::authority_host_runtime::session) struct ObserverData {
 }
 
 impl ObserverData {
-    pub(in crate::authority_host_runtime::session) fn original_observer_config(
+    pub(crate) fn original_observer_config(
         &self,
     ) -> io::Result<CellGenerationObserverConfigV1> {
         Ok(CellGenerationObserverConfigV1 {
@@ -86,7 +86,7 @@ impl ObserverData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct SignerData {
+pub(crate) struct SignerData {
     pub id: String,
     pub verifying_key: [u8; 32],
     pub minimum_authority_epoch: u64,
@@ -125,7 +125,7 @@ impl SignerData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct OwnerTrustData {
+pub(crate) struct OwnerTrustData {
     pub registry_id: String,
     pub withdrawal_scope: [u8; 32],
     pub minimum_registry_generation: u64,
@@ -136,7 +136,7 @@ pub(in crate::authority_host_runtime::session) struct OwnerTrustData {
 }
 
 impl OwnerTrustData {
-    pub(in crate::authority_host_runtime::session) fn original_owner_trust(
+    pub(crate) fn original_owner_trust(
         &self,
     ) -> io::Result<ArtifactOwnerTrustV1> {
         Ok(ArtifactOwnerTrustV1 {
@@ -162,7 +162,7 @@ impl OwnerTrustData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct SelectorTrustData {
+pub(crate) struct SelectorTrustData {
     pub registry_id: String,
     pub withdrawal_scope: [u8; 32],
     pub minimum_authority_epoch: u64,
@@ -170,7 +170,7 @@ pub(in crate::authority_host_runtime::session) struct SelectorTrustData {
 }
 
 impl SelectorTrustData {
-    pub(in crate::authority_host_runtime::session) fn original_selector(
+    pub(crate) fn original_selector(
         &self,
         owner: &ArtifactOwnerTrustV1,
     ) -> io::Result<ArtifactSelectionVerifierV1> {
@@ -193,7 +193,7 @@ impl SelectorTrustData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct CurrentData {
+pub(crate) struct CurrentData {
     pub withdrawal_scope: [u8; 32],
     pub binding: [u8; 32],
     pub registry_id: String,
@@ -209,7 +209,7 @@ pub(in crate::authority_host_runtime::session) struct CurrentData {
 }
 
 impl CurrentData {
-    pub(in crate::authority_host_runtime::session) fn original_current(
+    pub(crate) fn original_current(
         &self,
     ) -> io::Result<SignedCurrentArtifactHeadV1> {
         Ok(SignedCurrentArtifactHeadV1 {
@@ -237,7 +237,7 @@ impl CurrentData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct WithdrawalData {
+pub(crate) struct WithdrawalData {
     pub binding: [u8; 32],
     pub scope: [u8; 32],
     pub head: [u8; 32],
@@ -257,7 +257,7 @@ pub(in crate::authority_host_runtime::session) struct IssuerKeyData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(in crate::authority_host_runtime::session) struct SelectionData {
+pub(crate) struct SelectionData {
     pub selection_id: String,
     pub artifact_id: String,
     pub registry_id: String,
@@ -285,12 +285,12 @@ pub(in crate::authority_host_runtime::session) struct SelectionData {
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(in crate::authority_host_runtime::session) enum ModelKind {
+pub(crate) enum ModelKind {
     Model,
 }
 
 impl SelectionData {
-    pub(in crate::authority_host_runtime::session) fn original_selection(
+    pub(crate) fn original_selection(
         &self,
     ) -> io::Result<SignedArtifactSelectionV1> {
         Ok(SignedArtifactSelectionV1 {

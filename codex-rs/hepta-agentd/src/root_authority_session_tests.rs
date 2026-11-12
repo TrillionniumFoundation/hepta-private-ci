@@ -740,3 +740,6 @@ async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
         Err(AgentdRootAuthorityError::Unavailable)
     ));
 }
+
+#[path = "root_authority_session_lifecycle_tests.rs"]
+mod lifecycle_custody;

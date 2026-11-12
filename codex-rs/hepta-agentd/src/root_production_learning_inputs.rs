@@ -205,6 +205,53 @@ impl AgentdRootLearningInputsV1 {
         Ok((handle, bootstrap.with_original_q24_stage_owners(original)?))
     }
 
+    /// Same original scoped assembly, with a close-only handle to this exact
+    /// checkpoint client retained beside the real worker. Public/default
+    /// assembly keeps its original unique Box-backed ports unchanged.
+    pub(crate) fn into_original_retirable_learning_runtime(
+        self,
+        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+        verifier: LearningEvidenceVerifierV1,
+        capacity: usize,
+        work: &Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>,
+    ) -> Result<
+        (
+            LearningIterationHandleV1,
+            LearningIterationRuntimeBootstrapV1,
+            crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement,
+        ),
+        AgentdError,
+    > {
+        self.require_prepared_q24(stages.prepared())?;
+        work.require_original_retirement_identity(&self.identity, work.gate())?;
+        let scope = self.scope.ok_or_else(|| {
+            refused("retirable Learning requires the original scoped checkpoint")
+        })?;
+        let (ports, checkpoint) =
+            AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(
+                self.client,
+                Arc::clone(&stages),
+                &self.identity,
+                work,
+            )?;
+        let (handle, bootstrap) = crate::learning_iteration_channel_scoped_v2(
+            self.identity.agent_id,
+            self.identity.spawn_generation,
+            self.initial.owners,
+            ports,
+            verifier,
+            capacity,
+            scope,
+        )?;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
+        let bootstrap = bootstrap
+            .with_original_circuit_learning_delivery(self.initial.request)?;
+        let bootstrap = LearningIterationRuntimeBootstrapV1::with_original_q24_stage_owners(
+            bootstrap, stages,
+        )?;
+        Ok((handle, bootstrap, checkpoint))
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if &self.identity != identity {
             return Err(refused(

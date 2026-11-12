@@ -130,6 +130,47 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &owner,
         )?;
         println!("{}", serde_json::to_string(&registered)?);
+    } else if command == "serve-original-same-actor-phase" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let deployment = take("--same-actor-deployment")?;
+        let writer = options
+            .remove(std::ffi::OsStr::new("--root-handoff-fd"))
+            .ok_or("original writer handoff descriptor required")?;
+        let phase = options
+            .remove(std::ffi::OsStr::new("--root-same-actor-phase-handoff-fd"))
+            .ok_or("original same-actor phase handoff descriptor required")?;
+        let scoped = options
+            .remove(std::ffi::OsStr::new("--root-same-actor-scoped-handoff-fd"))
+            .ok_or("original same-actor scoped handoff descriptor required")?;
+        let root = options
+            .remove(std::ffi::OsStr::new("--root-pidfd"))
+            .ok_or("original Root pidfd required")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err("same-actor phase requires exact original deployment and pre-held owner pidfd".into());
+        }
+        // Preserve the original claim-before-open discipline for all four
+        // rights. This explicit command sends the actual three-right purpose.
+        let mut claimed = std::collections::BTreeSet::new();
+        let writer = inherited_descriptor(&writer, &mut claimed)?;
+        let phase = inherited_descriptor(&phase, &mut claimed)?;
+        let scoped = inherited_descriptor(&scoped, &mut claimed)?;
+        let root_pidfd = inherited_descriptor(&root, &mut claimed)?;
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let handoffs = codex_hepta_agentd::RootSameActorDeploymentHandoffsV1 {
+            writer: std::os::unix::net::UnixDatagram::from(writer),
+            phase: std::os::unix::net::UnixDatagram::from(phase),
+            scoped: std::os::unix::net::UnixDatagram::from(scoped),
+            root_pidfd,
+        };
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()?;
+        runtime.block_on(
+            codex_hepta_agentd::PreparedRootSameActorQ24PhaseV1::serve_fresh_original_deployment(
+                &config, &registration, owner, &deployment, handoffs,
+            ),
+        )?;
     } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
@@ -271,7 +312,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     )?,
                 None => prepared,
             };
-            let bootstrap = prepared.seal_bootstrap(&consumers)?;
+            let bootstrap = codex_hepta_agentd::PreparedHostAuthoritySession::seal_bootstrap(
+                &prepared, &consumers,
+            )?;
             codex_hepta_agentd::send_root_production_handoff(
                 std::os::unix::net::UnixDatagram::from(handoff),
                 &bootstrap,
@@ -430,7 +473,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 (None, Some((file, pidfd))) => {
                     prepared.serve_with_text_and_ready(file, pidfd, ready)
                 }
-                (None, None) => prepared.serve_with_ready(ready),
+                (None, None) => {
+                    codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(prepared, ready)
+                }
                 (Some(_), Some(_)) => {
                     Err(std::io::Error::other("exclusive native/text UI options"))
                 }

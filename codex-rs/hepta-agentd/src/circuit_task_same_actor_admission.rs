@@ -135,6 +135,9 @@ impl SameActorTaskAdmission {
         &self,
         trace: &CircuitCommittedTraceV2,
     ) -> CircuitTaskLearningReadinessV1 {
+        if self.original.phase == TaskPhase::C {
+            return self.observe_original_c_learning(trace).await;
+        }
         // The blocking callback retains this same ticket. Dropping its awaiting
         // caller cannot make original source/ledger work invisible to drain.
         let original = Arc::clone(&self.original);
@@ -171,6 +174,90 @@ impl SameActorTaskAdmission {
         }
     }
 
+    async fn observe_original_c_learning(
+        &self,
+        trace: &CircuitCommittedTraceV2,
+    ) -> CircuitTaskLearningReadinessV1 {
+        let mut closing = CloseSameActorPhaseOnDrop::new(&self.original.route.gate);
+        let work = match self.original.route.original_learning_work() {
+            Ok(work) => work,
+            Err(error) => {
+                self.original.route.close();
+                return CircuitTaskLearningReadinessV1::Pending(
+                    CircuitTaskLearningPendingV1::Refused(error.to_string()),
+                );
+            }
+        };
+        let job = {
+            let admission = match work.reserve_original_blocking() {
+                Ok(admission) => admission,
+                Err(error) => {
+                    self.original.route.close();
+                    return CircuitTaskLearningReadinessV1::Pending(
+                        CircuitTaskLearningPendingV1::Refused(error.to_string()),
+                    );
+                }
+            };
+            let original = Arc::clone(&self.original);
+            let trace = trace.clone();
+            let handle = tokio::task::spawn_blocking(move || {
+                if original.require_original_admission().is_err() {
+                    return Ok::<_, std::convert::Infallible>(
+                        CircuitTaskLearningReadinessV1::Pending(
+                            CircuitTaskLearningPendingV1::OwnerUnavailable,
+                        ),
+                    );
+                }
+                let invocation: &Arc<dyn AgentdCircuitTaskInvocationProviderV1> =
+                    &original.original.invocation;
+                let ready = invocation.observe_learning(
+                    &original.route.identity,
+                    &original.record,
+                    &trace,
+                );
+                Ok(if original.require_original_admission().is_err() {
+                    CircuitTaskLearningReadinessV1::Pending(
+                        CircuitTaskLearningPendingV1::OwnerUnavailable,
+                    )
+                } else {
+                    ready
+                })
+            });
+            // The same actual handle enters the already bound Work registry
+            // before any await. A cancelled receiver never detaches that job.
+            admission.retain_original_handle(handle)
+        };
+        match crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::receive_original_job_with_join_cause(
+            &work,
+            job,
+        )
+        .await
+        {
+            Ok(Ok(ready)) => {
+                if self.original.require_original_admission().is_err() {
+                    self.original.route.close();
+                    return CircuitTaskLearningReadinessV1::Pending(
+                        CircuitTaskLearningPendingV1::OwnerUnavailable,
+                    );
+                }
+                // This fact is set only after that actual handle was joined.
+                // A C ticket cannot finish from a pending count or task result.
+                self.observation_joined.store(true, Ordering::Release);
+                closing.disarm();
+                ready
+            }
+            Ok(Err(never)) => match never {},
+            Err(error) => {
+                self.original.route.close();
+                CircuitTaskLearningReadinessV1::Pending(
+                    CircuitTaskLearningPendingV1::Refused(format!(
+                        "original learning owner observation stopped: {error}"
+                    )),
+                )
+            }
+        }
+    }
+
     pub(crate) fn require_original_phase_execution(&self) -> Result<(), AgentdError> {
         if !self.submitted || self.original.require_original_admission().is_err() {
             self.original.route.close();
@@ -181,6 +268,12 @@ impl SameActorTaskAdmission {
 
     pub(crate) fn finish_original_task(mut self) -> Result<(), AgentdError> {
         self.require_original_phase_execution()?;
+        if self.original.phase == TaskPhase::C
+            && !self.observation_joined.load(Ordering::Acquire)
+        {
+            self.original.route.close();
+            return Err(task_error(Error::CommitUncertain));
+        }
         self.completed = true;
         Ok(())
     }

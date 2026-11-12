@@ -40,6 +40,19 @@ use std::task::Poll;
 use std::time::Duration;
 use tokio::io::unix::AsyncFd;
 
+#[path = "root_authority_session_lifecycle.rs"]
+mod lifecycle;
+use lifecycle::OriginalSessionWorker;
+pub(crate) use lifecycle::OriginalConsumerFailure;
+pub(crate) use lifecycle::OriginalConsumerJoinSummary;
+pub(crate) use lifecycle::OriginalRootSessionCustodySlot;
+pub(crate) use lifecycle::OriginalRootSessionJoinObservation;
+pub(crate) use lifecycle::OriginalRootWorkerTermination;
+pub(crate) use lifecycle::OriginalRootSessionPauseWaiter;
+pub(crate) use lifecycle::OriginalRootSessionPaused;
+pub(crate) use lifecycle::OriginalRootSessionObservationRetired;
+pub(crate) use lifecycle::OriginalRootSessionFullyRetired;
+
 struct LiveRoot {
     proof: VerifiedRootWriterProof,
     cache: RootObservationCache,
@@ -264,8 +277,10 @@ impl ProductionAuthorityVerifier for LiveRoot {
 /// actual independently opened FinalUse consumers are installed and synced.
 pub struct AgentdRootAuthoritySession {
     live: Arc<LiveRoot>,
-    worker: tokio::task::JoinHandle<()>,
+    worker: OriginalSessionWorker,
     writer_file: WriterCustody,
+    // Last: only after the original operational fields have really dropped.
+    _retirement: Option<lifecycle::OriginalSessionRetirement>,
 }
 impl AgentdRootAuthoritySession {
     pub async fn connect(
@@ -317,7 +332,7 @@ impl AgentdRootAuthoritySession {
             refresh_failed: AtomicBool::new(false),
         });
         let writer_file = Arc::new(OnceLock::new());
-        refresh(&live, &stream, &writer_file).await?;
+        refresh(&live, &stream, &writer_file, /*phase_jobs*/ None).await?;
         let background = Arc::clone(&live);
         let background_file = Arc::clone(&writer_file);
         let worker = tokio::spawn(RootWorker {
@@ -325,7 +340,7 @@ impl AgentdRootAuthoritySession {
                 let _fence = FenceOnDrop(Arc::clone(&background));
                 loop {
                     tokio::time::sleep(Duration::from_millis(100)).await;
-                    if refresh(&background, &stream, &background_file)
+                    if refresh(&background, &stream, &background_file, /*phase_jobs*/ None)
                         .await
                         .inspect_err(|_error| {
                             #[cfg(test)]
@@ -343,8 +358,9 @@ impl AgentdRootAuthoritySession {
         });
         Ok(Self {
             live,
-            worker,
+            worker: OriginalSessionWorker::Legacy(worker),
             writer_file,
+            _retirement: None,
         })
     }
     /// Only the explicit phase receiver calls this with its original captured
@@ -359,7 +375,8 @@ impl AgentdRootAuthoritySession {
         original_session_end_boottime_ns: u64,
         trust: AgentdRootWriterTrust,
         phase: Arc<SameActorPhaseGate>,
-    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> {
+        custody: &lifecycle::OriginalRootSessionCustodySlot,
+    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> + '_ {
         // Captured outside the async body. Dropping an unpolled connection
         // attempt closes all existing phase lanes too.
         let mut closing = CloseSameActorPhaseOnDrop::new(&phase);
@@ -390,11 +407,9 @@ impl AgentdRootAuthoritySession {
                 trust,
                 Arc::clone(&phase),
                 stop,
+                custody,
             )
             .await?;
-            phase
-                .require_open()
-                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             closing.disarm();
             Ok(session)
         }
@@ -407,6 +422,7 @@ impl AgentdRootAuthoritySession {
         trust: AgentdRootWriterTrust,
         phase: Arc<SameActorPhaseGate>,
         stop: SameActorPhaseStream,
+        custody: &lifecycle::OriginalRootSessionCustodySlot,
     ) -> Result<Self, AgentdRootAuthorityError> {
         let response: HostWriterAuthorizationReadResponseV1 = stream
             .read(&HostWriterAuthorizationReadRequestV1 {
@@ -436,22 +452,50 @@ impl AgentdRootAuthoritySession {
             refresh_failed: AtomicBool::new(false),
         });
         let writer_file = Arc::new(OnceLock::new());
-        refresh(&live, &stream, &writer_file).await?;
+        let consumer_jobs = lifecycle::OriginalConsumerJobs::new(&phase);
+        refresh(&live, &stream, &writer_file, Some(&consumer_jobs)).await?;
         let background = Arc::clone(&live);
         let background_file = Arc::clone(&writer_file);
+        let background_jobs = Arc::clone(&consumer_jobs);
+        let pause = lifecycle::OriginalSessionPauseControl::new(&phase);
+        let background_pause = Arc::clone(&pause);
         // These guards already exist before the future is created. Even a
         // worker which never receives its first poll owns shared cancellation.
         let worker_close = CloseSameActorPhaseOnDrop::new(&phase);
+        let admission = custody.reserve_original_session(&phase)?;
         let worker = tokio::spawn(RootWorker {
             future: Box::pin(async move {
-                let _worker_close = worker_close;
-                let _stream_stop = stop;
-                let _fence = FenceOnDrop(Arc::clone(&background));
+                let worker_close = worker_close;
+                let stream_stop = stop;
+                let fence = FenceOnDrop(Arc::clone(&background));
                 loop {
-                    tokio::time::sleep(Duration::from_millis(100)).await;
-                    if refresh(&background, &stream, &background_file)
+                    let changed = background_pause.changed().notified();
+                    tokio::pin!(changed);
+                    changed.as_mut().enable();
+                    if background_pause.requested() {
+                        let resources = lifecycle::OriginalPausedObservationResources::from_original_worker(
+                            worker_close, fence, stream, stream_stop, background, background_file,
+                        );
+                        if let Err(error) = background_pause.park_original_worker(
+                            resources, &background_jobs,
+                        ).await {
+                            background_jobs.record_worker_failure(error);
+                        }
+                        return;
+                    }
+                    tokio::select! {
+                        _ = tokio::time::sleep(Duration::from_millis(100)) => {},
+                        _ = &mut changed => continue,
+                    }
+                    // Normal pause is observed only between complete frames.
+                    // Never select/drop the original refresh or consumer CAS.
+                    if background_pause.requested() {
+                        continue;
+                    }
+                    if refresh(&background, &stream, &background_file, Some(&background_jobs))
                         .await
                         .inspect_err(|_error| {
+                            background_jobs.record_worker_failure(*_error);
                             #[cfg(test)]
                             eprintln!(
                                 "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
@@ -465,11 +509,24 @@ impl AgentdRootAuthoritySession {
             }),
             _writer_file: Arc::clone(&writer_file),
         });
-        Ok(Self {
+        let custody = lifecycle::OriginalRootSessionCustody::from_original_worker(
+            &live, &phase, consumer_jobs, pause, worker, &writer_file,
+        );
+        let session = Self {
             live,
-            worker,
+            worker: OriginalSessionWorker::Phase(Arc::clone(&custody)),
             writer_file,
-        })
+            _retirement: Some(custody.retirement_notice()),
+        };
+        admission.retain_original(&custody);
+        drop(custody);
+        // The same original post-spawn check now runs after the Session and
+        // external custody exist. Refusal drops this Session but not the only
+        // actual JoinHandle; its RootWorker still retains future before File.
+        phase
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        Ok(session)
     }
 
     /// The wrapper captures cancellation before polling and covers every
@@ -602,6 +659,9 @@ impl AgentdRootAuthoritySession {
             observation.revocations.clone(),
             started,
             &self.writer_file,
+            self.worker.phase_custody().map(|original| {
+                lifecycle::OriginalRootSessionCustody::consumers(original)
+            }),
         )
         .await?;
         *self
@@ -668,6 +728,7 @@ async fn refresh(
     live: &Arc<LiveRoot>,
     stream: &RootObservationStream,
     writer_file: &WriterCustody,
+    phase_jobs: Option<&Arc<lifecycle::OriginalConsumerJobs>>,
 ) -> Result<(), AgentdRootAuthorityError> {
     // Declared before the original permit: diagnostic output happens only
     // after the unchanged refresh and consumer barrier release that permit.
@@ -746,7 +807,7 @@ async fn refresh(
                 eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-consumers-lock error={_error:?}");
             })?
             .clone();
-        synchronize_consumers(consumers, head, started, writer_file)
+        synchronize_consumers(consumers, head, started, writer_file, phase_jobs)
             .await
             .inspect_err(|_error| {
                 #[cfg(test)]
@@ -775,6 +836,7 @@ async fn synchronize_consumers(
     head: FinalUseRevocations,
     started: u64,
     writer_file: &WriterCustody,
+    phase_jobs: Option<&Arc<lifecycle::OriginalConsumerJobs>>,
 ) -> Result<(), AgentdRootAuthorityError> {
     if consumers.is_empty() {
         return Ok(());
@@ -791,14 +853,39 @@ async fn synchronize_consumers(
         head,
         writer_file: Arc::clone(writer_file),
     };
-    let result = tokio::time::timeout(
-        Duration::from_nanos(remaining),
-        // Aborting/timing out this await cannot cancel an already running CAS.
-        tokio::task::spawn_blocking(move || job.run()),
-    )
-    .await
-    .map_err(|_| AgentdRootAuthorityError::Unavailable)?
-    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+    let result = if let Some(phase_jobs) = phase_jobs {
+        let admission = phase_jobs.reserve_original_consumer()?;
+        // The new custody mutex cannot put waiting outside the original
+        // request-age budget. Sample only the original clock, after admission,
+        // and subtract from the SAME started value without renewing a window.
+        let admitted_elapsed = boottime_ns()?
+            .checked_sub(started)
+            .filter(|admitted| *admitted >= elapsed)
+            .ok_or(AgentdRootAuthorityError::Unavailable)?;
+        let remaining = MAX_AGE_NS
+            .checked_sub(admitted_elapsed)
+            .filter(|remaining| *remaining > 0)
+            .ok_or(AgentdRootAuthorityError::Unavailable)?;
+        let handle = tokio::task::spawn_blocking(move || job.run());
+        let retained = lifecycle::OriginalConsumerAdmission::retain_original_session_consumer_handle(
+            admission, handle,
+        );
+        tokio::time::timeout(
+            Duration::from_nanos(remaining),
+            phase_jobs.receive_original_consumer(&retained),
+        )
+        .await
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+    } else {
+        tokio::time::timeout(
+            Duration::from_nanos(remaining),
+            // Aborting/timing out this await cannot cancel an already running CAS.
+            tokio::task::spawn_blocking(move || job.run()),
+        )
+        .await
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+    };
     result?;
     if boottime_ns()?
         .checked_sub(started)

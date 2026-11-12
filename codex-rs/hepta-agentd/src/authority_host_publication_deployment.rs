@@ -294,3 +294,6 @@ fn registration_uncertain(error: io::Error) -> io::Error {
 #[cfg(test)]
 #[path = "authority_host_publication_deployment_tests.rs"]
 mod tests;
+
+#[path = "authority_host_publication_phase_deployment.rs"]
+pub(in crate::authority_host_runtime::session) mod phase_inputs;

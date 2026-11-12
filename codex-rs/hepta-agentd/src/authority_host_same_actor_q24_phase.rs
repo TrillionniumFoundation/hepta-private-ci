@@ -25,6 +25,17 @@ pub use scope_cap::RootSameActorScopedEnrollmentV1;
 #[path = "authority_host_same_actor_q24_phase_worker.rs"]
 mod worker;
 
+#[path = "authority_host_same_actor_q24_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalRootRetiredChannel;
+pub(crate) use retirement::OriginalRootRetirementLane;
+pub(crate) use retirement::OriginalRootRetirementPurpose;
+pub(crate) use retirement::OriginalRootRetirementScope;
+
+#[path = "authority_host_same_actor_q24_deployment.rs"]
+mod deployment;
+pub use deployment::RootSameActorDeploymentHandoffsV1;
+
 #[path = "authority_host_same_actor_q24_host.rs"]
 mod host;
 pub use host::RootSameActorHostAcknowledgementV1;

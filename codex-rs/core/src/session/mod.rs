@@ -393,9 +393,17 @@ pub(crate) struct SessionIo {
     // Shared future for the background submission loop completion so multiple
     // callers can wait for shutdown.
     pub(crate) session_loop_termination: SessionLoopTermination,
+    pub(crate) original_loop_outcome: Option<Arc<OriginalSessionLoopOutcome>>,
 }
 
 pub(crate) type SessionLoopTermination = Shared<BoxFuture<'static, ()>>;
+
+mod original_shutdown;
+pub(crate) use original_shutdown::OriginalCoreTaskFailure;
+pub(crate) use original_shutdown::OriginalSessionLoopOutcome;
+pub(crate) use original_shutdown::OriginalSessionLoopShutdown;
+#[cfg(test)]
+pub(crate) use original_shutdown::original_loop_io_for_test;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum GitEnrichmentPolicy {
@@ -812,11 +820,14 @@ impl Session {
                 .instrument(info_span!("session_loop", thread_id = %thread_id))
                 .await;
         });
+        let (session_loop_termination, original_loop_outcome) =
+            original_shutdown::observe_original_session_loop(session_loop_handle);
         let io = SessionIo {
             tx_sub,
             rx_event,
             agent_status: agent_status_rx,
-            session_loop_termination: session_loop_termination_from_handle(session_loop_handle),
+            session_loop_termination,
+            original_loop_outcome: Some(original_loop_outcome),
         };
 
         Ok((session, io))

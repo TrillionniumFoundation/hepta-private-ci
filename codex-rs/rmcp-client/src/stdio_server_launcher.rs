@@ -69,6 +69,13 @@ use crate::utils::create_env_for_mcp_server;
 use crate::utils::create_env_overlay_for_remote_mcp_server;
 use crate::utils::remote_mcp_env_var_names;
 
+#[path = "stdio_server_owned_shutdown.rs"]
+mod owned_shutdown;
+
+pub use owned_shutdown::OriginalStdioShutdownCustody;
+pub use owned_shutdown::OriginalStdioShutdownObservation;
+use owned_shutdown::OriginalOwnedStdioTransport;
+
 // General purpose public code.
 
 /// Launches an MCP stdio server and returns the transport for rmcp.
@@ -108,6 +115,7 @@ pub struct StdioServerTransport {
 
 enum StdioServerTransportInner {
     LocalLegacy(TokioChildProcess),
+    OwnedLocalLegacy(OriginalOwnedStdioTransport),
     LocalModern(LocalStdioTransport),
     Executor(ExecutorProcessTransport),
 }
@@ -124,6 +132,7 @@ impl Transport<RoleClient> for StdioServerTransport {
         // semantics unchanged.
         match &mut self.inner {
             StdioServerTransportInner::LocalLegacy(transport) => transport.send(item).boxed(),
+            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.send(item).boxed(),
             StdioServerTransportInner::LocalModern(transport) => transport.send(item).boxed(),
             StdioServerTransportInner::Executor(transport) => transport.send(item).boxed(),
         }
@@ -135,6 +144,7 @@ impl Transport<RoleClient> for StdioServerTransport {
         // line-delimited JSON stream expected by rmcp.
         match &mut self.inner {
             StdioServerTransportInner::LocalLegacy(transport) => transport.receive().boxed(),
+            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.receive().boxed(),
             StdioServerTransportInner::LocalModern(transport) => transport.receive().boxed(),
             StdioServerTransportInner::Executor(transport) => transport.receive().boxed(),
         }
@@ -144,6 +154,7 @@ impl Transport<RoleClient> for StdioServerTransport {
         self.process.terminate().await?;
         match &mut self.inner {
             StdioServerTransportInner::LocalLegacy(transport) => transport.close().await,
+            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.close().await,
             StdioServerTransportInner::LocalModern(transport) => transport.close().await,
             StdioServerTransportInner::Executor(transport) => transport.close().await,
         }
@@ -188,6 +199,7 @@ impl StdioServerCommand {
 #[derive(Clone)]
 pub struct LocalStdioServerLauncher {
     fallback_cwd: PathBuf,
+    owned_shutdown: Option<Arc<OriginalStdioShutdownCustody>>,
 }
 
 impl LocalStdioServerLauncher {
@@ -196,7 +208,10 @@ impl LocalStdioServerLauncher {
     /// `fallback_cwd` is used when the MCP server config omits `cwd`, so
     /// relative commands resolve from the caller's runtime working directory.
     pub fn new(fallback_cwd: PathBuf) -> Self {
-        Self { fallback_cwd }
+        Self {
+            fallback_cwd,
+            owned_shutdown: None,
+        }
     }
 }
 
@@ -205,6 +220,9 @@ impl StdioServerLauncher for LocalStdioServerLauncher {
         &self,
         command: StdioServerCommand,
     ) -> BoxFuture<'static, io::Result<StdioServerTransport>> {
+        if let Some(custody) = &self.owned_shutdown {
+            return Arc::clone(custody).launch(command, self.fallback_cwd.clone());
+        }
         let fallback_cwd = self.fallback_cwd.clone();
         async move {
             // Keep synchronous program resolution and process creation from blocking the
@@ -249,6 +267,7 @@ struct StdioServerProcessHandleInner {
 
 enum StdioServerProcessKind {
     Local(Option<LocalProcessTerminator>),
+    OwnedLocal(Arc<OriginalStdioShutdownCustody>),
     Executor(Arc<dyn ExecProcess>),
 }
 
@@ -483,6 +502,10 @@ impl StdioServerProcessHandle {
                 Ok(())
             }
             StdioServerProcessKind::Local(None) => Ok(()),
+            StdioServerProcessKind::OwnedLocal(custody) => {
+                OriginalStdioShutdownCustody::request_stop(custody);
+                Ok(())
+            }
             StdioServerProcessKind::Executor(process) => match process.terminate().await {
                 Ok(()) => Ok(()),
                 Err(error) => {
@@ -505,6 +528,9 @@ impl Drop for StdioServerProcessHandleInner {
                 terminator.terminate();
             }
             StdioServerProcessKind::Local(None) => {}
+            StdioServerProcessKind::OwnedLocal(custody) => {
+                OriginalStdioShutdownCustody::request_stop(custody);
+            }
             StdioServerProcessKind::Executor(process) => {
                 let process = Arc::clone(process);
                 let program_name = self.program_name.clone();

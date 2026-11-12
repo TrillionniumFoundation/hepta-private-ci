@@ -21,6 +21,7 @@ fn jobs() -> io::Result<Arc<OriginalLearningJobs>> {
             SameActorPhaseDeadline::at_original_service_start(WAIT)?,
         )?,
         retained: Mutex::new(Vec::new()),
+        normal_closed: AtomicBool::new(false),
         pending: Arc::new(AtomicUsize::new(0)),
         join_failed: Arc::new(AtomicBool::new(false)),
         changed: Arc::new(Notify::new()),
@@ -274,3 +275,62 @@ async fn successful_original_job_releases_real_lane_before_returning_value() -> 
     assert_eq!(jobs.close_and_join().await, Ok(()));
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure() -> anyhow::Result<()> {
+    let jobs = jobs()?;
+    let job = {
+        let admission = jobs.reserve()?;
+        let handle = tokio::task::spawn_blocking(|| -> Result<(), ()> {
+            panic!("original C observer component panic");
+        });
+        admission.retain_original_handle(handle)
+    };
+    let error = jobs
+        .receive_registered_job_with_join_cause(job)
+        .await
+        .unwrap_err();
+    let OriginalJobReceiveError::Join(error) = error else {
+        panic!("original JoinError was not preserved: {error}");
+    };
+    assert!(error.is_panic());
+    let payload = error.into_panic();
+    assert_eq!(
+        *payload.downcast::<&'static str>().unwrap(),
+        "original C observer component panic"
+    );
+    assert_eq!(jobs.pending.load(Ordering::Acquire), 0);
+    assert!(jobs.gate.require_open().is_err());
+    assert_eq!(jobs.close_and_join().await, Err(()));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn joined_c_job_distinguishes_phase_refusal_and_drops_the_actual_owner() -> anyhow::Result<()> {
+    let jobs = jobs()?;
+    let (owned, mut peer) = pair()?;
+    let (started, started_rx) = oneshot::channel();
+    let (release, release_rx) = mpsc::sync_channel(1);
+    let job = {
+        let admission = jobs.reserve()?;
+        let handle = tokio::task::spawn_blocking(move || {
+            let _ = started.send(());
+            release_rx.recv().map_err(|_| ())?;
+            Ok::<_, ()>(owned)
+        });
+        admission.retain_original_handle(handle)
+    };
+    tokio::time::timeout(WAIT, started_rx).await??;
+    jobs.gate.close();
+    assert_eq!(jobs.pending.load(Ordering::Acquire), 1);
+    release.send(())?;
+    let result = jobs.receive_registered_job_with_join_cause(job).await;
+    assert!(matches!(result, Err(OriginalJobReceiveError::Phase(_))));
+    require_eof(&mut peer).await?;
+    assert_eq!(jobs.pending.load(Ordering::Acquire), 0);
+    assert_eq!(jobs.close_and_join().await, Ok(()));
+    Ok(())
+}
+
+#[path = "same_actor_q24_phase_learning_normal_work_tests.rs"]
+mod normal_retirement;

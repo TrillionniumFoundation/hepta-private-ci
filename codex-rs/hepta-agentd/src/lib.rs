@@ -141,6 +141,10 @@ mod same_actor_q24_phase_learning;
 #[cfg(target_os = "linux")]
 mod same_actor_q24_phase_protocol;
 #[cfg(target_os = "linux")]
+mod same_actor_q24_deployment_protocol;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_root_retirement_protocol;
+#[cfg(target_os = "linux")]
 #[path = "authority_host_same_actor_q24_phase_record.rs"]
 mod same_actor_q24_phase_record;
 #[cfg(target_os = "linux")]
@@ -170,9 +174,19 @@ pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedRootSameActorQ24PhaseV1;
 #[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootRetiredChannel;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootRetirementLane;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootRetirementPurpose;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootRetirementScope;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootSameActorHostAcknowledgementV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorDeploymentHandoffsV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootSameActorHostCommandV1;
 #[cfg(target_os = "linux")]
@@ -747,6 +761,8 @@ mod production_composition;
 #[cfg(target_os = "linux")]
 mod production_launcher;
 #[cfg(target_os = "linux")]
+mod same_actor_q24_deployment;
+#[cfg(target_os = "linux")]
 mod production_root_composition;
 mod production_writer_host;
 mod prompt_runtime;
@@ -1314,6 +1330,8 @@ pub use production_composition::AgentdProductionNotesInputs;
 pub use production_composition::attach_production_operation_host;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdOriginalSameActorPhaseStartupV1;
+#[cfg(target_os = "linux")]
+pub use production_launcher::AgentdOriginalSameActorDeploymentStartupV1;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionLaunch;
 #[cfg(target_os = "linux")]

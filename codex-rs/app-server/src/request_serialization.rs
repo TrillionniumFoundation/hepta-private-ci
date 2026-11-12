@@ -154,10 +154,97 @@ struct RequestSerializationQueue {
 
 #[derive(Clone, Default)]
 pub(crate) struct RequestSerializationQueues {
+    original_owner: Option<Arc<crate::OriginalAppServerOwnerCustody>>,
+    original_closed: Arc<std::sync::atomic::AtomicBool>,
     inner: Arc<Mutex<HashMap<RequestSerializationQueueKey, RequestSerializationQueue>>>,
 }
 
 impl RequestSerializationQueues {
+    pub(crate) fn new_original_owner(
+        original: Arc<crate::OriginalAppServerOwnerCustody>,
+    ) -> Self {
+        Self {
+            original_owner: Some(original),
+            ..Self::default()
+        }
+    }
+
+    pub(crate) fn original_owner(&self) -> Option<Arc<crate::OriginalAppServerOwnerCustody>> {
+        self.original_owner.as_ref().map(Arc::clone)
+    }
+
+    pub(crate) async fn seal_original_queues(&self) {
+        let _queues = self.inner.lock().await;
+        self.original_closed
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
+
+    pub(crate) async fn require_original_queues_drained(&self) -> std::io::Result<()> {
+        // Called only after the actual registered drain jobs have been joined.
+        // The empty-map check is an additional invariant, never a join proof.
+        let abandoned = {
+            let mut queues = self.inner.lock().await;
+            if queues.is_empty() {
+                return Ok(());
+            }
+            std::mem::take(&mut *queues)
+        };
+        drop(abandoned);
+        Err(std::io::Error::other(
+            "original serialized drain left unexecuted request owners",
+        ))
+    }
+
+    async fn enqueue_original(
+        &self,
+        original: &Arc<crate::OriginalAppServerOwnerCustody>,
+        key: RequestSerializationQueueKey,
+        access: RequestSerializationAccess,
+        request: QueuedInitializedRequest,
+    ) {
+        let request = QueuedSerializedRequest {
+            access,
+            request,
+            _diagnostics_guard: QUEUED_REQUESTS.track(),
+        };
+        let mut queues = self.inner.lock().await;
+        if self.original_closed.load(std::sync::atomic::Ordering::Acquire) {
+            drop(queues);
+            drop(request);
+            crate::OriginalAppServerOwnerCustody::record_original_failure(
+                original,
+                std::io::Error::other("request reached sealed original serialization queues"),
+            );
+            return;
+        }
+        match queues.get_mut(&key) {
+            Some(queue) => {
+                queue.requests.push_back(request);
+                queue.changed.notify_one();
+            }
+            None => {
+                let mut requests = VecDeque::new();
+                requests.push_back(request);
+                queues.insert(
+                    key.clone(),
+                    RequestSerializationQueue {
+                        requests,
+                        changed: Arc::new(Notify::new()),
+                    },
+                );
+                let actual = self.clone();
+                let span = tracing::debug_span!("app_server.serialized_request_queue", ?key);
+                let handle = tokio::spawn(async move { actual.drain(key).await }.instrument(span));
+                // Registration occurs before releasing the SAME admission lock.
+                crate::OriginalAppServerOwnerCustody::retain_original_task(
+                    original,
+                    crate::original_owned_shutdown::OriginalAppServerTaskKind::SerializedQueue,
+                    handle,
+                );
+            }
+        }
+    }
+
     /// Enqueue app-owned work alongside RPCs that mutate the same serialized resource.
     pub(crate) async fn enqueue_background(
         &self,
@@ -179,6 +266,10 @@ impl RequestSerializationQueues {
         access: RequestSerializationAccess,
         request: QueuedInitializedRequest,
     ) {
+        if let Some(original) = &self.original_owner {
+            self.enqueue_original(original, key, access, request).await;
+            return;
+        }
         let request = QueuedSerializedRequest {
             access,
             request,

@@ -186,3 +186,11 @@ async fn delivery(
         .map_err(|_| Error::CommitUncertain)?;
     Ok(completed.snapshot().clone())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_learning_delivery_same_actor.rs"]
+mod same_actor;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor::OriginalDurableLearningAcknowledgement;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor::deliver_original_same_actor_ack;

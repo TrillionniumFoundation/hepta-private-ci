@@ -151,6 +151,31 @@ impl HostAuthorityPeerChannel {
         }
     }
 
+    /// Consume this channel only after a terminal response was sent. Wait for
+    /// the same live peer to close its write side within the original end.
+    /// Any byte is a protocol error: this never starts another framed request
+    /// or creates another per-request deadline. EOF is only an exit-ordering
+    /// fact, not evidence that the peer consumed a response or completed work.
+    pub fn wait_for_original_peer_eof(&mut self) -> Result<(), HostIssuerTransportError> {
+        let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
+        let result = (|| {
+            let end = self.owner.end();
+            self.owner.check(end)?;
+            let mut byte = [0; 1];
+            if self.owner.read(&mut stream, &mut byte, end)? != 0 {
+                return Err(HostIssuerTransportError::InvalidRequest);
+            }
+            self.owner.check(end)?;
+            Ok(())
+        })();
+        if result.is_err() {
+            let _ = stream.shutdown(Shutdown::Both);
+        }
+        // Success also consumes the slot. There is no reconnect, rearm or
+        // following request even when the peer supplied a clean EOF.
+        result
+    }
+
     /// Serve one frame. The handler must return a complete bounded response.
     /// No response prefix is sent before encoding and capacity checks finish.
     /// Storage in the handler is not forcibly cancelled; deadline/owner checks

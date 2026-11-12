@@ -21,7 +21,7 @@ pub async fn run_main_with_transport_options(
     auth: AppServerWebsocketAuthSettings,
     runtime_options: AppServerRuntimeOptions,
 ) -> std::io::Result<()> {
-    crate::run_main_with_transport_options_inner(
+    crate::run_main_with_original_owner_options(
         arg0_paths,
         cli_config_overrides,
         loader_overrides,
@@ -56,7 +56,7 @@ pub async fn run_main_with_inherited_unix_listener(
     let transport = AppServerTransport::UnixSocket {
         socket_path: listener.socket_path().clone(),
     };
-    crate::run_main_with_transport_options_inner(
+    crate::run_main_with_original_owner_options(
         arg0_paths,
         cli_config_overrides,
         loader_overrides,

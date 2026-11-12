@@ -233,3 +233,52 @@ impl BoundFactory {
         )
     }
 }
+
+impl BoundFactory {
+    pub(super) fn serve_same_actor_phase_factory_for_retirement(
+        &self,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        retirement: &std::sync::Arc<crate::OriginalRootRetirementScope>,
+    ) -> io::Result<crate::OriginalRootRetiredChannel> {
+        let gate = retirement.gate();
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        let end = gate.deadline().instant();
+        let stream = loop {
+            let epoch = gate.original_wait_epoch()?;
+            owner_alive(owner, end)?;
+            match self.listener.accept() {
+                Ok((stream, _)) => break stream,
+                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                    gate.wait_original_change(epoch)?;
+                }
+                Err(error) => return Err(error),
+            }
+        };
+        verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+        gate.require_open()?;
+        let retired = service.serve_q24_model_factory_for_root_retirement(
+            &self.factory,
+            config,
+            registration,
+            stream,
+            HostAuthorityPeerPolicy {
+                peer: HostIssuerPeer {
+                    uid: config.peer_uid,
+                    pid: registration.peer_pid,
+                },
+                timeout: Duration::from_millis(config.timeout_ms),
+                lifetime: Duration::from_millis(config.lifetime_ms),
+                request_bound: 16 * 1024,
+                response_bound: 16 * 1024,
+            },
+            owner.try_clone()?,
+            retirement,
+        )?;
+        retirement.require_original(gate)?;
+        closing.disarm();
+        Ok(retired)
+    }
+}

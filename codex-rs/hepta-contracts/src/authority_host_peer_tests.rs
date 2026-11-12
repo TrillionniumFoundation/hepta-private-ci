@@ -164,3 +164,133 @@ fn pinned_client_rejects_truncated_oversized_and_late_replies_without_retry() {
         Err(HostIssuerTransportError::Closed)
     );
 }
+
+#[test]
+fn original_peer_eof_retains_the_channel_until_the_live_client_releases_it() {
+    let (mut server, client) = channel(32);
+    let retained_client_stream = client.try_clone().unwrap();
+    let pid = rustix::process::getpid();
+    let owner = rustix::process::pidfd_open(pid, rustix::process::PidfdFlags::empty()).unwrap();
+    let mut client = HostAuthorityPeerChannel::from_stream(
+        client,
+        HostAuthorityPeerPolicy {
+            peer: HostIssuerPeer {
+                uid: rustix::process::getuid().as_raw(),
+                pid: pid.as_raw_nonzero().get() as u32,
+            },
+            timeout: Duration::from_millis(100),
+            lifetime: Duration::from_secs(3),
+            request_bound: 32,
+            response_bound: 32,
+        },
+        owner,
+    )
+    .unwrap();
+    std::thread::scope(|scope| {
+        let returned = scope.spawn(move || {
+            assert_eq!(
+                server.exchange(|request| {
+                    assert_eq!(request, b"last");
+                    Ok(b"joined".to_vec())
+                }),
+                Ok(true)
+            );
+            assert_eq!(server.wait_for_original_peer_eof(), Ok(()));
+            assert_eq!(
+                server.wait_for_original_peer_eof(),
+                Err(HostIssuerTransportError::Closed)
+            );
+        });
+        // request() includes the original final pidfd/deadline check. The
+        // release is ordered after that real check, not after a bare read.
+        assert_eq!(client.request(b"last"), Ok(b"joined".to_vec()));
+        drop(client);
+        retained_client_stream.shutdown(Shutdown::Write).unwrap();
+        returned.join().unwrap();
+    });
+}
+
+#[test]
+fn original_peer_eof_rejects_an_extra_byte_or_frame_without_rearming() {
+    for bytes in [vec![0], vec![0, 0, 0, 1, b'x']] {
+        let (mut server, mut client) = channel(32);
+        client.write_all(&bytes).unwrap();
+        assert_eq!(
+            server.wait_for_original_peer_eof(),
+            Err(HostIssuerTransportError::InvalidRequest)
+        );
+        assert_eq!(
+            server.wait_for_original_peer_eof(),
+            Err(HostIssuerTransportError::Closed)
+        );
+        let mut response = Vec::new();
+        client.read_to_end(&mut response).unwrap();
+        assert!(response.is_empty());
+    }
+}
+
+#[test]
+fn original_peer_eof_rejects_the_exit_of_the_actual_connected_process() {
+    const CHILD: &str = "HEPTA_ORIGINAL_PEER_EOF_COMPONENT_CHILD";
+    if let Some(path) = std::env::var_os(CHILD) {
+        let _stream = UnixStream::connect(path).unwrap();
+        let mut release = [0; 1];
+        std::io::stdin().read_exact(&mut release).unwrap();
+        assert_eq!(release, [1]);
+        return;
+    }
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("peer.sock");
+    let listener = std::os::unix::net::UnixListener::bind(&path).unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let module = module_path!().split_once("::").unwrap().1;
+    let test_name = format!(
+        "{module}::original_peer_eof_rejects_the_exit_of_the_actual_connected_process"
+    );
+    let mut child = std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", &test_name, "--nocapture"])
+        .env(CHILD, &path)
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    let child_pid = rustix::process::Pid::from_raw(child.id() as i32).unwrap();
+    let owner =
+        rustix::process::pidfd_open(child_pid, rustix::process::PidfdFlags::empty()).unwrap();
+    let mut descriptors = [rustix::event::PollFd::new(&listener, rustix::event::PollFlags::IN)];
+    assert_ne!(
+        rustix::event::poll(
+            &mut descriptors,
+            Some(&rustix::event::Timespec::try_from(Duration::from_secs(3)).unwrap())
+        )
+        .unwrap(),
+        0
+    );
+    let (stream, _) = listener.accept().unwrap();
+    let mut server = HostAuthorityPeerChannel::from_stream(
+        stream,
+        HostAuthorityPeerPolicy {
+            peer: HostIssuerPeer {
+                uid: rustix::process::getuid().as_raw(),
+                pid: child.id(),
+            },
+            timeout: Duration::from_millis(100),
+            lifetime: Duration::from_secs(3),
+            request_bound: 32,
+            response_bound: 32,
+        },
+        owner,
+    )
+    .unwrap();
+    child.stdin.take().unwrap().write_all(&[1]).unwrap();
+    assert!(child.wait().unwrap().success());
+    // The actual connected child's pidfd is readable. Its simultaneous EOF
+    // must not erase the original lifetime refusal.
+    assert_eq!(
+        server.wait_for_original_peer_eof(),
+        Err(HostIssuerTransportError::PeerDenied)
+    );
+    assert_eq!(
+        server.wait_for_original_peer_eof(),
+        Err(HostIssuerTransportError::Closed)
+    );
+}

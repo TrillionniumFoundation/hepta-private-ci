@@ -3,6 +3,9 @@ use super::*;
 #[path = "product_execution_tests.rs"]
 mod execution_tests;
 
+#[path = "product_file_backed_tests.rs"]
+mod file_backed_tests;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 

@@ -92,3 +92,65 @@ impl HostAuthorityService {
         Err(HostIssuerTransportError::Closed)
     }
 }
+
+impl HostAuthorityService {
+    pub(crate) fn serve_learning_checkpoint_for_root_retirement(
+        &self,
+        backend: &LearningIterationCheckpointOwnerV1,
+        stream: UnixStream,
+        mut policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        retirement: &std::sync::Arc<crate::OriginalRootRetirementScope>,
+    ) -> Result<crate::OriginalRootRetiredChannel, HostIssuerTransportError> {
+        let phase = retirement.gate();
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
+        phase.require_open().map_err(unavailable)?;
+        let stream_stop = phase.retain_original_stream(&stream).map_err(unavailable)?;
+        let writer: &RegisteredWriter = self
+            .writer
+            .as_ref()
+            .ok_or(HostIssuerTransportError::Unavailable)?;
+        if backend.registered_agent_id() != self.identity.agent_id.to_string() {
+            return Err(HostIssuerTransportError::PeerDenied);
+        }
+        policy.request_bound = 16 * 1024;
+        policy.response_bound = 16 * 1024;
+        let mut channel = HostAuthorityPeerChannel::from_stream_until(
+            stream,
+            policy,
+            owner_pidfd,
+            phase.deadline().instant(),
+        )?;
+        let retirement_lane = retirement
+            .register_original_lane(crate::OriginalRootRetirementPurpose::Learning, phase)
+            .map_err(unavailable)?;
+        let mut next_request_id = 1;
+        let mut retirement_admission = None;
+        while channel.exchange(|bytes| {
+            retirement_admission = Some(
+                retirement_lane.enter_original_request().map_err(unavailable)?,
+            );
+            let _admission = phase.enter_original_lane().map_err(unavailable)?;
+            self.check_logind_lifetime().map_err(unavailable)?;
+            let response = writer.exchange_same_actor_learning_checkpoint(
+                &self.issuer,
+                &self.clock,
+                backend,
+                bytes,
+                &mut next_request_id,
+                phase,
+            )?;
+            self.check_logind_lifetime().map_err(unavailable)?;
+            phase.require_open().map_err(unavailable)?;
+            Ok(response)
+        })? {
+            phase.require_open().map_err(unavailable)?;
+            drop(retirement_admission.take());
+        }
+        let retired = retirement_lane
+            .accept_original_clean_eof(channel, stream_stop)
+            .map_err(unavailable)?;
+        closing.disarm();
+        Ok(retired)
+    }
+}

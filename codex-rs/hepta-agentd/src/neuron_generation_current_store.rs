@@ -11,6 +11,8 @@ use super::types::CurrentHead;
 use super::types::invalid;
 use super::types::scope_digest;
 use crate::AgentdError;
+#[cfg(target_os = "linux")]
+use crate::root_generation_current_client::RootGenerationCurrentClient;
 
 pub(super) struct CurrentStore {
     owner_id: String,
@@ -105,6 +107,26 @@ impl CurrentStore {
             _ => Err(invalid(
                 "successor requires the same actual Root update client",
             )),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn retire_original_root_client_after_intent(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        match &self.store {
+            Store::Root(original) => {
+                RootGenerationCurrentClient::retire_original_current_after_root_intent(
+                    original, intent, identity, gate,
+                )
+            }
+            _ => {
+                gate.close();
+                Err(invalid("retirement requires the original scoped CURRENT client"))
+            }
         }
     }
 

@@ -20,6 +20,8 @@ External or production callers enter through `ProductEvaluationRunnerV1`; the ru
 | `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
 | `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Not default cross-crate APIs; only the product runner may turn them into product qualification |
 | `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
+| `LockedFileFinalHoldoutProviderV1` | **Concrete file material provider** | Releases exact frozen file data only with the original runner's one-shot post-consumption permit; a copied receipt is insufficient |
+| `LockedFileProductQualificationEvidenceSinkV1` | **Concrete durable evidence publication** | Commits the actual runner decision in an independently bound evidence file; readback is data, never a reconstructed qualification or role credential |
 | `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required when multiple writers/hosts can contend** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
 | `DurableFinalHoldoutJournalV1` | Single-host/cooperative-owner only | Local file durability when the host can guarantee exclusive namespace ownership |
 | `trusted_inprocess::decide_independently{,_v2}` | **Trusted-only** | Explicit compatibility/test feature; never external qualification ingress |
@@ -91,10 +93,30 @@ manufacture a newer fence or current authoritative state.
 `ProductEvaluationRunnerV1` is the canonical evaluation composition. It freezes
 the metric-to-estimator mapping into the bound estimand, consumes the final
 holdout through `FencedFinalHoldoutOwnerV1`, and only then invokes the
-`FinalHoldoutProviderV1::release_after_consumption` boundary. Candidate and
+`FinalHoldoutProviderV1::release_original_consumption` boundary with a private-field,
+non-cloneable permit constructed by the original runner after `Recorded`. Its
+synchronous default passes the same receipt to the legacy
+`release_after_consumption` method. The concrete file provider rejects that
+receipt-only method, checks its complete frozen plan and permits one release
+attempt. The permit proves the original runner control flow; the host still
+supplies and authenticates the authoritative CAS backend. Candidate and
 baseline metric intervals are derived from sealed `TemporalEvaluationReceipt`
 and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 `MetricGateV1` intervals. The runner builds the signed qualification bundle itself and returns success only after `ProductQualificationEvidenceSinkV1` returns a nonzero durable publication digest. The resulting `ProductQualificationReceiptV1` has a private integrity seal and binds the candidate, evaluator, objective, dataset, snapshot set, claim scope, signed decision and durable publication.
+
+The file provider uses bounded versioned data bytes whose exact digest is the
+original frozen `final_holdout_digest`; it never manufactures observations,
+roles or signed evidence. Its caller supplies the authorized regular file and
+retains pathname, permission and independent-data provenance responsibilities.
+The qualification sink uses a distinct evidence-domain binding over the original
+locked, append-only execution-storage primitive. It persists the complete actual
+decision, execution, trust and authentication commitments, fsyncs and reads back
+before returning the publication digest. Recovery requires the independently
+retained minimum anchor; pending, torn, conflicting or indeterminate publication
+cannot be converted to a fresh claim or a successful qualification. Actual
+signed admission, budgets, cost coverage and later independent selection remain
+unchanged. A prepared result file is not a substitute for either live runner
+execution or these original checks.
 
 ## Canonical product consumer
 

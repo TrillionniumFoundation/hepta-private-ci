@@ -48,6 +48,8 @@ pub use profile::HostAuthorityLearningScopeV2;
 mod transport;
 #[cfg(target_os = "linux")]
 pub use transport::AgentdLearningCheckpointClientV1;
+#[cfg(target_os = "linux")]
+pub(crate) use transport::OriginalLearningCheckpointRetirement;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationCheckpointErrorV1 {

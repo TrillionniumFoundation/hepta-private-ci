@@ -315,3 +315,149 @@ impl BoundLearning {
         })
     }
 }
+
+
+pub(super) struct OriginalRootScopedChannelsJoined {
+    learning: crate::OriginalRootRetiredChannel,
+    model: crate::OriginalRootRetiredChannel,
+    publication: crate::OriginalRootRetiredChannel,
+    // Retain the actual CURRENT/target/selection/FinalUse readers after its
+    // worker returns. This object is never reconstructed from a wire digest.
+    _publication_owner:
+        crate::authority_host_service::generation_publication::RegisteredGenerationPublication,
+}
+
+impl OriginalRootScopedChannelsJoined {
+    pub(super) fn require_original(
+        &self,
+        retirement: &crate::OriginalRootRetirementScope,
+    ) -> io::Result<()> {
+        self.learning.require_original(
+            retirement, crate::OriginalRootRetirementPurpose::Learning,
+        )?;
+        self.model.require_original(
+            retirement, crate::OriginalRootRetirementPurpose::Model,
+        )?;
+        self.publication.require_original(
+            retirement, crate::OriginalRootRetirementPurpose::Publication,
+        )
+    }
+}
+
+impl BoundLearning {
+    pub(super) fn serve_same_actor_phase_learning_for_retirement(
+        &self,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        mode: (
+            &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+            &std::sync::Arc<crate::OriginalRootRetirementScope>,
+        ),
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<OriginalRootScopedChannelsJoined> {
+        let (phase, retirement) = mode;
+        retirement.require_original(phase.gate)?;
+        let factory = self
+            .model
+            .as_ref()
+            .ok_or_else(|| io::Error::other("same-actor phase original Model factory missing"))?;
+        let publication = self.publication.as_ref().ok_or_else(|| {
+            io::Error::other("same-actor phase original publication route missing")
+        })?;
+        publication.activate_same_actor_phase()?;
+        std::thread::scope(|scope| {
+            let mut closing =
+                crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+            let model = scope.spawn(|| {
+                factory.serve_same_actor_phase_factory_for_retirement(
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    retirement,
+                )
+            });
+            let published = scope.spawn(|| {
+                publication.serve_same_actor_phase_publication_for_retirement(
+                    &self.learning,
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    (phase, retirement),
+                )
+            });
+            let learned = (|| {
+                phase.gate.require_open()?;
+                phase.record.require_scoped()?;
+                ready()?;
+                phase.gate.require_open()?;
+                let end = phase.gate.deadline().instant();
+                let stream = loop {
+                    let epoch = phase.gate.original_wait_epoch()?;
+                    owner_alive(owner, end)?;
+                    match self.listener.accept() {
+                        Ok((stream, _)) => break stream,
+                        Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                            phase.gate.wait_original_change(epoch)?;
+                        }
+                        Err(error) => return Err(error),
+                    }
+                };
+                verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+                phase.record.require_scoped()?;
+                service
+                    .serve_learning_checkpoint_for_root_retirement(
+                        &self.learning.backend,
+                        stream,
+                        HostAuthorityPeerPolicy {
+                            peer: HostIssuerPeer {
+                                uid: config.peer_uid,
+                                pid: registration.peer_pid,
+                            },
+                            timeout: Duration::from_millis(config.timeout_ms),
+                            lifetime: Duration::from_millis(config.lifetime_ms),
+                            request_bound: 16 * 1024,
+                            response_bound: 16 * 1024,
+                        },
+                        owner.try_clone()?,
+                        retirement,
+                    )
+                    .map_err(io::Error::other)
+            })();
+            if learned.is_err() {
+                phase.gate.close();
+            }
+            let model = model
+                .join()
+                .map_err(|_| io::Error::other("original phase Model worker panicked"))
+                .and_then(|result| result);
+            if model.is_err() {
+                phase.gate.close();
+            }
+            let published = published
+                .join()
+                .map_err(|_| io::Error::other("original phase publication worker panicked"))
+                .and_then(|result| result);
+            if published.is_err() {
+                phase.gate.close();
+            }
+            // All actual spawned workers have been joined, even when one
+            // result failed. No error is reclassified as a clean EOF.
+            let learned = learned?;
+            let model = model?;
+            let (publication_owner, publication) = published?;
+            let joined = OriginalRootScopedChannelsJoined {
+                learning: learned,
+                model,
+                publication,
+                _publication_owner: publication_owner,
+            };
+            joined.require_original(retirement)?;
+            closing.disarm();
+            Ok(joined)
+        })
+    }
+}

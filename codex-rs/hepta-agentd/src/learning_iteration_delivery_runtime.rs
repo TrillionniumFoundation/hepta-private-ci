@@ -278,3 +278,9 @@ impl CircuitLearningDeliveryRuntimeV1 {
         }
     }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_delivery_same_actor.rs"]
+mod same_actor;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor::OriginalLearningDeliveryRetired;

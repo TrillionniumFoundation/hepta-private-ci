@@ -39,6 +39,8 @@ use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 mod evaluation_phase;
 #[path = "cell_q24_learning_same_actor.rs"]
 mod same_actor;
+#[path = "cell_q24_learning_retirement.rs"]
+mod retirement;
 #[path = "cell_q24_learning_successor.rs"]
 mod successor;
 

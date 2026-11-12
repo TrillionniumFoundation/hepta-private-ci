@@ -30,6 +30,10 @@ use tokio_util::sync::CancellationToken;
 
 use crate::config_manager::ConfigManager;
 
+#[path = "configured_mcp_runtime_owned_shutdown.rs"]
+mod owned_shutdown;
+pub use owned_shutdown::initialize_configured_mcp_server_with_owned_shutdown;
+
 /// Own this alongside the production runtime. This is a newly initialized
 /// original manager session, not a claim to possess a ChatGPT connector or an
 /// already running App Server thread's peer. It never owns effect permission.
@@ -37,6 +41,7 @@ pub struct ConfiguredMcpRuntime {
     runtime: McpRuntime,
     binding: Arc<McpBinding>,
     startup: CancellationToken,
+    original_owned_shutdown: Option<Arc<codex_mcp::OriginalMcpRuntimeShutdown>>,
 }
 
 impl ConfiguredMcpRuntime {
@@ -184,6 +189,7 @@ pub async fn initialize_configured_mcp_server(
             runtime,
             binding,
             startup: startup.clone(),
+            original_owned_shutdown: None,
         })
     })
     .await

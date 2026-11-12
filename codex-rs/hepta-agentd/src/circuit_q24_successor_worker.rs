@@ -14,6 +14,18 @@ pub(crate) struct PendingSuccessorOwner {
     _lifetime: CloseOnDrop,
 }
 
+struct OriginalRetirableSuccessorAttempt {
+    closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,
+    slot_closing: CloseOnDrop,
+    owner: PendingSuccessorOwner,
+    slot: Arc<SuccessorSlot>,
+    identity: AgentdIdentity,
+    gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    store: AutomationStore,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+}
+
 impl PendingSuccessorOwner {
     pub(super) fn new(
         context: Arc<OriginalQ24SuccessorContext>,
@@ -55,6 +67,67 @@ impl PendingSuccessorOwner {
                 // consumed FinalUse or created the original Source/Cell owner.
                 work.await
             }
+        }
+    }
+
+    /// Preserve the actual original run future and its blocking loop. A
+    /// normal capability is returned only for the exact drain-authorized stop.
+    pub(crate) fn run_original_retirable(
+        self,
+        store: AutomationStore,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+        gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> impl std::future::Future<Output = Result<OriginalSuccessorWorkerJoined, AgentdError>>
+    + Send
+    + 'static {
+        let attempt = OriginalRetirableSuccessorAttempt {
+            closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&gate),
+            slot_closing: CloseOnDrop::new(&self.slot),
+            slot: Arc::clone(&self.slot),
+            identity: self.context.identity().clone(),
+            owner: self,
+            gate,
+            store,
+            state,
+            cancellation,
+        };
+        async move {
+            // Capture the ordered owner, including before the first poll.
+            // A failure closes Gate before dropping actual owner resources.
+            let mut attempt = attempt;
+            attempt.gate.require_open().map_err(|error| {
+                AgentdError::GenerationFenced(error.to_string())
+            })?;
+            if attempt.state.identity() != &attempt.identity
+                || attempt.cancellation.is_cancelled()
+            {
+                return Err(AgentdError::GenerationFenced(
+                    "original C retirement worker identity or cancellation differs".into(),
+                ));
+            }
+            // The separately retained guards now own failure closure. The
+            // unchanged run method still awaits its real in-flight work.
+            attempt.owner._lifetime.disarm();
+            PendingSuccessorOwner::run(
+                attempt.owner,
+                attempt.store,
+                attempt.state,
+                attempt.cancellation.clone(),
+            )
+            .await?;
+            if attempt.cancellation.is_cancelled() {
+                return Err(AgentdError::GenerationFenced(
+                    "original C worker returned during fault cancellation".into(),
+                ));
+            }
+            let joined = attempt.slot.finish_original_retirement_join(
+                &attempt.identity,
+                &attempt.gate,
+                attempt.closing,
+            )?;
+            attempt.slot_closing.disarm();
+            Ok(joined)
         }
     }
 

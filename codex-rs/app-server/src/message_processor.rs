@@ -300,6 +300,20 @@ impl MessageProcessor {
     /// Create a new `MessageProcessor`, retaining a handle to the outgoing
     /// `Sender` so handlers can enqueue messages to be written to stdout.
     pub(crate) fn new(args: MessageProcessorArgs) -> Self {
+        Self::new_with_original_owner(args, None)
+    }
+
+    pub(crate) fn new_original_owner(
+        args: MessageProcessorArgs,
+        original: Arc<crate::OriginalAppServerOwnerCustody>,
+    ) -> Self {
+        Self::new_with_original_owner(args, Some(original))
+    }
+
+    fn new_with_original_owner(
+        args: MessageProcessorArgs,
+        original_owner: Option<Arc<crate::OriginalAppServerOwnerCustody>>,
+    ) -> Self {
         let MessageProcessorArgs {
             outgoing,
             analytics_events_client,
@@ -322,7 +336,10 @@ impl MessageProcessor {
             hepta,
         } = args;
         let hepta = hepta.validated();
-        let thread_state_manager = ThreadStateManager::new();
+        let thread_state_manager = match &original_owner {
+            Some(original) => ThreadStateManager::new_original_owner(Arc::clone(original)),
+            None => ThreadStateManager::new(),
+        };
         // The thread store is intentionally process-scoped. Config reloads can
         // affect per-thread behavior, but they must not move newly started,
         // resumed, or forked threads to a different persistence backend/root.
@@ -426,22 +443,37 @@ impl MessageProcessor {
             crate::thread_status::ThreadWatchManager::new_with_outgoing(outgoing.clone());
         let thread_list_state_permit = Arc::new(Semaphore::new(/*permits*/ 1));
         let app_list_shutdown_token = CancellationToken::new();
-        let request_serialization_queues = RequestSerializationQueues::default();
+        let request_serialization_queues = match &original_owner {
+            Some(original) => RequestSerializationQueues::new_original_owner(Arc::clone(original)),
+            None => RequestSerializationQueues::default(),
+        };
         let config_processor = ConfigRequestProcessor::new(
             outgoing.clone(),
             config_manager.clone(),
             thread_manager.clone(),
             analytics_events_client.clone(),
         );
-        let on_effective_plugins_changed =
-            crate::effective_plugin_change::effective_plugins_changed_callback(
+        let on_effective_plugins_changed = match &original_owner {
+            Some(original) => {
+                crate::effective_plugin_change::effective_plugins_changed_callback_original(
+                    auth_manager.clone(),
+                    Arc::clone(&thread_manager),
+                    config_manager.clone(),
+                    outgoing.clone(),
+                    analytics_events_client.clone(),
+                    request_serialization_queues.clone(),
+                    Arc::clone(original),
+                )
+            }
+            None => crate::effective_plugin_change::effective_plugins_changed_callback(
                 auth_manager.clone(),
                 Arc::clone(&thread_manager),
                 config_manager.clone(),
                 outgoing.clone(),
                 analytics_events_client.clone(),
                 request_serialization_queues.clone(),
-            );
+            ),
+        };
         let account_processor = AccountRequestProcessor::new(
             auth_manager.clone(),
             Arc::clone(&thread_manager),
@@ -820,6 +852,140 @@ impl MessageProcessor {
             .await;
     }
 
+    pub(crate) async fn prepare_original_shutdown(
+        &self,
+        original: &Arc<crate::OriginalAppServerOwnerCustody>,
+    ) -> std::io::Result<()> {
+        let attached =
+            RequestSerializationQueues::original_owner(&self.request_serialization_queues)
+                .ok_or_else(|| {
+                    std::io::Error::other("original serialization owner is absent")
+                })?;
+        if !Arc::ptr_eq(&attached, original) {
+            return Err(std::io::Error::other("original serialization owner mismatch"));
+        }
+        self.thread_processor.prepare_original_shutdown(original).await
+    }
+
+    pub(crate) async fn finish_original_owners(
+        processor: Arc<Self>,
+        original: &Arc<crate::OriginalAppServerOwnerCustody>,
+    ) -> std::io::Result<()> {
+        use crate::original_owned_shutdown::OriginalAppServerTaskKind;
+
+        let mut failures = Vec::new();
+        // Main has stopped RPC dispatch and closed each actual connection gate.
+        // A background callback must register before it can upgrade its manager.
+        crate::OriginalAppServerOwnerCustody::seal_original_background(original);
+        processor.models_refresh_worker.shutdown();
+        if let Some(worker) = &processor.turn_cost_worker {
+            worker.shutdown();
+        }
+        processor.skills_watcher.shutdown();
+        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(
+            original,
+            OriginalAppServerTaskKind::PluginRefresh,
+        )
+        .await
+        {
+            failures.push(("original plugin callbacks", error));
+        }
+        RequestSerializationQueues::seal_original_queues(&processor.request_serialization_queues)
+            .await;
+        for kind in [
+            OriginalAppServerTaskKind::SerializedQueue,
+            OriginalAppServerTaskKind::Rpc,
+            OriginalAppServerTaskKind::ConnectionCleanup,
+        ] {
+            if let Err(error) =
+                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await
+            {
+                failures.push(("original admitted requests", error));
+            }
+        }
+        if let Err(error) = RequestSerializationQueues::require_original_queues_drained(
+            &processor.request_serialization_queues,
+        )
+        .await
+        {
+            failures.push(("original request owners", error));
+        }
+        ThreadRequestProcessor::drain_original_background_tasks(&processor.thread_processor).await;
+        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(
+            original,
+            OriginalAppServerTaskKind::ThreadStartup,
+        )
+        .await
+        {
+            failures.push(("original thread startup", error));
+        }
+        processor.cancel_active_login().await;
+        if let Err(error) =
+            ThreadRequestProcessor::shutdown_original_threads(&processor.thread_processor).await
+        {
+            failures.push(("original Core loops", error));
+        }
+        processor.clear_all_thread_listeners().await;
+        for kind in [
+            OriginalAppServerTaskKind::ThreadListener,
+            OriginalAppServerTaskKind::ThreadUnload,
+        ] {
+            if let Err(error) =
+                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await
+            {
+                failures.push(("original thread observer", error));
+            }
+        }
+        // The actual awaited jobs have released their processor clones. This
+        // transfers the real owner so its own auxiliary handles can be awaited;
+        // it does not use reference counts as evidence of task completion.
+        match Arc::try_unwrap(processor) {
+            Ok(mut processor) => {
+                if let Err(error) =
+                    ModelsRefreshWorker::join_original(&mut processor.models_refresh_worker).await
+                {
+                    failures.push(("original models refresh", std::io::Error::other(error)));
+                }
+                if let Some(worker) = &mut processor.turn_cost_worker {
+                    if let Err(error) = TurnCostWorker::join_original(worker).await {
+                        failures.push(("original turn cost", std::io::Error::other(error)));
+                    }
+                }
+                drop(processor);
+            }
+            Err(processor) => {
+                crate::OriginalAppServerOwnerCustody::retain_unreleased_original_processor(
+                    original,
+                    processor,
+                );
+                failures.push((
+                    "original processor ownership",
+                    std::io::Error::other("actual processor still has an unjoined owner"),
+                ));
+            }
+        }
+        crate::original_owned_shutdown::finish_original_failures(failures)
+    }
+
+    pub(crate) async fn connection_closed_original(
+        &self,
+        connection_id: ConnectionId,
+        session_state: &ConnectionSessionState,
+    ) {
+        session_state.rpc_gate.close().await;
+        session_state.mcp_event_streams.clear().await;
+        session_state.rpc_gate.shutdown().await;
+        self.outgoing.connection_closed(connection_id).await;
+        self.fs_processor.connection_closed(connection_id).await;
+        self.command_exec_processor
+            .connection_closed(connection_id)
+            .await;
+        self.process_exec_processor
+            .connection_closed(connection_id)
+            .await;
+        self.thread_processor.connection_closed(connection_id).await;
+    }
+
     pub(crate) async fn drain_background_tasks(&self) {
         self.models_refresh_worker.shutdown();
         if let Some(worker) = &self.turn_cost_worker {
@@ -995,9 +1161,18 @@ impl MessageProcessor {
                 .enqueue(key, access, request)
                 .await;
         } else {
-            tokio::spawn(async move {
+            let original_rpc = tokio::spawn(async move {
                 request.run().await;
             });
+            if let Some(original) =
+                RequestSerializationQueues::original_owner(&self.request_serialization_queues)
+            {
+                crate::OriginalAppServerOwnerCustody::retain_original_task(
+                    &original,
+                    crate::original_owned_shutdown::OriginalAppServerTaskKind::Rpc,
+                    original_rpc,
+                );
+            }
         }
         Ok(())
     }

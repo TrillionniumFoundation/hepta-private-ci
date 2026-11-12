@@ -1564,6 +1564,7 @@ mod tests {
                     rx_event,
                     agent_status,
                     session_loop_termination: crate::session::completed_session_loop_termination(),
+                    original_loop_outcome: None,
                 },
                 cancel_token: CancellationToken::new(),
                 reuse_key,

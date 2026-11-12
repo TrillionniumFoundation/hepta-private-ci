@@ -682,6 +682,12 @@ impl McpConnectionSet {
             non_prefixed_mcp_tool_servers,
             elicitation_requests: elicitation_requests.clone(),
         };
+        if let Some(owner) = crate::runtime::McpRuntimeContext::original_owned_shutdown(&runtime_context) {
+            // The selected profile is eager, threadless, fresh and one-server.
+            // Retain the actual startup set before returning to publication.
+            crate::OriginalMcpRuntimeShutdown::retain_original_startup(&owner, join_set);
+            return manager;
+        }
         let summary_publication_gate = publication_gate;
         tokio::spawn(async move {
             let outcomes = join_set.join_all().await;

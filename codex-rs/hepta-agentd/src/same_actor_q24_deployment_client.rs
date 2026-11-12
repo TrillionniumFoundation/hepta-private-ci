@@ -1,0 +1,200 @@
+//! One actual daemon connection to the original Root deployment purpose.
+//! The context is retained from the sealed receive; public progress data
+//! cannot reconstruct its pidfd, peer identity, gate or original deadline.
+
+use std::os::fd::OwnedFd;
+use std::sync::Arc;
+use std::time::Duration;
+use std::time::Instant;
+
+use codex_hepta_contracts::HostAuthorityPeerChannel;
+use codex_hepta_contracts::HostAuthorityPeerPolicy;
+use codex_hepta_contracts::HostIssuerPeer;
+
+use crate::AgentdError;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_deployment_protocol::FRAME_BOUND;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentAcknowledgement;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentProgress;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentRequest;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentStage;
+use crate::same_actor_q24_deployment_protocol::PROGRESS_PURPOSE;
+use crate::same_actor_q24_deployment_protocol::original_deployment_socket;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
+
+#[path = "same_actor_q24_deployment_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalRootRetirementIntent;
+pub(crate) use retirement::OriginalRootWorkersJoined;
+pub(crate) use retirement::OriginalRootProcessExited;
+
+const ORIGINAL_FRAME_TIMEOUT: Duration = Duration::from_millis(500);
+
+/// Only the actual selected Startup can hand its private Root context to the
+/// concrete coordinator. One consumed or uncertain stage is never rearmed.
+pub(super) struct OriginalDeploymentClient {
+    context: Arc<OriginalSameActorRootContext>,
+    binding: OriginalDeploymentBinding,
+    channel: HostAuthorityPeerChannel,
+    // Duplicated from the same actual held pidfd before channel construction;
+    // it is only observed for expected exit after the complete ACK2/EOF path.
+    root_exit_pidfd: OwnedFd,
+    next: Option<OriginalDeploymentStage>,
+    current_registration: Option<OriginalDeploymentCurrentRegistration>,
+    required: RequiredSameActorPhaseChannel,
+}
+
+struct OriginalDeploymentCurrentRegistration {
+    registration: String,
+    request: String,
+}
+
+impl OriginalDeploymentClient {
+    pub(super) async fn connect_original(
+        context: Arc<OriginalSameActorRootContext>,
+    ) -> Result<Self, AgentdError> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        OriginalSameActorRootContext::require_current(&context)?;
+        let binding = OriginalDeploymentBinding::from_original_phase(context.descriptor())?;
+        let path = original_deployment_socket(context.descriptor())?;
+        let end = context.gate().deadline().instant();
+        let connect_end = Instant::now()
+            .checked_add(ORIGINAL_FRAME_TIMEOUT)
+            .ok_or_else(|| refused("original deployment connect deadline overflow"))?
+            .min(end);
+        let connected = tokio::time::timeout_at(
+            tokio::time::Instant::from_std(connect_end),
+            tokio::net::UnixStream::connect(&path),
+        );
+        let stream = tokio::select! {
+            _ = context.gate().cancelled() => {
+                return Err(refused("original deployment connection was closed"));
+            }
+            result = connected => {
+                result
+                    .map_err(|_| refused("original deployment connection deadline elapsed"))??
+            }
+        };
+        OriginalSameActorRootContext::require_current(&context)?;
+        let stream = stream.into_std()?;
+        let required = context.gate().retain_required_original_stream(&stream)?;
+        let root_pidfd = OriginalSameActorRootContext::root_pidfd(&context)?;
+        let root_exit_pidfd = root_pidfd.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream,
+            HostAuthorityPeerPolicy {
+                peer: HostIssuerPeer {
+                    uid: 0,
+                    pid: binding.root.pid,
+                },
+                timeout: ORIGINAL_FRAME_TIMEOUT,
+                // This is only the existing constructor's maximum-policy
+                // bound. OwnerChannel stores the exact retained end above.
+                lifetime: Duration::from_secs(300),
+                request_bound: FRAME_BOUND,
+                response_bound: FRAME_BOUND,
+            },
+            root_pidfd,
+            end,
+        )
+        .map_err(owner_error)?;
+        HostAuthorityPeerChannel::check_peer_lifetime(&channel).map_err(owner_error)?;
+        OriginalSameActorRootContext::require_current(&context)?;
+        required.require_open()?;
+        closing.disarm();
+        Ok(Self {
+            context,
+            binding,
+            channel,
+            root_exit_pidfd,
+            next: Some(OriginalDeploymentStage::Initial),
+            current_registration: None,
+            required,
+        })
+    }
+
+    /// Synchronous original framing is driven inside the concrete coordinator's
+    /// block_in_place scope. Other phase lanes remain independently polled.
+    /// The channel's one original request deadline covers write and reply.
+    pub(super) fn exchange_original(
+        &mut self,
+        progress: OriginalDeploymentProgress,
+    ) -> Result<OriginalDeploymentAcknowledgement, AgentdError> {
+        let mut closing = self.required.failure_scope();
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        let expected = self.next.take()
+            .ok_or_else(|| refused("original deployment stage was already consumed"))?;
+        if progress.stage() != expected {
+            return Err(refused("original deployment stages arrived out of order"));
+        }
+        let sequence = match expected {
+            OriginalDeploymentStage::Initial => 1,
+            OriginalDeploymentStage::Scoped => 2,
+            OriginalDeploymentStage::Current => 3,
+        };
+        let request = OriginalDeploymentRequest {
+            schema_version: 1,
+            purpose: PROGRESS_PURPOSE.into(),
+            binding: self.binding.clone(),
+            sequence,
+            progress,
+        };
+        let bytes = request.encode_original()?;
+        self.required.require_open()?;
+        HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
+        // From the actual call onward a missing, invalid or overdue reply
+        // cannot establish that Root performed no registration.
+        let response = HostAuthorityPeerChannel::request(&mut self.channel, &bytes)
+            .map_err(uncertain)?;
+        let acknowledged = (|| {
+            let acknowledgement =
+                OriginalDeploymentAcknowledgement::decode_original(&response, &request)?;
+            HostAuthorityPeerChannel::check_peer_lifetime(&self.channel)
+                .map_err(owner_error)?;
+            OriginalSameActorRootContext::require_current(&self.context)?;
+            self.required.require_open()?;
+            Ok::<_, AgentdError>(acknowledgement)
+        })().map_err(uncertain)?;
+        if expected == OriginalDeploymentStage::Current {
+            self.current_registration = Some(OriginalDeploymentCurrentRegistration {
+                registration: acknowledged.registration_binding.clone()
+                    .ok_or_else(|| uncertain(refused("actual Current acknowledgement has no binding")))?,
+                request: acknowledged.original_request.clone(),
+            });
+        }
+        self.next = match expected {
+            OriginalDeploymentStage::Initial => Some(OriginalDeploymentStage::Scoped),
+            OriginalDeploymentStage::Scoped => Some(OriginalDeploymentStage::Current),
+            OriginalDeploymentStage::Current => None,
+        };
+        closing.disarm();
+        Ok(acknowledged)
+    }
+
+    // After Current, the same client transfers through the actual joined
+    // coordinator owner. Only its private retirement path consumes it.
+
+}
+
+fn refused(message: &str) -> AgentdError {
+    AgentdError::GenerationFenced(message.into())
+}
+
+fn owner_error(error: impl std::error::Error + Send + Sync + 'static) -> AgentdError {
+    AgentdError::Io(std::io::Error::other(error))
+}
+
+fn uncertain(error: impl std::error::Error + Send + Sync + 'static) -> AgentdError {
+    owner_error(OriginalDeploymentUncertain {
+        source: Box::new(error),
+    })
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("original Root deployment registration outcome is uncertain: {source}")]
+struct OriginalDeploymentUncertain {
+    #[source]
+    source: Box<dyn std::error::Error + Send + Sync>,
+}

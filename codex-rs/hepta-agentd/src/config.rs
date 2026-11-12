@@ -150,11 +150,32 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    original_app_server_custody:
+        Option<std::sync::Arc<codex_app_server::OriginalAppServerOwnerCustody>>,
     // Retire original facade state before the one retained process-owner file.
     _writer_lock: std::sync::Arc<File>,
 }
 
 impl AgentdConfig {
+    pub(crate) fn attach_original_app_server_custody(
+        &mut self,
+        original: std::sync::Arc<codex_app_server::OriginalAppServerOwnerCustody>,
+    ) -> Result<(), AgentdError> {
+        if !cfg!(target_os = "linux") || self.original_app_server_custody.is_some() {
+            return Err(AgentdError::Invalid(
+                "original App Server custody requires one Linux attachment".into(),
+            ));
+        }
+        self.original_app_server_custody = Some(original);
+        Ok(())
+    }
+
+    pub(crate) fn take_original_app_server_custody(
+        &mut self,
+    ) -> Option<std::sync::Arc<codex_app_server::OriginalAppServerOwnerCustody>> {
+        self.original_app_server_custody.take()
+    }
+
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
         let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
@@ -283,6 +304,7 @@ impl AgentdConfig {
                 app_server_socket,
             },
             registry,
+            original_app_server_custody: None,
             _writer_lock: std::sync::Arc::new(writer_lock),
             sockets: AgentdSocketInputs::Bind,
             authbus_trust_file: None,

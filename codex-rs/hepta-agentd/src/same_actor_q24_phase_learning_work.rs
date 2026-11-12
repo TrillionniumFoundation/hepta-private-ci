@@ -24,6 +24,10 @@ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 
 #[path = "same_actor_q24_phase_learning_evaluation.rs"]
 mod evaluation;
+#[path = "same_actor_q24_phase_learning_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalLearningStop;
+pub(crate) use retirement::OriginalLearningWorkJoined;
 
 /// Only the actual scoped assembly constructs this capability. It is neither
 /// a replacement stage owner nor an independent source of learning evidence.
@@ -32,6 +36,7 @@ pub(crate) struct OriginalSameActorLearningWork {
     prepared: Arc<CellQ24PreparedLearningV1>,
     jobs: Arc<OriginalLearningJobs>,
     evaluation: evaluation::OriginalEvaluationExchange,
+    retirement: retirement::OriginalLearningRetirement,
 }
 
 pub(crate) struct OriginalSameActorLearningCleanup {
@@ -41,6 +46,7 @@ pub(crate) struct OriginalSameActorLearningCleanup {
 struct OriginalLearningJobs {
     gate: Arc<SameActorPhaseGate>,
     retained: Mutex<Vec<Arc<dyn OriginalJobCustody>>>,
+    normal_closed: AtomicBool,
     pending: Arc<AtomicUsize>,
     join_failed: Arc<AtomicBool>,
     changed: Arc<Notify>,
@@ -48,13 +54,58 @@ struct OriginalLearningJobs {
 
 trait OriginalJobCustody: Send + Sync {
     fn join_and_discard(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>>;
+    fn join_for_normal_retirement(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>>;
 }
 
 struct OriginalJobState<T, E> {
     handle: Option<JoinHandle<Result<T, E>>>,
     joined: bool,
     join_failed: bool,
+    join_error: Option<tokio::task::JoinError>,
     output: Option<Result<T, E>>,
+}
+
+/// The original blocking JoinError is retained, not reconstructed from a
+/// boolean or mapped into an unrelated owner result. Existing receivers keep
+/// their original CommitUncertain mapping.
+#[derive(Debug)]
+pub(crate) enum OriginalJobReceiveError {
+    Join(tokio::task::JoinError),
+    Phase(std::io::Error),
+    Custody(Error),
+    WrongOriginalJob,
+    ResultUnavailable,
+    Release {
+        original: Box<OriginalJobReceiveError>,
+        custody: Error,
+    },
+}
+
+impl std::fmt::Display for OriginalJobReceiveError {
+    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Join(error) => write!(output, "original blocking join: {error}"),
+            Self::Phase(error) => write!(output, "original phase refused result: {error}"),
+            Self::Custody(error) => write!(output, "original job custody: {error}"),
+            Self::WrongOriginalJob => write!(output, "job belongs to another original Work"),
+            Self::ResultUnavailable => write!(output, "original joined result is unavailable"),
+            Self::Release { original, custody } => {
+                write!(output, "{original}; original job release: {custody}")
+            }
+        }
+    }
+}
+
+impl std::error::Error for OriginalJobReceiveError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Join(error) => Some(error),
+            Self::Phase(error) => Some(error),
+            Self::Custody(error) => Some(error),
+            Self::Release { original, .. } => Some(original.as_ref()),
+            Self::WrongOriginalJob | Self::ResultUnavailable => None,
+        }
+    }
 }
 
 /// This object holds the real handle, even while another future borrows it
@@ -89,6 +140,7 @@ impl OriginalSameActorLearningWork {
         let jobs = Arc::new(OriginalLearningJobs {
             gate: Arc::clone(context.gate()),
             retained: Mutex::new(Vec::new()),
+            normal_closed: AtomicBool::new(false),
             pending: Arc::new(AtomicUsize::new(0)),
             join_failed: Arc::new(AtomicBool::new(false)),
             changed: Arc::new(Notify::new()),
@@ -99,6 +151,7 @@ impl OriginalSameActorLearningWork {
             prepared,
             jobs,
             evaluation,
+            retirement: retirement::OriginalLearningRetirement::new(),
         }))
     }
 
@@ -181,6 +234,16 @@ impl OriginalSameActorLearningWork {
         self.jobs.receive_registered_job(job).await
     }
 
+    pub(crate) async fn receive_original_job_with_join_cause<
+        T: Send + 'static,
+        E: Send + 'static,
+    >(
+        &self,
+        job: Arc<OriginalLearningJob<T, E>>,
+    ) -> Result<Result<T, E>, OriginalJobReceiveError> {
+        self.jobs.receive_registered_job_with_join_cause(job).await
+    }
+
     pub(crate) async fn close_and_join_original_work(&self) -> Result<(), AgentdError> {
         self.jobs
             .close_and_join()
@@ -209,6 +272,31 @@ impl OriginalLearningJobs {
         result.map_err(|_| Error::CommitUncertain)
     }
 
+    async fn receive_registered_job_with_join_cause<T: Send + 'static, E: Send + 'static>(
+        &self,
+        job: Arc<OriginalLearningJob<T, E>>,
+    ) -> Result<Result<T, E>, OriginalJobReceiveError> {
+        if !Arc::ptr_eq(&self.gate, &job.gate) || !Arc::ptr_eq(&self.pending, &job.pending) {
+            self.gate.close();
+            job.gate.close();
+            return Err(OriginalJobReceiveError::WrongOriginalJob);
+        }
+        let result = job.receive_with_join_cause().await;
+        match self.release(&job) {
+            Ok(()) => result,
+            Err(custody) => match result {
+                Err(original) => Err(OriginalJobReceiveError::Release {
+                    original: Box::new(original),
+                    custody,
+                }),
+                Ok(output) => {
+                    drop(output);
+                    Err(OriginalJobReceiveError::Custody(custody))
+                }
+            },
+        }
+    }
+
     fn reserve(&self) -> Result<OriginalBlockingAdmission<'_>, Error> {
         let retained = self.retained.lock().map_err(|_| {
             self.gate.close();
@@ -217,6 +305,10 @@ impl OriginalLearningJobs {
         self.gate
             .require_open()
             .map_err(|_| Error::CommitUncertain)?;
+        if self.normal_closed.load(Ordering::Acquire) {
+            self.gate.close();
+            return Err(Error::CommitUncertain);
+        }
         self.pending
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 value.checked_add(1)
@@ -246,6 +338,76 @@ impl OriginalLearningJobs {
         })?;
         retained.retain(|entry| !Arc::ptr_eq(entry, &original));
         Ok(())
+    }
+
+    async fn join_original_normal(&self) -> Result<(), String> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
+        {
+            let _retained = self.retained.lock().map_err(|error| {
+                self.gate.close();
+                error.to_string()
+            })?;
+            self.gate.require_open().map_err(|error| error.to_string())?;
+            if self.normal_closed.swap(true, Ordering::AcqRel) {
+                return Err("original normal Work join was already requested".into());
+            }
+        }
+        loop {
+            self.gate.require_open().map_err(|error| error.to_string())?;
+            let jobs = self.retained.lock().map_err(|error| {
+                self.gate.close();
+                error.to_string()
+            })?.clone();
+            if jobs.is_empty() {
+                let notified = self.changed.notified();
+                tokio::pin!(notified);
+                notified.as_mut().enable();
+                if self.pending.load(Ordering::Acquire) == 0 {
+                    if self.join_failed.load(Ordering::Acquire) {
+                        return Err("original blocking work failed before normal retirement".into());
+                    }
+                    self.gate.require_open().map_err(|error| error.to_string())?;
+                    closing.disarm();
+                    return Ok(());
+                }
+                tokio::select! {
+                    _ = notified => {},
+                    _ = self.gate.cancelled() => {
+                        return Err("original phase closed while joining actual Work".into());
+                    }
+                    _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                        self.gate.deadline().instant(),
+                    )) => {
+                        self.gate.close();
+                        return Err("original phase ended while joining actual Work".into());
+                    }
+                }
+                continue;
+            }
+            for job in jobs {
+                let joined = tokio::select! {
+                    result = job.join_for_normal_retirement() => result,
+                    _ = self.gate.cancelled() => {
+                        return Err("original phase closed while joining an actual handle".into());
+                    }
+                    _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                        self.gate.deadline().instant(),
+                    )) => {
+                        self.gate.close();
+                        return Err("original phase ended while joining an actual handle".into());
+                    }
+                };
+                self.retained.lock().map_err(|error| {
+                self.gate.close();
+                error.to_string()
+            })?
+                    .retain(|entry| !Arc::ptr_eq(entry, &job));
+                if !joined {
+                    self.join_failed.store(true, Ordering::Release);
+                    return Err("original normal join found failed or undelivered work".into());
+                }
+            }
+        }
     }
 
     async fn close_and_join(&self) -> Result<(), ()> {
@@ -298,6 +460,7 @@ impl OriginalBlockingAdmission<'_> {
                 handle: Some(handle),
                 joined: false,
                 join_failed: false,
+                join_error: None,
                 output: None,
             }),
             gate: Arc::clone(&self.gate),
@@ -342,11 +505,41 @@ impl<T: Send + 'static, E: Send + 'static> OriginalLearningJob<T, E> {
         state.handle = None;
         match result {
             Ok(output) => state.output = Some(output),
-            Err(_) => {
+            Err(error) => {
                 state.join_failed = true;
+                state.join_error = Some(error);
                 self.join_failed.store(true, Ordering::Release);
             }
         }
+    }
+
+    async fn receive_with_join_cause(&self) -> Result<Result<T, E>, OriginalJobReceiveError> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
+        let mut state = self.state.lock().await;
+        self.join_locked(&mut state).await;
+        let failed = state.join_failed;
+        let join_error = state.join_error.take();
+        let output = state.output.take();
+        drop(state);
+        if let Some(error) = join_error {
+            drop(output);
+            return Err(OriginalJobReceiveError::Join(error));
+        }
+        if failed {
+            drop(output);
+            return Err(OriginalJobReceiveError::ResultUnavailable);
+        }
+        let output = output.ok_or(OriginalJobReceiveError::ResultUnavailable)?;
+        if output.is_err() {
+            self.gate.close();
+            return Ok(output);
+        }
+        if let Err(error) = self.gate.require_open() {
+            drop(output);
+            return Err(OriginalJobReceiveError::Phase(error));
+        }
+        closing.disarm();
+        Ok(output)
     }
 
     async fn receive(&self) -> Result<Result<T, E>, ()> {
@@ -375,6 +568,25 @@ impl<T: Send + 'static, E: Send + 'static> OriginalLearningJob<T, E> {
 }
 
 impl<T: Send + 'static, E: Send + 'static> OriginalJobCustody for OriginalLearningJob<T, E> {
+    fn join_for_normal_retirement(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>> {
+        Box::pin(async move {
+            let mut state = self.state.lock().await;
+            self.join_locked(&mut state).await;
+            let output = state.output.take();
+            let succeeded = !state.join_failed && output.is_none();
+            drop(state);
+            // A completed but never-delivered owner cannot become normal
+            // completion. Release it, retain failure, then fault cleanup joins
+            // every remaining original handle.
+            drop(output);
+            if !succeeded {
+                self.join_failed.store(true, Ordering::Release);
+                self.gate.close();
+            }
+            succeeded
+        })
+    }
+
     fn join_and_discard(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>> {
         Box::pin(async move {
             let mut state = self.state.lock().await;

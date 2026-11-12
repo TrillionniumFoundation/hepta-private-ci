@@ -37,6 +37,14 @@ mod late_startup;
 #[path = "production_launcher_same_actor_phase.rs"]
 mod same_actor_phase;
 pub use same_actor_phase::AgentdOriginalSameActorPhaseStartupV1;
+pub use same_actor_phase::AgentdOriginalSameActorDeploymentStartupV1;
+pub(crate) use same_actor_phase::owner::OriginalPhaseRunControl;
+pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;
+
+#[path = "production_launcher_same_actor_runtime.rs"]
+mod same_actor_runtime;
+pub(crate) use same_actor_runtime::OriginalSameActorRuntimeStopped;
+pub(crate) use same_actor_runtime::OriginalRuntimeRootPurposesRetired;
 
 use inputs::LaunchInputs;
 use inputs::NotesUiInputs;

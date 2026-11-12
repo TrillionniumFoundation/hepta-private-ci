@@ -117,3 +117,68 @@ impl HostAuthorityService {
         result
     }
 }
+
+impl HostAuthorityService {
+    pub(crate) fn serve_original_phase_lane_for_root_retirement(
+        &self,
+        lane: HostAuthorityLane,
+        stream: (
+            UnixStream,
+            crate::same_actor_q24_phase_gate::SameActorPhaseStream,
+        ),
+        mut policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        retirement: &Arc<crate::OriginalRootRetirementScope>,
+    ) -> Result<crate::OriginalRootRetiredChannel, HostIssuerTransportError> {
+        let gate = retirement.gate();
+        let mut closing = CloseSameActorPhaseOnDrop::new(gate);
+        gate.require_open().map_err(unavailable)?;
+        let (stream, stream_stop) = stream;
+        let bound = match lane {
+            HostAuthorityLane::Observation => 16 * 1024,
+            HostAuthorityLane::Issuer => 64 * 1024,
+            HostAuthorityLane::Checkpoint => 32 * 1024,
+            HostAuthorityLane::DeviceConsumerFrontier
+            | HostAuthorityLane::NotesConsumerFrontier => 16 * 1024,
+        };
+        policy.request_bound = bound;
+        policy.response_bound = bound;
+        if matches!(lane, HostAuthorityLane::Checkpoint)
+            && let Some(checkpoint) = &self.checkpoint
+        {
+            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+        }
+        let mut channel = HostAuthorityPeerChannel::from_stream_until(
+            stream,
+            policy,
+            owner_pidfd,
+            gate.deadline().instant(),
+        )?;
+        let retirement_lane = retirement
+            .register_original_lane(
+                crate::OriginalRootRetirementPurpose::from_original_lane(lane),
+                gate,
+            )
+            .map_err(unavailable)?;
+        let mut retirement_admission = None;
+        while channel.exchange(|bytes| {
+            retirement_admission = Some(
+                retirement_lane.enter_original_request().map_err(unavailable)?,
+            );
+            let _admission = gate.enter_original_lane().map_err(unavailable)?;
+            let response = self.handle_original_same_actor_phase_lane(lane, bytes, gate)?;
+            gate.require_open().map_err(unavailable)?;
+            Ok(response)
+        })? {
+            // The framed ACK has completed. Instant-only transport checks
+            // do not replace the phase's retained BOOTTIME boundary.
+            gate.require_open().map_err(unavailable)?;
+            drop(retirement_admission.take());
+        }
+        let retired = retirement_lane
+            .accept_original_clean_eof(channel, stream_stop)
+            .map_err(unavailable)?;
+        closing.disarm();
+        Ok(retired)
+    }
+}

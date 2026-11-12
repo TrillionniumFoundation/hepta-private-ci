@@ -1,0 +1,243 @@
+//! Bounded observations for one original Root deployment purpose.
+//! Decoded data is not a capability, an approval or a completion receipt.
+//! Root independently retains and validates every authorized material file.
+
+use std::io;
+use std::path::PathBuf;
+
+use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
+use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::HostAuthorityLearningProfileV1;
+use crate::same_actor_q24_phase_protocol::OriginalPhaseBootstrap;
+use crate::same_actor_q24_phase_protocol::START_PURPOSE;
+
+pub(crate) const PROGRESS_PURPOSE: &str = "hepta.same-actor-q24-deployment.progress.v1";
+pub(crate) const PROGRESS_SOCKET: &str = "same-actor-q24-deployment-v1.sock";
+pub(crate) const FRAME_BOUND: usize = 65_536;
+
+/// These exact public values come from the already validated original sealed
+/// phase. Their equality only correlates the independently peer-pinned lane.
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OriginalDeploymentBinding {
+    pub(crate) phase: String,
+    pub(crate) root: CognitiveCheckpointPeerLifetime,
+    pub(crate) consumer: CognitiveCheckpointPeerLifetime,
+    pub(crate) identity: String,
+    pub(crate) root_end_boottime_ns: u64,
+}
+
+impl OriginalDeploymentBinding {
+    pub(crate) fn from_original_phase(original: &OriginalPhaseBootstrap) -> io::Result<Self> {
+        if original.purpose != START_PURPOSE {
+            return Err(io::Error::other("original sealed phase purpose required"));
+        }
+        let binding = Self {
+            phase: original.phase.clone(),
+            root: original.original.root.clone(),
+            consumer: original.original.consumer.clone(),
+            identity: original.original.identity.clone(),
+            root_end_boottime_ns: original.original.root_end_boottime_ns,
+        };
+        binding.require_data()?;
+        Ok(binding)
+    }
+
+    pub(super) fn require_data(&self) -> io::Result<()> {
+        let phase = self.phase.parse::<Digest32>().map_err(io::Error::other)?;
+        let identity = self.identity.parse::<Digest32>().map_err(io::Error::other)?;
+        if phase.is_zero() || identity.is_zero()
+            || phase.to_string() != self.phase || identity.to_string() != self.identity
+            || self.root.uid != 0 || self.consumer.uid == 0
+            || self.root.pid == 0 || self.consumer.pid == 0
+            || self.root.process_start_ticks == 0 || self.consumer.process_start_ticks == 0
+            || self.root.boot_id.is_empty() || self.root.boot_id != self.consumer.boot_id
+            || self.root_end_boottime_ns == 0
+        {
+            return Err(io::Error::other("complete original deployment correlation required"));
+        }
+        Ok(())
+    }
+}
+
+pub(crate) fn original_deployment_socket(original: &OriginalPhaseBootstrap) -> io::Result<PathBuf> {
+    OriginalDeploymentBinding::from_original_phase(original)?;
+    let parent = original.control_socket.parent()
+        .filter(|parent| parent.is_absolute())
+        .ok_or_else(|| io::Error::other("original phase runtime parent required"))?;
+    Ok(parent.join(PROGRESS_SOCKET))
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum OriginalDeploymentStage {
+    Initial,
+    Scoped,
+    Current,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "stage", rename_all = "snake_case", deny_unknown_fields)]
+pub(crate) enum OriginalDeploymentProgress {
+    InputsOpened,
+    OriginalAPrepared { profile: HostAuthorityLearningProfileV1 },
+    OriginalSelectionReady { canonical_material: String },
+}
+
+impl OriginalDeploymentProgress {
+    pub(crate) fn stage(&self) -> OriginalDeploymentStage {
+        match self {
+            Self::InputsOpened => OriginalDeploymentStage::Initial,
+            Self::OriginalAPrepared { .. } => OriginalDeploymentStage::Scoped,
+            Self::OriginalSelectionReady { .. } => OriginalDeploymentStage::Current,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OriginalDeploymentRequest {
+    pub(crate) schema_version: u8,
+    pub(crate) purpose: String,
+    pub(crate) binding: OriginalDeploymentBinding,
+    pub(crate) sequence: u8,
+    pub(crate) progress: OriginalDeploymentProgress,
+}
+
+impl OriginalDeploymentRequest {
+    pub(crate) fn encode_original(&self) -> io::Result<Vec<u8>> {
+        self.binding.require_data()?;
+        let sequence = match self.progress.stage() {
+            OriginalDeploymentStage::Initial => 1,
+            OriginalDeploymentStage::Scoped => 2,
+            OriginalDeploymentStage::Current => 3,
+        };
+        if self.schema_version != 1 || self.purpose != PROGRESS_PURPOSE || self.sequence != sequence {
+            return Err(io::Error::other("original deployment stage and sequence differ"));
+        }
+        if let OriginalDeploymentProgress::OriginalSelectionReady { canonical_material } = &self.progress
+            && (canonical_material.is_empty() || canonical_material.len() > FRAME_BOUND)
+        {
+            return Err(io::Error::other("bounded original Current material required"));
+        }
+        encode_bounded(self)
+    }
+
+    pub(crate) fn decode_original(bytes: &[u8]) -> io::Result<Self> {
+        if bytes.is_empty() || bytes.len() > FRAME_BOUND {
+            return Err(io::Error::other("bounded original deployment request required"));
+        }
+        let request: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+        if request.encode_original()? != bytes {
+            return Err(io::Error::other("canonical original deployment request required"));
+        }
+        Ok(request)
+    }
+
+    pub(crate) fn require_original_stage(
+        &self,
+        binding: &OriginalDeploymentBinding,
+        stage: OriginalDeploymentStage,
+    ) -> io::Result<()> {
+        self.encode_original()?;
+        if self.binding != *binding || self.progress.stage() != stage {
+            return Err(io::Error::other("original deployment request changed phase or stage"));
+        }
+        Ok(())
+    }
+
+    fn digest(&self) -> io::Result<String> {
+        Ok(Digest32::of_parts(&[
+            b"hepta.same-actor-q24-deployment.original-request.v1\0",
+            &self.encode_original()?,
+        ]).to_string())
+    }
+}
+
+/// Created only after the Root bridge receives the matching actual typed
+/// registration acknowledgement. It carries no capability or business result.
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OriginalDeploymentAcknowledgement {
+    pub(crate) schema_version: u8,
+    pub(crate) purpose: String,
+    pub(crate) binding: OriginalDeploymentBinding,
+    pub(crate) sequence: u8,
+    pub(crate) stage: OriginalDeploymentStage,
+    pub(crate) original_request: String,
+    #[serde(deserialize_with = "required_binding")]
+    pub(crate) registration_binding: Option<String>,
+}
+
+impl OriginalDeploymentAcknowledgement {
+    pub(crate) fn from_actual_registration(
+        request: &OriginalDeploymentRequest,
+        registration_binding: Option<String>,
+    ) -> io::Result<Self> {
+        let value = Self {
+            schema_version: 1,
+            purpose: PROGRESS_PURPOSE.into(),
+            binding: request.binding.clone(),
+            sequence: request.sequence,
+            stage: request.progress.stage(),
+            original_request: request.digest()?,
+            registration_binding,
+        };
+        value.require_original_request(request)?;
+        Ok(value)
+    }
+
+    pub(crate) fn require_original_request(&self, request: &OriginalDeploymentRequest) -> io::Result<()> {
+        if self.schema_version != 1 || self.purpose != PROGRESS_PURPOSE
+            || self.binding != request.binding || self.sequence != request.sequence
+            || self.stage != request.progress.stage() || self.original_request != request.digest()?
+        {
+            return Err(io::Error::other("original deployment acknowledgement differs"));
+        }
+        match (self.stage, self.registration_binding.as_deref()) {
+            (OriginalDeploymentStage::Scoped, None) => {}
+            (OriginalDeploymentStage::Initial | OriginalDeploymentStage::Current, Some(value)) => {
+                let digest = value.parse::<Digest32>().map_err(io::Error::other)?;
+                if digest.is_zero() || digest.to_string() != value {
+                    return Err(io::Error::other("actual original registration binding required"));
+                }
+            }
+            _ => return Err(io::Error::other("original deployment acknowledgement kind differs")),
+        }
+        Ok(())
+    }
+
+    pub(crate) fn encode_original(&self, request: &OriginalDeploymentRequest) -> io::Result<Vec<u8>> {
+        self.require_original_request(request)?;
+        encode_bounded(self)
+    }
+
+    pub(crate) fn decode_original(bytes: &[u8], request: &OriginalDeploymentRequest) -> io::Result<Self> {
+        if bytes.is_empty() || bytes.len() > FRAME_BOUND {
+            return Err(io::Error::other("bounded original deployment acknowledgement required"));
+        }
+        let response: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+        if response.encode_original(request)? != bytes {
+            return Err(io::Error::other("canonical original deployment acknowledgement required"));
+        }
+        Ok(response)
+    }
+}
+
+fn encode_bounded(value: &impl Serialize) -> io::Result<Vec<u8>> {
+    let bytes = serde_json::to_vec(value).map_err(io::Error::other)?;
+    if bytes.is_empty() || bytes.len() > FRAME_BOUND {
+        return Err(io::Error::other("original deployment frame exceeds its bound"));
+    }
+    Ok(bytes)
+}
+
+fn required_binding<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    Option::<String>::deserialize(deserializer)
+}

@@ -64,6 +64,29 @@ pub(crate) struct OriginalQ24SuccessorInvocationV1 {
     ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,
 }
 
+impl OriginalQ24SuccessorInvocationV1 {
+    pub(crate) fn require_original_installed_custody(
+        &self,
+        installed: &OriginalQ24InstalledSuccessorV1,
+        identity: &AgentdIdentity,
+    ) -> Result<(), AgentdError> {
+        if &installed.identity != identity
+            || !matches!(
+                (&self.ledger, &installed.ledger),
+                (Some(actual), Some(held)) if Arc::ptr_eq(actual, held)
+            )
+        {
+            return Err(AgentdError::GenerationFenced(
+                "original C installation differs from its actual invocation and Ledger".into(),
+            ));
+        }
+        installed
+            .source
+            .require_original_source_custody(self.source.as_ref())
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))
+    }
+}
+
 impl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 {
     fn build(
         &self,

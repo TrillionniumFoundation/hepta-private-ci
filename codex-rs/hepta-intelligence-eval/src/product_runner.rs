@@ -190,6 +190,15 @@ pub struct TemporalComparisonInputsV1 {
     pub future_window_ids: Vec<StableId>,
 }
 
+/// One call's original post-consumption control-flow proof. The original
+/// runner alone constructs it after accepted CAS and the Recorded check. It
+/// is not a role credential, serialized receipt or independent attestation of
+/// a host-provided CAS backend. The host still authenticates that backend.
+pub struct OriginalFinalHoldoutReleasePermitV1<'a> {
+    plan: &'a ProductFrozenEvaluationPlanV1,
+    receipt: &'a FinalHoldoutJournalReceiptV1,
+}
+
 pub trait FinalHoldoutProviderV1 {
     fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1>;
 
@@ -199,7 +208,24 @@ pub trait FinalHoldoutProviderV1 {
         &mut self,
         receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>;
+
+    /// Existing providers receive the same original receipt through this
+    /// synchronous default. Protected file providers override this method and
+    /// refuse their public receipt-only entry.
+    fn release_original_consumption(
+        &mut self,
+        permit: OriginalFinalHoldoutReleasePermitV1<'_>,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        self.release_after_consumption(permit.receipt)
+    }
 }
+
+#[path = "product_holdout_file.rs"]
+mod product_holdout_file;
+
+pub use product_holdout_file::FileFinalHoldoutErrorV1;
+pub use product_holdout_file::LockedFileFinalHoldoutProviderV1;
+pub use product_holdout_file::encode_file_final_holdout_material_v1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProductEvidenceSinkErrorV1 {
@@ -400,7 +426,12 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 ));
             }
         }
-        let mut inputs = provider.release_after_consumption(&holdout)?;
+        let mut inputs = provider.release_original_consumption(
+            OriginalFinalHoldoutReleasePermitV1 {
+                plan: product_plan,
+                receipt: &holdout,
+            },
+        )?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,

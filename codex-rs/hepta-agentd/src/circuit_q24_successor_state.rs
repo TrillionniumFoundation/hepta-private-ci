@@ -23,6 +23,9 @@ enum Phase {
     Pending,
     Installing,
     Ready,
+    Retiring,
+    JoinedRetirement,
+    Retired,
     Closed,
 }
 
@@ -36,7 +39,12 @@ struct State {
     decision: Option<LearningIterationSnapshotV1>,
     installed: Option<Installed>,
     generation: bool,
+    retirement: Option<Arc<crate::circuit_task::OriginalCQuiescenceOrigin>>,
 }
+
+#[path = "circuit_q24_successor_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalSuccessorWorkerJoined;
 
 pub(crate) struct SuccessorSlot {
     state: Mutex<State>,
@@ -83,6 +91,7 @@ impl SuccessorSlot {
                 decision: None,
                 installed: None,
                 generation: false,
+                retirement: None,
             }),
             changed: watch::channel(()).0,
             closed: CancellationToken::new(),

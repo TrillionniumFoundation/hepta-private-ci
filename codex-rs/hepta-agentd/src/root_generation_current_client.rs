@@ -143,6 +143,34 @@ impl RootGenerationCurrentClient {
         self.connection.require_same_successor_session(session)
     }
 
+    pub(crate) fn retire_original_current_after_root_intent(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+        identity: &crate::AgentdIdentity,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        intent.require_original_origin(identity, gate)?;
+        if self.connection.original_launch_binding().1 != identity
+            || self.fenced.swap(true, Ordering::AcqRel)
+        {
+            return Err(uncertain());
+        }
+        // The original exchange holds this mutex through complete response
+        // validation. Busy/empty/poisoned never means a normal retirement.
+        let mut held = self.lane.try_lock().map_err(|_| uncertain())?;
+        let lane = held.as_mut().ok_or_else(uncertain)?;
+        OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent(
+            &mut lane.stream, intent, identity, gate,
+        )?;
+        intent.require_original_origin(identity, gate)?;
+        // Keep the exact Lane, connection, sequence, stream and failure guard.
+        // fenced is permanent; no later call can enter a business exchange.
+        drop(held);
+        closing.disarm();
+        Ok(())
+    }
+
     fn fence(&self) {
         self.fenced.store(true, Ordering::Release);
         if let Ok(mut held) = self.lane.try_lock() {

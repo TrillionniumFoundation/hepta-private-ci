@@ -18,6 +18,14 @@ use crate::same_actor_q24_phase::OriginalSameActorPhaseEventV1;
 use crate::same_actor_q24_phase::install_original_initial_task;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 
+#[path = "production_launcher_same_actor_owner.rs"]
+pub(super) mod owner;
+#[path = "production_launcher_same_actor_run.rs"]
+mod run;
+#[path = "production_launcher_same_actor_deployment.rs"]
+mod deployment;
+pub use deployment::AgentdOriginalSameActorDeploymentStartupV1;
+
 /// Construct before arg0 or original business owners open any additional
 /// descriptors. The two extra phase descriptors are checked against every
 /// original parser-owned descriptor before that parser takes ownership.
@@ -38,6 +46,15 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
     ) -> Result<(Self, Vec<OsString>), AgentdError> {
         // First statement: these samples precede parser/Registry/offer work.
         let start = OriginalPhaseReceiveStart::capture()?;
+        Self::from_original_receive_start(arguments, phase_handoff, scoped_handoff, start)
+    }
+
+    fn from_original_receive_start(
+        arguments: Vec<OsString>,
+        phase_handoff: UnixDatagram,
+        scoped_handoff: UnixDatagram,
+        start: OriginalPhaseReceiveStart,
+    ) -> Result<(Self, Vec<OsString>), AgentdError> {
         require_disjoint_phase_descriptors(&arguments, &phase_handoff, &scoped_handoff)?;
         let arguments = match late_startup::select_original_startup_entry(arguments)? {
             late_startup::OriginalStartupSelection::Existing(arguments)
@@ -92,135 +109,12 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
     /// provide independent signed Outcomes through the bounded typed channel.
     pub async fn run_original_phase(
         self,
-        mut business: OriginalSameActorBusinessInputsV1,
+        business: OriginalSameActorBusinessInputsV1,
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
-        let runtime = tokio::runtime::Handle::try_current()
-            .map_err(|_| refused("original phase requires its actual Tokio runtime"))?;
-        if runtime.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread {
-            return Err(refused(
-                "original phase requires the original multi-thread runtime",
-            ));
-        }
-        let Self {
-            identity,
-            cognitive_mode,
-            inputs,
-            mut receiver,
-            phase_handoff,
-            scoped_handoff,
-        } = self;
-        let LaunchInputs {
-            handoff,
-            learning_handoff: _,
-            q24_model_handoff: _,
-            publication_handoff: _,
-            initial_handoff: _,
-            uid,
-            gid,
-            control,
-            app_server,
-            primary,
-            bootstrap_deadline: _,
-            notes,
-            notes_ui,
-            lifetime: _,
-        } = inputs;
-        late_writer::require_late_owner(uid, gid)?;
-        let (bootstrap, root_pidfd, writer) = tokio::task::block_in_place(|| {
-            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-            let original = crate::receive_root_production_writer_handoff(handoff, timeout)?;
-            receiver.remaining()?;
-            Ok::<_, AgentdError>(original)
-        })?;
-        let phase = tokio::task::block_in_place(|| {
-            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-            let phase = receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
-            receiver.remaining()?;
-            Ok::<_, AgentdError>(phase)
-        })?;
-        let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-        let OriginalSameActorProductionInputs {
-            mut root,
-            context,
-            initial,
-        } = receive_original_same_actor_inputs(
-            bootstrap, root_pidfd, phase, &identity, timeout, receiver,
-        )
-        .await?;
-        // From this point onward the actual same-Gate close guard already
-        // exists outside every later future, including never-polled work.
-        let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
-        let config =
-            AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
-                .with_root_bound_sockets(control, app_server)?
-                .with_cognitive_retrieval_mode(cognitive_mode);
-        if config.identity() != &identity || context.identity() != &identity {
-            return Err(refused(
-                "original Starting Config differs from the received phase",
-            ));
-        }
-        OriginalSameActorRootContext::require_current(&context)?;
-        business.host.notify_original(
-            &context,
-            OriginalSameActorPhaseEventV1::InputsOpened {
-                identity: Box::new(identity.clone()),
-                phase: context.descriptor().phase.clone(),
-            },
-        )?;
-        if !matches!(
-            business.host.receive_original(&context).await?,
-            OriginalSameActorPhaseCommandV1::InitialRootEnrolled
-        ) {
-            return Err(refused(
-                "actual Initial Root enrollment must precede connection",
-            ));
-        }
-        let connection =
-            crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?;
-        let initial = initial
-            .connect_original_same_actor_initial(
-                connection,
-                Arc::clone(&context),
-                Duration::from_millis(500),
-            )
-            .await?;
-        OriginalSameActorRootContext::require_current(&context)?;
-        // Original synchronous owners complete before this poll returns.
-        // block_in_place lets the original refresh worker continue; it
-        // creates no detached owner task or discardable JoinHandle.
-        let config = tokio::task::block_in_place(|| {
-            install_original_initial_task(
-                config,
-                Arc::clone(&context),
-                initial,
-                business,
-                scoped_handoff,
-            )
-        })?;
-        late_writer::require_late_owner(uid, gid)?;
-        OriginalSameActorRootContext::require_current(&context)?;
-        let launch = AgentdProductionLaunch {
-            root,
-            inputs: RuntimeInputs {
-                primary,
-                notes,
-                notes_ui,
-            },
-            q24_model: None,
-            publication: None,
-            initial_publication: None,
-        };
-        // Actual Primary/session/writer/appserver composition and its
-        // original signed ingress/readiness checks are still mandatory.
-        // Generic bounded host shutdown can abort its async wrapper while
-        // the original blocking owner is still joining real work. This
-        // phase has no final completion/owner-join acknowledgement, so
-        // generic Ok cannot certify a completed phase or physical join.
-        launch.run(config, arg0_paths).await?;
-        Err(refused(
-            "original phase completion and physical owner join are not acknowledged",
-        ))
+        owner::OriginalPhaseRunOwner::start_original(
+            self, owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)), arg0_paths,
+        )?.await
     }
 }
 
@@ -229,7 +123,12 @@ fn require_disjoint_phase_descriptors(
     phase: &UnixDatagram,
     scoped: &UnixDatagram,
 ) -> Result<(), AgentdError> {
-    let extra = [phase.as_raw_fd(), scoped.as_raw_fd()];
+    require_disjoint_phase_descriptor_numbers(arguments, [phase.as_raw_fd(), scoped.as_raw_fd()])
+}
+
+fn require_disjoint_phase_descriptor_numbers(
+    arguments: &[OsString], extra: [i32; 2],
+) -> Result<(), AgentdError> {
     if extra[0] < 3 || extra[1] < 3 || extra[0] == extra[1] {
         return Err(refused(
             "original phase descriptors must be distinct inherited rights",

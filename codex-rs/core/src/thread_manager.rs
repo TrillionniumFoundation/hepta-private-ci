@@ -100,6 +100,10 @@ use tracing::Instrument;
 use tracing::instrument;
 use tracing::warn;
 
+#[path = "thread_manager_original_shutdown.rs"]
+mod original_shutdown;
+pub(crate) use original_shutdown::OriginalSessionShutdownOrigin;
+
 const THREAD_CREATED_CHANNEL_CAPACITY: usize = 1024;
 // Reject pathological selected cwd values at the environment-selection boundary.
 const MAX_TURN_ENVIRONMENT_CWD_BYTES: usize = 8 * 1024;
@@ -573,6 +577,7 @@ pub(crate) struct ResumeThreadWithHistoryOptions {
 /// function to require an `Arc<&Self>`.
 pub(crate) struct ThreadManagerState {
     thread_registry: Arc<RwLock<ThreadRegistryState>>,
+    original_shutdown: Arc<original_shutdown::OriginalThreadShutdownCustody>,
     thread_created_tx: broadcast::Sender<ThreadId>,
     thread_id_generator: ThreadIdGenerator,
     auth_manager: Arc<AuthManager>,
@@ -716,6 +721,7 @@ impl ThreadManager {
         Self {
             state: Arc::new(ThreadManagerState {
                 thread_registry: Arc::new(RwLock::new(ThreadRegistryState::default())),
+                original_shutdown: Arc::new(original_shutdown::OriginalThreadShutdownCustody::default()),
                 thread_created_tx,
                 thread_id_generator: default_thread_id_generator(),
                 models_manager,
@@ -868,6 +874,7 @@ impl ThreadManager {
         Self {
             state: Arc::new(ThreadManagerState {
                 thread_registry: Arc::new(RwLock::new(ThreadRegistryState::default())),
+                original_shutdown: Arc::new(original_shutdown::OriginalThreadShutdownCustody::default()),
                 thread_created_tx,
                 thread_id_generator: default_thread_id_generator(),
                 models_manager: create_model_provider(provider, Some(auth_manager.clone()))
@@ -2392,37 +2399,46 @@ impl ThreadManagerState {
         let state = Arc::clone(self);
         // Tokio tasks do not inherit the caller's tracing span. Preserve it explicitly so the
         // cancellation-safe owner remains part of the request's startup trace after detaching.
-        tokio::spawn(
-            async move {
-                let admission = Arc::new(std::sync::Mutex::new(None));
-                let owned_result = state
-                    .spawn_thread_owned(request, Arc::clone(&admission))
-                    .await;
-                #[cfg(test)]
-                state.pause_startup_before_delivery_for_tests().await;
-                let (result, cleanup) = match owned_result {
-                    Ok(owned) => (Ok(owned.new_thread), owned.unclaimed_cleanup),
-                    Err(error) => (Err(error), None),
-                };
-                let (ack_tx, ack_rx) = tokio::sync::oneshot::channel();
-                let caller_received =
-                    result_tx.send((result, ack_tx)).is_ok() && ack_rx.await.is_ok();
-                if let Some(cleanup) = cleanup {
-                    if caller_received {
-                        state.claim_published_thread(&cleanup).await;
-                    } else {
-                        state.cleanup_unclaimed_thread(cleanup).await;
+        {
+            let original_admission = self.original_shutdown.reserve_original_startup()?;
+            let original_worker = tokio::spawn(
+                async move {
+                    let admission = Arc::new(std::sync::Mutex::new(None));
+                    let owned_result = state
+                        .spawn_thread_owned(request, Arc::clone(&admission))
+                        .await;
+                    #[cfg(test)]
+                    state.pause_startup_before_delivery_for_tests().await;
+                    let (result, cleanup) = match owned_result {
+                        Ok(owned) => (Ok(owned.new_thread), owned.unclaimed_cleanup),
+                        Err(error) => (Err(error), None),
+                    };
+                    let (ack_tx, ack_rx) = tokio::sync::oneshot::channel();
+                    let caller_received =
+                        result_tx.send((result, ack_tx)).is_ok() && ack_rx.await.is_ok();
+                    if let Some(cleanup) = cleanup {
+                        if caller_received {
+                            state.claim_published_thread(&cleanup).await;
+                        } else {
+                            state.cleanup_unclaimed_thread(cleanup).await;
+                        }
                     }
+                    // The admission spans delivery acknowledgement or exact unclaimed-runtime
+                    // cleanup. Dropping it is the hard-delete barrier's completion signal.
+                    let _ = admission
+                        .lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner)
+                        .take();
                 }
-                // The admission spans delivery acknowledgement or exact unclaimed-runtime
-                // cleanup. Dropping it is the hard-delete barrier's completion signal.
-                let _ = admission
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner)
-                    .take();
+                .in_current_span(),
+            );
+            if let Some(original_admission) = original_admission {
+                original_shutdown::OriginalThreadStartupAdmission::retain_original_thread_startup_handle(
+                    original_admission,
+                    original_worker,
+                );
             }
-            .in_current_span(),
-        );
+        }
         let (result, ack_tx) = result_rx.await.map_err(|_| {
             CodexErr::Fatal("thread startup owner exited before returning a result".to_string())
         })?;
@@ -2621,6 +2637,7 @@ impl ThreadManagerState {
                 return Err(error);
             }
         };
+        self.original_shutdown.retain_original_session_loop(&io)?;
         #[cfg(test)]
         self.pause_startup_before_finalize_for_tests().await;
         // Enable Full Access form input only after session startup so a required MCP server cannot

@@ -9,6 +9,7 @@ use tokio_util::sync::CancellationToken;
 use crate::AgentdError;
 use crate::AgentdState;
 use crate::LearningIterationRuntimeBootstrapV1;
+use crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement;
 use crate::circuit_q24_successor::PendingSuccessorOwner;
 use crate::learning_iteration::CircuitLearningDeliveryRuntimeV1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
@@ -19,6 +20,7 @@ use super::OriginalSameActorLearningWork;
 pub(crate) struct OriginalSameActorLearningWorker {
     context: Arc<OriginalSameActorRootContext>,
     work: Arc<OriginalSameActorLearningWork>,
+    checkpoint: OriginalLearningCheckpointRetirement,
     learning: LearningIterationRuntimeBootstrapV1,
     delivery: CircuitLearningDeliveryRuntimeV1,
     pending: PendingSuccessorOwner,
@@ -39,14 +41,17 @@ impl OriginalSameActorLearningWorker {
         learning: LearningIterationRuntimeBootstrapV1,
         delivery: CircuitLearningDeliveryRuntimeV1,
         pending: PendingSuccessorOwner,
+        checkpoint: OriginalLearningCheckpointRetirement,
     ) -> Result<Self, AgentdError> {
         let closing = CloseSameActorPhaseOnDrop::new(context.gate());
         OriginalSameActorRootContext::require_current(&context)?;
         work.require_identity_and_gate(context.identity(), context.gate())?;
         learning.require_identity(context.identity())?;
+        OriginalLearningCheckpointRetirement::require_original_work(&checkpoint, &work)?;
         Ok(Self {
             context,
             work,
+            checkpoint,
             learning,
             delivery,
             pending,
@@ -154,3 +159,10 @@ impl OriginalSameActorLearningWorker {
         Err(AgentdError::GenerationFenced(failures.join("; ")))
     }
 }
+
+#[path = "same_actor_q24_phase_learning_worker_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalRetiredLearningOwners;
+pub(crate) use retirement::OriginalRetiredLearningPurposes;
+pub(crate) use retirement::OriginalSameActorLearningPurposesRetired;
+pub(crate) use retirement::OriginalSameActorLearningJoined;

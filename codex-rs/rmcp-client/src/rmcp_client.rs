@@ -371,6 +371,11 @@ pub struct CancellableEventStreamRequest {
     pub notifications: crate::EventNotificationReceiver,
 }
 
+#[path = "rmcp_client_owned_shutdown.rs"]
+mod owned_shutdown;
+pub use owned_shutdown::OriginalMcpClientShutdown;
+pub use owned_shutdown::OriginalMcpClientShutdownObservation;
+
 /// MCP client implemented on top of the official `rmcp` SDK.
 /// https://github.com/modelcontextprotocol/rust-sdk
 pub struct RmcpClient {
@@ -381,6 +386,7 @@ pub struct RmcpClient {
     initialize_context: Mutex<Option<InitializeContext>>,
     session_recovery_lock: Semaphore,
     elicitation_pause_state: ElicitationPauseState,
+    original_owned_shutdown: Option<Arc<OriginalMcpClientShutdown>>,
 }
 
 impl RmcpClient {
@@ -471,6 +477,7 @@ impl RmcpClient {
             initialize_context: Mutex::new(None),
             session_recovery_lock: Semaphore::new(/*permits*/ 1),
             elicitation_pause_state: ElicitationPauseState::new(),
+            original_owned_shutdown: None,
         })
     }
 
@@ -544,6 +551,7 @@ impl RmcpClient {
             initialize_context: Mutex::new(None),
             session_recovery_lock: Semaphore::new(/*permits*/ 1),
             elicitation_pause_state: ElicitationPauseState::new(),
+            original_owned_shutdown: None,
         })
     }
 
@@ -644,6 +652,7 @@ impl RmcpClient {
             initialize_context: Mutex::new(None),
             session_recovery_lock: Semaphore::new(/*permits*/ 1),
             elicitation_pause_state: ElicitationPauseState::new(),
+            original_owned_shutdown: None,
         })
     }
 
@@ -1334,6 +1343,18 @@ impl RmcpClient {
                 return Err(error);
             }
         };
+
+        if let Some(owner) = &self.original_owned_shutdown {
+            // Retain the actual driver before cache configuration or any other
+            // subsequent await can be cancelled. Default ownership stays below.
+            let service = Arc::new(service);
+            OriginalMcpClientShutdown::retain_original_service(owner, &service)?;
+            service
+                .peer()
+                .set_response_cache_config(ClientCacheConfig::disabled())
+                .await;
+            return Ok((service, oauth_persistor));
+        }
 
         // Preserve Codex's existing snapshot and request-freshness behavior. rmcp 3
         // enables response caching and stale-on-error fallback by default.

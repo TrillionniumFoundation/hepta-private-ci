@@ -5,6 +5,7 @@
 use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::sync::Weak;
+use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
 use codex_hepta_neuron::FileAnchorWitnessStore;
@@ -22,6 +23,12 @@ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 mod admission;
 #[path = "circuit_task_same_actor_learning.rs"]
 mod learning;
+#[path = "circuit_task_same_actor_retirement.rs"]
+mod retirement;
+pub(crate) use retirement::OriginalCQuiescenceOrigin;
+pub(crate) use retirement::OriginalSameActorCJoined;
+pub(crate) use retirement::OriginalSameActorCPurposesRetired;
+pub(crate) use retirement::OriginalSameActorCQuiescence;
 
 type Invocation = Arc<dyn AgentdCircuitTaskInvocationProviderV1>;
 
@@ -43,6 +50,11 @@ enum Phase {
         slot: Arc<SuccessorSlot>,
         invocation: Invocation,
     },
+    ClosingC {
+        slot: Arc<SuccessorSlot>,
+        invocation: Invocation,
+    },
+    RetiredC,
 }
 
 struct RouteState {
@@ -59,8 +71,9 @@ pub(crate) struct SameActorTaskRoute {
     state: Mutex<RouteState>,
     invocation: OnceLock<Weak<dyn AgentdCircuitTaskInvocationProviderV1>>,
     changed: watch::Sender<()>,
-    learning_work:
-        OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
+    learning_work: OnceLock<
+        Mutex<Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>>,
+    >,
 }
 
 struct PhaseInvocation {
@@ -87,6 +100,7 @@ pub(crate) struct SameActorTaskAdmission {
     built: Option<CircuitTaskRequestV1>,
     submitted: bool,
     completed: bool,
+    observation_joined: AtomicBool,
 }
 
 /// A cancelled caller cannot hide queued or executing work from phase drain.
@@ -347,7 +361,11 @@ impl SameActorTaskRoute {
                         }),
                     )
                 }
-                Phase::PendingA | Phase::ClosingA { .. } | Phase::AwaitingC => {
+                Phase::PendingA
+                | Phase::ClosingA { .. }
+                | Phase::AwaitingC
+                | Phase::ClosingC { .. }
+                | Phase::RetiredC => {
                     return Err(Error::Unavailable);
                 }
             };
@@ -367,6 +385,7 @@ impl SameActorTaskRoute {
             built: None,
             submitted: false,
             completed: false,
+            observation_joined: AtomicBool::new(false),
         })
     }
 
@@ -383,7 +402,10 @@ impl SameActorTaskRoute {
             (Phase::A { original } | Phase::ClosingA { original }, TaskPhase::A) => {
                 Arc::ptr_eq(original, &ticket.original)
             }
-            (Phase::C { slot, invocation }, TaskPhase::C) => {
+            (
+                Phase::C { slot, invocation } | Phase::ClosingC { slot, invocation },
+                TaskPhase::C,
+            ) => {
                 if !Arc::ptr_eq(invocation, &ticket.original.invocation) {
                     false
                 } else {
@@ -409,16 +431,24 @@ impl SameActorTaskRoute {
             Phase::A { original } | Phase::ClosingA { original } => {
                 original.handle.pending.load(Ordering::Acquire)
             }
-            Phase::C { slot, .. } => slot.pending_count(),
-            Phase::PendingA | Phase::AwaitingC => 0,
+            Phase::C { slot, .. } | Phase::ClosingC { slot, .. } => slot.pending_count(),
+            Phase::PendingA | Phase::AwaitingC | Phase::RetiredC => 0,
         };
         state
             .tickets
             .saturating_add(work)
-            .saturating_add(self.learning_work.get().map_or(0, |original| {
-                crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::pending_count(
-                    original,
-                )
+            .saturating_add(self.learning_work.get().map_or(0, |attached| {
+                match attached.lock() {
+                    Ok(original) => original.as_ref().map_or_else(
+                        || usize::from(!matches!(state.phase, Phase::RetiredC)),
+                        |original| {
+                            crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::pending_count(
+                                original,
+                            )
+                        },
+                    ),
+                    Err(_) => 1,
+                }
             }))
     }
 
@@ -431,7 +461,7 @@ impl SameActorTaskRoute {
             };
             state.closed = true;
             match &state.phase {
-                Phase::C { slot, .. } => Some(Arc::clone(slot)),
+                Phase::C { slot, .. } | Phase::ClosingC { slot, .. } => Some(Arc::clone(slot)),
                 _ => None,
             }
         };
@@ -466,12 +496,40 @@ impl CircuitTaskHandleV1 {
 }
 
 impl CircuitTaskRuntimeBootstrapV1 {
+    pub(crate) fn original_same_actor_owner_custody(
+        &self,
+    ) -> Result<Arc<OriginalCircuitOwnerCustody>, AgentdError> {
+        let TaskHandleRoute::SameActor { original } = &self.handle.route else {
+            return Err(AgentdError::GenerationFenced(
+                "outer Circuit custody requires the actual same-actor Bootstrap".into(),
+            ));
+        };
+        let custody = self.original_phase_custody.as_ref().ok_or_else(|| {
+            AgentdError::GenerationFenced("original outer Circuit custody is missing".into())
+        })?;
+        original.require_identity(&self.identity)?;
+        OriginalCircuitOwnerCustody::require_original_origin(
+            custody,
+            &self.identity,
+            &original.gate,
+        )?;
+        Ok(Arc::clone(custody))
+    }
+
     pub(crate) fn from_original_same_actor_worker(
         identity: &AgentdIdentity,
         route: Arc<SameActorTaskRoute>,
         worker: crate::same_actor_q24_phase::OriginalSameActorTaskWorker,
     ) -> Result<Self, AgentdError> {
         route.require_identity(identity)?;
+        let custody = OriginalCircuitOwnerCustody::from_original_phase(
+            identity,
+            Arc::clone(&route.gate),
+        )?;
+        let worker = crate::same_actor_q24_phase::OriginalSameActorTaskWorker::with_original_outer_custody(
+            worker,
+            &custody,
+        )?;
         Ok(Self {
             identity: identity.clone(),
             handle: CircuitTaskHandleV1 {
@@ -480,6 +538,7 @@ impl CircuitTaskRuntimeBootstrapV1 {
             owner: Box::new(move |store, state, cancellation| {
                 Box::pin(worker.run(store, state, cancellation))
             }),
+            original_phase_custody: Some(custody),
         })
     }
 }

@@ -135,6 +135,9 @@ pub struct OriginalSameActorCOutcomeInputsV1 {
 /// every original Root owner independently validates its own state.
 pub enum OriginalSameActorPhaseCommandV1 {
     InitialRootEnrolled,
+    /// Data-only notification for the concrete deployment: externally supplied
+    /// material is ready for Root's independent validation. This is no ACK.
+    OriginalPreparedMaterialsReady,
     CompleteOriginalA(Box<OriginalSameActorCompletedAInputsV1>),
     Learning(Box<OriginalSameActorLearningInputsV1>),
     /// Independent B's actual Trainer/holdout/runner/evidence inputs, supplied
@@ -180,6 +183,7 @@ pub enum OriginalSameActorPhaseEventV1 {
 pub struct OriginalSameActorPhaseHostV1 {
     commands: mpsc::Receiver<OriginalSameActorPhaseCommandV1>,
     events: mpsc::Sender<OriginalSameActorPhaseEventV1>,
+    await_prepared_materials_before_retirement: bool,
 }
 
 pub fn original_same_actor_phase_host_channel_v1(
@@ -202,11 +206,66 @@ pub fn original_same_actor_phase_host_channel_v1(
     Ok((
         send,
         receive,
-        OriginalSameActorPhaseHostV1 { commands, events },
+        OriginalSameActorPhaseHostV1 {
+            commands, events, await_prepared_materials_before_retirement: false,
+        },
     ))
 }
 
+/// Only the actual file-backed coordinator uses this private timing mode.
+/// The original public typed-host channel retains its immediate retirement.
+pub(crate) fn original_same_actor_deployment_host_channel(
+    capacity: usize,
+) -> Result<
+    (
+        mpsc::Sender<OriginalSameActorPhaseCommandV1>,
+        mpsc::Receiver<OriginalSameActorPhaseEventV1>,
+        OriginalSameActorPhaseHostV1,
+    ),
+    AgentdError,
+> {
+    let (commands, events, mut host) = original_same_actor_phase_host_channel_v1(capacity)?;
+    host.await_prepared_materials_before_retirement = true;
+    Ok((commands, events, host))
+}
+
 impl OriginalSameActorPhaseHostV1 {
+    /// Wait only BEFORE the first original retirement request exists. The
+    /// unchanged request creates its own 500 ms budget after this returns.
+    /// Cancellation remains inside A's actual owned loop/cleanup scope.
+    async fn wait_original_deployment_materials(
+        &mut self,
+        context: &OriginalSameActorRootContext,
+        prepared: &CellQ24PreparedLearningV1,
+    ) -> Result<(), AgentdError> {
+        if !self.await_prepared_materials_before_retirement {
+            return Ok(());
+        }
+        // Consume the local notification obligation once, before any await.
+        self.await_prepared_materials_before_retirement = false;
+        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        let expiry = prepared.initial().request.envelope.expiry_unix_seconds;
+        require_original_material_time(context, expiry)?;
+        let expired = async {
+            loop {
+                if let Err(error) = require_original_material_time(context, expiry) {
+                    return Err(error);
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(5)).await;
+            }
+        };
+        let ready = tokio::select! {
+            received = self.receive_original(context) => received,
+            result = expired => result,
+        }?;
+        if !matches!(ready, OriginalSameActorPhaseCommandV1::OriginalPreparedMaterialsReady) {
+            return Err(phase_refused("original prepared-material notification is missing"));
+        }
+        require_original_material_time(context, expiry)?;
+        closing.disarm();
+        Ok(())
+    }
+
     pub(crate) fn notify_original(
         &self,
         context: &OriginalSameActorRootContext,
@@ -245,6 +304,18 @@ struct OriginalSameActorAOwners {
     cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
     ledger: Arc<OriginalCellQ24TaskLedgerProducerV1>,
     published: PublishedCircuitFeatureTaskV1,
+}
+
+fn require_original_material_time(
+    context: &OriginalSameActorRootContext,
+    expiry_unix_seconds: u64,
+) -> Result<(), AgentdError> {
+    OriginalSameActorRootContext::require_current(context)?;
+    let now = context.clock().now_unix_ms().map_err(phase_owner_error)? / 1_000;
+    if now >= expiry_unix_seconds {
+        return Err(phase_refused("original prepared business deadline elapsed"));
+    }
+    OriginalSameActorRootContext::require_current(context)
 }
 
 fn phase_refused(message: &str) -> AgentdError {

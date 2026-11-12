@@ -10,10 +10,15 @@ use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Condvar;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
 use tokio_util::sync::CancellationToken;
+
+#[path = "same_actor_q24_required_purpose_retirement.rs"]
+mod original_required_retirement;
 
 const MAX_STREAMS: usize = 16;
 const STOP_PROBE: Duration = Duration::from_millis(5);
@@ -138,6 +143,16 @@ pub(crate) struct SameActorPhaseStream {
 pub(crate) struct RequiredSameActorPhaseChannel {
     closing: CloseSameActorPhaseOnDrop,
     _stream: SameActorPhaseStream,
+    retired: Arc<AtomicBool>,
+}
+
+/// A close-only reference to an actual required channel registration. It
+/// creates no FD, authority or new registration. The real channel retains
+/// its armed guard and shares this one-way retirement state.
+pub(crate) struct OriginalRequiredPurposeRetirement {
+    gate: Arc<SameActorPhaseGate>,
+    id: u64,
+    retired: Arc<AtomicBool>,
 }
 
 impl RequiredSameActorPhaseChannel {
@@ -146,7 +161,66 @@ impl RequiredSameActorPhaseChannel {
     }
 
     pub(crate) fn require_open(&self) -> io::Result<()> {
-        self.closing.gate.require_open().map(|_| ())
+        if self.retired.load(Ordering::Acquire) {
+            self.closing.gate.close();
+            return Err(refused("original purpose is already retired"));
+        }
+        self.closing.gate.require_open()?;
+        if self.retired.load(Ordering::Acquire) {
+            self.closing.gate.close();
+            return Err(refused("original purpose retired during admission"));
+        }
+        Ok(())
+    }
+
+    /// Only the actual receiving owner retains this close-only registration.
+    /// It cannot release anything without the later real Root Intent.
+    pub(crate) fn original_retirement_custody(&self) -> OriginalRequiredPurposeRetirement {
+        OriginalRequiredPurposeRetirement {
+            gate: Arc::clone(&self.closing.gate),
+            id: self._stream.id,
+            retired: Arc::clone(&self.retired),
+        }
+    }
+
+    pub(crate) fn shutdown_original_after_root_intent(
+        &self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+    ) -> Result<(), crate::AgentdError> {
+        self.original_retirement_custody().shutdown_original_after_root_intent(intent)
+    }
+
+    /// Only the exact actual ACK2 owner can close its own final peer.
+    /// All ordinary response/pidfd checks must finish before this EOF. After
+    /// it, Root is expected to exit, so no peer-alive postcheck is performed.
+    pub(crate) fn shutdown_original_after_root_workers_joined(
+        &self,
+        joined: &crate::same_actor_q24_deployment::OriginalRootWorkersJoined,
+    ) -> Result<(), crate::AgentdError> {
+        let checked = (|| {
+            joined.require_original_final_peer(self)?;
+            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {
+                return Err(refused("original final peer EOF was already consumed").into());
+            }
+            {
+                let mut state = self.closing.gate.state.lock()
+                    .map_err(|_| refused("original final peer Gate is poisoned"))?;
+                self.closing.gate.check_locked(&mut state)?;
+                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self._stream.id) else {
+                    return Err(refused("original final peer registration is unavailable").into());
+                };
+                stream.shutdown(Shutdown::Both)?;
+                self.closing.gate.check_locked(&mut state)?;
+            }
+            // Retain the same absolute bounds without requiring an already
+            // intentionally released peer to remain alive.
+            self.closing.gate.require_open()?;
+            Ok::<(), crate::AgentdError>(())
+        })();
+        if checked.is_err() {
+            self.closing.gate.close();
+        }
+        checked
     }
 
     pub(crate) fn failure_scope(&self) -> CloseSameActorPhaseOnDrop {
@@ -280,6 +354,7 @@ impl SameActorPhaseGate {
         Ok(RequiredSameActorPhaseChannel {
             closing,
             _stream: stream,
+            retired: Arc::new(AtomicBool::new(false)),
         })
     }
 
@@ -521,6 +596,27 @@ impl OriginalSameActorPhaseWatch {
             gate: Arc::clone(gate),
             worker: Some(worker),
         })
+    }
+}
+
+impl OriginalSameActorPhaseWatch {
+    /// Consume the actual watcher handle only after the same Root's kernel
+    /// exit proof. Common closure wakes its Condvar before the real join.
+    /// A watcher panic remains an error instead of being discarded by Drop.
+    pub(crate) fn finish_original_after_root_exit(
+        mut self,
+        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<(), crate::AgentdError> {
+        exited.require_original_cleanup_origin(identity, &self.gate)?;
+        self.gate.close();
+        let worker = self.worker.take().ok_or_else(|| {
+            crate::AgentdError::GenerationFenced("actual deadline watcher was already consumed".into())
+        })?;
+        worker.join().map_err(|_| {
+            crate::AgentdError::GenerationFenced("actual deadline watcher panicked".into())
+        })?;
+        exited.require_original_cleanup_origin(identity, &self.gate)
     }
 }
 

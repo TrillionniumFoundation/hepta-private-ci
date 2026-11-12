@@ -389,3 +389,6 @@ async fn learning_checkpoint_cancel_after_commit_requires_original_owner_reconci
 
 #[path = "learning_iteration_checkpoint_same_actor_tests.rs"]
 mod same_actor_tests;
+
+#[path = "learning_iteration_checkpoint_retirement_tests.rs"]
+mod retirement_tests;
