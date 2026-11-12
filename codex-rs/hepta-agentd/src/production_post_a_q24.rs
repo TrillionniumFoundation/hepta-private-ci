@@ -15,6 +15,8 @@ use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 mod deployment;
 #[path = "production_post_a_q24_handoff.rs"]
 mod handoff;
+#[path = "production_post_a_material.rs"]
+mod material;
 #[path = "production_post_a_q24_owners.rs"]
 mod owners;
 pub(super) use handoff::PendingHandoffs;
