@@ -38,6 +38,7 @@ CALLERS = {
         AGENT + "authority_host_generation_initial_enrollment.rs",
         AGENT + "authority_host_generation_initial_transport.rs",
         PIN, SESSION, TRANSPORT,
+        AGENT + "authority_host_initial_learning_trust_transport.rs",
     ),
     "root_historical_source_fixed_inputs": (SESSION,),
     "root_historical_source_registered_inputs": (PIN,),

@@ -5691,7 +5691,7 @@ symbol = "RootGenerationPublicationConnectionV1::require_original_publication_se
 receiver_type = "RootGenerationPublicationConnectionV1"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
 definition_markers = ["pub(crate) fn require_original_publication_session(","libc::getuid()","libc::geteuid()","std::process::id() != self.original.consumer.pid","verify_sender_process_binding("]
-product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs","codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs","codex-rs/hepta-agentd/src/root_generation_initial_client.rs","codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs","codex-rs/hepta-agentd/src/root_q24_successor_session.rs","codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs","codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs","codex-rs/hepta-agentd/src/root_generation_initial_client.rs","codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs","codex-rs/hepta-agentd/src/root_q24_successor_session.rs","codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs","codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs"]
 caller_markers = []
 
 [[boundary]]
