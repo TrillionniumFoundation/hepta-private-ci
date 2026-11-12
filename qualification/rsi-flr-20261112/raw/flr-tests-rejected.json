@@ -1,0 +1,37 @@
+{
+  "base_sha": "",
+  "before": {
+    "commit": "4d5ffd79302da50ca2de87ec203905f7b4683de6",
+    "dirty": true,
+    "parents": [
+      "dafa66841cbcda56dcbab7f1a737514ec7e7fe4f"
+    ],
+    "tree": "8fb46bb725eeac65575275bbce15d2150fd73e53"
+  },
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.ndu_real_runtime.test_causal_ace",
+    "scripts.ndu_real_runtime.test_evolve1",
+    "scripts.ndu_real_runtime.test_evolve1_pilot",
+    "scripts.ndu_real_runtime.test_flr_contract",
+    "scripts.ndu_real_runtime.test_flr_reference"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 0.037468669999725535,
+  "error": "invalid source_sha",
+  "exit_code": 2,
+  "finished_at": "2026-11-12T06:29:37.172680+00:00",
+  "job": null,
+  "lane": "",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "",
+  "started_at": "2026-11-12T06:29:37.132543+00:00",
+  "status": "rejected",
+  "tested_sha": "",
+  "working_directory": "/workspace/scratch/97e9e0e36433/hepta-rsi"
+}

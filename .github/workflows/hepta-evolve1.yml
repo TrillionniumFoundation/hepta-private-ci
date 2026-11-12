@@ -35,7 +35,7 @@ env:
 
 jobs:
   contracts:
-    name: EVOLVE-1 and F/L/R contract regressions
+    name: EVOLVE-1 and multigeneration F/L/R regressions
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -87,7 +87,7 @@ jobs:
           PY
           cat "$RUNNER_TEMP/evolve1-ci/runtime.json"
 
-      - name: Run all four suites with separate non-skipped test minima
+      - name: Run all five suites with separate non-skipped test minima
         shell: bash
         run: |
           set -euo pipefail
@@ -103,6 +103,7 @@ jobs:
           20 scripts.ndu_real_runtime.test_evolve1
           3 scripts.ndu_real_runtime.test_evolve1_pilot
           19 scripts.ndu_real_runtime.test_flr_contract
+          7 scripts.ndu_real_runtime.test_flr_reference
           CASES
           exit "$status"
 
@@ -119,7 +120,9 @@ jobs:
             scripts/ndu_real_runtime/test_evolve1_pilot.py
             scripts/ndu_real_runtime/flr_plan.py
             scripts/ndu_real_runtime/flr_contract.py
+            scripts/ndu_real_runtime/flr_reference.py
             scripts/ndu_real_runtime/test_flr_contract.py
+            scripts/ndu_real_runtime/test_flr_reference.py
           )
           uv run --frozen --project scripts --python 3.12.14 \
             ruff format --check "${files[@]}"
@@ -127,6 +130,20 @@ jobs:
             ruff check --select E9,F63,F7,F82 "${files[@]}"
           git diff --exit-code
           git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Execute and retain a frozen three-generation reference campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 \
+            python -m scripts.ndu_real_runtime.flr_reference \
+            --output "$RUNNER_TEMP/evolve1-ci/flr-reference" \
+            --source-commit "$SOURCE_SHA" --source-tree "$(git rev-parse HEAD^{tree})" \
+            --generations 3 --seed 41 --attempts 3 \
+            > "$RUNNER_TEMP/evolve1-ci/flr-reference.log" 2>&1
+          cat "$RUNNER_TEMP/evolve1-ci/flr-reference.log"
+          git diff --exit-code
           test -z "$(git status --porcelain)"
 
       - name: Retain exact-source execution records and original logs
