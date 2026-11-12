@@ -102,6 +102,10 @@ jobs:
               "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
               "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
               "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+              "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+              "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+              "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+              "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
                       "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",

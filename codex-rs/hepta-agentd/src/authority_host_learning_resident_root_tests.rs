@@ -424,3 +424,6 @@ mod evaluation;
 
 #[path = "authority_host_learning_resident_model_tests.rs"]
 mod original_model;
+
+#[path = "authority_host_learning_resident_retention_auth_tests.rs"]
+mod retention_auth;
