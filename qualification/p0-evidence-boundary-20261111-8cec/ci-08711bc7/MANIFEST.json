@@ -1,0 +1,108 @@
+{
+  "schema": "hepta-original-ci-evidence-checkpoint-v1",
+  "recorded_at_utc": "2026-11-12 01:03:59 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 6036,
+  "actual_behavior_source": "08711bc7f339b99e03b7513a18084e55ebee5016",
+  "actual_behavior_tree": "be15f3dfcee331d39b43258b59668165cf4fa7c2",
+  "common_candidate_at_recording": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "common_candidate_tree_at_recording": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "files": [
+    {
+      "path": "shared-43127239314-130882315438.log",
+      "github_blob_sha": "e46ca2dcbd46cb369f2eab478d32e6b2399acee6"
+    },
+    {
+      "path": "shared-43127239314-130882315438.summary.json",
+      "github_blob_sha": "2263f0e3d8e67c762b27865f6b003b2694c92e08"
+    },
+    {
+      "path": "daemon-43127239316-130882315084.log",
+      "github_blob_sha": "62074c3aedd877140d1e2fa59f8ecdfe9d954e9c"
+    },
+    {
+      "path": "daemon-43127239316-130882315084.summary.json",
+      "github_blob_sha": "2d1da929cc4bf924dae66467144bad97cf6de850"
+    }
+  ],
+  "independent_root_readback": {
+    "shared": {
+      "key": "0871-shared-log",
+      "blob_sha": "e46ca2dcbd46cb369f2eab478d32e6b2399acee6",
+      "bytes": 363307,
+      "expectedBytes": 363307,
+      "exactSize": true,
+      "summaries": [
+        "2026-11-12T00:52:40.4524259Z      Summary [ 480.258s] 1268 tests run: 1268 passed (4 slow), 77 skipped"
+      ],
+      "sourceInventory": [],
+      "uid": []
+    },
+    "daemon": {
+      "key": "0871-daemon-log",
+      "blob_sha": "62074c3aedd877140d1e2fa59f8ecdfe9d954e9c",
+      "bytes": 3316194,
+      "expectedBytes": 3316194,
+      "exactSize": true,
+      "summaries": [
+        "2026-11-12T00:52:52.2800570Z      Summary [ 448.583s] 1235 tests run: 1235 passed (4 slow), 78 skipped",
+        "2026-11-12T00:52:55.1421937Z      Summary [   1.059s] 12 tests run: 12 passed, 1033 skipped"
+      ],
+      "sourceInventory": [
+        "2026-11-12T00:31:12.4998028Z \u001b[36;1m    print(json.dumps({\"source_snapshot\": label, **result}), flush=True)\u001b[0m",
+        "2026-11-12T00:31:13.6785356Z {\"source_snapshot\": \"checkout\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"ed533a5b1be1c9f885fece2eae4dc136b4fc7b75553ca2ccbe9745f042360074\"}",
+        "2026-11-12T00:40:26.8160319Z {\"source_snapshot\": \"before-tests\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"ed533a5b1be1c9f885fece2eae4dc136b4fc7b75553ca2ccbe9745f042360074\"}",
+        "2026-11-12T00:52:56.3303374Z {\"source_snapshot\": \"after-tests\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \"\", \"files\": 14508, \"inventory_sha256\": \"ed533a5b1be1c9f885fece2eae4dc136b4fc7b75553ca2ccbe9745f042360074\"}",
+        "2026-11-12T00:57:29.1922994Z {\"source_snapshot\": \"after-maintenance\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \" M codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs\\n M codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs\\n\", \"files\": 14508, \"inventory_sha256\": \"43eac19b6a0ec0c3374f81eef5340da2ce45d9c1cb2ea988b6d5dfd24d6b0889\"}",
+        "2026-11-12T00:59:16.5607060Z {\"source_snapshot\": \"after-bins\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \" M codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs\\n M codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs\\n\", \"files\": 14508, \"inventory_sha256\": \"43eac19b6a0ec0c3374f81eef5340da2ce45d9c1cb2ea988b6d5dfd24d6b0889\"}",
+        "2026-11-12T00:59:17.6363053Z {\"source_snapshot\": \"final\", \"commit\": \"08711bc7f339b99e03b7513a18084e55ebee5016\", \"tree\": \"be15f3dfcee331d39b43258b59668165cf4fa7c2\", \"status\": \" M codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs\\n M codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs\\n\", \"files\": 14508, \"inventory_sha256\": \"43eac19b6a0ec0c3374f81eef5340da2ce45d9c1cb2ea988b6d5dfd24d6b0889\"}"
+      ],
+      "uid": [
+        "2026-11-12T00:31:12.5012810Z \u001b[36;1m        check_uid = \"import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')\"\u001b[0m",
+        "2026-11-12T00:31:12.5038301Z \u001b[36;1m             \"print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)\")\u001b[0m",
+        "2026-11-12T00:52:52.5301356Z Root fixture uid=0 path=/run/hepta-daemon-learning-43127239316-1",
+        "2026-11-12T00:52:52.5565460Z Root test uid=0"
+      ]
+    }
+  },
+  "observations": {
+    "shared": {
+      "passed": 1268,
+      "failed": 0,
+      "skipped": 77,
+      "source_before_after_clean": true
+    },
+    "daemon_ordinary": {
+      "passed": 1235,
+      "failed": 0,
+      "skipped": 78,
+      "source_before_after_clean": true
+    },
+    "daemon_root": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 1033,
+      "uid": 0,
+      "source_before_after_clean": true
+    },
+    "subsequent_maintenance_changed_source": true,
+    "subsequent_maintenance_changed_files": [
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs"
+    ],
+    "source_after_maintenance_behavior_rerun": false,
+    "final_candidate_behavior": "pending; no result transfer"
+  },
+  "qualification": {
+    "p0": "HOLD",
+    "p1": "HOLD",
+    "new_accepted_real_ordinary_business_chains": 0,
+    "new_independent_future_task_confirmations": 0,
+    "new_independently_qualified_net_benefit_updates": 0,
+    "engineering_evidence_only": true,
+    "production_adoption": false,
+    "rsi_claim": false,
+    "limitation": "Root fixture recovery tests are not the requested real whole daemon-plus-Root ordinary business chain; synthetic mechanism tests are not independent learning benefit."
+  },
+  "retention": "Append-only checkpoint; initial formatter failures and caller timeout remain in initial-checkpoint. No original log or summary content was edited."
+}

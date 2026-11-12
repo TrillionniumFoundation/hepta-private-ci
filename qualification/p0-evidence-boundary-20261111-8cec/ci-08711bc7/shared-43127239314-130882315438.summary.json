@@ -1,0 +1,163 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "08711bc7f339b99e03b7513a18084e55ebee5016",
+  "source_tree": "be15f3dfcee331d39b43258b59668165cf4fa7c2",
+  "source_parent": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "workflow": {
+    "name": "Hepta shared Cell framework",
+    "path": ".github/workflows/hepta-shared-framework.yml",
+    "run_id": 43127239314,
+    "run_attempt": 1,
+    "job_id": 130882315438,
+    "job_name": "owners",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127239314/jobs/130882315438"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "e46ca2dcbd46cb369f2eab478d32e6b2399acee6",
+    "encoding": "utf-8",
+    "byte_count": 363307,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits, including original leading BOM and line endings"
+  },
+  "suite_summary": {
+    "raw_line": "2026-11-12T00:52:40.4524259Z      Summary [ 480.258s] 1268 tests run: 1268 passed (4 slow), 77 skipped",
+    "passed": 1268,
+    "failed": 0,
+    "skipped": 77,
+    "slow": 4
+  },
+  "execution_record": {
+    "after": {
+      "commit": "08711bc7f339b99e03b7513a18084e55ebee5016",
+      "dirty": false,
+      "parents": [
+        "3c8dabe46598599e91b2b8b80081e09069ff9426"
+      ],
+      "tree": "be15f3dfcee331d39b43258b59668165cf4fa7c2"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "08711bc7f339b99e03b7513a18084e55ebee5016",
+      "dirty": false,
+      "parents": [
+        "3c8dabe46598599e91b2b8b80081e09069ff9426"
+      ],
+      "tree": "be15f3dfcee331d39b43258b59668165cf4fa7c2"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "command_exit_code": 0,
+    "elapsed_seconds": 797.1206435039999,
+    "exit_code": 0,
+    "finished_at": "2026-11-12T00:52:40.531456+00:00",
+    "job": "owners",
+    "lane": "source-head",
+    "log_bytes": 236802,
+    "log_file": "tests.json.240aef0f06e341078b9531baaa4e2b0d.log",
+    "log_sha256": "bf161c6fe0780540f4fbdb6d407651c5514066627d9acecd777c1a73e165838d",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 1268,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "run_attempt": "1",
+    "run_id": "43127239314",
+    "schema_version": 1,
+    "source_sha": "08711bc7f339b99e03b7513a18084e55ebee5016",
+    "started_at": "2026-11-12T00:39:23.410042+00:00",
+    "status": "passed",
+    "tested_sha": "08711bc7f339b99e03b7513a18084e55ebee5016",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "native_junit_collection": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "errors": 0,
+    "execution_file": "tests.json",
+    "execution_sha256": "2cc948b103a20b37c8f4f865275ed4ca52c8d7e88ebb3ccd27edbf032e149aaf",
+    "failures": 0,
+    "job": "owners",
+    "junit_bytes": 302768,
+    "junit_mtime_ns": 1794444760465203700,
+    "junit_sha256": "0227ed4e9467969918cfa9dd39c48ea42401b65dc6605598d99b88f381f1c26e",
+    "kind": "native-junit-collection",
+    "native_path": "codex-rs/target/nextest/local/junit.xml",
+    "run_attempt": "1",
+    "run_id": "43127239314",
+    "schema_version": 1,
+    "skipped_in_xml": 0,
+    "source_sha": "08711bc7f339b99e03b7513a18084e55ebee5016",
+    "source_tree": "be15f3dfcee331d39b43258b59668165cf4fa7c2",
+    "status": "passed",
+    "total_testcases": 1268
+  },
+  "changed_test_observations": [
+    {
+      "observed_at": "2026-11-12T00:45:07.8554696Z",
+      "status": "PASS",
+      "duration_seconds": 1.327,
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_evaluation_never_claims_a_receipt_before_or_after_cold_reopen",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T00:45:10.3056740Z",
+      "status": "PASS",
+      "duration_seconds": 2.45,
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_qualification_refuses_legacy_no_update_histories_before_owner_io",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T00:45:29.9066354Z",
+      "status": "PASS",
+      "duration_seconds": 1.171,
+      "package": "codex-hepta-agentd",
+      "test": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T00:46:39.0103629Z",
+      "status": "PASS",
+      "duration_seconds": 4.77,
+      "package": "codex-hepta-agentd",
+      "test": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_keeps_ineligible_and_insufficient_decisions_distinct",
+      "change_kind": "existing test renamed and updated"
+    }
+  ],
+  "coverage_limits": {
+    "packages_selected": [
+      "codex-hepta-automation",
+      "codex-hepta-neuron",
+      "codex-hepta-agentd"
+    ],
+    "intelligence_eval_unit_tests_selected": false,
+    "real_root_ignored_suite_selected": false,
+    "new_regressions_are": "Synthetic engineering regressions for insufficient-evidence decisions, original owner files, cold reopen, and refusal before owner IO; not independent learning benefit or real product task evidence.",
+    "not_evidence_for_source": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+    "cross_source_rule": "Preserve this run independently. No result, test count, or unchanged-source assertion may be relabeled as evidence for a later source."
+  }
+}
