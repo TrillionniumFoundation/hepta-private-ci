@@ -3,3 +3,5 @@
 
 #[path = "ordinary_q24_process_deployment_tests.rs"]
 mod deployment;
+#[path = "ordinary_q24_process_inputs_tests.rs"]
+mod inputs;
