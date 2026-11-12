@@ -8,6 +8,7 @@ use codex_uds::UnixListener;
 use codex_uds::UnixStream;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -120,10 +121,24 @@ impl AgentdControlServer {
     }
 
     async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {
+        let mut connections = JoinSet::new();
+        let mut failure = None;
         loop {
-            let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+            let accepted = tokio::select! {
+                biased;
+                _ = self.cancellation.cancelled() => break,
+                Some(completion) = connections.join_next(), if !connections.is_empty() => {
+                    retain_connection_failure(&mut failure, completion);
+                    continue;
+                }
+                accepted = self.listener.accept() => accepted,
+            };
+            let stream = match accepted {
+                Ok(stream) => stream,
+                Err(error) => {
+                    failure.get_or_insert_with(|| error.into());
+                    break;
+                }
             };
             #[cfg(target_os = "linux")]
             if self.owned_socket_path.is_none()
@@ -141,11 +156,37 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            connections.spawn(async move {
                 let _permit = permit;
-                let _ = ControlConnection::<P>::serve_connection(stream, state).await;
+                ControlConnection::<P>::serve_connection(stream, state).await
             });
         }
+        // Stop admission, then join every already accepted request. Dropping a
+        // required control task aborts its owned children; it never detaches
+        // continuations that could outlive a claimed original-runtime drain.
+        while let Some(completion) = connections.join_next().await {
+            retain_connection_failure(&mut failure, completion);
+        }
+        match failure {
+            Some(error) => Err(error),
+            None => Ok(()),
+        }
+    }
+}
+
+fn retain_connection_failure(
+    failure: &mut Option<AgentdError>,
+    completion: Result<Result<(), AgentdError>, tokio::task::JoinError>,
+) {
+    let error = match completion {
+        Ok(Ok(())) => return,
+        Ok(Err(error)) => error,
+        Err(error) => {
+            AgentdError::Protocol(format!("agentd control connection task failed: {error}"))
+        }
+    };
+    if failure.is_none() {
+        *failure = Some(error);
     }
 }
 
