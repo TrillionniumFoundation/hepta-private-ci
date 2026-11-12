@@ -15,6 +15,8 @@ mod cold_launch;
 mod cold_phase;
 #[path = "ordinary_q24_cold_publication_data_tests.rs"]
 mod cold_publication_data;
+#[path = "ordinary_q24_cold_recipient_data_tests.rs"]
+mod cold_recipient_data;
 #[path = "ordinary_q24_cold_record_tests.rs"]
 mod cold_record;
 #[path = "ordinary_q24_cold_successor_data_tests.rs"]
