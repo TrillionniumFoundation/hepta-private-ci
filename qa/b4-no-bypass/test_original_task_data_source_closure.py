@@ -25,7 +25,7 @@ CLIENT = route.CLIENT
 ROOT_TASK = A + "authority_host_historical_task.rs"
 DERIVE = A + "authority_host_post_a_derive.rs"
 CALLERS = {
-    "original_task_data_observation": (ROOT_TASK,),
+    "original_task_data_observation": (ROOT_TASK, A + "authority_host_successor_files_read.rs"),
     "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT, DERIVE),
     "original_task_data_decode": (),
     "original_task_data_decision": (DATA,),

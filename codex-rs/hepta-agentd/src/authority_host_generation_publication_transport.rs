@@ -188,8 +188,8 @@ impl HostAuthorityService {
                                 slot.target.observe().map_err(io::Error::other)?;
                                 let successor = slot.successor.as_ref()
                                     .ok_or_else(|| io::Error::other("original successor custody not registered"))?;
-                                let cut = successor.observe_retired(matches!(&request.command, Command::CaptureRetiredTask {}))?;
-                                successor_observed = Some(successor.read_data(cut)?);
+                                let cut = RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?;
+                                successor_observed = Some(RegisteredSuccessorData::read_data(successor, cut)?);
                             }
                             Command::Observe => {
                                 if before.current == intent.target {
@@ -371,8 +371,8 @@ impl HostAuthorityService {
                     slot.require_profile()?;
                     if let Some(observed) = successor_observed {
                         let successor = slot.successor.as_ref().ok_or_else(|| io::Error::other("original successor custody disappeared"))?;
-                        successor.finish_observed(&observed.cut)?;
-                        if successor.read_data(observed.cut.clone())? != observed {
+                        RegisteredSuccessorData::finish_observed(successor, &observed.cut)?;
+                        if RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed {
                             return Err(io::Error::other("original successor record changed after Root context"));
                         }
                     }
