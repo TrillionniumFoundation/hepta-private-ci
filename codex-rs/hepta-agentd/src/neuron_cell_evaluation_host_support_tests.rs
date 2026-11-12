@@ -1,6 +1,7 @@
 //! Explicit same-UID transport and synthetic B time for original host tests.
 //! Public production factories still require independent original processes.
 //! Every successful response comes from the actual original host and journals.
+use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::atomic::Ordering;
@@ -22,10 +23,11 @@ use super::OriginalCellEvaluationCommandClientV1;
 type Thread = std::thread::JoinHandle<anyhow::Result<u64>>;
 
 fn pidfd() -> anyhow::Result<OwnedFd> {
-    Ok(rustix::process::pidfd_open(
-        rustix::process::getpid(),
-        rustix::process::PidfdFlags::empty(),
-    )?)
+    // SAFETY: pidfd_open observes this process and returns a new descriptor.
+    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    anyhow::ensure!(raw >= 0, "{}", std::io::Error::last_os_error());
+    // SAFETY: successful pidfd_open returned a new, unowned descriptor.
+    Ok(unsafe { OwnedFd::from_raw_fd(i32::try_from(raw)?) })
 }
 
 fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
@@ -33,7 +35,8 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
         stream,
         HostAuthorityPeerPolicy {
             peer: HostIssuerPeer {
-                uid: rustix::process::geteuid().as_raw(),
+                // SAFETY: geteuid reads only this test process's kernel credential.
+                uid: unsafe { libc::geteuid() },
                 pid: std::process::id(),
             },
             timeout: Duration::from_secs(/*secs*/ 30),

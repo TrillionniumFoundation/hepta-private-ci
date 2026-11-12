@@ -206,8 +206,10 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
 
     def test_original_grant_registry_revocation_and_local_only_fence_are_mandatory(self):
         filename = "authority_host_learning_resident_authority.rs"
+        self.rejects(filename, "fn new(", "unsafe { libc::geteuid() } != 0")
         for marker in (
             "self.root_pid != std::process::id()",
+            "unsafe { libc::geteuid() } != 0",
             "cancellation.is_cancelled()",
             "matches!(access, ResidentAccessV3::Work) && self.readonly()",
             "verifier\n            .read_lease(&lease.lease_id)",

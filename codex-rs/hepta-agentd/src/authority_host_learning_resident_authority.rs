@@ -89,7 +89,8 @@ impl ResidentRootAuthorityV3 {
     ) -> io::Result<Self> {
         // Credentials alone confer no permission; every operation below also
         // verifies the exact externally supplied intent and same Registry.
-        if rustix::process::geteuid().as_raw() != 0 {
+        // SAFETY: geteuid takes no arguments and reads the current kernel credential.
+        if unsafe { libc::geteuid() } != 0 {
             return Err(invalid(
                 "resident authority must remain in its original Root process",
             ));
@@ -140,8 +141,9 @@ impl ResidentRootAuthorityV3 {
         } else {
             ResidentAccessV3::Observe
         };
+        // SAFETY: geteuid takes no arguments and reads the current kernel credential.
         if self.root_pid != std::process::id()
-            || rustix::process::geteuid().as_raw() != 0
+            || unsafe { libc::geteuid() } != 0
             || cancellation.is_cancelled()
             || (matches!(access, ResidentAccessV3::Work) && self.readonly())
         {
