@@ -20,6 +20,8 @@ const ACKNOWLEDGED: u8 = 4;
 mod cell_retention;
 #[path = "authority_host_historical_source_deployment.rs"]
 mod deployment;
+#[path = "authority_host_historical_ledger_session.rs"]
+mod ledger_retention;
 
 struct Submission {
     acknowledgement: mpsc::SyncSender<Result<Digest32, String>>,
@@ -132,8 +134,10 @@ pub(super) struct HistoricalSourceRuntime {
     root: RootLifetime,
     end: Arc<OnceLock<Instant>>,
     cell: Mutex<cell_retention::OriginalCellCustody>,
+    ledger: Mutex<ledger_retention::OriginalLedgerCustody>,
 }
 
+#[derive(Clone, Copy)]
 pub(super) struct SourceCaptureContext<'a> {
     pub(super) service: &'a HostAuthorityService,
     pub(super) config: &'a HostAuthorityServiceConfig,
@@ -192,6 +196,7 @@ impl PreparedHostAuthoritySession {
             root: root.clone(),
             end: Arc::clone(&end),
             cell: Mutex::new(cell_retention::OriginalCellCustody::Absent),
+            ledger: Mutex::new(ledger_retention::OriginalLedgerCustody::Absent),
         });
         Ok(RootHistoricalSourceCaptureCapabilityV1 {
             sender,
@@ -247,7 +252,10 @@ impl HistoricalSourceRuntime {
                 context.registration,
                 context.owner,
                 inputs,
-                self.take_original_source_cell()?,
+                crate::authority_host_service::generation_initial::historical_source_pin::OriginalSourceDataCaptureV1 {
+                    cell: self.take_original_source_cell()?,
+                    ledger: self.take_original_source_ledger()?,
+                },
             )?;
             let delivered = (|| {
                 let digest = pin.readback_digest()?;

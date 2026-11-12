@@ -35,6 +35,8 @@ pub(super) struct SourceDeploymentData {
     pub(super) source_witness: PathBuf,
     #[serde(default)]
     pub(super) cell_files: Option<RootCellFilesData>,
+    #[serde(default)]
+    pub(super) ledger_deployment: Option<PathBuf>,
     witness_scope: [u8; 32],
     witness_objective: [u8; 32],
     witness_generation: u64,
