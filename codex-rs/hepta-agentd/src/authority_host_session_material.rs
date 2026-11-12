@@ -134,6 +134,7 @@ impl PreparedHostAuthoritySession {
             learning: None,
             publication: None,
             initial_publication: None,
+            historical_read: None,
         })
     }
 
@@ -167,6 +168,7 @@ impl PreparedHostAuthoritySession {
             learning: None,
             publication: None,
             initial_publication: None,
+            historical_read: None,
         })
     }
 
@@ -196,6 +198,7 @@ impl PreparedHostAuthoritySession {
             learning: None,
             publication: None,
             initial_publication: None,
+            historical_read: None,
         })
     }
 }
