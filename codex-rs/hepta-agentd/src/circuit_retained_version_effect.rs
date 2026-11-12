@@ -11,6 +11,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionHostStateV1;
 use super::RetainedVersionHostPhaseV1;
+use super::RetainedVersionFinalUseOutcomeV1;
 use super::super::Error;
 use super::super::RetainedVersionOriginV1;
 use super::super::OriginalCircuitRetainedVersionReadbackV1;
@@ -45,6 +46,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         let actual = self.read_original(state).map_err(|_| Error::CommitUncertain)?;
         state.cut.as_ref().ok_or(Error::CommitUncertain)?
             .require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
+        self.prepared.notify_waiters();
         Ok(actual)
     }
 
@@ -67,17 +69,23 @@ impl OriginalCircuitRetainedVersionHostV1 {
         }).await.map_err(|_| Error::CommitUncertain)?
     }
 
-    /// Supplied by the original Version host, never by the Root command.
+    /// Called only after this host's one original issuer request, never by the
+    /// Root command or a caller-supplied future grant.
     /// Exact binding is checked before custody is consumed. Any effect failure
     /// permanently removes this prepared instance; only original readback may
     /// establish what happened. This does not issue or renew a grant.
-    pub async fn publish_original_final_use(
+    pub(super) async fn publish_original_final_use(
         self: Arc<Self>,
         signed: SignedFinalUseGrant,
     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
         if self.origin != RetainedVersionOriginV1::Fresh { return Err(Error::ReadbackRequired); }
         {
             let state = self.state.try_lock().map_err(|_| Error::Busy)?;
+            if self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Requested
+                || state.final_use_issuer.is_some()
+            {
+                return Err(Error::ReadbackRequired);
+            }
             let Some(RetainedVersionHostPhaseV1::Prepared { original, .. }) = state.phase.as_ref() else {
                 return Err(Error::ReadbackRequired);
             };
@@ -131,6 +139,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
             let actual = self.read_original(&state).map_err(|_| Error::CommitUncertain)?;
             state.cut.as_ref().ok_or(Error::CommitUncertain)?
                 .require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
+            self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release);
             self.installed.notify_waiters();
             Ok(actual)
         }).await.map_err(|_| Error::CommitUncertain)?;
@@ -167,6 +176,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
                     _ => return Err(Error::CommitUncertain),
                 }
                 owner.read_original(&state)?;
+                if owner.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published {
+                    return Err(Error::CommitUncertain);
+                }
                 state.cut.as_ref().ok_or(Error::Unavailable)?
                     .require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
                 let Some(RetainedVersionHostPhaseV1::Installed { config, .. }) = state.phase.as_mut() else {

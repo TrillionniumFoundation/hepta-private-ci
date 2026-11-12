@@ -168,7 +168,8 @@ impl OriginalCircuitRetainedVersionClientV1 {
         // channel. No bit is reset and no second preparation becomes possible.
         let structured_error = matches!(&response.result,
             wire::OriginalResult::Busy | wire::OriginalResult::ReadbackRequired
-            | wire::OriginalResult::Uncertain | wire::OriginalResult::Unavailable);
+            | wire::OriginalResult::Uncertain | wire::OriginalResult::Unavailable
+            | wire::OriginalResult::FinalUseDenied);
         let decoded = response.result.decode(&self.cut);
         match &decoded {
             Ok(value) => self.pin(value)?,

@@ -10,6 +10,7 @@ use std::time::Instant;
 use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::OriginalCircuitRetainedVersionHostV1;
+use super::RetainedVersionFinalUseOutcomeV1;
 use super::super::Error;
 use super::super::wire;
 use super::super::super::context::PublicationAccess;
@@ -67,11 +68,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
         lifetime: Duration,
         arg0_paths: codex_arg0::Arg0DispatchPaths,
     ) -> Result<u64, Error> {
-        let (served, ()) = tokio::try_join!(
+        let (served, (), ()) = tokio::try_join!(
             Arc::clone(&self).serve_commands(
                 stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
             ),
             OriginalCircuitRetainedVersionHostV1::run_original_c(Arc::clone(&self), arg0_paths),
+            OriginalCircuitRetainedVersionHostV1::serve_original_final_use(Arc::clone(&self)),
         )?;
         Ok(served)
     }
@@ -179,6 +181,13 @@ impl OriginalCircuitRetainedVersionHostV1 {
                     Err(Error::Busy) => wire::OriginalResult::Busy,
                     Err(Error::ReadbackRequired) => wire::OriginalResult::ReadbackRequired,
                     Err(_) => wire::OriginalResult::Uncertain,
+                };
+                let result = match (&result, self.original_final_use_outcome()) {
+                    (wire::OriginalResult::Prepared { .. }, RetainedVersionFinalUseOutcomeV1::Denied) =>
+                        wire::OriginalResult::FinalUseDenied,
+                    (wire::OriginalResult::Prepared { .. }, RetainedVersionFinalUseOutcomeV1::Requested
+                        | RetainedVersionFinalUseOutcomeV1::Uncertain) => wire::OriginalResult::Uncertain,
+                    _ => result,
                 };
                 (result, Some(state.cut.as_ref().ok_or(Error::Unavailable)?.duplicate_response_pin()))
             }
