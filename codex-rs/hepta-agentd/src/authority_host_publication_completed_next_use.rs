@@ -34,7 +34,7 @@ impl OriginalCompletedPublicationReadV1<'_> {
             .published
             .as_ref()
             .ok_or_else(|| io::Error::other("first original publication missing"))?;
-        let original_a = context.original_task_publication()?;
+        let original_a = context.original_task_publication();
         let (a, _) =
             RootHistoricalTaskPublicationDataV1::decode_original_successor_data(&original_a)
                 .map_err(io::Error::other)?;
