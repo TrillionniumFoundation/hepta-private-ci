@@ -1,0 +1,85 @@
+...EEEEE.....
+======================================================================
+ERROR: test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history) (marker='self.schema != 1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 161, in test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history
+    self.rejects(DATA, "fn validate_data(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agent-protocol/src/q24_completed_history.rs:fn validate_data(: required code order missing: ['if self.schema != 1', 'return Err(', 'for (field, value) in [', 'if value.len() != 64', 'byte.is_ascii_digit()', "(b'a'..=b'f').contains(&byte)", "value.bytes().all(|byte| byte == b'0')", 'return Err(format!', 'Ok(())']
+
+======================================================================
+ERROR: test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history) (marker='value.len() != 64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 161, in test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history
+    self.rejects(DATA, "fn validate_data(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agent-protocol/src/q24_completed_history.rs:fn validate_data(: required code order missing: ['if self.schema != 1', 'return Err(', 'for (field, value) in [', 'if value.len() != 64', 'byte.is_ascii_digit()', "(b'a'..=b'f').contains(&byte)", "value.bytes().all(|byte| byte == b'0')", 'return Err(format!', 'Ok(())']
+
+======================================================================
+ERROR: test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history) (marker='byte.is_ascii_digit()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 161, in test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history
+    self.rejects(DATA, "fn validate_data(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agent-protocol/src/q24_completed_history.rs:fn validate_data(: required code order missing: ['if self.schema != 1', 'return Err(', 'for (field, value) in [', 'if value.len() != 64', 'byte.is_ascii_digit()', "(b'a'..=b'f').contains(&byte)", "value.bytes().all(|byte| byte == b'0')", 'return Err(format!', 'Ok(())']
+
+======================================================================
+ERROR: test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history) (marker="(b'a'..=b'f').contains(&byte)")
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 161, in test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history
+    self.rejects(DATA, "fn validate_data(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agent-protocol/src/q24_completed_history.rs:fn validate_data(: required code order missing: ['if self.schema != 1', 'return Err(', 'for (field, value) in [', 'if value.len() != 64', 'byte.is_ascii_digit()', "(b'a'..=b'f').contains(&byte)", "value.bytes().all(|byte| byte == b'0')", 'return Err(format!', 'Ok(())']
+
+======================================================================
+ERROR: test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history) (marker="value.bytes().all(|byte| byte == b'0')")
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 161, in test_digest_shape_cannot_allow_missing_zero_or_noncanonical_history
+    self.rejects(DATA, "fn validate_data(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agent-protocol/src/q24_completed_history.rs:fn validate_data(: required code order missing: ['if self.schema != 1', 'return Err(', 'for (field, value) in [', 'if value.len() != 64', 'byte.is_ascii_digit()', "(b'a'..=b'f').contains(&byte)", "value.bytes().all(|byte| byte == b'0')", 'return Err(format!', 'Ok(())']
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.487s
+
+FAILED (errors=5)

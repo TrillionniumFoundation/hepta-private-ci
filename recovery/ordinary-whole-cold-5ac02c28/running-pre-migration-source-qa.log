@@ -1,0 +1,419 @@
+E.....EEEEEEEEEEEEEEEEEEEEEEEEE
+======================================================================
+ERROR: test_all_current_slot_and_runtime_protections_are_live (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_all_current_slot_and_runtime_protections_are_live)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 64, in test_all_current_slot_and_runtime_protections_are_live
+    PROOF._verify_protected_files(ROOT, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='let data = completed.data().clone();')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='let result = data.validate_data().map_err(AgentdError::Protocol);')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='let root_after =')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='let generation_after = self.require_original_completed_history_current();')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='root_after?;')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='generation_after?;')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation) (marker='result?;')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 141, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_current_root_and_generation_wrap_even_failed_data_validation (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_current_root_and_generation_wrap_even_failed_data_validation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 143, in test_query_current_root_and_generation_wrap_even_failed_data_validation
+    self.rejects(STATE, function,
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='self.refresh_generation()?;')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='self.identity.spawn_generation.checked_add(1)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='Some(runtime.current_generation) != running_generation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='runtime.lifecycle != AgentLifecycle::Running')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='!runtime.app_server_ready')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='!runtime.critical_stores_ready')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='!runtime.revocation_ready')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='!runtime.required_ports_ready')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='!runtime.admission_open')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='runtime.drain_requested')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_keeps_all_local_current_admission_checks (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_keeps_all_local_current_admission_checks) (marker='runtime.fenced')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 157, in test_query_keeps_all_local_current_admission_checks
+    self.rejects(STATE, "fn require_original_completed_history_current(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_query_missing_does_not_become_completed (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_query_missing_does_not_become_completed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 129, in test_query_missing_does_not_become_completed
+    self.rejects(STATE, "fn read_original_q24_completed_history(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck) (marker='completed: Arc<OriginalCompletedLearningHistoryV1>')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 119, in test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck) (marker='.validate_data()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 119, in test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck) (marker='result?;')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 119, in test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck) (marker='.set(completed)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 119, in test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck
+    self.rejects(STATE, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+======================================================================
+ERROR: test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck (test_q24_completed_history_control_source_closure.OriginalCompletedHistoryControlSourceTests.test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 121, in test_state_attach_cannot_accept_raw_data_or_skip_root_postcheck
+    self.rejects(STATE, function,
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py", line 49, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-c-grant-guards-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+q24_completed_history_control_proof.VerificationFailure: codex-rs/hepta-agentd/src/state_q24_completed_history.rs:fn require_original_completed_history_current(: required code order missing: ['self.refresh_generation()?;', 'let runtime = self.runtime.lock().map_err(poisoned_state)?;', 'runtime.current_generation != self.identity.spawn_generation', 'runtime.lifecycle != AgentLifecycle::Running', '!runtime.app_server_ready', '!runtime.critical_stores_ready', '!runtime.revocation_ready', '!runtime.required_ports_ready', '!runtime.admission_open', 'runtime.drain_requested', 'runtime.fenced', 'return Err(AgentdError::GenerationFenced(', 'Ok(())']
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.725s
+
+FAILED (errors=26)

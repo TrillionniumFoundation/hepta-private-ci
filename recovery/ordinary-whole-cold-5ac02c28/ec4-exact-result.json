@@ -1,0 +1,52 @@
+{
+  "head": "ec4a9c44a78ac2573389ebd73564f81816d60585",
+  "tree": "234677c5e3063a2d311add07b9987233df84cd6c",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_q24_completed_history_control_source_closure.py"
+  ],
+  "start_unix": 1794512461.9989936,
+  "end_unix": 1794512462.5874262,
+  "exit_code": 0,
+  "before": {
+    ".github/blob-size-allowlist.txt": "db1e9c46a17b4eddd5b1ff3b016b7301130c5e1f79ce9bcbf94db8dfaa23ff05",
+    "CALLERS.toml": "0c7813250fca7b1d7e5ab3ed86c6c660565e6ef401dd611abc7ff89ced6c975d",
+    "codex-rs/hepta-agent-protocol/src/q24_completed_history.rs": "6a4ed6a3243be051bd7ce4340e58d6739a1316106450ef391fe41c729224d4cf",
+    "codex-rs/hepta-agentd/src/client_q24_completed_history.rs": "3f9e0d57fe4f2e280a10e5a1268f63305cb00512e6bb44b2096521e9bd5509c3",
+    "codex-rs/hepta-agentd/src/config.rs": "92f6597ef3129cd52da287459d3faca61d06fc39a99e603d06fc49ceeafccb77",
+    "codex-rs/hepta-agentd/src/config_q24_completed_history.rs": "959767214777c3e8c64d649860de95d113e1f480f5b109d2501561596f6fff03",
+    "codex-rs/hepta-agentd/src/runtime.rs": "9ec2ed8a9c3bd3218bf24ecd7c6b557a032ec934190a0d83710216902c178313",
+    "codex-rs/hepta-agentd/src/state.rs": "8b97416baedec6be42bbf91302ae394354b1c678094cdf6a19359c6bd054624b",
+    "codex-rs/hepta-agentd/src/state_control.rs": "140230ca4bb373f8f2495839e92f923109252ae6562f0b86c5b5a672a0954804",
+    "codex-rs/hepta-agentd/src/state_q24_completed_history.rs": "5f81bacf1ec23b70aedcb7040fa518b6854a78ceee826e64935362eb9812ea95",
+    "codex-rs/hepta-agentd/src/state_q24_completed_history_tests.rs": "015d5f069391ddf400fa356ae97424226514619c4fcb4d841dec795c29cf652f",
+    "qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py": "a538a49156392d20068207f10e2a8e71d76dc203f9bad3f3477736f7772ab9ff",
+    "scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+    "scripts/verify_hepta_callers.py": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896"
+  },
+  "after": {
+    ".github/blob-size-allowlist.txt": "db1e9c46a17b4eddd5b1ff3b016b7301130c5e1f79ce9bcbf94db8dfaa23ff05",
+    "CALLERS.toml": "0c7813250fca7b1d7e5ab3ed86c6c660565e6ef401dd611abc7ff89ced6c975d",
+    "codex-rs/hepta-agent-protocol/src/q24_completed_history.rs": "6a4ed6a3243be051bd7ce4340e58d6739a1316106450ef391fe41c729224d4cf",
+    "codex-rs/hepta-agentd/src/client_q24_completed_history.rs": "3f9e0d57fe4f2e280a10e5a1268f63305cb00512e6bb44b2096521e9bd5509c3",
+    "codex-rs/hepta-agentd/src/config.rs": "92f6597ef3129cd52da287459d3faca61d06fc39a99e603d06fc49ceeafccb77",
+    "codex-rs/hepta-agentd/src/config_q24_completed_history.rs": "959767214777c3e8c64d649860de95d113e1f480f5b109d2501561596f6fff03",
+    "codex-rs/hepta-agentd/src/runtime.rs": "9ec2ed8a9c3bd3218bf24ecd7c6b557a032ec934190a0d83710216902c178313",
+    "codex-rs/hepta-agentd/src/state.rs": "8b97416baedec6be42bbf91302ae394354b1c678094cdf6a19359c6bd054624b",
+    "codex-rs/hepta-agentd/src/state_control.rs": "140230ca4bb373f8f2495839e92f923109252ae6562f0b86c5b5a672a0954804",
+    "codex-rs/hepta-agentd/src/state_q24_completed_history.rs": "5f81bacf1ec23b70aedcb7040fa518b6854a78ceee826e64935362eb9812ea95",
+    "codex-rs/hepta-agentd/src/state_q24_completed_history_tests.rs": "015d5f069391ddf400fa356ae97424226514619c4fcb4d841dec795c29cf652f",
+    "qa/b4-no-bypass/test_q24_completed_history_control_source_closure.py": "a538a49156392d20068207f10e2a8e71d76dc203f9bad3f3477736f7772ab9ff",
+    "scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+    "scripts/verify_hepta_callers.py": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896"
+  },
+  "scope": "10 source QA methods; selected real caller index only, not a full repository caller scan",
+  "native": "not run",
+  "dependency": "actual ordinary completed-history opaque implementation pending"
+}
