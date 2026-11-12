@@ -40,6 +40,7 @@ pub use inputs::RootGenerationInitialEnrollmentV1;
 pub use inputs::RootGenerationInitialModeV1;
 #[path = "authority_host_data_refusal.rs"]
 mod data_refusal;
+pub(crate) use data_refusal::RootCompletedLearningRefusalV1;
 #[path = "authority_host_generation_initial_enrollment.rs"]
 mod enrollment;
 #[path = "authority_host_historical_source_pin.rs"]

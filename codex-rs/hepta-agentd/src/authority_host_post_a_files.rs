@@ -18,7 +18,7 @@ use crate::CellQ24ModelFilesV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::authority_host_service::generation_initial::original_root;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct PostAFileData {
     path: PathBuf,

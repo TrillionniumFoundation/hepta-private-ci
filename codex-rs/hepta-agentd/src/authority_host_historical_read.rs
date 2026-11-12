@@ -36,11 +36,17 @@ use crate::root_historical_task_read_protocol::PURPOSE;
 use crate::root_historical_task_read_protocol::SOCKET;
 use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
+#[path = "authority_host_completed_files.rs"]
+mod completed_files;
 #[path = "authority_host_completed_journal.rs"]
 mod completed_journal;
 #[path = "authority_host_completed_learning.rs"]
 mod completed_learning;
 pub(crate) use completed_learning::OriginalCompletedLearningContextV1;
+#[path = "authority_host_completed_record.rs"]
+mod completed_record;
+pub(crate) use completed_record::RootCompletedLearningAcceptanceDataV1;
+pub(crate) use completed_record::completed_learning_acceptance_owner;
 #[path = "authority_host_historical_learning_trust.rs"]
 mod learning_trust;
 #[path = "authority_host_post_a_learning.rs"]

@@ -26,7 +26,7 @@ use super::post_a_files::PostAFileData;
 use super::post_a_files::PostAOriginalFile;
 use super::require_end;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct CompletedJournalData {
     journal: PostAFileData,
@@ -56,6 +56,7 @@ pub(super) struct CompletedJournalFiles {
     files: Digest32,
 }
 
+#[derive(Clone)]
 pub(super) struct CompletedJournalObservation {
     pub(super) cut: CompletedJournalCut,
     pub(super) records: Vec<(
@@ -65,6 +66,47 @@ pub(super) struct CompletedJournalObservation {
 }
 
 impl CompletedJournalFiles {
+    pub(super) fn require_empty(&self) -> io::Result<()> {
+        for original in [&self.journal, &self.witness] {
+            let file = PostAOriginalFile::read_handle(original)?;
+            if file.metadata()?.len() != 0 {
+                return Err(io::Error::other(
+                    "fresh completed-learning reservation must be empty",
+                ));
+            }
+            PostAOriginalFile::require_identity(original, &file)?;
+        }
+        Ok(())
+    }
+
+    pub(super) fn aliases(&self, other: &Self) -> bool {
+        [&self.journal, &self.witness].iter().any(|left| {
+            [&other.journal, &other.witness]
+                .iter()
+                .any(|right| PostAOriginalFile::same_file(left, right))
+        })
+    }
+
+    pub(super) fn require_same_files(
+        &self,
+        journal: &PostAOriginalFile,
+        witness: &PostAOriginalFile,
+        scope: JournalScope,
+        generation: Generation,
+        maximum_records: usize,
+    ) -> io::Result<()> {
+        if !PostAOriginalFile::same_file(&self.journal, journal)
+            || !PostAOriginalFile::same_file(&self.witness, witness)
+            || self.scope != scope
+            || self.generation != generation
+            || self.maximum_records != maximum_records
+        {
+            return Err(io::Error::other(
+                "completed-learning original freeze differs",
+            ));
+        }
+        Ok(())
+    }
     pub(super) fn retain_original(
         data: CompletedJournalData,
         objective: Digest32,
@@ -178,6 +220,15 @@ impl CompletedJournalFiles {
         observe_original_file_anchor_v1(witness, self.scope, self.generation, self.maximum_records)
             .map_err(io::Error::other)?
             .ok_or_else(|| io::Error::other("original completed witness missing"))
+    }
+}
+
+impl CompletedJournalCut {
+    pub(super) fn data_digest(&self) -> io::Result<Digest32> {
+        Ok(Digest32::of_parts(&[
+            b"hepta.root.completed-learning.journal-cut.v1\0",
+            &serde_json::to_vec(self).map_err(io::Error::other)?,
+        ]))
     }
 }
 

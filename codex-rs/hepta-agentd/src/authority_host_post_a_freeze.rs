@@ -43,6 +43,18 @@ pub(super) struct PostAFreezeFiles {
 }
 
 impl PostAFreezeFiles {
+    pub(super) fn require_completed_files(
+        &self,
+        completed: &super::completed_journal::CompletedJournalFiles,
+    ) -> io::Result<()> {
+        completed.require_same_files(
+            &self.journal,
+            &self.witness,
+            self.scope,
+            self.generation,
+            self.maximum_records,
+        )
+    }
     pub(super) fn retain_original_freeze(
         data: PostAFreezeData,
         objective: Digest32,
