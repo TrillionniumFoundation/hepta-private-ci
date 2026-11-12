@@ -142,6 +142,13 @@ def evaluate(args):
         new_independent_confirmation_sources=0,
         tasks_evaluated=len({row["task_id"] for row in rows}),
         quality_rubric=QUALITY_RUBRIC,
+        prior_failed_attempt=plan.get("prior_failed_attempt"),
+        incomplete_training_observations=sum(
+            o["status"] != "executed"
+            for a in read(root / "TRAINING_ATTEMPTS.json")
+            for o in a["observations"]
+        ),
+        training_censoring="fit contains only observed complete prefix/branch pairs; failed observations and their measured costs remain in all-attempt records and execution envelope",
         training_source_groups={
             split: dict(
                 attempted=sum(
