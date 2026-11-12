@@ -20,13 +20,48 @@ from qualification.hcsn_boundary_audit.spatial_generator import KilledSpatialGen
 PARAMETERS = ("log_boundary", "mu", "sigma", "absolute_reset", "discount")
 
 
-def solve_partials(
+def _check_sensitivity_shape(model, content):
+    marked = np.asarray(content)
+    if marked.ndim != 2 or not 1 <= marked.shape[1] <= 16:
+        raise ValueError("one to sixteen fixed signed channels required")
+    cells, channels = model.spatial.intervals + 5, marked.shape[1] + 1
+    if 6 * cells * channels > 8192 or 5 * cells * cells * channels > 2_000_000:
+        raise ValueError("declared augmented-state/Jacobian budget exceeded")
+
+
+def solve_partials(model, query_times, active, content, phase=(), **options):
+    """The uniform-grid physical Jacobian; other geometry must opt in separately."""
+    if (
+        type(model) is not JointModel
+        or type(model.spatial) is not KilledSpatialGenerator
+    ):
+        raise ValueError(
+            "this qualified Jacobian requires the frozen uniform JointModel"
+        )
+    _check_sensitivity_shape(model, content)
+    count, h = model.spatial.intervals, model.spatial.spacing
+    full = np.zeros((5, count + 1, count + 1))
+    indices = np.arange(1, count)
+    full[1, indices, indices - 1] = -1 / (2 * h)
+    full[1, indices, indices + 1] = 1 / (2 * h)
+    full[2, indices, indices - 1] = model.spatial.sigma / h**2
+    full[2, indices, indices + 1] = model.spatial.sigma / h**2
+    full[2, indices, indices] = -2 * model.spatial.sigma / h**2
+    nodes = np.arange(count + 1) * h
+    return _solve_variational(
+        model, query_times, active, content, phase, nodes=nodes, full=full, **options
+    )
+
+
+def _solve_variational(
     model,
     query_times,
     active,
     content,
     phase=(),
     *,
+    nodes,
+    full,
     log_boundary=0.0,
     absolute_reset=None,
     rtol=2e-10,
@@ -38,13 +73,6 @@ def solve_partials(
     Reset interpolation is piecewise affine. Two-sided partials at reset knots
     and at zero central jump rates are refused, not supplied with a surrogate.
     """
-    if (
-        type(model) is not JointModel
-        or type(model.spatial) is not KilledSpatialGenerator
-    ):
-        raise ValueError(
-            "this qualified Jacobian requires the frozen uniform JointModel"
-        )
     if (
         isinstance(log_boundary, bool)
         or not isinstance(log_boundary, (int, float))
@@ -67,9 +95,11 @@ def solve_partials(
         or abs(math.log(vr) - log_boundary - model.reset) > 2e-13
     ):
         raise ValueError("absolute reset and boundary must identify this model")
-    h = model.spatial.spacing
-    position = model.reset / h
-    if min(model.spatial.rates) <= 0 or abs(position - round(position)) <= 1e-8:
+    left_node = int(np.searchsorted(nodes, model.reset, side="right")) - 1
+    h = nodes[left_node + 1] - nodes[left_node]
+    fraction = (model.reset - nodes[left_node]) / h
+    down, up = model.spatial.rates
+    if min(np.min(down), np.min(up)) <= 0 or min(fraction, 1 - fraction) <= 1e-8:
         raise ValueError("two-sided partials need positive rates and an off-knot reset")
     # Reuse the candidate's actual input/packet validation without taking a step.
     initial = model.solve(
@@ -106,7 +136,6 @@ def solve_partials(
     ):
         state[0, :, n + offset] = initial[name]
     dr = np.zeros((5, n))
-    left_node = int(math.floor(position))
     reset_slope = np.zeros(model.spatial.intervals + 1)
     reset_slope[left_node], reset_slope[left_node + 1] = -1 / h, 1 / h
     try:
@@ -122,13 +151,6 @@ def solve_partials(
     dq[4] = 1
     derivative_q = np.zeros((5, n, n))
     derivative_lower, derivative_upper = np.zeros((5, n)), np.zeros((5, n))
-    full = np.zeros((5, n + 2, n + 2))
-    indices = np.arange(1, n + 1)
-    full[1, indices, indices - 1] = -1 / (2 * h)
-    full[1, indices, indices + 1] = 1 / (2 * h)
-    full[2, indices, indices - 1] = model.spatial.sigma / h**2
-    full[2, indices, indices + 1] = model.spatial.sigma / h**2
-    full[2, indices, indices] = -2 * model.spatial.sigma / h**2
     derivative_q[:] = full[:, 1:-1, 1:-1]
     derivative_lower[:], derivative_upper[:] = full[:, 1:-1, 0], full[:, 1:-1, -1]
     linear = np.zeros((size, size))
@@ -171,6 +193,8 @@ def solve_partials(
             if 0 <= value <= Fraction(str(float(times[-1]))):
                 knots.add(value)
     knots = list(map(float, sorted(knots)))
+    if len(knots) * 6 * channels * size > 2_000_000:
+        raise ValueError("declared snapshot/history budget exceeded")
     history, snapshots, steps = [], {}, 0
     support = linear.copy()
     support[n + 3, :n] = 1

@@ -1,0 +1,61 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "ruff",
+    "format",
+    "qualification/hcsn_graded/spatial.py",
+    "qualification/hcsn_graded/reference.py",
+    "qualification/hcsn_graded/probe_migration.py",
+    "qualification/hcsn_graded/model.py",
+    "qualification/hcsn_graded/test_model.py",
+    "qualification/hcsn_initial_law/test_migration.py",
+    "qualification/hcsn_initial_law/migration.py",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/basis.py"
+  ],
+  "exit": 0,
+  "files": {
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/basis.py": {
+      "ast_equal": true,
+      "formatted_sha256": "de5ac6f28d4887c90aaf7a6d201c3dea84f527a6f9a46e37567661cf9905f84e",
+      "tested_sha256": "efaffeaf2192813115f90c6bf8c93bb54c53318cd28d1df0ff3f829639ed99ee"
+    },
+    "qualification/hcsn_graded/model.py": {
+      "ast_equal": true,
+      "formatted_sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+      "tested_sha256": "a81139ed340b58ce61533d3d8f30eb316ac7abafc12b9a8e67485078c3d92548"
+    },
+    "qualification/hcsn_graded/probe_migration.py": {
+      "ast_equal": true,
+      "formatted_sha256": "fbb9de41166443465b51888bc0d7da0c34612244a76aaf7f35c5543d61447029",
+      "tested_sha256": "477b17fb052cd2344baf603cf0e1e2ff625058a83fb1b21d64787964f7883989"
+    },
+    "qualification/hcsn_graded/reference.py": {
+      "ast_equal": true,
+      "formatted_sha256": "eb1a646ca7ae2591e5bc2d54b4e010dbe240cf611dda43ae79e2e52ed8ff0181",
+      "tested_sha256": "326e32c5903cb077a57d52ccef6b2e618f49bd20dc782842e61f2162a0d34056"
+    },
+    "qualification/hcsn_graded/spatial.py": {
+      "ast_equal": true,
+      "formatted_sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+      "tested_sha256": "f5d28cde16f1cf8de58572951dcf17846ae64c24d8fd8adeb8c602003c73f464"
+    },
+    "qualification/hcsn_graded/test_model.py": {
+      "ast_equal": true,
+      "formatted_sha256": "209108432e1180ffa31978cf56aa1760ba1e2fdb432e97e3e55b217a86cabb68",
+      "tested_sha256": "26b1f40b0b8bb63a8f587004c721a66b0f1263e8dbff3a2508c3bde49bba949f"
+    },
+    "qualification/hcsn_initial_law/migration.py": {
+      "ast_equal": true,
+      "formatted_sha256": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+      "tested_sha256": "3acf7cc6cc00b6193e92af48f9374dbfe5788ca919b786a18894072fc2a4b8d0"
+    },
+    "qualification/hcsn_initial_law/test_migration.py": {
+      "ast_equal": true,
+      "formatted_sha256": "fed864aa8b4f361ed1af86e18fe38777044bdd7f7cb8828ab0c5c10e0d74db17",
+      "tested_sha256": "eabbe854cc57d2191a94f44623cab08c31671a0de09f10afdfc1d0623c217520"
+    }
+  },
+  "stderr": "",
+  "stdout": "8 files reformatted\n"
+}

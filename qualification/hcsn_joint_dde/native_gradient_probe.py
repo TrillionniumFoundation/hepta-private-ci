@@ -5,6 +5,7 @@ Every run uses a fresh directory, and every actor verifies source identities.
 """
 
 import argparse
+from dataclasses import asdict
 import hashlib
 import json
 import math
@@ -21,7 +22,10 @@ import torch
 
 from qualification.hcsn_boundary_audit.spatial_generator import KilledSpatialGenerator
 from qualification.hcsn_joint_dde.model import JointModel
-from qualification.hcsn_joint_dde.torch_physical import physical_flow
+from qualification.hcsn_joint_dde.torch_physical import (
+    physical_flow,
+    graded_physical_flow,
+)
 
 
 def sources():
@@ -33,17 +37,45 @@ def sources():
         "hcsn_joint_dde/native_gradient_probe.py",
         "hcsn_boundary_audit/spatial_generator.py",
         "hcsn_boundary_audit/refractory_transport.py",
+        "hcsn_joint_dde/graded_sensitivities.py",
+        "hcsn_graded/model.py",
+        "hcsn_graded/spatial.py",
     ]
     return {
         name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in names
     }
 
 
-def fixture():
-    model = JointModel(KilledSpatialGenerator(8, 2.0, -0.12, 0.5), 0.53, 0.2, 0.15)
-    point = np.zeros(9)
-    point[2] = 1
-    return model, point, np.column_stack((2 * point,)), [0.0, 0.2, 0.6]
+def fixture(geometry):
+    if geometry == "uniform":
+        model = JointModel(KilledSpatialGenerator(8, 2.0, -0.12, 0.5), 0.53, 0.2, 0.15)
+        nodes = np.arange(9) * model.spatial.spacing
+        flow = physical_flow
+    else:
+        from qualification.hcsn_graded.model import GradedJointModel
+        from qualification.hcsn_graded.spatial import GradedSpatialGenerator
+
+        model = GradedJointModel(
+            GradedSpatialGenerator(16, 2.0, -0.12, 0.5, 4), 0.53, 0.2, 0.15
+        )
+        nodes = model.spatial.nodes
+        flow = graded_physical_flow
+    point = np.zeros(len(nodes))
+    point[np.argmin(abs(nodes - 0.5))] = 1
+    return model, point, np.column_stack((2 * point,)), [0.0, 0.2, 0.6], flow
+
+
+def runtime_signature():
+    return dict(
+        python=sys.version,
+        torch=str(torch.__version__),
+        torch_build=torch.version.git_version,
+        numpy=np.__version__,
+        scipy=scipy.__version__,
+        threads=torch.get_num_threads(),
+        default_dtype=str(torch.get_default_dtype()),
+        byteorder=sys.byteorder,
+    )
 
 
 def train(args):
@@ -51,7 +83,18 @@ def train(args):
     before = sources()
     torch.set_num_threads(1)
     torch.manual_seed(77)
-    model, point, marked, times = fixture()
+    model, point, marked, times, flow = fixture(args.geometry)
+    binding = dict(
+        geometry=args.geometry,
+        spatial=asdict(model.spatial),
+        delay=model.delay,
+        reset=model.reset,
+        active_reward=model.active_reward,
+        hit_reward=model.hit_reward,
+        fixed_initial_sha256=hashlib.sha256(
+            point.tobytes() + marked.tobytes() + np.asarray(times).tobytes()
+        ).hexdigest(),
+    )
     theta = torch.nn.Parameter(
         torch.tensor([0.01, -0.12, 0.5, math.exp(0.54), 0.15], dtype=torch.float64)
     )
@@ -61,17 +104,26 @@ def train(args):
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True)
         if checkpoint["sources"] != before:
             raise ValueError("checkpoint source identity differs")
+        if (
+            checkpoint["runtime"] != runtime_signature()
+            or checkpoint["binding"] != binding
+        ):
+            raise ValueError("checkpoint runtime or fixed-input binding differs")
         theta.data.copy_(checkpoint["parameters"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         torch.set_rng_state(checkpoint["rng"])
         start, records = checkpoint["step"], checkpoint["records"]
     for index in range(start, start + args.steps):
         optimizer.zero_grad(set_to_none=True)
-        values = physical_flow(
+        values = flow(
             theta, model, times, point, marked, rtol=2e-10, atol=2e-12, max_step=0.015
         )
         # Full-output layout: interior n*C, then upper/R/M/H/A/Z, C=2.
-        features = values[-1, [18, 20, 22]]
+        channels = marked.shape[1] + 1
+        offset = (len(point) - 2) * channels
+        features = values[
+            -1, [offset + 2 * channels, offset + 3 * channels, offset + 4 * channels]
+        ]
         target = torch.tensor(
             [0.4, 0.35, 0.65], dtype=torch.float64
         ) + 0.01 * torch.randn(3, dtype=torch.float64)
@@ -104,6 +156,8 @@ def train(args):
         rng=torch.get_rng_state(),
         step=start + args.steps,
         records=records,
+        runtime=runtime_signature(),
+        binding=binding,
     )
     temporary, final = args.output / "state.pt.tmp", args.output / "state.pt"
     with temporary.open("xb") as stream:
@@ -128,14 +182,14 @@ def probe(args):
     wall, cpu = time.perf_counter(), time.process_time()
     before = sources()
     torch.set_num_threads(1)
-    model, point, marked, times = fixture()
+    model, point, marked, times, flow = fixture(args.geometry)
     theta = torch.tensor(
         [0.01, -0.12, 0.5, math.exp(0.54), 0.15],
         dtype=torch.float64,
         requires_grad=True,
     )
     passed = torch.autograd.gradcheck(
-        lambda p: physical_flow(
+        lambda p: flow(
             p, model, times, point, marked, rtol=2e-11, atol=2e-13, max_step=0.015
         ),
         (theta,),
@@ -148,16 +202,14 @@ def probe(args):
         raise AssertionError("Torch physical gradcheck failed")
     refused_initial = False
     try:
-        physical_flow(
-            theta, model, times, torch.tensor(point, requires_grad=True), marked
-        )
+        flow(theta, model, times, torch.tensor(point, requires_grad=True), marked)
     except ValueError:
         refused_initial = True
     if not refused_initial:
         raise AssertionError("trainable initial-state gradients were silently dropped")
     version_guard = False
     changing = theta.detach().clone().requires_grad_()
-    stale = physical_flow(changing, model, times, point, marked)
+    stale = flow(changing, model, times, point, marked)
     with torch.no_grad():
         changing.add_(1e-5)
     try:
@@ -170,7 +222,7 @@ def probe(args):
         )
     unsafe_data_guard = False
     changing = theta.detach().clone().requires_grad_()
-    stale = physical_flow(changing, model, times, point, marked)
+    stale = flow(changing, model, times, point, marked)
     changing.data.add_(1e-5)
     try:
         stale.sum().backward()
@@ -191,6 +243,8 @@ def probe(args):
             str(args.output / name),
             "--steps",
             str(steps),
+            "--geometry",
+            args.geometry,
         ]
         if resume:
             command.extend(("--resume", str(resume)))
@@ -240,6 +294,12 @@ def probe(args):
     actor(
         "source-mismatch", 1, args.output / "source-mismatch.pt", expect_success=False
     )
+    damaged_runtime = torch.load(args.output / "first/state.pt", weights_only=True)
+    damaged_runtime["runtime"]["python"] = "different runtime"
+    torch.save(damaged_runtime, args.output / "runtime-mismatch.pt")
+    actor(
+        "runtime-mismatch", 1, args.output / "runtime-mismatch.pt", expect_success=False
+    )
     if before != sources():
         raise ValueError("probe sources changed")
     report = dict(
@@ -258,6 +318,8 @@ def probe(args):
         unsafe_data_mutation_guard=unsafe_data_guard,
         continuous_vs_fresh_process_full_state_exact=True,
         source_mismatch_refused=True,
+        runtime_mismatch_refused=True,
+        geometry=args.geometry,
         actual_adam_update_calls=4,
         commands=commands,
         records=whole["records"],
@@ -282,6 +344,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--steps", type=int, choices=(1, 2), default=2)
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--geometry", choices=("uniform", "graded"), default="uniform")
     args = parser.parse_args()
     train(args) if args.mode == "train" else probe(args)
 
