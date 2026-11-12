@@ -8,7 +8,7 @@ AssertionError: REJECTED: increasing quadrature to 64 does not halve fixed-grid 
 
 ===== GREEN / desktop job 1a1cd9fe5bf-2564-131f / exit 0 / output_complete =====
 [stdout]
-OBSERVATIONS=[{"order":8,"active_mean_tv":0.050664016130343076,"finite":true,"mass_error":2.220446049250313e-16,"max_tv":0.09262439245108663},{"order":16,"active_mean_tv":0.05063870509388512,"finite":true,"mass_error":4.440892098500626e-16,"max_tv":0.09262459023061453},{"order":32,"active_mean_tv":0.050638582087830564,"finite":true,"mass_error":4.440892098500626e-16,"max_tv":0.09262459023061462},{"order":64,"active_mean_tv":0.05063858208774455,"finite":true,"mass_error":5.551115123125783e-16,"max_tv":0.09262459023061444}]
+OBSERVATIONS=[{"active_mean_tv": 0.050664016130343076, "finite": true, "mass_error": 2.220446049250313e-16, "max_tv": 0.09262439245108663, "order": 8}, {"active_mean_tv": 0.05063870509388512, "finite": true, "mass_error": 4.440892098500626e-16, "max_tv": 0.09262459023061453, "order": 16}, {"active_mean_tv": 0.050638582087830564, "finite": true, "mass_error": 4.440892098500626e-16, "max_tv": 0.09262459023061462, "order": 32}, {"active_mean_tv": 0.05063858208774455, "finite": true, "mass_error": 5.551115123125783e-16, "max_tv": 0.09262459023061444, "order": 64}]
 [stderr]
 test_increasing_quadrature_16_to_64_does_not_cure_defect (__main__.TestQuadratureCounterfactual.test_increasing_quadrature_16_to_64_does_not_cure_defect) ... ok
 test_mass_finite_and_large_defect_at_all_orders (__main__.TestQuadratureCounterfactual.test_mass_finite_and_large_defect_at_all_orders) ... ok
@@ -20,7 +20,7 @@ OK
 
 ===== PUBLISHED_BLOB_GREEN / desktop job 1a1cda17d7e-2564-1323 / exact test Git blob cf643dad13d5b992336f46285b782a94c8bb3163 / exit 0 / output_complete =====
 [stdout]
-OBSERVATIONS=[{"order":8,"active_mean_tv":0.050664016130343076,"finite":true,"mass_error":2.220446049250313e-16,"max_tv":0.09262439245108663},{"order":16,"active_mean_tv":0.05063870509388512,"finite":true,"mass_error":4.440892098500626e-16,"max_tv":0.09262459023061453},{"order":32,"active_mean_tv":0.050638582087830564,"finite":true,"mass_error":4.440892098500626e-16,"max_tv":0.09262459023061462},{"order":64,"active_mean_tv":0.05063858208774455,"finite":true,"mass_error":5.551115123125783e-16,"max_tv":0.09262459023061444}]
+OBSERVATIONS=[{"active_mean_tv": 0.050664016130343076, "finite": true, "mass_error": 2.220446049250313e-16, "max_tv": 0.09262439245108663, "order": 8}, {"active_mean_tv": 0.05063870509388512, "finite": true, "mass_error": 4.440892098500626e-16, "max_tv": 0.09262459023061453, "order": 16}, {"active_mean_tv": 0.050638582087830564, "finite": true, "mass_error": 4.440892098500626e-16, "max_tv": 0.09262459023061462, "order": 32}, {"active_mean_tv": 0.05063858208774455, "finite": true, "mass_error": 5.551115123125783e-16, "max_tv": 0.09262459023061444, "order": 64}]
 [stderr]
 test_increasing_quadrature_16_to_64_does_not_cure_defect (__main__.TestQuadratureCounterfactual.test_increasing_quadrature_16_to_64_does_not_cure_defect) ... ok
 test_mass_finite_and_large_defect_at_all_orders (__main__.TestQuadratureCounterfactual.test_mass_finite_and_large_defect_at_all_orders) ... ok
