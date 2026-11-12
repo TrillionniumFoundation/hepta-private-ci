@@ -421,3 +421,6 @@ fn resident_root_structured_uncertain_allows_only_same_operation_readback() -> a
 
 #[path = "authority_host_learning_resident_evaluation_tests.rs"]
 mod evaluation;
+
+#[path = "authority_host_learning_resident_model_tests.rs"]
+mod original_model;

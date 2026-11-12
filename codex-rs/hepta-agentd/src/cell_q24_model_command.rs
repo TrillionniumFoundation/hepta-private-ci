@@ -111,3 +111,7 @@ pub(super) fn require_clock(started: u64, current: u64) -> Result<(), Error> {
     if current < started { return Err(Error::Binding("original Model clock moved backwards")); }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "cell_q24_model_command_root_support_tests.rs"]
+mod root_support;

@@ -403,3 +403,7 @@ fn now() -> Result<u64, Error> {
 
 #[cfg(test)]
 pub(crate) use serving::tests::bootstrap_ports;
+
+#[cfg(test)]
+#[path = "cell_q24_material_command_root_support_tests.rs"]
+mod root_model_support;

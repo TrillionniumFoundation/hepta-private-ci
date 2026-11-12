@@ -246,6 +246,7 @@ pub(super) fn terminal_outcome(
 }
 
 pub(super) struct Material {
+    pub(super) command_config: crate::OriginalCellQ24MaterialReceiptConfigV1,
     pub(super) initial: LearningIterationSnapshotV1,
     pub(super) config: crate::OriginalCellQ24TrainingSourceConfigV1,
     pub(super) frozen: DatasetSnapshotReceiptV3,
@@ -398,7 +399,7 @@ pub(super) fn material_with_profile(
                 true,
             )?,
         },
-        config,
+        config.clone(),
         SigningKey::from_bytes(&[44; 32]),
         SigningKey::from_bytes(&[45; 32]),
     )?;
@@ -428,6 +429,7 @@ pub(super) fn material_with_profile(
     let frozen = dataset.material.receipt().clone();
     drop(owners);
     Ok(Material {
+        command_config: config,
         initial,
         config: crate::OriginalCellQ24TrainingSourceConfigV1 {
             dataset: coordinator.snapshot().clone(),
