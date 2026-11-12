@@ -64,6 +64,8 @@ mod historical_preparation;
 mod operation;
 #[path = "cell_q24_prepared_learning.rs"]
 mod prepared;
+#[path = "cell_q24_prepared_training_material.rs"]
+mod training_material;
 use freeze_operation::OriginalFreezePreparationReadV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeErrorV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeOwnerV1;
