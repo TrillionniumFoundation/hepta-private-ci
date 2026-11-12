@@ -41,6 +41,9 @@ mod control;
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
 #[cfg(target_os = "linux")]
+#[path = "state_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
 #[path = "state_q24_outcome.rs"]
 mod q24_outcome;
 #[cfg(target_os = "linux")]
@@ -67,6 +70,10 @@ pub(crate) struct AgentdState {
     #[cfg(target_os = "linux")]
     original_q24_outcome_control:
         std::sync::OnceLock<Arc<crate::OriginalCellQ24TaskLedgerProducerV1>>,
+    #[cfg(target_os = "linux")]
+    original_q24_completed_history: std::sync::OnceLock<
+        Arc<crate::root_completed_learning_history::OriginalCompletedLearningHistoryV1>,
+    >,
     pub(crate) circuit_task_invocation:
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
     circuit_learning_source:
@@ -179,6 +186,8 @@ impl AgentdState {
             circuit_task: std::sync::OnceLock::new(),
             #[cfg(target_os = "linux")]
             original_q24_outcome_control: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            original_q24_completed_history: std::sync::OnceLock::new(),
             circuit_task_invocation: std::sync::OnceLock::new(),
             circuit_learning_source: std::sync::OnceLock::new(),
             circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),

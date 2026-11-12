@@ -61,6 +61,8 @@ pub async fn run_with_shutdown(
     let original_run_start_retention = config.take_original_run_start_retention();
     #[cfg(target_os = "linux")]
     let original_q24_outcome = config.take_original_q24_outcome_control();
+    #[cfg(target_os = "linux")]
+    let original_q24_completed_history = config.take_original_q24_completed_history();
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
@@ -186,6 +188,10 @@ pub async fn run_with_shutdown(
     #[cfg(target_os = "linux")]
     if let Some(producer) = original_q24_outcome {
         AgentdState::attach_original_q24_outcome_control(&state, producer)?;
+    }
+    #[cfg(target_os = "linux")]
+    if let Some(completed) = original_q24_completed_history {
+        AgentdState::attach_original_q24_completed_history(&state, completed)?;
     }
     if let Some(bootstrap) = &neuron_generation {
         bootstrap.attach(&state)?;

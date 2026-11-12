@@ -38,6 +38,9 @@ mod initial_q24;
 #[cfg(target_os = "linux")]
 mod q24_circuit_task;
 #[cfg(target_os = "linux")]
+#[path = "config_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
 #[path = "config_q24_outcome.rs"]
 mod q24_outcome;
 
@@ -155,6 +158,10 @@ pub struct AgentdConfig {
     #[cfg(target_os = "linux")]
     original_q24_outcome_control:
         Option<std::sync::Arc<crate::OriginalCellQ24TaskLedgerProducerV1>>,
+    #[cfg(target_os = "linux")]
+    original_q24_completed_history: Option<
+        std::sync::Arc<crate::root_completed_learning_history::OriginalCompletedLearningHistoryV1>,
+    >,
     circuit_task_invocation:
         Option<std::sync::Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>>,
     #[cfg(target_os = "linux")]
@@ -334,6 +341,8 @@ impl AgentdConfig {
             circuit_task_bootstrap: None,
             #[cfg(target_os = "linux")]
             original_q24_outcome_control: None,
+            #[cfg(target_os = "linux")]
+            original_q24_completed_history: None,
             circuit_task_invocation: None,
             #[cfg(target_os = "linux")]
             original_source_close: None,
