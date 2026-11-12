@@ -30,7 +30,7 @@ COLD = (F(201, 1000), F(7, 25), F(9, 25))
 CHANNELS = 5
 MAGIC = b"HCSNN128"
 VERSION = 1
-SECTION_IDS = (1, 2, 3, 4)
+SECTION_IDS = (1, 2, 3, 4, 5)
 
 
 def canonical(value):
@@ -468,6 +468,21 @@ class NumericPacket:
 
 
 @dataclass(frozen=True)
+class Readout:
+    lane: int
+    lane_order: int
+    time: F
+    capsule_identity: str
+
+    def __post_init__(self):
+        if type(self.lane) is not int or not 0 <= self.lane <= 2:
+            raise ValueError("readout lane")
+        if type(self.lane_order) is not int or self.lane_order < 0:
+            raise ValueError("readout lane order")
+        checked_hash(self.capsule_identity)
+
+
+@dataclass(frozen=True)
 class NumericCapsule:
     roster_identity: str
     input_hashes: tuple
@@ -475,6 +490,7 @@ class NumericCapsule:
     lane: int
     time: F
     interior_nodes: int
+    readouts: tuple
     state: tuple
     packets: tuple
 
@@ -485,6 +501,15 @@ class NumericCapsule:
             raise ValueError("input hashes ordered")
         for name, value in self.input_hashes:
             checked_hash(value)
+        if (
+            tuple(sorted(self.readouts, key=lambda item: (item.lane, item.lane_order)))
+            != self.readouts
+        ):
+            raise ValueError("readout schedule ordered")
+        if len({(item.lane, item.lane_order) for item in self.readouts}) != len(
+            self.readouts
+        ):
+            raise ValueError("duplicate readout")
         state = tuple(checked_float(value) for value in self.state)
         if len(state) != 10 * self.interior_nodes + 50:
             raise ValueError("complete state coordinate count")
@@ -532,7 +557,12 @@ def dump(capsule):
         operator_section += struct.pack(f"<{len(operator.indptr)}Q", *operator.indptr)
         operator_section += struct.pack(f"<{len(operator.indices)}I", *operator.indices)
         operator_section += struct.pack(f"<{len(operator.data)}d", *operator.data)
-    sections = (metadata, state, packets, operator_section)
+    readouts = struct.pack("<I", len(capsule.readouts))
+    for readout in capsule.readouts:
+        readouts += struct.pack("<BI", readout.lane, readout.lane_order)
+        readouts += pack_fraction(readout.time)
+        readouts += checked_hash(readout.capsule_identity)
+    sections = (metadata, state, packets, operator_section, readouts)
     header = MAGIC + struct.pack(
         "<HHHH", VERSION, 0x4C45, len(sections), 16 + 44 * len(sections)
     )
@@ -570,7 +600,12 @@ class Cursor:
 def load(raw):
     if raw[:8] != MAGIC or hashlib.sha256(raw[:-32]).digest() != raw[-32:]:
         raise ValueError("container identity")
-    if struct.unpack("<HHHH", raw[8:16]) != (VERSION, 0x4C45, 4, 16 + 44 * 4):
+    if struct.unpack("<HHHH", raw[8:16]) != (
+        VERSION,
+        0x4C45,
+        len(SECTION_IDS),
+        16 + 44 * len(SECTION_IDS),
+    ):
         raise ValueError("container header")
     cursor = Cursor(raw[16:-32])
     directory = []
@@ -618,6 +653,16 @@ def load(raw):
             raise ValueError("operator identity")
         operators[identity] = operator
     operator_cursor.finish()
+    readout_cursor = Cursor(sections[4])
+    (count,) = readout_cursor.unpack("<I")
+    readouts = []
+    for _ in range(count):
+        lane, lane_order = readout_cursor.unpack("<BI")
+        readout_time = readout_cursor.fraction()
+        readouts.append(
+            Readout(lane, lane_order, readout_time, readout_cursor.take(32).hex())
+        )
+    readout_cursor.finish()
     packet_cursor = Cursor(sections[2])
     (count,) = packet_cursor.unpack("<I")
     packets = []
@@ -636,7 +681,15 @@ def load(raw):
         )
     packet_cursor.finish()
     capsule = NumericCapsule(
-        roster, tuple(inputs), capsule_id, lane, time, nodes, state, tuple(packets)
+        roster,
+        tuple(inputs),
+        capsule_id,
+        lane,
+        time,
+        nodes,
+        tuple(readouts),
+        state,
+        tuple(packets),
     )
     if dump(capsule) != raw:
         raise ValueError("noncanonical cold container")

@@ -23,6 +23,14 @@ class EngineeringTests(unittest.TestCase):
                 source, 1, 1, 0, F(1, 40), F(1, 20), op2, tuple([0.125] * 5), (1.0,)
             ),
         )
+        readouts = (
+            candidate.Readout(
+                0, 0, F(0), hashlib.sha256(b"readout-warm-0").hexdigest()
+            ),
+            candidate.Readout(
+                0, 1, F(1, 40), hashlib.sha256(b"readout-warm-1").hexdigest()
+            ),
+        )
         capsule = candidate.NumericCapsule(
             hashlib.sha256(b"fixture-roster").hexdigest(),
             (("input", input_hash),),
@@ -30,6 +38,7 @@ class EngineeringTests(unittest.TestCase):
             0,
             F(0),
             3,
+            readouts,
             tuple([0.0] * 80),
             packets,
         )
@@ -112,7 +121,24 @@ class EngineeringTests(unittest.TestCase):
                     0,
                     F(0),
                     3,
+                    capsule.readouts,
                     tuple(changed),
+                    capsule.packets,
+                )
+
+    def test_readout_schedule_must_be_canonical(self):
+        with tempfile.TemporaryDirectory() as root:
+            capsule, _ = self.fixture(root)
+            with self.assertRaisesRegex(ValueError, "readout schedule ordered"):
+                candidate.NumericCapsule(
+                    capsule.roster_identity,
+                    capsule.input_hashes,
+                    capsule.capsule_identity,
+                    capsule.lane,
+                    capsule.time,
+                    capsule.interior_nodes,
+                    tuple(reversed(capsule.readouts)),
+                    capsule.state,
                     capsule.packets,
                 )
 

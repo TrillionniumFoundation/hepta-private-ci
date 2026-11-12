@@ -15,6 +15,11 @@
       "kind": "local_roster_mirror_transport",
       "failure": "the first local transport mirror appended empty JSONL records, so the static audit rejected PACKET_ROSTER before graph materialization",
       "resolution": "removed only the transport-added empty records; the immutable #6263 source bytes, identities, counts, and N128 gate were not changed"
+    },
+    {
+      "kind": "readout_loader_shadowed_time",
+      "failure": "the first readout-schedule loader reused the capsule-time local while decoding readouts, so canonical redump rejected the fixture after five other controls passed",
+      "resolution": "renamed the readout-local time and preserved the separately decoded capsule time; no schema, roster, threshold, or N128 numerical gate changed"
     }
   ],
   "n128_coordinate_denominator_unchanged": 4623492,
