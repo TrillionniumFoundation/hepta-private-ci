@@ -39,7 +39,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?;
                 runtime
                     .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
-                        &owners.factory,
+                        &mut owners.factory,
                     ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
@@ -66,7 +66,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?;
                 runtime
                     .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
-                        &owners.factory,
+                        &mut owners.factory,
                     ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
