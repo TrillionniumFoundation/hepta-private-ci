@@ -45,7 +45,7 @@ impl<'a> SourceLaneProof<'a> {
         let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(
             "ordinary Training requires original source capture",
         ))?;
-        training.require_original_source_operation(operation)?;
+        CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?;
         Ok(())
     }
 }
@@ -136,3 +136,5 @@ mod cancellation {
 
 #[cfg(target_os = "linux")]
 pub(super) use cancellation::SourceLaneCancellation;
+#[cfg(target_os = "linux")]
+pub(super) use cancellation::SourceLaneCancellationState;

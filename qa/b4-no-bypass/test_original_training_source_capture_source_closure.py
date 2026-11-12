@@ -42,8 +42,8 @@ EXPECTED = {
     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),
-    "learning_source_bound_training_admission": (BOUND, MODEL),
-    "learning_source_bound_training_live_check": (NATIVE, STAGE, MODEL),
+    "learning_source_bound_training_admission": (),
+    "learning_source_bound_training_live_check": (NATIVE, STAGE),
     "learning_source_bound_training_work_deadline": (NATIVE,),
 }
 
@@ -123,7 +123,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(OWNER, function, marker)
-        self.rejects(BOUND, "fn from_original_stage(", "CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?")
+        self.rejects(BOUND, "fn from_original_stage(", "SourceLaneProof::require_original(source, &mut owners.training)?")
         self.rejects(NATIVE, "fn fit_or_readback(", "Ok(state) => return self.decode_state(state)")
         self.rejects(NATIVE, "fn fit_or_readback(", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)")
 
@@ -135,7 +135,11 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         self.rejects(STAGE, "fn execute_training(", "training.require_live_source_if_captured()?")
         self.rejects(STAGE, "fn execute_training(", "fresh_now >= dataset.request.envelope.expiry_unix_seconds")
         for path, function in ((STAGE, "fn in_lane<"), (MODEL, "fn in_model_lane<")):
-            for marker in ("training.require_live_source_if_captured()?", "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)"):
+            for marker in (
+                "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+                "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
+                "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
+            ):
                 with self.subTest(path=path, marker=marker):
                     self.rejects(path, function, marker)
 

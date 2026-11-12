@@ -19,6 +19,8 @@ use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::CellQ24ModelProposalReceiptV1;
 use crate::CellQ24TrainingOwnerV1;
+#[cfg(target_os = "linux")]
+use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingStageV1<TW, RW>
@@ -251,7 +253,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let source_bound = source.is_some();
         #[cfg(target_os = "linux")]
         if let (Some(source), Some(operation)) = (source.as_ref(), operation.as_mut()) {
-            if operation.read_after_native(source).is_err() {
+            if OriginalCellQ24TrainingSourceOperationV1::read_after_native(operation, source).is_err() {
                 owners.source_fenced = true;
                 return Err(Error::CommitUncertain);
             }
@@ -289,7 +291,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 owners.source_fenced = true;
                 return Err(Error::CommitUncertain);
             }
-            operation.finish(source).map_err(|_| {
+            OriginalCellQ24TrainingSourceOperationV1::finish(operation, source).map_err(|_| {
                 owners.source_fenced = true;
                 Error::CommitUncertain
             })?;

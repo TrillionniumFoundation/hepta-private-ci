@@ -290,7 +290,7 @@ impl OriginalCellQ24TrainingSourceV1 {
     /// Never call it on an executor thread. No original writer is unlocked,
     /// reopened, cloned or held across an evidence-client await.
     pub(crate) fn require_current_in_lane(&self) -> Result<(), Error> {
-        if self.source_operation_fenced() {
+        if OriginalCellQ24TrainingSourceV1::source_operation_fenced(self) {
             return Err(Error::CaptureUncertain);
         }
         let material = self

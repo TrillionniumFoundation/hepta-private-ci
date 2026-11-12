@@ -155,10 +155,12 @@ impl OriginalCellQ24TrainingSourceOperationV1<'_> {
             return Err(Error::Binding("source operation clock moved backwards"));
         }
         verify_original_evidence(&self.config, fresh_now)?;
-        self.source
-            .material
-            .require_original_freeze_current(&self.config, fresh_now)
-            .map_err(|_| Error::Binding("fresh original source freeze"))?;
+        OriginalCellQ24DatasetV1::require_original_freeze_current(
+            &self.source.material,
+            &self.config,
+            fresh_now,
+        )
+        .map_err(|_| Error::Binding("fresh original source freeze"))?;
         Ok(())
     }
 }
@@ -193,8 +195,7 @@ impl LiveOwners {
             return Err(Error::Binding("source operation read clock moved backwards"));
         }
         verify_original_evidence(config, fresh_now)?;
-        material
-            .require_original_freeze_current(config, fresh_now)
+        OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)
             .map_err(|_| Error::Binding("fresh original source freeze"))?;
         Ok(material)
     }

@@ -118,7 +118,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             return Err(Error::CommitUncertain);
         }
         if let Some(source) = &self.source {
-            if source.source_operation_fenced() {
+            if OriginalCellQ24TrainingSourceV1::source_operation_fenced(source) {
                 return Err(Error::CommitUncertain);
             }
             return Ok(Some(Arc::clone(source)));
@@ -142,8 +142,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
                 "ordinary Training requires original source capture",
             ))
             .and_then(|source| {
-                operation
-                    .require_original_source(source)
+                OriginalCellQ24TrainingSourceOperationV1::require_original_source(operation, source)
                     .map_err(Error::from)
             });
         if result.is_err() {

@@ -219,7 +219,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         if self
             .source
             .as_ref()
-            .is_some_and(|source| source.source_operation_fenced())
+            .is_some_and(|source| {
+                crate::OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)
+            })
         {
             self.fenced = true;
         }

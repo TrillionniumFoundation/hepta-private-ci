@@ -114,7 +114,7 @@ class OriginalTrainingCommandClosureTests(unittest.TestCase):
     def test_original_captured_stage_is_required_before_any_command(self):
         self.rejects(SERVICE, "fn bind_original_stage(", "SourceBoundCellQ24TrainingStageV1::require_original_command_context(")
         self.rejects(BOUND, "fn require_original_command_context(", "self.original.require_dataset(dataset)?")
-        self.rejects(BOUND, "fn require_original_command_context(", ".in_lane(move |owners|")
+        self.rejects(BOUND, "fn require_original_command_context(", ".in_lane(move |owners, _source|")
         self.rejects(BOUND, "fn require_original_command_context(", "if owners.receipts.config.scope != scope")
 
     def test_command_calls_actual_execution_and_actual_readback_without_replay(self):

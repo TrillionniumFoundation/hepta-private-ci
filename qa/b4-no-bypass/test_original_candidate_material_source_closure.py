@@ -99,11 +99,12 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         for path, function, marker in (
-            (MODEL, "fn read_candidate_material(", "CellQ24TrainingOwnerV1::require_original_source_capture(training)?"),
+            (MODEL, "fn read_candidate_material(", "SourceLaneProof::require_original(source, training)?"),
             (MODEL, "fn read_candidate_material(", "CellQ24TrainingOwnerV1::readback(training)?"),
             (MODEL, "fn read_candidate_material(", "completed.attestation.clone()"),
-            (MODEL, "fn in_model_lane<", "training.require_live_source_if_captured()?"),
-            (MODEL, "fn in_model_lane<", "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)"),
+            (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)"),
+            (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceOperationV1::read_after_native("),
+            (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)"),
             (MODEL, "fn in_model_lane<", "current.receipt != original.receipt || current.attestation != original.attestation"),
             (BOUND, "fn read_candidate_material(", "self.original.require_dataset(dataset)?"),
             (MATERIAL, "fn from_original_candidate(", "candidate.bundle != *signed"),

@@ -151,7 +151,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                 ".try_acquire_owned()", "self.owners.try_lock()",
                 ".require_original_dataset_scope(",
                 "let original = owners.read_original_completion()?",
-                "let result = work(&mut owners.training, &original)",
+                "work(&mut owners.training, &original, &proof)",
                 "let current = owners",
                 "if current.receipt != original.receipt || current.attestation != original.attestation",
             )),

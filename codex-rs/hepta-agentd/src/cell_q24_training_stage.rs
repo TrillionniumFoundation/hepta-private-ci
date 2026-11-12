@@ -20,6 +20,8 @@ use crate::CellQ24ModelProposalErrorV1;
 use crate::CellQ24TrainingOutcomeV1;
 use crate::CellQ24TrainingOwnerErrorV1;
 use crate::CellQ24TrainingOwnerV1;
+#[cfg(target_os = "linux")]
+use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
 #[path = "cell_q24_training_model_lane.rs"]
@@ -29,6 +31,8 @@ mod source_lane;
 use source_lane::SourceLaneProof;
 #[cfg(target_os = "linux")]
 use source_lane::SourceLaneCancellation;
+#[cfg(target_os = "linux")]
+use source_lane::SourceLaneCancellationState;
 
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_source_bound_stage.rs"]
@@ -248,12 +252,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         #[cfg(target_os = "linux")]
         let mut cancellation = SourceLaneCancellation::new(Arc::clone(&self.source_abandoned));
         #[cfg(target_os = "linux")]
-        let worker_cancellation = cancellation.worker();
+        let worker_cancellation = SourceLaneCancellation::worker(&cancellation);
         let completed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
             #[cfg(target_os = "linux")]
-            if owners.source_fenced || worker_cancellation.stage_is_fenced() {
+            if owners.source_fenced || SourceLaneCancellationState::stage_is_fenced(&worker_cancellation) {
                 return Err(Error::CommitUncertain);
             }
             let Owners {
@@ -266,7 +270,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             let source = training.original_source_for_operation()?;
             #[cfg(target_os = "linux")]
             if source.is_some() {
-                worker_cancellation.bind_source()?;
+                SourceLaneCancellationState::bind_source(&worker_cancellation)?;
             }
             #[cfg(target_os = "linux")]
             let operation = source
@@ -286,17 +290,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             // Native and Generator before consuming the borrowed operation.
             #[cfg(target_os = "linux")]
             if let (Some(source), Some(mut operation)) = (source.as_ref(), operation) {
-                if operation.read_after_native(source).is_err() {
+                if OriginalCellQ24TrainingSourceOperationV1::read_after_native(&mut operation, source).is_err() {
                     owners.source_fenced = true;
                     return Err(Error::CommitUncertain);
                 }
                 if owners.require_captured_tail_current().is_err()
-                    || worker_cancellation.require_live().is_err()
+                    || SourceLaneCancellationState::require_live(&worker_cancellation).is_err()
                 {
                     owners.source_fenced = true;
                     return Err(Error::CommitUncertain);
                 }
-                operation.finish(source).map_err(|_| {
+                OriginalCellQ24TrainingSourceOperationV1::finish(operation, source).map_err(|_| {
                     owners.source_fenced = true;
                     Error::CommitUncertain
                 })?;
@@ -306,7 +310,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         .await
         .map_err(|_| Error::CommitUncertain);
         #[cfg(target_os = "linux")]
-        cancellation.joined();
+        SourceLaneCancellation::joined(&mut cancellation);
         completed?
     }
 }
