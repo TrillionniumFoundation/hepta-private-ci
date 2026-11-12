@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "root-independent-original-scoped-receiver-replay",
+  "packet": {
+    "blob": "fb8317d17e72aa71123a843250e60f383d1d85b5",
+    "bytes": 4535,
+    "sha256": "a0101e283859f8fee05b039d2efca313561e2c042fb3e544a35c2d057889983c"
+  },
+  "parent": "9a966b92196b026cc7c95b1d8e1cae1bebcc4494",
+  "source_base": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+  "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+  "pre": {
+    "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+    "bytes": 15759,
+    "sha256": "acf76f678d611bc6ede72cf8f78a1b05ebaf3edda3f1e2c091805575a58a8250"
+  },
+  "post": {
+    "blob": "74e69ea8381d36d659943ad6b09292cee9c34b61",
+    "bytes": 15814,
+    "sha256": "ef22476b8874c1c272524875a598aa2e89aebe763d32944d4b6a78e798b11b5c",
+    "create_get_equal": true
+  },
+  "forward_unique": true,
+  "reverse_unique": true,
+  "complete_pre_post_and_recovery_equal": true,
+  "actual_fixed_base_and_maintenance_path_equal": true,
+  "code_change": "Same actual context.gate() and &stream at the original call position, explicit existing type path, original ? unchanged.",
+  "source_manifest_before": {
+    "blob": "fc153553bd244cc4f4acc0ca1120ef23696eb249",
+    "bytes": 57198,
+    "sha256": "859a0bd879ff5148332bca55dbf472157b40a2ef92d305f2dd444ac5418d7d31"
+  },
+  "ordinary_business_counts": [
+    0,
+    0,
+    0
+  ],
+  "no_checker_or_policy_changes": true
+}

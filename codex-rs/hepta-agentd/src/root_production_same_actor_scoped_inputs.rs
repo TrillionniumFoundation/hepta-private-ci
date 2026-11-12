@@ -362,7 +362,7 @@ async fn connect_original_same_actor_model(
     let stream = stream.into_std()?;
     // Both owners are derived here from THIS original stream and THIS gate.
     // The factory is never passed an externally chosen transport/guard pair.
-    let required = context.gate().retain_required_original_stream(&stream)?;
+    let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(context.gate(), &stream)?;
     let transport = RootObservationStream::from_stream_until(
         stream,
         AgentdRootAuthorityPeer {

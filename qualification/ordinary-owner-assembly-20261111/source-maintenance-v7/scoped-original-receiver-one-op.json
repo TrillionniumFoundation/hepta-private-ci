@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "actual_original_scoped_gate_receiver_one_op",
+  "status": "UNINSTALLED_UNEXECUTED_STATIC_SOURCE_DELTA",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_manifest": "fc153553bd244cc4f4acc0ca1120ef23696eb249",
+  "base_context": {
+    "commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+    "previously_unchanged_path": true
+  },
+  "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "reference_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "pre": {
+        "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+        "bytes": 15759,
+        "sha256": "acf76f678d611bc6ede72cf8f78a1b05ebaf3edda3f1e2c091805575a58a8250"
+      },
+      "post": {
+        "blob": "74e69ea8381d36d659943ad6b09292cee9c34b61",
+        "bytes": 15814,
+        "sha256": "ef22476b8874c1c272524875a598aa2e89aebe763d32944d4b6a78e798b11b5c",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "let required = context.gate().retain_required_original_stream(&stream)?;",
+          "new": "let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(context.gate(), &stream)?;",
+          "kind": "actual_receiver_spelling",
+          "origin": "One original held SameActorPhaseGate receiver returned by the same context.gate(); same &stream, error propagation and position."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    }
+  ],
+  "counts": {
+    "paths": 1,
+    "operations": 1
+  },
+  "cause": "Original full-base scoped Model receiver was outside the 174-file overlay. Its context.gate().method expression is unsupported by the unchanged e23 receiver expression rule.",
+  "actual_type": {
+    "callee": "SameActorPhaseGate::retain_required_original_stream",
+    "callee_definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+    "callee_blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+    "receiver": "OriginalSameActorRootContext::gate() -> &Arc<SameActorPhaseGate>",
+    "context_definition": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+    "context_blob": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+    "real_call": "connect_original_same_actor_model receives one actual connected stream, retains its required registration, then passes the same stream and same original end into RootObservationStream::from_stream_until."
+  },
+  "static_projection": {
+    "artifact": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+    "before": {
+      "found": false,
+      "calls": [
+        {
+          "kind": "dot",
+          "offset": 14906,
+          "receiver": null,
+          "owner": null,
+          "resolved": null
+        }
+      ],
+      "error": "unresolved possible SameActorPhaseGate::retain_required_original_stream receiver"
+    },
+    "after": {
+      "found": true,
+      "calls": [
+        {
+          "kind": "qualified",
+          "offset": 14926,
+          "text": "SameActorPhaseGate::retain_required_original_stream("
+        }
+      ]
+    },
+    "original_checker_executed": false
+  },
+  "metadata_obligation": {
+    "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+    "append_real_original_callers": [
+      "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs"
+    ],
+    "second_file_blob": "6ef608fb0cdcd8acbad836ff5dd80a8203272ab2",
+    "whole_guard_resampling": "Keep every existing guard and resample only exact source spelling/layout from the actual formatter postimage. No guard/helper change is in this source packet."
+  },
+  "authority": {
+    "h": false,
+    "native": false,
+    "PTY": false,
+    "refs": false,
+    "CI": false,
+    "checker_changes": false,
+    "permission_changes": false,
+    "deadline_changes": false,
+    "production_behavior_changes": false
+  },
+  "integration": [
+    "Apply only to the exact original source preimage; it is not already in the 196-source overlay.",
+    "Do not replay runtime's 28/105 packet twice.",
+    "A separate metadata delta will append both real original caller paths; this packet alone does not qualify a closed caller set.",
+    "No native qualification or ordinary business completion is claimed."
+  ]
+}
