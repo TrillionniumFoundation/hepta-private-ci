@@ -5941,15 +5941,6 @@ caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)wait_and_register\\s*\\("
 
 [[boundary]]
-id = "root_generation_deployment_original_inputs"
-symbol = "OriginalInputs::enrollment_inputs"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
-definition_markers = ["pub(super) fn enrollment_inputs(", "read_dataset_withdrawal_snapshot(", "LearningArtifactReadViewV1::open_original(", "RootGenerationPublicationEnrollmentV1"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"]
-caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enrollment_inputs\\s*\\("
-
-[[boundary]]
 id = "root_artifact_original_selection_files"
 symbol = "LearningArtifactReadViewV1::locate_selected_original_files"
 definition_path = "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
@@ -5975,12 +5966,6 @@ path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs"
 required = ["#[serde(deny_unknown_fields)]","pub(super) struct DeploymentData","pub(super) struct LateMaterial","pub target: ObserverData","pub selection: SelectionData","required_option","from_original_selection(","data.original_selection()? != *original","pub(crate) struct ObserverData","pub(crate) struct SelectorTrustData"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
 required_function_order = [{ function = "fn original_selection(", sequence = ["Ok(SignedArtifactSelectionV1","self\n                .signature\n                .as_slice()\n                .try_into()"] }, { function = "fn from_original_selection(", sequence = ["original.artifact_kind != ArtifactKind::Model","let data = Self","data.original_selection()? != *original","Ok(data)"] }]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
-required = ["self.require_original_inputs()?","read_dataset_withdrawal_snapshot(","data.selector_trust.original_selector(&trust)?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","locate_selected_original_files(","OriginalFile::open_original(","RootGenerationPublicationEnrollmentV1","Mode::Reserve","Mode::Recover"]
-forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
-required_function_order = [{ function = "fn enrollment_inputs(", sequence = ["self.require_original_inputs()?","material.schema_version != 1","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","read_dataset_withdrawal_snapshot(","material.selection.original_selection()?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","reader\n            .locate_selected_original_files(","OriginalFile::open_original(&paths.0)?","OriginalFile::open_original(&paths.1)?","reader\n            .locate_selected_original_files(","RootGenerationPublicationEnrollmentV1","self.require_original_inputs()?","Ok((inputs"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
@@ -10705,15 +10690,6 @@ forbidden = ["RootGenerationPublicationHandoffV1::connect"]
 required_function_order = [{ function = "fn assemble_original_post_a_q24(", sequence = ["self.publication.is_some()", "receive_original_after_ack(", "self.publication = Some(publication)", "prepare_original_q24_successor(config, data.queue_capacity)", "crate::RootGenerationPublicationHandoffV1::retain_original_preparation(", "self.take_generation_publication_handoff()?", "publication_connection,\n            &prepared,\n            self.session_end,"] }]
 
 [[boundary]]
-id = "root_post_a_publication_files"
-symbol = "OriginalPostAPublicationFiles::retain_original_publication"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
-definition_markers = ["fn retain_original_publication(", "MetadataFile::open_metadata(path)?", "material.require_distinct(file)?"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"]
-caller_markers = []
-receiver_type = "OriginalPostAPublicationFiles"
-
-[[boundary]]
 id = "root_post_a_publication_attach"
 symbol = "OriginalPostAPublicationFiles::attach_original_route"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
@@ -11003,14 +10979,6 @@ product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publicat
 caller_markers = []
 
 [[boundary]]
-id = "root_publication_reserved_version"
-symbol = "ReservedPublicationProfile::original_for_version"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs"
-definition_markers = ["fn original_for_version(", "durable.schema_version == 2", "original.digest()? != original.binding"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs"]
-caller_markers = []
-
-[[boundary]]
 id = "root_publication_current_live_profile"
 symbol = "ReservedPublicationProfile::require_live_profile"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs"
@@ -11259,14 +11227,6 @@ product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_registr
 caller_markers = []
 
 [[boundary]]
-id = "root_publication_refusal_inspect"
-symbol = "PublicationRefusal::inspect"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"
-definition_markers = ["fn inspect<T>(", "let armed = self.arm_ready(observed)?"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
-caller_markers = []
-
-[[boundary]]
 id = "root_publication_refusal_persist"
 symbol = "PublicationRefusal::refuse"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"
@@ -11281,12 +11241,6 @@ definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publicati
 definition_markers = ["pub(crate) fn refuse(", "PublicationRefusal::refuse(&self.refusal)?"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
 caller_markers = []
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"
-required = ["#[serde(deny_unknown_fields)]", "original: Option<ReservedPublicationProfile>", "publication-refusal/", "attempt: u64"]
-forbidden = ["unwrap_or", "wrapping_add", "fetch_add", "SigningKey", "OpenOptions", "std::fs", "#[serde(default", "pub fn"]
-required_function_order = [{ function = "fn from_original(", sequence = ["scope.validate_snapshot(initial)", "publication_purpose: version.purpose()", "learning_operation: initial.request.operation_id.to_string()", "initial: initial.head_digest.to_string()", "scope: scope.binding().to_string()", "previous: CellGenerationOwnerBindingV1::new(", "&inputs.previous.config.generation", "inputs.previous.config.journal_records", "target: CellGenerationOwnerBindingV1::new(", "&inputs.target.config.generation", "inputs.target.config.journal_records"] }, { function = "fn owner(", sequence = ["format!(", "Digest32::of_bytes(self.learning_operation.as_bytes())"] }, { function = "fn require_profile(", sequence = ["ReservedPublicationProfile::original_for_version(", "PublicationVersion::from_purpose(&self.publication_purpose)?", "original.learning_operation != self.learning_operation", "original.initial != self.initial", "original.scope != self.scope", "original.intent.previous != self.previous", "original.intent.target != self.target", "original.intent.digest()"] }, { function = "fn enroll<T>(", sequence = ["original_root()?", "require_end(end)?", "let owner = binding.owner()", "RootGenerationPublicationModeV1::Reserve => HostAuthorityFrontierStore::initialize(", "attempt: 1", "phase: Phase::Armed", "original: None", "RootGenerationPublicationModeV1::Recover => {", "HostAuthorityFrontierStore::open(root, owner.clone())", "let retained = Arc::new(Self", "gate: Mutex::new(())", "poisoned: AtomicBool::new(false)", "let _gate = retained", "try_lock()", "retained.load_matching()?", "observed.phase != Phase::Armed", "observed.attempt != 1", "observed.original.is_some()", "RootGenerationPublicationModeV1::Recover => retained.arm_ready(observed)?", "retained.complete_armed(&armed, end, || action(Arc::clone(&retained)))"] }, { function = "fn inspect<T>(", sequence = ["original_root()?", "try_lock()", "self.poisoned.load(Ordering::Acquire)", "self.load_matching()?", "observed.original.as_ref() != Some(original)", "self.arm_ready(observed)?", "self.complete_armed(&armed, end, || Ok((action()?, original.clone())))"] }, { function = "fn arm_ready(", sequence = ["before.phase != Phase::Ready || before.original.is_none()", "before.attempt.checked_add(1)", "let mut armed = before.clone()", "armed.attempt = attempt", "armed.phase = Phase::Armed", "self.store.compare_and_set(&self.owner, &before, &armed)", "self.poisoned.store(true, Ordering::Release)", "Ok(armed)"] }, { function = "fn complete_armed<T>(", sequence = ["let result = (|| {", "require_end(end)?", "let (value, original) = action()?", "self.binding.require_profile(&original)?", "self.poisoned.load(Ordering::Acquire)", "is_some_and(|before| before != &original)", "let mut ready = armed.clone()", "ready.original = Some(original)", "ready.phase = Phase::Ready", "require_end(end)?", "compare_and_set(&self.owner, armed, &ready)", "self.poisoned.load(Ordering::Acquire) || require_end(end).is_err()", "self.refuse_locked()?", "Ok(value)", "if result.is_err()", "self.poisoned.store(true, Ordering::Release)", "result"] }, { function = "fn refuse(", sequence = ["original_root()?", "try_lock()", "self.refuse_locked()"] }, { function = "fn refuse_locked(", sequence = ["self.poisoned.store(true, Ordering::Release)", "self.load_matching()?", "before.phase == Phase::Refused", "let mut refused = before.clone()", "refused.phase = Phase::Refused", "compare_and_set(&self.owner, &before, &refused)", "self.store.load(&self.owner).map_err(io::Error::other)? != refused", "Ok(())"] }, { function = "fn load_matching(", sequence = ["let result = (|| {", "self.store.load(&self.owner)", "observed.binding != self.binding || observed.attempt == 0", "if let Some(original) = &observed.original", "self.binding.require_profile(original)?", "Ok(observed)", "if result.is_err()", "self.poisoned.store(true, Ordering::Release)", "result"] }, { function = "fn require_end(", sequence = ["Instant::now() >= end", "return Err(", "Ok(())"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
@@ -11305,12 +11259,6 @@ path = "codex-rs/hepta-agentd/src/authority_host_generation_publication.rs"
 required = ["refusal: Arc<PublicationRefusal>"]
 forbidden = []
 required_function_order = [{ function = "fn refuse(", sequence = ["PublicationRefusal::refuse(&self.refusal)?", "fence_record(&self.profile_store, &self.profile_owner)"] }]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
-required = []
-forbidden = []
-required_function_order = [{ function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {", "let (raw, expected) = self.with_learning_profile(", "slot.require_profile()?", "original_broker_publish(", "slot.require_profile()?", "Ok((raw, after))", "slot.require_profile()?", "slot.require_previous()?", "slot.require_selection(", "original_broker_head()", "!= expected", "expected.current == slot.profile.intent.target", "slot.target.observe()", "require_original_unwritten_or_genesis()", "verify_pinned_process(", "&pin,", "end,", "refusal::require_end(end)?", "Ok(raw)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
@@ -12661,48 +12609,12 @@ product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_registr
 caller_markers = []
 
 [[boundary]]
-id = "root_successor_exact"
-symbol = "RegisteredSuccessorData::require_exact"
-receiver_type = "RegisteredSuccessorData"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
-definition_markers = ["fn require_exact("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"]
-caller_markers = []
-
-[[boundary]]
 id = "root_successor_baseline_post"
 symbol = "RegisteredSuccessorData::require_baseline"
 receiver_type = "RegisteredSuccessorData"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
 definition_markers = ["fn require_baseline("]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"]
-caller_markers = []
-
-[[boundary]]
-id = "root_successor_capture_read"
-symbol = "RegisteredSuccessorData::observe_retired"
-receiver_type = "RegisteredSuccessorData"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
-definition_markers = ["fn observe_retired(", "capture != matches!(original.phase, SuccessorPhase::Registered)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
-caller_markers = []
-
-[[boundary]]
-id = "root_successor_finish"
-symbol = "RegisteredSuccessorData::finish_observed"
-receiver_type = "RegisteredSuccessorData"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
-definition_markers = ["fn finish_observed("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
-caller_markers = []
-
-[[boundary]]
-id = "root_successor_reply_data"
-symbol = "RegisteredSuccessorData::read_data"
-receiver_type = "RegisteredSuccessorData"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
-definition_markers = ["fn read_data("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -12751,22 +12663,10 @@ forbidden = []
 required_function_order = [{ function = "fn with_inputs<T>(", sequence = ["original_root()?", "self.require_original()?", "if let Some(files) = &self.files", "RetainedMaterial::open_original((*data).clone(), self.uid, self.gid)", "let source = files[0]", "let target_data = files[1]", "let ingress = files[2]", "OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(", "source.bytes(),", "identity,", "original.source_journal != self.data.source_journal.path", "original.source_witness != self.data.source_witness.path", "serde_json::from_slice(target_data.bytes())", "CellGenerationOwnerBindingV1::new(&config.generation, config.journal_records)", "!= *target", "self.deployment_digest()?.as_array()", "source.bytes(),", "target_data.bytes(),", "ingress.bytes(),", "journal: RetainedMaterial::original_readonly_description(&files[3])?", "witness: RetainedMaterial::original_readonly_description(&files[4])?", "RootHistoricalSourceInputsV1::retain_original(", "RetainedRootHistoricalSourceInputsV1::into_registered(", "OriginalCellFiles::retain_original_cell(", "journal: RetainedMaterial::original_readonly_description(&files[5])?", "witness: RetainedMaterial::original_readonly_description(&files[6])?", "let result = action(source_inputs, cell, configuration)?", "source.require_unchanged()?", "target_data.require_unchanged()?", "ingress.require_unchanged()?", "file.require_original()?", "self.require_original()?", "Ok(result)"], top_level = ["original_root()?", "let result = action(source_inputs, cell, configuration)?", "source.require_unchanged()?", "target_data.require_unchanged()?", "ingress.require_unchanged()?", "Ok(result)"] }]
 
 [[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
-required = ["enum SuccessorPhase", "Registered,", "Finalized { cut: Box<RootSuccessorTaskCutV1> }"]
-forbidden = ["pub struct", "pub fn", "SigningKey", "File::open", "OpenOptions", "unwrap_or(", "ErrorKind::NotFound"]
-required_function_order = [{ function = "fn enroll(", sequence = ["original_root()?", ".original_for_version(PublicationVersion::DurableV2)?", "Digest32::of_bytes(original.learning_operation.as_bytes())", "match mode", "RootGenerationPublicationModeV1::Reserve =>", "original_broker_head()", "head.current != original.intent.previous", "head.prepared.is_some()", "original != &slot.profile", "registration.publisher_epoch == 0", "registration.checkpoint_owner_agent_id != identity.agent_id", "RootOriginalSuccessorFilesV1::require_registered_baseline(", "profile: slot.reserved.clone()", "serde_json::to_string(&registration.registered_identity)", "pid: registration.peer_pid", "boot_id: registration.boot_id.clone()", "process_start_ticks: registration.process_start_ticks", "publisher_epoch: registration.publisher_epoch", "files: files.deployment_digest()?.to_string()", "phase: SuccessorPhase::Registered", "HostAuthorityFrontierStore::initialize(", "RootGenerationPublicationModeV1::Recover =>", "HostAuthorityFrontierStore::<SuccessorRecord>::open(", "store.load(&owner)", "record.schema != 1", "record.purpose != SUCCESSOR_PURPOSE", "record.profile != slot.reserved", "record.files != files.deployment_digest()?.to_string()", "record.publisher.uid != config.peer_uid", "record.peer_gid != config.peer_gid", "record.publisher_epoch == 0", "held.require_exact()?"] }, { function = "fn require_exact(", sequence = ["self.store.load(&self.owner)", "!= *expected", "original_identity(&expected)?", ".original_for_version(PublicationVersion::DurableV2)?", "neuron_generation_process_identity_digest_v1(&identity)", "!= profile.identity", "identity.agent_id.as_str() != profile.intent.target.scope().agent_id", "self.files.deployment_digest()?.to_string() != expected.files"] }, { function = "fn require_baseline(", sequence = ["self.require_exact()?", "original.phase != SuccessorPhase::Registered", "original_identity(&original)?", "RootOriginalSuccessorFilesV1::require_registered_baseline(", "&self.files,", "&identity,", "&profile.intent.target", "!= original.configuration"] }, { function = "fn observe_retired(", sequence = ["self.require_exact()?", "capture != matches!(original.phase, SuccessorPhase::Registered)", "let cut = self.read_physical(&original)?", "if capture", "next.phase = SuccessorPhase::Finalized", ".compare_and_set(&self.owner, &original, &next)", "self.store.load(&self.owner)", "!= next", "*original = next", "SuccessorPhase::Finalized { cut: retained } if retained.as_ref() == &cut", "Ok(cut)"], top_level = ["self.require_exact()?", "let cut = self.read_physical(&original)?", "Ok(cut)"] }, { function = "fn finish_observed(", sequence = ["self.observe_retired(", "false", "!= *expected", "self.require_exact()"] }, { function = "fn read_data(", sequence = ["self.require_exact()?", "SuccessorPhase::Finalized { cut: retained } if retained.as_ref() == &cut", "record_digest: Digest32::of_parts(", "&serde_json::to_vec(&*record)", "cut,"] }, { function = "fn read_physical(", sequence = ["RetiredCheckpointPublisher::observe(record.publisher.clone())", "original_identity(record)?", ".original_for_version(PublicationVersion::DurableV2)?", "RootOriginalSuccessorFilesV1::observe_original_successor(", "&self.files,", "&identity,", "&profile.intent.target", "cut.configuration != record.configuration", "RetiredCheckpointPublisher::observe(record.publisher.clone())", "Ok(cut)"] }, { function = "fn original_identity(", sequence = ["serde_json::from_str(&record.registered_identity)", "serde_json::to_string(&registered)", "!= record.registered_identity", "registered.identity()"] }]
-
-[[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
 required = []
 forbidden = []
 required_function_order = [{ function = "fn enroll_generation_publication(", sequence = ["PublicationRefusal::enroll(", "|refusal| {", "self.enroll_armed_generation_publication(", "if let Some(files) = successor", "self.with_learning_profile(", "|initial, proof| {", "version != PublicationVersion::DurableV2", "enrolled.profile.initial != initial.head_digest.to_string()", "enrolled.profile.writer != proof", "enrolled.profile.identity", "&self.identity", "enrolled.require_profile()?", "RegisteredSuccessorData::enroll(", "&enrolled,", "files,", "mode,", "registration,", "&self.identity,", "if mode == RootGenerationPublicationModeV1::Reserve", "RegisteredSuccessorData::require_baseline(&retained)?", "RegisteredSuccessorData::require_exact(&retained)?", "enrolled.successor = Some(retained)", "enrolled.require_profile()?", "verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?", "require_end(end)?", "Ok((enrolled, original))"] }]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
-required = ["CaptureRetiredTask {}", "ReadFinalizedTask {}"]
-forbidden = []
-required_function_order = [{ function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {", "let mut successor_observed = None", "self.with_learning_profile(", "Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "record.intent == *intent", "slot.verify_retained(&record.signed, &record.witness)? != original_revocations", "slot.target.observe()", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "RegisteredSuccessorData::read_data(successor, cut)?", "successor: successor_observed.clone()", "raw.len() > 16 * 1024", "Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {}", "Ok((raw, after))", "if let Some(observed) = successor_observed", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", "slot.require_previous()?", "verify_pinned_process(", "end,", "refusal::require_end(end)?", "Ok(raw)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_historical_cell_files.rs"
@@ -12819,15 +12719,6 @@ symbol = "LiveGenerationCurrent::original_historical_successor_current"
 receiver_type = "LiveGenerationCurrent"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"
 definition_markers = ["fn original_historical_successor_current("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"]
-caller_markers = []
-
-[[boundary]]
-id = "root_successor_canonical_data"
-symbol = "RootHistoricalTaskPublicationDataV1::decode_original_successor_data"
-receiver_type = "RootHistoricalTaskPublicationDataV1"
-definition_path = "codex-rs/hepta-agentd/src/circuit_task_source_data.rs"
-definition_markers = ["fn decode_original_successor_data("]
 product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"]
 caller_markers = []
 
@@ -14184,12 +14075,6 @@ forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "Sign
 required_function_order = [{ function = "fn issue_original_publication_final_use(", sequence = ["admitted: RootPreparedPublicationGrantV1<'_>", "admitted.into_original_parts()", "self.issue_registered_final_use(&binding, registration, proof, expiry)"] }]
 
 [[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
-required = ["IssueFinalUse {", "pub(crate) grant: Option<SignedFinalUseGrant>,"]
-forbidden = []
-required_function_order = [{ function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {", "serde_json::from_slice(bytes)", "matches!(&request.command, Command::IssueFinalUse { .. })", "return HostAuthorityService::issue_generation_publication_grant(", "&mut sequence,", "end,", "let mut successor_observed = None", "self.with_learning_profile(", "grant: None", "Ok(raw)", "let _ = RegisteredGenerationPublication::refuse(slot);"] }]
-
-[[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
 required = []
 forbidden = []
@@ -14537,15 +14422,6 @@ symbol = "HistoricalTaskReadRuntime::with_original_completed_context"
 receiver_type = "HistoricalTaskReadRuntime"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
 definition_markers = ["fn with_original_completed_context<T>(", "service.with_learning_profile(", "OriginalCompletedLearningContextV1 {", "read_original_completed_scoped(", "not_send: PhantomData"]
-product_callers = []
-caller_markers = []
-
-[[boundary]]
-id = "root_completed_learning_same_service"
-symbol = "OriginalCompletedLearningContextV1::require_original_publication_context"
-receiver_type = "OriginalCompletedLearningContextV1"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
-definition_markers = ["fn require_original_publication_context(", "!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"]
 product_callers = []
 caller_markers = []
 
@@ -14900,3 +14776,165 @@ definition_markers = ["pub(crate) struct OriginalCompletedLearningAcceptanceV1"]
 product_callers = []
 caller_markers = []
 call_pattern = '\bOriginalCompletedLearningAcceptanceV1\s*\{'
+
+[[boundary]]
+id = "root_generation_deployment_original_inputs"
+symbol = "OriginalInputs::enrollment_inputs"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
+definition_markers = ["pub(super) fn enrollment_inputs(", "std::time::SystemTime::now()", "self.inputs_at(data, material, consumer_uid, now)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enrollment_inputs\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
+required = ["self.require_original_inputs()?", "read_dataset_withdrawal_snapshot(", "data.selector_trust.original_selector(&trust)?", "LearningArtifactReadViewV1::open_original(", "with_original_withdrawal_floor(", "locate_selected_original_files(", "OriginalFile::open_original(", "RootGenerationPublicationEnrollmentV1", "Mode::Reserve", "Mode::Recover"]
+forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "FinalUseAuthority::", "HostAuthorityFrontierStore::initialize", "NeuronGenerationCurrentOwnerV1::initialize"]
+required_function_order = [
+  { function = "fn inputs_at(", sequence = ["self.require_original_inputs()?", "material.schema_version != 1", "data.owner_trust.original_owner_trust()?", "data.selector_trust.original_selector(&trust)?", "read_dataset_withdrawal_snapshot(", "material.selection.original_selection()?", "LearningArtifactReadViewV1::open_original(", "with_original_withdrawal_floor(", "reader\n            .locate_selected_original_files(", "OriginalFile::open_original(&paths.0)?", "OriginalFile::open_original(&paths.1)?", "reader\n            .locate_selected_original_files(", "RootGenerationPublicationEnrollmentV1", "self.require_original_inputs()?", "Ok((inputs"] },
+  { function = "fn enrollment_inputs(", sequence = ["std::time::SystemTime::now()", ".as_millis()", "self.inputs_at(data, material, consumer_uid, now)"] },
+  { function = "fn completed_inputs(", sequence = ["proof.original_profile()?", "self.inputs_at(data, material, consumer_uid, proof.verified_at_unix_ms())"] },
+]
+
+[[boundary]]
+id = "root_post_a_publication_files"
+symbol = "OriginalPostAPublicationFiles::retain_original_publication"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
+definition_markers = ["fn retain_original_publication(", "MetadataFile::open_metadata(path)?", "material.require_distinct(file)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs", "codex-rs/hepta-agentd/src/authority_host_completed_publication_deployment.rs"]
+caller_markers = []
+receiver_type = "OriginalPostAPublicationFiles"
+
+[[boundary]]
+id = "root_publication_reserved_version"
+symbol = "ReservedPublicationProfile::original_for_version"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs"
+definition_markers = ["fn original_for_version(", "durable.schema_version == 2", "original.digest()? != original.binding"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs", "codex-rs/hepta-agentd/src/authority_host_publication_acceptance.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_publication_refusal_inspect"
+symbol = "PublicationRefusal::inspect_with_acceptance"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"
+definition_markers = ["fn inspect_with_acceptance<T>(", "let armed = self.arm_ready(observed)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"
+required = ["#[serde(deny_unknown_fields)]", "original: Option<ReservedPublicationProfile>", "publication-refusal/", "attempt: u64", "publication: Option<PublicationAcceptance>"]
+forbidden = ["unwrap_or", "wrapping_add", "fetch_add", "SigningKey", "OpenOptions", "std::fs", "#[serde(default", "pub fn"]
+required_function_order = [
+  { function = "fn from_original(", sequence = ["scope.validate_snapshot(initial)", "publication_purpose: version.purpose()", "learning_operation: initial.request.operation_id.to_string()", "initial: initial.head_digest.to_string()", "scope: scope.binding().to_string()", "previous: CellGenerationOwnerBindingV1::new(", "&inputs.previous.config.generation", "inputs.previous.config.journal_records", "target: CellGenerationOwnerBindingV1::new(", "&inputs.target.config.generation", "inputs.target.config.journal_records"] },
+  { function = "fn owner(", sequence = ["format!(", "Digest32::of_bytes(self.learning_operation.as_bytes())"] },
+  { function = "fn require_profile(", sequence = ["ReservedPublicationProfile::original_for_version(", "PublicationVersion::from_purpose(&self.publication_purpose)?", "original.learning_operation != self.learning_operation", "original.initial != self.initial", "original.scope != self.scope", "original.intent.previous != self.previous", "original.intent.target != self.target", "original.intent.digest()"] },
+  { function = "fn enroll<T>(", sequence = ["original_root()?", "require_end(end)?", "let owner = binding.owner()", "RootGenerationPublicationModeV1::Reserve => HostAuthorityFrontierStore::initialize(", "attempt: 1", "phase: Phase::Armed", "original: None", "RootGenerationPublicationModeV1::Recover => {", "HostAuthorityFrontierStore::open(root, owner.clone())", "let retained = Arc::new(Self", "gate: Mutex::new(())", "poisoned: AtomicBool::new(false)", "let _gate = retained", "try_lock()", "retained.load_matching()?", "observed.phase != Phase::Armed", "observed.attempt != 1", "observed.original.is_some()", "RootGenerationPublicationModeV1::Recover => retained.arm_ready(observed)?", "retained.complete_armed(&armed, end, || {", "let (value, original) = action(Arc::clone(&retained))?", "Ok((value, original, None))"] },
+  { function = "fn inspect_with_acceptance<T>(", sequence = ["original_root()?", "try_lock()", "self.poisoned.load(Ordering::Acquire)", "self.load_matching()?", "observed.original.as_ref() != Some(original)", "self.arm_ready(observed)?", "self.complete_armed(&armed, end, || {", "let (value, publication) = action(armed.publication.as_ref())?", "Ok((value, original.clone(), publication))"] },
+  { function = "fn arm_ready(", sequence = ["before.phase != Phase::Ready || before.original.is_none()", "before.attempt.checked_add(1)", "let mut armed = before.clone()", "armed.attempt = attempt", "armed.phase = Phase::Armed", "self.store.compare_and_set(&self.owner, &before, &armed)", "self.poisoned.store(true, Ordering::Release)", "Ok(armed)"] },
+  { function = "fn complete_armed<T>(", sequence = ["let result = (|| {", "require_end(end)?", "let (value, original, publication) = action()?", "self.binding.require_profile(&original)?", "self.poisoned.load(Ordering::Acquire)", "is_some_and(|before| before != &original)", "let mut ready = armed.clone()", "if let Some(publication) = publication", "publication.require_original(&original)?", "is_some_and(|old| old != &publication)", "ready.publication = Some(publication)", "ready.original = Some(original)", "ready.phase = Phase::Ready", "require_end(end)?", "compare_and_set(&self.owner, armed, &ready)", "self.poisoned.load(Ordering::Acquire) || require_end(end).is_err()", "self.refuse_locked()?", "Ok(value)", "if result.is_err()", "self.poisoned.store(true, Ordering::Release)", "result"] },
+  { function = "fn refuse(", sequence = ["original_root()?", "try_lock()", "self.refuse_locked()"] },
+  { function = "fn refuse_locked(", sequence = ["self.poisoned.store(true, Ordering::Release)", "self.load_matching()?", "before.phase == Phase::Refused", "let mut refused = before.clone()", "refused.phase = Phase::Refused", "compare_and_set(&self.owner, &before, &refused)", "self.store.load(&self.owner).map_err(io::Error::other)? != refused", "Ok(())"] },
+  { function = "fn load_matching(", sequence = ["let result = (|| {", "self.store.load(&self.owner)", "observed.binding != self.binding || observed.attempt == 0", "if let Some(original) = &observed.original", "self.binding.require_profile(original)?", "if let Some(publication) = &observed.publication", "publication.require_original(original)?", "else if observed.publication.is_some()", "Ok(observed)", "if result.is_err()", "self.poisoned.store(true, Ordering::Release)", "result"] },
+  { function = "fn require_end(", sequence = ["Instant::now() >= end", "return Err(", "Ok(())"] },
+  { function = "fn inspect<T>(", sequence = ["self.inspect_with_acceptance(", "original, end, |_| Ok((action()?, None))"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+required = []
+forbidden = []
+required_function_order = [
+  { function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "let (raw, expected) = self.with_learning_profile(", "slot.require_profile()?", "original_broker_publish(", "slot.require_profile()?", "Ok((raw, after))", "slot.require_profile()?", "slot.require_previous()?", "slot.require_selection(", "original_broker_head()", "!= expected", "expected.current == slot.profile.intent.target", "slot.target.observe()", "require_original_unwritten_or_genesis()", "verify_pinned_process(", "&pin,", "end,", "refusal::require_end(end)?", "Ok((raw, accepted))"] },
+]
+
+[[boundary]]
+id = "root_successor_exact"
+symbol = "RegisteredSuccessorData::require_exact"
+receiver_type = "RegisteredSuccessorData"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+definition_markers = ["fn require_exact("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_registration.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed_successor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_successor_capture_read"
+symbol = "RegisteredSuccessorData::observe_retired"
+receiver_type = "RegisteredSuccessorData"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+definition_markers = ["fn observe_retired(", "capture != matches!(original.phase, SuccessorPhase::Registered)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_successor_finish"
+symbol = "RegisteredSuccessorData::finish_observed"
+receiver_type = "RegisteredSuccessorData"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+definition_markers = ["fn finish_observed("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_successor_reply_data"
+symbol = "RegisteredSuccessorData::read_data"
+receiver_type = "RegisteredSuccessorData"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+definition_markers = ["fn read_data("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+required = ["enum SuccessorPhase", "Registered,", "Finalized { cut: Box<RootSuccessorTaskCutV1> }"]
+forbidden = ["pub struct", "pub fn", "SigningKey", "File::open", "OpenOptions", "unwrap_or(", "ErrorKind::NotFound"]
+required_function_order = [
+  { function = "fn enroll(", sequence = ["original_root()?", "ReservedPublicationProfile::original_for_version(", "Digest32::of_bytes(original.learning_operation.as_bytes())", "match mode", "RootGenerationPublicationModeV1::Reserve =>", "original_broker_head()", "head.current != original.intent.previous", "head.prepared.is_some()", "original != &slot.profile", "registration.publisher_epoch == 0", "registration.checkpoint_owner_agent_id != identity.agent_id", "RootOriginalSuccessorFilesV1::require_registered_baseline(", "profile: slot.reserved.clone()", "serde_json::to_string(&registration.registered_identity)", "pid: registration.peer_pid", "boot_id: registration.boot_id.clone()", "process_start_ticks: registration.process_start_ticks", "publisher_epoch: registration.publisher_epoch", "files: files.deployment_digest()?.to_string()", "phase: SuccessorPhase::Registered", "HostAuthorityFrontierStore::initialize(", "RootGenerationPublicationModeV1::Recover =>", "HostAuthorityFrontierStore::<SuccessorRecord>::open(", "store.load(&owner)", "record.schema != 1", "record.purpose != SUCCESSOR_PURPOSE", "record.profile != slot.reserved", "record.files != files.deployment_digest()?.to_string()", "record.publisher.uid != config.peer_uid", "record.peer_gid != config.peer_gid", "record.publisher_epoch == 0", "held.require_exact()?"] },
+  { function = "fn require_exact(", sequence = ["self.store.load(&self.owner)", "!= *expected", "original_identity(&expected)?", "ReservedPublicationProfile::original_for_version(", "neuron_generation_process_identity_digest_v1(&identity)", "!= profile.identity", "identity.agent_id.as_str() != profile.intent.target.scope().agent_id", "self.files.deployment_digest()?.to_string() != expected.files"] },
+  { function = "fn require_baseline(", sequence = ["self.require_exact()?", "original.phase != SuccessorPhase::Registered", "original_identity(&original)?", "RootOriginalSuccessorFilesV1::require_registered_baseline(", "&self.files,", "&identity,", "&profile.intent.target", "!= original.configuration"] },
+  { function = "fn observe_retired(", sequence = ["self.require_exact()?", "capture != matches!(original.phase, SuccessorPhase::Registered)", "let cut = self.read_physical(&original)?", "if capture", "next.phase = SuccessorPhase::Finalized", ".compare_and_set(&self.owner, &original, &next)", "self.store.load(&self.owner)", "!= next", "*original = next", "SuccessorPhase::Finalized { cut: retained } if retained.as_ref() == &cut", "Ok(cut)"], top_level = ["self.require_exact()?", "let cut = self.read_physical(&original)?", "Ok(cut)"] },
+  { function = "fn finish_observed(", sequence = ["self.observe_retired(", "false", "!= *expected", "self.require_exact()"] },
+  { function = "fn read_data(", sequence = ["self.require_exact()?", "SuccessorPhase::Finalized { cut: retained } if retained.as_ref() == &cut", "record_digest: Digest32::of_parts(", "&serde_json::to_vec(&*record)", "cut,"] },
+  { function = "fn read_physical(", sequence = ["RetiredCheckpointPublisher::observe(record.publisher.clone())", "original_identity(record)?", "ReservedPublicationProfile::original_for_version(", "RootOriginalSuccessorFilesV1::observe_original_successor(", "&self.files,", "&identity,", "&profile.intent.target", "cut.configuration != record.configuration", "RetiredCheckpointPublisher::observe(record.publisher.clone())", "Ok(cut)"] },
+  { function = "fn original_identity(", sequence = ["serde_json::from_str(&record.registered_identity)", "serde_json::to_string(&registered)", "!= record.registered_identity", "registered.identity()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+required = ["CaptureRetiredTask {}", "ReadFinalizedTask {}"]
+forbidden = []
+required_function_order = [
+  { function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "let mut successor_observed = None", "self.with_learning_profile(", "Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "record.intent == *intent", "slot.verify_retained(&record.signed, &record.witness)? != original_revocations", "slot.target.observe()", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "RegisteredSuccessorData::read_data(successor, cut)?", "successor: successor_observed.clone()", "raw.len() > 16 * 1024", "Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {}", "Ok((raw, after))", "if let Some(observed) = successor_observed", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", "slot.require_previous()?", "verify_pinned_process(", "end,", "refusal::require_end(end)?", "Ok((raw, accepted))"] },
+]
+
+[[boundary]]
+id = "root_successor_canonical_data"
+symbol = "RootHistoricalTaskPublicationDataV1::decode_original_successor_data"
+receiver_type = "RootHistoricalTaskPublicationDataV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_task_source_data.rs"
+definition_markers = ["fn decode_original_successor_data("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs", "codex-rs/hepta-agentd/src/authority_host_publication_completed_next_use.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+required = ["IssueFinalUse {", "pub(crate) grant: Option<SignedFinalUseGrant>,"]
+forbidden = []
+required_function_order = [
+  { function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "serde_json::from_slice(bytes)", "matches!(&request.command, Command::IssueFinalUse { .. })", "return HostAuthorityService::issue_generation_publication_grant(", "&mut sequence,", "end,", ".map(|raw| (raw, None))", "let mut successor_observed = None", "self.with_learning_profile(", "grant: None", "Ok((raw, accepted))", "let _ = RegisteredGenerationPublication::refuse(slot);"] },
+]
+
+[[boundary]]
+id = "root_completed_learning_same_service"
+symbol = "OriginalCompletedLearningContextV1::require_original_publication_context"
+receiver_type = "OriginalCompletedLearningContextV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
+definition_markers = ["fn require_original_publication_context(", "!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_completed.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn serve_generation_publication_with_end(", sequence = ["refusal::require_end(end)?", "let accepted = match fresh_publication", "Some(prepared) if version == PublicationVersion::DurableV2", "PublicationAcceptance::observe_original_publish(", "refusal::require_end(end)?", "Ok((raw, accepted))"] }]

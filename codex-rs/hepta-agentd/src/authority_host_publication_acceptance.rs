@@ -62,9 +62,10 @@ impl PublicationAcceptance {
     ) -> io::Result<Self> {
         original_root()?;
         refusal::require_end(end)?;
-        let original = slot
-            .reserved
-            .original_for_version(PublicationVersion::DurableV2)?;
+        let original = ReservedPublicationProfile::original_for_version(
+            &slot.reserved,
+            PublicationVersion::DurableV2,
+        )?;
         Self::require_first_transition(&original.intent, prepared, expected)?;
         slot.require_profile()?;
         let published = expected
@@ -170,7 +171,10 @@ impl PublicationAcceptance {
     }
 
     pub(super) fn require_original(&self, reserved: &ReservedPublicationProfile) -> io::Result<()> {
-        let original = reserved.original_for_version(PublicationVersion::DurableV2)?;
+        let original = ReservedPublicationProfile::original_for_version(
+            reserved,
+            PublicationVersion::DurableV2,
+        )?;
         let published = self
             .current
             .published

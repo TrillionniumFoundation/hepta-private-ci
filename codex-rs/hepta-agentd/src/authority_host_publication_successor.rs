@@ -62,9 +62,10 @@ impl RegisteredSuccessorData {
         identity: &crate::AgentdIdentity,
     ) -> io::Result<Self> {
         original_root()?;
-        let original = slot
-            .reserved
-            .original_for_version(PublicationVersion::DurableV2)?;
+        let original = ReservedPublicationProfile::original_for_version(
+            &slot.reserved,
+            PublicationVersion::DurableV2,
+        )?;
         let owner = format!(
             "publication-task/{}",
             Digest32::of_bytes(original.learning_operation.as_bytes())
@@ -150,9 +151,10 @@ impl RegisteredSuccessorData {
             return Err(io::Error::other("original successor record changed"));
         }
         let identity = original_identity(&expected)?;
-        let profile = expected
-            .profile
-            .original_for_version(PublicationVersion::DurableV2)?;
+        let profile = ReservedPublicationProfile::original_for_version(
+            &expected.profile,
+            PublicationVersion::DurableV2,
+        )?;
         if crate::neuron_generation_process_identity_digest_v1(&identity)
             .map_err(io::Error::other)?
             .to_string()
@@ -179,9 +181,10 @@ impl RegisteredSuccessorData {
             ));
         }
         let identity = original_identity(&original)?;
-        let profile = original
-            .profile
-            .original_for_version(PublicationVersion::DurableV2)?;
+        let profile = ReservedPublicationProfile::original_for_version(
+            &original.profile,
+            PublicationVersion::DurableV2,
+        )?;
         if RootOriginalSuccessorFilesV1::require_registered_baseline(
             &self.files,
             &identity,
@@ -270,9 +273,10 @@ impl RegisteredSuccessorData {
         let _retired = RetiredCheckpointPublisher::observe(record.publisher.clone())
             .map_err(io::Error::other)?;
         let identity = original_identity(record)?;
-        let profile = record
-            .profile
-            .original_for_version(PublicationVersion::DurableV2)?;
+        let profile = ReservedPublicationProfile::original_for_version(
+            &record.profile,
+            PublicationVersion::DurableV2,
+        )?;
         let cut = RootOriginalSuccessorFilesV1::observe_original_successor(
             &self.files,
             &identity,

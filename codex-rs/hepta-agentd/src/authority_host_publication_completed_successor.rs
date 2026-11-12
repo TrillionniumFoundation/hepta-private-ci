@@ -43,7 +43,7 @@ impl RegisteredSuccessorData {
             original: Mutex::new(record),
             files,
         };
-        held.require_exact()?;
+        RegisteredSuccessorData::require_exact(&held)?;
         Ok((held, pin))
     }
 }

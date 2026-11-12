@@ -18,8 +18,10 @@ pub(crate) struct OriginalPublicationHistoryProofV1<'a> {
 impl OriginalPublicationHistoryProofV1<'_> {
     pub(crate) fn original_profile(&self) -> io::Result<&PublicationProfile> {
         self.accepted.require_original(self.original)?;
-        self.original
-            .original_for_version(PublicationVersion::DurableV2)
+        ReservedPublicationProfile::original_for_version(
+            self.original,
+            PublicationVersion::DurableV2,
+        )
     }
 
     pub(crate) fn verified_at_unix_ms(&self) -> u64 {

@@ -72,7 +72,7 @@ def require_structure(path, source):
         if "initialize" in body[start:stop] or "None =>" in body[start:stop]:
             raise PROOF.VerificationFailure("recover cannot retrofit a missing marker")
         at_depth(body, "retained.complete_armed(", 1)
-        for name in ("inspect<T>", "refuse"):
+        for name in ("inspect_with_acceptance<T>", "refuse"):
             body, _ = route.function(source, "fn " + name + "(")
             at_depth(body, "try_lock()", 1)
         body, _ = route.function(source, "fn arm_ready(")
@@ -112,13 +112,13 @@ def require_structure(path, source):
         at_depth(inner[done:], "enrolled.require_profile()?", -1)
     if path == TRANSPORT:
         body, _ = route.function(source, "fn serve_generation_publication_with_end(")
-        start, stop = route.original.span(body, "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {")
+        start, stop = route.original.span(body, "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {")
         inner = body[start:stop]
         context, done = route.original.span(inner, "|initial, proof| {")
         if not re.match(r"^\s*,\s*\)\?;", inner[done:]):
             raise PROOF.VerificationFailure("actual Root context postchecks must return first")
         for marker in ("let (raw, expected) = self.with_learning_profile(",
-                       "refusal::require_end(end)?", "Ok(raw)"):
+                       "refusal::require_end(end)?", "Ok((raw, accepted))"):
             at_depth(inner, marker, 1)
         final = inner[done:]
         for marker in ("slot.require_profile()?", "slot.require_previous()?", "slot.require_selection(",
@@ -194,9 +194,9 @@ class PublicationRefusalSourceTests(unittest.TestCase):
         self.check(REFUSAL, "arm_ready", ("before.phase != Phase::Ready || before.original.is_none()",
             "before.attempt.checked_add(1)", "armed.attempt = attempt", "armed.phase = Phase::Armed",
             "self.store.compare_and_set(&self.owner, &before, &armed)"))
-        for name in ("inspect<T>", "refuse"):
+        for name in ("inspect_with_acceptance<T>", "refuse"):
             self.reject(REFUSAL, name, "try_lock()")
-        self.check(REFUSAL, "inspect<T>", ("self.poisoned.load(Ordering::Acquire)",
+        self.check(REFUSAL, "inspect_with_acceptance<T>", ("self.poisoned.load(Ordering::Acquire)",
             "observed.original.as_ref() != Some(original)", "self.arm_ready(observed)?"))
 
     def test_complete_callback_profile_and_deadline_precede_ready(self):
@@ -205,7 +205,7 @@ class PublicationRefusalSourceTests(unittest.TestCase):
             "compare_and_set(&self.owner, armed, &ready)", "self.refuse_locked()?", "self.poisoned.store(true, Ordering::Release)"))
         for occurrence in (0, 1):
             self.reject(REFUSAL, "complete_armed<T>", "require_end(end)?", occurrence)
-        self.mutate(REFUSAL, lambda s: s.replace("let (value, original) = action()?;", "let (value, original) = if false { action()? } else { fabricated() };", 1))
+        self.mutate(REFUSAL, lambda s: s.replace("let (value, original, publication) = action()?;", "let (value, original, publication) = if false { action()? } else { fabricated() };", 1))
 
     def test_first_live_root_proof_and_primary_io_are_inside_arm(self):
         self.check(REGISTRATION, "enroll_generation_publication", ("learning.profile.original_initial_data()?",
@@ -217,7 +217,7 @@ class PublicationRefusalSourceTests(unittest.TestCase):
 
     def test_frame_arm_covers_root_postchecks_and_exact_current_readback(self):
         self.check(TRANSPORT, "serve_generation_publication_with_end", ("exchange_with_original_deadline(|bytes, end| {",
-            "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {", "Ok((raw, after))",
+            "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "Ok((raw, after))",
             "!= expected", "refusal::require_end(end)?"))
         for occurrence in (0, 1, 2):
             self.reject(TRANSPORT, "serve_generation_publication_with_end", "slot.require_profile()?", occurrence)
