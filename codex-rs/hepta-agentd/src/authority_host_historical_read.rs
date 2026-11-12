@@ -28,6 +28,7 @@ use crate::authority_host_service::generation_initial::historical_source_pin::Ro
 use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalTaskReadV1;
 use crate::authority_host_service::generation_initial::historical_source_pin::RootRetainedHistoricalCompleteTaskV1;
 use crate::authority_host_service::generation_initial::original_root;
+use crate::root_historical_task_read_protocol::HistoricalReadOperationV1;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadProfileV1;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadResponseV1;
 use crate::root_historical_task_read_protocol::PURPOSE;
@@ -38,6 +39,9 @@ use crate::root_historical_task_read_protocol::WIRE_BOUND;
 mod learning_trust;
 #[path = "authority_host_post_a_files.rs"]
 mod post_a_files;
+use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
+use crate::root_historical_learning_trust_data::TRUST_PURPOSE;
+use learning_trust::RootHistoricalLearningTrustV1;
 #[path = "authority_host_historical_read_session.rs"]
 mod prepared;
 #[path = "authority_host_historical_read_runtime.rs"]
@@ -61,6 +65,7 @@ struct HistoricalTaskDeploymentData {
     source_deployment: PathBuf,
     run_start_deployment: PathBuf,
     ledger_deployment: PathBuf,
+    learning_trust_deployment: PathBuf,
 }
 
 pub(super) struct HistoricalTaskReadRuntime {
@@ -68,6 +73,7 @@ pub(super) struct HistoricalTaskReadRuntime {
     deployment: HistoricalTaskDeploymentData,
     profile: HistoricalTaskReadProfileV1,
     task: RootRetainedHistoricalCompleteTaskV1,
+    learning_trust: RootHistoricalLearningTrustV1,
     socket: PathBuf,
     phase: AtomicU8,
 }
@@ -95,13 +101,19 @@ impl HistoricalTaskReadRuntime {
         }
         deployment.target.digest().map_err(io::Error::other)?;
         let identity = registration.registered_identity.identity()?;
-        let (profile, task) = service.with_learning_profile(
+        let (profile, task, learning_trust) = service.with_learning_profile(
             config,
             registration,
             owner,
             &deployment.initial,
-            |_, proof| {
+            |initial, proof| {
                 metadata.require_metadata_unchanged()?;
+                let learning_trust = RootHistoricalLearningTrustV1::open_original(
+                    service,
+                    &deployment.learning_trust_deployment,
+                    &initial,
+                    &deployment.target,
+                )?;
                 let mut profile: HistoricalTaskReadProfileV1 = HistoricalTaskReadProfileV1 {
                     purpose: PURPOSE.into(),
                     identity: crate::neuron_generation_process_identity_digest_v1(&identity)
@@ -114,6 +126,7 @@ impl HistoricalTaskReadRuntime {
                     ])
                     .to_string(),
                     deployment: metadata.digest().to_string(),
+                    learning_trust: learning_trust.pin.clone(),
                     binding: String::new(),
                 };
                 profile.binding = profile.digest()?;
@@ -133,7 +146,8 @@ impl HistoricalTaskReadRuntime {
                     },
                 )?;
                 metadata.require_metadata_unchanged()?;
-                Ok((profile, task))
+                RootHistoricalLearningTrustV1::revalidate(&learning_trust, service, &initial)?;
+                Ok((profile, task, learning_trust))
             },
         )?;
         let socket = config
@@ -148,6 +162,7 @@ impl HistoricalTaskReadRuntime {
             deployment,
             profile,
             task,
+            learning_trust,
             socket,
             phase: AtomicU8::new(PREPARED),
         })
@@ -159,6 +174,7 @@ impl HistoricalTaskReadRuntime {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
+        operation: HistoricalReadOperationV1,
         request_id: u64,
         end: Instant,
     ) -> io::Result<Vec<u8>> {
@@ -166,7 +182,7 @@ impl HistoricalTaskReadRuntime {
             .with_original_historical_task(service, end, |read| {
                 require_end(end)?;
                 self.metadata.require_metadata_unchanged()?;
-                let reply = service.with_learning_profile(
+                let (reply, initial) = service.with_learning_profile(
                     config,
                     registration,
                     owner,
@@ -180,6 +196,7 @@ impl HistoricalTaskReadRuntime {
                         if expected != initial || self.phase.load(Ordering::Acquire) != SERVING {
                             return Err(io::Error::other("original historical recipient changed"));
                         }
+                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
                         RootOriginalHistoricalTaskReadV1::require_original_target(read, &self.deployment.target)?;
                         let observed: RootOriginalHistoricalCompleteTaskObservationV1 = RootOriginalHistoricalTaskReadV1::observe_original_task(
                             read,
@@ -196,28 +213,43 @@ impl HistoricalTaskReadRuntime {
                                 .map(Arc::new)
                             },
                         )?;
-                        let reply = serde_json::to_vec(&HistoricalTaskReadResponseV1 {
-                            schema: 1,
-                            purpose: PURPOSE.into(),
-                            request_id,
-                            profile: self.profile.binding.clone(),
-                            data_cut: RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(&observed).to_string(),
-                            ledger: RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?,
-                            publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed),
-                        })
-                        .map_err(io::Error::other)?;
+                        let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?;
+                        RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger)?;
+                        let data_cut = RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(&observed).to_string();
+                        let reply = match operation {
+                            HistoricalReadOperationV1::Task => serde_json::to_vec(&HistoricalTaskReadResponseV1 {
+                                schema: 1,
+                                purpose: PURPOSE.into(),
+                                request_id,
+                                profile: self.profile.binding.clone(),
+                                data_cut,
+                                ledger,
+                                publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed),
+                            }),
+                            HistoricalReadOperationV1::LearningTrust => serde_json::to_vec(&HistoricalLearningTrustResponseV1 {
+                                schema: 1,
+                                purpose: TRUST_PURPOSE.into(),
+                                request_id,
+                                profile: self.profile.binding.clone(),
+                                data_cut,
+                                pin: self.learning_trust.pin.clone(),
+                                payload: RootHistoricalLearningTrustV1::read_original_payload(&self.learning_trust, service, &initial, &ledger)?,
+                            }),
+                        }.map_err(io::Error::other)?;
                         if reply.is_empty() || reply.len() > WIRE_BOUND {
                             return Err(io::Error::other(
                                 "complete historical reply exceeds bound",
                             ));
                         }
+                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
                         require_end(end)?;
-                        Ok(reply)
+                        Ok((reply, initial))
                     },
                 )?;
                 // Actual current recipient postchecks returned before the complete
                 // task's final physical rereads and all refusal Ready transitions.
                 self.metadata.require_metadata_unchanged()?;
+                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
                 require_end(end)?;
                 Ok(reply)
             })

@@ -142,6 +142,47 @@ pub(crate) struct HistoricalLearningTrustResponseV1 {
     pub(crate) purpose: String,
     pub(crate) request_id: u64,
     pub(crate) profile: String,
+    pub(crate) data_cut: String,
     pub(crate) pin: HistoricalLearningTrustPinV1,
     pub(crate) payload: HistoricalLearningTrustPayloadV1,
 }
+
+pub(crate) fn require_original_trust_reply(
+    bytes: &[u8],
+    request_id: u64,
+    profile: &str,
+    expected: &HistoricalLearningTrustPinV1,
+    initial: &LearningIterationSnapshotV1,
+) -> io::Result<HistoricalLearningTrustResponseV1> {
+    use crate::root_historical_task_read_protocol::MAX_READS;
+    use crate::root_historical_task_read_protocol::WIRE_BOUND;
+    use crate::root_historical_task_read_protocol::canonical_digest;
+
+    if bytes.is_empty() || bytes.len() > WIRE_BOUND || !(1..=MAX_READS).contains(&request_id) {
+        return Err(io::Error::other(
+            "historical trust reply exceeds original bound",
+        ));
+    }
+    let response: HistoricalLearningTrustResponseV1 =
+        serde_json::from_slice(bytes).map_err(io::Error::other)?;
+    if response.schema != 1
+        || response.purpose != TRUST_PURPOSE
+        || response.request_id != request_id
+        || response.profile != profile
+        || &response.pin != expected
+    {
+        return Err(io::Error::other(
+            "original recipient trust response differs",
+        ));
+    }
+    canonical_digest(profile)?;
+    canonical_digest(&response.data_cut)?;
+    response.pin.require_initial(initial)?;
+    // This is strict public data validation only. The actual client performs
+    // activation with its original live Root clock before forming a capsule.
+    Ok(response)
+}
+
+#[cfg(test)]
+#[path = "root_historical_learning_trust_data_tests.rs"]
+mod tests;

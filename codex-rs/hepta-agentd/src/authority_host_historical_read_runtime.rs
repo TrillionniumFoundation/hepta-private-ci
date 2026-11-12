@@ -148,8 +148,9 @@ pub(in super::super) fn serve_optional(
                     .exchange(|bytes| {
                         let request: HistoricalTaskReadRequestV1 = serde_json::from_slice(bytes)
                             .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                        let operation = HistoricalReadOperationV1::from_purpose(&request.purpose)
+                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
                         if request.schema != 1
-                            || request.purpose != PURPOSE
                             || request.profile != bound.runtime.profile.binding
                             || request.request_id != sequence
                             || !(1..=MAX_READS).contains(&sequence)
@@ -169,6 +170,7 @@ pub(in super::super) fn serve_optional(
                                 config,
                                 registration,
                                 owner,
+                                operation,
                                 request.request_id,
                                 request_end,
                             )
