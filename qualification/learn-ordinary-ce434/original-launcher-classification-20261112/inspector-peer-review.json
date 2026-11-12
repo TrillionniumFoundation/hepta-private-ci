@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "reviewer": "learn_model_carrier",
+  "status": "static source peer review only; no Python parser/execution/H dispatch/target access",
+  "script": {
+    "blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+    "bytes": 21070,
+    "sha256": "7efe06fadf8ea6f13b8cfd55945a2a730f2f87d6a98484df1bac2a0e13102315"
+  },
+  "contract": {
+    "blob": "b80dd6405702b6cf0074ac823a746eae7b8d3505",
+    "bytes": 12459,
+    "sha256": "d0f78a7383057ddc639edb06c2d592f095b56f4cb6f321715e117230faf66d8c"
+  },
+  "approved_design_blob": "e420ef42bafeda8592127dc429cbd967673787df",
+  "preceding_inspector": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+  "conclusion": "No blocking value-disclosure, target-expansion or execution issue found in the requested fixed-slot classifier scope.",
+  "exact_source_checks": {
+    "seven_original_helpers": [
+      {
+        "name": "checked_stat",
+        "exact": true
+      },
+      {
+        "name": "identity",
+        "exact": true
+      },
+      {
+        "name": "read_stable_source",
+        "exact": true
+      },
+      {
+        "name": "identifier",
+        "exact": true
+      },
+      {
+        "name": "dotted_name",
+        "exact": true
+      },
+      {
+        "name": "location",
+        "exact": true
+      },
+      {
+        "name": "callee_name",
+        "exact": true
+      }
+    ],
+    "warning_parse_block_identical": true,
+    "original29_names_and_order_exact": true,
+    "original29_reference": "88664e8ecc545a7fcb14726204eae67b70475565; same original ordered names as the embedded FDE list5553a141",
+    "expected_times_exact_decimal_strings": true
+  },
+  "observations": [
+    "Original stable one-target reader, read flags, size/hash/identity gate and seven helper bodies are unchanged. The two nanosecond expectations use their exact original decimal strings; main converts metadata integers only after the original read.",
+    "The only ast.Constant.value accesses are the already shape-checked line7 pathlib.Path direct argument and direct elements of the exact ten-slot line8 List. The fixed line10 subprocess.run use and watched-binding conditions are checked first.",
+    "Line7 reads only a string type and whether the literal begins with '/'. It emits only absolute/relative omitted-literal classifications; no path value, length, component, digest, resolved identity or extra file access.",
+    "The line8 dictionaries contain the fixed sudo/env head/wrapper tokens, five fixed flags and exactly the original ordered 29 case names. Results contain only closed enums and 1-based case ordinals. Almost-matching or other literals use the same unknown-literal enum.",
+    "Other expressions, nested formatting, command/env assignments, mappings and keyword values are not evaluated or exported. Structural identifier inspection for rebinding does not print unknown identifiers.",
+    "Only one direct str(binary), one original case and a later known --exact can yield the bounded static selector declaration. The output explicitly denies full command semantics and referenced binary identity.",
+    "Script parsing is warning-as-error and safe exceptions contain only fixed rejection codes or exception type/position/errno. No ast.dump, unparse, target import, eval, exec, runpy, subprocess, path resolve/read of referenced files or arbitrary source line output is added.",
+    "Authority, owner custody and current-runtime-instance fields remain false; a missing/ambiguous/negative shape stays unknown and does not broaden search."
+  ],
+  "limits": [
+    "This is a source inspection, not Python syntax validation or execution against the real target.",
+    "The static selector label only reports syntax. Unknown arguments may change actual command behavior; no effective privilege, fixture execution, runtime deployment or original-owner authority is established.",
+    "The exact source identity remains the fixed 1379-byte source; the already observed script is not opened by this review.",
+    "The seven helper comparisons and original29 lookup comparisons are byte/string checks in V8, not a claim that the new Python negative matrix ran."
+  ]
+}

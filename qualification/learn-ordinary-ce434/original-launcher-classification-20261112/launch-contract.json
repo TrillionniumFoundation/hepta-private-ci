@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.learn.existing-launcher-classify-v3-launch.v1",
+  "status": "prepared_not_dispatched",
+  "fixed_worktree": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "exact_clean_before_and_after_required": true,
+    "source_mismatch": "reject; no e5c fallback, rebind, checkout, reset or fetch"
+  },
+  "input_scope": {
+    "only_target": "/data/hepta-service-root-01.py",
+    "source_sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "size_bytes": 1379,
+    "source_mtime_ns": "1792775306676468050",
+    "source_ctime_ns": "1792775306676468050",
+    "target_is_read_but_never_executed": true,
+    "referenced_paths_neither_read_nor_executed": true
+  },
+  "artifacts": {
+    "approved_plan": {
+      "blob": "e420ef42bafeda8592127dc429cbd967673787df",
+      "bytes": 9382
+    },
+    "inspector": {
+      "blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+      "bytes": 21070,
+      "sha256": "7efe06fadf8ea6f13b8cfd55945a2a730f2f87d6a98484df1bac2a0e13102315"
+    },
+    "inspector_contract": {
+      "blob": "b80dd6405702b6cf0074ac823a746eae7b8d3505",
+      "bytes": 12459
+    },
+    "inspector_peer": {
+      "blob": "a99e1a80bfe820c6d66e643ef47c7529007f2b09",
+      "bytes": 4123
+    },
+    "wrapper": {
+      "blob": "7f8dc6b4e452ba7be2668a477590359f108adfcc",
+      "bytes": 29172,
+      "sha256": "2144df4b09948a472627d3a5523ebcdc7ee3e35f68769bc06a77e4e29e8d6d57"
+    },
+    "typed_request": {
+      "blob": "972e515d03956dc8ade7dc00dbf908c3b7a8a124",
+      "bytes": 31373,
+      "sha256": "1a8b1b2712b54467a70c1050ce4258ed9475447e5e9bc8f81d061f3232f7af3b"
+    },
+    "wrapper_exact_unified_diff": {
+      "blob": "8fbcf9a33721db634a7619c47d29f71484334615",
+      "bytes": 43254
+    }
+  },
+  "original_immutable_inputs": {
+    "wrapper_blob": "bd006f3762bda50e40ca389f9eeb5b616e4477d7",
+    "request_blob": "ece6b9a4bda6c2a95dc02dfe40146a354c26b91e",
+    "request_key": "learn-ce434-existing-launcher-shape-readonly-v2",
+    "old_inputs_unchanged": true
+  },
+  "launch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_c_is_complete_wrapper": true,
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "idempotency_key": "learn-ce434-a671-existing-launcher-classify-v3",
+    "exclusive_output_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3",
+    "inspector_command": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3/inspect.py"
+    ],
+    "supervisor_timeout": null,
+    "resource_overrides": [],
+    "stderr": "DEVNULL",
+    "target_subprocess_calls": 0,
+    "signal_calls": 0,
+    "replay_or_retry": 0
+  },
+  "wrapper_semantics": [
+    "Verify the embedded inspector's Git blob, complete byte length and SHA-256 before private output creation.",
+    "Require a real existing owned evidence parent; reject any pre-existing output directory; create 0700 and verify directory ownership/mode.",
+    "Preserve the original Git-only before/after HEAD/tree/status/final-HEAD checks, with GIT_OPTIONAL_LOCKS=0 and core.fsmonitor=false.",
+    "Write inspect.py exclusively, flush/fsync, and read back its exact complete bytes before execution.",
+    "Run only the new own-directory inspector with /usr/bin/python3 -I -S -B, discard child stderr and wait on the original child without timeout or signals.",
+    "Record actual PID/returncode and original_process_complete only after the original wait. On an uncertain exception do not signal, retry, reissue, rerun or clean up a process.",
+    "Preserve complete raw stdout bytes/hash; verify the same bytes again before bounded JSON parsing.",
+    "Accept only the fixed v3 schema/target and the two closed static assessment enums, with ordinary authority, runtime custody and current-instance proof all false.",
+    "Persist execution.pending.json through the original atomic replace; final wrapper output names the exact execution record bytes/hash.",
+    "The observation can succeed with unknown_static_purpose. A declared Root29 selector remains syntax evidence and never counts as ordinary deployment or actual fixture execution."
+  ],
+  "changes": {
+    "exact_edit_groups": 15,
+    "embedded_script_replaced_by_exact_pinned_inspector": true,
+    "other_changes": "Only fixed source/tree/output path and inspector/contract/peer pins, integrity sizes/hashes, plus the necessary v3 schema/two-enum record plumbing.",
+    "request_changes": "Only args[4] changes to the new full wrapper and idempotency_key changes to the Root-specified independent v3 key; all other original request fields remain exact.",
+    "forward_and_reverse_full_wrapper_reconstruction": true,
+    "original_process_io_and_source_guard_bodies_unchanged": true
+  },
+  "limitations": [
+    "No H query/start, Python parsing/execution, target read, referenced-path read or Rust/native execution occurred during preparation.",
+    "Original read-side identity sampling is not a filesystem lock; no external supervisor lifetime guarantee is claimed.",
+    "This documentation child is an artifact delivery; the tested/observed source remains the explicitly pinned a671 parent.",
+    "Root must review and confirm actual worktree source before any dispatch. Transport timeout remains unknown and never authorizes a new implicit run."
+  ],
+  "ordinary_acceptance": {
+    "task_a": 0,
+    "independent_b_and_retention": 0,
+    "selection_and_version": 0,
+    "fresh_session_different_content_c": 0,
+    "daemon_root_cold_restart": 0
+  }
+}
