@@ -26,9 +26,10 @@ REFUSAL = A + "authority_host_publication_refusal.rs"
 CALLERS = {
     "root_publication_fixed_version": (OWNER, SERVER, CLIENT, INPUTS, REFUSAL,
                                        A + "authority_host_publication_bootstrap.rs",
-                                       A + "root_publication_preparation.rs"),
+                                       A + "root_publication_preparation.rs",
+                                       A + "authority_host_publication_grant.rs"),
     "root_publication_reserved_origin": (ENROLL,),
-    "root_publication_reserved_version": (ENROLL, REFUSAL),
+    "root_publication_reserved_version": (ENROLL, REFUSAL, A + "authority_host_publication_grant_store.rs"),
     "root_publication_current_live_profile": (ENROLL, OWNER),
 }
 

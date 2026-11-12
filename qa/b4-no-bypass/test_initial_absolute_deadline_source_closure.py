@@ -90,7 +90,9 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
         self.assertEqual(boundaries["root_original_publication_stream_until"]["product_callers"],
                          [AGENT + "root_generation_initial_inputs.rs",
                           AGENT + "root_historical_task_read_inputs.rs",
-                          AGENT + "root_generation_publication_inputs.rs"])
+                          AGENT + "root_generation_publication_inputs.rs",
+                          AGENT + "root_independent_b_client_connect.rs",
+                          AGENT + "root_independent_b_source_client.rs"])
 
 
 if __name__ == "__main__":
