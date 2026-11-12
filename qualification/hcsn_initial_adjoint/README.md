@@ -1,6 +1,7 @@
 # Bounded initial-amplitude adjoint
 
-Local stage 1 passed its own prefrozen small-model gates. This supplies a
+Local stage 1 passed the executed mathematical comparisons under its
+prefrozen small-model tolerances. This supplies a
 continuous finite-DDE VJP without constructing an initial-basis forward map.
 It is a new candidate; global HCSN qualification remains HOLD.
 
@@ -20,7 +21,7 @@ The objective follows post-release query semantics, including atom/query
 coincidences and a query at zero. `SPEC.md` defines the equations and sides.
 
 The 69 old-forward-basis contractions agreed within 1.282e-10 (uniform) and
-4.866e-9 (graded). Ten directions per geometry were checked against retained
+4.866e-9 (graded). Five directions per geometry were checked against retained
 coarse/fine FD scalar contractions; no old basis or FD experiment was rerun.
 Time tightening, exact mass gradients, Bellman continuation gradients,
 atom/uniform fronts, upper occupation, scalar delay direction and physical
@@ -32,6 +33,8 @@ small matrix exponentials; and two static perpetual solves. There were zero
 forward DDE/basis calls, Torch calls or optimizer updates. Actual wall time was
 2.66415 seconds, CPU 2.64862 seconds, and peak process RSS 72760 KiB on the
 recorded Python 3.12.14 CPU environment with numerical threads fixed at one.
+The validation timer excludes module imports and initial source/archive
+admission; total process wall time was not separately instrumented.
 Per-call maxima were 3056 accepted steps, 6142 RHS evaluations, 934247 stored
 float64 polynomial/snapshot coefficients, and 147 current sparse-Jacobian
 nonzeros. The tightened graded run approaches the declared coefficient cap;
@@ -50,7 +53,14 @@ Git HEAD; its exact RED is retained, followed by a successful invocation
 after creating a formatting-scope-only local HEAD. It is not numerical
 candidate evidence or a replacement for the remote prefreeze identity.
 
-Still OPEN: independent review of this new stage, a real first-order Torch
+Independent read-only review recomputed all 345 recorded comparisons,
+69 basis contractions and 20 retained FD projections, and confirmed source
+and archive identities. Its exact receipt and inspector are in
+`evidence/review001`; it performed zero candidate/adjoint/ODE/exponential/
+static/Torch/optimizer calls. It leaves internal snapshot-corruption rejection
+branches untested.
+
+Still OPEN: a real first-order Torch
 adapter and all version/metadata guards, larger-mesh resource/error gates,
 support/delay/physics/migration derivatives, full-network training and
 restoration, continuum finite-risk accuracy and independent task controls.
