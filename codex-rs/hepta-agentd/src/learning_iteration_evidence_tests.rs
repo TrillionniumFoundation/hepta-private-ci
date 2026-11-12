@@ -168,3 +168,168 @@ mod root;
 
 #[path = "learning_iteration_generation_evidence_tests.rs"]
 mod generation;
+
+/// Same-UID, synthetic evidence transport for original receipt-owner mechanism
+/// tests. The public constructor still refuses this custody configuration.
+pub(crate) fn fixture_original_receipt_client(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signature: SignedLearningEvidenceV1,
+    expected_reads: usize,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<()>>,
+)> {
+    let fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature,
+    };
+    let (client, mut channel) = fixture.original_owner_client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let evidence: Vec<_> = (0..expected_reads).map(|_| fixture.evidence()).collect();
+    let peer = std::thread::spawn(move || -> anyhow::Result<()> {
+        for (index, evidence) in evidence.into_iter().enumerate() {
+            // The original channel fixes one lifetime at construction, waits
+            // for the first byte only until that end, then shares one 500ms
+            // deadline across the whole request, handler and response.
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, evidence))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            anyhow::ensure!(
+                exchanged,
+                "original receipt fixture closed before request {index}"
+            );
+        }
+        Ok(())
+    });
+    Ok((client, peer))
+}
+
+#[tokio::test]
+async fn original_receipt_fixture_retains_peer_during_owner_work_between_frames()
+-> anyhow::Result<()> {
+    let fixture = Fixture::new()?;
+    let (client, peer) = fixture_original_receipt_client(
+        fixture.initial.clone(),
+        fixture.receipt.clone(),
+        fixture.verifier.clone(),
+        fixture.signature.clone(),
+        2,
+    )?;
+    assert_eq!(
+        client.readback(&fixture.initial, &fixture.receipt).await?,
+        fixture.signature
+    );
+    // No frame is in flight while the original owner reads its CURRENTs.
+    // This crosses both former fixture limits (2-second idle, 5-second life)
+    // without changing the real client's 500-millisecond frame deadline.
+    tokio::time::sleep(Duration::from_millis(5_100)).await;
+    assert_eq!(
+        client.readback(&fixture.initial, &fixture.receipt).await?,
+        fixture.signature
+    );
+    drop(client);
+    peer.join().expect("original receipt peer")?;
+    Ok(())
+}
+
+/// An explicit same-UID test transport that returns original retained signatures
+/// until its client is dropped. No production constructor or signer is exposed.
+pub(crate) fn fixture_original_receipt_client_until_close(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signature: SignedLearningEvidenceV1,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    let fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature,
+    };
+    let (client, mut channel) = fixture.original_owner_client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
+        for index in 0..128 {
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, fixture.evidence()))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            if !exchanged {
+                return Ok(index);
+            }
+        }
+        anyhow::bail!("bounded original evidence fixture exceeded its request budget")
+    });
+    Ok((client, peer))
+}
+
+/// A bounded negative-mechanism peer: each real request observes the next
+/// explicitly supplied signature. No production attestation is manufactured.
+pub(crate) fn fixture_original_receipt_sequence_until_close(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signatures: Vec<SignedLearningEvidenceV1>,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    anyhow::ensure!(!signatures.is_empty() && signatures.len() <= 128);
+    let mut fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature: signatures[0].clone(),
+    };
+    let (client, mut channel) = fixture.original_owner_client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
+        for index in 0..128 {
+            fixture.signature = signatures[index.min(signatures.len() - 1)].clone();
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, fixture.evidence()))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            if !exchanged {
+                return Ok(index);
+            }
+        }
+        anyhow::bail!("bounded original evidence sequence exceeded its request budget")
+    });
+    Ok((client, peer))
+}

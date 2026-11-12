@@ -1,0 +1,430 @@
+{
+  "schema": "hepta.paired-best-case-power-audit.v1",
+  "status": "static BigInt projection of pinned original Q32 code; Rust mechanism cases pending; no ordinary deployed paired plan",
+  "source": {
+    "confidence_blob": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c",
+    "roles_blob": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+    "agentd_rule_commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+    "agentd_rule_blob": "6cd43b7e4b6f41f1f4609adb836ccea3282747ab"
+  },
+  "actual_producer_rule": {
+    "total_episodes_max": 64,
+    "history_nonempty": true,
+    "optimistic_pair_upper_bound": 31,
+    "old_agentd_fixture_history": 3,
+    "old_fixture_pair_upper_bound": 30
+  },
+  "known_parameter_scope": "alpha50000,m1,W4 are existing source-fixture parameters only; no ordinary deployed paired freeze is established",
+  "calculation": {
+    "Q32_scale": "4294967296",
+    "clusters": "optimistic one distinct actual principal per pair; sum cluster sizes squared equals n; any dependence can only widen these bounds",
+    "outcomes": "candidate all one, baseline all zero",
+    "primary_margin": "zero is the most favorable permitted nonnegative margin",
+    "radius": "ceil_sqrt(ceil(R_raw^2 * L * n / (2*n^2))) + 8 raw",
+    "L": "ceil(log2(ceil(6000000*m/alpha_ppm)))",
+    "ips_range": "original frozen W",
+    "dr_range": "1 + 2*W + 2/Q32",
+    "snips": "original numerator and weight-mean ratio intervals; [0,1] if lower denominator <=0"
+  },
+  "rows": [
+    {
+      "pairs": 30,
+      "clusters": 30,
+      "weight_bound": 4,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "5868042465",
+        "candidate_lower_raw": "-1573075169",
+        "baseline_upper_raw": "5868042465",
+        "best_improvement_raw": "-7441117634",
+        "strict_zero_margin": false
+      },
+      "snips": {
+        "candidate_lower_raw": "0",
+        "baseline_upper_raw": "4294967296",
+        "best_improvement_raw": "-4294967296",
+        "strict_zero_margin": false
+      },
+      "doubly_robust": {
+        "range_raw": "38654705666",
+        "radius_raw": "13203095536",
+        "candidate_lower_raw": "-8908128240",
+        "baseline_upper_raw": "13203095536",
+        "best_improvement_raw": "-22111223776",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 31,
+      "clusters": 31,
+      "weight_bound": 4,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "5772620781",
+        "candidate_lower_raw": "-1477653485",
+        "baseline_upper_raw": "5772620781",
+        "best_improvement_raw": "-7250274266",
+        "strict_zero_margin": false
+      },
+      "snips": {
+        "candidate_lower_raw": "0",
+        "baseline_upper_raw": "4294967296",
+        "best_improvement_raw": "-4294967296",
+        "strict_zero_margin": false
+      },
+      "doubly_robust": {
+        "range_raw": "38654705666",
+        "radius_raw": "12988396748",
+        "candidate_lower_raw": "-8693429452",
+        "baseline_upper_raw": "12988396748",
+        "best_improvement_raw": "-21681826200",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 31,
+      "clusters": 31,
+      "weight_bound": 1,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "1443155202",
+        "candidate_lower_raw": "2851812094",
+        "baseline_upper_raw": "1443155202",
+        "best_improvement_raw": "1408656892",
+        "strict_zero_margin": true
+      },
+      "snips": {
+        "candidate_lower_raw": "2134572707",
+        "baseline_upper_raw": "2173461712",
+        "best_improvement_raw": "-38889005",
+        "strict_zero_margin": false
+      },
+      "doubly_robust": {
+        "range_raw": "12884901890",
+        "radius_raw": "4329465589",
+        "candidate_lower_raw": "-34498293",
+        "baseline_upper_raw": "4329465589",
+        "best_improvement_raw": "-4363963882",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 31,
+      "clusters": 31,
+      "weight_bound": 1,
+      "family_alpha_ppm": 100000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 6,
+      "ips": {
+        "radius_raw": "1336102093",
+        "candidate_lower_raw": "2958865203",
+        "baseline_upper_raw": "1336102093",
+        "best_improvement_raw": "1622763110",
+        "strict_zero_margin": true
+      },
+      "snips": {
+        "candidate_lower_raw": "2256805661",
+        "baseline_upper_raw": "1939430965",
+        "best_improvement_raw": "317374696",
+        "strict_zero_margin": true
+      },
+      "doubly_robust": {
+        "range_raw": "12884901890",
+        "radius_raw": "4008306264",
+        "candidate_lower_raw": "286661032",
+        "baseline_upper_raw": "4008306264",
+        "best_improvement_raw": "-3721645232",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 512,
+      "clusters": 512,
+      "weight_bound": 4,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "1420426928",
+        "candidate_lower_raw": "2874540368",
+        "baseline_upper_raw": "1420426928",
+        "best_improvement_raw": "1454113440",
+        "strict_zero_margin": true
+      },
+      "snips": {
+        "candidate_lower_raw": "2160140908",
+        "baseline_upper_raw": "2122317457",
+        "best_improvement_raw": "37823451",
+        "strict_zero_margin": true
+      },
+      "doubly_robust": {
+        "range_raw": "38654705666",
+        "radius_raw": "3195960577",
+        "candidate_lower_raw": "1099006719",
+        "baseline_upper_raw": "3195960577",
+        "best_improvement_raw": "-2096953858",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 14,
+      "clusters": 14,
+      "weight_bound": 1,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "2147483656",
+        "candidate_lower_raw": "2147483640",
+        "baseline_upper_raw": "2147483656",
+        "best_improvement_raw": "-16",
+        "strict_zero_margin": false
+      },
+      "snips": {
+        "candidate_lower_raw": "1431655758",
+        "baseline_upper_raw": "4294967296",
+        "best_improvement_raw": "-2863311538",
+        "strict_zero_margin": false
+      },
+      "doubly_robust": {
+        "range_raw": "12884901890",
+        "radius_raw": "6442450953",
+        "candidate_lower_raw": "-2147483657",
+        "baseline_upper_raw": "6442450953",
+        "best_improvement_raw": "-8589934610",
+        "strict_zero_margin": false
+      }
+    },
+    {
+      "pairs": 15,
+      "clusters": 15,
+      "weight_bound": 1,
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "log_upper": 7,
+      "ips": {
+        "radius_raw": "2074666315",
+        "candidate_lower_raw": "2220300981",
+        "baseline_upper_raw": "2074666315",
+        "best_improvement_raw": "145634666",
+        "strict_zero_margin": true
+      },
+      "snips": {
+        "candidate_lower_raw": "1497122233",
+        "baseline_upper_raw": "4013250478",
+        "best_improvement_raw": "-2516128245",
+        "strict_zero_margin": false
+      },
+      "doubly_robust": {
+        "range_raw": "12884901890",
+        "radius_raw": "6223998929",
+        "candidate_lower_raw": "-1929031633",
+        "baseline_upper_raw": "6223998929",
+        "best_improvement_raw": "-8153030562",
+        "strict_zero_margin": false
+      }
+    }
+  ],
+  "minimum_pairs_with_existing_fixture_parameters": {
+    "ips": 225,
+    "snips": 505,
+    "doubly_robust": 1135
+  },
+  "conclusions": [
+    "With alpha50000,m1,W4 and n<=31, none of IPS/SNIPS/DR can pass a nonnegative strict Primary margin, even with maximal distinct real clusters and extreme outcomes.",
+    "DR remains impossible at n<=31 even for the original allowed maximum alpha100000 and minimum W1; this is an upper-bound comparison, not a change to any frozen plan.",
+    "For one actual principal, the original minimum-cluster check rejects before Qualification; pair/episode/arm IDs must not split that principal.",
+    "The 512-pair IPS unit case tests mechanism reachability only and cannot be used by the current 64-episode producer or counted as actual B efficacy.",
+    "A separate not-yet-created W1+IPS registration at alpha50000,m1 and zero Primary margin is mathematically reachable with 15 distinct real principal clusters/pairs and extreme outcomes; it is not a replacement for the frozen W4 protocol or an actual Qualified result."
+  ],
+  "authority_or_policy_changes": false,
+  "original_thresholds_changed": false,
+  "unregistered_preregistration_contrast": {
+    "status": "mathematical reachability comparison only; no change to any existing frozen W4/metric plan; not an issued grant, new registered plan, actual principal inventory or B execution",
+    "parameters": {
+      "weight_bound": 1,
+      "metric": "IPS",
+      "family_alpha_ppm": 50000,
+      "simultaneous_comparisons": 1,
+      "primary_minimum_improvement": 0
+    },
+    "minimum_pairs_and_distinct_real_heldout_principals": 15,
+    "exact_minimum_pairs_by_metric_under_the_same_contrast_parameters": {
+      "ips": 15,
+      "snips": 32,
+      "doubly_robust": 127
+    },
+    "required_before_use": [
+      "Separate original-owner registration before either B arm is observed, preserving the existing original validator and actual authority requirements.",
+      "At least the stated number of distinct real independent principal clusters, each represented in both arms; no episode/pair/arm splitting of one principal.",
+      "All original temporal training/heldout lineage, support and historical-sample requirements must still fit the unchanged 64-total-episode producer bound.",
+      "All unmodified safety/retention/other metric and authority requirements must pass; positive original margin or multiplicity may require more samples."
+    ],
+    "outcomes": "candidate all one and baseline all zero are a best-case assumption, not observed evidence"
+  },
+  "retention_roles": {
+    "each_product_plan_requires_at_least_one_primary": true,
+    "every_registered_primary_must_pass": true,
+    "source": "metric_roles.rs::role_contract_commitment_bytes primary_count==0 rejects; decide_independently_v2 applies the strict original role predicate to every metric through decide_with_metric_contract.",
+    "formulas": {
+      "maximize_improvement": "candidate.lower - baseline.upper",
+      "minimize_improvement": "baseline.lower - candidate.upper",
+      "primary": "improvement > minimum_improvement; frozen margin >=0",
+      "noninferiority": "improvement >= -maximum_regression; frozen margin >=0",
+      "absolute": "Original direction-specific candidate safety floor remains required; AbsoluteConstraint cannot remove the plan's Primary requirement."
+    },
+    "equal_perfect_limit": "For finite original intervals, equal perfect arms have negative conservative improvement. A zero-regression NI gate and any nonnegative strict Primary therefore reject. This is not an instruction to widen a frozen margin.",
+    "rows": [
+      {
+        "pairs": 30,
+        "weight_bound": 4,
+        "alpha_ppm": 50000,
+        "m": 1,
+        "equal_perfect_maximize": {
+          "ips_required_noninferiority_margin_raw": "11736084930",
+          "dr_required_noninferiority_margin_raw": "26406191072",
+          "snips_required_noninferiority_margin_raw": "4294967296",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "equal_perfect_minimize": {
+          "ips_required_noninferiority_margin_raw": "11736084930",
+          "dr_required_noninferiority_margin_raw": "26406191072",
+          "snips_required_noninferiority_margin_raw": "4294967296",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "max_perfect_candidate_lower_raw": {
+          "ips": "-1573075169",
+          "doubly_robust": "-8908128240",
+          "snips": "0"
+        }
+      },
+      {
+        "pairs": 31,
+        "weight_bound": 4,
+        "alpha_ppm": 50000,
+        "m": 1,
+        "equal_perfect_maximize": {
+          "ips_required_noninferiority_margin_raw": "11545241562",
+          "dr_required_noninferiority_margin_raw": "25976793496",
+          "snips_required_noninferiority_margin_raw": "4294967296",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "equal_perfect_minimize": {
+          "ips_required_noninferiority_margin_raw": "11545241562",
+          "dr_required_noninferiority_margin_raw": "25976793496",
+          "snips_required_noninferiority_margin_raw": "4294967296",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "max_perfect_candidate_lower_raw": {
+          "ips": "-1477653485",
+          "doubly_robust": "-8693429452",
+          "snips": "0"
+        }
+      },
+      {
+        "pairs": 31,
+        "weight_bound": 1,
+        "alpha_ppm": 50000,
+        "m": 1,
+        "equal_perfect_maximize": {
+          "ips_required_noninferiority_margin_raw": "2886310404",
+          "dr_required_noninferiority_margin_raw": "8658931178",
+          "snips_required_noninferiority_margin_raw": "2160394589",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "equal_perfect_minimize": {
+          "ips_required_noninferiority_margin_raw": "2886310404",
+          "dr_required_noninferiority_margin_raw": "8658931178",
+          "snips_required_noninferiority_margin_raw": "2173461712",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "max_perfect_candidate_lower_raw": {
+          "ips": "2851812094",
+          "doubly_robust": "-34498293",
+          "snips": "2134572707"
+        }
+      },
+      {
+        "pairs": 31,
+        "weight_bound": 1,
+        "alpha_ppm": 100000,
+        "m": 1,
+        "equal_perfect_maximize": {
+          "ips_required_noninferiority_margin_raw": "2672204186",
+          "dr_required_noninferiority_margin_raw": "8016612528",
+          "snips_required_noninferiority_margin_raw": "2038161635",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "equal_perfect_minimize": {
+          "ips_required_noninferiority_margin_raw": "2672204186",
+          "dr_required_noninferiority_margin_raw": "8016612528",
+          "snips_required_noninferiority_margin_raw": "1939430965",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "max_perfect_candidate_lower_raw": {
+          "ips": "2958865203",
+          "doubly_robust": "286661032",
+          "snips": "2256805661"
+        }
+      },
+      {
+        "pairs": 512,
+        "weight_bound": 4,
+        "alpha_ppm": 50000,
+        "m": 1,
+        "equal_perfect_maximize": {
+          "ips_required_noninferiority_margin_raw": "2840853856",
+          "dr_required_noninferiority_margin_raw": "6391921154",
+          "snips_required_noninferiority_margin_raw": "2134826388",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "equal_perfect_minimize": {
+          "ips_required_noninferiority_margin_raw": "2840853856",
+          "dr_required_noninferiority_margin_raw": "6391921154",
+          "snips_required_noninferiority_margin_raw": "2122317457",
+          "zero_margin_noninferiority": false,
+          "strict_nonnegative_primary": false
+        },
+        "max_perfect_candidate_lower_raw": {
+          "ips": "2874540368",
+          "doubly_robust": "1099006719",
+          "snips": "2160140908"
+        }
+      }
+    ],
+    "observed_ordinary_retention_contract": "not established; actual member roles and all other preregistered constraints must be checked separately by the original panel owner",
+    "panel_aggregation_observation_at_488": {
+      "status": "fixed source observation, distinct from the mathematical per-member disposition; no ordinary adoption execution claimed",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+          "blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+          "function": "OriginalCellEvaluationPanelOwnerV1::require_observed_panel"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+          "function": "material"
+        }
+      ],
+      "observed_behavior": "The panel rejects InsufficientEvidence but retains signed Ineligible member digests; material qualification is derived from primary.qualified. Therefore mathematical failure of a retention member does not by itself imply the existing aggregate adoption check rejects.",
+      "closure_gap": "Actual original retention dispositions and full signatures/windows are preserved, but Ineligible retention must not be represented as successful preservation. A separate original-policy fail-closed change is required; this statistics patch does not alter the agentd aggregate gate.",
+      "positive_ordinary_gate": "The existing overall Root/Candidate positive gate remains closed."
+    }
+  }
+}

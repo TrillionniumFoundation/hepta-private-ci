@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/network-proxy/**"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
@@ -15,6 +17,14 @@ on:
       - ".github/scripts/check_windows_private_state_acquisition.py"
       - ".github/scripts/test_check_windows_private_state_acquisition.py"
       - ".github/fixtures/windows-private-state-acquisition/**"
+      - "scripts/hepta_windows_learn_regressions.py"
+      - "scripts/test_hepta_windows_learn_regressions.py"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
+      - "scripts/run-nextest.py"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
+      - "scripts/just-shell.py"
   workflow_dispatch:
 
 permissions:
@@ -35,6 +45,8 @@ jobs:
     name: ACL, anti-reparse, signed-owner durability and recovery on Windows
     runs-on: windows-latest
     timeout-minutes: 65
+    env:
+      CARGO_BUILD_TARGET: "x86_64-pc-windows-msvc"
     steps:
       - name: Checkout immutable PR head without saved credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -86,7 +98,7 @@ jobs:
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check
+          cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd --package codex-hepta-intelligence-eval --package codex-hepta-learning-ledger -- --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove directory acquisition rejects both original native attacks
         shell: pwsh
@@ -94,6 +106,18 @@ jobs:
           python -m unittest discover -s .github/scripts -p test_check_windows_private_state_acquisition.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python .github/scripts/check_windows_private_state_acquisition.py "$env:RUNNER_TEMP/private-state-acquisition"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise exact Windows LEARN file and CURRENT regressions
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m unittest discover -s scripts -p test_hepta_windows_learn_regressions.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/hepta_windows_learn_regressions.py --expected-head "$env:SOURCE_SHA" --output "$env:RUNNER_TEMP/hepta-windows-learn-regressions"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Confirm no generated or modified tracked source
         if: always()
@@ -113,4 +137,12 @@ jobs:
           name: windows-private-state-acquisition-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/private-state-acquisition
           if-no-files-found: warn
+          retention-days: 14
+      - name: Retain native LEARN logs, exact case coverage and original JUnit
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-learn-regressions-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-learn-regressions/
+          if-no-files-found: error
           retention-days: 14

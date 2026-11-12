@@ -37,16 +37,75 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 mod control;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_candidate_learning_read_capability.rs"]
+mod candidate_learning_read;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadClientV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadContextV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadErrorV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadOwnerV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadbackV1;
+pub(crate) use candidate_learning_read::OriginalCircuitCandidateCompletionReadinessClientV1;
+
+#[path = "circuit_learning_read_capability.rs"]
+mod learning_read;
 #[path = "circuit_feature_current_owner.rs"]
 mod owner;
 #[path = "circuit_feature_current_recovery.rs"]
 mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
+
+#[path = "circuit_learning_retained_publication.rs"]
+mod retained_publication;
+
+#[path = "circuit_learning_model_publication.rs"]
+mod model_publication;
+pub use model_publication::OriginalCircuitModelPublicationContextV1;
+pub use model_publication::OriginalCircuitModelPublicationErrorV1;
+pub use model_publication::OriginalCircuitModelPublicationInputsV1;
+pub use model_publication::OriginalCircuitModelPublicationPredecessorsV1;
+pub use model_publication::OriginalCircuitModelPublicationRecoveryV1;
+pub use model_publication::OriginalCircuitModelPublicationSelectionV1;
+pub use model_publication::OriginalCircuitModelPublicationV1;
+pub use model_publication::PreparedOriginalCircuitModelPublicationV1;
+pub use model_publication::prepare_original_circuit_model_publication_v1;
+pub use model_publication::recover_original_circuit_model_publication_v1;
+pub use model_publication::version::OriginalCircuitModelArtifactCheckpointV1;
+pub use model_publication::version::OriginalCircuitModelTaskInputsV1;
+pub use model_publication::version::OriginalCircuitModelVersionClientV1;
+pub use model_publication::version::OriginalCircuitModelVersionErrorV1;
+pub use model_publication::version::OriginalCircuitModelVersionHostV1;
+pub use model_publication::version::OriginalCircuitModelVersionPublicationV1;
+pub use model_publication::version::OriginalCircuitModelVersionReadbackV1;
+pub use model_publication::version::OriginalCircuitModelVersionRecoveryV1;
 pub use control::PublishedCircuitFeatureControlV1;
+pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
+pub use learning_read::OriginalCircuitLearningReadClientV1;
+pub use learning_read::OriginalCircuitLearningReadContextV1;
+pub use learning_read::OriginalCircuitLearningReadErrorV1;
+pub use learning_read::OriginalCircuitLearningReadOwnerV1;
+pub use learning_read::OriginalCircuitLearningReadbackV1;
+#[cfg(test)]
+pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
 pub use recovery::CircuitFeaturePredecessorFilesV1;
 pub(crate) use recovery::recover_predecessor;
+pub use retained_publication::OriginalCircuitRetainedPublicationContextV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationErrorV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationInputsV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationRecoveryV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationSelectionV1;
+pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
+pub use retained_publication::prepare_original_circuit_retained_publication_v1;
+pub use retained_publication::recover_original_circuit_retained_publication_v1;
+pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionHostV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionPublicationV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionReadbackV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionRecoveryV1;
 
 /// Pin this exact profile in the original target.task_digest BEFORE independent
 /// selection/FinalUse publication. Existing arbitrary task grants do not match.
@@ -354,3 +413,6 @@ fn source_input(source: &CircuitTaskSourceInputV1, operation_id: StableId) -> Ce
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
+
+#[cfg(test)]
+pub(crate) use learning_read::readiness_fixture as original_readiness_fixture;

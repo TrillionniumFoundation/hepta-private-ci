@@ -1,0 +1,150 @@
+//! Original Model purpose only; old Training/Evidence protocols are untouched.
+//! All connections retain the one original host state and bounded framing.
+use super::super::super::model_command::wire;
+use super::*;
+use super::read_operation::OriginalModelReadHostOperation;
+use crate::AgentdRootAuthorityPeer;
+use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+use codex_hepta_contracts::HostAuthorityPeerChannel;
+use codex_hepta_contracts::HostIssuerTransportError;
+use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixStream;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+
+impl OriginalCellQ24ModelCommandHostV1 {
+    pub async fn serve_commands(
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
+        // Bind the original descriptor/pidfd and absolute end before this
+        // service can queue. The worker cannot restart that original budget.
+        let mut channel = original_owner_command_channel_v1(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )?;
+        let queued = QueuedModelServiceV1::new();
+        let cancellation = Arc::clone(&queued.cancelled);
+        let result = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            // A service dropped while it was queued never enters the original
+            // frame reader. Cancellation after dispatch remains uncertain.
+            if cancellation.load(Ordering::Acquire) {
+                return Err(Error::Cancelled);
+            }
+            channel.check_peer_lifetime()?;
+            if cancellation.load(Ordering::Acquire) {
+                return Err(Error::Cancelled);
+            }
+            self.serve_original_channel(&mut channel)
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?;
+        drop(queued);
+        result
+    }
+    fn serve_original_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
+        let mut operation = None;
+        for nonce in 1..=128 {
+            if !channel.exchange(|bytes| {
+                self.command_response(bytes, nonce, &mut operation)
+                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
+            })? {
+                if operation.is_some() { return Err(Error::CommitUncertain); }
+                return Ok(nonce - 1);
+            }
+        }
+        Err(Error::Unavailable)
+    }
+    fn command_response<'a>(
+        &'a self,
+        bytes: &[u8],
+        nonce: u64,
+        operation: &mut Option<OriginalModelReadHostOperation<'a>>,
+    ) -> Result<Vec<u8>, Error> {
+        if bytes.len() > 16_384 {
+            return Err(Error::Binding("bounded original Model command"));
+        }
+        let request: wire::Request = serde_json::from_slice(bytes)?;
+        request.require_initial(&self.bootstrap.config.material, nonce)?;
+        let result = (|| {
+            match request.action {
+                wire::Action::BeginOriginalRead | wire::Action::BeginOriginalExecute => {
+                    if operation.is_some() {
+                        return Err(Error::Binding("one original Model operation per channel"));
+                    }
+                    let original: OriginalModelReadHostOperation<'_> = self.begin_original_read(&request)?;
+                    let outcome = OriginalModelReadHostOperation::started(&original)?;
+                    *operation = Some(original);
+                    Ok(outcome)
+                }
+                wire::Action::ReadOriginalPage { .. } => {
+                    OriginalModelReadHostOperation::page(
+                        operation.as_mut().ok_or(Error::ReadbackRequired)?, &request,
+                    )
+                }
+                wire::Action::FinishOriginalRead { .. } => {
+                    OriginalModelReadHostOperation::finish(
+                        operation.take().ok_or(Error::ReadbackRequired)?, &request,
+                    )
+                }
+                wire::Action::Execute | wire::Action::Readback => {
+                    if operation.is_some() {
+                        return Err(Error::Binding("complete the same original Model operation"));
+                    }
+                    self.original_response(&request)
+                }
+            }
+        })();
+        if result.is_err() {
+            // Failed, cancelled or malformed transfers never restore a partial
+            // proof. Dropping the same guard also consumes its original E lane.
+            drop(operation.take());
+        }
+        let outcome = match result {
+            Ok(outcome) => outcome,
+            Err(Error::Busy) => wire::Outcome::Busy,
+            Err(Error::ReadbackRequired) => wire::Outcome::ReadbackRequired,
+            Err(Error::Ineligible) => wire::Outcome::Ineligible,
+            Err(Error::DeadlineExceeded) => wire::Outcome::Expired,
+            Err(Error::Unavailable) => wire::Outcome::Unavailable,
+            // Never turn a transport, CURRENT, source or owner error into a
+            // proven missing Model. The original operation remains unresolved.
+            Err(_) => wire::Outcome::Uncertain,
+        };
+        let response = serde_json::to_vec(&wire::Response { request, outcome })?;
+        if response.len() > 16_384 {
+            return Err(Error::Binding("bounded original Model response"));
+        }
+        Ok(response)
+    }
+}
+
+struct QueuedModelServiceV1 {
+    cancelled: Arc<AtomicBool>,
+}
+impl QueuedModelServiceV1 {
+    fn new() -> Self {
+        Self {
+            cancelled: Arc::new(AtomicBool::new(false)),
+        }
+    }
+}
+impl Drop for QueuedModelServiceV1 {
+    fn drop(&mut self) {
+        self.cancelled.store(true, Ordering::Release);
+    }
+}

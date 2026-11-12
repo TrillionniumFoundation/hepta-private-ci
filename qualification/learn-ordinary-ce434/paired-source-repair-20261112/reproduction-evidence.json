@@ -1,0 +1,1123 @@
+{
+  "schema": "hepta.learn.paired-source-limited-reproduction.v1",
+  "base_commit": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "actual_original_evidence": [
+    {
+      "kind": "complete FAIL/ERROR headings",
+      "blob": "3757fc47445359980935cec90fe98c319565bb56",
+      "bytes": 30077,
+      "readback": true
+    },
+    {
+      "kind": "original H read response bundle including window timeout",
+      "blob": "58cd9b8e19ee4e8cc854cc51fcd93c42c1c321f0",
+      "bytes": 54534,
+      "readback": true
+    }
+  ],
+  "root_supplied_log_identity": {
+    "source_log_bytes": 384649,
+    "source_log_sha256": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4",
+    "basis": "Root supplied fixed original log identity; not a claim this child fetched the full log"
+  },
+  "existing_operation_read_attempt": {
+    "operation_id": "d5f1d021c1f2465764ec644f7969bb04f7b8c2ff4fb3ef35eaaf5169bba2e786",
+    "status": {
+      "text": "tool call error: tool call failed for `codex_apps/h.operation_status`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+      "isError": true
+    },
+    "page0": {
+      "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+      "isError": true
+    }
+  },
+  "distinctions": [
+    "The actual base run reports the 26 owned ERROR subtests. Detailed exception tails were unavailable to this child.",
+    "The following is a deterministic, source-limited V8 reproduction of the fixed Python algorithms, not execution of the Python verifier or an H/native test pass.",
+    "The source fixes preserve the same original receivers and all semantic checks. The QA fix raises an explicit failure for a missing real literal; it does not ignore ValueError or add it to a broad expected-exception allowlist.",
+    "No source or result is accepted from an unregistered caller. The original expected caller set remains exactly the episode and records files.",
+    "No completed B, retained capability, Qualified material, publication, adoption or ordinary acceptance is inferred."
+  ],
+  "checkpoint_before": {
+    "fields": [
+      [
+        "Episode\u0000policy",
+        "CircuitTaskPolicyProjectionV1"
+      ]
+    ],
+    "aliases": [],
+    "result": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "found": false,
+        "calls": [
+          {
+            "receiver": "policy",
+            "resolved": "CircuitTaskSourcePublicationV1",
+            "owner": "Episode",
+            "bindings": {
+              "config": "OriginalCircuitOnPolicyCohortConfigV1",
+              "ledger": "LedgerWriter",
+              "requested": "OriginalCircuitEvaluationEpisodeV1",
+              "decisions": "StableId",
+              "outcomes": "StableId",
+              "publications": "Publications",
+              "sources": "OriginalCircuitEvaluationSourceV1",
+              "training": "CandidateBinding",
+              "current": "u64",
+              "Error": "Binding",
+              "CircuitTaskSourcePublicationV1": "source",
+              "decision": null,
+              "source": null,
+              "owner": null,
+              "original_run": null,
+              "policy": "CircuitTaskSourcePublicationV1",
+              "input": null,
+              "admitted_at": null,
+              "observed_at": null,
+              "finalized_at": null,
+              "value": null
+            }
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "found": false,
+        "error": "unresolved possible CircuitTaskPolicyProjectionV1::checkpoint_before receiver",
+        "calls": [
+          {
+            "receiver": "row.policy",
+            "resolved": null,
+            "owner": null,
+            "bindings": {
+              "arm": "OnPolicyEvaluationArmInputsV1",
+              "row": "_",
+              "pair": "OnPolicyPairContractV1",
+              "window": "StableId",
+              "evaluation_start": "u64",
+              "evaluation_end": "u64"
+            }
+          }
+        ]
+      }
+    ],
+    "source_pins": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+        "sha": "ac759463f6687cc48c4abef5c7af054eed040b77"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_read.rs",
+        "sha": "a0670b8fc3125115097b3874acfd9b2ba79a7b19"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+        "sha": "172391eea47e3be956c2b8c21f6ef28e6e0141b9"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "sha": "448b410a7fe36e1769c07aa5e38752f4349b0b3c"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "sha": "112f330ada77a72524a19ebfc7bfa16d6b676668"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+        "sha": "6cd43b7e4b6f41f1f4609adb836ccea3282747ab"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+        "sha": "c4152c599aa2fa1fe572738b402750956ec0cc37"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "sha": "005e108f3bede3723753d10b89f6f1f05e70da42"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+        "sha": "13bd6f51ebed56fd0e4315d088bb6c9d1e75ea51"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+        "sha": "ca95ea49e644523fa043c661fb4489e48f6a238d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+        "sha": "a0709ddb5ee25a32e38fcc8d34d5fcbc1999e454"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+        "sha": "e588433c4c01bc46dcdb6ce97bc8970b4dd1fbab"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+        "sha": "b6723afcfc34ea2fb5074892b255c8dfa9cefd0c"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+        "sha": "86ab44215e5ea3a5c0134221ccf1be8d2100917a"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+        "sha": "26e66ef4e70c6776fed7e0d2b84241312bd6962b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+        "sha": "6cf30270a3b8cd9441784bbe8204904f741abd10"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+        "sha": "0d8ee0061e682b23d7e398ecc2969c9c1926cb92"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "sha": "85806c3da1a357ac7aa2a2c05973f879857e804f"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "sha": "3bcc826373b2519a25d5a498d6548408315cd7cd"
+      }
+    ]
+  },
+  "checkpoint_after": {
+    "fields": [
+      [
+        "Episode\u0000policy",
+        "CircuitTaskPolicyProjectionV1"
+      ]
+    ],
+    "aliases": [],
+    "result": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "found": true,
+        "calls": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "found": true,
+        "calls": []
+      }
+    ],
+    "extra": {
+      "found": true,
+      "calls": [
+        {
+          "receiver": "owner",
+          "resolved": "CircuitTaskPolicyProjectionV1",
+          "owner": null,
+          "bindings": {
+            "owner": "CircuitTaskPolicyProjectionV1"
+          }
+        }
+      ]
+    }
+  },
+  "checkpoint_guard_deletions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "marker": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()",
+      "rejected": true,
+      "reason": "Error: codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs:fn read_episode( missing sequence !CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "marker": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()",
+      "rejected": true,
+      "reason": "Error: codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs:fn append_arm( missing sequence !CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "marker": "checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)",
+      "rejected": true,
+      "reason": "Error: codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs:fn append_arm( missing sequence checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)"
+    }
+  ],
+  "checkpoint_stale_call_controls": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "marker": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()",
+      "stale_code_rejected": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "marker": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()",
+      "stale_code_rejected": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "marker": "checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)",
+      "stale_code_rejected": true
+    }
+  ],
+  "product_literal_original_function_checks": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn pair_contract(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.on-policy-pair-contract.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn plan(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn estimand(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-estimate.v1\", legacy.0)",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-support.v1\", legacy.1)",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-confidence.v1\", legacy.2)",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-inputs.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut row = b\"paired-earlier-training.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-target.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-observed-outcome.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-cluster.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-run-provenance.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXRP01\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXRP01\"",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXR001\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if bytes.starts_with(b\"HPEXRP01\") {",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXR001\"",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_envelope(",
+      "marker": "let mut bytes = b\"HPEXEV01\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_envelope(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXEV01\"",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-execution.v1\".to_vec(),",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::PairedOnPolicy(_) => b\"hepta.intelligence-eval.paired-on-policy-product-execution.v1\".to_vec(),",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-evaluation-receipt.v1\".to_vec(),",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_plan_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-plan.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_estimand_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-estimand.v1\".to_vec();",
+      "exact": true,
+      "token_match": true
+    }
+  ],
+  "product_literal_reproduction": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn pair_contract(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.on-policy-pair-contract.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn plan(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn estimand(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-estimate.v1\", legacy.0)",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-support.v1\", legacy.1)",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-confidence.v1\", legacy.2)",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-inputs.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut row = b\"paired-earlier-training.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-target.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-observed-outcome.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-cluster.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-run-provenance.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXRP01\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "protected_rejection"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "protected_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXRP01\"",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "protected_rejection"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "protected_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXR001\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if bytes.starts_with(b\"HPEXRP01\") {",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXR001\"",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_envelope(",
+      "marker": "let mut bytes = b\"HPEXEV01\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_envelope(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXEV01\"",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "uncaught_marker_value_error",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "assertion_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-execution.v1\".to_vec(),",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::PairedOnPolicy(_) => b\"hepta.intelligence-eval.paired-on-policy-product-execution.v1\".to_vec(),",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-evaluation-receipt.v1\".to_vec(),",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_plan_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-plan.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_estimand_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-estimand.v1\".to_vec();",
+      "unmodified": "accepted",
+      "original": {
+        "mutated": "protected_rejection",
+        "decoy": "uncaught_marker_value_error"
+      },
+      "fixed": {
+        "mutated": "protected_rejection",
+        "decoy": "assertion_rejection"
+      },
+      "fixed_unmodified": "accepted"
+    }
+  ],
+  "product_original_first_unhandled_phase": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn pair_contract(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.on-policy-pair-contract.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn plan(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn estimand(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-estimate.v1\", legacy.0)",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-support.v1\", legacy.1)",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "function": "fn comparison(",
+      "marker": "bind(b\"hepta.intelligence-eval.paired-on-policy-confidence.v1\", legacy.2)",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-inputs.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn released_inputs_digest(",
+      "marker": "let mut row = b\"paired-earlier-training.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-target.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-observed-outcome.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-cluster.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "function": "fn push_arm(",
+      "marker": "let mut row = b\"paired-original-run-provenance.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXRP01\".to_vec();",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXRP01\"",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_execution(",
+      "marker": "let mut bytes = b\"HPEXR001\".to_vec();",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if bytes.starts_with(b\"HPEXRP01\") {",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_execution(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXR001\"",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_envelope(",
+      "marker": "let mut bytes = b\"HPEXEV01\".to_vec();",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_envelope(",
+      "marker": "if reader.take(/*count*/ 8)? != b\"HPEXEV01\"",
+      "first_unhandled": "mutated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-execution.v1\".to_vec(),",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn execution_digest(",
+      "marker": "ProductComparisonModeV1::PairedOnPolicy(_) => b\"hepta.intelligence-eval.paired-on-policy-product-execution.v1\".to_vec(),",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-evaluation-receipt.v1\".to_vec(),",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_evaluation_seal(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_plan_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-plan.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_estimand_commitment_bytes(",
+      "marker": "let mut bytes = b\"hepta.intelligence-eval.product-estimand.v1\".to_vec();",
+      "first_unhandled": "comment_decoy"
+    }
+  ],
+  "product_summary": {
+    "positive_original_literals": 25,
+    "original_first_unhandled_mutated": 6,
+    "original_first_unhandled_comment_decoy": 19,
+    "fixed_positive_literals": 25,
+    "fixed_mutated_literals_rejected": 25,
+    "fixed_comment_decoys_rejected": 25
+  },
+  "complete_protected_projection": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "ok": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "ok": true
+    }
+  ],
+  "record_audit": {
+    "total_records": 1199,
+    "boundaries": 710,
+    "protected": 489,
+    "changed_records": 2,
+    "unchanged_record_raw_bytes": 1197,
+    "unchanged_boundaries": 710,
+    "qa_methods": [
+      {
+        "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "methods": [
+          "test_exact_original_paired_and_closed_cohort_edges",
+          "test_complete_records_preserve_shared_and_paired_guards",
+          "test_each_actual_producer_guard_cannot_move_to_a_comment",
+          "test_original_authority_and_outcome_substitutions_are_rejected",
+          "test_freeze_guards_stay_inside_the_one_original_generic_function",
+          "test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+          "test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+          "test_shared_release_and_cross_mode_current_are_explicitly_closed"
+        ],
+        "count": 8,
+        "unchanged": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+        "methods": [
+          "test_complete_records_and_actual_composed_callers_are_installed",
+          "test_frozen_protocol_and_temporal_parameters_cannot_drift",
+          "test_original_run_source_outcome_and_principal_identities_cannot_merge",
+          "test_single_original_consumption_and_signed_qualification_path_remain",
+          "test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+          "test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+          "test_domains_are_actual_literals_in_the_original_functions",
+          "test_original_shared_function_code_is_preserved",
+          "test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+        ],
+        "count": 9,
+        "unchanged": true
+      }
+    ]
+  },
+  "production_inverse": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "exact_inverse_preserves_all_other_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "exact_inverse_preserves_all_other_bytes": true
+    }
+  ],
+  "blob_readback": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "sha": "270227f62f8af4824c1bc75b4246eef2dc071132",
+      "full_content_equal": true,
+      "independent_git_sha_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "sha": "c33b542c30c7bc53b5ba002f0c691e50b29fdf1f",
+      "full_content_equal": true,
+      "independent_git_sha_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "sha": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+      "full_content_equal": true,
+      "independent_git_sha_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "sha": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+      "full_content_equal": true,
+      "independent_git_sha_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "sha": "eb05412707d9c97916413d1c6eacb04f99bc4840",
+      "full_content_equal": true,
+      "independent_git_sha_equal": true
+    }
+  ],
+  "parser_and_scope": {
+    "typed_original_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "verifier_original_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "marker_original_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c",
+    "checkpoint_source_count": 19,
+    "checkpoint_relevant_type_paths_without_cfg_test_items": [
+      "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+      "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs"
+    ],
+    "no_repository_verifier_modifications": true,
+    "lexical_projection_only": true
+  },
+  "projection_sources": {
+    "typed": "\nfunction rx(s){return s.replace(/[.*+?^\\${}()|[\\]\\\\]/g,\"\\\\$&\");}\nfunction end(code,start,opening,closing){let depth=0;for(let i=start;i<code.length;i++){if(code[i]===opening)depth++;else if(code[i]===closing&&--depth===0)return i;}throw Error(\"unbalanced Rust authority context\");}\nfunction declaredAliases(code,target){return new Set([...code.matchAll(new RegExp(\"\\\\b\"+rx(target)+\"\\\\s+as\\\\s+(\\\\w+)\",\"g\")),...code.matchAll(new RegExp(\"\\\\btype\\\\s+(\\\\w+)\\\\s*=\\\\s*(?:\\\\w+::)*\"+rx(target)+\"\\\\s*;\",\"g\"))].map(x=>x[1]));}\nfunction normalizeAliases(code,target,aliases=new Set()){const all=new Set([...aliases,...declaredAliases(code,target)]);for(const alias of all)code=code.replace(new RegExp(\"\\\\b\"+rx(alias)+\"\\\\b\",\"g\"),target);return code;}\nfunction type(raw,target){if(new RegExp(\"\\\\b\"+rx(target)+\"\\\\b\").test(raw))return target;const skip=new Set([\"mut\",\"pub\",\"crate\",\"self\",\"super\"]),names=[...raw.matchAll(/\\b[A-Za-z_]\\w*\\b/g)].map(x=>x[0]).filter(x=>!skip.has(x));return names.length?names[names.length-1]:null;}\nfunction authorityFields(sourceIndex,target){const aliases=new Set([target]);while(true){let added=false;for(const code of Object.values(sourceIndex))for(const name of [...aliases])for(const alias of declaredAliases(code,name)){if(!aliases.has(alias)){aliases.add(alias);added=true;}}if(!added)break;}aliases.delete(target);const fields=new Map();for(let code of Object.values(sourceIndex)){code=normalizeAliases(code,target,aliases);if(!code.includes(target))continue;for(const d of code.matchAll(/\\bstruct\\s+(\\w+)(?:\\s*<[^{};]*>)?\\s*\\{/g)){const e=end(code,d.index+d[0].length-1,\"{\",\"}\");for(const f of code.slice(d.index+d[0].length,e).matchAll(/\\b(\\w+)\\s*:\\s*([^,;{}]+)/g)){if(type(f[2],target)===target)fields.set(d[1]+\"\\0\"+f[1],target);}}}return{fields,aliases};}\nfunction implOwner(code,position){let owner=null;for(const m of code.slice(0,position).matchAll(/\\bimpl(?:\\s*<[^{}]*>)?\\s+(?:[\\w:]+(?:\\s*<[^{}]*>)?\\s+for\\s+)?([\\w:]+)(?:\\s*<[^{}]*>)?\\s*\\{/g)){if(end(code,m.index+m[0].length-1,\"{\",\"}\")>=position)owner=m[1].split(\"::\").at(-1);}return owner;}\nfunction functionStart(code,position){let start=0;for(const m of code.slice(0,position).matchAll(/\\bfn\\s+\\w+/g)){const opening=code.indexOf(\"(\",m.index+m[0].length);if(opening<0)continue;const closing=end(code,opening,\"(\",\")\"),brace=code.indexOf(\"{\",closing),semicolon=code.indexOf(\";\",closing);if(brace>=0&&(semicolon<0||brace<semicolon)&&end(code,brace,\"{\",\"}\")>=position)start=m.index;}return start;}\nfunction receiverType(receiver,bindings,owner,fields){const parts=receiver.replace(/\\s+/g,\"\").split(\".\");let current=parts[0]===\"self\"?owner:bindings.get(parts[0]);for(const f of parts.slice(1))current=current?fields.get(current+\"\\0\"+f):null;return current??null;}\nfunction bindings(code,position,target,owner,fields){const scope=code.slice(functionStart(code,position),position),out=new Map();for(const p of scope.matchAll(/\\b(\\w+)\\s*:\\s*([^,;={}]+)/g))out.set(p[1],type(p[2],target));for(const a of scope.matchAll(/\\blet\\s+(?:mut\\s+)?(\\w+)(?:\\s*:\\s*([^=;]+))?\\s*=\\s*([^;]+)/g)){const [,name,annotation,expression]=a;if(annotation){out.set(name,type(annotation,target));continue;}const shared=expression.match(/^\\s*(?:std\\s*::\\s*(?:sync|rc)\\s*::\\s*)?(?:Arc|Rc)\\s*::\\s*clone\\s*\\(/);if(shared){const argument=expression.slice(shared[0].length).match(/^\\s*&?\\s*((?:self|[A-Za-z_]\\w*)(?:\\s*\\.\\s*\\w+)*)\\s*\\)\\s*$/);out.set(name,argument?receiverType(argument[1],out,owner,fields):null);continue;}const constructor=expression.match(/^(?:[A-Za-z_]\\w*::)*([A-Za-z_]\\w*)\\s*::\\s*\\w+\\s*\\(/);if(constructor){out.set(name,constructor[1]);continue;}const alias=expression.match(/^\\s*&?\\s*(?:mut\\s+)?((?:[A-Za-z_]\\w*)(?:\\s*\\.\\s*\\w+)*?)(?:\\s*\\.\\s*(?:clone|as_ref|borrow|deref)\\s*\\(\\s*\\))?\\s*$/);out.set(name,alias?receiverType(alias[1],out,owner,fields):null);}return out;}\nfunction hasAuthorityCall(code,target,method,index){code=normalizeAliases(code,target,index.aliases);const typeNames=new Set([target,...[...index.fields.keys()].map(x=>x.split(\"\\0\")[0])]);if(![...typeNames].some(n=>new RegExp(\"\\\\b\"+rx(n)+\"\\\\b\").test(code)))return{found:false,calls:[]};let found=new RegExp(\"\\\\b\"+rx(target)+\"\\\\s*::\\\\s*\"+rx(method)+\"\\\\s*\\\\(\").test(code);const calls=[];for(const c of code.matchAll(new RegExp(\"\\\\.\\\\s*\"+rx(method)+\"\\\\s*\\\\(\",\"g\"))){const owner=implOwner(code,c.index),b=bindings(code,c.index,target,owner,index.fields),receiver=code.slice(0,c.index).match(/\\b(?:self|[A-Za-z_]\\w*)(?:\\s*\\.\\s*\\w+)*\\s*$/);const resolved=receiver?receiverType(receiver[0],b,owner,index.fields):null;calls.push({receiver:receiver?.[0],resolved,owner,bindings:Object.fromEntries(b)});if(resolved===target)found=true;else if(resolved===null)return{found,error:\"unresolved possible \"+target+\"::\"+method+\" receiver\",calls};}return{found,calls};}\n",
+    "literal": "\nclass MarkerValueError extends Error {}\nclass LiteralAssertionError extends Error {}\nclass ProtectedError extends Error {}\nfunction literalTokens(source,start=0,end=source.length){const raw=[...source.slice(start,end).matchAll(/\"(?:\\\\.|[^\"\\\\])*\"|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[^\\s]/g)].map(m=>({token:m[0],start:start+m.index,end:start+m.index+m[0].length}));return raw.filter((t,i)=>!(t.token===\",\"&&(i+1===raw.length||[\")\",\"}\",\"]\"].includes(raw[i+1].token))));}\nfunction sourceMarkerSpan(source,marker,start=0,end=source.length){const exact=source.indexOf(marker,start);if(exact>=0&&exact+marker.length<=end)return[exact,exact+marker.length];const expected=literalTokens(marker).map(t=>t.token);if(!expected.length)throw new MarkerValueError(\"empty Rust mutation marker\");const actual=literalTokens(source,start,end);for(let i=0;i<=actual.length-expected.length;i++){if(expected.every((v,j)=>v===actual[i+j].token))return[actual[i].start,actual[i+expected.length-1].end];}throw new MarkerValueError(\"Rust mutation marker not found: \"+marker);}\nfunction originalFunction(source,marker,strip){const code=strip(source),start=code.indexOf(marker);if(start<0||code.indexOf(marker,start+1)>=0)throw new LiteralAssertionError(\"unique actual function\");const opening=code.indexOf(\"{\",start);let depth=1,end=opening+1;for(;end<code.length&&depth;end++){if(code[end]===\"{\")depth++;else if(code[end]===\"}\")depth--;}if(depth)throw new LiteralAssertionError(\"complete actual function\");let body=code.slice(start,end);if(/\\bfn\\s+(?:r#)?\\w+/.test(body.slice(marker.length)))throw Error(\"projection needs actual nested fn masking\");return{start,end:end-1,body};}\nfunction productVerifies(path,source,contract,validateProtected,strip,mapMissing){const rows=contract.rows.filter(r=>r.path===path);if(rows.length!==1)throw new LiteralAssertionError(\"one complete record\");try{validateProtected(rows[0],source);}catch(e){throw new ProtectedError(String(e));}for(const literal of contract.literal_markers){if(literal.path!==path)continue;const{start,end,body}=originalFunction(source,literal.function,strip);let first,after;try{[first,after]=sourceMarkerSpan(source,literal.marker,start,end+1);}catch(e){if(mapMissing&&e instanceof MarkerValueError)throw new LiteralAssertionError(\"missing original code literal\");throw e;}if(after>end+1||body[first-start]!==source[first]||!body[first-start].trim())throw new LiteralAssertionError(\"actual code literal\");}return true;}\n"
+  }
+}

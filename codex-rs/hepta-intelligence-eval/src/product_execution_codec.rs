@@ -10,6 +10,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 use super::ProductEvaluationError;
+use super::ProductComparisonModeV1;
 use super::ProductFrozenEvaluationPlanV1;
 use super::ProductTemporalEvaluationReceiptV1;
 use crate::ClusterOpeEstimate;
@@ -86,6 +87,9 @@ pub(super) fn decode_envelope(
 pub(super) fn encode_execution(
     receipt: &ProductTemporalEvaluationReceiptV1,
 ) -> Result<Vec<u8>, ProductEvaluationError> {
+    if matches!(receipt.product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_)) {
+        return paired_codec::encode_execution(receipt);
+    }
     receipt.validate_integrity()?;
     if receipt.authority.grants_any()
         || receipt.holdout.authority.grants_any()
@@ -139,6 +143,12 @@ pub(super) fn decode_execution(
     plan: &ProductFrozenEvaluationPlanV1,
     holdout: &FinalHoldoutJournalReceiptV1,
 ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationError> {
+    if bytes.starts_with(b"HPEXRP01") {
+        return paired_codec::decode_execution(bytes, plan, holdout);
+    }
+    if !matches!(plan.comparison_mode(), ProductComparisonModeV1::SharedBehavior) {
+        return Err(invalid());
+    }
     let mut reader = Reader::new(bytes)?;
     if reader.take(/*count*/ 8)? != b"HPEXR001"
         || reader.digest()? != plan.receipt_seal
@@ -170,6 +180,7 @@ pub(super) fn decode_execution(
         receipt_seal: reader.digest()?,
         authority: AuthorityPosture::DENY_ALL,
         execution_evaluator: None,
+        paired_input_digest: None,
     };
     reader.finish()?;
     receipt.validate_integrity()?;
@@ -352,3 +363,6 @@ impl<'a> Reader<'a> {
         }
     }
 }
+
+#[path = "product_paired_codec.rs"]
+mod paired_codec;

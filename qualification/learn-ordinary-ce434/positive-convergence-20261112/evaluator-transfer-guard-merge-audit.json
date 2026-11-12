@@ -1,0 +1,1184 @@
+{
+  "schema": 1,
+  "left": "3c4c576d46d01fead45ec92d6aabca07feacbbde",
+  "right": "1862467ec580bebb540406504c3c62a1de51cf84",
+  "verified_merge_base": "6794167d5cd0f6663de86014c1f61826ae08aea1",
+  "shared_paths": [
+    "CALLERS.toml"
+  ],
+  "boundary_changes": [
+    {
+      "before": {
+        "id": "learning_original_evaluation_operation_member",
+        "symbol": "TrainingOperation::require_member",
+        "receiver_type": "TrainingOperation",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_operation.rs",
+        "definition_markers": [
+          "fn require_member"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+        ],
+        "caller_markers": []
+      },
+      "after": {
+        "id": "learning_original_evaluation_operation_member",
+        "symbol": "TrainingOperation::require_member",
+        "receiver_type": "TrainingOperation",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_operation.rs",
+        "definition_markers": [
+          "fn require_member"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_model_read_owned_begin",
+        "symbol": "OriginalCellEvaluationModelMaterialClientV1::begin_owned_model_read",
+        "receiver_type": "OriginalCellEvaluationModelMaterialClientV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+        "definition_markers": [
+          "fn begin_owned_model_read("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_model_read_current",
+        "symbol": "OriginalCellEvaluationModelReadV1::require_original_operation_current",
+        "receiver_type": "OriginalCellEvaluationModelReadV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+        "definition_markers": [
+          "fn require_original_operation_current("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_model_body",
+        "symbol": "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body",
+        "receiver_type": "OriginalCellEvaluationModelMaterialV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "definition_markers": [
+          "fn original_model_transfer_body("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_model_body_decode",
+        "symbol": "OriginalCellEvaluationModelMaterialV1::from_original_model_response",
+        "receiver_type": "OriginalCellEvaluationModelMaterialV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "definition_markers": [
+          "fn from_original_model_response("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_model_read_operation.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_publication_expiry",
+        "symbol": "OriginalCellEvaluationModelMaterialV1::original_publication_expiry",
+        "receiver_type": "OriginalCellEvaluationModelMaterialV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "definition_markers": [
+          "fn original_publication_expiry("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_selector_material",
+        "symbol": "OriginalCellEvaluationModelMaterialV1::require_original_selector_material",
+        "receiver_type": "OriginalCellEvaluationModelMaterialV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "definition_markers": [
+          "fn require_original_selector_material("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"
+        ],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    },
+    {
+      "before": null,
+      "after": {
+        "id": "learning_original_evaluation_material_serve",
+        "symbol": "OriginalCellEvaluationHostV1::serve_model_material",
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+        "definition_markers": [
+          "fn serve_model_material("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "left_equals_base": true
+    }
+  ],
+  "protected_removed": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "required": [
+        "impl Owners",
+        "Body {",
+        "fn member("
+      ],
+      "forbidden": [
+        "SigningKey",
+        "File::open",
+        "UnixStream::connect",
+        "permit_all",
+        "if false",
+        "TrainingOperation {"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn original_model_material(",
+          "sequence": [
+            "if self.fenced",
+            "Err(Error::CommitUncertain)",
+            "let result = self.read_original_model_material(context).await",
+            "self.fence_result(result)"
+          ],
+          "top_level": [
+            "if self.fenced",
+            "let result =",
+            "self.fence_result(result)"
+          ]
+        },
+        {
+          "function": "fn read_original_model_material(",
+          "sequence": [
+            "let started_at = self.current_time()?",
+            "context.authenticate(started_at)?",
+            "self.begin_training_operation(context).await?",
+            "Some(original) => TrainingRead::Operation(original)",
+            "None => TrainingRead::Independent",
+            ".read_original_completion(context, super::super::wire::Action::Readback, training)",
+            "members.push(member(",
+            "&self.panel.primary",
+            "observed.primary()",
+            "for ((owner, observed), binding)",
+            "members.push(member(owner, observed, *binding, started_at)?)",
+            "let body = Body",
+            "let bytes = body.encode()?",
+            "let after = self.read_panel(training).await?",
+            "if after != observed",
+            "return Err(Error::CommitUncertain)",
+            "if let Some(original) = operation",
+            "TrainingOperation::finish(original).await?",
+            "self.finish_original_completion(",
+            "let current = self.current_time()?",
+            "require_clock(started_at, current)?",
+            "self.authenticate_panel(&after, current)?",
+            "super::verify::material(context, &evaluation, &bytes, current)?",
+            "Ok(bytes)"
+          ],
+          "top_level": [
+            "let started_at =",
+            "context.authenticate(started_at)?",
+            "let operation =",
+            "let (evaluation, observed) =",
+            "let body =",
+            "let bytes =",
+            "let after =",
+            "if after != observed",
+            "if let Some(original) = operation",
+            "let evaluation =",
+            "let current =",
+            "super::verify::material(",
+            "Ok(bytes)"
+          ]
+        },
+        {
+          "function": "fn member(",
+          "sequence": [
+            "let config = &owner.qualification.config",
+            "CellEvaluationRunnerV1::original_model_commitments(",
+            "&owner.runner",
+            "observed.evaluation()",
+            "observed.qualification()",
+            "OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(",
+            "&owner.cohort",
+            "&observed.cohort",
+            "let snapshots = [",
+            ".candidate",
+            ".snapshot()",
+            ".fixed_expert",
+            ".snapshot()",
+            "let record = observed.qualification().comparison()",
+            ".zip([&record.candidate, &record.fixed_expert])",
+            ".zip(&observed.scopes)",
+            ".digest()",
+            "arm.snapshot_digest",
+            "snapshot.manifest_digest",
+            ".manifest",
+            ".digest()",
+            "&snapshot.scope != scope",
+            "return Err(Error::Binding(",
+            "Ok(Member {",
+            "record: serde_json::to_vec(observed.qualification().comparison())?",
+            "snapshots: serde_json::to_vec(&snapshots)?",
+            "holdout: projection.holdout().to_vec()",
+            "decision: projection.decision().to_vec()",
+            "qualification: projection.qualification().to_vec()",
+            "generator: learning_owner_evidence::encode(",
+            "evaluator: learning_owner_evidence::encode(",
+            "execution: learning_owner_evidence::encode(",
+            "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(execution)",
+            "execution.attestation()",
+            "OriginalProductEvaluationExecutionEvidenceV1::original_record(execution)",
+            "freeze: learning_owner_evidence::encode(&freeze_payload, &freeze_evidence)?"
+          ],
+          "top_level": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+      "required": [
+        "pub(crate) struct OriginalCellEvaluationModelReadV1<'a>",
+        "client: &'a OriginalCellEvaluationModelMaterialClientV1",
+        "channel: Channel",
+        "material: OriginalCellEvaluationModelMaterialV1",
+        "cancellation: Cancelled"
+      ],
+      "forbidden": [
+        "pub struct",
+        "pub fn",
+        "pub async fn",
+        "Clone",
+        "Deserialize",
+        "Serialize",
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "permit_all",
+        "if false",
+        "state.retained",
+        "*self.expected",
+        "*self.channel",
+        "*self.retained"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn begin_model_read(",
+          "sequence": [
+            "fn begin_model_read(",
+            "self.begin_model_read_with_clock(now).await"
+          ],
+          "top_level": [
+            "self.begin_model_read_with_clock(now).await"
+          ]
+        },
+        {
+          "function": "fn begin_model_read_with_clock(",
+          "sequence": [
+            ".channel",
+            ".try_lock()",
+            ".take()",
+            "let started_at = clock()?",
+            "require_clock(self.observed_at, started_at)?",
+            "wire::context_binding(&self.context, started_at)? != self.binding",
+            "let expected = self",
+            "wire::binding(&self.context, original, started_at)?",
+            "let transfer = channel.next",
+            "let cancellation = Cancelled(",
+            "tokio::task::spawn_blocking(move ||",
+            "read_pages(&mut channel, binding, &cancelled)?",
+            "channel.peer.check_peer_lifetime()?",
+            "Err(Error::Missing | Error::Pending) if expected.is_some()",
+            "return Err(Error::CommitUncertain)",
+            "let current = clock()?",
+            "require_clock(started_at, current)?",
+            "self.authenticate_material(bytes, &expected, current)?",
+            ".is_some_and(|original| original != material.binding())",
+            "Ok(OriginalCellEvaluationModelReadV1 {",
+            "client: self",
+            "channel,",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,"
+          ],
+          "top_level": [
+            "let mut channel =",
+            "let started_at =",
+            "require_clock(self.observed_at, started_at)?",
+            "let transfer =",
+            "let cancellation =",
+            "let result =",
+            "let current =",
+            "require_clock(started_at, current)?",
+            "let material =",
+            "Ok(OriginalCellEvaluationModelReadV1 {"
+          ]
+        },
+        {
+          "function": "fn material(",
+          "sequence": [
+            "&self",
+            "&OriginalCellEvaluationModelMaterialV1",
+            "&self.material"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "self",
+            "self.finish_with_clock(now).await"
+          ],
+          "top_level": [
+            "self.finish_with_clock(now).await"
+          ]
+        },
+        {
+          "function": "fn finish_with_clock(",
+          "sequence": [
+            "self,",
+            "let Self {",
+            "mut channel",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,",
+            "} = self",
+            "Arc::clone(&cancellation.0)",
+            "client.binding",
+            "tokio::task::spawn_blocking(move ||",
+            "finish_transfer(&mut channel, binding, transfer, &material.bytes, &cancelled)?",
+            "channel.peer.check_peer_lifetime()?",
+            "let (channel, material) = result",
+            "let current = clock()?",
+            "require_clock(started_at, current)?",
+            "client.retain_completed_material(channel, material, current)?",
+            "drop(cancellation)",
+            "Ok(material)"
+          ],
+          "top_level": [
+            "let Self {",
+            "let cancelled =",
+            "let binding =",
+            "let result =",
+            "let current =",
+            "require_clock(started_at, current)?",
+            "let material =",
+            "drop(cancellation)",
+            "Ok(material)"
+          ]
+        }
+      ]
+    }
+  ],
+  "protected_added": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "required": [
+        "struct PendingExport",
+        "struct Exported",
+        "impl Owners",
+        "Body {",
+        "fn member("
+      ],
+      "forbidden": [
+        "SigningKey",
+        "File::open",
+        "UnixStream::connect",
+        "permit_all",
+        "if false",
+        "TrainingOperation {",
+        "self.fenced = false",
+        "Clone",
+        "Deserialize",
+        "Serialize"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn begin_model_material_transfer(",
+          "sequence": [
+            "if self.fenced",
+            "return Err(Error::CommitUncertain)",
+            "self.fenced = true",
+            "let started_at",
+            "context.authenticate(started_at)?",
+            "self.begin_training_operation(context).await?",
+            "Some(original) => TrainingRead::Operation(original)",
+            "None => TrainingRead::Independent",
+            "self.read_model_material_export(context, training).await?",
+            "self.finish_model_material_export(context, pending)?",
+            "Ok((exported.bytes, operation))"
+          ],
+          "top_level": [
+            "if self.fenced",
+            "self.fenced = true",
+            "let started_at",
+            "let operation",
+            "let pending",
+            "let exported",
+            "Ok((exported.bytes, operation))"
+          ]
+        },
+        {
+          "function": "fn finish_model_material_transfer(",
+          "sequence": [
+            "if !self.fenced",
+            "match (&operation, &self.shared_training)",
+            "TrainingOperation::require_member(",
+            "original, trainer,",
+            "self.panel.primary.qualification.config",
+            "(None, None) =>",
+            "_ => return Err",
+            "Some(original) => TrainingRead::Operation(original)",
+            "None => TrainingRead::Independent",
+            "self.read_model_material_export(context, training).await?",
+            "if let Some(original) = operation",
+            "TrainingOperation::finish(original).await?",
+            "self.finish_model_material_export(context, pending)?",
+            "exported.bytes.as_slice() != expected",
+            "return Err(Error::CommitUncertain)",
+            "Digest32::of_bytes(&exported.bytes)",
+            "Ok(OriginalCellEvaluationModelMaterialV1 {",
+            "context: context.clone()",
+            "evaluation: exported.evaluation",
+            "bytes: exported.bytes",
+            "observed_at: exported.observed_at"
+          ],
+          "top_level": [
+            "if !self.fenced",
+            "match (&operation, &self.shared_training)",
+            "let training",
+            "let pending",
+            "if let Some(original) = operation",
+            "let exported",
+            "let binding",
+            "Ok(OriginalCellEvaluationModelMaterialV1 {"
+          ]
+        },
+        {
+          "function": "fn read_model_material_export(",
+          "sequence": [
+            "let started_at",
+            "context.authenticate(started_at)?",
+            ".read_original_completion(context, super::super::wire::Action::Readback, training)",
+            "members.push(member(",
+            "&self.panel.primary",
+            "observed.primary()",
+            "for ((owner, observed), binding)",
+            "members.push(member(owner, observed, *binding, started_at)?)",
+            "let body = Body",
+            "let bytes = body.encode()?",
+            "let after = self.read_panel(training).await?",
+            "if after != observed",
+            "return Err(Error::CommitUncertain)",
+            "Ok(PendingExport {",
+            "bytes, evaluation, panel: after, started_at"
+          ],
+          "top_level": [
+            "let started_at",
+            "let (evaluation, observed)",
+            "let body =",
+            "let bytes =",
+            "let after =",
+            "if after != observed",
+            "Ok(PendingExport {"
+          ]
+        },
+        {
+          "function": "fn finish_model_material_export(",
+          "sequence": [
+            "let PendingExport",
+            "self.finish_original_completion(",
+            "Action::Readback",
+            "evaluation,",
+            "&panel,",
+            "started_at,",
+            "let current",
+            "require_clock(started_at, current)?",
+            "self.authenticate_panel(&panel, current)?",
+            "super::verify::material(context, &evaluation, &bytes, current)?",
+            "Ok(Exported"
+          ],
+          "top_level": [
+            "let PendingExport",
+            "let evaluation",
+            "let current",
+            "require_clock(started_at, current)?",
+            "self.authenticate_panel(",
+            "super::verify::material(",
+            "Ok(Exported"
+          ]
+        },
+        {
+          "function": "fn member(",
+          "sequence": [
+            "let config = &owner.qualification.config",
+            "CellEvaluationRunnerV1::original_model_commitments(",
+            "&owner.runner",
+            "observed.evaluation()",
+            "observed.qualification()",
+            "OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(",
+            "&owner.cohort",
+            "&observed.cohort",
+            "let snapshots = [",
+            ".candidate",
+            ".snapshot()",
+            ".fixed_expert",
+            ".snapshot()",
+            "let record = observed.qualification().comparison()",
+            ".zip([&record.candidate, &record.fixed_expert])",
+            ".zip(&observed.scopes)",
+            ".digest()",
+            "arm.snapshot_digest",
+            "snapshot.manifest_digest",
+            ".manifest",
+            ".digest()",
+            "&snapshot.scope != scope",
+            "return Err(Error::Binding(",
+            "Ok(Member {",
+            "record: serde_json::to_vec(observed.qualification().comparison())?",
+            "snapshots: serde_json::to_vec(&snapshots)?",
+            "holdout: projection.holdout().to_vec()",
+            "decision: projection.decision().to_vec()",
+            "qualification: projection.qualification().to_vec()",
+            "generator: learning_owner_evidence::encode(",
+            "evaluator: learning_owner_evidence::encode(",
+            "execution: learning_owner_evidence::encode(",
+            "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(execution)",
+            "execution.attestation()",
+            "OriginalProductEvaluationExecutionEvidenceV1::original_record(execution)",
+            "freeze: learning_owner_evidence::encode(&freeze_payload, &freeze_evidence)?"
+          ],
+          "top_level": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+      "required": [
+        "pub(crate) struct OriginalCellEvaluationModelReadV1<'a>",
+        "client: OriginalMaterialReadClient<'a>",
+        "channel: Channel",
+        "material: OriginalCellEvaluationModelMaterialV1",
+        "cancellation: Cancelled",
+        "enum OriginalMaterialReadClient<'a>",
+        "Borrowed(&'a OriginalCellEvaluationModelMaterialClientV1)",
+        "Owned(Arc<OriginalCellEvaluationModelMaterialClientV1>)"
+      ],
+      "forbidden": [
+        "pub struct",
+        "pub fn",
+        "pub async fn",
+        "Clone",
+        "Deserialize",
+        "Serialize",
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "permit_all",
+        "if false",
+        "state.retained",
+        "*self.expected",
+        "*self.channel",
+        "*self.retained"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn begin_owned_model_read(",
+          "sequence": [
+            "self: Arc<Self>",
+            "let operation = self.begin_model_read().await?",
+            "let OriginalCellEvaluationModelReadV1",
+            "client: _",
+            "channel,",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,",
+            "} = operation",
+            "Ok(OriginalCellEvaluationModelReadV1",
+            "client: OriginalMaterialReadClient::Owned(self)",
+            "channel,",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,"
+          ],
+          "top_level": [
+            "let operation",
+            "let OriginalCellEvaluationModelReadV1",
+            "Ok(OriginalCellEvaluationModelReadV1"
+          ]
+        },
+        {
+          "function": "fn original(",
+          "sequence": [
+            "match self",
+            "Self::Borrowed(original) => original",
+            "Self::Owned(original) => original.as_ref()"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_operation_current(",
+          "sequence": [
+            "self.channel.peer.check_peer_lifetime()?",
+            "let current = now()?",
+            "require_clock(self.started_at.max(lower), current)?",
+            "self.client.original()",
+            "wire::context_binding(&client.context, current)? != client.binding",
+            "return Err(Error::CommitUncertain)",
+            "self.material.authenticate_current(current)?",
+            "Ok(current)"
+          ],
+          "top_level": [
+            "self.channel.peer.check_peer_lifetime()?",
+            "let current",
+            "require_clock(",
+            "let client",
+            "if wire::context_binding(",
+            "self.material.authenticate_current(current)?",
+            "Ok(current)"
+          ]
+        },
+        {
+          "function": "fn begin_model_read(",
+          "sequence": [
+            "fn begin_model_read(",
+            "self.begin_model_read_with_clock(now).await"
+          ],
+          "top_level": [
+            "self.begin_model_read_with_clock(now).await"
+          ]
+        },
+        {
+          "function": "fn begin_model_read_with_clock(",
+          "sequence": [
+            ".channel",
+            ".try_lock()",
+            ".take()",
+            "let started_at = clock()?",
+            "require_clock(self.observed_at, started_at)?",
+            "wire::context_binding(&self.context, started_at)? != self.binding",
+            "let expected",
+            "wire::binding(&self.context, original, started_at)?",
+            "let transfer = channel.next",
+            "let cancellation",
+            "tokio::task::spawn_blocking(move ||",
+            "read_pages(&mut channel, binding, &cancelled)?",
+            "channel.peer.check_peer_lifetime()?",
+            "Err(Error::Missing | Error::Pending) if expected.is_some()",
+            "let current = clock()?",
+            "require_clock(started_at, current)?",
+            "self.authenticate_material(bytes, &expected, current)?",
+            ".is_some_and(|original| original != material.binding())",
+            "Ok(OriginalCellEvaluationModelReadV1",
+            "client: OriginalMaterialReadClient::Borrowed(self)",
+            "channel,",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,"
+          ],
+          "top_level": [
+            "let mut channel",
+            "let started_at",
+            "let transfer",
+            "let cancellation",
+            "let result",
+            "let current",
+            "let material",
+            "Ok(OriginalCellEvaluationModelReadV1"
+          ]
+        },
+        {
+          "function": "fn material(",
+          "sequence": [
+            "&self",
+            "&OriginalCellEvaluationModelMaterialV1",
+            "&self.material"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "self",
+            "self.finish_with_clock(now).await"
+          ],
+          "top_level": [
+            "self.finish_with_clock(now).await"
+          ]
+        },
+        {
+          "function": "fn finish_with_clock(",
+          "sequence": [
+            "let Self",
+            "client,",
+            "mut channel,",
+            "material,",
+            "transfer,",
+            "started_at,",
+            "cancellation,",
+            "} = self",
+            "let client = client.original()",
+            "Arc::clone(&cancellation.0)",
+            "let binding = client.binding",
+            "tokio::task::spawn_blocking(move ||",
+            "finish_transfer(&mut channel, binding, transfer, &material.bytes, &cancelled)?",
+            "channel.peer.check_peer_lifetime()?",
+            "let (channel, material) = result",
+            "let current = clock()?",
+            "require_clock(started_at, current)?",
+            "client.retain_completed_material(channel, material, current)?",
+            "drop(cancellation)",
+            "Ok(material)"
+          ],
+          "top_level": [
+            "let Self",
+            "let client",
+            "let cancelled",
+            "let binding",
+            "let result",
+            "let (channel, material)",
+            "let current",
+            "require_clock(started_at, current)?",
+            "let material",
+            "drop(cancellation)",
+            "Ok(material)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "required": [
+        "struct Transfer",
+        "struct Active",
+        "training: Option<TrainingOperation>",
+        "struct Session<'a>",
+        "host: &'a OriginalCellEvaluationHostV1",
+        "completed: Option<OriginalCellEvaluationModelMaterialV1>",
+        "retained: Option<Digest32>",
+        "for request_id in 1..=128_u64",
+        "16_384"
+      ],
+      "forbidden": [
+        "Clone",
+        "Deserialize",
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "permit_all",
+        "if false",
+        "TrainingOperation {",
+        "impl Clone for Session",
+        "pub struct Session",
+        "pub(crate) struct Session"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn serve_model_material(",
+          "sequence": [
+            "try_acquire_owned()",
+            "original_owner_command_channel_v1(",
+            "let queued",
+            "let cancelled",
+            "tokio::task::spawn_blocking(move ||",
+            "require_not_cancelled(&cancelled)?",
+            "self.serve_model_material_channel(",
+            ".await",
+            "drop(queued)",
+            "result"
+          ],
+          "top_level": [
+            "let permit",
+            "let mut channel",
+            "let queued",
+            "let cancelled",
+            "let result",
+            "drop(queued)"
+          ]
+        },
+        {
+          "function": "fn serve_model_material_channel(",
+          "sequence": [
+            "Session::new(self)",
+            "for request_id in 1..=128_u64",
+            "require_not_cancelled(cancelled)?",
+            "channel.exchange(",
+            "self.model_material_response(",
+            "session.active.is_some()",
+            "session.completed.is_some()",
+            "return Err(Error::CommitUncertain)",
+            "return Ok(request_id - 1)",
+            "channel.check_peer_lifetime()?",
+            "require_not_cancelled(cancelled)?",
+            "self.finish_model_material_response(",
+            "Err(Error::Unavailable)"
+          ],
+          "top_level": [
+            "let mut session",
+            "for request_id",
+            "Err(Error::Unavailable)"
+          ]
+        },
+        {
+          "function": "fn model_material_response(",
+          "sequence": [
+            "require_not_cancelled(cancelled)?",
+            "std::ptr::eq(self, session.host)",
+            "session.completed.is_some()",
+            "bytes.is_empty()",
+            "bytes.len() > 16_384",
+            "wire::context_binding(",
+            "request.require(request_id, context)?",
+            "match &request.read",
+            "wire::Read::Begin",
+            "session.active.is_some()",
+            "self.begin_original_model_material_transfer()",
+            "Body::decode(&bytes)?",
+            "Digest32::of_bytes(&bytes)",
+            "session.retained.is_some_and(",
+            "bytes.len() > MAX_BYTES",
+            "pages > MAX_PAGES",
+            "request_id.checked_add(pages as u64)",
+            "last > 128",
+            "session.active = Some(Active",
+            "wire::Read::Page",
+            "session.active.as_mut()",
+            "active.pages.id != *id",
+            "active.pages.context != context",
+            "page(&mut active.pages",
+            "wire::Read::Finish",
+            "session.active.take()",
+            "let Active { pages, training }",
+            "pages.id != *id",
+            "pages.context != context",
+            "digest != &pages.digest.to_string()",
+            "pages.next_page != pages.bytes.len().div_ceil(PAGE_BYTES)",
+            "self.finish_original_model_material_transfer(",
+            "completed.bytes != pages.bytes",
+            "completed.binding() != pages.digest",
+            "session.completed = Some(completed)",
+            "wire::Outcome::Completed",
+            "self.context.authenticate(",
+            "require_not_cancelled(cancelled)?",
+            "encode_response(request, outcome)"
+          ],
+          "top_level": [
+            "let request:",
+            "let context",
+            "request.require(request_id, context)?",
+            "let outcome = match &request.read"
+          ]
+        },
+        {
+          "function": "fn begin_original_model_material_transfer(",
+          "sequence": [
+            "self.owners.try_lock()",
+            ".block_on(owners.begin_model_material_transfer(&self.context))"
+          ],
+          "top_level": [
+            "let mut owners"
+          ]
+        },
+        {
+          "function": "fn finish_original_model_material_transfer(",
+          "sequence": [
+            "training: Option<TrainingOperation>",
+            "expected: &[u8]",
+            "self.owners.try_lock()",
+            ".block_on(owners.finish_model_material_transfer(",
+            "&self.context, training, expected"
+          ],
+          "top_level": [
+            "let mut owners"
+          ]
+        },
+        {
+          "function": "fn finish_model_material_response(",
+          "sequence": [
+            "std::ptr::eq(self, session.host)",
+            "session.completed.take()",
+            "self.owners.try_lock()",
+            "if !owners.fenced",
+            "let current = owners.current_time()?",
+            "completed.authenticate_current(current)?",
+            "self.context.authenticate(current)?",
+            "session.retained = Some(completed.binding())",
+            "owners.fenced = false"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn page(",
+          "sequence": [
+            "index != active.next_page",
+            "index >= MAX_PAGES",
+            "index.checked_mul(PAGE_BYTES)",
+            "offset >= active.bytes.len()",
+            "offset.saturating_add(PAGE_BYTES).min(active.bytes.len())",
+            "STANDARD_NO_PAD.encode",
+            "active.next_page += 1",
+            "Ok(wire::Outcome::Page"
+          ],
+          "top_level": [
+            "if index != active.next_page",
+            "let offset",
+            "if offset >= active.bytes.len()",
+            "let end",
+            "let bytes",
+            "active.next_page += 1",
+            "Ok(wire::Outcome::Page"
+          ]
+        },
+        {
+          "function": "fn encode_response(",
+          "sequence": [
+            "serde_json::to_vec(",
+            "encoded.is_empty()",
+            "encoded.len() > 16_384",
+            "return Err",
+            "Ok(encoded)"
+          ],
+          "top_level": [
+            "let encoded",
+            "if encoded.is_empty()",
+            "Ok(encoded)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "required": [
+        "const MAX_BYTES: usize = 131_072;",
+        "const PAGE_BYTES: usize = 8192;",
+        "const MAX_MEMBERS: usize = 17;",
+        "pub struct OriginalCellEvaluationModelMaterialV1 {",
+        "context: Context,",
+        "evaluation: Receipt,",
+        "bytes: Vec<u8>,",
+        "observed_at: u64,",
+        "pub(crate) fn original_model_transfer_body(",
+        "pub(crate) fn from_original_model_response(",
+        "pub(crate) fn original_publication_expiry(",
+        "pub(crate) fn require_original_selector_material("
+      ],
+      "forbidden": [
+        "Clone",
+        "Deserialize",
+        "Serialize",
+        "SigningKey",
+        "UnixStream::connect",
+        "CellQualificationOwnerV1::",
+        "pub bytes:",
+        "pub context:",
+        "pub evaluation:",
+        "pub observed_at:",
+        "pub fn from_original_model_response",
+        "pub fn original_model_transfer_body",
+        "impl From<"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn original_model_transfer_body(",
+          "sequence": [
+            "fn original_model_transfer_body(",
+            "&self.bytes"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn from_original_model_response(",
+          "sequence": [
+            "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+            "Context::from_original_training(",
+            "material.scope.clone()",
+            "registration.clone()",
+            "material.verifier.clone()",
+            "training,",
+            "context.initial()? != material.initial",
+            "codec::Body::decode(&bytes)?",
+            "body.encode()? != bytes",
+            "let current = super::now()?",
+            "super::require_clock(lower, current)?",
+            "verify::material(&context, evaluation, &bytes, current)?",
+            "Digest32::of_bytes(&bytes)",
+            "observed_at: current"
+          ],
+          "top_level": [
+            "let context = Context::from_original_training(",
+            "let body = codec::Body::decode(&bytes)?",
+            "let current = super::now()?"
+          ]
+        },
+        {
+          "function": "fn authority(",
+          "sequence": [
+            "fn authority(",
+            "AuthorityPosture::DENY_ALL"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn authenticate_current(",
+          "sequence": [
+            "current < self.observed_at || Digest32::of_bytes(&self.bytes) != self.binding",
+            "Err(Error::CommitUncertain)",
+            "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_selector_material(",
+          "sequence": [
+            "self.authenticate_current(current)?",
+            "codec::Body::decode(&self.bytes)?",
+            "body.members.first()",
+            "decode(&primary.generator)?",
+            "decode(&primary.evaluator)?",
+            "decode(&primary.execution)?",
+            "config.scope != self.context.scope",
+            "config.verifier.trust_digest() != self.context.verifier.trust_digest()",
+            "config.verifier.scope_digest() != self.context.verifier.scope_digest()",
+            "config.verifier.objective_digest() != self.context.verifier.objective_digest()",
+            "config.training_evidence != self.context.training_evidence",
+            "&config.evaluation_evidence != self.evaluation.attestation()",
+            "config.decision.request != self.evaluation.snapshot().request",
+            "config.decision.owners != self.evaluation.snapshot().owners",
+            "config.decision.receipts.len() != 5",
+            "config.decision.receipts[..4] != self.evaluation.snapshot().receipts",
+            "primary.record != serde_json::to_vec(config.qualification.comparison())?",
+            "config.qualification.comparison() != config.evaluation.plan().record()",
+            "Digest32::of_bytes(&primary.qualification) != config.qualification.product().evidence_digest",
+            "generator != config.product_evidence.generator_plan",
+            "evaluator != config.product_evidence.evaluator_bundle",
+            "&execution != config.execution_evidence.attestation()",
+            "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(&config.execution_evidence)",
+            "OriginalProductEvaluationExecutionEvidenceV1::original_record(&config.execution_evidence)",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "self.authenticate_current(current)?",
+            "let body = codec::Body::decode(&self.bytes)?"
+          ]
+        },
+        {
+          "function": "fn original_publication_expiry(",
+          "sequence": [
+            "self.authenticate_current(current)?",
+            "codec::Body::decode(&self.bytes)?",
+            "self.context.training_evidence.expires_at",
+            ".min(self.evaluation.attestation().expires_at)",
+            "for member in &body.members",
+            "&member.generator",
+            "&member.evaluator",
+            "&member.execution",
+            "&member.freeze",
+            "decode(encoded)?",
+            "self.context.verifier.verify(role, &signed, &payload, current)?",
+            "expiry.min(signed.expires_at).min(verified.principal().expires_at)",
+            "if expiry <= current",
+            "return Err(Error::Binding(",
+            "Ok(expiry)"
+          ],
+          "top_level": [
+            "self.authenticate_current(current)?",
+            "for member in &body.members",
+            "if expiry <= current"
+          ]
+        },
+        {
+          "function": "fn require_original_model_input(",
+          "sequence": [
+            "training != &self.context.training",
+            "training_evidence != &self.context.training_evidence",
+            "current < self.observed_at",
+            "return Err(Error::Binding(",
+            "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+            "if !checked.qualified",
+            "return Err(Error::Binding(",
+            "evaluation: self.evaluation.receipt().clone()",
+            "candidate: checked.candidate",
+            "material: checked.material"
+          ],
+          "top_level": [
+            "if !checked.qualified"
+          ]
+        }
+      ]
+    }
+  ],
+  "complete_record_counter": "Left + Right - Base equals Merged with zero residual; all arrays and duplicate path multiplicity preserved.",
+  "counts": {
+    "left": {
+      "boundary": 569,
+      "protected": 404
+    },
+    "right": {
+      "boundary": 560,
+      "protected": 397
+    },
+    "base": {
+      "boundary": 553,
+      "protected": 395
+    },
+    "merged": {
+      "boundary": 576,
+      "protected": 406
+    }
+  },
+  "inventory_exact": true,
+  "validation": "Read-only Git ancestry and complete-record merge audit only. Python, formatter, compiler, typed whole repository caller scan and native execution remain unexecuted for this positive source.",
+  "ordinary_acceptance": 0,
+  "unmodified_nonrecord_configuration_byte_equal": true,
+  "protected_source_projection": {
+    "rows": 4,
+    "errors": [],
+    "kind": "JavaScript exact verifier projection, Python not executed"
+  }
+}

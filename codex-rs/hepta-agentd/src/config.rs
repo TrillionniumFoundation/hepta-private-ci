@@ -28,6 +28,9 @@ mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;
 
 #[cfg(target_os = "linux")]
+#[path = "config_resident_learning.rs"]
+mod resident_learning;
+#[cfg(target_os = "linux")]
 #[path = "config_root_handoff.rs"]
 mod root_handoff;
 #[cfg(target_os = "linux")]
@@ -131,6 +134,8 @@ pub struct AgentdConfig {
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
     #[cfg(target_os = "linux")]
     root_learning_inputs: Option<crate::AgentdRootLearningInputsV1>,
+    #[cfg(target_os = "linux")]
+    resident_learning_delivery: Option<crate::AgentdRootResidentDeliveryV3>,
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     circuit_task_bootstrap: Option<crate::CircuitTaskRuntimeBootstrapV1>,
@@ -300,6 +305,8 @@ impl AgentdConfig {
             learning_iteration_bootstrap: None,
             #[cfg(target_os = "linux")]
             root_learning_inputs: None,
+            #[cfg(target_os = "linux")]
+            resident_learning_delivery: None,
             terminal_learning_bootstrap: None,
             neuron_generation_bootstrap: None,
             circuit_task_bootstrap: None,
@@ -749,6 +756,12 @@ impl AgentdConfig {
         #[cfg(target_os = "linux")]
         self.require_root_learning_assembled()?;
         bootstrap.require_identity(&self.identity)?;
+        #[cfg(target_os = "linux")]
+        if self.resident_learning_delivery.is_some() {
+            return Err(AgentdError::Invalid(
+                "resident learning already configured".into(),
+            ));
+        }
         if self.learning_iteration_bootstrap.is_some() {
             return Err(AgentdError::Invalid(
                 "learning iteration owner already configured".into(),
@@ -924,6 +937,7 @@ impl AgentdConfig {
             || self.cognitive_retrieval_learning.is_some()
             || self.plasticity_bootstrap.is_some()
             || self.learning_iteration_bootstrap.is_some()
+            || self.resident_learning_delivery.is_some()
             || self.terminal_learning_bootstrap.is_some()
             || self.neuron_generation_bootstrap.is_some()
             || self.intuition_policy_host.is_some()

@@ -1,0 +1,504 @@
+{
+  "schema": "hepta.learn.authority-metadata-restoration-audit.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "manifest_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "manifest_bytes": 1619553,
+    "manifest_sha256": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da"
+  },
+  "original_reference": {
+    "commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "manifest_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+    "manifest_bytes": 1537190,
+    "manifest_sha256": "265b6000e599522f42c207eec04fe9b6fa69da03199866c10b029c35e060afdc",
+    "authority_block": "[authority]\nruntime_authority = false\nproduction_caller = false\nproduction_writer = false\nexternal_effect = false\nself_issued_acceptance = false\npromotion = false\nrelease = false\n",
+    "authority": {
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    }
+  },
+  "change": {
+    "path": "CALLERS.toml",
+    "postimage_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "postimage_bytes": 1619732,
+    "postimage_sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e",
+    "kind": "append-only",
+    "added_bytes": 179,
+    "added_lines": 8,
+    "original_prefix_byte_equal": true,
+    "no_authority_value_changed": true,
+    "existing_root_metadata_changes": [],
+    "production_source_changes": [],
+    "qa_changes": [],
+    "validator_changes": []
+  },
+  "cause": {
+    "first_confirmed_loss_commit": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "true_parents": [
+      "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "36a494ae6ce41a536f0ddf79a474a0577e9aa853"
+    ],
+    "manifest_inherited_unchanged_by_a671": true,
+    "root_table_completely_absent_not_misscoped": true,
+    "finding": "Both actual parents contain the same complete root authority table with seven false values. The merged manifest omits that table entirely while retaining the other root metadata. The a671 manifest is the identical merged Git blob.",
+    "history": {
+      "pure_guard": {
+        "blob": "06df696b15344b5efa5c76bdf29170fee01e607a",
+        "bytes": 1576127,
+        "rootKeys": [
+          "schema_version",
+          "plan_id",
+          "plan_version",
+          "source_roots",
+          "ignored_path_fragments",
+          "rule",
+          "privileged_inventory",
+          "boundary",
+          "protected_file",
+          "authority"
+        ],
+        "authority": {
+          "runtime_authority": false,
+          "production_caller": false,
+          "production_writer": false,
+          "external_effect": false,
+          "self_issued_acceptance": false,
+          "promotion": false,
+          "release": false
+        },
+        "rawHeader": true,
+        "counts": [
+          717,
+          492
+        ],
+        "tail": "));\\n    }\\n    Ok((context, PolicyMetadataInputV2 {\\n        claim_scope, base_estimand_digest, baseline_id,\\n        metric_contracts, metric_roles, metric_sources, folds,\\n    }))\\n}\"], \"top_level\" = [\"if bytes.len() > MAX_BYTES {\"] }]\n\n"
+      },
+      "premerge": {
+        "blob": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+        "bytes": 1545695,
+        "rootKeys": [
+          "schema_version",
+          "plan_id",
+          "plan_version",
+          "source_roots",
+          "ignored_path_fragments",
+          "rule",
+          "privileged_inventory",
+          "boundary",
+          "protected_file",
+          "authority"
+        ],
+        "authority": {
+          "runtime_authority": false,
+          "production_caller": false,
+          "production_writer": false,
+          "external_effect": false,
+          "self_issued_acceptance": false,
+          "promotion": false,
+          "release": false
+        },
+        "rawHeader": true,
+        "counts": [
+          716,
+          489
+        ],
+        "tail": "\"\nreceiver_type = \"OriginalCellQ24TrainingBootstrapOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs\"\ndefinition_markers = [\"pub fn recover_original_custody_v2(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+      },
+      "merged": {
+        "blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+        "bytes": 1619553,
+        "rootKeys": [
+          "schema_version",
+          "plan_id",
+          "plan_version",
+          "source_roots",
+          "ignored_path_fragments",
+          "rule",
+          "privileged_inventory",
+          "boundary",
+          "protected_file"
+        ],
+        "authority": null,
+        "rawHeader": false,
+        "counts": [
+          736,
+          506
+        ],
+        "tail": "));\\n    }\\n    Ok((context, PolicyMetadataInputV2 {\\n        claim_scope, base_estimand_digest, baseline_id,\\n        metric_contracts, metric_roles, metric_sources, folds,\\n    }))\\n}\"], top_level = [\"if bytes.len() > MAX_BYTES {\"] },\n]\n\n"
+      }
+    }
+  },
+  "parser": {
+    "blob": "61036288985212a4cf00bfe6d691fc849476f95f",
+    "bytes": 56208,
+    "method": "Full UTF-8 manifests parsed in V8 using the original fixed audit parser bundle; new Function('sources', bundle.loader)(bundle.sources). Not the Python source verifier.",
+    "used_as_production": false
+  },
+  "checks": {
+    "all_input_git_blob_hashes_verified": true,
+    "original_prefix_bytes_unchanged": 1619553,
+    "full_original_prefix_sha256": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da",
+    "ordered_boundary_records": 736,
+    "ordered_protected_records": 506,
+    "ordered_inventory_ids": 736,
+    "all_original_root_keys_in_same_order": [
+      "schema_version",
+      "plan_id",
+      "plan_version",
+      "source_roots",
+      "ignored_path_fragments",
+      "rule",
+      "privileged_inventory",
+      "boundary",
+      "protected_file"
+    ],
+    "all_original_root_values_exact_equal": true,
+    "restored_root_authority_exact_reference": true,
+    "all_authority_values_false": true,
+    "original_root_metadata_from_fde_equal": [
+      {
+        "key": "schema_version",
+        "equal": true
+      },
+      {
+        "key": "plan_id",
+        "equal": true
+      },
+      {
+        "key": "plan_version",
+        "equal": true
+      },
+      {
+        "key": "source_roots",
+        "equal": true
+      },
+      {
+        "key": "ignored_path_fragments",
+        "equal": true
+      },
+      {
+        "key": "rule",
+        "equal": true
+      }
+    ],
+    "record_projection": {
+      "before_boundary_sha256": "30472da759a8c2253a494bb3e0a37ec20394a2333fd39b375d5917bec7e2ad58",
+      "after_boundary_sha256": "30472da759a8c2253a494bb3e0a37ec20394a2333fd39b375d5917bec7e2ad58",
+      "before_protected_sha256": "a3f4520b42f95e74dce856ca16342793af28b50ebc021c7afb0759b0cf5514e2",
+      "after_protected_sha256": "a3f4520b42f95e74dce856ca16342793af28b50ebc021c7afb0759b0cf5514e2",
+      "before_inventory_sha256": "6e1996830b7f7817a47451cd411d8aad27226d867275372f9553721f3a47161c",
+      "after_inventory_sha256": "6e1996830b7f7817a47451cd411d8aad27226d867275372f9553721f3a47161c",
+      "duplicateProtectedPaths": [
+        [
+          "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/runtime.rs",
+          5
+        ],
+        [
+          "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-fleet/src/authority_port.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/production_protected_host.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_writer.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/root_authority_session.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+          4
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_notes.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_service.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/config.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+          4
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          6
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+          4
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          5
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          4
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_model_command.rs",
+          3
+        ],
+        [
+          "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          2
+        ],
+        [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          2
+        ]
+      ],
+      "uniqueProtectedPaths": 414
+    },
+    "original_manifest_raw_prefix_byte_equality_implies_all_original_record_bytes_preserved": true,
+    "no_path_deduplication": true,
+    "parsed_authority_keys": [
+      "runtime_authority",
+      "production_caller",
+      "production_writer",
+      "external_effect",
+      "self_issued_acceptance",
+      "promotion",
+      "release"
+    ],
+    "postimage_root_keys": [
+      "schema_version",
+      "plan_id",
+      "plan_version",
+      "source_roots",
+      "ignored_path_fragments",
+      "rule",
+      "privileged_inventory",
+      "boundary",
+      "protected_file",
+      "authority"
+    ]
+  },
+  "actual_source_failure_report": {
+    "source_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "reporter": "Root, original H execution",
+    "suite_methods": 443,
+    "errors": 37,
+    "stage_exit": 1,
+    "log_bytes": 129213,
+    "log_sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0",
+    "status": "Parent-reported actual result; this repair did not dispatch or execute H and does not claim full raw trace readback.",
+    "observed_error": "KeyError: 'authority'",
+    "evidence_relation": "Missing root metadata independently reproduced by full manifest parsing."
+  },
+  "validation_limits": {
+    "python_source_verifier_run": false,
+    "source_suite_run": false,
+    "native_run": false,
+    "ordinary_acceptance": 0,
+    "current_h_checkout_modified": false,
+    "new_authority_created": false,
+    "old_pass_migrated": false,
+    "remaining_runtime_failures_not_changed": true
+  }
+}

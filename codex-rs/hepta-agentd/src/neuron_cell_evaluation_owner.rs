@@ -84,6 +84,14 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionOwnerV1<W> {
         })
     }
 
+    #[cfg(test)]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.journal.qualification_file_bytes(maximum_bytes)
+    }
+
     /// Read only the original signed payload, with current signature validation.
     /// This does not execute the holdout, create a claim or renew validity.
     pub fn readback(&mut self) -> Result<(Vec<u8>, SignedLearningEvidenceV1), Error> {

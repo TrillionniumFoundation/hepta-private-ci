@@ -20,10 +20,11 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 PLAN = AGENT + "cell_composed_q24_training_plan.rs"
 TRAINING = AGENT + "cell_composed_q24_training.rs"
+DATASET = AGENT + "cell_q24_dataset.rs"
 PROFILE = AGENT + "authority_host_learning_profile.rs"
 CALLERS = {
     "learning_frozen_update_scope_constructor": (PROFILE, PLAN),
-    "cell_q24_single_head_training_plan": (TRAINING,),
+    "cell_q24_single_head_training_plan": (TRAINING, DATASET),
     "cell_q24_single_head_candidate_validation": (),
 }
 

@@ -1,0 +1,690 @@
+"""Exact original learning-owner subsets in one complete native report."""
+
+from collections import Counter
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import re
+import xml.etree.ElementTree as ET
+
+from hepta_ci_junit import NoDoctypeTreeBuilder
+
+PACKAGE = "codex-hepta-agentd"
+PREFIX = "circuit_next_use_receipt_owner::tests::"
+INGRESS = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+NEXT_USE_CASES = (
+    PREFIX
+    + "original_observer_configuration_rejects_substituted_custody_before_journal_creation",
+    PREFIX
+    + "original_observer_predecessors_require_bound_signed_roles_and_independent_custody",
+    PREFIX + "original_observer_deadline_and_saved_signature_window_never_renew",
+    PREFIX + "original_observer_pending_claim_reopens_without_signing_or_rewriting",
+    INGRESS
+    + "q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use",
+    INGRESS
+    + "q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use",
+)
+MATERIAL_PREFIX = "cell_q24_material_receipt_owner::tests::"
+MATERIAL_CASES = tuple(
+    MATERIAL_PREFIX + name
+    for name in (
+        "original_material_pair_signs_recovers_and_feeds_actual_no_update_training",
+        "original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning",
+        "original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim",
+        "original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes",
+        "original_material_pair_expired_work_only_reads_original_completed_windows",
+        "original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery",
+    )
+)
+SELECTION_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+    "observer_support::selection_owner::"
+)
+SELECTION_CASES = tuple(
+    SELECTION_PREFIX + name
+    for name in (
+        "q24_original_selector_attests_actual_publication_and_recovers_exact_signature",
+        "q24_original_selector_refuses_withdrawn_publication_before_claim",
+        "q24_original_selector_refuses_valid_training_renewal_live_and_cold",
+        "q24_original_selector_preserves_pending_and_recovers_completed_lost_ack",
+        "q24_original_selector_rejects_substituted_custody_before_store_creation",
+        "q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest",
+    )
+)
+MODEL_SELECTION_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+)
+MODEL_SELECTION_CASES = tuple(
+    MODEL_SELECTION_PREFIX + name
+    for name in (
+        "q24_source_bound_model_selector_attests_and_recovers_exact_adoption",
+        "q24_source_bound_model_selector_refuses_withdrawn_training_source",
+        "q24_source_bound_model_selector_refuses_withdrawn_version_publication",
+        "q24_source_bound_model_selector_refuses_valid_predecessor_resigning",
+        "q24_source_bound_model_selector_pending_claim_survives_recovery",
+        "q24_source_bound_model_selector_fences_changed_execution_bytes",
+    )
+)
+TRAINING_LANE_PREFIX = (
+    "neuron_generation_update_bootstrap::adopted_learning::composed_tests::"
+    "training::owner::model_proposal::training_lane::"
+)
+TRAINING_LANE_CASES = tuple(
+    TRAINING_LANE_PREFIX + name
+    for name in (
+        "original_training_model_lane_retains_custody_and_exact_generator_evidence",
+        "original_training_model_lane_preserves_pending_and_lost_ack",
+        "original_training_model_lane_fences_physical_mutation_after_bytes_restore",
+    )
+)
+SOURCE_PREFIX = "cell_q24_material_receipt_owner::tests::support::training_source::"
+SOURCE_CASES = tuple(
+    SOURCE_PREFIX + name
+    for name in (
+        "source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update",
+        "source_bound_training_rejects_identical_legacy_batch_before_admission",
+        "source_bound_training_withdrawal_before_claim_fences_without_no_update",
+        "source_bound_training_withdrawal_after_claim_preserves_pending_without_signature",
+        "source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes",
+        "source_bound_training_cold_identity_rejects_valid_material_signature_renewal",
+    )
+)
+SOURCE_OPERATION_PREFIX = SOURCE_PREFIX + "operation::"
+SOURCE_OPERATION_CASES = tuple(
+    SOURCE_OPERATION_PREFIX + name
+    for name in (
+        "source_operation_candidate_and_model_keep_two_reads_per_lane",
+        "source_operation_after_read_withdrawal_fences_completed_native_result",
+        "source_operation_cancelled_waiter_keeps_lane_then_fences",
+        "source_operation_rejects_equal_capture_from_different_arc",
+        "source_operation_abandoned_finish_preserves_real_native_effect_and_fences",
+    )
+)
+TRAINING_COMMAND_PREFIX = SOURCE_PREFIX + "command::"
+TRAINING_COMMAND_CASES = tuple(
+    TRAINING_COMMAND_PREFIX + name
+    for name in (
+        "original_training_command_executes_and_produces_actual_evidence_readback",
+        "original_training_command_recovers_same_job_and_full_signature_read_only",
+        "original_training_command_lost_ack_reads_existing_completion_without_reexecution",
+        "original_training_command_withdrawal_after_claim_preserves_pending_without_signature",
+        "original_training_command_wrong_context_cannot_claim_or_consume_admission",
+        "original_training_command_public_bootstrap_refuses_same_process_custody",
+    )
+)
+MATERIAL_SERVICE_PREFIX = "learning_iteration_evidence_client::material::tests::"
+MATERIAL_SERVICE_CASES = tuple(
+    MATERIAL_SERVICE_PREFIX + "material_readback_service_" + name
+    for name in (
+        "returns_original_signatures_and_cold_rereads",
+        "refuses_request_rebinding_and_replay_without_writes",
+        "refuses_withdrawn_source_and_busy_ledger",
+        "never_finishes_missing_dataset",
+        "rejects_same_uid_peer_and_widened_transport",
+        "failed_frame_permanently_consumes_channel",
+    )
+)
+REMOTE_MATERIAL_PREFIX = "learning_iteration_evidence_client::material::source::tests::"
+REMOTE_MATERIAL_CASES = tuple(
+    REMOTE_MATERIAL_PREFIX + name
+    for name in (
+        "material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads",
+        "material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding",
+        "material_source_peer_pins_complete_material_and_freeze_signatures",
+        "material_source_service_refuses_withdrawn_missing_or_busy_originals",
+        "material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass",
+        "material_source_peer_consumes_wrong_purpose_or_failed_frames",
+    )
+)
+MATERIAL_COMMAND_PREFIX = (
+    "learning_iteration_evidence_client::material::command::serving::tests::"
+)
+MATERIAL_COMMAND_CASES = tuple(
+    MATERIAL_COMMAND_PREFIX + name
+    for name in (
+        "material_command_executes_original_experience_then_dataset_without_uploads",
+        "material_command_lost_ack_recovers_original_signatures_and_shared_admission",
+        "material_command_missing_predecessor_and_cold_missing_never_execute",
+        "material_command_pending_claim_and_withdrawal_never_complete_or_rearm",
+        "material_command_wrong_context_role_or_custody_never_claims",
+        "material_command_pins_original_signatures_and_consumes_invalid_replies",
+    )
+)
+TRANSPORT_CASES = (
+    "learning_iteration_evidence_client::tests::"
+    "original_receipt_fixture_retains_peer_during_owner_work_between_frames",
+)
+EXECUTION_PACKAGE = "codex-hepta-intelligence-eval"
+EXECUTION_PREFIX = "product_runner::tests::execution_tests::original_evidence::"
+EXECUTION_CASES = tuple(
+    EXECUTION_PREFIX + name
+    for name in (
+        "original_execution_evidence_survives_recovery_without_work_or_renewal",
+        "original_execution_evidence_rechecks_expiry_after_owner_reads",
+        "equal_execution_with_validly_renewed_signature_has_different_original_evidence",
+        "original_execution_evidence_missing_and_pending_never_claim",
+    )
+)
+EXECUTION_OWNER_PREFIX = "neuron_cell_evaluation_execution_store::tests::"
+EXECUTION_OWNER_CASES = tuple(
+    EXECUTION_OWNER_PREFIX + name
+    for name in (
+        "original_execution_owner_preserves_missing_pending_and_completed_after_recovery",
+        "original_execution_owner_creation_and_recovery_never_repair_partial_anchors",
+        "original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty",
+        "original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty",
+        "original_execution_owner_physical_corruption_fences_even_after_restore",
+        "original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail",
+    )
+)
+HOLDOUT_CURRENT_CASES = (
+    "fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore",
+    "fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier",
+    "fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors",
+    "fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes",
+    "product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay",
+    "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original",
+)
+QUALIFICATION_OWNER_CASES = (
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim",
+)
+PUBLISHED_READ_PREFIX = SELECTION_PREFIX + "published_read::"
+PUBLISHED_READ_CASES = tuple(
+    PUBLISHED_READ_PREFIX + name
+    for name in (
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+    )
+)
+SOURCE_CURRENT_PREFIX = "circuit_task::source::tests::physical_current::"
+SOURCE_CURRENT_CASES = tuple(
+    SOURCE_CURRENT_PREFIX + name
+    for name in (
+        "original_source_current_fences_same_length_mutation_after_restore",
+        "original_source_current_fences_truncation_and_extra_tail_without_repair",
+        "original_source_input_read_is_readonly_and_requires_live_original_configuration",
+    )
+)
+SELECTOR_COMMAND_PREFIX = PUBLISHED_READ_PREFIX + "command_owner::"
+SELECTOR_COMMAND_CASES = tuple(
+    SELECTOR_COMMAND_PREFIX + name
+    for name in (
+        "q24_selector_command_binds_opaque_training_result_and_shared_dispatch",
+        "q24_selector_command_lost_ack_recovers_original_signature_readonly",
+        "q24_selector_command_recovered_missing_never_dispatches",
+        "q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch",
+        "q24_selector_command_evidence_readback_detects_live_withdrawal",
+        "q24_selector_command_keeps_original_expiry_and_external_custody",
+    )
+)
+DEFERRED_TRAINING_PREFIX = (
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::"
+)
+DEFERRED_TRAINING_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + name
+    for name in (
+        "deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "deferred_training_wrong_context_does_not_consume_original_custody",
+        "deferred_training_failed_source_or_pending_claim_never_rearms",
+        "deferred_training_attenuation_and_prebound_transport_preserve_original_custody",
+    )
+)
+INITIAL_TRAINING_CONNECTION_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + "command_connection::" + name
+    for name in (
+        "deferred_training_connection_rejects_experience_and_valid_other_freeze_context",
+        "deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+    )
+)
+ORIGINAL_TRAINING_READBACK_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + "original_readback::" + name
+    for name in (
+        "original_training_readback_unready_and_wrong_purpose_never_initialize",
+        "original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+    )
+)
+DEEP_ORIGINAL_READBACK_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+    "original::deep_readonly::"
+)
+DEEP_ORIGINAL_READBACK_CASES = tuple(
+    DEEP_ORIGINAL_READBACK_PREFIX + name
+    for name in (
+        "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+    )
+)
+
+NEXT_USE_COMMAND_PREFIX = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::"
+NEXT_USE_COMMAND_CASES = tuple(
+    NEXT_USE_COMMAND_PREFIX + name
+    for name in (
+        "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+        "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+        "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+        "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+        "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+        "q24_next_use_command_preserves_original_expiry_and_external_custody",
+    )
+)
+
+CANDIDATE_MATERIAL_PREFIX = (
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::"
+    "candidate_material::"
+)
+CANDIDATE_MATERIAL_CASES = tuple(
+    CANDIDATE_MATERIAL_PREFIX + name
+    for name in (
+        "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+    )
+)
+
+ORDINARY_NO_UPDATE_MATERIAL_CASES = tuple(
+    MATERIAL_COMMAND_PREFIX + "ordinary_stage::" + name
+    for name in (
+        "ordinary_stage_without_resident_gate_never_dispatches_original_material",
+        "ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim",
+    )
+)
+C_COMPLETION_READINESS_CASES = tuple(
+    NEXT_USE_COMMAND_PREFIX + "readiness::" + name
+    for name in (
+        "q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch",
+        "q24_readiness_withdrawal_is_fatal_and_never_becomes_pending",
+        "q24_readiness_completed_identity_cannot_revert_or_change_publication",
+        "q24_readiness_requires_original_selection_and_consumes_wrong_purpose",
+    )
+)
+
+PHYSICAL_CELL_PACKAGE = "codex-hepta-neuron"
+PHYSICAL_CELL_PREFIX = "cell_generation_journal::tests::physical_current::"
+PHYSICAL_CELL_CASES = tuple(
+    PHYSICAL_CELL_PREFIX + name
+    for name in (
+        "physical_current_preserves_complete_bytes_cursor_state_and_append_owner",
+        "physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair",
+        "physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm",
+        "physical_current_rejects_header_change_and_preserves_cursor_after_restore",
+        "physical_current_fences_witness_change_between_original_descriptor_reads",
+    )
+)
+
+EVALUATION_PANEL_PREFIX = "neuron_cell_evaluation_qualification_owner::panel::tests::"
+EVALUATION_PANEL_CASES = tuple(
+    EVALUATION_PANEL_PREFIX + name
+    for name in (
+        "original_panel_registration_commits_full_nonempty_membership_before_any_result",
+        "original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks",
+    )
+)
+
+CANDIDATE_STAGE_CASES = tuple(
+    CANDIDATE_MATERIAL_PREFIX + "ordinary_stages::" + name
+    for name in (
+        "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+        "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+    )
+)
+
+RETAINED_PUBLICATION_PREFIX = INGRESS + "observer_support::retained_publication::"
+
+RETAINED_PUBLICATION_CASES = tuple(
+    RETAINED_PUBLICATION_PREFIX + name
+    for name in (
+        "retained_publication_uses_original_selection_and_real_distinct_task_c",
+        "retained_publication_refuses_changed_full_training_signature_before_prepare",
+        "retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest",
+        "retained_publication_never_converts_candidate_training_into_no_update",
+        "retained_publication_refuses_another_final_use_purpose_and_only_reads_pending",
+        "retained_publication_refuses_actual_artifact_withdrawal_before_final_use",
+        "retained_publication_lost_ack_recovers_original_files_without_another_grant",
+    )
+)
+
+ORIGINAL_EVALUATION_PROVIDER_PREFIX = (
+    MODEL_SELECTION_PREFIX + "original::evaluation_provider::"
+)
+ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
+    ORIGINAL_EVALUATION_PROVIDER_PREFIX + name
+    for name in (
+        "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+    )
+)
+
+ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX = (
+    ORIGINAL_EVALUATION_PROVIDER_PREFIX + "panel_members::"
+)
+ORIGINAL_EVALUATION_PANEL_MEMBER_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + name
+    for name in (
+        "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+        "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+    )
+)
+
+ORIGINAL_EVALUATION_HOST_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::" + name
+    for name in (
+        "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+    )
+)
+
+ARTIFACT_PUBLICATION_READBACK_CASES = (
+    "owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan",
+    "owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing",
+    "owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged",
+    "owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion",
+    "owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation",
+    "owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage",
+    "owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp",
+)
+
+ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::model_material::" + name
+    for name in (
+        "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+    )
+)
+
+ORIGINAL_ARTIFACT_PREPARATION_CASES = tuple(
+    "owner_service::preparation::tests::" + name
+    for name in (
+        "original_registry_preparation_stops_before_head_and_finishes_same_writer_once",
+        "original_registry_lost_return_and_cold_readback_cannot_recreate_continuation",
+        "original_registry_partial_prepare_is_pending_and_readback_never_completes_it",
+        "original_registry_physical_corruption_fences_even_after_original_bytes_return",
+        "original_registry_wrong_context_is_refused_before_consuming_the_writer",
+        "original_registry_finish_requires_original_signature_withdrawal_and_fresh_time",
+    )
+)
+LEGACY_ARTIFACT_RECOVERY_CASES = (
+    "owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head",
+    "owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot",
+    "owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease",
+)
+ORIGINAL_ARTIFACT_HEAD_CASES = tuple(
+    "artifact_original_head::source::tests::" + name
+    for name in (
+        "original_artifact_head_signs_once_and_cold_reads_saved_signature",
+        "original_artifact_head_lost_reply_reads_original_without_recreating_writer",
+        "original_artifact_head_restored_source_cannot_revive_consumed_connection",
+    )
+)
+
+ORIGINAL_EVALUATION_OPERATION_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::training_operation::" + name
+    for name in (
+        "original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+        "original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+        "original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+        "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+    )
+)
+
+PAIRED_PRODUCT_CASES = (
+    "product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds",
+    "product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority",
+    "product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending",
+    "product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters",
+    "product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign",
+    "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature",
+    "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution",
+    "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible",
+)
+
+PRE_B_PRODUCT_POLICY_CASES = (
+    "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+    "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+    "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+    "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+    "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+    "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+    "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact",
+)
+PRE_B_AGENTD_POLICY_CASES = (
+    "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical",
+    "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity",
+    "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity",
+    "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution",
+)
+
+OWNER_GROUPS = (
+    ("original_pre_b_product_policy_v2", "codex-hepta-intelligence-eval", PRE_B_PRODUCT_POLICY_CASES),
+    ("original_pre_b_agentd_policy_v2", PACKAGE, PRE_B_AGENTD_POLICY_CASES),
+    ("original_paired_product_domain", "codex-hepta-intelligence-eval", PAIRED_PRODUCT_CASES),
+    ("original_artifact_head", PACKAGE, ORIGINAL_ARTIFACT_HEAD_CASES),
+    ("original_artifact_preparation", "codex-hepta-learning-artifacts", ORIGINAL_ARTIFACT_PREPARATION_CASES),
+    ("legacy_artifact_recovery", "codex-hepta-learning-artifacts", LEGACY_ARTIFACT_RECOVERY_CASES),
+    ("original_evaluation_operation", PACKAGE, ORIGINAL_EVALUATION_OPERATION_CASES),
+    ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
+    (
+        "original_evaluation_model_material",
+        PACKAGE,
+        ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES,
+    ),
+    ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
+    (
+        "original_evaluation_panel_members",
+        PACKAGE,
+        ORIGINAL_EVALUATION_PANEL_MEMBER_CASES,
+    ),
+    ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
+    ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),
+    ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
+    ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
+    ("next_use_observer", PACKAGE, NEXT_USE_CASES),
+    ("material_observers", PACKAGE, MATERIAL_CASES),
+    ("original_selector", PACKAGE, SELECTION_CASES),
+    ("original_model_selector", PACKAGE, MODEL_SELECTION_CASES),
+    ("original_qualification_owner", PACKAGE, QUALIFICATION_OWNER_CASES),
+    ("original_execution_owner", PACKAGE, EXECUTION_OWNER_CASES),
+    ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
+    ("original_training_source", PACKAGE, SOURCE_CASES),
+    ("original_training_source_operation", PACKAGE, SOURCE_OPERATION_CASES),
+    ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
+    ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
+    ("original_training_readback", PACKAGE, ORIGINAL_TRAINING_READBACK_CASES),
+    ("deep_original_readback", PACKAGE, DEEP_ORIGINAL_READBACK_CASES),
+    (
+        "original_initial_training_connection",
+        PACKAGE,
+        INITIAL_TRAINING_CONNECTION_CASES,
+    ),
+    ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
+    ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
+    ("original_material_command", PACKAGE, MATERIAL_COMMAND_CASES),
+    ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
+    ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
+    ("original_holdout_current", EXECUTION_PACKAGE, HOLDOUT_CURRENT_CASES),
+    ("original_published_circuit_read", PACKAGE, PUBLISHED_READ_CASES),
+    ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
+    ("original_selector_command", PACKAGE, SELECTOR_COMMAND_CASES),
+    ("original_next_use_command", PACKAGE, NEXT_USE_COMMAND_CASES),
+    ("original_candidate_material", PACKAGE, CANDIDATE_MATERIAL_CASES),
+    ("ordinary_no_update_material_guard", PACKAGE, ORDINARY_NO_UPDATE_MATERIAL_CASES),
+    ("original_c_completion_readiness", PACKAGE, C_COMPLETION_READINESS_CASES),
+    (
+        "original_artifact_publication_readback",
+        "codex-hepta-learning-artifacts",
+        ARTIFACT_PUBLICATION_READBACK_CASES,
+    ),
+)
+EXPECTED_CASES = tuple(
+    (package, name) for _, package, names in OWNER_GROUPS for name in names
+)
+CASES = tuple(name for _, name in EXPECTED_CASES)
+
+ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+TERMINAL = re.compile(
+    r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"
+    r"(?:\(\s*\d+/\d+\)\s+)?(\S+)\s+(\S+)\s*$",
+    re.MULTILINE,
+)
+
+
+def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
+    if len(xml) > 64 * 1024 * 1024:
+        raise ValueError("Observer JUnit exceeds its byte bound")
+    if len(set(EXPECTED_CASES)) != len(EXPECTED_CASES) or len(set(CASES)) != len(CASES):
+        raise ValueError("duplicate Observer inventory")
+    expected = Counter(EXPECTED_CASES)
+    document = ET.fromstring(xml, parser=ET.XMLParser(target=NoDoctypeTreeBuilder()))
+    if document.tag not in ("testsuite", "testsuites"):
+        raise ValueError("unexpected native JUnit root")
+    suites = (
+        [document] if document.tag == "testsuite" else document.findall("testsuite")
+    )
+    selected = [
+        (suite, case)
+        for suite in suites
+        for case in suite.findall("testcase")
+        if case.get("name") in CASES
+    ]
+    all_named = [
+        case for case in document.iter("testcase") if case.get("name") in CASES
+    ]
+    observed = Counter(
+        (case.get("classname"), case.get("name")) for _, case in selected
+    )
+    xml_ok = (
+        len(selected) == len(all_named) == len(CASES)
+        and observed == expected
+        and all(
+            suite.get("name") == case.get("classname")
+            and not any(
+                node.tag
+                in (
+                    "failure",
+                    "error",
+                    "skipped",
+                    "flakyFailure",
+                    "flakyError",
+                    "rerunFailure",
+                    "rerunError",
+                )
+                for node in case.iter()
+            )
+            for suite, case in selected
+        )
+    )
+    clean_log = ANSI.sub("", log)
+    summary = re.search(r"^\s*Summary\s+\[[^\]\n]+\]\s+", clean_log, re.MULTILINE)
+    # Pinned nextest prints final-output status headers again after Summary.
+    # Keep the whole log, but count only its original execution-status phase.
+    rows = TERMINAL.findall(clean_log[: summary.start()]) if summary is not None else []
+    named = [row for row in rows if row[2] in CASES]
+    log_ok = Counter((package, name) for _, package, name in named) == expected and all(
+        status == "PASS" for status, _, _ in named
+    )
+    return {
+        "expected_count": len(CASES),
+        "required_owner_groups": {name: len(cases) for name, _, cases in OWNER_GROUPS},
+        "required_group_packages": {name: package for name, package, _ in OWNER_GROUPS},
+        "expected": sorted(expected),
+        "junit_observed": sorted(observed.elements(), key=repr),
+        "terminal_rows": named,
+        "terminal_phase": "before_first_nextest_summary",
+        "exact_pass_coverage": xml_ok and log_ok,
+    }
+
+
+def assess_retained_original_observer_coverage(
+    execution_path: Path, junit_path: Path
+) -> dict:
+    """Read the recorder's original bounded log, never a guessed log name."""
+    encoded_record = execution_path.read_bytes()
+    record = json.loads(encoded_record)
+    if (
+        record.get("status") != "passed"
+        or any(
+            type(record.get(field)) is not int or record[field] != 0
+            for field in ("returncode", "command_exit_code", "exit_code")
+        )
+        or record.get("timed_out") is not False
+        or record.get("output_limit_exceeded") is not False
+    ):
+        raise ValueError("Observer coverage requires a successful retained execution")
+    name = record.get("log_file")
+    if (
+        not isinstance(name, str)
+        or re.fullmatch(re.escape(execution_path.name) + r"\.[0-9a-f]{32}\.log", name)
+        is None
+    ):
+        raise ValueError("retained execution log must be its exact relative basename")
+    expected_size = record.get("log_bytes")
+    expected_digest = record.get("log_sha256")
+    if (
+        type(expected_size) is not int
+        or not 0 <= expected_size <= 64 * 1024 * 1024
+        or not isinstance(expected_digest, str)
+        or re.fullmatch(r"[0-9a-f]{64}", expected_digest) is None
+    ):
+        raise ValueError("retained execution lacks bounded original log identity")
+    path = execution_path.parent / name
+
+    def identity(value):
+        return (
+            value.st_dev,
+            value.st_ino,
+            value.st_mode,
+            value.st_size,
+            value.st_mtime_ns,
+            value.st_ctime_ns,
+        )
+
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode):
+        raise ValueError("retained execution log is not an original regular file")
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        raw = stream.read(expected_size + 1)
+        after = os.fstat(stream.fileno())
+    current = path.lstat()
+    if (
+        identity(before) != identity(opened)
+        or identity(opened) != identity(after)
+        or identity(after) != identity(current)
+        or len(raw) != expected_size
+        or hashlib.sha256(raw).hexdigest() != expected_digest
+    ):
+        raise ValueError("retained original log bytes or identity changed")
+    with junit_path.open("rb") as stream:
+        xml = stream.read(64 * 1024 * 1024 + 1)
+    if execution_path.read_bytes() != encoded_record:
+        raise ValueError("retained execution record changed during coverage read")
+    result = assess_original_observer_coverage(
+        raw.decode("utf-8", errors="replace"), xml
+    )
+    return {
+        "execution_record_sha256": hashlib.sha256(encoded_record).hexdigest(),
+        "log_file": name,
+        "log_bytes": len(raw),
+        "log_sha256": expected_digest,
+        **result,
+    }

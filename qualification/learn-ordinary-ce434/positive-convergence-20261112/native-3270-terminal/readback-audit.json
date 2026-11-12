@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "source_sha": "3270e8e8d310e205b4e76eabdce164bd75fab311",
+  "source_tree": "328fcfe75de43c83a6e4d6e5feaca6e9c4909f16",
+  "original_request_blob": "a37055a680067712b4ccedce1700726f26abd091",
+  "original_idempotency_key": "learn-ce434-fixed-3270-positive-native174-v1",
+  "original_pty": "dpty-04eeb7c6841befcf9948c084aac0220a7c0d6bbe0c94003828979ec511a86197",
+  "terminal": "exited",
+  "pty_exit_code": 1,
+  "helper_cargo_exit_code": 101,
+  "helper_driver_exit_code": 1,
+  "helper_seconds": 511.0995842870325,
+  "source_after_clean": true,
+  "native_tests_reached": false,
+  "native_tests_executed": 0,
+  "diagnosis": {
+    "code": "E0599",
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+    "line": 144,
+    "method": "FrozenLearningScopeV2::require_verifier",
+    "actual_errors": 1
+  },
+  "original_inventory_assertion": {
+    "cases": 174,
+    "groups": 39,
+    "incorrect": true,
+    "retained_unchanged": true
+  },
+  "corrected_source_inventory": {
+    "cases": 175,
+    "groups": 39,
+    "coverage_blob": "2cf877d32cb1c3ecffb15f5523701b270ff81da8",
+    "reason": "Original Candidate cancellation case must remain in addition to the twelve HEAD/Artifact cases."
+  },
+  "raw_stdout": {
+    "full_bytes": 1019061,
+    "full_sha256": "05f54b78bc85aa02e116c7741a015d96f686d28a1738bdd949cc3620b8a7a3df",
+    "retrieved_tail_offset": 953525,
+    "retrieved_tail_bytes": 65536,
+    "complete_stdout_retrieved": false,
+    "first_tail_line_partial": true
+  },
+  "evidence_files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/native-result.json",
+      "sha": "04d65585990c21ba9c79da9783babf3fe795e0e7",
+      "bytes": 1649,
+      "sha256": "230063ed6c33825fd166eb00fd3207e61a86e10fa372a2f77b0b67c678d09a1b"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/preparation-result.json",
+      "sha": "499d78441e0685dafdd2b89e136c0e5414f6e26f",
+      "bytes": 1722,
+      "sha256": "2883823033c29be1b537cbbc88b3dbbc31190dc604324126e2a91f0f644d25a0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/helper-manifest.json",
+      "sha": "3aef2a312de8f390f0370649e25f7bd3c94a33ba",
+      "bytes": 1239,
+      "sha256": "286e2330fcf70389be91b15aff950d80ddfbf461a249cea25fab16b51b52edb9"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/helper-build.driver.log",
+      "sha": "41209bcfef115fbc168e57898cd94be266e404e9",
+      "bytes": 216,
+      "sha256": "0560fb2a90e3ca3a0c1105a973eb6320d04006b24f4ea558f341e541d8f4ee86"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/helper-build.stderr.log",
+      "sha": "7634d745704dd072f1d05e998ff13e78a620c708",
+      "bytes": 65788,
+      "sha256": "dd4d2ffeba423315078965639f8a0067ec95b4496dd5a92e82dab22d18753a70"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/helper-cargo.stdout.tail.jsonl",
+      "sha": "4f007d70087e71e06b2dfd64f2ec60835ea72c34",
+      "bytes": 65536,
+      "sha256": "812d5f054c0f33ea549be783b1139141685aadf6e498d4cba2562ee736f67675"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/helper-cargo.stdout.file-info.json",
+      "sha": "c5a893c68396ba0ddad3d495f8bdcede53c733af",
+      "bytes": 601,
+      "sha256": "494bfdd85ee921df5da5929a5581821781a6981827379ba046790c1c5b959a67"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/original-pty-terminal.json",
+      "sha": "9ab9cedd3c1f12778fccc64f84a83b590aafa4c8",
+      "bytes": 1541,
+      "sha256": "319730407418d484e8907d95c314b64ccffbfeebab3c07cff20d4777240edfef"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/original-driver.py",
+      "sha": "24914f8ac2be61407d84fe1655d1907dfee2eb1b",
+      "bytes": 11005,
+      "sha256": "4b3558e3144c0bae2bfd114e9007596866c8c9173e69915b517dee88d5bcf223"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/native-3270-terminal/original-readback-responses.json",
+      "sha": "e6a04185d7a3e66271ff8b285463030e0a4d05f7",
+      "bytes": 186043,
+      "sha256": "928d03aa31a5e9840ef770db4a82be5e2275e353ed0c01181fb1b2164855bfff"
+    }
+  ],
+  "readback": "Every byte file is pinned to the original H version; two stderr chunks reassembled and independent SHA256 matched original file_info. Every Git blob was fetched in full and matched.",
+  "production_mutation_during_readback": false,
+  "acceptance": {
+    "ordinary_positive": 0,
+    "ordinary_no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

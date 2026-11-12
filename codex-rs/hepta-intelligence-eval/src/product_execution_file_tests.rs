@@ -302,3 +302,6 @@ fn failed_constructor_releases_lock_even_with_a_duplicate_description() {
     assert_eq!(temp.recover(minimum).err(), Some(FileError::Busy));
     drop(recovered);
 }
+
+#[path = "product_execution_current_tests.rs"]
+mod current;

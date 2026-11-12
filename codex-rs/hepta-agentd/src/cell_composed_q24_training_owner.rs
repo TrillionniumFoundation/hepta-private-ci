@@ -45,6 +45,9 @@ pub enum CellQ24TrainingOwnerErrorV1 {
     Witness(#[from] WitnessStoreError),
     #[error("Q24 training: {0}")]
     Training(#[from] CellQ24TrainingErrorV1),
+    #[cfg(target_os = "linux")]
+    #[error("original live training source: {0}")]
+    Source(#[from] crate::OriginalCellQ24TrainingSourceErrorV1),
 }
 
 type Error = CellQ24TrainingOwnerErrorV1;
@@ -52,6 +55,10 @@ type Error = CellQ24TrainingOwnerErrorV1;
 #[path = "cell_composed_q24_training_observation.rs"]
 mod observation;
 pub use observation::CellQ24TrainingObservationV2;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_source_owner.rs"]
+mod source;
 
 /// Owns one exact frozen Dataset cut and its bounded native optimizer. Transfer
 /// exclusive file ownership; writable duplicate descriptors are not supported.
@@ -63,13 +70,15 @@ pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
     batch: CellQ24TrainingBatchV1,
     rule: CellQ24SgdRuleV1,
     key: ProductEvaluationExecutionKeyV1,
+    #[cfg(target_os = "linux")]
+    source: Option<std::sync::Arc<crate::OriginalCellQ24TrainingSourceV1>>,
     fenced: bool,
 }
 
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// Read-only preflight for the original typed training/signature pair.
     pub(crate) fn require_original_dataset_scope(
-        &self,
+        &mut self,
         dataset: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<(), Error> {
@@ -103,6 +112,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
+            #[cfg(target_os = "linux")]
+            source: None,
             fenced: false,
         })
     }
@@ -145,6 +156,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
+            #[cfg(target_os = "linux")]
+            source: None,
             fenced: false,
         })
     }
@@ -158,6 +171,20 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         cancellation: &AtomicBool,
     ) -> Result<CellQ24TrainingOutcomeV1, Error> {
         self.require_current()?;
+        #[cfg(target_os = "linux")]
+        if self.source.is_some() {
+            self.require_live_source_if_captured()?;
+            // The original source/evidence reads can block. Revalidate the
+            // locked native journal before using any cached operation state.
+            self.require_current()?;
+            match self.journal.readback(&self.key) {
+                Ok(state) => return self.decode_state(state),
+                Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {
+                    self.require_captured_work_deadline()?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
         let before = anchor(self.journal.anchor());
         match self.journal.claim(&self.key)? {
             ProductEvaluationExecutionClaimV1::Existing(state) => return self.decode_state(state),
@@ -168,7 +195,11 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         // Validate exactly the bytes that will be persisted, using the same
         // reconstruction as cold readback, before committing a terminal result.
         self.decode(&payload)?;
+        #[cfg(target_os = "linux")]
+        self.require_live_source_if_captured()?;
         self.require_current()?;
+        #[cfg(target_os = "linux")]
+        self.require_captured_work_deadline()?;
         let before = anchor(self.journal.anchor());
         self.journal.complete(&self.key, &payload)?;
         self.anchor_append(before)?;
@@ -183,11 +214,33 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         self.decode_state(state)
     }
 
-    fn require_current(&self) -> Result<(), Error> {
-        if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())) {
+    fn require_current(&mut self) -> Result<(), Error> {
+        #[cfg(target_os = "linux")]
+        if self
+            .source
+            .as_ref()
+            .is_some_and(|source| {
+                crate::OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)
+            })
+        {
+            self.fenced = true;
+        }
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current()?;
+            let physical = anchor(self.journal.read_current_anchor()?);
+            let after = self.witness.current()?;
+            if before != Some(physical) || after != Some(physical) {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {

@@ -16,6 +16,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 SOURCE = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 
 
 class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
@@ -61,11 +62,11 @@ class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 self.rejects("training.readback(dataset.snapshot()).await?", mutation)
 
-    def test_only_snapshot_adapter_reads_stage_and_no_product_host_is_claimed(self):
+    def test_only_original_snapshot_and_source_gate_read_stage_without_host_registration(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (SOURCE, STAGE)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (SOURCE, STAGE, BOUND)}
         for name, callers in (
-            ("learning_original_training_stage_readback", (SOURCE,)),
+            ("learning_original_training_stage_readback", (SOURCE, BOUND)),
             ("learning_original_training_snapshot_readback", ()),
         ):
             row = rows[name]

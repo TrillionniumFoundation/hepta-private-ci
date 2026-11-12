@@ -339,6 +339,15 @@ async fn original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits(
         stage.readback(&f.config.dataset).await,
         Err(StageError::Busy)
     ));
+    let model_root = tempfile::tempdir()?;
+    assert!(matches!(
+        stage.create_model_owner(
+            opened(model_root.path(), "proposal")?,
+            witness(model_root.path())?,
+        ),
+        Err(StageError::Busy)
+    ));
+    assert_eq!(fs::metadata(model_root.path().join("proposal"))?.len(), 0);
     assert!(matches!(
         stage
             .receipt_attestation(&f.config.dataset, &f.config.dataset.receipts[0])
@@ -374,5 +383,63 @@ async fn original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits(
         (result.receipt, result.attestation)
     );
     assert_eq!(retained(&f)?, saved);
+    Ok(())
+}
+
+#[tokio::test]
+async fn original_training_model_lane_distinguishes_missing_pending_and_no_update()
+-> anyhow::Result<()> {
+    #[derive(Clone, Copy)]
+    enum State {
+        Missing,
+        Pending,
+        NoUpdate,
+    }
+    for state in [State::Missing, State::Pending, State::NoUpdate] {
+        let f = ReceiptFixture::new(Q)?;
+        let mut training = f.create_training()?;
+        if matches!(state, State::Pending) {
+            assert!(matches!(
+                training.fit_or_readback(&AtomicBool::new(/*v*/ true)),
+                Err(OwnerError::Training(CellQ24TrainingErrorV1::Cancelled))
+            ));
+        }
+        let stage = Stage::from_original_owners(training, f.create_receipts()?).await?;
+        if matches!(state, State::NoUpdate) {
+            let completion = stage
+                .execute_training(&f.config.dataset, Arc::new(AtomicBool::new(/*v*/ false)))
+                .await?;
+            assert!(matches!(
+                completion.outcome,
+                CellQ24TrainingOutcomeV1::NoUpdate { .. }
+            ));
+        }
+        let model_root = tempfile::tempdir()?;
+        let result = stage.create_model_owner(
+            opened(model_root.path(), "proposal")?,
+            witness(model_root.path())?,
+        );
+        match state {
+            State::Missing => assert!(matches!(
+                result,
+                Err(StageError::Receipt(ReceiptError::Training(
+                    OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)
+                )))
+            )),
+            State::Pending => assert!(matches!(
+                result,
+                Err(StageError::Receipt(ReceiptError::Training(
+                    OwnerError::Pending
+                )))
+            )),
+            State::NoUpdate => assert!(matches!(
+                result,
+                Err(StageError::ModelProposal(
+                    crate::CellQ24ModelProposalErrorV1::Binding("NoUpdate has no model proposal")
+                ))
+            )),
+        }
+        assert_eq!(fs::metadata(model_root.path().join("proposal"))?.len(), 0);
+    }
     Ok(())
 }

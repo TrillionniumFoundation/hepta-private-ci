@@ -1,0 +1,3379 @@
+{
+  "schema": "hepta.original-pre-b-agentd-policy.v2",
+  "baseline": {
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17"
+  },
+  "parents": {
+    "source_bridge": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+    "pure_product_policy": "36a494ae6ce41a536f0ddf79a474a0577e9aa853"
+  },
+  "intent": "Commit the entire paired evaluation policy in a separate V2 profile already covered by original T; require exact later Cell/Product reconstruction and independent raw metadata verification. Never upgrade legacy V1 signatures or infer execution authority.",
+  "policy": {
+    "domains": {
+      "legacy_rule": "hepta.circuit.original-on-policy-cohort-rule.v1\\0",
+      "new_rule": "hepta.circuit.original-on-policy-cohort-rule.v2\\0",
+      "new_policy": "hepta.circuit.original-on-policy-evaluation-policy.v2\\0",
+      "legacy_current": "hepta.circuit.original-on-policy-cohort-current.v1\\0",
+      "new_current": "hepta.circuit.original-on-policy-cohort-current.v2\\0",
+      "realized_cell_estimand": "hepta.agentd.cell-paired-on-policy-estimand.v1\\0"
+    },
+    "fixed_before_T": [
+      "original rule canonical digest, task, snapshot and original ledger identity",
+      "complete Product Context/Input: plan, objective, claim scope, baseline participant, base estimand, all metrics/directions/floors, role kinds and margins, all metric sources",
+      "both complete Temporal plans, original alpha/comparison counts, W and support/confidence thresholds, final holdout identity",
+      "every complete CrossFold partition, all lineage sets and original model/prediction digest declarations",
+      "full comparison capacity/cumulative/update policy, baseline receipt reference, full cost coverage and metering digest",
+      "complete real pair input/protocol, original principal, distinct ledger-derived episode/run/decision identities",
+      "primary and every nonempty retention member; full registration determines request.evaluation_profile"
+    ],
+    "only_late_slots": [
+      "unique actual original signed-T candidate identity and bundle; original T receipt payload digest",
+      "actual Dataset/holdout manifest from the original authenticated completed cohort",
+      "two actual original Cell records and their physical structures; deterministic original Cell estimand recomputed from complete fixed+observed record"
+    ],
+    "no_late_slots": [
+      "W/alpha/comparison count/metric source/role/margin/claim scope/base estimand/fold metadata",
+      "new principals or renamed arms, targets, outcomes or ledger identities"
+    ],
+    "time_claim": "Original T signature on the exact V2 panel profile cryptographically commits the full preimage before existing original B window checks. It does not prove V2 was parsed by T then or a factory ran before A.",
+    "cross_fold_limit": "Existing fold digests are fixed commitments. This change does not turn metadata commitments into proof of actual fitting or predict future admission timestamps.",
+    "ordinary_claim_scope": "New ordinary Panel declaration accepts only Qualification, already supported by original E holdout material. Pure Product metadata retains its prior legal modes.",
+    "compatibility": "Legacy Shared code and paired V1 canonical/signature bytes remain. Legacy paired V1 is readable but has no V2 release or Model/Selector adoption eligibility.",
+    "remote": "Complete policy appended once per member in V2 current; strict decode and raw expected commitments compare complete plan/estimand/roles. No remote FrozenPlan/Execution/Qualification seal is constructed.",
+    "eligibility": "Original member/cohort authentication and retention-set checks occur first. qualified also requires every member policy_bound; original signed primary observation still reflects only its primary verdict.",
+    "authority": "Metadata only; no new grant/key/policy, signer, capability, reconnect, deadline extension or cross-request CURRENT cache. Existing actual B task/inference custody remains necessary."
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+      "sha": "9c53e2efc865081e68805e060b025b6d0ea5cf8e",
+      "bytes": 5039
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+      "sha": "53d666e3027dff653c891c2c1403c79131ee1044",
+      "bytes": 2963
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "sha": "aaaa0a0d70c8b9f3126eef0be3066f369f541b65",
+      "bytes": 11149
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+      "sha": "c5037acf9d2ab99e211f724550f0c5318ba2ed23",
+      "bytes": 6085
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "sha": "d4a62890aef097ed2465a023ab85bf860a5fdc03",
+      "bytes": 5164
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "sha": "4b213bbb565f667cb8b6523ec292433cf2f637d6",
+      "bytes": 1187
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "sha": "8b850bb43ba160406c319e61c70ffb38cb52ed4a",
+      "bytes": 15322
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "sha": "cef5a2ad271a5eabac5409e81a6f814e32d96142",
+      "bytes": 13702
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "sha": "5d6e662d7afdc26af7e57eb14a014eebca824344",
+      "bytes": 7006
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "sha": "cbf45f8015c6a146278900fb78bba073014e56ec",
+      "bytes": 18168
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "sha": "230f309a45642550b230a3a8df2e0de7321e9f5c",
+      "bytes": 11107
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha": "fdc0fe8119ffe832e73e7543be686aecabdf43bf",
+      "bytes": 74941
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "sha": "02f5309fb3001f8a5855153e9305c57d6593a1bf",
+      "bytes": 4557
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+      "sha": "9844538356c7f8ff5edf20bcc83667bb4d033815",
+      "bytes": 6881
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "sha": "5ad097ac7176d778feaff513a3dc34910496a191",
+      "bytes": 17635
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "sha": "bb536a7d4dd4edd8f9bed768bf00353d1d3137e6",
+      "bytes": 10674
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "sha": "07f1d1dbc946c4b8de33d3bc76acd8e9c3ca48db",
+      "bytes": 23727
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "sha": "880e0b27608fd6e363d9680ed0d59d2585cf6946",
+      "bytes": 15043
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "sha": "3e99100057e9aa685e1bb407a6e4e950048a52a1",
+      "bytes": 10659
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "sha": "edc2e5cfaf7fe36ef89b9f71b47c25d71700edd1",
+      "bytes": 10741
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "sha": "2b0c33cc53b52cde683ebc8c651198e12d827113",
+      "bytes": 16157
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "sha": "83e76788acc7e65a912d9507a11afb2a6117e5bf",
+      "bytes": 15004
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_tests.rs",
+      "sha": "f4a0c06969011e7516889859f03ac2ded1149cf7",
+      "bytes": 13769
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "sha": "decb1e0c4386191cee405cc44cf7259d38bc9382",
+      "bytes": 20551
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+      "sha": "37824c19349b2ae43ccb508f927c7a63890af896",
+      "bytes": 6305
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py",
+      "sha": "8a60ac66ce60d75cc2fe8f2bbdd8c69bac298a12",
+      "bytes": 8683
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "sha": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+      "bytes": 34666
+    }
+  ],
+  "added_protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "required": [
+        "const DOMAIN: &[u8] = b\"hepta.circuit.original-on-policy-evaluation-policy.v2\\0\";",
+        "legacy_rule: Digest32",
+        "ledger: Digest32",
+        "baseline: Digest32",
+        "pairs: Vec<Pair>",
+        "product: ProductEvaluationPolicyV2"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn freeze(",
+          "sequence": [
+            "context.plan_id != rule.plan_id",
+            "context.objective_digest != rule.objective_digest",
+            "context.final_holdout_window_id != rule.holdout_window_id",
+            "context.candidate_temporal != rule.candidate_plan",
+            "context.baseline_temporal != rule.baseline_plan",
+            "rule.protocol.canonical_digest()?",
+            "pair.input.scope.principal_digest",
+            "decision: value.behavior_run_id.clone()",
+            "super::binding::episode_lineage(ledger, &value.episode_id)?",
+            "super::contract::input_digest(&pair.input)?",
+            "pairs.sort_by(",
+            "legacy_rule: rule.canonical_digest()?",
+            "ledger: ledger.binding_digest()",
+            "policy.validate()?",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)?",
+            "Ok(policy)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn canonical_commitment_bytes(",
+          "sequence": [
+            "&self",
+            "encoding::encode(self)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn digest(",
+          "sequence": [
+            "&self",
+            "Digest32::of_bytes(&self.canonical_commitment_bytes()?)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn cohort_rule_digest(",
+          "sequence": [
+            "&self",
+            "Digest32::of_parts(&[",
+            "self.legacy_rule.as_array()",
+            "self.digest()?.as_array()"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn from_canonical_commitment_bytes(",
+          "sequence": [
+            "encoding::decode(bytes)?",
+            "policy.validate()?",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes",
+            "return Err(Error::Binding(",
+            "Ok(policy)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_rule(",
+          "sequence": [
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze(rule, ledger,",
+            "product: self.product.clone()",
+            "comparison: self.comparison.clone()",
+            "baseline_bundle_digest: self.baseline",
+            "&reconstructed != self",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_policy_training(",
+          "sequence": [
+            "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+            "training.request.selected_bundle.artifact_id != self.product.input().baseline_id",
+            "CellCompatibilityBundleV1::digest(&training.request.selected_bundle)",
+            "!= self.baseline",
+            "training.request.envelope.objective_digest != self.product.context().objective_digest",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn pairing(",
+          "sequence": [
+            "self.require_original_policy_training(training)?",
+            "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+            "original.candidate()",
+            "if candidate == self.baseline",
+            "decision_id: value.decision.clone()",
+            "principal_lineage: value.principal.clone()",
+            "episode_lineage: value.episode.clone()",
+            "behavior_run_id: value.run.clone()",
+            "input_digest: pair.input",
+            "protocol_digest: pair.protocol",
+            "candidate: arm(&pair.candidate, candidate)",
+            "baseline: arm(&pair.baseline, self.baseline)",
+            "OnPolicyPairingContractV1::digest(&pairing)",
+            "Ok(pairing)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn comparison(",
+          "sequence": [
+            "self.require_original_policy_training(training)?",
+            "self.comparison.observed(training, candidate_structure, baseline_structure)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn validate(",
+          "sequence": [
+            "self.comparison.normalize()?",
+            "self.legacy_rule, self.task, self.ledger, self.baseline",
+            "digest.is_zero()",
+            "self.pairs.is_empty()",
+            "self.pairs.len() > 31",
+            "rows[0].id >= rows[1].id",
+            "pair.input.is_zero() || pair.protocol.is_zero()",
+            "pair.candidate.principal != pair.baseline.principal",
+            "arm.decision != arm.run",
+            "!decisions.insert(&arm.decision)",
+            "!episodes.insert(&arm.episode)",
+            "!runs.insert(&arm.run)",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+      "required": [
+        "pub struct OriginalCircuitOnPolicyComparisonPolicyV2",
+        "pub capacity: CellParameterCapacityV1",
+        "pub cumulative: CellTrainingBudgetV1",
+        "pub selective_update: CellSelectiveUpdateV1",
+        "pub baseline_training_receipt_digest: [u8; 32]",
+        "pub cost_coverage: CellCostCoverageV1"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn normalize(",
+          "sequence": [
+            "training.optimizer_steps",
+            ".checked_mul(updates.maximum_parameters_per_step)",
+            "capacity.total_parameters == 0",
+            "capacity.trainable_parameters > capacity.total_parameters",
+            "capacity.maximum_active_parameters > capacity.total_parameters",
+            "training.examples_seen == 0",
+            "training.optimizer_steps == 0",
+            "training.parameter_updates == 0",
+            "training.compute_units == 0",
+            "updates.maximum_parameters_per_step == 0",
+            "updates.maximum_parameters_per_step > capacity.trainable_parameters",
+            "training.parameter_updates > maximum",
+            "training.compute_unit_contract",
+            "updates.policy_digest",
+            "updates.eligibility_digest",
+            "updates.schedule_digest",
+            "self.baseline_training_receipt_digest",
+            "self.cost_coverage.metering_contract_digest",
+            ".contains(&[0; 32])",
+            "metrics.sort_unstable()",
+            "metrics.len() > 7",
+            "CellRequiredCostMetricV1::Wall",
+            "CellRequiredCostMetricV1::Cpu",
+            "pair[0] == pair[1]",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn observed(",
+          "sequence": [
+            "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+            "original.candidate()",
+            "training.receipts.get(2)",
+            "candidate_structure == [0; 32] || baseline_structure == [0; 32]",
+            "capacity: self.capacity.clone()",
+            "cumulative: self.cumulative.clone()",
+            "selective_update: self.selective_update.clone()",
+            "candidate.artifact_id.clone()",
+            "baseline_structure",
+            "candidate_structure",
+            "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+            "training.request.selected_bundle.artifact_id.clone()",
+            "baseline_structure",
+            "baseline_structure",
+            "self.baseline_training_receipt_digest",
+            "cost_coverage: self.cost_coverage.clone()"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+      "required": [
+        "const MAX_POLICY_BYTES: usize = 131_072;",
+        "struct Read<'a>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn new(",
+          "sequence": [
+            "bytes.is_empty() || bytes.len() > MAX_POLICY_BYTES",
+            "Err(Error::Binding(",
+            "Ok(Self { bytes, offset: 0 })"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn put_bytes(",
+          "sequence": [
+            "&(value.len() as u64).to_be_bytes()",
+            "out.extend_from_slice(value)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn take(",
+          "sequence": [
+            "self.offset.checked_add(count)",
+            "self.bytes.get(self.offset..end)",
+            "self.offset = end",
+            "Ok(value)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn literal(",
+          "sequence": [
+            "self.take(value.len())? != value",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn count(",
+          "sequence": [
+            "usize::try_from(self.u64()?)",
+            "count > maximum",
+            "return Err(Error::Binding(",
+            "Ok(count)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn bytes(",
+          "sequence": [
+            "self.count(MAX_POLICY_BYTES)?",
+            "self.take(count)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn id(",
+          "sequence": [
+            "self.count(128)?",
+            "std::str::from_utf8(self.take(count)?)",
+            ".map_err(|_| Error::Binding("
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "self.offset != self.bytes.len()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+      "required": [
+        "fn encode(",
+        "fn decode("
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn encode(",
+          "sequence": [
+            "DOMAIN.to_vec()",
+            "policy.legacy_rule, policy.task, policy.ledger, policy.baseline",
+            "put_id(&mut out, &policy.snapshot)",
+            "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy.product)",
+            "put_bytes(&mut out, &product)",
+            "value.capacity.total_parameters",
+            "value.capacity.trainable_parameters",
+            "value.capacity.maximum_active_parameters",
+            "value.cumulative.examples_seen",
+            "value.cumulative.optimizer_steps",
+            "value.cumulative.parameter_updates",
+            "value.cumulative.compute_units",
+            "value.selective_update.maximum_parameters_per_step",
+            "value.cumulative.compute_unit_contract",
+            "value.selective_update.policy_digest",
+            "value.selective_update.eligibility_digest",
+            "value.selective_update.schedule_digest",
+            "value.baseline_training_receipt_digest",
+            "value.cost_coverage.metering_contract_digest",
+            "value.cost_coverage.required_metrics.len() as u64",
+            "CellRequiredCostMetricV1::Communication => 6",
+            "policy.pairs.len() as u64",
+            "put_id(&mut out, &pair.id)",
+            "pair.input.as_array()",
+            "pair.protocol.as_array()",
+            "&arm.decision, &arm.principal, &arm.episode, &arm.run",
+            "out.len() > MAX_POLICY_BYTES",
+            "Ok(out)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn decode(",
+          "sequence": [
+            "Read::new(bytes)?",
+            "read.literal(DOMAIN)?",
+            "let legacy_rule = read.digest()?",
+            "let task = read.digest()?",
+            "let ledger = read.digest()?",
+            "let baseline = read.digest()?",
+            "let snapshot = read.id()?",
+            "ProductEvaluationPolicyV2::from_canonical_commitment_bytes(read.bytes()?)",
+            "CellParameterCapacityV1",
+            "examples_seen = read.u64()?",
+            "optimizer_steps = read.u64()?",
+            "parameter_updates = read.u64()?",
+            "compute_units = read.u64()?",
+            "maximum_parameters_per_step = read.u64()?",
+            "compute_unit_contract: read.array()?",
+            "policy_digest: read.array()?",
+            "eligibility_digest: read.array()?",
+            "schedule_digest: read.array()?",
+            "baseline_training_receipt_digest = read.array()?",
+            "metering_contract_digest = read.array()?",
+            "read.count(7)?",
+            "read.count(31)?",
+            "id = read.id()?",
+            "input = read.digest()?",
+            "protocol = read.digest()?",
+            "decision: read.id()?, principal: read.id()?, episode: read.id()?, run: read.id()?",
+            "read.finish()?",
+            "Ok(OriginalCircuitOnPolicyEvaluationPolicyV2"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "required": [
+        "pub struct OriginalCircuitOnPolicyPanelPolicyV2",
+        "primary: OriginalCircuitOnPolicyEvaluationPolicyV2",
+        "retention: Vec<OriginalCircuitOnPolicyEvaluationPolicyV2>",
+        "registration: OriginalCellEvaluationPanelRegistrationV1"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn freeze(",
+          "sequence": [
+            "!(1..=16).contains(&retention.len())",
+            "retention.sort_by(",
+            "plan_id: policy.product.context().plan_id.clone()",
+            "task_digest: policy.task",
+            "cohort_rule_digest: policy.cohort_rule_digest()?",
+            "OriginalCellEvaluationPanelRegistrationV1::new(",
+            "task(&primary)?",
+            "retention.iter().map(task)",
+            "policy.require_declaration()?",
+            "Ok(policy)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_declaration(",
+          "sequence": [
+            "let mut contribution = 0usize",
+            "std::iter::once(&self.primary).chain(&self.retention)",
+            "policy.product.input().claim_scope",
+            "!= codex_hepta_intelligence_eval::EvaluationClaimScopeV1::Qualification",
+            "policy.baseline != self.primary.baseline",
+            "policy.product.input().baseline_id != self.primary.product.input().baseline_id",
+            "policy.product.context().objective_digest != self.primary.product.context().objective_digest",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(policy)?",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&bytes)? != *policy",
+            "contribution.checked_add(8)",
+            ".checked_add(bytes.len())",
+            "contribution >= 9 * 8192",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_panel_initial(",
+          "sequence": [
+            "LearningIterationCoordinatorV1::from_snapshot(initial.clone())?",
+            "!initial.receipts.is_empty()",
+            "return Err(Error::Binding(",
+            "self.require_original_panel_training(initial)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_panel_training(",
+          "sequence": [
+            "self.require_declaration()?",
+            "training.request.evaluation_profile != self.registration.evaluation_profile()",
+            "return Err(Error::Binding(",
+            "std::iter::once(&self.primary).chain(&self.retention)",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(policy, training)?",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "required": [
+        "pub struct OriginalCircuitOnPolicyCohortConfigV2",
+        "original: OriginalCircuitOnPolicyCohortConfigV1",
+        "policy: Arc<OriginalCircuitOnPolicyPanelPolicyV2>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn from_original(",
+          "sequence": [
+            "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(&policy, &original.training)?",
+            "policy.member(&original.rule.plan_id)?",
+            "policy.registration() != &original.registration",
+            "member.task_digest() != original.rule.task_digest",
+            "member.cohort_rule_digest()? != original.freeze_plan.inclusion_policy_digest",
+            "return Err(Error::Binding(",
+            "Ok(Self { original, policy })"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "required": [
+        "policy: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn read_original_v2(",
+          "sequence": [
+            "config: OriginalCircuitOnPolicyCohortConfigV2",
+            "Self::read_with_policy(owners, config.original, Some(config.policy), now)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn original_pre_b_policy(",
+          "sequence": [
+            "self.policy.as_ref()",
+            "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+            "panel.member(&self.config.rule.plan_id)?",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule(",
+            "Ok((policy, &self.config.training))"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_pre_b_plan(",
+          "sequence": [
+            "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(self)?",
+            "binding::require_plan(self, plan)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn into_final_holdout_provider(",
+          "sequence": [
+            "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self)?",
+            "binding::require_plan(&self, &plan)?",
+            "release_attempted: false",
+            "release_completed: false"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn release_with_clock(",
+          "sequence": [
+            "self.release_attempted = true",
+            "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)",
+            "self.plan.product_plan().frozen_plan",
+            "read_current_with_clock(clock)",
+            "self.release_completed = true"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "required": [
+        "policy: Option<&super::OriginalCircuitOnPolicyPanelPolicyV2>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn validate_configuration(",
+          "sequence": [
+            "let digest = match policy",
+            "Some(panel)",
+            "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+            "panel.registration() != &config.registration",
+            "panel.member(&rule.plan_id)?",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule(",
+            "member.cohort_rule_digest()?",
+            "None => rule.canonical_digest()?",
+            "member.cohort_rule_digest != digest"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_plan(",
+          "sequence": [
+            "if original.policy.is_some()",
+            "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(original)?",
+            "record.candidate.manifest.evolution.structure",
+            "record.fixed_expert.manifest.evolution.structure",
+            "cost_scope: crate::CellEvaluationCostScopeV1::TaskLedgersBeforeFinalHoldout",
+            "original_estimand: policy.product().input().base_estimand_digest",
+            "learning_evaluation_profile: Some(snapshot.request.evaluation_profile.into_array())",
+            "candidate: record.candidate.clone()",
+            "fixed_expert: record.fixed_expert.clone()",
+            "policy.pairing(snapshot)?",
+            "serde_json::to_vec(&expected_record)",
+            "ProductEvaluationPolicyV2::instantiate(",
+            "policy.product()",
+            "candidate_id: record.comparison.candidate.participant_id.clone()",
+            "dataset_digest: dataset.snapshot.dataset_digest",
+            "final_holdout_digest: original.observed_manifest_digest()?",
+            "cell_estimand_digest: Digest32::of_parts(&[",
+            "&pairing",
+            "record != &expected_record",
+            "original.observed_pairing_contract()? != &pairing",
+            "product != &expected",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "required": [
+        "pub fn freeze_paired_cell_learning_evaluation_plan_v2<"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false,
+      "required_order": [
+        [
+          "fn freeze_paired_cell_learning_evaluation_plan_v2<",
+          "cohort: &crate::OriginalCircuitOnPolicyCohortV1",
+          "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(cohort)",
+          "policy.comparison(",
+          "journals.candidate.manifest().evolution.structure",
+          "journals.fixed_expert.manifest().evolution.structure",
+          "CellEvaluationArmRecordV1::read(",
+          "CellEvaluationArmRecordV1::read(",
+          "candidate.cost.identity().task_digest != fixed_expert.cost.identity().task_digest",
+          "candidate.cost.identity().task_digest != policy.task_digest().into_array()",
+          "candidate.journal_cut == fixed_expert.journal_cut",
+          "policy.pairing(training)",
+          "cohort.observed_pairing_contract()",
+          "pair.candidate.model_digest.into_array() != candidate.manifest.bundle_digest",
+          "pair.baseline.model_digest.into_array() != fixed_expert.manifest.bundle_digest",
+          "original_estimand: policy.product().input().base_estimand_digest",
+          "learning_evaluation_profile: Some(training.request.evaluation_profile.into_array())",
+          "serde_json::to_vec(&record)",
+          "ProductEvaluationPolicyV2::instantiate(",
+          "dataset_digest: cohort.observed_dataset()",
+          "final_holdout_digest: cohort.observed_manifest_digest()",
+          "cell_estimand_digest: Digest32::of_parts(&[",
+          "&pairing",
+          "let plan = CellEvaluationPlanV1 { record, product }",
+          "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(cohort, &plan)",
+          "Ok(plan)"
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "required": [
+        "b\"hepta.circuit.original-on-policy-cohort-current.v1\\0\"",
+        "b\"hepta.circuit.original-on-policy-cohort-current.v2\\0\""
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn read_current_with_clock(",
+          "sequence": [
+            "self.original.read_current_with_clock(clock)?",
+            "let mut bytes =",
+            "if self.original.policy.is_some()",
+            "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)?",
+            "bytes =",
+            "self.original.rule_digest",
+            "material.pairing.digest()",
+            "bytes.extend_from_slice(&material.freeze_payload)",
+            "if self.original.policy.is_some()",
+            "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self.original)?",
+            "policy.canonical_commitment_bytes()?",
+            "&(full_policy.len() as u64).to_be_bytes()",
+            "bytes.extend_from_slice(&full_policy)",
+            "binding: Digest32::of_bytes(&bytes)",
+            "self.last = Some(observed.clone())",
+            "self.fenced = false",
+            "Ok(observed)"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "required": [
+        "struct Cohort {",
+        "policy_bound: bool",
+        "b\"hepta.circuit.original-on-policy-cohort-current.v2\\0\""
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn cohort(",
+          "sequence": [
+            "let paired_v2 = member.cohort.starts_with(",
+            "if paired::is_paired(member)",
+            "if paired_v2",
+            "proof.literal(",
+            "else",
+            "proof.literal(",
+            "let ledger_binding = proof.digest()?",
+            "ledger_binding.is_zero()",
+            "let policy_preimage = if paired_v2",
+            "usize::try_from(proof.u64()?)",
+            "length == 0 || length > 131_072",
+            "Some(proof.take(length)?)",
+            "proof.finish()?",
+            "verify_dataset_snapshot_receipt_v3(",
+            "if let Some(preimage) = policy_preimage",
+            "paired_policy::verify_pre_b_policy(",
+            "Ok(Cohort {",
+            "binding: Digest32::of_bytes(&member.cohort)",
+            "policy_bound: !paired::is_paired(member) || paired_v2"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "required": [
+        "fn verify_pre_b_policy(",
+        "record[\"candidate\"][\"manifest\"][\"evolution\"][\"structure\"]",
+        "record[\"fixed_expert\"][\"manifest\"][\"evolution\"][\"structure\"]",
+        "record[\"comparison\"]",
+        "record[\"original_estimand\"]",
+        "record[\"cost_scope\"]",
+        "record[\"learning_evaluation_profile\"]"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false",
+        "instantiate(",
+        "freeze_paired_on_policy_product_evaluation_plan_v1(",
+        "CellEvaluationPlanV1 {",
+        "FrozenCrossFoldPlanV1 {",
+        "ProductQualificationReceiptV1 {"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn verify_pre_b_policy(",
+          "sequence": [
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(bytes)",
+            "context.training.receipts.get(2)",
+            "policy.cohort_rule_digest()",
+            "!= task.cohort_rule_digest",
+            "product.context().plan_id != task.plan_id",
+            "policy.task_digest() != task.task_digest",
+            "policy.ledger_binding() != ledger",
+            "policy.snapshot_id() != snapshot_id",
+            "product.context().objective_digest != context.verifier.objective_digest()",
+            "candidate_temporal.ope.outcome_watermark != outcome_watermark",
+            "baseline_temporal.ope.outcome_watermark != outcome_watermark",
+            "training_receipt.observed_unix_seconds",
+            ">= product.context().candidate_temporal.fold.evaluation_start",
+            "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(",
+            "policy.pairing(&context.training)",
+            "paired::pairing(member)? != pairing",
+            "serde_json::from_slice(&member.record)?",
+            "let candidate_structure: [u8; 32]",
+            "let baseline_structure: [u8; 32]",
+            "policy.comparison(&context.training, candidate_structure, baseline_structure)",
+            "record.as_object().map(|object| object.len()) != Some(6)",
+            "!= serde_json::to_value(&comparison)?",
+            "product.input().base_estimand_digest.into_array()",
+            "context.registration.evaluation_profile().into_array()",
+            "LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?",
+            "original.candidate()",
+            "ProductEvaluationPolicyV2::expected_commitment_bytes(",
+            "candidate_id: candidate.artifact_id.clone()",
+            "dataset_digest: checked.dataset",
+            "final_holdout_digest: checked.manifest",
+            "cell_estimand_digest: Digest32::of_parts(&[",
+            "&member.record",
+            "&pairing",
+            "expected.plan() != member.plan.as_slice()",
+            "expected.estimand() != member.estimand.as_slice()",
+            "expected.roles() != member.roles.as_slice()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "required": [
+        "let mut all_policies_bound = true;"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn material(",
+          "sequence": [
+            "body.members.len() != context.registration.retention().len() + 1",
+            "let mut all_policies_bound = true",
+            "member::verify(raw, context, task, &generator, current)?",
+            "member::cohort(raw, &checked, context, task, &generator, current)?",
+            "all_policies_bound &= cohort.policy_bound",
+            "cohort.binding,",
+            "checked_members.push(checked)",
+            "primary.retention != retention",
+            "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+            "let disposition = if primary.qualified",
+            "Ok(Checked {",
+            "qualified,"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+      "required": [
+        "fn pairing(member: &Member)"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "TrustedLearningSignerV1",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "Deserialize",
+        "from_raw_parts",
+        "transmute",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn pairing(",
+          "sequence": [
+            "Reader::new(&member.plan)",
+            "plan.literal(PLAN)?",
+            "for _ in 0..5 { plan.digest()?; }",
+            "contract(plan.bytes()?)"
+          ],
+          "top_level": []
+        }
+      ],
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    }
+  ],
+  "protected_record_replacements": [
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+        "required": [
+          "pub struct OriginalCircuitOnPolicyCohortV1",
+          "owners: OriginalCircuitEvaluationSourceOwnersV1",
+          "config: OriginalCircuitOnPolicyCohortConfigV1",
+          "manifest: Option<Digest32>",
+          "dataset: Option<DatasetSnapshotReceiptV3>",
+          "fenced: bool",
+          "pub struct OriginalCircuitOnPolicyFinalHoldoutProviderV1",
+          "release_attempted: bool",
+          "same exact original cohort and signatures",
+          "release_completed: bool",
+          "pairing: Option<OnPolicyPairingContractV1>",
+          "release_paired_after_consumption",
+          "OnPolicyTemporalComparisonInputsV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "impl Clone for OriginalCircuitOnPolicyCohortV1",
+          "Deserialize",
+          "pub owners:",
+          "pub config:",
+          "pub fn read_original_with_clock",
+          "pub fn read_current_with_clock",
+          "pub fn release_with_clock",
+          "pub fn reset",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "pub candidate:",
+          "pub fn execute",
+          "pub fn run"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn read_original(",
+              "Self::read_original_with_clock(owners, config, now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_original_with_clock(",
+            "sequence": [
+              "fn read_original_with_clock(",
+              "binding::validate_configuration(&owners, &config)?",
+              "manifest: None",
+              "dataset: None",
+              "last_observed_at: 0",
+              "let observed = owner.read_current_with_clock(clock)?",
+              "owner.manifest = Some(observed.manifest)",
+              "owner.dataset = Some(observed.dataset)",
+              "owner.pairing = Some(observed.pairing)",
+              "Ok(owner)"
+            ],
+            "top_level": [
+              "let rule_digest = binding::validate_configuration",
+              "let observed = owner.read_current_with_clock"
+            ]
+          },
+          {
+            "function": "fn into_final_holdout_provider(",
+            "sequence": [
+              "fn into_final_holdout_provider(",
+              "self,",
+              "binding::require_plan(&self, &plan)?",
+              "original: self",
+              "release_attempted: false",
+              "release_completed: false"
+            ],
+            "top_level": [
+              "binding::require_plan(&self, &plan)?"
+            ]
+          },
+          {
+            "function": "fn read_current_with_clock(",
+            "sequence": [
+              "fn read_current_with_clock(",
+              "if self.fenced",
+              "return Err(Error::Indeterminate)",
+              "self.fenced = true",
+              "let started_at = clock()?",
+              "if started_at < self.last_observed_at",
+              "return Err(Error::Binding(",
+              "OriginalCircuitOnPolicyCohortV1::read_original_material(",
+              "expected != observed.manifest",
+              "expected != &observed.dataset",
+              "expected != &observed.pairing",
+              "return Err(Error::Binding(",
+              "self.fenced = false",
+              "Ok(observed)"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "self.fenced = true",
+              "let started_at = clock()?",
+              "if started_at < self.last_observed_at",
+              "self.fenced = false",
+              "Ok(observed)"
+            ]
+          },
+          {
+            "function": "fn authority(",
+            "sequence": [
+              "fn authority(",
+              "AuthorityPosture::DENY_ALL"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn manifest_digest(",
+            "sequence": [
+              "fn manifest_digest(",
+              "self.manifest_with_clock(now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn manifest_with_clock(",
+            "sequence": [
+              "fn manifest_with_clock(",
+              "if self.release_attempted",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "read_current_with_clock(clock)",
+              ".map(|observed| observed.manifest)",
+              ".map_err(provider_error)"
+            ],
+            "top_level": [
+              "if self.release_attempted"
+            ]
+          },
+          {
+            "function": "fn release_with_clock(",
+            "sequence": [
+              "fn release_with_clock(",
+              "if self.release_attempted",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "self.release_attempted = true",
+              "self.plan.product_plan().frozen_plan",
+              "self.original.pairing.as_ref() != Some(pairing)",
+              "receipt.disposition != HoldoutUseDispositionV1::Recorded",
+              "used.disposition != HoldoutUseDispositionV1::Recorded",
+              "receipt.sequence == 0",
+              "receipt.head_digest != receipt.record_digest",
+              "receipt.authority.grants_any()",
+              "used.authority.grants_any()",
+              "used.plan_id != plan.plan_id",
+              "used.plan_digest != plan.plan_digest",
+              "used.claim_scope != plan.claim_scope",
+              "used.candidate_id != plan.candidate_id",
+              "used.baseline_id != plan.baseline_id",
+              "used.objective_digest != plan.objective_digest",
+              "used.dataset_digest != plan.dataset_digest",
+              "used.estimand_digest != plan.estimand_digest",
+              "used.metric_contract_digest != plan.metric_contract_digest",
+              "used.final_holdout_window_id != plan.final_holdout_window_id",
+              "used.holdout_digest != plan.final_holdout_digest",
+              "used.registry_digest.is_zero()",
+              "used.use_digest.is_zero()",
+              "return Err(ProductProviderErrorV1::Rejected)",
+              "read_current_with_clock(clock)",
+              "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "self.release_completed = true",
+              "Ok(observed.inputs)"
+            ],
+            "top_level": [
+              "if self.release_attempted",
+              "self.release_attempted = true",
+              "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+              "self.release_completed = true",
+              "Ok(observed.inputs)"
+            ]
+          },
+          {
+            "function": "fn now(",
+            "sequence": [
+              "fn now(",
+              "SystemTime::now()",
+              ".duration_since(UNIX_EPOCH)",
+              ".map(|elapsed| elapsed.as_secs())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn into_readback_only(",
+            "sequence": [
+              "self,",
+              "binding::require_plan(&self, &plan)?",
+              "OriginalCircuitOnPolicyCohortReadbackV1::retaining(self, plan)",
+              "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?",
+              "Ok(readback)"
+            ],
+            "top_level": [
+              "binding::require_plan(&self, &plan)?",
+              "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?"
+            ]
+          },
+          {
+            "function": "fn into_original_readback(",
+            "sequence": [
+              "self,\n    )",
+              "if !self.release_completed || self.original.fenced",
+              "return Err(Error::Indeterminate)",
+              "OriginalCircuitOnPolicyCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )"
+            ],
+            "top_level": [
+              "if !self.release_completed || self.original.fenced"
+            ]
+          },
+          {
+            "function": "fn release_after_consumption(",
+            "sequence": [
+              "self.release_attempted = true",
+              "Err(ProductProviderErrorV1::Rejected)"
+            ],
+            "top_level": [
+              "self.release_attempted = true"
+            ]
+          },
+          {
+            "function": "fn release_paired_after_consumption(",
+            "sequence": [
+              "pairing: &OnPolicyPairingContractV1",
+              "self.release_with_clock(receipt, pairing, now)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+        "required": [
+          "pub struct OriginalCircuitOnPolicyCohortV1",
+          "owners: OriginalCircuitEvaluationSourceOwnersV1",
+          "config: OriginalCircuitOnPolicyCohortConfigV1",
+          "manifest: Option<Digest32>",
+          "dataset: Option<DatasetSnapshotReceiptV3>",
+          "fenced: bool",
+          "pub struct OriginalCircuitOnPolicyFinalHoldoutProviderV1",
+          "release_attempted: bool",
+          "same exact original cohort and signatures",
+          "release_completed: bool",
+          "pairing: Option<OnPolicyPairingContractV1>",
+          "release_paired_after_consumption",
+          "OnPolicyTemporalComparisonInputsV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "impl Clone for OriginalCircuitOnPolicyCohortV1",
+          "Deserialize",
+          "pub owners:",
+          "pub config:",
+          "pub fn read_original_with_clock",
+          "pub fn read_current_with_clock",
+          "pub fn release_with_clock",
+          "pub fn reset",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "pub candidate:",
+          "pub fn execute",
+          "pub fn run"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn read_original(",
+              "Self::read_original_with_clock(owners, config, now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_original_with_clock(",
+            "sequence": [
+              "fn read_original_with_clock(",
+              "Self::read_with_policy(owners, config,",
+              "None, clock)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_with_policy(",
+            "sequence": [
+              "fn read_with_policy(",
+              "binding::validate_configuration(&owners, &config, policy.as_deref())?",
+              "manifest: None",
+              "dataset: None",
+              "last_observed_at: 0",
+              "let observed = owner.read_current_with_clock(clock)?",
+              "owner.manifest = Some(observed.manifest)",
+              "owner.dataset = Some(observed.dataset)",
+              "owner.pairing = Some(observed.pairing)",
+              "Ok(owner)"
+            ],
+            "top_level": [
+              "let rule_digest = binding::validate_configuration",
+              "let observed = owner.read_current_with_clock"
+            ]
+          },
+          {
+            "function": "fn into_final_holdout_provider(",
+            "sequence": [
+              "fn into_final_holdout_provider(",
+              "self,",
+              "binding::require_plan(&self, &plan)?",
+              "original: self",
+              "release_attempted: false",
+              "release_completed: false"
+            ],
+            "top_level": [
+              "binding::require_plan(&self, &plan)?"
+            ]
+          },
+          {
+            "function": "fn read_current_with_clock(",
+            "sequence": [
+              "fn read_current_with_clock(",
+              "if self.fenced",
+              "return Err(Error::Indeterminate)",
+              "self.fenced = true",
+              "let started_at = clock()?",
+              "if started_at < self.last_observed_at",
+              "return Err(Error::Binding(",
+              "OriginalCircuitOnPolicyCohortV1::read_original_material(",
+              "expected != observed.manifest",
+              "expected != &observed.dataset",
+              "expected != &observed.pairing",
+              "return Err(Error::Binding(",
+              "self.fenced = false",
+              "Ok(observed)"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "self.fenced = true",
+              "let started_at = clock()?",
+              "if started_at < self.last_observed_at",
+              "self.fenced = false",
+              "Ok(observed)"
+            ]
+          },
+          {
+            "function": "fn authority(",
+            "sequence": [
+              "fn authority(",
+              "AuthorityPosture::DENY_ALL"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn manifest_digest(",
+            "sequence": [
+              "fn manifest_digest(",
+              "self.manifest_with_clock(now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn manifest_with_clock(",
+            "sequence": [
+              "fn manifest_with_clock(",
+              "if self.release_attempted",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "read_current_with_clock(clock)",
+              ".map(|observed| observed.manifest)",
+              ".map_err(provider_error)"
+            ],
+            "top_level": [
+              "if self.release_attempted"
+            ]
+          },
+          {
+            "function": "fn release_with_clock(",
+            "sequence": [
+              "fn release_with_clock(",
+              "if self.release_attempted",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "self.release_attempted = true",
+              "self.plan.product_plan().frozen_plan",
+              "self.original.pairing.as_ref() != Some(pairing)",
+              "receipt.disposition != HoldoutUseDispositionV1::Recorded",
+              "used.disposition != HoldoutUseDispositionV1::Recorded",
+              "receipt.sequence == 0",
+              "receipt.head_digest != receipt.record_digest",
+              "receipt.authority.grants_any()",
+              "used.authority.grants_any()",
+              "used.plan_id != plan.plan_id",
+              "used.plan_digest != plan.plan_digest",
+              "used.claim_scope != plan.claim_scope",
+              "used.candidate_id != plan.candidate_id",
+              "used.baseline_id != plan.baseline_id",
+              "used.objective_digest != plan.objective_digest",
+              "used.dataset_digest != plan.dataset_digest",
+              "used.estimand_digest != plan.estimand_digest",
+              "used.metric_contract_digest != plan.metric_contract_digest",
+              "used.final_holdout_window_id != plan.final_holdout_window_id",
+              "used.holdout_digest != plan.final_holdout_digest",
+              "used.registry_digest.is_zero()",
+              "used.use_digest.is_zero()",
+              "return Err(ProductProviderErrorV1::Rejected)",
+              "read_current_with_clock(clock)",
+              "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+              "return Err(ProductProviderErrorV1::Indeterminate)",
+              "self.release_completed = true",
+              "Ok(observed.inputs)"
+            ],
+            "top_level": [
+              "if self.release_attempted",
+              "self.release_attempted = true",
+              "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+              "self.release_completed = true",
+              "Ok(observed.inputs)"
+            ]
+          },
+          {
+            "function": "fn now(",
+            "sequence": [
+              "fn now(",
+              "SystemTime::now()",
+              ".duration_since(UNIX_EPOCH)",
+              ".map(|elapsed| elapsed.as_secs())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn into_readback_only(",
+            "sequence": [
+              "self,",
+              "binding::require_plan(&self, &plan)?",
+              "OriginalCircuitOnPolicyCohortReadbackV1::retaining(self, plan)",
+              "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?",
+              "Ok(readback)"
+            ],
+            "top_level": [
+              "binding::require_plan(&self, &plan)?",
+              "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?"
+            ]
+          },
+          {
+            "function": "fn into_original_readback(",
+            "sequence": [
+              "self,\n    )",
+              "if !self.release_completed || self.original.fenced",
+              "return Err(Error::Indeterminate)",
+              "OriginalCircuitOnPolicyCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )"
+            ],
+            "top_level": [
+              "if !self.release_completed || self.original.fenced"
+            ]
+          },
+          {
+            "function": "fn release_after_consumption(",
+            "sequence": [
+              "self.release_attempted = true",
+              "Err(ProductProviderErrorV1::Rejected)"
+            ],
+            "top_level": [
+              "self.release_attempted = true"
+            ]
+          },
+          {
+            "function": "fn release_paired_after_consumption(",
+            "sequence": [
+              "pairing: &OnPolicyPairingContractV1",
+              "self.release_with_clock(receipt, pairing, now)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "reason": "Preserve the complete original record; move constructor body into actual common policy path or project the new verified policy result without changing original signed primary facts.",
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs\"\nrequired = [\"pub struct OriginalCircuitOnPolicyCohortV1\", \"owners: OriginalCircuitEvaluationSourceOwnersV1\", \"config: OriginalCircuitOnPolicyCohortConfigV1\", \"manifest: Option<Digest32>\", \"dataset: Option<DatasetSnapshotReceiptV3>\", \"fenced: bool\", \"pub struct OriginalCircuitOnPolicyFinalHoldoutProviderV1\", \"release_attempted: bool\", \"same exact original cohort and signatures\", \"release_completed: bool\", \"pairing: Option<OnPolicyPairingContractV1>\", \"release_paired_after_consumption\", \"OnPolicyTemporalComparisonInputsV1\"]\nforbidden = [\"SigningKey\", \"File::open\", \"File::create\", \"UnixStream::connect\", \"impl Clone for OriginalCircuitOnPolicyCohortV1\", \"Deserialize\", \"pub owners:\", \"pub config:\", \"pub fn read_original_with_clock\", \"pub fn read_current_with_clock\", \"pub fn release_with_clock\", \"pub fn reset\", \"unwrap_or\", \"if false\", \"LearningEvidenceVerifierV1::new\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\", \"pub candidate:\", \"pub fn execute\", \"pub fn run\"]\nrequired_function_order = [{ \"function\" = \"fn read_original(\", \"sequence\" = [\"fn read_original(\", \"Self::read_original_with_clock(owners, config, now)\"], \"top_level\" = [] }, { \"function\" = \"fn read_original_with_clock(\", \"sequence\" = [\"fn read_original_with_clock(\", \"binding::validate_configuration(&owners, &config)?\", \"manifest: None\", \"dataset: None\", \"last_observed_at: 0\", \"let observed = owner.read_current_with_clock(clock)?\", \"owner.manifest = Some(observed.manifest)\", \"owner.dataset = Some(observed.dataset)\", \"owner.pairing = Some(observed.pairing)\", \"Ok(owner)\"], \"top_level\" = [\"let rule_digest = binding::validate_configuration\", \"let observed = owner.read_current_with_clock\"] }, { \"function\" = \"fn into_final_holdout_provider(\", \"sequence\" = [\"fn into_final_holdout_provider(\", \"self,\", \"binding::require_plan(&self, &plan)?\", \"original: self\", \"release_attempted: false\", \"release_completed: false\"], \"top_level\" = [\"binding::require_plan(&self, &plan)?\"] }, { \"function\" = \"fn read_current_with_clock(\", \"sequence\" = [\"fn read_current_with_clock(\", \"if self.fenced\", \"return Err(Error::Indeterminate)\", \"self.fenced = true\", \"let started_at = clock()?\", \"if started_at < self.last_observed_at\", \"return Err(Error::Binding(\", \"OriginalCircuitOnPolicyCohortV1::read_original_material(\", \"expected != observed.manifest\", \"expected != &observed.dataset\", \"expected != &observed.pairing\", \"return Err(Error::Binding(\", \"self.fenced = false\", \"Ok(observed)\"], \"top_level\" = [\"if self.fenced\", \"self.fenced = true\", \"let started_at = clock()?\", \"if started_at < self.last_observed_at\", \"self.fenced = false\", \"Ok(observed)\"] }, { \"function\" = \"fn authority(\", \"sequence\" = [\"fn authority(\", \"AuthorityPosture::DENY_ALL\"], \"top_level\" = [] }, { \"function\" = \"fn manifest_digest(\", \"sequence\" = [\"fn manifest_digest(\", \"self.manifest_with_clock(now)\"], \"top_level\" = [] }, { \"function\" = \"fn manifest_with_clock(\", \"sequence\" = [\"fn manifest_with_clock(\", \"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"read_current_with_clock(clock)\", \".map(|observed| observed.manifest)\", \".map_err(provider_error)\"], \"top_level\" = [\"if self.release_attempted\"] }, { \"function\" = \"fn release_with_clock(\", \"sequence\" = [\"fn release_with_clock(\", \"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"self.release_attempted = true\", \"self.plan.product_plan().frozen_plan\", \"self.original.pairing.as_ref() != Some(pairing)\", \"receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"used.disposition != HoldoutUseDispositionV1::Recorded\", \"receipt.sequence == 0\", \"receipt.head_digest != receipt.record_digest\", \"receipt.authority.grants_any()\", \"used.authority.grants_any()\", \"used.plan_id != plan.plan_id\", \"used.plan_digest != plan.plan_digest\", \"used.claim_scope != plan.claim_scope\", \"used.candidate_id != plan.candidate_id\", \"used.baseline_id != plan.baseline_id\", \"used.objective_digest != plan.objective_digest\", \"used.dataset_digest != plan.dataset_digest\", \"used.estimand_digest != plan.estimand_digest\", \"used.metric_contract_digest != plan.metric_contract_digest\", \"used.final_holdout_window_id != plan.final_holdout_window_id\", \"used.holdout_digest != plan.final_holdout_digest\", \"used.registry_digest.is_zero()\", \"used.use_digest.is_zero()\", \"return Err(ProductProviderErrorV1::Rejected)\", \"read_current_with_clock(clock)\", \"if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"self.release_completed = true\", \"Ok(observed.inputs)\"], \"top_level\" = [\"if self.release_attempted\", \"self.release_attempted = true\", \"if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing\", \"self.release_completed = true\", \"Ok(observed.inputs)\"] }, { \"function\" = \"fn now(\", \"sequence\" = [\"fn now(\", \"SystemTime::now()\", \".duration_since(UNIX_EPOCH)\", \".map(|elapsed| elapsed.as_secs())\"], \"top_level\" = [] }, { \"function\" = \"fn into_readback_only(\", \"sequence\" = [\"self,\", \"binding::require_plan(&self, &plan)?\", \"OriginalCircuitOnPolicyCohortReadbackV1::retaining(self, plan)\", \"OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?\", \"Ok(readback)\"], \"top_level\" = [\"binding::require_plan(&self, &plan)?\", \"OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?\"] }, { \"function\" = \"fn into_original_readback(\", \"sequence\" = [\"self,\\n    )\", \"if !self.release_completed || self.original.fenced\", \"return Err(Error::Indeterminate)\", \"OriginalCircuitOnPolicyCohortReadbackV1::retaining(\\n            self.original,\\n            self.plan,\\n        )\"], \"top_level\" = [\"if !self.release_completed || self.original.fenced\"] }, { \"function\" = \"fn release_after_consumption(\", \"sequence\" = [\"self.release_attempted = true\", \"Err(ProductProviderErrorV1::Rejected)\"], \"top_level\" = [\"self.release_attempted = true\"] }, { \"function\" = \"fn release_paired_after_consumption(\", \"sequence\" = [\"pairing: &OnPolicyPairingContractV1\", \"self.release_with_clock(receipt, pairing, now)\"], \"top_level\" = [] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs\"\nrequired = [\"pub struct OriginalCircuitOnPolicyCohortV1\", \"owners: OriginalCircuitEvaluationSourceOwnersV1\", \"config: OriginalCircuitOnPolicyCohortConfigV1\", \"manifest: Option<Digest32>\", \"dataset: Option<DatasetSnapshotReceiptV3>\", \"fenced: bool\", \"pub struct OriginalCircuitOnPolicyFinalHoldoutProviderV1\", \"release_attempted: bool\", \"same exact original cohort and signatures\", \"release_completed: bool\", \"pairing: Option<OnPolicyPairingContractV1>\", \"release_paired_after_consumption\", \"OnPolicyTemporalComparisonInputsV1\"]\nforbidden = [\"SigningKey\", \"File::open\", \"File::create\", \"UnixStream::connect\", \"impl Clone for OriginalCircuitOnPolicyCohortV1\", \"Deserialize\", \"pub owners:\", \"pub config:\", \"pub fn read_original_with_clock\", \"pub fn read_current_with_clock\", \"pub fn release_with_clock\", \"pub fn reset\", \"unwrap_or\", \"if false\", \"LearningEvidenceVerifierV1::new\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\", \"pub candidate:\", \"pub fn execute\", \"pub fn run\"]\nrequired_function_order = [\n  { function = \"fn read_original(\", sequence = [\"fn read_original(\", \"Self::read_original_with_clock(owners, config, now)\"], top_level = [] },\n  { function = \"fn read_original_with_clock(\", sequence = [\"fn read_original_with_clock(\", \"Self::read_with_policy(owners, config,\", \"None, clock)\"], top_level = [] },\n  { function = \"fn read_with_policy(\", sequence = [\"fn read_with_policy(\", \"binding::validate_configuration(&owners, &config, policy.as_deref())?\", \"manifest: None\", \"dataset: None\", \"last_observed_at: 0\", \"let observed = owner.read_current_with_clock(clock)?\", \"owner.manifest = Some(observed.manifest)\", \"owner.dataset = Some(observed.dataset)\", \"owner.pairing = Some(observed.pairing)\", \"Ok(owner)\"], top_level = [\"let rule_digest = binding::validate_configuration\", \"let observed = owner.read_current_with_clock\"] },\n  { function = \"fn into_final_holdout_provider(\", sequence = [\"fn into_final_holdout_provider(\", \"self,\", \"binding::require_plan(&self, &plan)?\", \"original: self\", \"release_attempted: false\", \"release_completed: false\"], top_level = [\"binding::require_plan(&self, &plan)?\"] },\n  { function = \"fn read_current_with_clock(\", sequence = [\"fn read_current_with_clock(\", \"if self.fenced\", \"return Err(Error::Indeterminate)\", \"self.fenced = true\", \"let started_at = clock()?\", \"if started_at < self.last_observed_at\", \"return Err(Error::Binding(\", \"OriginalCircuitOnPolicyCohortV1::read_original_material(\", \"expected != observed.manifest\", \"expected != &observed.dataset\", \"expected != &observed.pairing\", \"return Err(Error::Binding(\", \"self.fenced = false\", \"Ok(observed)\"], top_level = [\"if self.fenced\", \"self.fenced = true\", \"let started_at = clock()?\", \"if started_at < self.last_observed_at\", \"self.fenced = false\", \"Ok(observed)\"] },\n  { function = \"fn authority(\", sequence = [\"fn authority(\", \"AuthorityPosture::DENY_ALL\"], top_level = [] },\n  { function = \"fn manifest_digest(\", sequence = [\"fn manifest_digest(\", \"self.manifest_with_clock(now)\"], top_level = [] },\n  { function = \"fn manifest_with_clock(\", sequence = [\"fn manifest_with_clock(\", \"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"read_current_with_clock(clock)\", \".map(|observed| observed.manifest)\", \".map_err(provider_error)\"], top_level = [\"if self.release_attempted\"] },\n  { function = \"fn release_with_clock(\", sequence = [\"fn release_with_clock(\", \"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"self.release_attempted = true\", \"self.plan.product_plan().frozen_plan\", \"self.original.pairing.as_ref() != Some(pairing)\", \"receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"used.disposition != HoldoutUseDispositionV1::Recorded\", \"receipt.sequence == 0\", \"receipt.head_digest != receipt.record_digest\", \"receipt.authority.grants_any()\", \"used.authority.grants_any()\", \"used.plan_id != plan.plan_id\", \"used.plan_digest != plan.plan_digest\", \"used.claim_scope != plan.claim_scope\", \"used.candidate_id != plan.candidate_id\", \"used.baseline_id != plan.baseline_id\", \"used.objective_digest != plan.objective_digest\", \"used.dataset_digest != plan.dataset_digest\", \"used.estimand_digest != plan.estimand_digest\", \"used.metric_contract_digest != plan.metric_contract_digest\", \"used.final_holdout_window_id != plan.final_holdout_window_id\", \"used.holdout_digest != plan.final_holdout_digest\", \"used.registry_digest.is_zero()\", \"used.use_digest.is_zero()\", \"return Err(ProductProviderErrorV1::Rejected)\", \"read_current_with_clock(clock)\", \"if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing\", \"return Err(ProductProviderErrorV1::Indeterminate)\", \"self.release_completed = true\", \"Ok(observed.inputs)\"], top_level = [\"if self.release_attempted\", \"self.release_attempted = true\", \"if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing\", \"self.release_completed = true\", \"Ok(observed.inputs)\"] },\n  { function = \"fn now(\", sequence = [\"fn now(\", \"SystemTime::now()\", \".duration_since(UNIX_EPOCH)\", \".map(|elapsed| elapsed.as_secs())\"], top_level = [] },\n  { function = \"fn into_readback_only(\", sequence = [\"self,\", \"binding::require_plan(&self, &plan)?\", \"OriginalCircuitOnPolicyCohortReadbackV1::retaining(self, plan)\", \"OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?\", \"Ok(readback)\"], top_level = [\"binding::require_plan(&self, &plan)?\", \"OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?\"] },\n  { function = \"fn into_original_readback(\", sequence = [\"self,\\n    )\", \"if !self.release_completed || self.original.fenced\", \"return Err(Error::Indeterminate)\", \"OriginalCircuitOnPolicyCohortReadbackV1::retaining(\\n            self.original,\\n            self.plan,\\n        )\"], top_level = [\"if !self.release_completed || self.original.fenced\"] },\n  { function = \"fn release_after_consumption(\", sequence = [\"self.release_attempted = true\", \"Err(ProductProviderErrorV1::Rejected)\"], top_level = [\"self.release_attempted = true\"] },\n  { function = \"fn release_paired_after_consumption(\", sequence = [\"pairing: &OnPolicyPairingContractV1\", \"self.release_with_clock(receipt, pairing, now)\"], top_level = [] },\n]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "required": [
+          "NoUpdate is not a Candidate evaluation",
+          "original registered panel member",
+          "Candidate and retained baseline are distinct"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "from_receipt",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn validate_configuration(",
+            "sequence": [
+              "fn validate_configuration(",
+              "let digest = rule.canonical_digest()?",
+              "config.registration.primary()",
+              ".chain(config.registration.retention())",
+              "member.plan_id == rule.plan_id",
+              "member.task_digest != rule.task_digest",
+              "member.cohort_rule_digest != digest",
+              "config.training.request.evaluation_profile != config.registration.evaluation_profile()",
+              "config.candidate.receipt() != config.training.receipts.get(2)",
+              "config.candidate.attestation() != &config.training_evidence",
+              "config.freeze_plan.inclusion_policy_digest != digest",
+              "config.freeze_evidence.principal_id != config.training.owners.evaluator",
+              "owners.ledger.verifier().trust_digest() != config.verifier.trust_digest()",
+              "owners.sources.len() > MAX_SOURCES",
+              "actual.len() != owners.sources.len()",
+              "actual != rule.run_ids()",
+              "actual.contains(&config.training.request.source_run_id)",
+              "source.identity.agent_id.as_str() != input.scope.agent_id.as_str()",
+              "super::protocol::candidate_definition(config)?",
+              "Ok(digest)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_training(",
+            "sequence": [
+              "fn authenticate_training(",
+              "LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?",
+              "config.scope.validate_snapshot(&config.training)?",
+              "original.next_stage() != Some(LearningIterationStageV1::Evaluation)",
+              "config.training.receipts.len() != 3",
+              "config.training.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "current >= config.training.request.envelope.expiry_unix_seconds",
+              "LearningIterationObservationV1::Training { candidate, .. }",
+              "receipt.actor_id != config.training.owners.trainer",
+              "config.training_evidence.principal_id != receipt.actor_id",
+              "config.training_evidence.issued_at != receipt.observed_unix_seconds",
+              "receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start",
+              "config.verifier.verify(",
+              "LearningEvidenceRoleV1::Generator",
+              "&config.training_evidence",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "if candidate == baseline",
+              "config.candidate.bundle().digest()",
+              "config.candidate.receipt() != receipt",
+              "config.candidate.attestation() != &config.training_evidence",
+              "config.candidate.model().components() != &config.candidate.bundle().components",
+              "Ok(CandidateBinding"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_plan(",
+            "sequence": [
+              "fn require_plan(",
+              "authenticate_training(&original.config, super::now()?)?",
+              "if original.fenced",
+              "frozen.plan_id != rule.plan_id",
+              "frozen.dataset_digest != dataset.snapshot.dataset_digest",
+              "frozen.final_holdout_digest != original.observed_manifest_digest()?",
+              "frozen.final_holdout_window_id != rule.holdout_window_id",
+              "frozen.authority.grants_any()",
+              "product.candidate_temporal_plan_digest != rule.candidate_plan.plan_digest",
+              "product.baseline_temporal_plan_digest != rule.baseline_plan.plan_digest",
+              "product.comparison_mode()",
+              "ProductComparisonModeV1::PairedOnPolicy(",
+              "original.observed_pairing_contract()?.clone()",
+              "record.learning_evaluation_profile",
+              "original\n                    .config\n                    .registration\n                    .evaluation_profile()\n                    .into_array()",
+              "record.candidate.manifest.bundle_digest != training.candidate.into_array()",
+              "record.fixed_expert.manifest.bundle_digest != training.baseline.into_array()",
+              "record.candidate.cost.identity().task_digest != rule.task_digest.into_array()",
+              "record.fixed_expert.cost.identity().task_digest != rule.task_digest.into_array()",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn pairing_contract(",
+            "sequence": [
+              "config.rule.protocol.canonical_digest()?",
+              "for pair in &config.rule.pairs",
+              "pair.input.scope.principal_digest",
+              "owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)",
+              "crate::circuit_learning_run_id_v1(",
+              "if run != episode.behavior_run_id",
+              "decision_id: run",
+              "principal_lineage: principal_lineage.clone()",
+              "episode_lineage: episode_lineage(ledger, &episode.episode_id)?",
+              "behavior_run_id: episode.behavior_run_id.clone()",
+              "input_digest: super::contract::input_digest(&pair.input)?",
+              "candidate: arm(&pair.candidate, training.candidate)?",
+              "baseline: arm(&pair.baseline, training.baseline)?",
+              "pairs.sort_by(",
+              "pairing.digest()",
+              "Ok(pairing)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn episode_lineage(",
+            "sequence": [
+              "ledger.binding_digest().as_array()",
+              "episode.as_str().as_bytes()"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "required": [
+          "NoUpdate is not a Candidate evaluation",
+          "original registered panel member",
+          "Candidate and retained baseline are distinct"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "from_receipt",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn validate_configuration(",
+            "sequence": [
+              "fn validate_configuration(",
+              "let digest = match policy",
+              "config.registration.primary()",
+              ".chain(config.registration.retention())",
+              "member.plan_id == rule.plan_id",
+              "member.task_digest != rule.task_digest",
+              "member.cohort_rule_digest != digest",
+              "config.training.request.evaluation_profile != config.registration.evaluation_profile()",
+              "config.candidate.receipt() != config.training.receipts.get(2)",
+              "config.candidate.attestation() != &config.training_evidence",
+              "config.freeze_plan.inclusion_policy_digest != digest",
+              "config.freeze_evidence.principal_id != config.training.owners.evaluator",
+              "owners.ledger.verifier().trust_digest() != config.verifier.trust_digest()",
+              "owners.sources.len() > MAX_SOURCES",
+              "actual.len() != owners.sources.len()",
+              "actual != rule.run_ids()",
+              "actual.contains(&config.training.request.source_run_id)",
+              "source.identity.agent_id.as_str() != input.scope.agent_id.as_str()",
+              "super::protocol::candidate_definition(config)?",
+              "Ok(digest)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_training(",
+            "sequence": [
+              "fn authenticate_training(",
+              "LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?",
+              "config.scope.validate_snapshot(&config.training)?",
+              "original.next_stage() != Some(LearningIterationStageV1::Evaluation)",
+              "config.training.receipts.len() != 3",
+              "config.training.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "current >= config.training.request.envelope.expiry_unix_seconds",
+              "LearningIterationObservationV1::Training { candidate, .. }",
+              "receipt.actor_id != config.training.owners.trainer",
+              "config.training_evidence.principal_id != receipt.actor_id",
+              "config.training_evidence.issued_at != receipt.observed_unix_seconds",
+              "receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start",
+              "config.verifier.verify(",
+              "LearningEvidenceRoleV1::Generator",
+              "&config.training_evidence",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "if candidate == baseline",
+              "CellCompatibilityBundleV1::digest(config.candidate.bundle())",
+              "config.candidate.receipt() != receipt",
+              "config.candidate.attestation() != &config.training_evidence",
+              "config.candidate.model().components() != &config.candidate.bundle().components",
+              "Ok(CandidateBinding"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_plan(",
+            "sequence": [
+              "fn require_plan(",
+              "authenticate_training(&original.config, super::now()?)?",
+              "if original.fenced",
+              "frozen.plan_id != rule.plan_id",
+              "frozen.dataset_digest != dataset.snapshot.dataset_digest",
+              "frozen.final_holdout_digest != original.observed_manifest_digest()?",
+              "frozen.final_holdout_window_id != rule.holdout_window_id",
+              "frozen.authority.grants_any()",
+              "product.candidate_temporal_plan_digest != rule.candidate_plan.plan_digest",
+              "product.baseline_temporal_plan_digest != rule.baseline_plan.plan_digest",
+              "product.comparison_mode()",
+              "ProductComparisonModeV1::PairedOnPolicy(",
+              "original.observed_pairing_contract()?.clone()",
+              "record.learning_evaluation_profile",
+              "original\n                    .config\n                    .registration\n                    .evaluation_profile()\n                    .into_array()",
+              "record.candidate.manifest.bundle_digest != training.candidate.into_array()",
+              "record.fixed_expert.manifest.bundle_digest != training.baseline.into_array()",
+              "record.candidate.cost.identity().task_digest != rule.task_digest.into_array()",
+              "record.fixed_expert.cost.identity().task_digest != rule.task_digest.into_array()",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn pairing_contract(",
+            "sequence": [
+              "config.rule.protocol.canonical_digest()?",
+              "for pair in &config.rule.pairs",
+              "pair.input.scope.principal_digest",
+              "owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)",
+              "crate::circuit_learning_run_id_v1(",
+              "if run != episode.behavior_run_id",
+              "decision_id: run",
+              "principal_lineage: principal_lineage.clone()",
+              "episode_lineage: episode_lineage(ledger, &episode.episode_id)?",
+              "behavior_run_id: episode.behavior_run_id.clone()",
+              "input_digest: super::contract::input_digest(&pair.input)?",
+              "candidate: arm(&pair.candidate, training.candidate)?",
+              "baseline: arm(&pair.baseline, training.baseline)?",
+              "pairs.sort_by(",
+              "OnPolicyPairingContractV1::digest(&pairing)",
+              "Ok(pairing)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn episode_lineage(",
+            "sequence": [
+              "ledger.binding_digest().as_array()",
+              "episode.as_str().as_bytes()"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "reason": "Preserve the complete original record; move constructor body into actual common policy path or project the new verified policy result without changing original signed primary facts.",
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs\"\nrequired = [\"NoUpdate is not a Candidate evaluation\", \"original registered panel member\", \"Candidate and retained baseline are distinct\"]\nforbidden = [\"SigningKey\", \"File::open\", \"from_receipt\", \"unwrap_or\", \"if false\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"File::create\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\"]\nrequired_function_order = [{ \"function\" = \"fn validate_configuration(\", \"sequence\" = [\"fn validate_configuration(\", \"let digest = rule.canonical_digest()?\", \"config.registration.primary()\", \".chain(config.registration.retention())\", \"member.plan_id == rule.plan_id\", \"member.task_digest != rule.task_digest\", \"member.cohort_rule_digest != digest\", \"config.training.request.evaluation_profile != config.registration.evaluation_profile()\", \"config.candidate.receipt() != config.training.receipts.get(2)\", \"config.candidate.attestation() != &config.training_evidence\", \"config.freeze_plan.inclusion_policy_digest != digest\", \"config.freeze_evidence.principal_id != config.training.owners.evaluator\", \"owners.ledger.verifier().trust_digest() != config.verifier.trust_digest()\", \"owners.sources.len() > MAX_SOURCES\", \"actual.len() != owners.sources.len()\", \"actual != rule.run_ids()\", \"actual.contains(&config.training.request.source_run_id)\", \"source.identity.agent_id.as_str() != input.scope.agent_id.as_str()\", \"super::protocol::candidate_definition(config)?\", \"Ok(digest)\"], \"top_level\" = [] }, { \"function\" = \"fn authenticate_training(\", \"sequence\" = [\"fn authenticate_training(\", \"LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?\", \"config.scope.validate_snapshot(&config.training)?\", \"original.next_stage() != Some(LearningIterationStageV1::Evaluation)\", \"config.training.receipts.len() != 3\", \"config.training.owners.evidence_trust_digest != config.verifier.trust_digest()\", \"current >= config.training.request.envelope.expiry_unix_seconds\", \"LearningIterationObservationV1::Training { candidate, .. }\", \"receipt.actor_id != config.training.owners.trainer\", \"config.training_evidence.principal_id != receipt.actor_id\", \"config.training_evidence.issued_at != receipt.observed_unix_seconds\", \"receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start\", \"config.verifier.verify(\", \"LearningEvidenceRoleV1::Generator\", \"&config.training_evidence\", \"learning_iteration_receipt_signing_bytes_v1(receipt)?\", \"if candidate == baseline\", \"config.candidate.bundle().digest()\", \"config.candidate.receipt() != receipt\", \"config.candidate.attestation() != &config.training_evidence\", \"config.candidate.model().components() != &config.candidate.bundle().components\", \"Ok(CandidateBinding\"], \"top_level\" = [] }, { \"function\" = \"fn require_plan(\", \"sequence\" = [\"fn require_plan(\", \"authenticate_training(&original.config, super::now()?)?\", \"if original.fenced\", \"frozen.plan_id != rule.plan_id\", \"frozen.dataset_digest != dataset.snapshot.dataset_digest\", \"frozen.final_holdout_digest != original.observed_manifest_digest()?\", \"frozen.final_holdout_window_id != rule.holdout_window_id\", \"frozen.authority.grants_any()\", \"product.candidate_temporal_plan_digest != rule.candidate_plan.plan_digest\", \"product.baseline_temporal_plan_digest != rule.baseline_plan.plan_digest\", \"product.comparison_mode()\", \"ProductComparisonModeV1::PairedOnPolicy(\", \"original.observed_pairing_contract()?.clone()\", \"record.learning_evaluation_profile\", \"original\\n                    .config\\n                    .registration\\n                    .evaluation_profile()\\n                    .into_array()\", \"record.candidate.manifest.bundle_digest != training.candidate.into_array()\", \"record.fixed_expert.manifest.bundle_digest != training.baseline.into_array()\", \"record.candidate.cost.identity().task_digest != rule.task_digest.into_array()\", \"record.fixed_expert.cost.identity().task_digest != rule.task_digest.into_array()\", \"Ok(())\"], \"top_level\" = [] }, { \"function\" = \"fn pairing_contract(\", \"sequence\" = [\"config.rule.protocol.canonical_digest()?\", \"for pair in &config.rule.pairs\", \"pair.input.scope.principal_digest\", \"owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)\", \"crate::circuit_learning_run_id_v1(\", \"if run != episode.behavior_run_id\", \"decision_id: run\", \"principal_lineage: principal_lineage.clone()\", \"episode_lineage: episode_lineage(ledger, &episode.episode_id)?\", \"behavior_run_id: episode.behavior_run_id.clone()\", \"input_digest: super::contract::input_digest(&pair.input)?\", \"candidate: arm(&pair.candidate, training.candidate)?\", \"baseline: arm(&pair.baseline, training.baseline)?\", \"pairs.sort_by(\", \"pairing.digest()\", \"Ok(pairing)\"], \"top_level\" = [] }, { \"function\" = \"fn episode_lineage(\", \"sequence\" = [\"ledger.binding_digest().as_array()\", \"episode.as_str().as_bytes()\"], \"top_level\" = [] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs\"\nrequired = [\"NoUpdate is not a Candidate evaluation\", \"original registered panel member\", \"Candidate and retained baseline are distinct\"]\nforbidden = [\"SigningKey\", \"File::open\", \"from_receipt\", \"unwrap_or\", \"if false\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"File::create\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\"]\nrequired_function_order = [\n  { function = \"fn validate_configuration(\", sequence = [\"fn validate_configuration(\", \"let digest = match policy\", \"config.registration.primary()\", \".chain(config.registration.retention())\", \"member.plan_id == rule.plan_id\", \"member.task_digest != rule.task_digest\", \"member.cohort_rule_digest != digest\", \"config.training.request.evaluation_profile != config.registration.evaluation_profile()\", \"config.candidate.receipt() != config.training.receipts.get(2)\", \"config.candidate.attestation() != &config.training_evidence\", \"config.freeze_plan.inclusion_policy_digest != digest\", \"config.freeze_evidence.principal_id != config.training.owners.evaluator\", \"owners.ledger.verifier().trust_digest() != config.verifier.trust_digest()\", \"owners.sources.len() > MAX_SOURCES\", \"actual.len() != owners.sources.len()\", \"actual != rule.run_ids()\", \"actual.contains(&config.training.request.source_run_id)\", \"source.identity.agent_id.as_str() != input.scope.agent_id.as_str()\", \"super::protocol::candidate_definition(config)?\", \"Ok(digest)\"], top_level = [] },\n  { function = \"fn authenticate_training(\", sequence = [\"fn authenticate_training(\", \"LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?\", \"config.scope.validate_snapshot(&config.training)?\", \"original.next_stage() != Some(LearningIterationStageV1::Evaluation)\", \"config.training.receipts.len() != 3\", \"config.training.owners.evidence_trust_digest != config.verifier.trust_digest()\", \"current >= config.training.request.envelope.expiry_unix_seconds\", \"LearningIterationObservationV1::Training { candidate, .. }\", \"receipt.actor_id != config.training.owners.trainer\", \"config.training_evidence.principal_id != receipt.actor_id\", \"config.training_evidence.issued_at != receipt.observed_unix_seconds\", \"receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start\", \"config.verifier.verify(\", \"LearningEvidenceRoleV1::Generator\", \"&config.training_evidence\", \"learning_iteration_receipt_signing_bytes_v1(receipt)?\", \"if candidate == baseline\", \"CellCompatibilityBundleV1::digest(config.candidate.bundle())\", \"config.candidate.receipt() != receipt\", \"config.candidate.attestation() != &config.training_evidence\", \"config.candidate.model().components() != &config.candidate.bundle().components\", \"Ok(CandidateBinding\"], top_level = [] },\n  { function = \"fn require_plan(\", sequence = [\"fn require_plan(\", \"authenticate_training(&original.config, super::now()?)?\", \"if original.fenced\", \"frozen.plan_id != rule.plan_id\", \"frozen.dataset_digest != dataset.snapshot.dataset_digest\", \"frozen.final_holdout_digest != original.observed_manifest_digest()?\", \"frozen.final_holdout_window_id != rule.holdout_window_id\", \"frozen.authority.grants_any()\", \"product.candidate_temporal_plan_digest != rule.candidate_plan.plan_digest\", \"product.baseline_temporal_plan_digest != rule.baseline_plan.plan_digest\", \"product.comparison_mode()\", \"ProductComparisonModeV1::PairedOnPolicy(\", \"original.observed_pairing_contract()?.clone()\", \"record.learning_evaluation_profile\", \"original\\n                    .config\\n                    .registration\\n                    .evaluation_profile()\\n                    .into_array()\", \"record.candidate.manifest.bundle_digest != training.candidate.into_array()\", \"record.fixed_expert.manifest.bundle_digest != training.baseline.into_array()\", \"record.candidate.cost.identity().task_digest != rule.task_digest.into_array()\", \"record.fixed_expert.cost.identity().task_digest != rule.task_digest.into_array()\", \"Ok(())\"], top_level = [] },\n  { function = \"fn pairing_contract(\", sequence = [\"config.rule.protocol.canonical_digest()?\", \"for pair in &config.rule.pairs\", \"pair.input.scope.principal_digest\", \"owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)\", \"crate::circuit_learning_run_id_v1(\", \"if run != episode.behavior_run_id\", \"decision_id: run\", \"principal_lineage: principal_lineage.clone()\", \"episode_lineage: episode_lineage(ledger, &episode.episode_id)?\", \"behavior_run_id: episode.behavior_run_id.clone()\", \"input_digest: super::contract::input_digest(&pair.input)?\", \"candidate: arm(&pair.candidate, training.candidate)?\", \"baseline: arm(&pair.baseline, training.baseline)?\", \"pairs.sort_by(\", \"OnPolicyPairingContractV1::digest(&pairing)\", \"Ok(pairing)\"], top_level = [] },\n  { function = \"fn episode_lineage(\", sequence = [\"ledger.binding_digest().as_array()\", \"episode.as_str().as_bytes()\"], top_level = [] },\n]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+        "required": [
+          "head.literal(b\"HPEXRP01\")?",
+          "head.literal(b\"HPEXR001\")?",
+          "proof.literal(b\"hepta.circuit.original-on-policy-cohort-current.v1\\0\")?",
+          "proof.literal(b\"hepta.circuit.original-evaluation-cohort-current.v1\\0\")?"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "if false",
+          "unwrap_or",
+          "Deserialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn execution(",
+            "sequence": [
+              "let body = raw.bytes()?",
+              "raw.finish()?",
+              "&original != signed || body.len() < 200",
+              "paired::is_paired(member) && body.len() < 232",
+              "let mut key",
+              "Digest32::of_bytes(&member.plan)",
+              "Digest32::of_bytes(body)",
+              "if payload != expected",
+              "let mut head = Reader::new(body)",
+              "if paired::is_paired(member)",
+              "head.literal(",
+              "else",
+              "head.literal(",
+              "head.digest()? != Digest32::of_bytes(&member.plan)",
+              "paired::is_paired(member) && head.digest()?.is_zero()",
+              "body[body.len() - 160..]",
+              "tail.digest()? != bundle.estimate",
+              "tail.digest()? != bundle.support",
+              "tail.digest()? != bundle.confidence",
+              "tail.digest()? != execution_digest",
+              "tail.finish()?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn cohort(",
+            "sequence": [
+              "context.verifier.verify(",
+              "LearningEvidenceRoleV1::Evaluator",
+              "verify_signed_actor_separation(generator, &evaluator, current)?",
+              "if paired::is_paired(member)",
+              "proof.literal(",
+              "else",
+              "proof.literal(",
+              "proof.digest()? != checked.plan",
+              "proof.digest()? != checked.manifest",
+              "proof.digest()? != checked.dataset",
+              "proof.digest()? != task.cohort_rule_digest",
+              "proof.digest()? != context.registration.evaluation_profile()",
+              "proof.digest()? != context.training.head_digest",
+              "proof.digest()? != context.scope.binding()",
+              "if proof.digest()?.is_zero() || proof.digest()?.is_zero()",
+              "if paired::is_paired(member)",
+              "paired::require_pairing(member, context, proof.digest()?)?",
+              "for evidence in [&context.training_evidence, &signed]",
+              "full.extend_from_slice(&evidence.signature)",
+              "proof.take(full.len())? != full",
+              "proof.take(payload.len())? != payload",
+              "proof.finish()?",
+              "let inclusion = freeze.digest()?",
+              "paired::is_paired(member) && inclusion != task.cohort_rule_digest",
+              "count == 0 || count > 4096",
+              "freeze.finish()?",
+              "verify_dataset_snapshot_receipt_v3(",
+              "pending_outcomes: 0",
+              "censored_outcomes: 0",
+              "inclusion_policy_digest: inclusion",
+              "current,",
+              "Ok(Digest32::of_bytes(&member.cohort))"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn holdout(",
+            "sequence": [
+              "Digest32::of_bytes(&member.holdout) != bundle.holdout",
+              "holdout.literal(",
+              "manifest.is_zero()",
+              "holdout.digest()? != bundle.plan",
+              "holdout.digest()? != bundle.estimand",
+              "holdout.digest()? != Digest32::of_bytes(&member.roles)",
+              "holdout.finish()?",
+              "if paired::is_paired(member)",
+              "paired::holdout(member, bundle)?",
+              "return Ok(manifest)",
+              "let mut plan",
+              "plan.literal(",
+              "Ok(manifest)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+        "required": [
+          "head.literal(b\"HPEXRP01\")?",
+          "head.literal(b\"HPEXR001\")?",
+          "proof.literal(b\"hepta.circuit.original-on-policy-cohort-current.v1\\0\")?",
+          "proof.literal(b\"hepta.circuit.original-evaluation-cohort-current.v1\\0\")?"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "if false",
+          "unwrap_or",
+          "Deserialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn execution(",
+            "sequence": [
+              "let body = raw.bytes()?",
+              "raw.finish()?",
+              "&original != signed || body.len() < 200",
+              "paired::is_paired(member) && body.len() < 232",
+              "let mut key",
+              "Digest32::of_bytes(&member.plan)",
+              "Digest32::of_bytes(body)",
+              "if payload != expected",
+              "let mut head = Reader::new(body)",
+              "if paired::is_paired(member)",
+              "head.literal(",
+              "else",
+              "head.literal(",
+              "head.digest()? != Digest32::of_bytes(&member.plan)",
+              "paired::is_paired(member) && head.digest()?.is_zero()",
+              "body[body.len() - 160..]",
+              "tail.digest()? != bundle.estimate",
+              "tail.digest()? != bundle.support",
+              "tail.digest()? != bundle.confidence",
+              "tail.digest()? != execution_digest",
+              "tail.finish()?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn cohort(",
+            "sequence": [
+              "context.verifier.verify(",
+              "LearningEvidenceRoleV1::Evaluator",
+              "verify_signed_actor_separation(generator, &evaluator, current)?",
+              "if paired::is_paired(member)",
+              "proof.literal(",
+              "else",
+              "proof.literal(",
+              "proof.digest()? != checked.plan",
+              "proof.digest()? != checked.manifest",
+              "proof.digest()? != checked.dataset",
+              "proof.digest()? != task.cohort_rule_digest",
+              "proof.digest()? != context.registration.evaluation_profile()",
+              "proof.digest()? != context.training.head_digest",
+              "proof.digest()? != context.scope.binding()",
+              "if ledger_binding.is_zero() || proof.digest()?.is_zero()",
+              "if paired::is_paired(member)",
+              "paired::require_pairing(member, context, proof.digest()?)?",
+              "for evidence in [&context.training_evidence, &signed]",
+              "full.extend_from_slice(&evidence.signature)",
+              "proof.take(full.len())? != full",
+              "proof.take(payload.len())? != payload",
+              "proof.finish()?",
+              "let inclusion = freeze.digest()?",
+              "paired::is_paired(member) && inclusion != task.cohort_rule_digest",
+              "count == 0 || count > 4096",
+              "freeze.finish()?",
+              "verify_dataset_snapshot_receipt_v3(",
+              "pending_outcomes: 0",
+              "censored_outcomes: 0",
+              "inclusion_policy_digest: inclusion",
+              "current,",
+              "binding: Digest32::of_bytes(&member.cohort)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn holdout(",
+            "sequence": [
+              "Digest32::of_bytes(&member.holdout) != bundle.holdout",
+              "holdout.literal(",
+              "manifest.is_zero()",
+              "holdout.digest()? != bundle.plan",
+              "holdout.digest()? != bundle.estimand",
+              "holdout.digest()? != Digest32::of_bytes(&member.roles)",
+              "holdout.finish()?",
+              "if paired::is_paired(member)",
+              "paired::holdout(member, bundle)?",
+              "return Ok(manifest)",
+              "let mut plan",
+              "plan.literal(",
+              "Ok(manifest)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "reason": "Preserve the complete original record; move constructor body into actual common policy path or project the new verified policy result without changing original signed primary facts.",
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs\"\nrequired = [\"head.literal(b\\\"HPEXRP01\\\")?\", \"head.literal(b\\\"HPEXR001\\\")?\", \"proof.literal(b\\\"hepta.circuit.original-on-policy-cohort-current.v1\\\\0\\\")?\", \"proof.literal(b\\\"hepta.circuit.original-evaluation-cohort-current.v1\\\\0\\\")?\"]\nforbidden = [\"SigningKey\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\", \"if false\", \"unwrap_or\", \"Deserialize\"]\nrequired_function_order = [{ \"function\" = \"fn execution(\", \"sequence\" = [\"let body = raw.bytes()?\", \"raw.finish()?\", \"&original != signed || body.len() < 200\", \"paired::is_paired(member) && body.len() < 232\", \"let mut key\", \"Digest32::of_bytes(&member.plan)\", \"Digest32::of_bytes(body)\", \"if payload != expected\", \"let mut head = Reader::new(body)\", \"if paired::is_paired(member)\", \"head.literal(\", \"else\", \"head.literal(\", \"head.digest()? != Digest32::of_bytes(&member.plan)\", \"paired::is_paired(member) && head.digest()?.is_zero()\", \"body[body.len() - 160..]\", \"tail.digest()? != bundle.estimate\", \"tail.digest()? != bundle.support\", \"tail.digest()? != bundle.confidence\", \"tail.digest()? != execution_digest\", \"tail.finish()?\", \"Ok(())\"], \"top_level\" = [] }, { \"function\" = \"fn cohort(\", \"sequence\" = [\"context.verifier.verify(\", \"LearningEvidenceRoleV1::Evaluator\", \"verify_signed_actor_separation(generator, &evaluator, current)?\", \"if paired::is_paired(member)\", \"proof.literal(\", \"else\", \"proof.literal(\", \"proof.digest()? != checked.plan\", \"proof.digest()? != checked.manifest\", \"proof.digest()? != checked.dataset\", \"proof.digest()? != task.cohort_rule_digest\", \"proof.digest()? != context.registration.evaluation_profile()\", \"proof.digest()? != context.training.head_digest\", \"proof.digest()? != context.scope.binding()\", \"if proof.digest()?.is_zero() || proof.digest()?.is_zero()\", \"if paired::is_paired(member)\", \"paired::require_pairing(member, context, proof.digest()?)?\", \"for evidence in [&context.training_evidence, &signed]\", \"full.extend_from_slice(&evidence.signature)\", \"proof.take(full.len())? != full\", \"proof.take(payload.len())? != payload\", \"proof.finish()?\", \"let inclusion = freeze.digest()?\", \"paired::is_paired(member) && inclusion != task.cohort_rule_digest\", \"count == 0 || count > 4096\", \"freeze.finish()?\", \"verify_dataset_snapshot_receipt_v3(\", \"pending_outcomes: 0\", \"censored_outcomes: 0\", \"inclusion_policy_digest: inclusion\", \"current,\", \"Ok(Digest32::of_bytes(&member.cohort))\"], \"top_level\" = [] }, { \"function\" = \"fn holdout(\", \"sequence\" = [\"Digest32::of_bytes(&member.holdout) != bundle.holdout\", \"holdout.literal(\", \"manifest.is_zero()\", \"holdout.digest()? != bundle.plan\", \"holdout.digest()? != bundle.estimand\", \"holdout.digest()? != Digest32::of_bytes(&member.roles)\", \"holdout.finish()?\", \"if paired::is_paired(member)\", \"paired::holdout(member, bundle)?\", \"return Ok(manifest)\", \"let mut plan\", \"plan.literal(\", \"Ok(manifest)\"], \"top_level\" = [] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs\"\nrequired = [\"head.literal(b\\\"HPEXRP01\\\")?\", \"head.literal(b\\\"HPEXR001\\\")?\", \"proof.literal(b\\\"hepta.circuit.original-on-policy-cohort-current.v1\\\\0\\\")?\", \"proof.literal(b\\\"hepta.circuit.original-evaluation-cohort-current.v1\\\\0\\\")?\"]\nforbidden = [\"SigningKey\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"CellQ24FeatureWorkerV1::new\", \"shared_worker(\", \"into_worker(\", \"PublishedCircuitFeatureTaskV1::\", \"FinalUseGrant\", \"with_root_learning_stage_owners\", \"if false\", \"unwrap_or\", \"Deserialize\"]\nrequired_function_order = [\n  { function = \"fn execution(\", sequence = [\"let body = raw.bytes()?\", \"raw.finish()?\", \"&original != signed || body.len() < 200\", \"paired::is_paired(member) && body.len() < 232\", \"let mut key\", \"Digest32::of_bytes(&member.plan)\", \"Digest32::of_bytes(body)\", \"if payload != expected\", \"let mut head = Reader::new(body)\", \"if paired::is_paired(member)\", \"head.literal(\", \"else\", \"head.literal(\", \"head.digest()? != Digest32::of_bytes(&member.plan)\", \"paired::is_paired(member) && head.digest()?.is_zero()\", \"body[body.len() - 160..]\", \"tail.digest()? != bundle.estimate\", \"tail.digest()? != bundle.support\", \"tail.digest()? != bundle.confidence\", \"tail.digest()? != execution_digest\", \"tail.finish()?\", \"Ok(())\"], top_level = [] },\n  { function = \"fn cohort(\", sequence = [\"context.verifier.verify(\", \"LearningEvidenceRoleV1::Evaluator\", \"verify_signed_actor_separation(generator, &evaluator, current)?\", \"if paired::is_paired(member)\", \"proof.literal(\", \"else\", \"proof.literal(\", \"proof.digest()? != checked.plan\", \"proof.digest()? != checked.manifest\", \"proof.digest()? != checked.dataset\", \"proof.digest()? != task.cohort_rule_digest\", \"proof.digest()? != context.registration.evaluation_profile()\", \"proof.digest()? != context.training.head_digest\", \"proof.digest()? != context.scope.binding()\", \"if ledger_binding.is_zero() || proof.digest()?.is_zero()\", \"if paired::is_paired(member)\", \"paired::require_pairing(member, context, proof.digest()?)?\", \"for evidence in [&context.training_evidence, &signed]\", \"full.extend_from_slice(&evidence.signature)\", \"proof.take(full.len())? != full\", \"proof.take(payload.len())? != payload\", \"proof.finish()?\", \"let inclusion = freeze.digest()?\", \"paired::is_paired(member) && inclusion != task.cohort_rule_digest\", \"count == 0 || count > 4096\", \"freeze.finish()?\", \"verify_dataset_snapshot_receipt_v3(\", \"pending_outcomes: 0\", \"censored_outcomes: 0\", \"inclusion_policy_digest: inclusion\", \"current,\", \"binding: Digest32::of_bytes(&member.cohort)\"], top_level = [] },\n  { function = \"fn holdout(\", sequence = [\"Digest32::of_bytes(&member.holdout) != bundle.holdout\", \"holdout.literal(\", \"manifest.is_zero()\", \"holdout.digest()? != bundle.plan\", \"holdout.digest()? != bundle.estimand\", \"holdout.digest()? != Digest32::of_bytes(&member.roles)\", \"holdout.finish()?\", \"if paired::is_paired(member)\", \"paired::holdout(member, bundle)?\", \"return Ok(manifest)\", \"let mut plan\", \"plan.literal(\", \"Ok(manifest)\"], top_level = [] },\n]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+        "required": [
+          "pub(super) struct Checked {",
+          "pub qualified: bool,",
+          "pub(super) fn material("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "OpenOptions",
+          "Deserialize",
+          "pub fn material(",
+          "pub struct Checked",
+          "checked_members.iter().any(",
+          "qualified: primary.qualified",
+          "qualified: true",
+          "qualified: false",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn material(",
+            "sequence": [
+              "context.authenticate(current)?",
+              "Body::decode(bytes)?",
+              "decode_original_owner_snapshot_v1(&body.snapshot)?",
+              "learning_owner_evidence::decode(&body.evaluation)?",
+              "payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?",
+              "super::super::wire::authenticate_completed(context, snapshot, signed, current)?",
+              "&actual != expected",
+              "body.context != super::wire::binding(context, expected, current)?",
+              "body.members.len() != context.registration.retention().len() + 1",
+              "LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?",
+              "let mut checked_members",
+              "for (index, (raw, task)) in body",
+              ".members",
+              ".iter()",
+              ".zip(",
+              "std::iter::once(context.registration.primary()).chain(context.registration.retention())",
+              "member::verify(raw, context, task, &generator, current)?",
+              "member::cohort(raw, &checked, context, task, &generator, current)?",
+              "!namespaces.insert(raw.execution_namespace)",
+              "!namespaces.insert(raw.qualification_namespace)",
+              "serde_json::from_slice(&raw.record)?",
+              "training_digest",
+              "serde_json::from_slice(&raw.snapshots)?",
+              "serde_json::to_vec(&snapshots)? != raw.snapshots",
+              "crate::cell_composed_q24::validate_manifest(bundle, manifest)",
+              "snapshot",
+              "cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]",
+              "run == context.training.request.source_run_id.as_str()",
+              "!runs.insert(run.to_owned())",
+              "for value in [",
+              "raw.binding",
+              "cohort,",
+              "checked.qualification",
+              "checked.authentication",
+              "else if !checked.retention.is_empty()",
+              "checked_members.push(checked)",
+              "let primary = &checked_members[0]",
+              "let mut retention = checked_members",
+              ".skip(1)",
+              ".map(|member| member.qualification)",
+              "retention.sort_unstable()",
+              "retention.is_empty()",
+              "retention.windows(2).any(|pair| pair[0] == pair[1])",
+              "primary.retention != retention",
+              "Digest32::of_bytes(&panel) != body.panel",
+              "primary.qualification != expected.receipt().evidence_digest",
+              "primary.evaluator_issued_at != expected.receipt().observed_unix_seconds",
+              "let qualified = checked_members.iter().all(|member| member.qualified)",
+              "let disposition = if primary.qualified",
+              "LearningEvaluationDispositionV1::Qualified",
+              "LearningEvaluationDispositionV1::NoUpdate",
+              "expected.receipt().observation",
+              "LearningIterationObservationV1::Evaluation",
+              "candidate_bundle: candidate",
+              "evaluation_profile: context.registration.evaluation_profile()",
+              "disposition,",
+              "Ok(Checked {",
+              "candidate,",
+              "material: model_material.ok_or(Error::CommitUncertain)?",
+              "qualified,"
+            ],
+            "top_level": [
+              "let generator = context.authenticate(current)?",
+              "for (index, (raw, task)) in body",
+              "let primary = &checked_members[0]",
+              "let qualified = checked_members.iter().all(|member| member.qualified)",
+              "let disposition = if primary.qualified",
+              "if expected.receipt().observation",
+              "Ok(Checked {"
+            ]
+          },
+          {
+            "function": "fn digest(",
+            "sequence": [
+              "serde_json::from_value(value.clone())?",
+              "Ok(Digest32::from_array(bytes))"
+            ],
+            "top_level": []
+          }
+        ],
+        "runtime_authority": false,
+        "production_caller": false,
+        "production_writer": false,
+        "external_effect": false,
+        "self_issued_acceptance": false,
+        "promotion": false,
+        "release": false
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+        "required": [
+          "pub(super) struct Checked {",
+          "pub qualified: bool,",
+          "pub(super) fn material("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "OpenOptions",
+          "Deserialize",
+          "pub fn material(",
+          "pub struct Checked",
+          "checked_members.iter().any(",
+          "qualified: primary.qualified",
+          "qualified: true",
+          "qualified: false",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn material(",
+            "sequence": [
+              "context.authenticate(current)?",
+              "Body::decode(bytes)?",
+              "decode_original_owner_snapshot_v1(&body.snapshot)?",
+              "learning_owner_evidence::decode(&body.evaluation)?",
+              "payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?",
+              "super::super::wire::authenticate_completed(context, snapshot, signed, current)?",
+              "&actual != expected",
+              "body.context != super::wire::binding(context, expected, current)?",
+              "body.members.len() != context.registration.retention().len() + 1",
+              "LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?",
+              "let mut checked_members",
+              "for (index, (raw, task)) in body",
+              ".members",
+              ".iter()",
+              ".zip(",
+              "std::iter::once(context.registration.primary()).chain(context.registration.retention())",
+              "member::verify(raw, context, task, &generator, current)?",
+              "member::cohort(raw, &checked, context, task, &generator, current)?",
+              "!namespaces.insert(raw.execution_namespace)",
+              "!namespaces.insert(raw.qualification_namespace)",
+              "serde_json::from_slice(&raw.record)?",
+              "training_digest",
+              "serde_json::from_slice(&raw.snapshots)?",
+              "serde_json::to_vec(&snapshots)? != raw.snapshots",
+              "crate::cell_composed_q24::validate_manifest(bundle, manifest)",
+              "snapshot",
+              "cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]",
+              "run == context.training.request.source_run_id.as_str()",
+              "!runs.insert(run.to_owned())",
+              "for value in [",
+              "raw.binding",
+              "cohort.binding,",
+              "checked.qualification",
+              "checked.authentication",
+              "else if !checked.retention.is_empty()",
+              "checked_members.push(checked)",
+              "let primary = &checked_members[0]",
+              "let mut retention = checked_members",
+              ".skip(1)",
+              ".map(|member| member.qualification)",
+              "retention.sort_unstable()",
+              "retention.is_empty()",
+              "retention.windows(2).any(|pair| pair[0] == pair[1])",
+              "primary.retention != retention",
+              "Digest32::of_bytes(&panel) != body.panel",
+              "primary.qualification != expected.receipt().evidence_digest",
+              "primary.evaluator_issued_at != expected.receipt().observed_unix_seconds",
+              "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+              "let disposition = if primary.qualified",
+              "LearningEvaluationDispositionV1::Qualified",
+              "LearningEvaluationDispositionV1::NoUpdate",
+              "expected.receipt().observation",
+              "LearningIterationObservationV1::Evaluation",
+              "candidate_bundle: candidate",
+              "evaluation_profile: context.registration.evaluation_profile()",
+              "disposition,",
+              "Ok(Checked {",
+              "candidate,",
+              "material: model_material.ok_or(Error::CommitUncertain)?",
+              "qualified,"
+            ],
+            "top_level": [
+              "let generator = context.authenticate(current)?",
+              "for (index, (raw, task)) in body",
+              "let primary = &checked_members[0]",
+              "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+              "let disposition = if primary.qualified",
+              "if expected.receipt().observation",
+              "Ok(Checked {"
+            ]
+          },
+          {
+            "function": "fn digest(",
+            "sequence": [
+              "serde_json::from_value(value.clone())?",
+              "Ok(Digest32::from_array(bytes))"
+            ],
+            "top_level": []
+          }
+        ],
+        "runtime_authority": false,
+        "production_caller": false,
+        "production_writer": false,
+        "external_effect": false,
+        "self_issued_acceptance": false,
+        "promotion": false,
+        "release": false
+      },
+      "reason": "Preserve the complete original record; move constructor body into actual common policy path or project the new verified policy result without changing original signed primary facts.",
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs\"\nrequired = [\"pub(super) struct Checked {\", \"pub qualified: bool,\", \"pub(super) fn material(\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"OpenOptions\", \"Deserialize\", \"pub fn material(\", \"pub struct Checked\", \"checked_members.iter().any(\", \"qualified: primary.qualified\", \"qualified: true\", \"qualified: false\", \"permit_all\", \"unwrap_or\", \"if false\"]\nrequired_function_order = [{ \"function\" = \"fn material(\", \"sequence\" = [\"context.authenticate(current)?\", \"Body::decode(bytes)?\", \"decode_original_owner_snapshot_v1(&body.snapshot)?\", \"learning_owner_evidence::decode(&body.evaluation)?\", \"payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?\", \"super::super::wire::authenticate_completed(context, snapshot, signed, current)?\", \"&actual != expected\", \"body.context != super::wire::binding(context, expected, current)?\", \"body.members.len() != context.registration.retention().len() + 1\", \"LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?\", \"let mut checked_members\", \"for (index, (raw, task)) in body\", \".members\", \".iter()\", \".zip(\", \"std::iter::once(context.registration.primary()).chain(context.registration.retention())\", \"member::verify(raw, context, task, &generator, current)?\", \"member::cohort(raw, &checked, context, task, &generator, current)?\", \"!namespaces.insert(raw.execution_namespace)\", \"!namespaces.insert(raw.qualification_namespace)\", \"serde_json::from_slice(&raw.record)?\", \"training_digest\", \"serde_json::from_slice(&raw.snapshots)?\", \"serde_json::to_vec(&snapshots)? != raw.snapshots\", \"crate::cell_composed_q24::validate_manifest(bundle, manifest)\", \"snapshot\", \"cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]\", \"run == context.training.request.source_run_id.as_str()\", \"!runs.insert(run.to_owned())\", \"for value in [\", \"raw.binding\", \"cohort,\", \"checked.qualification\", \"checked.authentication\", \"else if !checked.retention.is_empty()\", \"checked_members.push(checked)\", \"let primary = &checked_members[0]\", \"let mut retention = checked_members\", \".skip(1)\", \".map(|member| member.qualification)\", \"retention.sort_unstable()\", \"retention.is_empty()\", \"retention.windows(2).any(|pair| pair[0] == pair[1])\", \"primary.retention != retention\", \"Digest32::of_bytes(&panel) != body.panel\", \"primary.qualification != expected.receipt().evidence_digest\", \"primary.evaluator_issued_at != expected.receipt().observed_unix_seconds\", \"let qualified = checked_members.iter().all(|member| member.qualified)\", \"let disposition = if primary.qualified\", \"LearningEvaluationDispositionV1::Qualified\", \"LearningEvaluationDispositionV1::NoUpdate\", \"expected.receipt().observation\", \"LearningIterationObservationV1::Evaluation\", \"candidate_bundle: candidate\", \"evaluation_profile: context.registration.evaluation_profile()\", \"disposition,\", \"Ok(Checked {\", \"candidate,\", \"material: model_material.ok_or(Error::CommitUncertain)?\", \"qualified,\"], \"top_level\" = [\"let generator = context.authenticate(current)?\", \"for (index, (raw, task)) in body\", \"let primary = &checked_members[0]\", \"let qualified = checked_members.iter().all(|member| member.qualified)\", \"let disposition = if primary.qualified\", \"if expected.receipt().observation\", \"Ok(Checked {\"] }, { \"function\" = \"fn digest(\", \"sequence\" = [\"serde_json::from_value(value.clone())?\", \"Ok(Digest32::from_array(bytes))\"], \"top_level\" = [] }]\n\n[authority]\nruntime_authority = false\nproduction_caller = false\nproduction_writer = false\nexternal_effect = false\nself_issued_acceptance = false\npromotion = false\nrelease = false\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs\"\nrequired = [\"pub(super) struct Checked {\", \"pub qualified: bool,\", \"pub(super) fn material(\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"OpenOptions\", \"Deserialize\", \"pub fn material(\", \"pub struct Checked\", \"checked_members.iter().any(\", \"qualified: primary.qualified\", \"qualified: true\", \"qualified: false\", \"permit_all\", \"unwrap_or\", \"if false\"]\nrequired_function_order = [\n  { function = \"fn material(\", sequence = [\"context.authenticate(current)?\", \"Body::decode(bytes)?\", \"decode_original_owner_snapshot_v1(&body.snapshot)?\", \"learning_owner_evidence::decode(&body.evaluation)?\", \"payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?\", \"super::super::wire::authenticate_completed(context, snapshot, signed, current)?\", \"&actual != expected\", \"body.context != super::wire::binding(context, expected, current)?\", \"body.members.len() != context.registration.retention().len() + 1\", \"LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?\", \"let mut checked_members\", \"for (index, (raw, task)) in body\", \".members\", \".iter()\", \".zip(\", \"std::iter::once(context.registration.primary()).chain(context.registration.retention())\", \"member::verify(raw, context, task, &generator, current)?\", \"member::cohort(raw, &checked, context, task, &generator, current)?\", \"!namespaces.insert(raw.execution_namespace)\", \"!namespaces.insert(raw.qualification_namespace)\", \"serde_json::from_slice(&raw.record)?\", \"training_digest\", \"serde_json::from_slice(&raw.snapshots)?\", \"serde_json::to_vec(&snapshots)? != raw.snapshots\", \"crate::cell_composed_q24::validate_manifest(bundle, manifest)\", \"snapshot\", \"cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]\", \"run == context.training.request.source_run_id.as_str()\", \"!runs.insert(run.to_owned())\", \"for value in [\", \"raw.binding\", \"cohort.binding,\", \"checked.qualification\", \"checked.authentication\", \"else if !checked.retention.is_empty()\", \"checked_members.push(checked)\", \"let primary = &checked_members[0]\", \"let mut retention = checked_members\", \".skip(1)\", \".map(|member| member.qualification)\", \"retention.sort_unstable()\", \"retention.is_empty()\", \"retention.windows(2).any(|pair| pair[0] == pair[1])\", \"primary.retention != retention\", \"Digest32::of_bytes(&panel) != body.panel\", \"primary.qualification != expected.receipt().evidence_digest\", \"primary.evaluator_issued_at != expected.receipt().observed_unix_seconds\", \"let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)\", \"let disposition = if primary.qualified\", \"LearningEvaluationDispositionV1::Qualified\", \"LearningEvaluationDispositionV1::NoUpdate\", \"expected.receipt().observation\", \"LearningIterationObservationV1::Evaluation\", \"candidate_bundle: candidate\", \"evaluation_profile: context.registration.evaluation_profile()\", \"disposition,\", \"Ok(Checked {\", \"candidate,\", \"material: model_material.ok_or(Error::CommitUncertain)?\", \"qualified,\"], top_level = [\"let generator = context.authenticate(current)?\", \"for (index, (raw, task)) in body\", \"let primary = &checked_members[0]\", \"let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)\", \"let disposition = if primary.qualified\", \"if expected.receipt().observation\", \"Ok(Checked {\"] },\n  { function = \"fn digest(\", sequence = [\"serde_json::from_value(value.clone())?\", \"Ok(Digest32::from_array(bytes))\"], top_level = [] },\n]\nruntime_authority = false\nproduction_caller = false\nproduction_writer = false\nexternal_effect = false\nself_issued_acceptance = false\npromotion = false\nrelease = false\n\n"
+    }
+  ],
+  "added_boundaries": [
+    {
+      "id": "learning_pre_b_policy_freeze",
+      "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze",
+      "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "definition_markers": [
+        "fn freeze("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_policy_decode",
+      "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes",
+      "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "definition_markers": [
+        "fn from_canonical_commitment_bytes("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_policy_original_rule",
+      "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule",
+      "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "definition_markers": [
+        "fn require_original_rule("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_policy_original_training",
+      "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training",
+      "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "definition_markers": [
+        "fn require_original_policy_training("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_panel_freeze",
+      "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::freeze",
+      "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "definition_markers": [
+        "fn freeze("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_panel_initial",
+      "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial",
+      "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "definition_markers": [
+        "fn require_original_panel_initial("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_panel_training",
+      "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training",
+      "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "definition_markers": [
+        "fn require_original_panel_training("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_cohort_config",
+      "symbol": "OriginalCircuitOnPolicyCohortConfigV2::from_original",
+      "receiver_type": "OriginalCircuitOnPolicyCohortConfigV2",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "definition_markers": [
+        "fn from_original("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_cohort_capture",
+      "symbol": "OriginalCircuitOnPolicyCohortV1::read_original_v2",
+      "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "definition_markers": [
+        "fn read_original_v2("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_cohort_declaration",
+      "symbol": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy",
+      "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "definition_markers": [
+        "fn original_pre_b_policy("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_cohort_plan",
+      "symbol": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan",
+      "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "definition_markers": [
+        "fn require_original_pre_b_plan("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "cell_pre_b_paired_evaluation_freeze",
+      "symbol": "freeze_paired_cell_learning_evaluation_plan_v2",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "definition_markers": [
+        "pub fn freeze_paired_cell_learning_evaluation_plan_v2<"
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_pre_b_remote_policy_verify",
+      "symbol": "verify_pre_b_policy",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "definition_markers": [
+        "fn verify_pre_b_policy("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs"
+      ],
+      "caller_markers": []
+    }
+  ],
+  "integrated_product_boundary_extensions": [
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_decode",
+        "symbol": "ProductEvaluationPolicyV2::from_canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn from_canonical_commitment_bytes(",
+          "let (context, input) = codec::decode(bytes)?;",
+          "ProductEvaluationPolicyV2::freeze(context, input)?;",
+          "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "from_canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "from_canonical_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_decode",
+        "symbol": "ProductEvaluationPolicyV2::from_canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn from_canonical_commitment_bytes(",
+          "let (context, input) = codec::decode(bytes)?;",
+          "ProductEvaluationPolicyV2::freeze(context, input)?;",
+          "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+        ],
+        "caller_markers": [
+          "from_canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "from_canonical_commitment_bytes"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_encode",
+        "symbol": "ProductEvaluationPolicyV2::canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn canonical_commitment_bytes(&self) -> Result<Vec<u8>, ProductEvaluationError>",
+          "codec::encode(&self.context, &self.input)"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "canonical_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_encode",
+        "symbol": "ProductEvaluationPolicyV2::canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn canonical_commitment_bytes(&self) -> Result<Vec<u8>, ProductEvaluationError>",
+          "codec::encode(&self.context, &self.input)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+        ],
+        "caller_markers": [
+          "canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "canonical_commitment_bytes"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_instantiate",
+        "symbol": "ProductEvaluationPolicyV2::instantiate",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn instantiate(",
+          "freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "self.bound_plan(bindings)"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "instantiate("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "instantiate"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_instantiate",
+        "symbol": "ProductEvaluationPolicyV2::instantiate",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn instantiate(",
+          "freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "self.bound_plan(bindings)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+        ],
+        "caller_markers": [
+          "instantiate("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "instantiate"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_expected_commitments",
+        "symbol": "ProductEvaluationPolicyV2::expected_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn expected_commitment_bytes(",
+          "paired::commitments::estimand_fields(",
+          "cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;",
+          "paired::commitments::plan_fields(",
+          "Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "expected_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "expected_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_expected_commitments",
+        "symbol": "ProductEvaluationPolicyV2::expected_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn expected_commitment_bytes(",
+          "paired::commitments::estimand_fields(",
+          "cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;",
+          "paired::commitments::plan_fields(",
+          "Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+        ],
+        "caller_markers": [
+          "expected_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "expected_commitment_bytes"
+        ]
+      }
+    }
+  ],
+  "actual_literal_markers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": null,
+      "marker": "const DOMAIN: &[u8] = b\"hepta.circuit.original-on-policy-evaluation-policy.v2\\0\";"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn cohort_rule_digest(",
+      "marker": "Ok(Digest32::of_parts(&[\n            b\"hepta.circuit.original-on-policy-cohort-rule.v2\\0\","
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn freeze(",
+      "marker": "let principal = StableId::new(format!(\"principal:{}\", pair.input.scope.principal_digest))"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "function": "fn require_declaration(",
+      "marker": "if contribution >= 9 * 8192 {"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+      "function": null,
+      "marker": "pub(super) const MAX_POLICY_BYTES: usize = 131_072;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "function": "fn read_current_with_clock(",
+      "marker": "let mut bytes = b\"hepta.circuit.original-on-policy-cohort-current.v1\\0\".to_vec();"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "function": "fn read_current_with_clock(",
+      "marker": "bytes = b\"hepta.circuit.original-on-policy-cohort-current.v2\\0\".to_vec();"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn require_plan(",
+      "marker": "cell_estimand_digest: Digest32::of_parts(&[\n                    b\"hepta.agentd.cell-paired-on-policy-estimand.v1\\0\", &encoded,\n                ]),"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "function": "fn freeze_paired_cell_learning_evaluation_plan_v2<",
+      "marker": "cell_estimand_digest: Digest32::of_parts(&[\n                b\"hepta.agentd.cell-paired-on-policy-estimand.v1\\0\", &encoded,\n            ]),"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "cell_estimand_digest: Digest32::of_parts(&[\n                b\"hepta.agentd.cell-paired-on-policy-estimand.v1\\0\", &member.record,\n            ]),"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"candidate\"][\"manifest\"][\"evolution\"][\"structure\"]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"fixed_expert\"][\"manifest\"][\"evolution\"][\"structure\"]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"comparison\"]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"original_estimand\"]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"cost_scope\"].as_str() != Some(\"task_ledgers_before_final_holdout\")"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record[\"learning_evaluation_profile\"]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "let paired_v2 = member.cohort.starts_with(b\"hepta.circuit.original-on-policy-cohort-current.v2\\0\");"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "proof.literal(b\"hepta.circuit.original-on-policy-cohort-current.v2\\0\")?;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "proof.literal(b\"hepta.circuit.original-on-policy-cohort-current.v1\\0\")?;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "proof.literal(b\"hepta.circuit.original-evaluation-cohort-current.v1\\0\")?;"
+    }
+  ],
+  "semantic_mutations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn from_canonical_commitment_bytes(",
+      "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn require_original_rule(",
+      "marker": "&reconstructed != self",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn require_original_policy_training(",
+      "marker": "training.request.selected_bundle.artifact_id != self.product.input().baseline_id",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn require_original_policy_training(",
+      "marker": "codex_hepta_learning_artifacts::CellCompatibilityBundleV1::digest(&training.request.selected_bundle)\n                .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)? != self.baseline",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "function": "fn validate(",
+      "marker": "pair.candidate.principal != pair.baseline.principal",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "function": "fn freeze(",
+      "marker": "!(1..=16).contains(&retention.len())",
+      "replacement": "!(0..=16).contains(&retention.len())"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "function": "fn require_declaration(",
+      "marker": "contribution >= 9 * 8192",
+      "replacement": "contribution > 9 * 8192"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "function": "fn require_original_panel_training(",
+      "marker": "training.request.evaluation_profile != self.registration.evaluation_profile()",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "function": "fn from_original(",
+      "marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(&policy, &original.training)?;",
+      "replacement": ""
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "function": "fn into_final_holdout_provider(",
+      "marker": "crate::OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self)?;",
+      "replacement": ""
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "function": "fn release_with_clock(",
+      "marker": "crate::OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan).map_err(provider_error)?;",
+      "replacement": ""
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn validate_configuration(",
+      "marker": "crate::OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule(member, rule, &owners.ledger)?;",
+      "replacement": ""
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn require_plan(",
+      "marker": "if original.policy.is_some() {",
+      "replacement": "if original.policy.is_none() {"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn require_plan(",
+      "marker": "record != &expected_record",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn require_plan(",
+      "marker": "product != &expected",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "function": "fn require_plan(",
+      "marker": "original.observed_pairing_contract()? != &pairing",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "function": "fn freeze_paired_cell_learning_evaluation_plan_v2<",
+      "marker": "crate::OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(cohort, &plan)",
+      "replacement": "Ok::<(), crate::OriginalCircuitEvaluationProviderErrorV1>(())"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "function": "fn read_current_with_clock(",
+      "marker": "bytes.extend_from_slice(&full_policy);",
+      "replacement": ""
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "length == 0 || length > 131_072",
+      "replacement": "length == 0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "paired_policy::verify_pre_b_policy(",
+      "replacement": "ignored_policy::verify_pre_b_policy("
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "function": "fn cohort(",
+      "marker": "policy_bound: !paired::is_paired(member) || paired_v2",
+      "replacement": "policy_bound: true"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "paired::pairing(member)? != pairing",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "record.as_object().map(|object| object.len()) != Some(6)",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "expected.plan() != member.plan.as_slice()",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "expected.estimand() != member.estimand.as_slice()",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "function": "fn verify_pre_b_policy(",
+      "marker": "expected.roles() != member.roles.as_slice()",
+      "replacement": "false"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "function": "fn material(",
+      "marker": "all_policies_bound &= cohort.policy_bound;",
+      "replacement": "all_policies_bound &= true;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "function": "fn material(",
+      "marker": "all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+      "replacement": "checked_members.iter().all(|member| member.qualified)"
+    }
+  ],
+  "manifest": {
+    "kind": "exact complete-record integration, no path deduplication",
+    "source_parent": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+    "pure_parent": "36a494ae6ce41a536f0ddf79a474a0577e9aa853",
+    "pure_upstream_contract_blob": "ca75253b32952b16383fb7ef753d6c8f936e75d6",
+    "before": {
+      "base_ref": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "base_sha": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+      "sha": "16fc94f23dadd77d01579bea8f1298cd96268ad8",
+      "bytes": 1580397,
+      "before": {
+        "boundary": 716,
+        "protected_file": 489
+      },
+      "after": {
+        "boundary": 729,
+        "protected_file": 503
+      },
+      "whole_record_replacements": 4,
+      "added_boundaries": 13,
+      "added_protected_records": 14,
+      "unowned_raw_records_preserved": 1201,
+      "exact_multiset": true,
+      "recursive_sequence_schema": true,
+      "scope": "agentd delta after corrected original Material/T bridge; pure Product guard child not yet applied",
+      "verifier_modified": false
+    },
+    "pure_delta": {
+      "protected_replacements": 4,
+      "protected_additions": 3,
+      "boundary_replacements": 1,
+      "boundary_additions": 7,
+      "actual_external_caller_extensions": 4,
+      "unowned_records_preserved": 1227
+    },
+    "final": {
+      "boundary": 736,
+      "protected_file": 506,
+      "inventory": 736,
+      "sha": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+      "bytes": 1619553
+    },
+    "full_record_multiset_equal": true,
+    "all_other_raw_records_preserved": true,
+    "schema_sequences_at_least_two": true,
+    "original_verifier_modified": false,
+    "python_executed": false
+  },
+  "upstream_contracts": {
+    "source_bridge": "6cd704d26c77c64389fa3e3b851b7f0f9f4009fc",
+    "pure_product": "ca75253b32952b16383fb7ef753d6c8f936e75d6",
+    "source_pre_T_binding_audit": "01a648c8b33db6b9e9eb015170c3664e46bae280",
+    "field_and_late_slot_matrix": "ec4ec4478b51fe97a68305ce22897359a360fc8f"
+  },
+  "legacy_qa": [
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "old_methods": [
+        "test_exact_original_paired_and_closed_cohort_edges",
+        "test_complete_records_preserve_shared_and_paired_guards",
+        "test_each_actual_producer_guard_cannot_move_to_a_comment",
+        "test_original_authority_and_outcome_substitutions_are_rejected",
+        "test_freeze_guards_stay_inside_the_one_original_generic_function",
+        "test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+        "test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+        "test_shared_release_and_cross_mode_current_are_explicitly_closed"
+      ],
+      "methods_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+      "old_methods": [
+        "test_complete_material_records_validate_without_execution_authority",
+        "test_acceptance_cannot_skip_actual_members_signatures_or_the_complete_retention_set",
+        "test_all_verified_members_govern_admission_without_rewriting_primary_observation",
+        "test_model_and_selector_require_the_same_verified_acceptance_gate"
+      ],
+      "methods_preserved": true
+    }
+  ],
+  "native_inventory": {
+    "path": "scripts/hepta_c_observer_coverage.py",
+    "before": {
+      "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+      "sha": "672a90aef6c8791265891fd31b9b2cadb8660952",
+      "reported_cases": 190,
+      "reported_groups": 41
+    },
+    "after": {
+      "sha": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+      "cases": 201,
+      "groups": 43
+    },
+    "exact_reverse_recovers_all_original_bytes": true,
+    "added_groups": [
+      {
+        "group": "original_pre_b_product_policy_v2",
+        "package": "codex-hepta-intelligence-eval",
+        "cases": [
+          "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+          "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+          "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+          "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+          "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+          "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+          "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact"
+        ]
+      },
+      {
+        "group": "original_pre_b_agentd_policy_v2",
+        "package": "codex-hepta-agentd",
+        "cases": [
+          "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical",
+          "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity",
+          "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity",
+          "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution"
+        ]
+      }
+    ],
+    "all_names_match_exact_source_function_once": true,
+    "executed": false,
+    "scope": "Immutable metadata and canonical reconstruction mechanisms, not actual B or Qualified Version effects."
+  },
+  "source_projection": {
+    "method": "Limited V8 transcription using the fixed original source masks/order/top uniqueness and marker-span behavior. Not original Python execution.",
+    "positive_rows": 18,
+    "code_deletion_controls": 64,
+    "literal_controls": 20,
+    "semantic_controls": 28,
+    "forbidden_controls": 159,
+    "errors": [],
+    "touched_other_records": {
+      "count": 18,
+      "failures": []
+    },
+    "typed": {
+      "scope": "43 current fixed Rust sources, not complete workspace scan",
+      "count": 17,
+      "checks": [
+        {
+          "id": "learning_pre_b_policy_freeze",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_policy_decode",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_policy_original_rule",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_policy_original_training",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_panel_freeze",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_panel_initial",
+          "actual": [
+            "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_panel_training",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_cohort_config",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_cohort_capture",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_cohort_declaration",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "learning_pre_b_cohort_plan",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_freeze",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_decode",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_encode",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_digest",
+          "actual": [],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_instantiate",
+          "actual": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "errors": []
+        },
+        {
+          "id": "product_pre_b_policy_v2_expected_commitments",
+          "actual": [
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    "python_executed": false,
+    "rust_executed": false,
+    "native_executed": false,
+    "ordinary_acceptance": 0
+  },
+  "peer_reviews": {
+    "source_chain": "b96d6c57c7f4530b10046434148ec5cc811f22b7",
+    "syntax_appendix": "f6826c3a6b192bc1014838eb7b06a49dcc9bfa98",
+    "scope": "Static exact-pin review only; not Python, compile, native or ordinary acceptance."
+  },
+  "remaining": [
+    "Actual production launcher before A is not demonstrated; host-authored request creation after A is not pre-A registration.",
+    "Existing Evaluator-only execution authority for actual unadopted candidate B is not derived from metadata. No new authority is issued.",
+    "Actual B+retention principal/support/power constraints remain unchanged; no completed Qualified actual panel or Version success/effect cancellation claim.",
+    "Full E body size, successful partial Root polling/cold-read counts, actual endpoint bindings and absolute-time latency require original native/deployment evidence.",
+    "New source QA, compile and eleven mechanisms have not executed; FDE runtime failures are not resolved by this metadata change."
+  ],
+  "ordinary_acceptance": 0
+}

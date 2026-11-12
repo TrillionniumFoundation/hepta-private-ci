@@ -1,0 +1,226 @@
+{
+  "schema": "learn.model-current-readback-receiver-independent-peer.v1",
+  "reviewer": "learn_evaluator_budget",
+  "status": "NO BLOCKING FINDING IN THE TWO FIXED POSTIMAGES; STATIC REVIEW ONLY",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": {
+    "commit": "7dd5b5efe75de6a950f0c9ba9acf6856f6df997e",
+    "tree": "5f2dc32327f96c0a232a86770ecd268a63ad1753"
+  },
+  "reviewed_artifacts": {
+    "rust_before": {
+      "blob": "300f86174ba4bc506acf6938ba75a8d678d3e4e7",
+      "bytes": 6762
+    },
+    "rust_after": {
+      "blob": "0064aef61f48479535f129bf3f9564df42add58f",
+      "bytes": 6914
+    },
+    "qa_before": {
+      "blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+      "bytes": 8491
+    },
+    "qa_after": {
+      "blob": "af4b98471db6b793da15da9e2666f1508f420d49",
+      "bytes": 10525
+    },
+    "field_and_import": {
+      "blob": "7d549230eb748ad55a33d993003b7d3727227358",
+      "bytes": 13496
+    },
+    "original_trait": {
+      "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1",
+      "bytes": 2249
+    },
+    "original_implementation": {
+      "blob": "38241d599afe14815efea41cdf56d13668983d25",
+      "bytes": 15155
+    },
+    "marker_helper": {
+      "blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c",
+      "bytes": 1525
+    },
+    "author_audit": {
+      "blob": "a04669099068a43497d1a9be1b6182d401e9e205",
+      "bytes": 21764,
+      "sha256": "71120dc82b01a341886bfc6038f5c1f6a692739c12d010c964747df2d8456a68"
+    },
+    "exact_patch": {
+      "blob": "0c3f8370992aff949f671a42741c0dc64aec1235",
+      "bytes": 4994,
+      "sha256": "0710bcd54038326652b20bc0d251b367ce3dbe2ced2c02507cf1c0ae86a778e4"
+    },
+    "readme": {
+      "blob": "c3f26111dc0eb009a917f99e147c987ab94ed752",
+      "bytes": 3170,
+      "sha256": "5e223bec49b487acb3e5d7a1cbdc01be95913dc422b9ea4bca1780bbe37b7635"
+    },
+    "actual_453_stderr": {
+      "blob": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "bytes": 191
+    },
+    "actual_453_terminal": {
+      "blob": "d442b61a89ce1ab3f41e2dac82a21f583fa00479",
+      "bytes": 1423,
+      "sha256": "6d42555a4666a725cb617845f0bb4c668bec243b6283e2fd0b3a99b3e88e0c73"
+    }
+  },
+  "actual_diagnostic": {
+    "stderr_bytes": 191,
+    "stderr_sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+    "terminal_stderr_sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+    "original_process_complete": true,
+    "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "status": "terminal",
+    "actual_child_exit": 1,
+    "elapsed": 1318.145882239798,
+    "budget": 4800,
+    "signals_sent": []
+  },
+  "actual_diagnostic_meaning": "The original full caller verification rejected source453 at the two-method current-material split impl's possible Model-owner readback receiver. The actual completed original process exited1 at1318.145882s, under its4800s budget, with no recorded signals. This is neither a timeout nor evidence about the unrun7dd or this repair.",
+  "fixed_parent_reads": [
+    {
+      "key": "rust",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "blob": "300f86174ba4bc506acf6938ba75a8d678d3e4e7",
+      "actual_fixed_parent_matches": true
+    },
+    {
+      "key": "qa",
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+      "actual_fixed_parent_matches": true
+    }
+  ],
+  "exact_source_delta": {
+    "edits": [
+      {
+        "before": "match self.journal.readback(&admission.key(self.binding)) {",
+        "after": "match ProductEvaluationExecutionStoreV1::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        ) {"
+      },
+      {
+        "before": "let state = self.journal.readback(&admission.key(self.binding))?;",
+        "after": "let state = ProductEvaluationExecutionStoreV1::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        )?;"
+      }
+    ],
+    "forward_complete_equal": true,
+    "inverse_complete_equal": true,
+    "only_two_trait_ufcs_calls": true
+  },
+  "exact_patch_replay": {
+    "exact_replacement_lists_forward_inverse": true,
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+        "hunks": 2,
+        "forward_complete_equal": true,
+        "inverse_complete_equal": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "hunks": 5,
+        "forward_complete_equal": true,
+        "inverse_complete_equal": true
+      }
+    ]
+  },
+  "type_and_effect_review": [
+    "The original parent module imports ProductEvaluationExecutionStoreV1 and declares journal: LockedFileProductEvaluationExecutionStoreV1 inside CellQ24ModelProposalOwnerV1. The split current-material module uses super::*.",
+    "The original trait readback takes &mut self and &ProductEvaluationExecutionKeyV1. The inspected concrete storage module supplies its readback in impl ProductEvaluationExecutionStoreV1 for LockedFileProductEvaluationExecutionStoreV1; that module has exactly one readback definition and no same-named inherent method.",
+    "Both changed calls now explicitly select that original trait and pass &mut self.journal and &admission.key(self.binding). Statement positions, receiver object, key derivation, returned Result, all branches and error handling remain unchanged.",
+    "All other Rust bytes reconstruct exactly to the original after reversing those two replacements. Material admission, original CURRENT/witness checks, original clocks, same-signature/material validation, durable completion and late-error fencing are unaffected. No owner, key, capability, public interface, external I/O or mutable alias is introduced.",
+    "The actual diagnostic concerns ambiguity under the Model-owner boundary, not a journal becoming a Model owner. No new allowed Model caller is added to make the scanner pass."
+  ],
+  "manifest_review": {
+    "fixed_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "whole_bytes_unchanged_by_this_repair": true,
+    "boundaries": 737,
+    "complete_protected_records": 506,
+    "protected_records_for_current_owner": 0,
+    "new_or_removed_record_count": 0,
+    "caller_additions": 0,
+    "existing_model_readback_boundary": {
+      "id": "cell_q24_model_material_owner_readback",
+      "receiver_type": "CellQ24ModelProposalOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ]
+    },
+    "reviewed_current_owner_boundaries": [
+      "cell_q24_current_model_owner_create",
+      "cell_q24_current_model_owner_recover",
+      "cell_q24_current_model_owner_commit",
+      "cell_q24_current_model_owner_readback"
+    ],
+    "existing_current_owner_callers_all": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+    ],
+    "original_verifier_and_typed_scanner_not_modified": true,
+    "original_root_metadata_required_ids_multiplicity_and_seven_false_authority_flags_retained": true,
+    "precision": "This file had no protected-file record to migrate. The unchanged full manifest, original typed verifier and the additional actual-source QA checks remain the gate; the repair does not delete a record or add an exception."
+  },
+  "qa_review": {
+    "original_method_names": [
+      "test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+      "test_original_training_header_and_receipt_bindings_cannot_be_removed",
+      "test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+      "test_original_manifests_and_qualified_evaluation_are_required",
+      "test_final_readback_cannot_skip_current_witness",
+      "test_commit_cannot_skip_durable_claim_completion_or_witness",
+      "test_owner_creation_cannot_skip_original_trainer",
+      "test_readback_preserves_original_bytes_and_timestamp",
+      "test_owner_clock_cannot_be_replaced_by_request_time",
+      "test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+      "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+    ],
+    "final_method_names": [
+      "test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+      "test_original_training_header_and_receipt_bindings_cannot_be_removed",
+      "test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+      "test_original_manifests_and_qualified_evaluation_are_required",
+      "test_final_readback_cannot_skip_current_witness",
+      "test_commit_cannot_skip_durable_claim_completion_or_witness",
+      "test_owner_creation_cannot_skip_original_trainer",
+      "test_readback_preserves_original_bytes_and_timestamp",
+      "test_owner_clock_cannot_be_replaced_by_request_time",
+      "test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+      "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+    ],
+    "original_first_method_body_preserved_as_complete_prefix": true,
+    "original_other_ten_method_bodies_byte_equal": true,
+    "original_unregistered_caller_negative_retained": true,
+    "actual_source_index_adds": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+    "adds_checks_for_four_already_registered_current_owner_boundaries": true,
+    "total_targeted_actual_boundaries": 12,
+    "new_negative_controls": "Inside each of the two unique actual Rust functions, the unchanged token helper locates the actual UFCS call and restores only that call to the former dot syntax. The test invokes the original _verify_boundary and requires its actual unresolved Model-owner receiver error. The helper only locates bytes and does not decide acceptance.",
+    "marker_helper_actual_behavior": "The fixed helper ignores formatting and optional trailing commas while preserving complete string literal tokens; the multiline call with trailing comma matches the new compact marker.",
+    "original_verifier_invocation_retained": true,
+    "source_syntax_negative_control_is_not_a_native_pass": true,
+    "no_load_tests_or_dynamic_method_rewrite": true
+  },
+  "author_reported_static_projection": {
+    "scope": "Six actual source files and twelve boundaries",
+    "positive_checks": 12,
+    "unregistered_caller_negatives": 12,
+    "independent_actual_call_rollbacks": 2,
+    "reviewer_limit": "The peer read the complete fixed audit and actual QA but did not execute its V8 scanner projection or the original Python verifier. These numbers remain the author's explicitly limited static projection, not runtime results."
+  },
+  "expected_inventory_unchanged": {
+    "source_methods": 445,
+    "source_modules": 62,
+    "native_cases": 201,
+    "native_groups": 43,
+    "separate_root_cases": 29
+  },
+  "limitations": {
+    "H": false,
+    "Python": false,
+    "Rust_compile": false,
+    "native": false,
+    "whole_workspace_caller_verify": false,
+    "ordinary_acceptance": 0,
+    "child_execution_results": null,
+    "pending": "Root must run the actual unchanged verifier and required gates on a fixed complete child. The known source453 failure is not converted to a pass and does not prove that no later whole-workspace failure remains."
+  }
+}

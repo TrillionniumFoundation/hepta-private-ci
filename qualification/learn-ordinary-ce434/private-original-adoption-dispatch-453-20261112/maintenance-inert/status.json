@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.learn.final-maintenance-recorder-inert-checkpoint.v1",
+  "status": "UNBOUND_DRAFT_ONLY_NOT_A_FROZEN_EXECUTABLE_REQUEST",
+  "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+  "script": {
+    "sha": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+    "bytes": 37500,
+    "sha256": "b24bc557e36392ac9f447868f5bb31320b09540fcf152e0910545164266c3a78",
+    "full_api_readback": true,
+    "python_parse_or_execution": false
+  },
+  "null_binding_template": "fa0e410ef34d1c0b72fc5cd3c8f78d3178a75a99",
+  "previous_status": {
+    "blob": "fc8b068ba8b13b137ce42677053fafd40c1dad55",
+    "script": "fffce0b6295d1b6239a0bc654491c04fd3a4eabe",
+    "historical_only": true
+  },
+  "sole_correction_since_fffce": {
+    "before": "        final = report[\"snapshots\"][-1]\n        report[\"verified_unchanged_source\"] = (\n            final[\"head\"] == SOURCE and final[\"HEAD_tree\"] == TREE and final[\"clean\"])\n        if report[\"verified_unchanged_source\"]:\n            report[\"post_maintenance_sha\"] = SOURCE\n            report[\"post_maintenance_tree\"] = TREE\n",
+    "after": "        # Git status alone is not a physical-byte equality proof. The recorder\n        # never assigns a commit identity to the post-maintenance worktree.\n",
+    "reverse_equal": true
+  },
+  "peer": "8f6f237e5402d76446debd95b71d2abf5bbf07c6",
+  "unchanged_runtime_limits": "Historical v2 constants / old outer+native pairing are draft only. No target current existence or runtime import is asserted.",
+  "parent_reported_actual_state": {
+    "source": "Parent has full original443/62 PASS; this recorder does not manufacture that result.",
+    "original_main_native": "21cb line36 target_root.lstat FileNotFound; no nativeResult/helper/test/canonical TMPDIR for this attempt. Actual trace677B hash79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8. No old receipt/env may fill it.",
+    "fullcaller": {
+      "job": "1a1d0a29350-2564-1bac",
+      "key": "learn-ce434-4537458b51b6-isolated-full-caller-v1",
+      "parent_observed": "launch_state launched, reused false",
+      "terminal": null
+    },
+    "native_recovery": "Model/Root preparing distinct v3 target recovery and separate native-only attempt. No future identity/path/result is stamped here."
+  },
+  "unresolved": [
+    "BINDING remains None and every receipt hash remains null; recorder refuses before mkdir/process.",
+    "Normal focused-native terminal/helper checks retained, but missing current nativeResult early failure is not treated as a complete runtime.",
+    "Final environment must use actual independently verified new target creation identity, new native-only canonical TMPDIR/helper and original resources; never relabel historical v2 receipt.",
+    "Preserve original failed main outer and source result. A future native-only receipt must be separately bound, not inserted into old outer as if one run passed.",
+    "Actual isolated fullcaller phase.started/original records must prove all started verifier children terminal; observation cutoff/unknown blocks source maintenance.",
+    "Root29 may be conditionally not dispatched if original201 success prerequisite absent; no invented execution or pass receipt.",
+    "The recorder always leaves post_maintenance_sha/tree null; complete physical postimages and exact HEAD/tree/NULstatus/binarydiff remain evidence for later actual publication.",
+    "No executable request/final maintenance freeze, H call, tests or production edit."
+  ]
+}

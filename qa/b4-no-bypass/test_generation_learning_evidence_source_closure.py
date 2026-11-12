@@ -25,6 +25,12 @@ CALLERS = {
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
         READER,
+        AGENT + "neuron_cell_evaluation_training_operation.rs",
+        AGENT + "circuit_next_use_receipt_owner.rs",
+        AGENT + "circuit_selection_receipt_owner.rs",
+        AGENT + "cell_q24_training_source.rs",
+        AGENT + "circuit_model_selection_receipt_sources.rs",
+        AGENT + "neuron_cell_evaluation_qualification_sources.rs",
     ),
 }
 

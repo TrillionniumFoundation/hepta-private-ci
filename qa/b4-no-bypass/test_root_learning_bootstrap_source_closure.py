@@ -51,7 +51,7 @@ CALLERS = {
     "root_learning_original_stage_assembly": (),
     "root_learning_original_runtime_consume": (CONFIG,),
     "root_learning_original_delivery_source": (INPUTS,),
-    "root_learning_completed_circuit_source": (DELIVERY,),
+    "root_learning_completed_circuit_source": (DELIVERY, "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",),
     "root_original_registered_ready_serve": (CLI,),
     "root_original_private_sealed_bytes": (REGISTRATION,),
 }

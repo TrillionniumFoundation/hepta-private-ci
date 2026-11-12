@@ -398,3 +398,25 @@ mod ports_tests;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
+
+/// Reuse the bounded canonical snapshot codec for an original role's readback
+/// response. These pure functions neither open nor mutate a Root checkpoint.
+#[cfg(target_os = "linux")]
+pub(crate) fn encode_original_owner_snapshot_v1(
+    snapshot: &LearningIterationSnapshotV1,
+) -> Result<Vec<u8>, LearningIterationCheckpointErrorV1> {
+    LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
+        .map_err(LearningIterationCheckpointErrorV1::Snapshot)?;
+    codec::encode(snapshot)
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) fn decode_original_owner_snapshot_v1(
+    bytes: &[u8],
+) -> Result<LearningIterationSnapshotV1, LearningIterationCheckpointErrorV1> {
+    let snapshot = codec::decode(bytes)?;
+    if codec::encode(&snapshot)? != bytes {
+        return Err(LearningIterationCheckpointErrorV1::InvalidRecord);
+    }
+    Ok(snapshot)
+}

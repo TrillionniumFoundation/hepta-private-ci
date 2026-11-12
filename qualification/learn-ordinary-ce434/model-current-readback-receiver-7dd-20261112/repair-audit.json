@@ -1,0 +1,517 @@
+{
+  "schema": "hepta.learn.actual-model-current-receiver-repair.v1",
+  "status": "prepared_source_child_no_python_fullcaller_native_or_ordinary_run",
+  "parent": {
+    "sha": "7dd5b5efe75de6a950f0c9ba9acf6856f6df997e",
+    "tree": "5f2dc32327f96c0a232a86770ecd268a63ad1753"
+  },
+  "actual_failure": {
+    "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "stderr": {
+      "blob": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "sha": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "bytes": 191,
+      "sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+      "text": "FAIL_HEPTA_CALLER_PROOF: cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver\n"
+    },
+    "terminal": {
+      "blob": "d442b61a89ce1ab3f41e2dac82a21f583fa00479",
+      "sha256": "6d42555a4666a725cb617845f0bb4c668bec243b6283e2fd0b3a99b3e88e0c73",
+      "actual_child_exit": 1,
+      "budget_seconds": 4800,
+      "child_pid": 1699342,
+      "classification_exit_is_not_child_exit": true,
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "elapsed_seconds": 1318.145882239798,
+      "finished_observing_at": "2026-11-12T17:03:19.866771+00:00",
+      "gate_classification_exit": 1,
+      "gate_status": "original_command_or_receipt_failed",
+      "late_success_does_not_change_gate": true,
+      "logs": [
+        {
+          "complete": true,
+          "file": "verify.stdout.log",
+          "prefix_bytes": 0,
+          "prefix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_after_snapshot": 0,
+          "stable_during_snapshot": true
+        },
+        {
+          "complete": true,
+          "file": "verify.stderr.log",
+          "prefix_bytes": 191,
+          "prefix_sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+          "size_after_snapshot": 191,
+          "stable_during_snapshot": true
+        }
+      ],
+      "original_process_complete": true,
+      "phase": "verify",
+      "receipt": null,
+      "receipt_error": null,
+      "recorder_pid": 1699296,
+      "run_id": "0655af5207ba4ac48cd17d7b84310a77",
+      "signals_sent": [],
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "started_at": "2026-11-12T16:41:21.717141+00:00",
+      "started_monotonic": 1579347.709450293,
+      "status": "terminal"
+    },
+    "full_result_blob": "95affec002c5589295c90df4bb943d16ba25ea5e",
+    "conclusion": "The actual complete verifier rejected source453; neither parent7dd nor this repair has been run by that evidence.",
+    "evidence_commit": "2facbab69deb479e948a42b19b6f64f221aacf7e",
+    "evidence_branch": "codex/learn-453-fullcaller-terminal-ce434-20261112-v1"
+  },
+  "production": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+    "before": {
+      "blob": "300f86174ba4bc506acf6938ba75a8d678d3e4e7",
+      "sha": "300f86174ba4bc506acf6938ba75a8d678d3e4e7",
+      "bytes": 6762,
+      "sha256": "486ded7a9407f492d0311415c5a2b5abc69e363e62953359f709894a22c3e9cb"
+    },
+    "after": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "sha": "0064aef61f48479535f129bf3f9564df42add58f",
+      "bytes": 6914,
+      "sha256": "e3e36d59f8ab935575361a220786e8980d139297b440535d4adad4cbc16d0903"
+    },
+    "exact_replacements": [
+      {
+        "before": "        match self.journal.readback(&admission.key(self.binding)) {",
+        "after": "        match ProductEvaluationExecutionStoreV1::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        ) {"
+      },
+      {
+        "before": "        let state = self.journal.readback(&admission.key(self.binding))?;",
+        "after": "        let state = ProductEvaluationExecutionStoreV1::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        )?;"
+      }
+    ],
+    "forward_and_inverse_whole_file_equal": true,
+    "actual_receiver": {
+      "parent_module": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "blob": "7d549230eb748ad55a33d993003b7d3727227358",
+        "field": "journal: LockedFileProductEvaluationExecutionStoreV1",
+        "trait_import": "use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;"
+      },
+      "split_impl": "impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W>",
+      "trait": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+        "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1",
+        "symbol": "ProductEvaluationExecutionStoreV1::readback",
+        "signature": "fn readback(&mut self, key: &ProductEvaluationExecutionKeyV1) -> Result<ProductEvaluationExecutionStateV1, ProductEvaluationExecutionStoreErrorV1>"
+      },
+      "concrete_implementation": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+        "blob": "38241d599afe14815efea41cdf56d13668983d25",
+        "impl": "impl ProductEvaluationExecutionStoreV1 for LockedFileProductEvaluationExecutionStoreV1",
+        "readback_definitions": 1,
+        "inherent_same_named_method": false
+      },
+      "preserved": "Same &mut self.journal, same &admission.key(self.binding), same statement positions and returned Result; no new I/O, owner, key, caller, lifetime, mutable alias, retry, fence or permission."
+    },
+    "same_file_census": {
+      "original_dot_readbacks": 2,
+      "after_dot_readbacks": 0,
+      "original_sites": [
+        {
+          "line": 88,
+          "owner": "CellQ24ModelProposalOwnerV1",
+          "receiver": "self.journal",
+          "resolved": null
+        },
+        {
+          "line": 126,
+          "owner": "CellQ24ModelProposalOwnerV1",
+          "receiver": "self.journal",
+          "resolved": null
+        }
+      ],
+      "all_eight_registered_model_owner_methods_reviewed": true,
+      "other_six_have_no_ambiguous_same_name_dot_calls": true,
+      "after_model_owner_readback_ufcs_calls": 0
+    }
+  },
+  "scanner_cause": {
+    "verifier": {
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    "typed_scanner": {
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    },
+    "functions": [
+      "authority_fields",
+      "_receiver_type",
+      "has_authority_call"
+    ],
+    "explanation": "authority_fields retains only fields whose type is the requested authority target. The actual journal has the unrelated original execution-store type, so self.journal is unresolved when the split impl contains CellQ24ModelProposalOwnerV1. Each method-style .readback therefore fails closed under the Model-owner boundary. Explicit original trait UFCS removes that ambiguity without registering the journal as a Model owner.",
+    "verifier_modified": false,
+    "allowlist_modified": false,
+    "definition_path_exclusion_retained": true
+  },
+  "manifest": {
+    "before_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "after_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "bytes": 1621149,
+    "boundary_count": 737,
+    "complete_protected_record_count": 506,
+    "whole_bytes_unchanged": true,
+    "root_metadata_and_seven_false_authority_fields_unchanged": true,
+    "protected_records_on_current_owner_path": 0,
+    "record_replacements": [],
+    "record_additions": [],
+    "caller_additions": [],
+    "checked_boundary_ids": [
+      "cell_q24_model_material_owner_create",
+      "cell_q24_model_material_owner_recover",
+      "cell_q24_model_material_owner_commit",
+      "cell_q24_model_material_owner_readback",
+      "learning_original_training_model_create",
+      "learning_original_training_model_recover",
+      "learning_original_training_model_commit",
+      "learning_original_training_model_readback",
+      "cell_q24_current_model_owner_create",
+      "cell_q24_current_model_owner_recover",
+      "cell_q24_current_model_owner_commit",
+      "cell_q24_current_model_owner_readback"
+    ]
+  },
+  "qa": {
+    "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+    "before_blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+    "after": {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "sha": "af4b98471db6b793da15da9e2666f1508f420d49",
+      "bytes": 10525,
+      "sha256": "43a8c27193a3ec5002688b3d0af2edb48dcec47ec48f49d1c192ee1267f36e75"
+    },
+    "exact_replacements": [
+      {
+        "before": "import unittest\n\n\nROOT",
+        "after": "import unittest\n\nfrom rust_source_marker_support import source_marker_span\n\n\nROOT"
+      },
+      {
+        "before": "OWNER = AGENT + \"cell_q24_model_proposal.rs\"\n",
+        "after": "OWNER = AGENT + \"cell_q24_model_proposal.rs\"\nCURRENT = AGENT + \"cell_q24_model_current_owner.rs\"\n"
+      },
+      {
+        "before": "BOUNDARIES.update({\n    \"learning_original_training_model_\"",
+        "after": "BOUNDARIES.update({\n    \"cell_q24_current_model_owner_\" + method: (LANE,)\n    for method in (\"create\", \"recover\", \"commit\", \"readback\")\n})\nBOUNDARIES.update({\n    \"learning_original_training_model_\""
+      },
+      {
+        "before": "            for path in (OWNER, ADMISSION, LANE, TRAINER, BOUND)\n",
+        "after": "            for path in (OWNER, CURRENT, ADMISSION, LANE, TRAINER, BOUND)\n"
+      },
+      {
+        "before": "\n    def test_original_training_header_and_receipt_bindings_cannot_be_removed(self):\n",
+        "after": "\n\n        # The split current-material impl contains the Model owner type, but\n        # both readbacks belong to its original durable journal. Reverting\n        # either real call independently must reproduce the closed scanner\n        # refusal, never add this file to the Model-owner caller allowlist.\n        original = (ROOT / CURRENT).read_text()\n        row = self.boundaries[\"cell_q24_model_material_owner_readback\"]\n        call = (\n            \"ProductEvaluationExecutionStoreV1::readback(\"\n            \"&mut self.journal, &admission.key(self.binding))\"\n        )\n        for function in (\n            \"fn commit_current_material_or_readback<\",\n            \"fn read_current_material<\",\n        ):\n            with self.subTest(function=function):\n                code = self.sources[CURRENT]\n                self.assertEqual(code.count(function), 1)\n                start = code.index(function)\n                end = PROOF._rust_item_end(code, start)\n                self.assertIsNotNone(end)\n                assert end is not None\n                first, after = source_marker_span(original, call, start, end + 1)\n                reverted = (\n                    original[:first]\n                    + \"self.journal.readback(&admission.key(self.binding))\"\n                    + original[after:]\n                )\n                sources = dict(self.sources)\n                sources[CURRENT] = PROOF._strip_cfg_test_items(\n                    PROOF._strip_rust_non_code(reverted)\n                )\n                with self.assertRaisesRegex(\n                    PROOF.VerificationFailure,\n                    \"unresolved possible CellQ24ModelProposalOwnerV1::readback receiver\",\n                ):\n                    PROOF._verify_boundary(ROOT, row, sources, ())\n\n    def test_original_training_header_and_receipt_bindings_cannot_be_removed(self):\n"
+      }
+    ],
+    "forward_and_inverse_whole_file_equal": true,
+    "class": "Q24ModelProposalSourceClosureTests",
+    "method_names": [
+      "test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+      "test_original_training_header_and_receipt_bindings_cannot_be_removed",
+      "test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+      "test_original_manifests_and_qualified_evaluation_are_required",
+      "test_final_readback_cannot_skip_current_witness",
+      "test_commit_cannot_skip_durable_claim_completion_or_witness",
+      "test_owner_creation_cannot_skip_original_trainer",
+      "test_readback_preserves_original_bytes_and_timestamp",
+      "test_owner_clock_cannot_be_replaced_by_request_time",
+      "test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+      "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+    ],
+    "method_count_before": 11,
+    "method_count_after": 11,
+    "first_method_original_body_is_exact_prefix": true,
+    "other_ten_method_bodies_byte_equal": true,
+    "dynamic_load_tests": false,
+    "regression": "The existing test invokes the unchanged original _verify_boundary over six actual source files and twelve actual manifest boundaries. It independently restores each real journal call to method syntax and requires the precise original unresolved-receiver VerificationFailure. Four existing current-owner boundaries join the original eight; all have unchanged actual caller tuples. The original unregistered-caller negative remains for each boundary.",
+    "marker_helper": {
+      "path": "qa/b4-no-bypass/rust_source_marker_support.py",
+      "blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c",
+      "purpose": "Select the exact original call span within its unique real function; the original verifier decides rejection."
+    }
+  },
+  "static_projection": {
+    "runtime": "V8; original Python verifier and tests were not executed",
+    "scope": "Six actual QA source paths; twelve actual manifest boundaries. Not a whole-workspace caller verification.",
+    "code_masks": "Ported original non-code/cfg-test masking and original _rust_item_end field-comma handling; no repository verifier edit.",
+    "positive": [
+      {
+        "id": "cell_q24_model_material_owner_create",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_model_material_owner_recover",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_model_material_owner_commit",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_model_material_owner_readback",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "learning_original_training_model_create",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "learning_original_training_model_recover",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "learning_original_training_model_commit",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "learning_original_training_model_readback",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_current_model_owner_create",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_current_model_owner_recover",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_current_model_owner_commit",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      },
+      {
+        "id": "cell_q24_current_model_owner_readback",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "errors": [],
+        "pass": true
+      }
+    ],
+    "negative": {
+      "unregistered": [
+        {
+          "boundary": "cell_q24_model_material_owner_create",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_model_material_owner_recover",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_model_material_owner_commit",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_model_material_owner_readback",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "learning_original_training_model_create",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "learning_original_training_model_recover",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "learning_original_training_model_commit",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "learning_original_training_model_readback",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_current_model_owner_create",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_current_model_owner_recover",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_current_model_owner_commit",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        },
+        {
+          "boundary": "cell_q24_current_model_owner_readback",
+          "unexpected": [
+            "codex-rs/hepta-agentd/src/unregistered_model_proposal.rs"
+          ]
+        }
+      ],
+      "real_site_rollbacks": [
+        {
+          "function": "fn commit_current_material_or_readback<",
+          "start": 2995,
+          "end": 4662,
+          "span": {
+            "start": 3587,
+            "end": 3714
+          },
+          "error": "unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+        },
+        {
+          "function": "fn read_current_material<",
+          "start": 4680,
+          "end": 5540,
+          "span": {
+            "start": 5264,
+            "end": 5391
+          },
+          "error": "unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+        }
+      ]
+    },
+    "original_sites": [
+      {
+        "line": 88,
+        "owner": "CellQ24ModelProposalOwnerV1",
+        "receiver": "self.journal",
+        "resolved": null
+      },
+      {
+        "line": 126,
+        "owner": "CellQ24ModelProposalOwnerV1",
+        "receiver": "self.journal",
+        "resolved": null
+      }
+    ]
+  },
+  "unchanged_expected_inventory": {
+    "source_methods": 445,
+    "source_modules": 62,
+    "native_cases": 201,
+    "native_groups": 43,
+    "root29_cases": 29
+  },
+  "actual_run_status": {
+    "python_source_suite": "not_run_on_this_child",
+    "full_caller": "not_run_on_this_child",
+    "rust_compile": "not_run_on_this_child",
+    "native": "not_run_on_this_child",
+    "ordinary_acceptance": 0
+  },
+  "restrictions": {
+    "h_called": false,
+    "pr_changed": false,
+    "source453_worktree_changed": false,
+    "grant_or_key_created": false,
+    "permissions_or_resource_budgets_changed": false
+  }
+}

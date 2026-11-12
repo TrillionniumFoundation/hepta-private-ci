@@ -1,0 +1,14 @@
+{
+  "source": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "failure_evidence_commit": "a16b3e17da0cb955bbff0053cdf82e49315c9006",
+  "reason": "Original just test stopped during test-binary compilation with E0659: assert_eq ambiguous between glob import and prelude.",
+  "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+  "before_blob": "d4d777123a8010b0d8295b7b92f0a66194303ab2",
+  "after_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+  "change": "Explicitly import pretty_assertions::assert_eq from the existing dev-dependency. All assertions and test logic unchanged.",
+  "cargo_manifest_blob": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+  "dependencies_changed": false,
+  "source_checks_rerun": false,
+  "native_tests_rerun": false,
+  "ordinary_acceptance": 0
+}

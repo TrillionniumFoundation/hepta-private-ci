@@ -133,5 +133,14 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
         for marker in ("identity.spawn_generation == 0", "published.require_bundle(&profile.bundle)?", "CellQ24FeatureWorkerV1::new(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published\n        .control(", "cell.writer()", "circuit_task_channel_v1(", "source.readback()"):
             with self.subTest(marker=marker): self.rejects(path, "fn circuit_q24_task_channel_v1<", marker)
 
+    def test_live_original_owner_current_brackets_physical_read_with_witness(self):
+        for marker in ("let before = self.witness.current()?", "self.journal.read_current_anchor()?", "let after = self.witness.current()?", "before != Some(current) || after != before", "if result.is_err()", "self.fenced = true"):
+            with self.subTest(marker=marker): self.rejects(JOURNAL, "fn require_current(", marker)
+
+    def test_live_execution_current_replays_original_locked_bytes(self):
+        path = "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs"
+        for marker in ("length > MAX_FILE_BYTES", "length != self.length", ".take(MAX_FILE_BYTES + 1)", ".read_to_end(&mut bytes)", "&bytes[8..40] != self.binding.as_array()", "next_anchor(current, payload)?", "checksum != next.history_digest.as_array()", "replay(&mut records, payload)?", "current != self.anchor || records != self.records", "self.file.seek(SeekFrom::Start(cursor))", "if result.is_err()"):
+            with self.subTest(marker=marker): self.rejects(path, "fn read_current_anchor(", marker)
+
 if __name__ == "__main__":
     unittest.main()

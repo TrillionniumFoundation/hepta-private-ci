@@ -74,6 +74,71 @@ impl AgentdState {
         Ok(())
     }
 
+    /// Before late enrollment, inspect the actual completed A directly.
+    /// This does not register a source, enqueue an intent or admit an old task.
+    /// The source slot must still be empty at both ends of these owner reads.
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn require_resident_learning_source_candidate(
+        &self,
+        request: &LearningIterationRequestV1,
+    ) -> Result<(), AgentdError> {
+        if request.agent_id.as_str() != self.identity().agent_id.as_str()
+            || !self.circuit_learning_sources().is_empty()
+            || !self.automation_admission_ready()?
+        {
+            return Err(invalid(
+                "resident source candidate is not the current unregistered owner",
+            ));
+        }
+        let generation = self.current_generation()?;
+        let host = self
+            .objective_runtime
+            .get()
+            .ok_or_else(|| invalid("original resident Objective source is unavailable"))?;
+        let original = host.learning_source_record(request)?;
+        if original.0.snapshot.generation != generation
+            || original.0.snapshot.fence_digest.to_string()
+                != crate::state::objective_run_fence(self.identity(), generation)
+        {
+            return Err(invalid(
+                "resident source belongs to another running generation",
+            ));
+        }
+        self.require_learning_source_authentication(&original.0)?;
+        let store = self.circuit_task_store()?;
+        let before = store
+            .bounded_circuit_committed_trace(request.source_run_id.as_str())
+            .await
+            .map_err(|error| invalid(&format!("resident source Circuit history: {error}")))?
+            .ok_or_else(|| invalid("resident source has no actual completion"))?;
+        if before.run().run_id() != request.source_run_id.as_str()
+            || before.history_digest().as_str() != request.completed_task_receipt.to_string()
+            || before.run().outcome().is_none()
+            || before.run().unresolved() != 0
+        {
+            return Err(invalid("resident source completed A receipt differs"));
+        }
+        let after = store
+            .bounded_circuit_committed_trace(request.source_run_id.as_str())
+            .await
+            .map_err(|error| invalid(&format!("resident source Circuit recheck: {error}")))?
+            .ok_or_else(|| invalid("resident source completion disappeared"))?;
+        if after.history_digest() != before.history_digest()
+            || after.run().outcome().is_none()
+            || after.run().unresolved() != 0
+            || host.learning_source_record(request)? != original
+            || self.current_generation()? != generation
+            || !self.circuit_learning_sources().is_empty()
+            || !self.automation_admission_ready()?
+        {
+            return Err(invalid(
+                "resident original source changed during enrollment",
+            ));
+        }
+        self.require_learning_source_authentication(&original.0)?;
+        Ok(())
+    }
+
     fn require_learning_source_authentication(
         &self,
         record: &RunStartRecordV1,

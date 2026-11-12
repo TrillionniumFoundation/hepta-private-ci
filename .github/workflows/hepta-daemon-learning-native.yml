@@ -4,9 +4,18 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-neuron/**"
+      - "CALLERS.toml"
+      - "qa/b4-no-bypass/**"
+      - "scripts/verify_hepta_callers.py"
       - "scripts/test_hepta_cell_research_units.py"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
+      - "scripts/hepta_c_observer_coverage.py"
+      - "scripts/test_hepta_c_observer_coverage.py"
       - ".github/workflows/hepta-daemon-learning-native.yml"
   workflow_dispatch:
 
@@ -62,6 +71,7 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
+          from hepta_c_observer_coverage import assess_retained_original_observer_coverage
 
           parents = [
               "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
@@ -71,9 +81,32 @@ jobs:
               "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+              "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+              "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+              "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+              "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+              "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+              "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+              "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+              "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+              "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+              "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+              "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
           ]
-          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
-                      "-p", "codex-hepta-intelligence-eval"]
+          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
+                      "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",
+                      "-p", "codex-hepta-neuron"]
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
@@ -129,7 +162,7 @@ jobs:
               command = ["python3", "scripts/hepta_ci_exec.py", "--timeout-seconds", "7200",
                          "--minimum-tests", "1", "--output", str(records / (name + ".json")),
                          "--", "just", "test", "--locked", "--offline", *arguments,
-                         "--retries", "0", "--success-output", "final", "--failure-output", "final"]
+                         "--retries", "0", "--status-level", "pass", "--success-output", "final", "--failure-output", "final"]
               if root:
                   names = ("PATH", "SOURCE_SHA", "TESTED_SHA", "HEPTA_CI_LANE",
                            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
@@ -156,6 +189,13 @@ jobs:
               if root:
                   restore_ownership()
               retained = collect(records / (name + ".json"), report, records / (name + ".xml"))
+              if name == "ordinary" and retained == 0:
+                  coverage = assess_retained_original_observer_coverage(
+                      records / (name + ".json"), records / (name + ".xml"))
+                  save("original-learning-owner-coverage.json",
+                       {"source_sha": os.environ["SOURCE_SHA"], **coverage})
+                  if not coverage["exact_pass_coverage"]:
+                      raise RuntimeError("ordinary learning owner cases lack exact native package/name coverage")
               if root and retained == 0:
                   cases = list(ET.parse(records / (name + ".xml")).iter("testcase"))
                   observed = [case.attrib["name"] for case in cases if case.find("skipped") is None]
@@ -176,8 +216,9 @@ jobs:
                       continue
                   path = os.fsdecode(raw)
                   if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/")):
+                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-ledger/",
+                           "codex-rs/hepta-learning-artifacts/", "codex-rs/hepta-intelligence-eval/",
+                           "codex-rs/hepta-neuron/")):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -264,6 +305,13 @@ jobs:
               raise SystemExit(1 if failed else 0)
           PY
           python3 "$RUNNER_TEMP/daemon-learning-driver.py" snapshot
+      - name: Check original owner source closure before native compilation
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/daemon-learning-records/source-closure.json" \
+            -- python3 -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v
+      - name: Check exact learning owner evidence parser controls
+        run: python3 -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py
       - name: Install native prerequisites
         run: |
           sudo apt-get update
@@ -316,5 +364,72 @@ jobs:
           path: |
             ${{ runner.temp }}/daemon-learning-records
             !${{ runner.temp }}/daemon-learning-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
+
+  caller-proof:
+    runs-on: ubuntu-24.04
+    # The complete uncached proof previously took 25 minutes locally and
+    # longer under contention. Keep a separate budget from native compilation.
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the full caller inventory and retain original execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          repo = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          records = Path(os.environ["RUNNER_TEMP"]) / "daemon-learning-caller-proof"
+          records.mkdir(parents=True, exist_ok=True)
+          os.chdir(repo)
+          sys.path.insert(0, str(repo / "scripts"))
+          from hepta_ci_exec import execute_logged
+
+          def identity():
+              def git(*args):
+                  return subprocess.check_output(["git", *args], cwd=repo).decode().strip()
+              return {"head": git("rev-parse", "HEAD"),
+                      "tree": git("rev-parse", "HEAD^{tree}"),
+                      "status": git("status", "--porcelain=v1", "--untracked-files=all")}
+
+          def save(name, value):
+              (records / name).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+          before = identity()
+          save("source-before.json", before)
+          if before["head"] != os.environ["SOURCE_SHA"] or before["status"]:
+              raise RuntimeError("caller proof requires the exact clean source")
+          try:
+              for phase, timeout in (("self-test", 300), ("verify", 4800)):
+                  command = ["python3", "scripts/verify_hepta_callers.py", phase]
+                  result = execute_logged(command, records / (phase + ".log"),
+                                          timeout_seconds=timeout)
+                  save(phase + ".json", {"source_sha": before["head"],
+                                        "command": command, **result})
+                  if result["returncode"] or result["timed_out"] or result["output_limit_exceeded"]:
+                      raise RuntimeError(phase + " failed; original log and exit status retained")
+          finally:
+              after = identity()
+              save("source-after.json", after)
+              if after != before:
+                  raise RuntimeError("caller proof changed the fixed source")
+          PY
+      - name: Retain complete caller proof evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: daemon-learning-caller-proof-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/daemon-learning-caller-proof
           if-no-files-found: error
           retention-days: 14

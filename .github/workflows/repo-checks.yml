@@ -9,7 +9,8 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # A measured full caller proof took 25.1 minutes before the remaining checks.
+    timeout-minutes: 40
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:

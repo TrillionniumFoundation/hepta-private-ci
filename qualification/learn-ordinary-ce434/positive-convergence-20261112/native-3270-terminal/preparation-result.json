@@ -1,0 +1,47 @@
+{
+  "state": "failed",
+  "source_sha": "3270e8e8d310e205b4e76eabdce164bd75fab311",
+  "source_tree": "328fcfe75de43c83a6e4d6e5feaca6e9c4909f16",
+  "steps": [
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "elapsed_seconds": 3.8806851401459426,
+      "bytes": 144,
+      "sha256": "dc19e811c9effd60dc971866b0cf354352444415034ac597d489a3a8827b6554"
+    },
+    {
+      "name": "create-source-worktree",
+      "exit_code": 0,
+      "elapsed_seconds": 5.671244184952229,
+      "bytes": 4178,
+      "sha256": "ea568624452ee618806399f5b5e30cdd0fbb9ca0d204ea60a64550b82b942a63"
+    },
+    {
+      "name": "original-full-native",
+      "exit_code": 1,
+      "elapsed_seconds": 520.0737637570128,
+      "bytes": 4151,
+      "sha256": "4a304775980fbc0ecaede60bdc246cf622e72f601ed191547be492c83efe13fe"
+    }
+  ],
+  "suite_expected_cases": 174,
+  "suite_expected_groups": 39,
+  "new_version_effect_coverage_claim": false,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "formatter_executed": false,
+  "purpose": "Initial compile and existing original-owner mechanism suite. This source has pending guard and Root route follow-ups.",
+  "repository": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+  "native_result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/result.json",
+  "driver_sha256": "4b3558e3144c0bae2bfd114e9007596866c8c9173e69915b517dee88d5bcf223",
+  "driver_git_blob": "24914f8ac2be61407d84fe1655d1907dfee2eb1b",
+  "tracked_rust_files": 6745,
+  "native_exit_code": 1,
+  "source_after": "3270e8e8d310e205b4e76eabdce164bd75fab311",
+  "source_status_after": ""
+}

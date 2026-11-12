@@ -16,7 +16,10 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+MODEL_LANE = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+BOOTSTRAP = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
 
 
 class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
@@ -43,13 +46,13 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_training_receipt_ports_remain_unassembled_and_caller_closed(self):
+    def test_training_receipt_ports_have_only_the_original_bootstrap_and_stage_callers(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, BOOTSTRAP)}
         for suffix in ("create", "recover", "attest", "readback"):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else ())
+            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else (BOOTSTRAP,))
             PROOF._verify_boundary(ROOT, row, sources, ())
             method = row.symbol.rsplit("::", 1)[1]
             changed = dict(sources)
@@ -60,14 +63,15 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         self.assertEqual(rows["root_learning_original_stage_assembly"].product_callers, ())
 
-    def test_pair_consumer_is_the_only_native_execute_and_scope_caller(self):
+    def test_pair_and_model_lane_keep_exact_native_callers(self):
         native = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, native, SNAPSHOT)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, MODEL_LANE, native, SNAPSHOT, BOUND, BOOTSTRAP)}
         for name in ("cell_q24_original_training_execute", "cell_q24_original_training_pair_binding"):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,))
+            expected = (STAGE,) if name == "cell_q24_original_training_execute" else (STAGE, MODEL_LANE)
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
             changed = dict(sources)
             method = row.symbol.rsplit("::", 1)[1]
@@ -76,21 +80,22 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         for suffix in ("constructor", "execute", "readback", "attestation"):
             row = rows["learning_original_training_stage_" + suffix]
-            self.assertEqual(row.product_callers, (SNAPSHOT,) if suffix == "readback" else ())
+            expected = (SNAPSHOT, BOUND) if suffix == "readback" else ((BOUND,) if suffix in ("execute", "attestation") else (BOOTSTRAP,))
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
 
     def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):
         for function, markers in (
             ("fn execute_training(", ("self.require_dataset(dataset)?", "owners.receipts.journal.read(&owners.receipts.saved)",
-                "Ok(_) => owners.read_original_completion()", "ProductEvaluationExecutionStoreErrorV1::Missing",
-                "let retained_outcome = match training.readback()", "Ok(outcome) => Some(outcome)",
+                "Ok(_) => owners", "ProductEvaluationExecutionStoreErrorV1::Missing",
+                "let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)", "Ok(outcome) => Some(outcome)",
                 "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
                 "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
                 "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
                 "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?")),
-            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(")),
-            ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
-            ("fn read_original_completion(&mut self)", ("self.receipts.readback(training)?", "training.readback()?")),
+            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", ".require_original_dataset_scope(")),
+            ("fn receipt_attestation(", ("OriginalCellQ24TrainingStageV1::readback(self, dataset).await?", "if &completed.receipt != expected")),
+            ("fn read_original_completion(&mut self)", ("OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?", "CellQ24TrainingOwnerV1::readback(training)?")),
         ):
             for marker in markers:
                 with self.subTest(function=function, marker=marker):

@@ -52,6 +52,8 @@ mod stage;
 pub use stage::OriginalCellQ24TrainingCompletionV1;
 pub use stage::OriginalCellQ24TrainingStageErrorV1;
 pub use stage::OriginalCellQ24TrainingStageV1;
+#[cfg(target_os = "linux")]
+pub use stage::SourceBoundCellQ24TrainingStageV1;
 
 /// Original host configuration, fixed before requesting a training signature.
 /// Structural validation cannot manufacture Dataset custody or Root enrollment.

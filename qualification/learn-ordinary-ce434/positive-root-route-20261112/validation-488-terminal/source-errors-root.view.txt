@@ -1,0 +1,35 @@
+2157:f1|ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_non_model_attestations(', marker='snapshot.training_no_update_v2().is_none()')
+2158:4e|----------------------------------------------------------------------
+2159:a2|Traceback (most recent call last):
+2160:42|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_resident_root_source_closure.py", line 378, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+2161:22|    self.rejects(filename, function, marker)
+2162:da|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_resident_root_source_closure.py", line 134, in rejects
+2163:e3|    offset = source.index(marker, start, end + 1)
+2164:6f|             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2165:06|ValueError: substring not found
+2166:c5|
+2167:0f|======================================================================
+2168:76|ERROR: test_admin_activation_cannot_precede_original_ready_callback (test_root_admin_source_closure.RootAdminSourceClosureTests.test_admin_activation_cannot_precede_original_ready_callback)
+2169:4e|----------------------------------------------------------------------
+2170:a2|Traceback (most recent call last):
+2171:8d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_root_admin_source_closure.py", line 32, in setUp
+2172:13|    MODULE._verify_protected_files(self.root, self.manifest)
+2173:21|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+2174:4a|    _verify_required_order(row, code, relative)
+2175:30|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+2176:1b|    raise VerificationFailure(
+2177:6c|root_admin_caller_verifier.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs: required_order must contain marker sequences
+2178:c5|
+2179:0f|======================================================================
+2180:53|ERROR: test_consumer_confirmation_must_observe_both_original_owners (test_root_admin_source_closure.RootAdminSourceClosureTests.test_consumer_confirmation_must_observe_both_original_owners)
+2181:4e|----------------------------------------------------------------------
+2182:a2|Traceback (most recent call last):
+2183:8d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_root_admin_source_closure.py", line 32, in setUp
+2184:13|    MODULE._verify_protected_files(self.root, self.manifest)
+2185:21|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+2186:4a|    _verify_required_order(row, code, relative)
+2187:30|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+2188:1b|    raise VerificationFailure(
+2189:6c|root_admin_caller_verifier.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs: required_order must contain marker sequences
+2190:c5|
+[... 272 more lines, 2462 total]

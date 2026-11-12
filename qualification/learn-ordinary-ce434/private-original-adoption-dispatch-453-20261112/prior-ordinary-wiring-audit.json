@@ -1,0 +1,521 @@
+{
+  "schema": "hepta.learn.ordinary-production-wiring-static-review.v1",
+  "status": "STATIC_SCOPE_ONLY_NO_SOURCE_CHANGE_NO_NEW_EXECUTION_OR_AUTHORITY",
+  "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "ordinary_acceptance": 0,
+  "scope": {
+    "current": "40 explicitly listed Agentd source/test files plus two identified source-closure QA files and exact CALLERS records; current fixed Git bytes verified. No full workspace scan or H read.",
+    "prior_source_audit": {
+      "commit": "29e6dd78880228931c6cc780f3ecaa0ba5f6b532",
+      "custody_map": "8fd2e8e518bb1725006c31f596a73391188ebb22",
+      "scope": "Prior 488 fixed Agentd domain, not a statement that no external launcher exists."
+    },
+    "handoff": "09d097abb75b7b2a8069e64cd5d2ab2f6e796e05",
+    "prior_upstream_scope": {
+      "commit": "7bb48279f35021f8ec769d9dc4ce63741f2b36b1",
+      "audit": "20a648b84a402324f47fef39606cbf4c4430186a"
+    },
+    "whole_caller_gate": "The declared empty caller sets are not a new completed full-caller scan. Parent reports the actual isolated full-caller job launched; terminal not observed here.",
+    "runtime_claim": "No source QA/native/ordinary run performed by this review."
+  },
+  "conclusion": [
+    "A concrete internal positive path already exists but Root require_stage refuses Candidate Selection/NextUse before it can be called.",
+    "The generic Candidate trait execute_stage / receipt_attestation denials need not be opened to make the private Root opaque-evidence route reachable.",
+    "Metadata freeze, owner construction, resident registration/enrollment and Version service composition can consume existing original inputs without new key/grant/policy APIs, but no current ordinary producer of those inputs was demonstrated.",
+    "B-before-adoption execution, genuine C FinalUse issuer policy plus authenticated RunStart, and daemon/Root lifecycle custody remain independent deployment inputs; readonly cohorts, model bytes and LEARN cannot supply them."
+  ],
+  "root_positive_proof_chain": [
+    {
+      "at": "authority_host_learning_resident_profile.rs::RootResidentLearningProfileV3::new (52-95)",
+      "proof": "Initial/scope/verifier identify the original operation; supplied signed intent and exact-purpose registered lease must match full binding, epoch and original deadline. No issuance or lease registration occurs."
+    },
+    {
+      "at": "authority_host_resident_registration.rs::register_host_resident_learning_v3 (19-35)",
+      "proof": "Open original configured issuer/root/registry custody; pass supplied profile to register_original_root. The existing HostAuthorityService route also consumes retained custody."
+    },
+    {
+      "at": "authority_host_learning_resident_authority.rs::perform (127-228)",
+      "proof": "Same original Root PID, exact current registry lease/revision and binding, held original resident intent, time/cancellation and readonly fence surround each synchronous store boundary. Root UID alone is insufficient."
+    },
+    {
+      "at": "authority_host_learning_resident.rs::into_candidate_runtime; runtime.rs::compose (79-126)",
+      "proof": "Consumes the concrete non-Clone Candidate bundle under the same registered owner, initial scope and full trust/objective/evidence verifier; no caller callback supplies a stage result."
+    },
+    {
+      "at": "resident_learning_delivery.rs::prepare_enrollment / EnrolledOriginalV3::deliver",
+      "proof": "Existing actual Root readback and original A source/outbox join precede admission. Enrollment ACK is not learning completion."
+    },
+    {
+      "at": "authority_host_learning_resident_gate.rs::ResidentRegisteredStateV3::admit (72-114); runtime.rs::admit (209-246)",
+      "proof": "Only actual Fresh CAS yields the private continuation and effect gate; the concrete stages move once from Uninstalled and receive that exact gate."
+    },
+    {
+      "at": "authority_host_learning_resident_runtime.rs::continue_original (301-339)",
+      "proof": "require_stage currently blanket-denies positive S/C. After a permitted route, gate.begin durably records predecessor+stage before remote dispatch; watchdog repeatedly checks the same current gate."
+    },
+    {
+      "at": "authority_host_learning_resident_stages.rs::execute_original_stage; cell_q24_candidate_stage_owners.rs::execute_original_evidence (147-165)",
+      "proof": "Candidate S/C already dispatch to the private original_evidence methods, preserving opaque same-operation evidence. They do not call the generic Candidate trait positive path."
+    },
+    {
+      "at": "cell_q24_candidate_stage_operation.rs::begin / close / into_original_parts (60-115,249-253)",
+      "proof": "Non-Clone borrowing operation fences reuse, actual original E/D/T prefix reads occur before and after work, full prefix values are equal, and std::ptr::eq ties consumption to the same original Owners. Only successful authenticated consumption clears the operation fence."
+    },
+    {
+      "at": "cell_q24_candidate_stage_adoption.rs::original_selection (196-287)",
+      "proof": "Exact cut5, Fresh origin and same absolute deadline; actual Model/E completion; original initially held selector/version channels move once. Same Root gate is checked around real Version publish and real S command. Saved pins do not replace current I/O."
+    },
+    {
+      "at": "circuit_model_version_effect.rs::publish_original (29-148); root_model_version_issuer.rs::request_for_original_model_version",
+      "proof": "Actual Artifact selection/current and completed A precede Prepared. Existing issuer transport receives only actual typed Prepared binding for agentd.cell-generation.replace-drained; independent issuer may deny. Publication checks the exact signed binding, then creates sealed C task and original ordinary config."
+    },
+    {
+      "at": "cell_q24_candidate_stage_next_use.rs::original_next_use (148-219)",
+      "proof": "Exact cut6, actual Model read and original S binding, same prebound C/readiness channels; Ready is a read and never C execution authority. Actual Observer command and matching publication/input/completion precede opaque cut7."
+    },
+    {
+      "at": "cell_q24_candidate_stage_suffix.rs::authenticate_original_suffix",
+      "proof": "Full Model/four original predecessor signatures remain fixed; S is distinct from T/E and C Observer from T/E/S. Exact owners/principals/trust/objective, 6/7 snapshots and physical publication/completion pins are independently verified."
+    },
+    {
+      "at": "authority_host_learning_resident_auth.rs::candidate_continuation_attestations (84-110); runtime.rs::continue_original (342-385)",
+      "proof": "Fresh Root read precedes same opaque consumption; complete nested E panel and role windows are reauthenticated, fixed five-cut Model proof is reconstructed, full role/principal separation is checked, checkpoint uses same gate, and original post-CAS clock verifies all evidence again. Later independent readback starts new original I/O."
+    }
+  ],
+  "permission_assessment": {
+    "precise_claim": "The proposed dispatch-only change need not add any grant/lease/key/UID/principal, caller-supplied result, connection or callable public owner interface. It would make already implemented effects reachable under existing original capabilities; that behavioral change is real and is not itself proof of end-to-end permission safety.",
+    "principals": "No new principal is admitted by the proposed gate change. Existing exact owners, roles, trust/scope/objective and independent actor checks continue to decide each actual result.",
+    "retained_denials": [
+      "Generic Candidate execute_stage positive Selection/NextUse",
+      "Generic Candidate receipt_attestation for Model/adoption",
+      "NoUpdate branch separation",
+      "Recovered/readback-only cannot execute",
+      "Original Version/FinalUse denial and uncertain fencing"
+    ],
+    "cannot_claim": "No unconditional assertion of 'no permission change whatsoever' or complete integration is made from source alone. Actual peer/issuer negative controls and same-source verification are still required."
+  },
+  "minimal_code_delta_proposal": {
+    "implemented": false,
+    "rust": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "change": "Replace only the Candidate non-NoUpdate Selection/NextUse unconditional OwnerUnavailable arm with dispatch eligibility to the existing concrete Candidate private route. Keep NoUpdate and Evaluation/Proposal branches, execute_original_stage opaque carrier, and all generic trait code unchanged."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "change": "If an explicit checked route predicate is desired, add a crate-private wrapper over existing require_adoption_cut(snapshot,stage,Action::Execute), requiring the original installed Root gate to be present. Reuse exact5/6/Fresh/next-stage/deadline/model-cut checks; do not create a public boolean authorization or future result. This predicate checks shape/custody presence only; every actual freshness/effect/issuer check below remains mandatory."
+      }
+    ],
+    "guard_migration": "Migrate the exact full protected record for require_stage and the single actual caller for any new private predicate; retain every other complete record and root metadata. Keep all source negative categories. Update the old blanket-deny mutation to require the checked concrete branch plus generic-deny negative controls, rather than deleting the test.",
+    "gate_warning": "Only deleting the deny is not ordinary assembly. Actual host callers and supplied original capabilities below remain necessary."
+  },
+  "production_wiring": [
+    {
+      "id": "ordinary_A_entry",
+      "callsite": "main.rs:33 receive; immediately before final production match at238, and production_launcher.rs receive/run",
+      "existing": "AgentdConfig::with_q24_circuit_task_profile consumes original published baseline, Source/Cell files+witness, DurableInferenceControl/model/fence/routes/clock. with_root_resident_learning_enrollment then installs the existing runtime actor.",
+      "minimum": "A trusted original launcher can pass its already-held typed task profile and retain the returned enrollment before run. For checkpoint mode consume actual stages via with_root_learning_stage_owners instead. Modes remain mutually exclusive.",
+      "unavailable": "Current main/config parser has no such owned input; production_launcher_inputs only19 existing flags including checkpoint handoff. An arbitrary config path/DTO cannot provide PublishedTask/inference custody. Adding an unused wrapper is not a production caller."
+    },
+    {
+      "id": "pre_B_policy_and_T",
+      "callsite": "circuit_on_policy_evaluation_policy_panel.rs::freeze -> MaterialConfigV2::from_original/create_v2 -> TrainingBootstrapConfigV2::from_original/from_original_custody_v2",
+      "existing": "Complete immutable primary+nonempty retention policy and profile binding are already checked before Material journal effects and actual T writer effects.",
+      "minimum": "In the original Material/Trainer host, consume the supplied pre-B policy plus its existing files/witness/keys and same original D/T connections; no V1 field replacement or cross-host Arc authority.",
+      "unavailable": "No ordinary producer/caller of panel.freeze/create_v2/from_original_custody_v2 is registered in453. Need actual owner preimage, objective/baseline/profile and valid independent principals; do not use fixture profile or lower thresholds."
+    },
+    {
+      "id": "Root_late_enrollment",
+      "callsite": "authority_host_resident_registration.rs -> into_candidate_runtime -> serve_original_stream; AgentdRootResidentLearningClientV3 -> enroll_original_root; runtime.rs498",
+      "existing": "Profile+already-issued intent/exact lease, original config-backed Root custody, initial connected stage streams, original Root peer/pidfd, verifier and deadlines.",
+      "minimum": "Wire actual root owner service and ordinary launcher to those existing consumers. Preserve actualA completion/outbox join and existing late actor; no futureA receipt and no new authority from checkpoint.",
+      "unavailable": "The registered producer/consumer endpoints are currently empty product_callers; ordinary receive delivers only sealed checkpoint file and originalRoot pidfd."
+    },
+    {
+      "id": "Version_and_C",
+      "callsite": "circuit_model_version_host.rs::from_original_owners -> circuit_model_version_service.rs::serve_original_ordinary and three read services",
+      "existing": "Original Model client, Artifact/checkpoint/current and generation publication inputs, originalC config/Source/Cell/control, completedA, held AgentdUnixFinalUseGrantProvider.",
+      "minimum": "Start these concrete services inside the original Version host after consuming its real inputs; all S/version/C/readiness sockets are already-held endpoints with same peer/pidfd/absolute window. C runtime begins only after real publication and still requires authenticated RunStart.",
+      "unavailable": "No known ordinary Version producer/serve caller. Existing issuer policy may deny changed-model publication; LEARN/S/readonly Ready do not authorize it."
+    }
+  ],
+  "deployment_only_inputs": [
+    {
+      "id": "B_pre_adoption",
+      "required": "An existing original task/inference owner authorized for the exact candidate and baseline before adoption, its actual per-arm RunStart/Source/Cell/ledger and terminal Outcome; primary plus retention and actual frozen comparability/profile.",
+      "not_substitute": "OriginalCircuitOnPolicyCohortV1::read_original_v2 only consumes completed original source/ledger views. It does not execute. Q24 ordinary profile requires a sealed PublishedTask, so it is not an E-only bypass."
+    },
+    {
+      "id": "C_final_use_and_task",
+      "required": "Original Version/Artifact resources plus the already-held original issuer connection whose existing policy authorizes actual Prepared binding, and C's independently authorized new-session RunStart/task content.",
+      "not_substitute": "Root LEARN intent, S signature, model bytes, C readiness, OSRoot or a reused fixture key."
+    },
+    {
+      "id": "cold_restart",
+      "required": "Existing daemon/Root service lifecycle owner, durable current/checkpoint/private files and independently authorized recovery connections/new real process identities.",
+      "not_substitute": "Same-Arc reopen, fixture owner reconstruction or only a new inference worker."
+    }
+  ],
+  "existing_verification_targets": {
+    "not_run_by_this_review": true,
+    "source": [
+      {
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "blob": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+        "method": "ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied",
+        "meaning": "Currently asserts blanket require_stage suffix denial; requires surgical semantic migration if route is wired, not removal."
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+        "blob": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+        "meaning": "Six existing methods protect same complete Model prefix, original channels/Model Finish/effects, actual readiness/full S/C, verifier context and no reconnect/signer/rearm injections."
+      }
+    ],
+    "native": [
+      "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+      "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+      "resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+      "resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+      "q24_source_bound_model_selector_attests_and_recovers_exact_adoption",
+      "q24_source_bound_model_selector_refuses_withdrawn_training_source",
+      "q24_source_bound_model_selector_refuses_withdrawn_version_publication",
+      "q24_source_bound_model_selector_refuses_valid_predecessor_resigning",
+      "q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use"
+    ],
+    "missing_proof": "The identified existing cases are component/Root mechanism checks, not an actual resident cut5->6->7 ordinary acceptance. Enabling the route requires a genuine same-operation original-owner progression plus negative cases for absent/wrong-purpose original peer, issuer denial, changed fullModel/panel/S/C, expiry/withdrawal/cancellation, and readonly replay. This review does not manufacture those inputs or claim those cases executed.",
+    "inventory": "scripts/hepta_c_observer_coverage.py blob3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87; ignoredRoot cases retain their separate original29 gate."
+  },
+  "manifest": {
+    "blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "selected_declared_empty_boundaries": [
+      {
+        "id": "root_learning_original_stage_assembly",
+        "symbol": "AgentdConfig::with_root_learning_stage_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_original_register",
+        "symbol": "register_host_resident_learning_v3",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_service_register",
+        "symbol": "HostAuthorityService::register_resident_learning_v3",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_original_stream_serve",
+        "symbol": "RootResidentLearningHandleV3::serve_original_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_original_client_create",
+        "symbol": "AgentdRootResidentLearningClientV3::from_original_root_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_late_enrollment_config",
+        "symbol": "AgentdConfig::with_root_resident_learning_enrollment",
+        "definition_path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_late_enrollment_submit",
+        "symbol": "AgentdRootResidentEnrollmentV3::enroll_original_root",
+        "definition_path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_candidate_stage_create",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_resident_candidate_runtime_consume",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluation_shared_training_host",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::into_host_from_original_training_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_positive_version_owner_create",
+        "symbol": "OriginalCircuitModelVersionHostV1::from_original_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_positive_version_owner_ordinary",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_ordinary",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_positive_version_owner_selection_read",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_selection_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_positive_version_owner_next_use_read",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_next_use_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_positive_version_owner_readiness",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_completion_readiness",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_material_config_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV2::from_original",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_material_create_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create_v2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_bootstrap_config_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapConfigV2::from_original",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_bootstrap_create_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody_v2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_pre_b_panel_freeze",
+        "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::freeze",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+        "product_callers": []
+      }
+    ]
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "bytes": 13038
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "bytes": 18594
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+      "bytes": 16134
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "bytes": 2102
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+      "blob": "e4918f2febdc8f64773bb263905b4090b78ce79b",
+      "bytes": 1546
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+      "bytes": 32937
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "bytes": 4136
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "blob": "7c247c1f377e9889b3678fb6ae984ea188c5440a",
+      "bytes": 12216
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+      "blob": "b98abbaf3dd53d92c4c094115c606680896f68eb",
+      "bytes": 2043
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+      "bytes": 7941
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+      "bytes": 11164
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+      "bytes": 9940
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+      "blob": "9df7156f13e7bf19c2686c55bdff96bce2ff8fee",
+      "bytes": 9687
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "blob": "5a43a41181b071aeb61562596ccb0e3601af45c8",
+      "bytes": 15757
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "bytes": 8213
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "bytes": 13860
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "bytes": 13085
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "blob": "46d4b587667f88e7de2580f7d3f605524543871a",
+      "bytes": 6683
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "blob": "936300641ff24012652f186713f840d908d283e3",
+      "bytes": 12398
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "blob": "fe8f78c9fd3de48e7ff13318317fa33863749e94",
+      "bytes": 10328
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "blob": "43e24b94f0bdf5c5703ba52fc79cc55db6de673b",
+      "bytes": 13470
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "blob": "36ae446b390fc4633bada3c1ceec27743bd38cf0",
+      "bytes": 8192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "blob": "14b344feba96f7f1a0ce80ee5b8a11541dfbf663",
+      "bytes": 8286
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "blob": "ecaf44f44b0c3d04456cf41e16e2f13bf176bd43",
+      "bytes": 9276
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "blob": "c4443b4d51a9a528ee4c6f51d9bae889556d244e",
+      "bytes": 14227
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "blob": "34e13d6f0b6ffcb3ca34d9230f047b6b6f455a8e",
+      "bytes": 9458
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_model_version_issuer.rs",
+      "blob": "05b712efd6dd9953c5503cb4b5ba35f212cc377f",
+      "bytes": 2648
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "blob": "8b850bb43ba160406c319e61c70ffb38cb52ed4a",
+      "bytes": 15322
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "blob": "d4a62890aef097ed2465a023ab85bf860a5fdc03",
+      "bytes": 5164
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "blob": "4b213bbb565f667cb8b6523ec292433cf2f637d6",
+      "bytes": 1187
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "blob": "07f1d1dbc946c4b8de33d3bc76acd8e9c3ca48db",
+      "bytes": 23727
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "blob": "3e99100057e9aa685e1bb407a6e4e950048a52a1",
+      "bytes": 10659
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "bytes": 1028
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "bytes": 7595
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "bytes": 15009
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "bytes": 18093
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+      "blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+      "bytes": 8901
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "blob": "d7643ab7bc964277d9f7672897dbd6d333d4d948",
+      "bytes": 11072
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_published_tests.rs",
+      "blob": "b1765932608e7e1ba911b515065ff03bd2229076",
+      "bytes": 11029
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_next_use_observer_tests.rs",
+      "blob": "1fb9549b0e0a79a339fff8b3627bb4d08ff004e6",
+      "bytes": 5391
+    }
+  ]
+}

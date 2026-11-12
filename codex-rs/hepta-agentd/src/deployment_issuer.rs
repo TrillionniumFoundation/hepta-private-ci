@@ -70,8 +70,11 @@ pub use notes::RootNotesGrantAdmission;
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
+#[path = "deployment_learning_resident.rs"]
+mod learning_resident;
 #[path = "deployment_signed_grant.rs"]
 mod original_grant;
+pub(crate) use learning_resident::OriginalResidentGrantFenceV3;
 
 enum RevocationExpectation<'a> {
     Current,

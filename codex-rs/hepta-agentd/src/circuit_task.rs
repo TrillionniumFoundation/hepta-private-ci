@@ -16,16 +16,22 @@ use codex_hepta_types::Digest32;
 use crate::CircuitCellErrorV1;
 use crate::CircuitCellExecutionV1;
 
+#[cfg(test)]
+#[path = "cell_q24_dataset_source_test_support.rs"]
+pub(crate) mod cell_q24_dataset_source_test_support;
 #[path = "circuit_task_driver.rs"]
 mod driver;
 #[path = "circuit_task_runtime.rs"]
 mod runtime;
 #[path = "circuit_task_source.rs"]
 mod source;
+#[cfg(test)]
+pub(crate) use source::tests as source_test_support;
 
 pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
 pub use runtime::circuit_task_channel_v1;
+pub(crate) use source::CircuitTaskPolicyProjectionV1;
 pub use source::CircuitTaskSourceInputV1;
 pub use source::CircuitTaskSourcePublicationV1;
 pub use source::CircuitTaskSourceReadbackV1;

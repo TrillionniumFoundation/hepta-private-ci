@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.learn.c7-retained-issuer-fixture-compile-repair.v1",
+  "source_parent": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "source_parent_tree": "2f6faa8fc5a3bf2a8e923748a45ec8d56a4a3d1b",
+  "actual_compiler_evidence": {
+    "commit": "c08e23e7d94eb44b9c6730f5a1b3dd727f028b49",
+    "log_blob": "f387d6c2f9a5b525b7a542e11145543c83dd6abc",
+    "bytes": 69516,
+    "sha256": "ec43e65d4eb6b7599363ded3c7fccd00f336ca98fbb3c6e12f418dbffc1b54cd",
+    "native_exit": 101,
+    "native_tests": 0,
+    "scope_errors": [
+      {
+        "code": "E0624",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+        "line": 35,
+        "detail": "command_response is private in sibling host::service"
+      },
+      {
+        "code": "E0433",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+        "line": 41,
+        "detail": "AuthorityPosture has no explicit import in the existing test module"
+      }
+    ]
+  },
+  "files": [
+    {
+      "name": "circuit_retained_version_host.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "before_blob": "97f0ca35bfad5e2603469dfe294ad2ebcae402bc",
+      "sha": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+      "bytes": 12501
+    },
+    {
+      "name": "circuit_retained_version_service.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_blob": "78e0f8f1a74be2c0496840b0f1b4444b637fcf66",
+      "sha": "771a33453238653a587632c04bf62b988421fb1b",
+      "bytes": 11680
+    },
+    {
+      "name": "circuit_retained_version_issuer_host_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "before_blob": "af2a90caddcc4ef972d9af8434e963e503123a06",
+      "sha": "dd031f845a02cbb94f250b9566c6b66ee6816c1d",
+      "bytes": 1920
+    },
+    {
+      "name": "circuit_retained_version_issuer_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "before_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "bytes": 10807
+    }
+  ],
+  "exact_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "before": "#[cfg(test)]\n#[path = \"circuit_retained_version_issuer_host_tests.rs\"]\nmod issuer_fixture;\n\n",
+      "after": "",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "operation": "append",
+      "text": "\n#[cfg(test)]\n#[path = \"circuit_retained_version_issuer_host_tests.rs\"]\nmod issuer_fixture;\n"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "before": "use super::super::wire;\nuse super::*;\n",
+      "after": "use super::*;\nuse crate::OriginalCircuitRetainedVersionReadbackV1;\n",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "before": "super::super::OriginalCircuitRetainedVersionReadbackV1",
+      "after": "OriginalCircuitRetainedVersionReadbackV1",
+      "occurrences": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "before": "use super::*;\n",
+      "after": "use super::*;\nuse codex_hepta_types::AuthorityPosture;\n",
+      "occurrences": 1
+    }
+  ],
+  "responsibility_boundary": {
+    "fixture_module_before": "host::issuer_fixture",
+    "fixture_module_after": "host::service::issuer_fixture",
+    "explanation": "Move only the cfg(test) fixture into the private service module's descendant scope. Rust module privacy now permits its existing call into the original command implementation without exposing that implementation to any production caller.",
+    "command_response_signature": "fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error>",
+    "production_method_visibility_changed": false,
+    "original_request_encode_validate_response_decode_and_pin_checks_changed": false,
+    "owner_state_or_phase_constructed_by_new_fixture_code": false,
+    "AuthorityPosture_DENY_ALL_assertion_changed": false,
+    "six_original_issuer_test_names_and_bodies_changed": false
+  },
+  "guard_impact": {
+    "manifest_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+    "manifest_modified": false,
+    "boundary_changes": [],
+    "protected_record_changes": [],
+    "before_counts": {
+      "boundaries": 710,
+      "complete_protected_records": 489
+    },
+    "after_counts": {
+      "boundaries": 710,
+      "complete_protected_records": 489
+    },
+    "unchanged_host_and_service_complete_records": 4,
+    "exact_unchanged_record_blocks": [
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\"\nrequired = [\"pub struct OriginalCircuitRetainedVersionHostV1\", \"state: Mutex<RetainedVersionHostStateV1>\", \"preparation_requested: AtomicBool\", \"publication_requested: AtomicBool\", \"runtime_started: AtomicBool\", \"phase: Option<RetainedVersionHostPhaseV1>\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"try_clone(\", \"permit_all\", \"forward_recovery\", \"LearningEvidenceVerifierV1::new\", \"RootResidentLearningProfileV3::new\", \"initialize_host_authority(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_owners(\"\nsequence = [\"require_original_command_initial(&material)\", \"require_initial_context(&dataset, &material)?\", \"task.require_completed_a(&inputs.completed)?\", \"RetainedVersionArtifactOwnerV1::new(\", \"Arc::clone(&inputs.authorities.artifacts)\", \"inputs.selection.signed.clone()\", \"inputs.selection.verifier.clone()\", \"Arc::clone(&inputs.current)\", \"RetainedVersionHostPhaseV1::Awaiting\", \"RetainedVersionOriginV1::Fresh\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_from_original_owners(\"\nsequence = [\"require_original_command_initial(&material)\", \"require_initial_context(&dataset, &material)?\", \"original.intent_digest.is_zero()\", \"original.training.receipts.len() != 3\", \"original.attestations.len() != 3\", \"RetainedVersionHostPhaseV1::Recovered\", \"RetainedVersionOriginV1::Recovered\", \"expected: Some(RetainedVersionColdCutV1\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn new(\"\nsequence = [\"lifetime.is_zero() || lifetime > Duration::from_secs(300)\", \"Instant::now().checked_add(lifetime)\", \"preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)\", \"publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)\", \"runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)\", \"Handle::try_current()\"]\ntop_level = []\n\n",
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\"\nrequired = [\"impl OriginalCircuitRetainedVersionHostV1\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"try_clone(\", \"permit_all\", \"forward_recovery\", \"LearningEvidenceVerifierV1::new\", \"RootResidentLearningProfileV3::new\", \"initialize_host_authority(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn serve_commands(\"\nsequence = [\"self.require_lifetime()?\", \"self.remaining_lifetime(lifetime)?\", \"spawn_blocking(\", \"original_owner_command_channel_v1(\", \"1..=128_u64\", \"self.require_lifetime()?\", \"channel.exchange(\", \"self.command_response(bytes, request_id)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn serve_original_ordinary(\"\nsequence = [\"tokio::try_join!\", \"serve_commands(\", \"OriginalCircuitRetainedVersionHostV1::run_original_c(Arc::clone(&self), arg0_paths)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn serve_original_selection_readback(\"\nsequence = [\"timeout.is_zero() || timeout > Duration::from_millis(500)\", \"self.remaining_lifetime(lifetime)?\", \"original_owner_command_channel_v1(\", \"loop\", \"self.require_lifetime()?\", \"channel.check_peer_lifetime()?\", \"state.selection_reader.as_ref().map(Arc::clone)\", \"spawn_blocking(\", \"OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn command_response(\"\nsequence = [\"request.schema != 1\\n            || request.purpose != wire::OPERATION\", \"request.request_id != request_id\", \"request.initial_binding != self.initial_binding.to_string()\", \"request.operation_id != self.material.initial.request.operation_id.to_string()\", \"wire::digest(&request.binding)?\", \"wire::digest(&request.training_head)?\", \"require_original_command_initial(\\n                &self.material,\\n            )\", \"self.state.try_lock()\", \"self.bind_original_predecessor(&mut state)\", \"request.require_cut(\", \"wire::Action::Prepare => self.prepare_original(&mut state)\", \"wire::Action::Readback\", \"self.preparation_requested.store(true, Ordering::Release)\", \"self.read_original(&state)\", \"require_fresh(started, PublicationAccess::Readback)?\", \"duplicate_response_pin()\", \"self.encode_response(request, result, started, pin)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn encode_response(\"\nsequence = [\"require_original_command_initial(\\n                &self.material,\\n            )\", \"binding != self.initial_binding || fresh < started\", \"self.require_lifetime()?\", \"serde_json::to_vec\", \"bytes.len() > 16_384\", \"pin.require_fresh(started, PublicationAccess::Readback)?\", \"Ok(bytes)\"]\ntop_level = []\n\n",
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\"\nrequired = [\"issuer_worker_started: AtomicBool,\", \"final_use_outcome: AtomicU8,\", \"final_use_issuer: Option<OriginalRootRetainedVersionIssuerV1>,\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"try_clone(\", \"permit_all\", \"forward_recovery\", \"LearningEvidenceVerifierV1::new\", \"RootResidentLearningProfileV3::new\", \"initialize_host_authority(\", \"DeploymentFinalUseIssuer::issue(\", \"ROOT_RESIDENT_LEARNING_EXECUTE\", \"AgentdUnixFinalUseGrantProvider::from_stream(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_owners(\"\nsequence = [\"final_use_issuer: AgentdUnixFinalUseGrantProvider\", \"task.require_completed_a(&inputs.completed)?\", \"RetainedVersionArtifactOwnerV1::new(\", \"AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(\", \"RetainedVersionHostPhaseV1::Awaiting\", \"final_use_issuer: Some(final_use_issuer)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_from_original_owners(\"\nsequence = [\"RetainedVersionHostPhaseV1::Recovered\", \"RetainedVersionOriginV1::Recovered\", \"final_use_issuer: None\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn new(\"\nsequence = [\"issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)\", \"final_use_outcome: AtomicU8::new(match origin\", \"RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8\", \"RetainedVersionOriginV1::Recovered => {\\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\\n                }\", \"runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)\"]\n\n",
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\"\nrequired = []\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"File::create\", \"try_clone(\", \"permit_all\", \"forward_recovery\", \"LearningEvidenceVerifierV1::new\", \"RootResidentLearningProfileV3::new\", \"initialize_host_authority(\", \"DeploymentFinalUseIssuer::issue(\", \"ROOT_RESIDENT_LEARNING_EXECUTE\", \"AgentdUnixFinalUseGrantProvider::from_stream(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn serve_original_ordinary(\"\nsequence = [\"tokio::try_join!\", \"serve_commands(\", \"OriginalCircuitRetainedVersionHostV1::run_original_c(\", \"OriginalCircuitRetainedVersionHostV1::serve_original_final_use(\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn command_response(\"\nsequence = [\"self.read_original(&state)\", \"PublicationAccess::Readback\", \"self.original_final_use_outcome()\", \"RetainedVersionFinalUseOutcomeV1::Denied\", \"wire::OriginalResult::FinalUseDenied\", \"RetainedVersionFinalUseOutcomeV1::Requested\", \"RetainedVersionFinalUseOutcomeV1::Uncertain\", \"wire::OriginalResult::Uncertain\", \"duplicate_response_pin()\", \"self.encode_response(\"]\n\n"
+    ],
+    "fixture_source_has_protected_record": false,
+    "production_callers_added_or_removed": false,
+    "source_method_inventory": 423,
+    "native_main_inventory": 190,
+    "original_Root_parent_inventory": 29
+  },
+  "source_projection": {
+    "production_token_counts": {
+      "circuit_retained_version_host.rs": 1606,
+      "circuit_retained_version_service.rs": 1877
+    },
+    "production_same": true,
+    "fixture_body_same_except_type_path": true,
+    "original_test_names": [
+      "retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once"
+    ],
+    "original_test_bodies_unchanged": true,
+    "guard_records_unchanged": 4
+  },
+  "validation_limits": {
+    "status": "Source/API readback and V8 cfg(test)-masked token projection only.",
+    "original_python_executed": false,
+    "rust_compiler_executed": false,
+    "native_executed": false,
+    "H_operation_dispatched": false,
+    "production_grants_keys_or_policies_created": false,
+    "ordinary_acceptance": 0,
+    "next": "Root must validate the integrated successor with original compilation/tests; C7 helper evidence cannot be relabeled to the new SHA."
+  },
+  "Root29_preparation": {
+    "prior_C7_case_identity_audit_remains_valid_for_C7_only": true,
+    "exact_29_names_changed": false,
+    "fixture_and_module_blob_pins_must_be_updated_for_new_final_SHA": true,
+    "current_C7_runner_draft_dispatched": false,
+    "helper_requirements": "Use original builder/verify-only for the final source; do not modify or relabel a prior helper manifest."
+  }
+}

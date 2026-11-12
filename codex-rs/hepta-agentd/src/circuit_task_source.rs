@@ -47,6 +47,9 @@ use crate::circuit_cell_scope_digest_v1;
 mod codec;
 #[path = "circuit_task_source_journal.rs"]
 mod journal;
+#[path = "circuit_task_source_policy.rs"]
+mod policy;
+pub(crate) use policy::CircuitTaskPolicyProjectionV1;
 #[path = "circuit_task_source_readback.rs"]
 mod readback;
 pub use readback::CircuitTaskSourceReadbackV1;
@@ -122,6 +125,12 @@ impl CircuitTaskSourcePublicationV1 {
     }
     pub fn checkpoint_digest(&self) -> Digest32 {
         self.checkpoint_digest
+    }
+
+    /// Decode only the exact policy retained by this original publication.
+    /// Current custody still requires reading the original Source before and after use.
+    pub(crate) fn original_policy(&self) -> Result<CircuitTaskPolicyProjectionV1, Error> {
+        policy::read(self)
     }
 
     pub(crate) fn require_decision(
@@ -418,4 +427,4 @@ fn agent_error(error: Error) -> AgentdError {
 
 #[cfg(test)]
 #[path = "circuit_task_source_tests.rs"]
-mod tests;
+pub(crate) mod tests;

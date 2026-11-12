@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.learn.a671-exact-three-parent-repair-union.v1",
+  "status": "prepared_source_only_no_new_native_result",
+  "base": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "ordered_parents": [
+    {
+      "parent": "643d76a29921bbfeae07ed6283f078335158e421",
+      "tree": "cf553399403907f0872c058b2ebab8db11941832",
+      "exact_delta_paths": 3,
+      "independent_git_tree_reconstruction_equal": true
+    },
+    {
+      "parent": "8eda34a7121dc332645b59a7e4d7e1c04dc8266e",
+      "tree": "ad74d570918d12aec9dc3b66ed67789b81f9dcd0",
+      "exact_delta_paths": 2,
+      "independent_git_tree_reconstruction_equal": true
+    },
+    {
+      "parent": "f87d324314797a3b786cfc62bc96c96860143bb0",
+      "tree": "aea44c87df486a87b867d8f1835f7c7cd9fdf70d",
+      "exact_delta_paths": 2,
+      "independent_git_tree_reconstruction_equal": true
+    }
+  ],
+  "scope": "Exact union of the seven disjoint paths already published by the three direct children of a671, plus the two specified peer records and this audit. No new production Rust, stack hypothesis, maintenance execution, PR update or H operation.",
+  "inherited_paths": [
+    {
+      "path": "CALLERS.toml",
+      "status": "modified",
+      "blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "bytes": 1619732,
+      "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e",
+      "original_parent": "643d76a29921bbfeae07ed6283f078335158e421"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair-audit.json",
+      "status": "added",
+      "blob": "6ccee3a7f4342b2a136ed6bf5597122ee49c0add",
+      "bytes": 15455,
+      "sha256": "3ecae5d61303206f6448b74f380feaea98d4b6d3ec4f9d85bcd7f88c6af09c3d",
+      "original_parent": "643d76a29921bbfeae07ed6283f078335158e421"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair.patch",
+      "status": "added",
+      "blob": "c824329e6245ba853ea948f0128c5ee27207415d",
+      "bytes": 392,
+      "sha256": "b9525fca4a46befea1f927338de9f98a197ab8863626d3c3129877429a7e390f",
+      "original_parent": "643d76a29921bbfeae07ed6283f078335158e421"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "status": "modified",
+      "blob": "2be5923507a86c65555ce525b273d05a6d3243a2",
+      "bytes": 15086,
+      "sha256": "761c4ee65809f2c36fa8da6dd62d86b98cf2ddbdc39a992d7691ae1b4291184b",
+      "original_parent": "8eda34a7121dc332645b59a7e4d7e1c04dc8266e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/a671-provider-objective-preimage-20261112/source-audit.json",
+      "status": "added",
+      "blob": "7af224d90dcec1ff31b82ffdbc5e4deecfbb8b03",
+      "bytes": 12959,
+      "sha256": "786c5b7e2ac810c5fc45859543a540dd9a22810749fd63f661d18d9d8f765f14",
+      "original_parent": "8eda34a7121dc332645b59a7e4d7e1c04dc8266e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "status": "modified",
+      "blob": "a66b07c2f084692e51896dde2f18daf2f1fc4af7",
+      "bytes": 26029,
+      "sha256": "d4d6262729863bae4ea9cbbedae341826e0f1734db9a33e2a7eb5e9bf1a6dade",
+      "original_parent": "f87d324314797a3b786cfc62bc96c96860143bb0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/candidate-expiry-boundary-20261112/audit.json",
+      "status": "added",
+      "blob": "8d2718304900c57edbd0ee15d1127e6317936600",
+      "bytes": 6954,
+      "sha256": "603f30fff1e56154027d27416a724d82cdf6c3f50544343ac8b369fd5700f15b",
+      "original_parent": "f87d324314797a3b786cfc62bc96c96860143bb0"
+    }
+  ],
+  "added_peer_records": [
+    {
+      "path": "qualification/learn-ordinary-ce434/a671-repairs-union-20261112/authority-peer-review.json",
+      "blob": "cd160cdd03dbc3173a9d33d94976feb3d0ad685f",
+      "bytes": 7099,
+      "sha256": "9ac3fdfbf7042818c6245df108c04b1d95b67f1cb5b480b1755befc38555696f"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/a671-repairs-union-20261112/provider-peer-review.json",
+      "blob": "7775ebbac8fb94118e78cc94c49475e4a3d18d74",
+      "bytes": 3551,
+      "sha256": "8100c72a462b6a3b1ddd70dcc9322e2bc6c05c974c28c837138428f1eff7ce3f"
+    }
+  ],
+  "preservation": {
+    "path_conflicts": 0,
+    "original_child_tree_proofs": "Each child's complete tree independently reconstructed from the exact a671 base plus only its listed delta; all three reconstructed root tree IDs equal their canonical published trees.",
+    "complete_inherited_blob_reads": "All seven inherited blobs and both peer blobs were fetched completely and independently checked against their Git blob IDs. All three modified preimages were also fetched and checked.",
+    "manifest": {
+      "before": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+      "after": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "exact_original_prefix_bytes": 1619553,
+      "only_suffix_bytes": 179,
+      "rule": "Use the existing complete 898948 blob verbatim. No TOML parser, generic manifest reconstruction, caller union or path-based record deduplication is used.",
+      "restored_authority_flags": {
+        "runtime_authority": false,
+        "production_caller": false,
+        "production_writer": false,
+        "external_effect": false,
+        "self_issued_acceptance": false,
+        "promotion": false,
+        "release": false
+      },
+      "original_boundary_records": 736,
+      "original_protected_file_records": 506,
+      "count_provenance": "Original counts are documented by the fixed authority peer; preservation is independently established here by exact equality of the complete preexisting manifest bytes.",
+      "root_metadata_and_privileged_inventory": "Every byte of the a671 manifest, including the root preamble, complete repeated records and privileged_inventory, remains before the sole restored authority suffix."
+    },
+    "provider": {
+      "before": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+      "after": "2be5923507a86c65555ce525b273d05a6d3243a2",
+      "exact_edits": 6,
+      "unique_forward_inverse_whole_file_equal": true,
+      "scope": "Only the already-reviewed fixture support change. It passes the same actual A objective preimage through the three existing B execute paths."
+    },
+    "expiry": {
+      "before": "b974191f9a27368db425da2efc9e903d905cf088",
+      "after": "a66b07c2f084692e51896dde2f18daf2f1fc4af7",
+      "exact_edits": 2,
+      "unique_forward_inverse_whole_file_equal": true,
+      "scope": "Only the already-reviewed original expiry+1 fixture control, exact ValidityWindow error and complete renewed receipt comparison."
+    },
+    "inventory": {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "unchanged_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87"
+    },
+    "other_source_and_evidence": "Every path outside the exact ten-path union retains its a671 tree entry; the four inherited audit/patch files and both peer records retain their original bytes."
+  },
+  "method": {
+    "tree_construction": "Start with the exact base Git tree and replace only the named file entries. Compute affected Git tree object hashes independently; compare API tree readbacks before publishing the new review branch.",
+    "parentage": "The new commit has exactly the ordered three real source child commits as parents, not cherry-picked or synthetic substitute parents.",
+    "final_commit_and_tree": "The canonical final commit/tree are carried by Git and reported in the delivery; this audit intentionally does not self-reference its containing tree.",
+    "runtime_validation": "None. Prior source/native results retain their original source pins; this union does not inherit a new native pass."
+  },
+  "validation": {
+    "v8_exact_bytes_and_git_object_checks": true,
+    "python": false,
+    "rust": false,
+    "native": false,
+    "h": false,
+    "fix_or_fmt": false,
+    "pr_ref_update": false
+  },
+  "ordinary_acceptance": 0
+}

@@ -32,6 +32,9 @@ use crate::journal_lock::LockedFile;
 mod context;
 pub use context::CellGenerationExpectedContextV1;
 
+#[path = "cell_generation_physical_current.rs"]
+mod physical_current;
+
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
 const MAX_FRAME: usize = 2 * 1024 * 1024;
@@ -49,6 +52,7 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
     length: u64,
     max_records: u64,
     healthy: bool,
+    physical_fenced: bool,
     current: Option<(
         Arc<dyn CellGenerationCurrentV1>,
         CellGenerationOwnerBindingV1,
@@ -132,6 +136,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             length: 0,
             max_records,
             healthy: false,
+            physical_fenced: false,
             current,
         };
         owner.recover()?;
@@ -142,6 +147,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     /// and witnessed before exposure. Missing witnessed suffixes are rejected
     /// before truncation; recovery never calls a model or transport.
     pub fn recover(&mut self) -> Result<(), CellGenerationErrorV2> {
+        if self.physical_fenced {
+            return Err(CellGenerationErrorV2::CommitUncertain);
+        }
         self.healthy = false;
         let mode = self.open_mode()?;
         let expected = self
@@ -184,17 +192,13 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
                 break;
             }
             let payload = &bytes[offset + 4..end - 32];
-            let next = next_anchor(&self.header, head, payload)?;
-            if next.sequence > self.max_records
-                || next.checkpoint_digest.as_array() != &bytes[end - 32..end]
-            {
-                return Err(CellGenerationErrorV2::Corrupt);
-            }
-            let event: GenerationEvent =
-                serde_json::from_slice(payload).map_err(|_| CellGenerationErrorV2::Corrupt)?;
-            if serde_json::to_vec(&event).map_err(|_| CellGenerationErrorV2::Corrupt)? != payload {
-                return Err(CellGenerationErrorV2::Corrupt);
-            }
+            let (next, event) = physical_current::decode_frame(
+                &self.header,
+                head,
+                payload,
+                &bytes[end - 32..end],
+                self.max_records,
+            )?;
             state.apply(&self.config, &event)?;
             witnessed |= expected == Some(next);
             head = Some(next);
@@ -300,6 +304,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
 
     /// Recheck the same live owner immediately before external computation.
     pub fn require_current(&self) -> Result<(), CellGenerationErrorV2> {
+        if self.physical_fenced {
+            return Err(CellGenerationErrorV2::CommitUncertain);
+        }
         if let Some((current, binding)) = &self.current {
             current.check_current(binding)?;
         }
@@ -533,7 +540,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     }
 
     fn require_healthy(&self) -> Result<(), CellGenerationErrorV2> {
-        if self.healthy {
+        if self.healthy && !self.physical_fenced {
             self.require_current()
         } else {
             Err(CellGenerationErrorV2::CommitUncertain)
