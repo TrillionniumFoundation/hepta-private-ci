@@ -5,3 +5,5 @@
 mod deployment;
 #[path = "ordinary_q24_process_inputs_tests.rs"]
 mod inputs;
+#[path = "ordinary_q24_process_root_tests.rs"]
+mod root;
