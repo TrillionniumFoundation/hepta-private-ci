@@ -447,9 +447,9 @@ impl Drop for RefreshCompletion<'_> {
     }
 }
 
-/// End the original observation feed only when its whole original read and
-/// consumer barrier have finished. Actual inputs/session Drop performs the
-/// fencing and abort; this helper never refreshes or pre-aborts the worker.
+/// Finish the retained task's original read while its observation feed can
+/// still run. Then acquire the completed refresh/consumer barrier and Drop
+/// under that permit. This helper never refreshes or pre-aborts the worker.
 pub(crate) async fn drop_original_production_after_idle(
     inputs: crate::AgentdRootProductionInputs,
     timeout: Duration,
@@ -458,6 +458,10 @@ pub(crate) async fn drop_original_production_after_idle(
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
     tokio::time::timeout(timeout, async move {
+        // A task check can perform synchronous original Root reads. Holding
+        // the feed permit across them would prevent the real background feed
+        // from refreshing its unchanged 500ms cache while the task is live.
+        before_drop()?;
         let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
@@ -465,9 +469,8 @@ pub(crate) async fn drop_original_production_after_idle(
             ));
         }
         live.current().map_err(std::io::Error::other)?;
-        before_drop()?;
-        // The permit prevents any new refresh from starting during this check
-        // and the actual Drop. A retained task can now test that original Drop.
+        // No task I/O remains under this permit. The same original worker and
+        // current observation must still be valid immediately before Drop.
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
                 "original Root observation worker failed or finished before deliberate Drop",
