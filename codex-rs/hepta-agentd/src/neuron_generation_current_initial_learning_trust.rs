@@ -3,7 +3,7 @@
 use super::*;
 
 impl NeuronGenerationCurrentOwnerV1 {
-    pub(crate) fn read_original_initial_learning_trust(
+    pub(crate) fn read_root_initial_learning_trust(
         &self,
         session: &crate::AgentdRootAuthoritySession,
         identity: &crate::AgentdIdentity,

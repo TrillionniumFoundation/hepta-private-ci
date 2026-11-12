@@ -21,7 +21,7 @@ fn original(root: &Path, name: &str, bytes: &[u8]) -> std::io::Result<(PathBuf, 
 fn initial_q24_ledger_files_detect_original_entry_replacement() -> anyhow::Result<()> {
     let directory = tempfile::tempdir()?;
     let (path, file) = original(directory.path(), "ledger", b"retained original")?;
-    let parent = OriginalParent::open(&path, &file)?;
+    let parent = OriginalParent::open_original(&path, &file)?;
     parent.require_original()?;
     let retained = directory.path().join("retained");
     std::fs::rename(&path, &retained)?;
@@ -39,12 +39,12 @@ fn initial_q24_ledger_files_reject_replaced_or_symlinked_directory() -> anyhow::
     std::fs::create_dir(&directory)?;
     std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700))?;
     let (path, file) = original(&directory, "ledger", b"original bytes")?;
-    let parent = OriginalParent::open(&path, &file)?;
+    let parent = OriginalParent::open_original(&path, &file)?;
     let retained = root.path().join("retained-owner");
     std::fs::rename(&directory, &retained)?;
     std::os::unix::fs::symlink(&retained, &directory)?;
     assert!(parent.require_original().is_err());
-    assert!(OriginalParent::open(&path, &file).is_err());
+    assert!(OriginalParent::open_original(&path, &file).is_err());
     assert_eq!(std::fs::read(retained.join("ledger"))?, b"original bytes");
     Ok(())
 }
@@ -53,7 +53,7 @@ fn initial_q24_ledger_files_reject_replaced_or_symlinked_directory() -> anyhow::
 fn initial_q24_ledger_files_reject_shared_custody_without_repair() -> anyhow::Result<()> {
     let directory = tempfile::tempdir()?;
     let (path, file) = original(directory.path(), "ledger", b"original bytes")?;
-    let parent = OriginalParent::open(&path, &file)?;
+    let parent = OriginalParent::open_original(&path, &file)?;
     file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
     assert!(parent.require_original().is_err());
     file.set_permissions(std::fs::Permissions::from_mode(0o600))?;

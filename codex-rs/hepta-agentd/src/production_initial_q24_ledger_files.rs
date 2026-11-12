@@ -79,7 +79,7 @@ pub(super) fn open(
         (&data.signature_witness.path, &signature_witness_file),
     ] {
         require_unwritten(file)?;
-        held.push(OriginalParent::open(path, file)?);
+        held.push(OriginalParent::open_original(path, file)?);
     }
     let ledger =
         DurableLedger::create(ledger_file, binding, data.maximum_records).map_err(invalid)?;
@@ -143,7 +143,7 @@ struct OriginalParent {
 }
 
 impl OriginalParent {
-    fn open(path: &Path, original_file: &File) -> Result<Self, AgentdError> {
+    fn open_original(path: &Path, original_file: &File) -> Result<Self, AgentdError> {
         let parent = path
             .parent()
             .ok_or_else(|| invalid("original containing directory missing"))?;
