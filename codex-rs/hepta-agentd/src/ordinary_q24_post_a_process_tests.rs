@@ -153,6 +153,9 @@ pub(super) fn run_original_business_case(
         &running,
         decision_cut,
     ))?;
+    let first_acceptance = runtime.block_on(
+        super::cold_acceptance_data::wait_for_original_terminal_acceptance(&running, &terminal),
+    )?;
     running.require_live()?;
     running.daemon.request_original_shutdown()?;
     let RunningOrdinaryPostA {
@@ -181,7 +184,7 @@ pub(super) fn run_original_business_case(
         super::post_a_completed_data::OriginalCompletedCData::observe_after_original_exit(
             &plan, &selected, &target, snapshot, &daemon, &root,
         )?;
-    Ok(RetainedOrdinaryQ24Fixture {
+    let retained = RetainedOrdinaryQ24Fixture {
         case,
         plan,
         independent,
@@ -195,7 +198,13 @@ pub(super) fn run_original_business_case(
         source,
         source_data,
         publication: qualified,
-    })
+    };
+    let accepted = super::cold_acceptance_data::OriginalColdAcceptanceData::observe(&retained)?;
+    anyhow::ensure!(
+        accepted.digest == first_acceptance.to_string(),
+        "actual first Root acceptance changed during successful process retirement"
+    );
+    Ok(retained)
 }
 
 fn require_actual_business_decision(
