@@ -1,0 +1,44 @@
+name: HPCA free-generation runtime contract
+on:
+  push:
+    branches:
+      - research/hpca-output-contract-20261112-e901
+    paths:
+      - qualification/hpca-neuroscience-20261110/**
+      - .github/workflows/hepta-hpca-freegen-runtime-contract.yml
+  pull_request:
+    paths:
+      - qualification/hpca-neuroscience-20261110/**
+      - .github/workflows/hepta-hpca-freegen-runtime-contract.yml
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test public source and synthetic runtime negatives
+        working-directory: qualification/hpca-neuroscience-20261110
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/hpca-runtime-contract"
+          git rev-parse HEAD > "$RUNNER_TEMP/hpca-runtime-contract/source-head.txt"
+          python -m unittest -v test_real_freegen test_native_lora_ood_probe test_frozen_prompt_condition test_ood_forward_audit test_freegen_contract 2>&1 | tee "$RUNNER_TEMP/hpca-runtime-contract/tests.log"
+      - name: Preserve raw execution record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hpca-runtime-contract-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hpca-runtime-contract
+          if-no-files-found: error
+          retention-days: 30
