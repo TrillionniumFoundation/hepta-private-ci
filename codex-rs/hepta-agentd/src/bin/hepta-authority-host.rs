@@ -1,4 +1,4 @@
-//! Explicit Root administration, fresh publication and open-only session entry.
+//! Explicit Root administration, fresh publication and original material recovery.
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,7 +8,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, register-learning, register-q24-model-factory, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, register-learning, register-q24-model-factory, serve-session, serve-fresh-session, serve-fresh-material-session, serve-recovered-material-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+    let fresh_session =
+        command == "serve-fresh-session" || command == "serve-fresh-material-session";
+    let recover_material_session = command == "serve-recovered-material-session";
+    let serving_session = command == "serve-session" || fresh_session || recover_material_session;
     if command == "independent-b-source" {
         return codex_hepta_agentd::run_original_independent_b_source_cli(args.collect())
             .map_err(Into::into);
@@ -34,7 +38,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     }
-    if initial_peer_ready && command != "serve-session" && command != "serve-fresh-session" {
+    if initial_peer_ready && !serving_session {
         return Err("Initial peer readiness requires the original serving command".into());
     }
     let mut take = |key: &str| {
@@ -143,7 +147,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &owner,
         )?;
         println!("{}", serde_json::to_string(&registered)?);
-    } else if command == "serve-session" || command == "serve-fresh-session" {
+    } else if serving_session {
         let config = take("--config")?;
         let registration = take("--registration")?;
         let text_file = options
@@ -331,7 +335,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let notes = match (notes_profile, notes_reservation, notes_session, notes_deployment) {
             (None, None, None, None) => None,
             (Some(profile), Some(reservation), Some(session), Some(deployment))
-                if command == "serve-fresh-session" => Some((
+                if fresh_session => Some((
                     profile, inherited_descriptor(&reservation, &mut claimed)?,
                     inherited_descriptor(&session, &mut claimed)?, inherited_descriptor(&deployment, &mut claimed)?,
                 )),
@@ -348,7 +352,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Err("native child launch and an inherited text UI are exclusive".into());
         }
         let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
-        let prepared = if command == "serve-fresh-session" {
+        let prepared = if fresh_session {
             let handoff =
                 handoff.ok_or("fresh session requires the original Root handoff descriptor")?;
             let root = root_fd
@@ -357,13 +361,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let runtime = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
                 .build()?;
-            let prepared = runtime.block_on(
-                codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
-                    &config,
-                    &registration,
-                    owner,
-                ),
-            )?;
+            let prepared = if command == "serve-fresh-material-session" {
+                runtime.block_on(
+                    codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_with_physical_material(
+                        &config,
+                        &registration,
+                        owner,
+                    ),
+                )?
+            } else {
+                runtime.block_on(
+                    codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
+                        &config,
+                        &registration,
+                        owner,
+                    ),
+                )?
+            };
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
             let prepared = match notes {
                 Some((profile, reservation, session, deployment)) => prepared
@@ -375,7 +389,40 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     )?,
                 None => prepared,
             };
-            let bootstrap = prepared.seal_bootstrap(&consumers)?;
+            let bootstrap = if command == "serve-fresh-material-session" {
+                codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_material_bootstrap(
+                    &prepared,
+                )?
+            } else {
+                prepared.seal_bootstrap(&consumers)?
+            };
+            codex_hepta_agentd::send_root_production_handoff(
+                std::os::unix::net::UnixDatagram::from(handoff),
+                &bootstrap,
+                root,
+                std::time::Duration::from_secs(30),
+            )?;
+            prepared
+        } else if recover_material_session {
+            let handoff =
+                handoff.ok_or("material recovery requires the original Root handoff descriptor")?;
+            let root = root_fd
+                .as_ref()
+                .ok_or("material recovery requires the pre-held current Root pidfd")?;
+            // This API holds the original writer fence while verifying the
+            // kernel-retired predecessor, old expiry, live successor and the
+            // retained physical image. It installs/adopts/releases that image;
+            // no fresh preparation or filesystem handoff is a recovery fallback.
+            let prepared =
+                codex_hepta_agentd::PreparedHostAuthoritySession::recover_with_physical_material(
+                    &config,
+                    &registration,
+                    owner,
+                )?;
+            let bootstrap =
+                codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_material_bootstrap(
+                    &prepared,
+                )?;
             codex_hepta_agentd::send_root_production_handoff(
                 std::os::unix::net::UnixDatagram::from(handoff),
                 &bootstrap,
