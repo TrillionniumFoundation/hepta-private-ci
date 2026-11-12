@@ -6,8 +6,11 @@ use super::*;
 
 #[path = "production_post_a_q24_deployment.rs"]
 mod deployment;
+#[path = "production_post_a_q24_handoff.rs"]
+mod handoff;
 #[path = "production_post_a_q24_owners.rs"]
 mod owners;
+pub(super) use handoff::PendingHandoffs;
 
 fn refused(message: impl std::fmt::Display) -> AgentdError {
     AgentdError::GenerationFenced(format!("original post-A Q24: {message}"))

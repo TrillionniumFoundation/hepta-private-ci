@@ -67,6 +67,7 @@ struct RootStartup {
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
     historical: Option<crate::RootHistoricalTaskReadHandoffV1>,
+    post_a_handoffs: Option<post_a_q24::PendingHandoffs>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -90,6 +91,7 @@ pub struct AgentdProductionLaunch {
         Option<Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>>,
     original_source_capture: Option<source_capture::OriginalSourceCaptureRequestV1>,
     original_run_start_retention: Option<run_start_retention::OriginalInitialRunStartRetainerV1>,
+    post_a_handoffs: Option<post_a_q24::PendingHandoffs>,
     session_end: Instant,
 }
 
@@ -113,8 +115,8 @@ impl AgentdProductionStartup {
             Some(inputs) => {
                 let LaunchInputs {
                     handoff,
-                    learning_handoff,
-                    q24_model_handoff,
+                    mut learning_handoff,
+                    mut q24_model_handoff,
                     publication_handoff,
                     initial_handoff,
                     historical_handoff,
@@ -128,6 +130,11 @@ impl AgentdProductionStartup {
                     notes_ui,
                     lifetime,
                 } = inputs;
+                let post_a_handoffs = post_a_q24::PendingHandoffs::defer_for_original_profile(
+                    &primary,
+                    &mut learning_handoff,
+                    &mut q24_model_handoff,
+                )?;
                 let config = config.prepare_root_handoff(uid, gid)?.drop_to_owner()?;
                 // Root grants the original home/data access before capturing
                 // this late handoff. Wait before arg0 creates helper aliases
@@ -191,6 +198,7 @@ impl AgentdProductionStartup {
                     publication,
                     initial_publication,
                     historical,
+                    post_a_handoffs,
                     control,
                     app_server,
                     lifetime,
@@ -251,6 +259,7 @@ impl AgentdProductionStartup {
                     publication,
                     initial_publication,
                     historical,
+                    post_a_handoffs,
                     control,
                     app_server,
                     lifetime,
@@ -337,6 +346,7 @@ impl AgentdProductionStartup {
                         historical_read,
                         original_source_capture: None,
                         original_run_start_retention: None,
+                        post_a_handoffs,
                         session_end,
                     }),
                 ))
@@ -429,6 +439,11 @@ impl AgentdProductionLaunch {
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         config.require_root_learning_assembled()?;
+        if self.post_a_handoffs.is_some() {
+            return Err(AgentdError::GenerationFenced(
+                "post-A learning handoffs must be installed before run".into(),
+            ));
+        }
         if self.initial_publication.is_some() {
             return Err(AgentdError::Invalid(
                 "original initial handoff must be taken for actual initial publication before run"
@@ -483,10 +498,11 @@ impl AgentdProductionLaunch {
             let mut desktop_attachment = None;
             let mut initial_attachment = None;
             let (attachment, android_deadline) = match primary {
-                PrimaryInputs::InitialQ24 { deployment } => {
+                PrimaryInputs::InitialQ24 { deployment }
+                | PrimaryInputs::PostAQ24 { deployment } => {
                     if deployment.is_some() || notes.is_some() || notes_ui.is_some() {
                         return Err(AgentdError::GenerationFenced(
-                            "Initial Q24 must consume its deployment before run".into(),
+                            "Q24 must consume its deployment before run".into(),
                         ));
                     }
                     let (configured, retained) =

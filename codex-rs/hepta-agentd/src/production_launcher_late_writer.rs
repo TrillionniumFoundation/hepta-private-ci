@@ -24,8 +24,8 @@ impl AgentdProductionLaunch {
         let (selected, ordinary) = inputs::parse(arguments)?;
         let LaunchInputs {
             handoff,
-            learning_handoff,
-            q24_model_handoff,
+            mut learning_handoff,
+            mut q24_model_handoff,
             publication_handoff,
             initial_handoff,
             historical_handoff,
@@ -43,6 +43,11 @@ impl AgentdProductionLaunch {
                 "original late writer requires a complete production launch".into(),
             )
         })?;
+        let post_a_handoffs = post_a_q24::PendingHandoffs::defer_for_original_profile(
+            &primary,
+            &mut learning_handoff,
+            &mut q24_model_handoff,
+        )?;
         require_late_owner(uid, gid)?;
         let session_end = Instant::now() + lifetime;
         let (bootstrap, root_pidfd, writer) =
@@ -172,6 +177,7 @@ impl AgentdProductionLaunch {
                 historical_read,
                 original_source_capture: None,
                 original_run_start_retention: None,
+                post_a_handoffs,
                 session_end,
             },
             ordinary,
