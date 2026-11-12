@@ -1,0 +1,119 @@
+test_actual_callers_and_unconnected_recovery_remain_closed (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_actual_callers_and_unconnected_recovery_remain_closed) ... 
+  test_actual_callers_and_unconnected_recovery_remain_closed (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_actual_callers_and_unconnected_recovery_remain_closed) (boundary='root_current_historical_backend') ... ERROR
+  test_actual_callers_and_unconnected_recovery_remain_closed (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_actual_callers_and_unconnected_recovery_remain_closed) (boundary='root_current_historical_owner') ... ERROR
+test_both_original_connections_and_failed_receipt_are_rechecked (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_both_original_connections_and_failed_receipt_are_rechecked) ... ok
+test_current_observation_and_iteration_must_match_the_same_receipt (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_current_observation_and_iteration_must_match_the_same_receipt) ... ok
+test_equal_public_data_cannot_replace_the_actual_shared_verifier (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_equal_public_data_cannot_replace_the_actual_shared_verifier) ... ok
+test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) ... 
+  test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.target,') ... FAIL
+  test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.definition,') ... FAIL
+  test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.source,') ... FAIL
+  test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.model,') ... FAIL
+  test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='intent_digest,') ... FAIL
+test_physical_a_and_current_checks_surround_returned_owner_postchecks (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_physical_a_and_current_checks_surround_returned_owner_postchecks) ... ok
+test_recovery_cannot_reopen_old_writers_or_replace_opaque_a (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_recovery_cannot_reopen_old_writers_or_replace_opaque_a) ... ok
+test_each_actual_caller_must_remain_declared (test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_each_actual_caller_must_remain_declared) ... ok
+test_original_owner_edges_keep_exact_registered_callers (test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_original_owner_edges_keep_exact_registered_callers) ... ok
+test_same_original_typed_call_cannot_move_to_an_unregistered_file (test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_same_original_typed_call_cannot_move_to_an_unregistered_file) ... ok
+
+======================================================================
+ERROR: test_actual_callers_and_unconnected_recovery_remain_closed (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_actual_callers_and_unconnected_recovery_remain_closed) (boundary='root_current_historical_backend')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 545, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 546, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible CurrentStore::require_original_root_historical_receipt receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 119, in test_actual_callers_and_unconnected_recovery_remain_closed
+    PROOF._verify_boundary(ROOT, row, self.sources, ())
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 550, in _verify_boundary
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: root_current_historical_backend: codex-rs/hepta-agentd/src/neuron_generation_current_root.rs: unresolved possible CurrentStore::require_original_root_historical_receipt receiver
+
+======================================================================
+ERROR: test_actual_callers_and_unconnected_recovery_remain_closed (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_actual_callers_and_unconnected_recovery_remain_closed) (boundary='root_current_historical_owner')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 119, in test_actual_callers_and_unconnected_recovery_remain_closed
+    PROOF._verify_boundary(ROOT, row, self.sources, ())
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 512, in _verify_boundary
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: root_current_historical_owner: missing definition marker 'self.store.require_original_root_historical_receipt(original)'
+
+======================================================================
+FAIL: test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.target,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 107, in mutate
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.definition,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 107, in mutate
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.source,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 107, in mutate
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='&recovery.model,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 107, in mutate
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_original_decision_and_full_target_precede_the_recovery_lane (test_current_historical_a_recovery_source_closure.CurrentHistoricalARecoverySourceTests.test_original_decision_and_full_target_precede_the_recovery_lane) (function='recover_feature_from_historical_a', marker='intent_digest,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_current_historical_a_recovery_source_closure.py", line 107, in mutate
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 2.164s
+
+FAILED (failures=5, errors=2)

@@ -1,0 +1,49 @@
+{
+  "before": {
+    "head": "163667d6ab8adf7e0f22e5ad467a77f27fa27458",
+    "tree": "d8859bc5844906ac075de018ca92197908c30116",
+    "status": "",
+    "source_files": 7981,
+    "source_digest": "99fdcd6471fb5b40d78307639022eab96a57f084923ffeb82957b3397b8a2955"
+  },
+  "after": {
+    "head": "163667d6ab8adf7e0f22e5ad467a77f27fa27458",
+    "tree": "d8859bc5844906ac075de018ca92197908c30116",
+    "status": "",
+    "source_files": 7981,
+    "source_digest": "99fdcd6471fb5b40d78307639022eab96a57f084923ffeb82957b3397b8a2955"
+  },
+  "started_utc": "2026-11-12T13:14:04.580488+00:00",
+  "duration_seconds": 2.3242790699005127,
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_current_historical_a_recovery_source_closure",
+        "test_root_publication_existing_owner_source_closure"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "markers": {
+    "status": "PASS",
+    "inventory": 795,
+    "selected_protected": 21,
+    "selected_boundaries": [
+      "root_current_historical_identity",
+      "root_current_historical_connection",
+      "root_current_historical_receipt_connection",
+      "root_current_historical_client_match",
+      "root_current_historical_backend",
+      "root_current_historical_owner",
+      "q24_current_historical_recover"
+    ]
+  },
+  "exact_source": true,
+  "native": "NOT_RUN",
+  "full_caller": "NOT_RUN",
+  "whole_protected": "NOT_RUN_ON_THIS_COMMIT; development parent786 full-marker check failed in circuit_feature_learning_source submit after submit_until migration"
+}
