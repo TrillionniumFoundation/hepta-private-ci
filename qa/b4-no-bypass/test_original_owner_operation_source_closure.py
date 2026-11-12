@@ -124,7 +124,7 @@ class OriginalOwnerOperationClosureTests(unittest.TestCase):
                 self.rejects(filename, function, marker)
         for marker in (
             "OriginalPreparedReadV1::require_prepared(read, &inner.prepared)",
-            ".block_on(owners.factory.require_current())",
+            "crate::AgentdRootQ24ModelFactoryV1::require_current(",
         ):
             for occurrence in (0, 1):
                 self.rejects(filename, function, marker, occurrence)

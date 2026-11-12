@@ -3102,7 +3102,7 @@ id = "learning_original_evaluation_key"
 symbol = "product_evaluation_execution_key_v1"
 definition_path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 definition_markers = ["pub fn product_evaluation_execution_key_v1(", "plan.validate_integrity()?", "plan.receipt_seal.as_array()"]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execution.rs"]
 caller_markers = ["product_evaluation_execution_key_v1("]
 
 
@@ -3827,7 +3827,7 @@ id = "root_q24_factory_live_observation"
 symbol = "AgentdRootQ24ModelFactoryV1::require_current"
 definition_path = "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
 definition_markers = ["fn require_current("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs", "codex-rs/hepta-agentd/src/config_root_learning.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs", "codex-rs/hepta-agentd/src/config_root_learning.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs"]
 caller_markers = []
 receiver_type = "AgentdRootQ24ModelFactoryV1"
 
@@ -4113,7 +4113,7 @@ id = "learning_original_generation_receipt_require_context"
 symbol = "OriginalGenerationLearningReceiptOwnerV1::require_context"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
 definition_markers = ["fn require_context"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_generation_operation.rs"]
 caller_markers = []
 receiver_type = "OriginalGenerationLearningReceiptOwnerV1"
 
@@ -4123,7 +4123,7 @@ id = "learning_original_generation_receipt_observe_original_selection"
 symbol = "OriginalGenerationLearningReceiptOwnerV1::observe_original_selection"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
 definition_markers = ["fn observe_original_selection"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_generation_operation.rs"]
 caller_markers = []
 receiver_type = "OriginalGenerationLearningReceiptOwnerV1"
 
@@ -4203,7 +4203,7 @@ id = "learning_original_q24_stage_require_current"
 symbol = "OriginalCellQ24LearningStageOwnersV1::require_current"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
 definition_markers = ["fn require_current"]
-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration.rs", "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs", "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs", "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration.rs", "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs", "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs", "codex-rs/hepta-agentd/src/learning_iteration_successor.rs", "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24LearningStageOwnersV1"
 
@@ -4212,7 +4212,7 @@ id = "learning_original_q24_stage_prepared"
 symbol = "OriginalCellQ24LearningStageOwnersV1::prepared"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
 definition_markers = ["fn prepared"]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs", "codex-rs/hepta-agentd/src/learning_iteration.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs", "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs", "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs", "codex-rs/hepta-agentd/src/learning_iteration_successor.rs", "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs", "codex-rs/hepta-agentd/src/learning_iteration.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs", "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs", "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs", "codex-rs/hepta-agentd/src/learning_iteration_successor.rs", "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs", "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs", "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24LearningStageOwnersV1"
 
@@ -4520,7 +4520,7 @@ id = "q24_publication_embedded_admission"
 symbol = "OriginalCellQ24PublicationDriverV1::from_original_owners"
 receiver_type = "OriginalCellQ24PublicationDriverV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs"
-definition_markers = ["pub async fn from_original_owners(", "owners.validate_recovery("]
+definition_markers = ["pub async fn from_original_owners(", "Decision::new(snapshot)?", ".read_original_publication_material(&decision.snapshot)", "owners,", "manifest,"]
 product_callers = []
 caller_markers = []
 
@@ -4849,7 +4849,7 @@ definition_path = "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
 definition_markers = ["fn from_original_stream(", "Command::Observe", "profile.digest()? != profile.binding", "validate_head(profile, &response.head)?"]
 product_callers = ["codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"]
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_stream\\s*\\("
+receiver_type = "RootGenerationCurrentClient"
 
 [[boundary]]
 id = "root_generation_publication_purpose_send"
@@ -4874,7 +4874,7 @@ id = "root_generation_publication_purpose_connect"
 symbol = "RootGenerationPublicationHandoffV1::connect"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
 definition_markers = ["pub async fn connect(", "Self::connect_until(self, connection, timeout, end).await", "RootGenerationCurrentClient::from_original_stream"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"]
+product_callers = []
 caller_markers = []
 receiver_type = "RootGenerationPublicationHandoffV1"
 
@@ -4883,7 +4883,7 @@ id = "root_generation_journal_original_observer"
 symbol = "CellGenerationJournalObserverV1::from_original_files"
 definition_path = "codex-rs/hepta-neuron/src/cell_generation_observer.rs"
 definition_markers = ["pub fn from_original_files(", "readonly(journal)", "readonly(witness)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs","codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs", "codex-rs/hepta-neuron/src/cell_generation_unpublished_observer.rs"]
 caller_markers = []
 receiver_type = "CellGenerationJournalObserverV1"
 
@@ -4901,7 +4901,7 @@ id = "root_artifact_original_reader_open"
 symbol = "LearningArtifactReadViewV1::open_original"
 definition_path = "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs"
 definition_markers = ["pub fn open_original(", "fs::canonicalize(&root)?", "ArtifactOwnerVerifierV1::new("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs", "codex-rs/hepta-agentd/src/production_initial_q24_load.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs", "codex-rs/hepta-agentd/src/production_initial_q24_load.rs", "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"]
 caller_markers = []
 receiver_type = "LearningArtifactReadViewV1"
 
@@ -4910,7 +4910,7 @@ id = "root_artifact_original_withdrawal_bind"
 symbol = "LearningArtifactReadViewV1::with_original_withdrawal_floor"
 definition_path = "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs"
 definition_markers = ["pub fn with_original_withdrawal_floor(", "require_extension("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs", "codex-rs/hepta-agentd/src/production_initial_q24_load.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs", "codex-rs/hepta-agentd/src/production_initial_q24_load.rs", "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_original_withdrawal_floor\\s*\\("
 
@@ -4966,7 +4966,7 @@ definition_path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
 definition_markers = ["pub fn read_original_publication(", "self.require_original_withdrawal()?", "ArtifactPublicationPhaseV1::Acknowledged"]
 product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"]
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)read_original_publication\\s*\\("
+receiver_type = "LearningArtifactOwnerService"
 
 [[boundary]]
 id = "root_generation_original_artifact_selection"
@@ -4990,7 +4990,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)revalidate_original_artifacts
 id = "q24_root_artifact_qualified_phase"
 symbol = "OriginalCellQ24ArtifactPublicationDriverV1::for_qualified_adoption"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn for_qualified_adoption(", "decision.require_root_publication()?", "owners\n            .original_publication_manifest("]
+definition_markers = ["fn for_qualified_adoption(", "decision.require_root_publication()?", "if !decision.adopts()", ".read_original_publication_material(&decision.snapshot)", ".ok_or(Error::Binding(\"original adopted B manifest absent\"))?"]
 product_callers = ["codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)for_qualified_adoption\\s*\\("
@@ -5017,7 +5017,7 @@ receiver_type = "OriginalCellQ24ArtifactPublicationDriverV1"
 id = "q24_root_retained_phase"
 symbol = "OriginalCellQ24RetainedArtifactForRootV1::from_original_result"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn from_original_result(", "decision.require_root_publication()?", "owners.validate_recovery("]
+definition_markers = ["fn from_original_result(", "decision.require_root_publication()?", "if decision.adopts()", ".read_original_publication_material(&decision.snapshot)", ".is_some()", "manifest: None"]
 product_callers = ["codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24RetainedArtifactForRootV1"
@@ -5511,7 +5511,7 @@ symbol = "RootGenerationPublicationConnectionV1::original_launch_binding"
 receiver_type = "RootGenerationPublicationConnectionV1"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
 definition_markers = ["pub(crate) fn original_launch_binding(", "(&self.original, &self.identity)"]
-product_callers = ["codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs", "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs", "codex-rs/hepta-agentd/src/root_independent_b_connection.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs", "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs", "codex-rs/hepta-agentd/src/root_independent_b_connection.rs", "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -10450,7 +10450,7 @@ required_function_order = [{ function = "fn read(", sequence = ["file.metadata()
 path = "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
 required = ["#[serde(deny_unknown_fields)]", "Create,", "Recover,", "files: &mut OriginalFiles"]
 forbidden = ["create(true)", "create_new", "SigningKey::generate", "unwrap()", "expect(", "LedgerWriter", "Completed", "OpenMode::Create => Ok"]
-required_function_order = [{ function = "fn open_original(", sequence = ["!(1..=86_400).contains(&self.signature_lifetime_seconds)", "files.read(&self.key)?", "file.metadata()?.len() != 32", "file.read_exact(&mut before)?", "file.rewind()?", "file.read_exact(&mut after)?", "SigningKey::from_bytes(&before)", "before != after", "key.verifying_key().to_bytes() != signer.verifying_key", "self.owner.open(files, objective, mode)?"] }, { function = "fn freeze_original(", sequence = ["original_historical_freeze_config(self.signature_lifetime_seconds)", "self.open_original(", "&config.signer", "config.verifier.objective_digest()", "journal.open_witness()?", "OriginalCellQ24DatasetFreezeOwnerV1::create(", "OriginalCellQ24DatasetFreezeOwnerV1::recover(", "phase\n            .authorize_and_materialize(&mut owner)", "drop(owner)", "Ok(prepared)"] }, { function = "fn into_original_inputs(", sequence = ["prepared.revalidate_source()", "self.experience\n                .open_original(", "self.dataset\n                .open_original(", "JournalData::open(&self.training, files, objective, self.mode)?", "self.training_receipt.open_original(", "self.local\n                .open_original(", "prepared.revalidate_source()", "experience.open_witness()?", "dataset.open_witness()?", "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?", "prepared.revalidate_source()", "crate::OriginalCellQ24LearningInputsV1"] }]
+required_function_order = [{ function = "fn open_original(", sequence = ["!(1..=86_400).contains(&self.signature_lifetime_seconds)", "files.read(&self.key)?", "file.metadata()?.len() != 32", "file.read_exact(&mut before)?", "file.rewind()?", "file.read_exact(&mut after)?", "SigningKey::from_bytes(&before)", "before != after", "key.verifying_key().to_bytes() != signer.verifying_key", "JournalData::open(&self.owner, files, objective, mode)?"] }, { function = "fn freeze_original(", sequence = ["original_historical_freeze_config(self.signature_lifetime_seconds)", "self.open_original(", "&config.signer", "config.verifier.objective_digest()", "journal.open_witness()?", "OriginalCellQ24DatasetFreezeOwnerV1::create(", "OriginalCellQ24DatasetFreezeOwnerV1::recover(", "phase\n            .authorize_and_materialize(&mut owner)", "drop(owner)", "Ok(prepared)"] }, { function = "fn into_original_inputs(", sequence = ["prepared.revalidate_source()", "self.experience\n                .open_original(", "self.dataset\n                .open_original(", "JournalData::open(&self.training, files, objective, self.mode)?", "self.training_receipt.open_original(", "self.local\n                .open_original(", "prepared.revalidate_source()", "experience.open_witness()?", "dataset.open_witness()?", "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?", "prepared.revalidate_source()", "crate::OriginalCellQ24LearningInputsV1"] }]
 
 [[boundary]]
 id = "root_learning_original_handoff_until"
@@ -10756,7 +10756,7 @@ symbol = "RootGenerationPublicationHandoffV1::connect_until"
 receiver_type = "RootGenerationPublicationHandoffV1"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
 definition_markers = ["fn connect_until(", "timeout.min(publication_remaining(end)?)", "OriginalPublicationStream::from_stream_until("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -13960,7 +13960,7 @@ caller_markers = []
 path = "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs"
 required = ["work: impl for<'read> FnOnce("]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "LearningEvidenceVerifierV1::new", "thread_local!", ".revalidate_source()", "read.clone()", "tokio::spawn("]
-required_function_order = [{ function = "fn in_original_prepared_lane<T>(", sequence = ["self.cancelled.load(Ordering::Acquire)", ".try_acquire_owned()", "FenceAggregateOnDrop {", "armed: true", "let inner = Arc::clone(self)", "tokio::task::spawn_blocking(move || {", "let _permit = permit", "inner.cancelled.load(Ordering::Acquire)", "inner\n                .owners\n                .try_lock()", "CellQ24PreparedLearningV1::with_original_prepared_operation(&inner.prepared, |read| {", "OriginalPreparedReadV1::require_prepared(read, &inner.prepared)", ".block_on(owners.factory.require_current())", "inner.cancelled.load(Ordering::Acquire)", "let result = work(owners, &runtime, read)", "OriginalPreparedReadV1::require_prepared(read, &inner.prepared)", ".block_on(owners.factory.require_current())", "inner.cancelled.load(Ordering::Acquire)", "result", ".await", "if result.is_ok()", "fence.armed = false", "result"] }]
+required_function_order = [{ function = "fn in_original_prepared_lane<T>(", sequence = ["self.cancelled.load(Ordering::Acquire)", ".try_acquire_owned()", "FenceAggregateOnDrop {", "armed: true", "let inner = Arc::clone(self)", "tokio::task::spawn_blocking(move || {", "let _permit = permit", "inner.cancelled.load(Ordering::Acquire)", "inner\n                .owners\n                .try_lock()", "CellQ24PreparedLearningV1::with_original_prepared_operation(&inner.prepared, |read| {", "OriginalPreparedReadV1::require_prepared(read, &inner.prepared)", "crate::AgentdRootQ24ModelFactoryV1::require_current(", "inner.cancelled.load(Ordering::Acquire)", "let result = work(owners, &runtime, read)", "OriginalPreparedReadV1::require_prepared(read, &inner.prepared)", "crate::AgentdRootQ24ModelFactoryV1::require_current(", "inner.cancelled.load(Ordering::Acquire)", "result", ".await", "if result.is_ok()", "fence.armed = false", "result"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs"
