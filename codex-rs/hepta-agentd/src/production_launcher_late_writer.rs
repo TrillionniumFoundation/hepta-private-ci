@@ -26,6 +26,7 @@ impl AgentdProductionLaunch {
             handoff,
             mut learning_handoff,
             mut q24_model_handoff,
+            mut independent_b_handoff,
             mut publication_handoff,
             initial_handoff,
             historical_handoff,
@@ -47,6 +48,7 @@ impl AgentdProductionLaunch {
             &primary,
             &mut learning_handoff,
             &mut q24_model_handoff,
+            &mut independent_b_handoff,
             &mut publication_handoff,
         )?;
         require_late_owner(uid, gid)?;

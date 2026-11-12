@@ -18,7 +18,7 @@ fn ordinary() -> Vec<OsString> {
 fn post_a_q24_cli_requires_all_original_purposes_before_descriptor_take() -> Result<(), AgentdError>
 {
     let ordinary = ordinary();
-    let full = [Some(31), Some(32), Some(33), Some(34)];
+    let full = [Some(31), Some(32), Some(33), Some(34), Some(37)];
     validate(Profile::PostAQ24, &ordinary, Some(36), &full, &[])?;
     assert!(
         validate(
@@ -50,7 +50,7 @@ fn post_a_q24_cli_requires_all_original_purposes_before_descriptor_take() -> Res
 #[test]
 fn post_a_q24_cli_rejects_missing_replay_and_competing_execution_inputs() {
     let full = ordinary();
-    let handoffs = [Some(31), Some(32), Some(33), Some(34)];
+    let handoffs = [Some(31), Some(32), Some(33), Some(34), Some(37)];
     for start in [0, 2, 4] {
         let mut missing = full.clone();
         missing.drain(start..start + 2);

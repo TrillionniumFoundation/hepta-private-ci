@@ -118,6 +118,7 @@ impl AgentdProductionStartup {
                     handoff,
                     mut learning_handoff,
                     mut q24_model_handoff,
+                    mut independent_b_handoff,
                     mut publication_handoff,
                     initial_handoff,
                     historical_handoff,
@@ -135,6 +136,7 @@ impl AgentdProductionStartup {
                     &primary,
                     &mut learning_handoff,
                     &mut q24_model_handoff,
+                    &mut independent_b_handoff,
                     &mut publication_handoff,
                 )?;
                 let config = config.prepare_root_handoff(uid, gid)?.drop_to_owner()?;

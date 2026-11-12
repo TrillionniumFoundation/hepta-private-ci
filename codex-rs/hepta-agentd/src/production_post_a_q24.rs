@@ -113,7 +113,7 @@ impl AgentdProductionLaunch {
             .post_a_handoffs
             .take()
             .ok_or_else(|| refused("original deferred handoffs are absent"))?;
-        let (learning, model, publication) = pending
+        let (learning, model, publication, independent_b) = pending
             .receive_original_after_ack(&self.root, &identity, &ack, &prepared, self.session_end)
             .await?;
         self.require_original_post_a_context(&identity)?;
@@ -179,9 +179,29 @@ impl AgentdProductionLaunch {
             .await?;
         self = launch;
         self.require_original_post_a_context(&identity)?;
+        let publication_connection = self.take_generation_publication_connection()?;
+        let evaluation = crate::OriginalRootIndependentBEvaluationClientV1::connect_until(
+            independent_b,
+            crate::RootGenerationPublicationConnectionV1::capture_original_b_connection(
+                &publication_connection,
+            )?,
+            post_a_remaining(self.session_end)?.min(Duration::from_millis(500)),
+            self.session_end,
+        )
+        .await?;
+        evaluation
+            .require_initial(prepared.initial(), prepared.scope())
+            .map_err(refused)?;
+        crate::OriginalCellQ24LearningStageOwnersV1::install_root_independent_evaluation(
+            &stage_owners,
+            evaluation,
+        )
+        .await
+        .map_err(refused)?;
+        self.require_original_post_a_context(&identity)?;
         let publication = crate::RootGenerationPublicationHandoffV1::retain_original_preparation(
             self.take_generation_publication_handoff()?,
-            self.take_generation_publication_connection()?,
+            publication_connection,
             &prepared,
             self.session_end,
         )?;

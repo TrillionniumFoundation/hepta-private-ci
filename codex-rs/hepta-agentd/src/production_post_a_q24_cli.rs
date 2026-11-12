@@ -11,7 +11,7 @@ pub(super) fn validate(
     profile: Profile,
     ordinary: &[OsString],
     deployment: Option<i32>,
-    historical_learning_model_publication: &[Option<i32>; 4],
+    historical_learning_model_publication_b: &[Option<i32>; 5],
     incompatible: &[Option<i32>],
 ) -> Result<(), AgentdError> {
     if profile != Profile::PostAQ24 {
@@ -23,13 +23,13 @@ pub(super) fn validate(
         return Ok(());
     }
     if deployment.is_none()
-        || historical_learning_model_publication
+        || historical_learning_model_publication_b
             .iter()
             .any(Option::is_none)
         || incompatible.iter().any(Option::is_some)
     {
         return Err(invalid(
-            "post-A Q24 requires original historical, learning, model and publication handoffs plus its sealed deployment",
+            "post-A Q24 requires original historical, learning, model, publication and independent B handoffs plus its sealed deployment",
         ));
     }
     for flag in [
