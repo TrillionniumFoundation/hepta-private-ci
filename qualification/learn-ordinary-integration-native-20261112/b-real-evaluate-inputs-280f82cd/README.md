@@ -1,0 +1,13 @@
+# Real independent B input fixture — source candidate
+
+This preserves the exact seven small source commits from c408fc9d to 280f82cd. All seven new files are test-only and live behind the ordinary process fixture's private `b_evaluate` module, whose parent wiring is owned by the ordinary process workstream. This source snapshot does not itself contain that later parent wiring and does not claim compilation or native execution.
+
+The helper prepares actual earlier file-business observations, fits label-free forecasts with the existing evaluation library, and preregisters their canonical protocol. The fixed arm executes the newly declared bounded control computation on the actual original baseline and retains its observed work. Its receipt is the digest of that new observation; no nonexistent baseline training history or completed native Training receipt is fabricated.
+
+Only after receiving the product's actual candidate callback does the separate Source process execute both loaded native policies, record independent fair behavior draws, sign the label-free policy with its original Generator, observe actual file-business outcomes in their declared binary unit, and sign the resulting source with its distinct original Observer. Evaluator authority remains in Root. The 19 Root outputs are existing empty files at registration; native Cell execution, holdout consumption, evaluation and the final Adopt/NoUpdate decision remain the product's work.
+
+The two business cases request file persistence or file absence. They do not convert Q24 scores or task success into labels. The action threshold is a preregistered deterministic policy and is never normalized into a propensity; behavior probabilities are exactly those of the original fair draws. `EvaluatedNoUpdate` is a requested test business case, not a fabricated receipt or an asserted result. The whole test must observe an actual completed B decision before counting it.
+
+The input holder keeps the original private Source directory alive through every cold phase and can consume itself into `TempDir::keep()` at final archival. `business_files()` enumerates the fixed Root B data set, including the original 19 outputs, model/input/protocol/signatures/deployment and observed control data; it excludes live Root registration, attempt and refusal storage, and leaves the 256 episode evidence files in the separately retained original Source directory. It does not raise the existing cold snapshot bound.
+
+Actual formatting and diff checking passed; no native test or complete-chain result is claimed. Whole positive / evaluated NoUpdate / daemon+Root cold restart counts remain **0 / 0 / 0**. See observation.json for exact source/blob/tree identities and limits.

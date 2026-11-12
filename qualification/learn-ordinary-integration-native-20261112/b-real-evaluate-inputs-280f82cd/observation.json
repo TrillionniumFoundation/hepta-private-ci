@@ -1,0 +1,118 @@
+{
+  "observed_at_utc": "2026-11-12T18:07:57.246814+00:00",
+  "repository": "/workspace/scratch/ff41dfc0f7bf/hepta-b-evaluate-fixture-cloud",
+  "source_head": "280f82cdfd2c9f75e018c1506a33029353916f78",
+  "source_tree": "59fccb65f19abf54cf91e8a293fa6785a75e5d23",
+  "base": "c408fc9df1abb9a535bdaa399f3accfea68c1c58",
+  "source_clean": true,
+  "bundle": {
+    "bytes": 22589,
+    "sha256": "4c1c9ec56dbe09d7f960a18e758765069bed14328e1648ab3fa5212ade41b247",
+    "prerequisite": "c408fc9df1abb9a535bdaa399f3accfea68c1c58"
+  },
+  "commits": [
+    {
+      "commit": "46866ebda5862fc93c2b6614850dfda4973702e8",
+      "tree": "12061a66b67db37ea450f377520a483cfcd2d111",
+      "subject": "test(agentd): record independent B business observations in their original unit",
+      "numstat": "209\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_business_tests.rs\n183\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_data_tests.rs"
+    },
+    {
+      "commit": "d39851eed79fc1eeeabb1e63ebbe822d56fa5210",
+      "tree": "a1393a15a7f330867bbf7db546b2d1d930f61c44",
+      "subject": "test(agentd): execute and retain the bounded fixed-arm control work",
+      "numstat": "195\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_fixed_tests.rs"
+    },
+    {
+      "commit": "ea600573050958014ada236f1ffce1ab5f9a6c7c",
+      "tree": "58fe87e3ccefb1dabd0e64e85e5b2249e73227fb",
+      "subject": "test(agentd): preregister B protocol from actual earlier observations",
+      "numstat": "412\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_protocol_tests.rs"
+    },
+    {
+      "commit": "4a399876b7857d8b2c2bbcd50b33e51269542a68",
+      "tree": "2c926240d47eef39d9be3c66368fa03bcd42dea0",
+      "subject": "test(agentd): produce signed independent outcomes after the actual candidate",
+      "numstat": "359\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_producer_tests.rs"
+    },
+    {
+      "commit": "3f0b037e1677804b2e2b535a4db3162f16e9b02b",
+      "tree": "e6ccb8ec5b429f892cdd5ec69469f60551862412",
+      "subject": "test(agentd): prepare original Root B files and fixed source registration",
+      "numstat": "326\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_files_tests.rs"
+    },
+    {
+      "commit": "8ab71447f33eb97a66d500bb8cff0fe4b858a235",
+      "tree": "66419843e23467f3c592afbe32656db1ffce0050",
+      "subject": "test(agentd): expose the real Evaluate input fixture to ordinary processes",
+      "numstat": "199\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_tests.rs"
+    },
+    {
+      "commit": "280f82cdfd2c9f75e018c1506a33029353916f78",
+      "tree": "59fccb65f19abf54cf91e8a293fa6785a75e5d23",
+      "subject": "test(agentd): retain the original independent business directory after cold qualification",
+      "numstat": "4\t0\tcodex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_tests.rs"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_business_tests.rs",
+      "blob": "fe06697328d934ea429392729a9fa047355a396e",
+      "bytes": 6742,
+      "lines": 209,
+      "sha256": "2f240ee6f138d5060413b634e80b7cc02c4df15c375306659a6f06146e708d8f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_data_tests.rs",
+      "blob": "ffdf29f74104d722ded5d4cc73efae383ad3ae54",
+      "bytes": 5731,
+      "lines": 183,
+      "sha256": "aafd33649f62e24a4106c7a77afc5f20a80b15eddaa10294ef15e576e506c5dd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_files_tests.rs",
+      "blob": "51dfb19c3863f2d51b72f85d36c61d5b37d3eb61",
+      "bytes": 11983,
+      "lines": 326,
+      "sha256": "1cc7a5c375deb01c0a69d96c59159d3312a2922fdfd368ecb588681c1ebba186"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_fixed_tests.rs",
+      "blob": "d2c12053159ba18f14ff4da5a02580f349488fe2",
+      "bytes": 7615,
+      "lines": 195,
+      "sha256": "c3ecd1d692079c044cfc4a52181e2974af4d0a263de3150fa699e6b3b9f41132"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_producer_tests.rs",
+      "blob": "2a3dff468d5d20b55b57d3278347f877ae20fe2b",
+      "bytes": 13535,
+      "lines": 359,
+      "sha256": "aa141776ace3bcf7d9b1fe289244cd62c038d65e14343a5fde7f6a1e36a69401"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_protocol_tests.rs",
+      "blob": "4d37797fb771fc673ef5adca55c3538211df5b08",
+      "bytes": 14719,
+      "lines": 412,
+      "sha256": "9be90e12e68091af3c900280c8c0bf8e04bbffb6385915a7f9e9b01b89989712"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_b_evaluation_tests.rs",
+      "blob": "142d694b86ec6a8c2ac17c4bdca1ec14158b78d1",
+      "bytes": 7540,
+      "lines": 203,
+      "sha256": "c4029e00412be46d9033757b1323eed36de38a203ac0d37cd2eca92aa5f23a17"
+    }
+  ],
+  "validation": {
+    "rustfmt": "actual rustfmt --edition 2024 over all seven new files; exit 0 (stable formatter warning about imports_granularity retained in tool output)",
+    "just_fmt": "actual just fmt --base c408fc9df1abb9a535bdaa399f3accfea68c1c58; exit 0",
+    "diff_check": "actual git diff --check; exit 0",
+    "native": "not run; Root owns exact integrated compilation/test target",
+    "source_qa": "no source QA is attributed to these newly added pure test helper modules",
+    "whole_positive": 0,
+    "whole_evaluated_no_update": 0,
+    "whole_daemon_root_cold": 0
+  }
+}
