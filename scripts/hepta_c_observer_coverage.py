@@ -265,7 +265,17 @@ PHYSICAL_CELL_CASES = tuple(
     )
 )
 
+EVALUATION_PANEL_PREFIX = "neuron_cell_evaluation_qualification_owner::panel::tests::"
+EVALUATION_PANEL_CASES = tuple(
+    EVALUATION_PANEL_PREFIX + name
+    for name in (
+        "original_panel_registration_commits_full_nonempty_membership_before_any_result",
+        "original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),

@@ -54,9 +54,9 @@ class CellGenerationPhysicalCurrentClosureTests(unittest.TestCase):
 
     def test_physical_current_has_an_exact_closed_caller_set(self):
         row = self.boundaries[BOUNDARY]
-        self.assertEqual(row.product_callers, ())
+        self.assertEqual(row.product_callers, ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",))
         self.assertIn(BOUNDARY, self.manifest["privileged_inventory"]["required_boundary_ids"])
-        sources = {CURRENT: self.code((ROOT / CURRENT).read_text())}
+        sources = {path: self.code((ROOT / path).read_text()) for path in (CURRENT, *row.product_callers)}
         PROOF._verify_boundary(ROOT, row, sources, ())
         sources[NEURON + "unregistered_current.rs"] = (
             "fn extra(owner: &mut CellGenerationJournalV2<W>) { owner.read_current_checkpoint(); }"
