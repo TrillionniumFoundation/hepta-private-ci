@@ -1,7 +1,9 @@
 use pretty_assertions::assert_eq;
 
-use super::*;
-use crate::learning_iteration_checkpoint::test_support as support;
+use super::codec::MAX_BYTES;
+use super::codec::decode_original_bundle_data;
+use super::codec::encode_original_bundle_data;
+use super::test_support as support;
 
 #[test]
 fn original_bundle_data_roundtrips_existing_checkpoint_shapes() -> anyhow::Result<()> {
