@@ -33,7 +33,15 @@ def amplitude_flow(model, query_times, active, content, phase_mass, phase_conten
 
     Output shape is [query, N+5, C+1]; mark zero is probability. Active input
     shape [N] omits the fixed zero lower atom and includes upper escape. Phase
-    inputs are [K] and [K,C]. No input is normalized or silently projected.
+    inputs are [K] and [K,C]. Values are finite nonnegative probability
+    amplitudes and arbitrary signed contents; total mass is not constrained
+    to one. The ambient VJP is the signed-amplitude linear extension, with
+    numerical two-sided tests at strictly positive probability amplitudes.
+    It is not an independently constrained normalized-probability derivative.
+    For a normalized physical law, construct joint active/phase probabilities
+    by a client-side softmax; construct content as probability times signed
+    conditional marks when that binding is intended. Both chains remain live.
+    No input is normalized or silently projected by this API.
     """
     inputs=(active,content,phase_mass,phase_content)
     if any(not isinstance(value,torch.Tensor) or value.device.type!="cpu" or
