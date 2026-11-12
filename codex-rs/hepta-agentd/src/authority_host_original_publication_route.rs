@@ -11,6 +11,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
     owner_pidfd: &OwnedFd,
     learning: &RegisteredHostLearningCheckpointV1,
     original_end: Option<Instant>,
+    version: PublicationVersion,
 ) -> io::Result<(
     PublicationRuntime,
     RootGenerationPublicationEnrollmentCapabilityV1,
@@ -45,7 +46,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
                     .map_err(io::Error::other)?;
             }
             let bundle = PublicationBootstrap {
-                purpose: PURPOSE.into(),
+                purpose: version.purpose().into(),
                 learning_operation: initial.request.operation_id.to_string(),
                 root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
                     uid: 0,
@@ -68,7 +69,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
                     .observation
                     .parent()
                     .ok_or_else(|| io::Error::other("original Root listener parent missing"))?
-                    .join(SOCKET),
+                    .join(version.socket()),
             };
             let bootstrap = crate::authority_host_bootstrap_seal::seal_bytes(
                 &serde_json::to_vec(&bundle).map_err(io::Error::other)?,
@@ -95,6 +96,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
         receiver: Mutex::new(receiver),
         phase: Arc::clone(&phase),
         socket: bundle.socket,
+        version,
     };
     Ok((
         runtime,
@@ -107,6 +109,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
             process_start_ticks: bundle.root.process_start_ticks,
             lifetime: Duration::from_millis(config.lifetime_ms),
             original_end,
+            version,
         },
         crate::RootGenerationPublicationOfferV1 { bootstrap },
     ))

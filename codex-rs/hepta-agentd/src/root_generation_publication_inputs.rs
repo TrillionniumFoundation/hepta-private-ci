@@ -14,9 +14,8 @@ use crate::AgentdRootAuthorityPeer;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::RootGenerationPublicationConnectionV1;
 use crate::RootGenerationPublicationHandoffV1;
-use crate::authority_host_service::generation_publication::PURPOSE;
 use crate::authority_host_service::generation_publication::PublicationBootstrap;
-use crate::authority_host_service::generation_publication::SOCKET;
+use crate::authority_host_service::generation_publication::PublicationVersion;
 use crate::root_generation_current_client::OriginalPublicationStream;
 use crate::root_generation_current_client::RootGenerationCurrentClient;
 
@@ -76,14 +75,15 @@ impl RootGenerationPublicationHandoffV1 {
             return Err(refused("publication bootstrap changed"));
         }
         let bundle: PublicationBootstrap = serde_json::from_slice(&raw)?;
+        let version = PublicationVersion::from_purpose(&bundle.purpose)?;
         let (original, identity) = connection.original_launch_binding();
         let socket = original
             .sockets
             .observation
             .parent()
             .ok_or_else(|| refused("original Root socket parent missing"))?
-            .join(SOCKET);
-        if bundle.purpose != PURPOSE
+            .join(version.socket());
+        if bundle.purpose != version.purpose()
             || bundle.root != original.root
             || bundle.consumer != original.consumer
             || bundle.root.pid != self.root_pid

@@ -77,7 +77,8 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
         descriptor_path: &Path,
     ) -> io::Result<RootGenerationPublicationDeploymentV1> {
         crate::authority_host_service::generation_publication::original_root()?;
-        if std::process::id() != self.root_pid
+        if self.version != super::PublicationVersion::LegacyV1
+            || std::process::id() != self.root_pid
             || super::root_start()? != self.process_start_ticks
             || std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim() != self.boot_id
             || !matches!(self.phase.load(Ordering::Acquire), PREPARED | ACTIVE)

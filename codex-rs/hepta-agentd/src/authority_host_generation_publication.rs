@@ -47,6 +47,11 @@ pub(crate) use transport::Response;
 pub(crate) const PURPOSE: &str = "runtime.learning.cell-generation.publication.v1";
 pub(crate) const SOCKET: &str = "cell-generation-publication-v1.sock";
 
+#[path = "authority_host_publication_profile_versions.rs"]
+mod versions;
+pub(crate) use versions::PublicationVersion;
+use versions::ReservedPublicationProfile;
+
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct PublicationProfile {
@@ -72,7 +77,7 @@ impl PublicationProfile {
         let mut value = self.clone();
         value.binding.clear();
         Ok(Digest32::of_parts(&[
-            b"hepta.root.generation-publication.profile.v1\0",
+            PublicationVersion::from_purpose(&self.purpose)?.binding_domain(),
             &serde_json::to_vec(&value).map_err(io::Error::other)?,
         ])
         .to_string())
@@ -94,7 +99,7 @@ pub(crate) struct ArtifactRegistrationPin {
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct PublicationRecord {
-    profile: PublicationProfile,
+    profile: ReservedPublicationProfile,
     fenced: bool,
 }
 
@@ -120,6 +125,7 @@ pub struct RootGenerationPublicationOfferV1 {
 
 pub(crate) struct RegisteredGenerationPublication {
     pub(crate) profile: PublicationProfile,
+    reserved: ReservedPublicationProfile,
     profile_store: HostAuthorityFrontierStore<PublicationRecord>,
     profile_owner: String,
     decision: LearningIterationSnapshotV1,
@@ -138,7 +144,7 @@ impl RegisteredGenerationPublication {
             .load(&self.profile_owner)
             .map_err(io::Error::other)?
             != (PublicationRecord {
-                profile: self.profile.clone(),
+                profile: self.reserved.clone(),
                 fenced: false,
             })
             || self.profile.digest()? != self.profile.binding
@@ -147,6 +153,7 @@ impl RegisteredGenerationPublication {
         {
             return Err(io::Error::other("original publication enrollment changed"));
         }
+        self.reserved.require_live_profile(&self.profile)?;
         Ok(())
     }
 
