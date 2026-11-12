@@ -379,6 +379,14 @@ pub use learning_iteration_evidence_client::OriginalCellQ24CandidateReadbackClie
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24CandidateReadbackErrorV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateStageOwnersV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateStageStreamsV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateTaskStreamV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionErrorV1;
@@ -756,6 +764,8 @@ pub use circuit_credit::CircuitCreditTargetV1;
 pub use circuit_credit::circuit_learning_run_id_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitLearningReadClientV1;
 #[cfg(target_os = "linux")]

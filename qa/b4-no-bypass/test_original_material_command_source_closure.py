@@ -34,12 +34,12 @@ EXPECTED = {
     "learning_original_material_command_serve_experience_readback": (),
     "learning_original_material_command_serve_dataset_readback": (),
     "learning_original_material_command_serve_dataset_source": (),
-    "learning_original_material_command_client_from_original_experience_stream": (),
-    "learning_original_material_command_client_from_original_dataset_stream": (),
-    "learning_original_material_command_client_recover_original_experience_stream": (),
-    "learning_original_material_command_client_recover_original_dataset_stream": (),
-    "learning_original_material_command_client_execute": (),
-    "learning_original_material_command_client_readback": (AGENT + "cell_q24_material_dataset_readback.rs",),
+    "learning_original_material_command_client_from_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_from_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_recover_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_recover_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+    "learning_original_material_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),
     "learning_original_material_command_client_receipt_attestation": (),
 }
 
@@ -223,6 +223,19 @@ class OriginalMaterialCommandClosureTests(unittest.TestCase):
                        "response.require_request(&request)?", "fresh_now < started_at",
                        "original != &completed", "channel.peer.check_peer_lifetime()?"):
             self.rejects(CLIENT, "fn exchange(", marker)
+        # The async future owns this private Drop fence through the blocking
+        # await; a queued task must inspect the same flag before sending Execute.
+        for marker in (
+            "let queued_execute_fence = QueuedExecuteFence {",
+            "abandoned: Arc::clone(&abandoned)",
+            "if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)",
+            "drop(queued_execute_fence)",
+        ):
+            with self.subTest(queued_cancel=marker):
+                self.rejects(CLIENT, "fn exchange(", marker)
+        self.rejects(CLIENT, "fn drop(", "self.abandoned.store(")
+        self.rejects(CLIENT, "fn drop(", "true, Ordering::Release",
+                     "false, Ordering::Release")
         self.rejects(CLIENT, "fn receipt_attestation(",
                      "OriginalCellQ24MaterialCommandClientV1::readback(self).await?")
         self.rejects(SERVICE, "fn command_response(", "fresh_now < started_at")

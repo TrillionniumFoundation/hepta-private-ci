@@ -351,6 +351,12 @@ async fn material_command_wrong_context_role_or_custody_never_claims() -> anyhow
             .is_err()
     );
 
+    for role in [Role::Experience, Role::Dataset] {
+        transport::cancel_queued_execute(&f, role).await?;
+        assert_eq!(host.admitted.load(Ordering::Acquire), 0);
+        assert_eq!(f.bytes()?, before);
+    }
+
     let identity = transport::identity()?;
     let (stream, unused) = UnixStream::pair()?;
     let denied = OriginalCellQ24MaterialCommandClientV1::from_original_experience_stream(
@@ -459,3 +465,6 @@ async fn material_command_pins_original_signatures_and_consumes_invalid_replies(
 
 #[path = "cell_q24_training_bootstrap_material_ports_tests.rs"]
 pub(crate) mod bootstrap_ports;
+
+#[path = "cell_q24_no_update_stage_material_tests.rs"]
+mod ordinary_stage;

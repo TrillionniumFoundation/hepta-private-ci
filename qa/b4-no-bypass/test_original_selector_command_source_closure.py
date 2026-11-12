@@ -27,18 +27,18 @@ SERVICE = AGENT + "circuit_selection_command_service.rs"
 EVIDENCE = AGENT + "circuit_selection_command_evidence.rs"
 OWNER = AGENT + "circuit_selection_receipt_owner.rs"
 EXPECTED = {
-    "learning_original_selector_command_context": (),
+    "learning_original_selector_command_context": ("codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",),
     "learning_original_selector_command_owner_consume": (),
     "learning_original_selector_command_owner_profile": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
     "learning_original_selector_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",),
     "learning_original_selector_command_client_create": (),
     "learning_original_selector_command_client_recover": (),
-    "learning_original_selector_command_client_execute": (),
-    "learning_original_selector_command_client_readback": (),
+    "learning_original_selector_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+    "learning_original_selector_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),
     "learning_original_selector_command_client_attestation": (),
     "learning_original_selector_command_owner_serve": (),
     "learning_original_selector_command_owner_evidence": (),
-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",),
+    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",),
     "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",),
     "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
@@ -134,6 +134,19 @@ class OriginalSelectorCommandClosureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.rejects(MAIN, "fn exchange(", marker)
+        # The async future owns this private Drop fence through the blocking
+        # await; a queued task must inspect the same flag before sending Execute.
+        for marker in (
+            "let queued_execute_fence = QueuedExecuteFence {",
+            "abandoned: Arc::clone(&abandoned)",
+            "if action == wire::Action::Execute && abandoned.load(Ordering::Acquire)",
+            "drop(queued_execute_fence)",
+        ):
+            with self.subTest(queued_cancel=marker):
+                self.rejects(MAIN, "fn exchange(", marker)
+        self.rejects(MAIN, "fn drop(", "self.abandoned.store(")
+        self.rejects(MAIN, "fn drop(", "true, Ordering::Release",
+                     "false, Ordering::Release")
         self.rejects(MAIN, "fn receipt_attestation(",
                      "OriginalCircuitSelectionCommandClientV1::readback(self).await?")
 

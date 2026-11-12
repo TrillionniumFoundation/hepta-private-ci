@@ -3,7 +3,10 @@
 
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
+use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -98,6 +101,18 @@ impl OriginalCellQ24MaterialCommandReceiptV1 {
 
     pub fn attestations(&self) -> &[SignedLearningEvidenceV1] {
         &self.evidence
+    }
+}
+
+// A dropped async caller cannot authorize a still-queued Execute. This flag
+// belongs only to one exchange; it never restores the consumed channel or once bit.
+struct QueuedExecuteFence {
+    abandoned: Arc<AtomicBool>,
+}
+
+impl Drop for QueuedExecuteFence {
+    fn drop(&mut self) {
+        self.abandoned.store(/*val*/ true, Ordering::Release);
     }
 }
 
@@ -325,7 +340,16 @@ impl OriginalCellQ24MaterialCommandClientV1 {
             .checked_add(1)
             .ok_or(Error::Unavailable)?;
         let encoded = serde_json::to_vec(&request)?;
+        let abandoned = Arc::new(AtomicBool::new(/*v*/ false));
+        let queued_execute_fence = QueuedExecuteFence {
+            abandoned: Arc::clone(&abandoned),
+        };
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
+            // The original peer remains moved into this one task. Once the
+            // request has started, a cancelled waiter still has an unknown ACK.
+            if action == wire::Action::Execute && abandoned.load(Ordering::Acquire) {
+                return Err(Error::Unavailable);
+            }
             let bytes = channel
                 .peer
                 .request(&encoded)
@@ -334,6 +358,7 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         })
         .await
         .map_err(|_| Error::CommitUncertain)??;
+        drop(queued_execute_fence);
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         // Peer liveness can perform I/O; verify original signatures afterward.

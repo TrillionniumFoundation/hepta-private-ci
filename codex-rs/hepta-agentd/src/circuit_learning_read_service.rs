@@ -26,6 +26,9 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::circuit_feature_task_digest_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_learning_completion_readiness_service.rs"]
+mod readiness;
+
 pub struct OriginalCircuitLearningReadOwnerV1<C: AnchorWitnessStore, S: AnchorWitnessStore> {
     cell: PublishedCircuitCellOwnerV1<C>,
     source: CircuitTaskSourceReadbackV1<S>,

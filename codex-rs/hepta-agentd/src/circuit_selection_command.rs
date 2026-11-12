@@ -4,7 +4,10 @@
 
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
+use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -34,6 +37,9 @@ use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::OriginalCircuitSelectionReceiptErrorV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+
+#[path = "circuit_selection_command_stage_binding.rs"]
+mod stage_binding;
 
 #[path = "circuit_selection_command_service.rs"]
 mod serving;
@@ -206,6 +212,18 @@ impl OriginalCircuitSelectionCommandReceiptV1 {
     }
     pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 {
         &self.training_evidence
+    }
+}
+
+// A dropped async caller cannot authorize a still-queued Execute. This flag
+// belongs only to one exchange; it never restores the consumed channel or once bit.
+struct QueuedExecuteFence {
+    abandoned: Arc<AtomicBool>,
+}
+
+impl Drop for QueuedExecuteFence {
+    fn drop(&mut self) {
+        self.abandoned.store(/*val*/ true, Ordering::Release);
     }
 }
 
@@ -389,7 +407,16 @@ impl OriginalCircuitSelectionCommandClientV1 {
         channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
         let request = wire::Request::new(&self.context, self.binding, request_id, action);
         let encoded = serde_json::to_vec(&request)?;
+        let abandoned = Arc::new(AtomicBool::new(/*v*/ false));
+        let queued_execute_fence = QueuedExecuteFence {
+            abandoned: Arc::clone(&abandoned),
+        };
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
+            // The original peer remains moved into this one task. Once the
+            // request has started, a cancelled waiter still has an unknown ACK.
+            if action == wire::Action::Execute && abandoned.load(Ordering::Acquire) {
+                return Err(Error::Unavailable);
+            }
             let bytes = channel
                 .peer
                 .request(&encoded)
@@ -398,6 +425,7 @@ impl OriginalCircuitSelectionCommandClientV1 {
         })
         .await
         .map_err(|_| Error::CommitUncertain)??;
+        drop(queued_execute_fence);
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         channel.peer.check_peer_lifetime()?;

@@ -46,6 +46,7 @@ mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
+pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
 pub use learning_read::OriginalCircuitLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadErrorV1;
@@ -363,3 +364,6 @@ fn source_input(source: &CircuitTaskSourceInputV1, operation_id: StableId) -> Ce
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
+
+#[cfg(test)]
+pub(crate) use learning_read::readiness_fixture as original_readiness_fixture;

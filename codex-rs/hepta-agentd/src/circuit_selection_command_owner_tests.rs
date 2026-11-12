@@ -241,6 +241,7 @@ async fn q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dis
     let service = OriginalService::start(&f, f.create()?)?;
     let before = f.bytes()?;
     command::reject_wrong_context(&service.owner)?;
+    command::cancel_queued_execute(Arc::clone(&service.owner)).await?;
     assert_eq!(f.bytes()?, before);
 
     let mut renewed = f.config.training_evidence.clone();

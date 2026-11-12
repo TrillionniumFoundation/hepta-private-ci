@@ -28,6 +28,13 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "cell_q24_no_update_stage_owners.rs"]
+mod ordinary_stage_owners;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageOwnersV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageStreamsV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateTaskStreamV1;
+
 #[path = "cell_q24_training_command.rs"]
 mod training_command;
 pub use training_command::OriginalCellQ24CandidateReadbackClientV1;
@@ -278,3 +285,8 @@ pub(crate) use selection_command::command_test_support as selection_command_test
 
 #[cfg(test)]
 pub(crate) use next_use_command::command_test_support as next_use_command_test_support;
+
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::fresh_material_only;
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::recovered_material_only;
