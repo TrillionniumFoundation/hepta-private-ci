@@ -23,7 +23,7 @@ class HistoricalFreezerSourceTests(unittest.TestCase):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         for key in ("q24_original_freeze_phase_clock", "q24_historical_freeze_key_admission"):
             self.assertEqual(rows[key]["product_callers"], [OWNER])
-        self.assertEqual(rows["q24_historical_freeze_signing_config"]["product_callers"], [])
+        self.assertEqual(rows["q24_historical_freeze_signing_config"]["product_callers"], [AGENT + "production_post_a_q24_owners.rs"])
 
     def test_config_clones_only_the_current_root_selected_authorities(self):
         self.check_markers(HISTORY, "fn original_historical_freeze_config(", (
