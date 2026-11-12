@@ -1,0 +1,20 @@
+{
+  "command": "PATH=<task-local-rust-just>/bin:$PATH just --justfile ../justfile fmt",
+  "working_directory": "codex-rs",
+  "exit_code": 0,
+  "qualification_python_has_formatter_owner": false,
+  "executed_math_source_unchanged": true,
+  "source_hashes": {
+    "qualification/hcsn_firstcycle_review/audit.py": {
+      "before": "a53be799bb3081379650d2a2042d3717a218810b98e72a8093a7845d4b7d4b90",
+      "after": "a53be799bb3081379650d2a2042d3717a218810b98e72a8093a7845d4b7d4b90"
+    },
+    "qualification/hcsn_firstcycle_review/analytic_reference.py": {
+      "before": "8bfe5478b29a651b0b3ba300f2e143ff6650dc5fdfdc75d40a780b7dfafeb8f2",
+      "after": "8bfe5478b29a651b0b3ba300f2e143ff6650dc5fdfdc75d40a780b7dfafeb8f2"
+    }
+  },
+  "analytic_reference_or_model_reruns_after_format": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": ""
+}
