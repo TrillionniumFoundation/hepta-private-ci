@@ -160,6 +160,7 @@ impl<'a> OriginalCompletedPublicationReadV1<'a> {
             current_pin,
             previous,
             target,
+            original_target: None,
             artifacts,
             selected,
             consumer,

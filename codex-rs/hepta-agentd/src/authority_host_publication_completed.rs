@@ -7,6 +7,7 @@ use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+use codex_hepta_neuron::CellGenerationJournalObservedV1;
 
 use super::completed_files::OriginalControlRecord;
 use super::*;
@@ -53,6 +54,7 @@ pub(crate) struct OriginalCompletedPublicationReadV1<'a> {
     current_pin: OriginalControlRecord,
     previous: CellGenerationJournalObserverV1,
     target: CellGenerationJournalObserverV1,
+    original_target: Option<CellGenerationJournalObservedV1>,
     artifacts: LearningArtifactReadViewV1,
     selected: AgentdSelectedGenerationV1,
     consumer: RootFinalUseObserverV1,
@@ -196,15 +198,20 @@ impl OriginalCompletedPublicationReadV1<'_> {
             ));
         }
         let previous = self.previous.observe().map_err(io::Error::other)?;
-        let target = self.target.observe().map_err(io::Error::other)?;
+        let (target, original_genesis) =
+            CellGenerationJournalObserverV1::observe_original_feature_boundary(&self.target)
+                .map_err(io::Error::other)?;
         if !previous.is_drained()
             || previous.owner_binding() != &profile.intent.previous
             || previous.observation().owner_checkpoint().into_array()
                 != profile.intent.previous_checkpoint
-            || !target.is_genesis()
             || target.owner_binding() != &profile.intent.target
-            || target.observation().owner_checkpoint().into_array()
+            || target.owner_binding().genesis_checkpoint().into_array()
                 != profile.intent.genesis_checkpoint
+            || self
+                .original_target
+                .as_ref()
+                .is_some_and(|before| before != &target)
         {
             return Err(io::Error::other(
                 "original completed Generation cut changed",
@@ -212,8 +219,11 @@ impl OriginalCompletedPublicationReadV1<'_> {
         }
         self.proof.require_original_observations(
             Digest32::from_array(previous.observation().digest().map_err(io::Error::other)?),
-            Digest32::from_array(target.observation().digest().map_err(io::Error::other)?),
+            Digest32::from_array(original_genesis),
         )?;
+        // An operation-local baseline only: all later checks physically replay
+        // the journal again and compare, including after the full Root action.
+        self.original_target = Some(target);
         self.selected
             .revalidate_original_artifacts(&self.artifacts, self.proof.verified_at_unix_ms())
             .map_err(io::Error::other)?;
