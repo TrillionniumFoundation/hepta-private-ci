@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.verify7.remaining-gates.v1",
+  "scope": "VERIFY branch, not whole-repository or business qualification",
+  "code_heads": {
+    "integrity": "3c2a347969291b2fbd99198140fbe608f3e4425d",
+    "clusters": "8947b0c2a9c5829258dcec0498146872499c11b3",
+    "provider": "e23e343243c52608db5a59cf9a75e96591b31bb8"
+  },
+  "repaired": [
+    {
+      "gate": "checker subject/version/frontier/authority binding",
+      "status": "FIXED_LOCAL_TESTED_CI_PENDING"
+    },
+    {
+      "gate": "sequential event/phase/total wall lower bounds",
+      "status": "FIXED_LOCAL_TESTED_CI_PENDING"
+    },
+    {
+      "gate": "callback alias cluster fabrication",
+      "status": "FIXED_LOCAL_TESTED_CI_PENDING"
+    },
+    {
+      "gate": "bounded reads and iterable materialization",
+      "status": "FIXED_LOCAL_TESTED_CI_PENDING"
+    },
+    {
+      "gate": "downloaded original Windows numeric artifact",
+      "status": "VERIFIED_FOR_OLD_SOURCE_b4717e6_ONLY"
+    },
+    {
+      "gate": "prospective provider collection adapter",
+      "status": "IMPLEMENTED_LOCAL_TESTED_CI_PENDING"
+    }
+  ],
+  "open": [
+    {
+      "gate": "new-head platform and blocking CI",
+      "status": "PENDING",
+      "required": "Original final source-specific terminal logs/artifacts, no transfer of prior head pass"
+    },
+    {
+      "gate": "prospective CI-property terminal labels",
+      "status": "UNKNOWN",
+      "planned_jobs": 12,
+      "known_labels": 0,
+      "required": "Natural terminal original responses for exact frozen job/run/head/attempt; retain every unknown"
+    },
+    {
+      "gate": "independent business tasks and terminal adjudication",
+      "status": "MISSING",
+      "known_labels": 0,
+      "required": "New-source actual business trajectories with predecision observations and independent original terminal evidence; CI conclusions do not satisfy this gate"
+    },
+    {
+      "gate": "independent evaluator custody and current trust",
+      "status": "MISSING",
+      "required": "Externally held original evaluator evidence and current host verifier; no self-created trust key or accepting callback"
+    },
+    {
+      "gate": "full physical cost and fair policy comparison",
+      "status": "MISSING",
+      "required": "Nonoverlapping full resource attribution, explicit losses, no-check/fixed/risk/oracle real-task execution at frozen budgets; unknown acquisition cost remains null"
+    },
+    {
+      "gate": "held-out source calibration drift and net policy benefit",
+      "status": "NOT_ESTABLISHED",
+      "required": "Complete prospective independent source labels before fitting/evaluating; input/model identity updates invalidate reuse; no fixture-count inflation"
+    }
+  ],
+  "all_blockers_closed": false,
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE",
+  "learning_decision": "NoUpdate",
+  "validation": {
+    "combined_tests_passed": 284,
+    "source_bytes_unchanged_during_execution": true,
+    "all_10_python_asts_unchanged_after_format": true,
+    "tests_rerun_after_final_format": false,
+    "new_independent_business_tasks": 0
+  }
+}

@@ -1,0 +1,354 @@
+{
+  "recorded_at_utc": "2026-11-12T05:40:55.113Z",
+  "scope": "new exact-source run job snapshots; no dispatch/rerun; prior results not inherited",
+  "heads": [
+    {
+      "stage": "v7integrity",
+      "sha": "3c2a347969291b2fbd99198140fbe608f3e4425d",
+      "run_id": 43162755852,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 130997532588,
+              "name": "VERIFY-1 (macos-15)",
+              "status": "completed",
+              "conclusion": "success",
+              "run_id": 43162755852,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Check out exact source",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3
+                },
+                {
+                  "name": "Prepare bounded experiment dependencies and output paths",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4
+                },
+                {
+                  "name": "Bind source and execute counterexamples",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5
+                },
+                {
+                  "name": "Run bounded real SQLite effects",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 6
+                },
+                {
+                  "name": "Run bounded checker dispatch and terminal labels",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 7
+                },
+                {
+                  "name": "Run paid observations and four policy controls",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 8
+                },
+                {
+                  "name": "Preserve all receipts including failures",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 9
+                },
+                {
+                  "name": "Post Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 17
+                },
+                {
+                  "name": "Post Check out exact source",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 18
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 19
+                }
+              ]
+            },
+            {
+              "id": 130997532840,
+              "name": "VERIFY-1 (ubuntu-24.04)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162755852,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 130997532886,
+              "name": "VERIFY-1 (windows-2025)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162755852,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    },
+    {
+      "stage": "v7clusters",
+      "sha": "8947b0c2a9c5829258dcec0498146872499c11b3",
+      "run_id": 43162769628,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 130997576719,
+              "name": "VERIFY-1 (macos-15)",
+              "status": "in_progress",
+              "conclusion": null,
+              "run_id": 43162769628,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Check out exact source",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3
+                },
+                {
+                  "name": "Prepare bounded experiment dependencies and output paths",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4
+                },
+                {
+                  "name": "Bind source and execute counterexamples",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5
+                },
+                {
+                  "name": "Run bounded real SQLite effects",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "number": 6
+                },
+                {
+                  "name": "Run bounded checker dispatch and terminal labels",
+                  "status": "pending",
+                  "conclusion": null,
+                  "number": 7
+                },
+                {
+                  "name": "Run paid observations and four policy controls",
+                  "status": "pending",
+                  "conclusion": null,
+                  "number": 8
+                },
+                {
+                  "name": "Preserve all receipts including failures",
+                  "status": "pending",
+                  "conclusion": null,
+                  "number": 9
+                },
+                {
+                  "name": "Post Set up Python",
+                  "status": "pending",
+                  "conclusion": null,
+                  "number": 17
+                },
+                {
+                  "name": "Post Check out exact source",
+                  "status": "pending",
+                  "conclusion": null,
+                  "number": 18
+                }
+              ]
+            },
+            {
+              "id": 130997576977,
+              "name": "VERIFY-1 (ubuntu-24.04)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162769628,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 130997577094,
+              "name": "VERIFY-1 (windows-2025)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162769628,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    },
+    {
+      "stage": "v7provider",
+      "sha": "e23e343243c52608db5a59cf9a75e96591b31bb8",
+      "run_id": 43162782247,
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 130997619062,
+              "name": "VERIFY-1 (windows-2025)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162782247,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 130997619406,
+              "name": "VERIFY-1 (macos-15)",
+              "status": "completed",
+              "conclusion": "success",
+              "run_id": 43162782247,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Check out exact source",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3
+                },
+                {
+                  "name": "Prepare bounded experiment dependencies and output paths",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4
+                },
+                {
+                  "name": "Bind source and execute counterexamples",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5
+                },
+                {
+                  "name": "Run bounded real SQLite effects",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 6
+                },
+                {
+                  "name": "Run bounded checker dispatch and terminal labels",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 7
+                },
+                {
+                  "name": "Run paid observations and four policy controls",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 8
+                },
+                {
+                  "name": "Preserve all receipts including failures",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 9
+                },
+                {
+                  "name": "Post Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 17
+                },
+                {
+                  "name": "Post Check out exact source",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 18
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 19
+                }
+              ]
+            },
+            {
+              "id": 130997619443,
+              "name": "VERIFY-1 (ubuntu-24.04)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 43162782247,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    }
+  ]
+}
