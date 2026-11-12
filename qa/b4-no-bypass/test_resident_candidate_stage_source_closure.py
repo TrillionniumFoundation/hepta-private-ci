@@ -30,7 +30,7 @@ EXPECTED = {
     "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_candidate_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "root_resident_candidate_runtime_consume": (),
-    "root_resident_concrete_stages_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",),
+    "root_resident_concrete_stages_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",),
     "root_resident_concrete_stages_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",),
     "root_resident_concrete_stages_route": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",),
 }
@@ -139,11 +139,11 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
     def test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied(self):
         self.rejects(CANDIDATE, "fn validate_recovery<'a>", "self.common.origin == Origin::Recovered")
         self.rejects(CANDIDATE, "fn validate_recovery<'a>", "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await")
-        self.rejects(RUNTIME, "fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?")
+        self.rejects(RUNTIME, "fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(\n            stages.as_ref(),\n            coordinator.snapshot(),\n            stage,\n        )?")
         self.rejects(RUNTIME, "fn continue_original(", "gate.begin(&predecessor, stage).await?")
         self.rejects(RUNTIME, "fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?")
         for marker in (
-            "Stage::Proposal => Err(Error::OwnerUnavailable(",
+            "Stage::Evaluation | Stage::Proposal => match self",
             "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",
             "Self::Candidate(_) => Ok(())",
         ):
@@ -162,8 +162,8 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
             "LearningEvidenceRoleV1::Evaluator",
             "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
         ):
-            self.rejects(AUTH, "fn verify_attestations(", marker)
-        self.rejects(AUTH, "fn verify_attestations(", "snapshot.training_no_update_v2().is_none()")
+            self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+        self.rejects(AUTH, "fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()")
 
 
 if __name__ == "__main__":
