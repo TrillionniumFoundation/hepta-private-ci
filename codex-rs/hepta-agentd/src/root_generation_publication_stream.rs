@@ -119,34 +119,51 @@ impl OriginalPublicationStream {
 
     pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {
         if request.is_empty() || request.len() > 16_384 {
-            return Err(unavailable());
+            return Err(io::Error::other(format!(
+                "original Root publication request frame length rejected: {}",
+                request.len()
+            )));
         }
         let end = (Instant::now() + self.timeout).min(self.end);
-        crate::root_observation_stream::check_lifetime(&self.root).map_err(io::Error::other)?;
-        self.write(&(request.len() as u32).to_be_bytes(), end)?;
-        self.write(request, end)?;
+        crate::root_observation_stream::check_lifetime(&self.root).map_err(|error| {
+            frame_error("Root lifetime before request", io::Error::other(error))
+        })?;
+        self.write(&(request.len() as u32).to_be_bytes(), end)
+            .map_err(|error| frame_error("write request length", error))?;
+        self.write(request, end)
+            .map_err(|error| frame_error("write request body", error))?;
         let mut prefix = [0; 4];
-        self.read(&mut prefix, end)?;
+        self.read(&mut prefix, end)
+            .map_err(|error| frame_error("read response length", error))?;
         let size = u32::from_be_bytes(prefix) as usize;
         if size == 0 || size > 16_384 {
-            return Err(unavailable());
+            return Err(io::Error::other(format!(
+                "original Root publication response frame length rejected: {size}"
+            )));
         }
         let mut response = vec![0; size];
-        self.read(&mut response, end)?;
-        crate::root_observation_stream::check_lifetime(&self.root).map_err(io::Error::other)?;
+        self.read(&mut response, end)
+            .map_err(|error| frame_error("read response body", error))?;
+        crate::root_observation_stream::check_lifetime(&self.root).map_err(|error| {
+            frame_error("Root lifetime after response", io::Error::other(error))
+        })?;
         if Instant::now() >= end {
-            return Err(unavailable());
+            return Err(io::Error::other(
+                "original Root publication frame deadline elapsed after response",
+            ));
         }
         Ok(response)
     }
 
     fn wait(&self, events: i16, end: Instant) -> io::Result<()> {
         loop {
-            let remaining = end
-                .checked_duration_since(Instant::now())
-                .ok_or_else(unavailable)?;
+            let remaining = end.checked_duration_since(Instant::now()).ok_or_else(|| {
+                io::Error::other("original Root publication poll deadline already elapsed")
+            })?;
             if remaining.is_zero() {
-                return Err(unavailable());
+                return Err(io::Error::other(
+                    "original Root publication poll has no original time remaining",
+                ));
             }
             let timeout = remaining
                 .as_millis()
@@ -167,7 +184,14 @@ impl OriginalPublicationStream {
             // SAFETY: both held original descriptors and the writable pollfd
             // array remain live for this bounded blocking poll.
             let ready = unsafe { libc::poll(fds.as_mut_ptr(), fds.len() as libc::nfds_t, timeout) };
-            if ready < 0 && io::Error::last_os_error().kind() == io::ErrorKind::Interrupted {
+            // Capture errno immediately; later deadline observations must not
+            // replace the actual failing syscall's diagnostic.
+            let poll_error = (ready < 0).then(io::Error::last_os_error);
+            if ready < 0
+                && poll_error
+                    .as_ref()
+                    .is_some_and(|error| error.kind() == io::ErrorKind::Interrupted)
+            {
                 continue;
             }
             if ready <= 0
@@ -175,7 +199,13 @@ impl OriginalPublicationStream {
                 || fds[1].revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0
                 || Instant::now() >= end
             {
-                return Err(unavailable());
+                let root_revents = fds[0].revents;
+                let stream_revents = fds[1].revents;
+                let expired = Instant::now() >= end;
+                let os_error = poll_error.as_ref().and_then(io::Error::raw_os_error);
+                return Err(io::Error::other(format!(
+                    "original Root publication poll rejected: ready={ready}; requested_events={events:#x}; root_revents={root_revents:#x}; stream_revents={stream_revents:#x}; deadline_elapsed={expired}; os_error={os_error:?}"
+                )));
             }
             if fds[1].revents & events != 0 {
                 return Ok(());
@@ -187,7 +217,11 @@ impl OriginalPublicationStream {
         while !bytes.is_empty() {
             self.wait(libc::POLLOUT, end)?;
             match self.stream.write(bytes) {
-                Ok(0) => return Err(unavailable()),
+                Ok(0) => {
+                    return Err(io::Error::other(
+                        "original Root publication frame write returned zero bytes",
+                    ));
+                }
                 Ok(size) => bytes = &bytes[size..],
                 Err(error)
                     if matches!(
@@ -204,7 +238,11 @@ impl OriginalPublicationStream {
         while !bytes.is_empty() {
             self.wait(libc::POLLIN, end)?;
             match self.stream.read(bytes) {
-                Ok(0) => return Err(unavailable()),
+                Ok(0) => {
+                    return Err(io::Error::other(
+                        "original Root publication frame read reached EOF",
+                    ));
+                }
                 Ok(size) => bytes = &mut bytes[size..],
                 Err(error)
                     if matches!(
@@ -216,6 +254,17 @@ impl OriginalPublicationStream {
         }
         Ok(())
     }
+}
+
+fn frame_error(stage: &str, error: io::Error) -> io::Error {
+    let kind = error.kind();
+    let os_error = error.raw_os_error();
+    io::Error::new(
+        kind,
+        format!(
+            "original Root publication frame {stage}: {error}; io_kind={kind:?}; os_error={os_error:?}"
+        ),
+    )
 }
 
 fn bounded_text(path: &str, limit: u64) -> io::Result<String> {
