@@ -144,7 +144,8 @@ impl HostAuthorityService {
                     let witness_path = reservation.witness_directory.join(WITNESS_FILENAME_V2);
                     let journal = open_file(&journal_path)?;
                     let witness = open_file(&witness_path)?;
-                    original.require_reserved_context(
+                    DurableQ24ModelFactoryProfileV2::require_reserved_context(
+                        original,
                         &initial,
                         &scope,
                         FilePin::capture(&journal)?,

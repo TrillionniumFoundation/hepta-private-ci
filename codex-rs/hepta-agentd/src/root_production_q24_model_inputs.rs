@@ -13,6 +13,7 @@ use crate::AgentdRootLearningInputsV1;
 use crate::AgentdRootProductionInputs;
 use crate::AgentdRootQ24ModelFactoryV1;
 use crate::RootQ24ModelFactoryHandoffV1;
+use crate::authority_host_service::q24_model::LiveFactoryProfile;
 use crate::authority_host_service::q24_model::Q24ModelFactoryBootstrap;
 use crate::root_observation_stream::RootObservationStream;
 
@@ -90,7 +91,8 @@ impl RootQ24ModelFactoryHandoffV1 {
             return Err(refused("factory handoff differs from original Root launch"));
         }
         let (initial, scope) = learning.q24_model_scope(identity)?;
-        bundle.profile.require_context(
+        LiveFactoryProfile::require_context(
+            &bundle.profile,
             identity,
             original.writer_proof.sha256()?.as_str(),
             &initial,

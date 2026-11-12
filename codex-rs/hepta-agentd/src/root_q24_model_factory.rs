@@ -82,9 +82,8 @@ impl AgentdRootQ24ModelFactoryV1 {
         witness: File,
     ) -> Result<Self, AgentdError> {
         profile.require_files(&journal, &witness)?;
-        let generation = profile
-            .witness_generation(spawn_generation)
-            .map_err(refused)?;
+        let generation =
+            LiveFactoryProfile::witness_generation(&profile, spawn_generation).map_err(refused)?;
         let mut factory = Self {
             transport: Some(transport),
             next_request_id: 1,
@@ -107,14 +106,14 @@ impl AgentdRootQ24ModelFactoryV1 {
         original: &crate::root_production_inputs::OriginalQ24SuccessorSession,
     ) -> Result<(), AgentdError> {
         original.require_current_successor_session()?;
-        self.profile
-            .require_context(
-                original.identity(),
-                &original.writer_proof()?,
-                &self.initial,
-                &self.scope,
-            )
-            .map_err(refused)
+        LiveFactoryProfile::require_context(
+            &self.profile,
+            original.identity(),
+            &original.writer_proof()?,
+            &self.initial,
+            &self.scope,
+        )
+        .map_err(refused)
     }
 
     pub(crate) fn require_local_policy(&self, policy: Digest32) -> Result<(), AgentdError> {
@@ -228,7 +227,9 @@ impl AgentdRootQ24ModelFactoryV1 {
             let witness = FileAnchorWitnessStore::open(
                 witness_file,
                 JournalScope {
-                    scope_digest: self.profile.witness_binding().parse().map_err(refused)?,
+                    scope_digest: LiveFactoryProfile::witness_binding(&self.profile)
+                        .parse()
+                        .map_err(refused)?,
                     objective_digest: self.initial.request.envelope.objective_digest,
                 },
                 self.generation,
