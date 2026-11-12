@@ -14,26 +14,26 @@ mod publication;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
-fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
+pub(super) fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
         Err(error) => panic!("fixture failed: {error:?}"),
     }
 }
 
-fn id(value: &str) -> StableId {
+pub(super) fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn binding() -> Digest32 {
+pub(super) fn binding() -> Digest32 {
     digest("run-start-owner-scope")
 }
 
-fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
+pub(super) fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.objective"),
@@ -76,7 +76,7 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     }
 }
 
-fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
+pub(super) fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
     RunStartConflictRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.objective"),
@@ -117,12 +117,12 @@ fn locked_bytes(mut file: &File) -> Vec<u8> {
     bytes
 }
 
-struct Fixture {
+pub(super) struct Fixture {
     root: PathBuf,
 }
 
 impl Fixture {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
             "hepta-run-start-journal-{}-{serial}",
@@ -138,15 +138,15 @@ impl Fixture {
         Self { root }
     }
 
-    fn path(&self) -> PathBuf {
+    pub(super) fn path(&self) -> PathBuf {
         self.root.join("journal")
     }
 
-    fn file(&self) -> File {
+    pub(super) fn file(&self) -> File {
         must(OpenOptions::new().read(true).write(true).open(self.path()))
     }
 
-    fn create(&self) -> DurableRunStartJournal {
+    pub(super) fn create(&self) -> DurableRunStartJournal {
         must(DurableRunStartJournal::create(
             self.file(),
             binding(),
@@ -154,7 +154,7 @@ impl Fixture {
         ))
     }
 
-    fn recover(
+    pub(super) fn recover(
         &self,
         recovery: RunStartRecovery,
     ) -> Result<DurableRunStartJournal, RunStartStoreError> {
