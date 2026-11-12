@@ -105,7 +105,10 @@ async fn ordinary_product_caller_retains_claimed_fact_before_contact_and_replays
     // dispatch and replay assertions pass. This remains a native test fixture.
     if let Some(output_root) = std::env::var_os("HEPTA_PRED_NATIVE_FIXTURE_DIR") {
         let output_root = PathBuf::from(output_root);
-        assert!(output_root.is_absolute(), "absolute fixture output directory");
+        assert!(
+            output_root.is_absolute(),
+            "absolute fixture output directory"
+        );
         let metadata = fs::symlink_metadata(&output_root).expect("existing fixture directory");
         assert!(
             metadata.is_dir()
@@ -119,7 +122,9 @@ async fn ordinary_product_caller_retains_claimed_fact_before_contact_and_replays
             .mode(0o600)
             .open(output_root.join("native-fact.json"))
             .expect("new native fact output");
-        fact_file.write_all(&bytes).expect("write original fact bytes");
+        fact_file
+            .write_all(&bytes)
+            .expect("write original fact bytes");
         fact_file.sync_all().expect("sync original fact bytes");
         let manifest = serde_json::to_vec(&serde_json::json!({
             "schema": "hepta-pred-native-fixture-v1",
