@@ -188,7 +188,7 @@ pub(crate) struct RegisteredGenerationInitial {
 }
 
 impl RegisteredGenerationInitial {
-    fn require_profile(&self) -> io::Result<()> {
+    pub(crate) fn require_profile(&self) -> io::Result<()> {
         if self
             .profile_store
             .load(&self.profile_owner)
@@ -299,7 +299,7 @@ impl RegisteredGenerationInitial {
             .map_err(io::Error::other)
     }
 
-    fn fence(&self) -> io::Result<()> {
+    pub(crate) fn fence(&self) -> io::Result<()> {
         fence_initial_record(&self.profile_store, &self.profile_owner)
     }
 }

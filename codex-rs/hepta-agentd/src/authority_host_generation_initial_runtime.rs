@@ -8,6 +8,12 @@ use std::sync::atomic::AtomicBool;
 
 use super::*;
 
+#[path = "authority_host_initial_enrollment_runtime.rs"]
+mod enrollment;
+#[path = "authority_host_initial_peer_runtime.rs"]
+mod peer_ready;
+use enrollment::InitialEnrollmentContext;
+
 pub(in super::super) struct BoundInitial {
     runtime: InitialRuntime,
     listener: UnixListener,
@@ -98,86 +104,63 @@ pub(in super::super) fn serve_optional(
         .map_err(|_| io::Error::other("original initial runtime already consumed"))?;
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
-            let receiver = initial
-                .runtime
-                .receiver
-                .try_lock()
-                .map_err(|_| io::Error::other("initial enrollment receiver busy"))?;
-            let submission = loop {
-                if stopping.load(Ordering::Acquire) {
-                    return Ok(());
-                }
-                owner_alive(owner, end)?;
-                match receiver.try_recv() {
-                    Ok(submission) => break submission,
-                    Err(mpsc::TryRecvError::Empty) => std::thread::sleep(Duration::from_millis(5)),
-                    Err(mpsc::TryRecvError::Disconnected) => return Ok(()),
-                }
+            let context = InitialEnrollmentContext {
+                initial,
+                service,
+                config,
+                registration,
+                owner,
+                stopping: &stopping,
+                end,
             };
-            let slot = service
-                .enroll_generation_initial(
-                    config,
-                    registration,
-                    owner,
-                    &initial.runtime.deployment,
-                    submission.inputs,
-                )
-                .and_then(|slot| {
-                    let run_start = initial
+            let (slot, run_start, ready_stream) =
+                if let Some(deployment) = &initial.runtime.peer_deployment {
+                    let Some(stream) = context.accept_original(&active)? else {
+                        return Ok(());
+                    };
+                    let (slot, run_start) =
+                        peer_ready::register_original_peer(&context, deployment, &stream)?;
+                    (slot, run_start, Some(stream))
+                } else {
+                    let receiver = initial
                         .runtime
-                        .run_start
-                        .as_ref()
-                        .map(|files| {
-                            service.register_initial_run_start_retention(
-                                &slot,
-                                config,
-                                registration,
-                                owner,
-                                Arc::clone(files),
-                                end,
-                            )
-                        })
-                        .transpose()?;
-                    Ok((slot, run_start))
-                });
-            let (slot, run_start) = match slot {
-                Ok((slot, run_start)) => {
-                    if let Some(source) = initial.runtime.source_capture.as_ref()
-                        && let Err(error) = {
-                            let context = source_capture::SourceCaptureContext {
-                                service,
-                                config,
-                                registration,
-                                owner,
-                                slot: &slot,
-                                stopping: &stopping,
-                                end,
-                            };
-                            source
-                                .register_original_source_cell(context)
-                                .and_then(|()| source.register_original_source_ledger(context))
+                        .receiver
+                        .try_lock()
+                        .map_err(|_| io::Error::other("initial enrollment receiver busy"))?;
+                    let submission = loop {
+                        if stopping.load(Ordering::Acquire) {
+                            return Ok(());
                         }
-                    {
-                        let _ = submission.acknowledgement.try_send(Err(error.to_string()));
-                        return Err(error);
+                        owner_alive(owner, end)?;
+                        match receiver.try_recv() {
+                            Ok(submission) => break submission,
+                            Err(mpsc::TryRecvError::Empty) => {
+                                std::thread::sleep(Duration::from_millis(5))
+                            }
+                            Err(mpsc::TryRecvError::Disconnected) => return Ok(()),
+                        }
+                    };
+                    match context.enroll_original(submission.inputs, end) {
+                        Ok((slot, run_start)) => {
+                            if stopping.load(Ordering::Acquire)
+                                || submission
+                                    .acknowledgement
+                                    .try_send(Ok(slot.profile.binding.clone()))
+                                    .is_err()
+                            {
+                                slot.fence()?;
+                                return Err(io::Error::other(
+                                    "original initial enrollment acknowledgement lost",
+                                ));
+                            }
+                            (slot, run_start, None)
+                        }
+                        Err(error) => {
+                            let _ = submission.acknowledgement.try_send(Err(error.to_string()));
+                            return Err(error);
+                        }
                     }
-                    if stopping.load(Ordering::Acquire)
-                        || submission
-                            .acknowledgement
-                            .try_send(Ok(slot.profile.binding.clone()))
-                            .is_err()
-                    {
-                        return Err(io::Error::other(
-                            "original initial enrollment acknowledgement lost",
-                        ));
-                    }
-                    (slot, run_start)
-                }
-                Err(error) => {
-                    let _ = submission.acknowledgement.try_send(Err(error.to_string()));
-                    return Err(error);
-                }
-            };
+                };
             source_capture::serve_optional(
                 initial.runtime.source_capture.as_ref(),
                 source_capture::SourceCaptureContext {
@@ -190,47 +173,14 @@ pub(in super::super) fn serve_optional(
                     end,
                 },
                 || {
-                    let stream = loop {
-                        if stopping.load(Ordering::Acquire) {
-                            return Ok(());
-                        }
-                        owner_alive(owner, end)?;
-                        match initial.listener.accept() {
-                            Ok((stream, _)) => break stream,
-                            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
-                                std::thread::sleep(Duration::from_millis(5));
-                            }
-                            Err(error) => return Err(error),
-                        }
-                    };
-                    verify_pinned_process(
-                        registration,
-                        config.peer_uid,
-                        config.peer_gid,
-                        owner,
-                        end,
-                    )?;
-                    {
-                        let mut held = active
-                            .lock()
-                            .map_err(|_| io::Error::other("initial lane poisoned"))?;
-                        if stopping.load(Ordering::Acquire) {
-                            return Ok(());
-                        }
-                        *held = Some(stream.try_clone()?);
-                    }
-                    let policy = HostAuthorityPeerPolicy {
-                        peer: HostIssuerPeer {
-                            uid: config.peer_uid,
-                            pid: registration.peer_pid,
+                    let stream = match ready_stream {
+                        Some(stream) => stream,
+                        None => match context.accept_original(&active)? {
+                            Some(stream) => stream,
+                            None => return Ok(()),
                         },
-                        timeout: Duration::from_millis(config.timeout_ms),
-                        lifetime: end
-                            .checked_duration_since(Instant::now())
-                            .ok_or_else(|| io::Error::other("initial Root session expired"))?,
-                        request_bound: 16 * 1024,
-                        response_bound: 16 * 1024,
                     };
+                    let policy = context.peer_policy()?;
                     let result = service.serve_generation_initial(
                         &slot,
                         config,

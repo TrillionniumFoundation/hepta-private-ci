@@ -15,7 +15,7 @@ impl HostAuthorityService {
     ) -> io::Result<RegisteredGenerationInitial> {
         original_root()?;
         let mut enrolled_result = None;
-        self.with_initial_publication_context(config, registration, owner, |proof| {
+        let result = self.with_initial_publication_context(config, registration, owner, |proof| {
             let profile_owner = format!(
                 "generation-initial/{}",
                 crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)
@@ -210,7 +210,13 @@ impl HostAuthorityService {
             };
             enrolled_result = Some(enrolled);
             Ok(())
-        })?;
+        });
+        if let Err(error) = result {
+            if let Some(enrolled) = &enrolled_result {
+                enrolled.fence()?;
+            }
+            return Err(error);
+        }
         enrolled_result.ok_or_else(|| io::Error::other("initial enrollment result missing"))
     }
 }

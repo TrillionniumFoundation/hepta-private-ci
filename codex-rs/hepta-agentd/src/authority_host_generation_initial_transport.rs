@@ -82,6 +82,8 @@ impl HostAuthorityService {
         let pin = owner.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
+        HostAuthorityPeerChannel::limit_original_end(&mut channel, session_end)
+            .map_err(io::Error::other)?;
         let mut source_capture = OriginalSourceCaptureExchange::new(
             self,
             slot,
