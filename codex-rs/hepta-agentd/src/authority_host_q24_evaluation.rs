@@ -16,6 +16,12 @@ mod protocol;
 #[path = "authority_host_q24_evaluation_record.rs"]
 mod record;
 
+#[path = "authority_host_q24_evaluation_history.rs"]
+mod history;
+pub(crate) use history::OriginalCompletedBDataV1;
+pub(crate) use history::OriginalCompletedBReadV1;
+pub(crate) use history::with_original_completed_b;
+
 #[path = "authority_host_q24_evaluation_deployment.rs"]
 mod deployment;
 

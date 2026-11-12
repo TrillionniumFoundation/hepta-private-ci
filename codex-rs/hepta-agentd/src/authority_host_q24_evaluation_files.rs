@@ -153,6 +153,11 @@ impl OriginalBFile {
     /// shared flock would conflict with that already-held original owner.
     /// This returns data only; it does not authenticate or acquire a writer.
     pub(super) fn observe_owned_output(&self) -> io::Result<Digest32> {
+        self.read_completed_image()
+            .map(|bytes| Digest32::of_bytes(&bytes))
+    }
+
+    pub(super) fn read_completed_image(&self) -> io::Result<Vec<u8>> {
         self.require_original()?;
         if !matches!(self.access, OriginalBFileAccess::ReadOnly) {
             return Err(io::Error::other(
@@ -168,16 +173,15 @@ impl OriginalBFile {
                 }
                 let mut bytes = vec![0; usize::try_from(before.len()).map_err(io::Error::other)?];
                 self.file.read_exact_at(&mut bytes, /*offset*/ 0)?;
-                let digest = Digest32::of_bytes(&bytes);
                 if stamp(&before) != stamp(&self.file.metadata()?)
-                    || previous.is_some_and(|old| old != digest)
+                    || previous.as_ref().is_some_and(|old| old != &bytes)
                 {
                     return Err(io::Error::other(
                         "original B output changed during observation",
                     ));
                 }
                 self.require_original()?;
-                previous = Some(digest);
+                previous = Some(bytes);
             }
             previous.ok_or_else(|| io::Error::other("original B output was not read"))
         })();

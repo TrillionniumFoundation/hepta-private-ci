@@ -112,7 +112,62 @@ pub(super) struct OriginalBInputs {
 }
 
 impl OriginalBInputs {
+    /// Historical signature time is supplied only by the independently
+    /// retained first Root acceptance. Trust and role selection remain current.
+    pub(super) fn require_completed_protocol(
+        &self,
+        context: &crate::authority_host_runtime::OriginalCompletedLearningContextV1<'_>,
+        accepted_at: u64,
+    ) -> io::Result<()> {
+        self.require_original_files()?;
+        let protocol = OriginalBProtocolData::decode(
+            &self
+                .protocol_file
+                .require_digest(self.protocol_digest, 65_536)?,
+            context.initial().request.evaluation_profile,
+        )?;
+        self.model
+            .require_baseline(&context.initial().request.selected_bundle)?;
+        self.model.input(protocol.benchmark_input())?;
+        let current = RootIndependentBTrustData::decode(
+            &self.trust_file.require_digest(self.trust_digest, 65_536)?,
+        )?
+        .activate(context.initial(), context.current_unix_seconds()?)?;
+        if current.verifier.trust_digest() != context.current_verifier().trust_digest() {
+            return Err(io::Error::other("completed B current trust differs"));
+        }
+        let bytes = self
+            .protocol_statement
+            .require_digest(self.protocol_statement_digest, 65_536)?;
+        let (payload, signed) =
+            crate::learning_owner_evidence::decode(&bytes).map_err(io::Error::other)?;
+        if payload != context.initial().request.evaluation_profile.as_array()
+            || signed.principal_id != current.generator.principal.principal_id
+        {
+            return Err(io::Error::other("completed B original protocol differs"));
+        }
+        context.require_current_signer(&signed)?;
+        current
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Generator,
+                &signed,
+                &payload,
+                accepted_at,
+            )
+            .map_err(io::Error::other)?;
+        self.require_original_files()
+    }
+
     pub(super) fn open(path: &Path) -> io::Result<Self> {
+        Self::open_with_access(path, OriginalBFileAccess::OwnerWriter)
+    }
+
+    pub(super) fn open_completed_readonly(path: &Path) -> io::Result<Self> {
+        Self::open_with_access(path, OriginalBFileAccess::ReadOnly)
+    }
+
+    fn open_with_access(path: &Path, outputs: OriginalBFileAccess) -> io::Result<Self> {
         let mut tracker = OriginalBFiles::default();
         let deployment = tracker.open(path, OriginalBFileAccess::ReadOnly)?;
         let bytes = deployment.read_stable(65_536)?;
@@ -135,10 +190,10 @@ impl OriginalBInputs {
             tracker.open(&data.protocol_statement, OriginalBFileAccess::ReadOnly)?;
         let protocol_statement_digest =
             Digest32::of_bytes(&protocol_statement.read_stable(65_536)?);
-        let fixed_expert = data.fixed_expert.open(&mut tracker)?;
+        let fixed_expert = data.fixed_expert.open(&mut tracker, outputs)?;
         let candidate = OriginalBCellFiles {
-            journal: tracker.open(&data.candidate.journal, OriginalBFileAccess::OwnerWriter)?,
-            witness: tracker.open(&data.candidate.witness, OriginalBFileAccess::OwnerWriter)?,
+            journal: tracker.open(&data.candidate.journal, outputs)?,
+            witness: tracker.open(&data.candidate.witness, outputs)?,
             config: fixed_expert.config.clone(),
         };
         let model = data.model.open(&mut tracker)?;
@@ -151,27 +206,22 @@ impl OriginalBInputs {
             trust_digest,
             protocol_statement,
             protocol_statement_digest,
-            source: tracker.open(&data.source, OriginalBFileAccess::OwnerWriter)?,
+            source: tracker.open(&data.source, outputs)?,
             source_peer: data.source_peer,
-            candidate_data: tracker.open(&data.candidate_data, OriginalBFileAccess::OwnerWriter)?,
-            observed_statement: tracker
-                .open(&data.observed_statement, OriginalBFileAccess::OwnerWriter)?,
-            policy_statement: tracker
-                .open(&data.policy_statement, OriginalBFileAccess::OwnerWriter)?,
-            realized_plan_statement: tracker.open(
-                &data.realized_plan_statement,
-                OriginalBFileAccess::OwnerWriter,
-            )?,
+            candidate_data: tracker.open(&data.candidate_data, outputs)?,
+            observed_statement: tracker.open(&data.observed_statement, outputs)?,
+            policy_statement: tracker.open(&data.policy_statement, outputs)?,
+            realized_plan_statement: tracker.open(&data.realized_plan_statement, outputs)?,
             evaluator_key: tracker.open(&data.evaluator_key, OriginalBFileAccess::ReadOnly)?,
             candidate,
             fixed_expert,
             model,
-            holdout: tracker.open(&data.holdout, OriginalBFileAccess::OwnerWriter)?,
-            executions: tracker.open(&data.executions, OriginalBFileAccess::OwnerWriter)?,
-            execution_signature: data.execution_signature.open(&mut tracker)?,
-            qualification_signature: data.qualification_signature.open(&mut tracker)?,
-            publication: data.publication.open(&mut tracker)?,
-            receipt: data.receipt.open(&mut tracker)?,
+            holdout: tracker.open(&data.holdout, outputs)?,
+            executions: tracker.open(&data.executions, outputs)?,
+            execution_signature: data.execution_signature.open(&mut tracker, outputs)?,
+            qualification_signature: data.qualification_signature.open(&mut tracker, outputs)?,
+            publication: data.publication.open(&mut tracker, outputs)?,
+            receipt: data.receipt.open(&mut tracker, outputs)?,
             maximum_signature_lifetime_seconds: data.maximum_signature_lifetime_seconds,
         };
         inputs.require_original_files()?;
@@ -296,10 +346,14 @@ impl OriginalBInputs {
 }
 
 impl CellFilesData {
-    fn open(self, tracker: &mut OriginalBFiles) -> io::Result<OriginalBCellFiles> {
+    fn open(
+        self,
+        tracker: &mut OriginalBFiles,
+        outputs: OriginalBFileAccess,
+    ) -> io::Result<OriginalBCellFiles> {
         Ok(OriginalBCellFiles {
-            journal: tracker.open(&self.journal, OriginalBFileAccess::OwnerWriter)?,
-            witness: tracker.open(&self.witness, OriginalBFileAccess::OwnerWriter)?,
+            journal: tracker.open(&self.journal, outputs)?,
+            witness: tracker.open(&self.witness, outputs)?,
             config: CellGenerationObserverConfigV1 {
                 generation: self.original,
                 journal_records: self.journal_records,
@@ -352,10 +406,14 @@ impl Drop for OriginalBCellReadGuard {
 }
 
 impl JournalFilesData {
-    fn open(self, tracker: &mut OriginalBFiles) -> io::Result<OriginalBJournalFiles> {
+    fn open(
+        self,
+        tracker: &mut OriginalBFiles,
+        outputs: OriginalBFileAccess,
+    ) -> io::Result<OriginalBJournalFiles> {
         Ok(OriginalBJournalFiles {
-            journal: tracker.open(&self.journal, OriginalBFileAccess::OwnerWriter)?,
-            witness: tracker.open(&self.witness, OriginalBFileAccess::OwnerWriter)?,
+            journal: tracker.open(&self.journal, outputs)?,
+            witness: tracker.open(&self.witness, outputs)?,
         })
     }
 }

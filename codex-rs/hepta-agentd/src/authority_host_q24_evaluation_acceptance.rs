@@ -25,6 +25,28 @@ pub(in super::super) struct OriginalBCompletedAcceptanceV1 {
 }
 
 impl OriginalBEnrollment {
+    pub(in super::super) fn completed_history_fact(
+        &self,
+        scope: &FrozenLearningScopeV2,
+    ) -> io::Result<(u64, Digest32, Digest32)> {
+        let fact = self
+            .completed_acceptance
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original B first verification fact is absent"))?;
+        fact.require_original(self)?;
+        if fact.frozen_scope != scope.binding().into_array() {
+            return Err(io::Error::other("original B completed scope differs"));
+        }
+        Ok((
+            fact.root_verified_at_seconds,
+            Digest32::of_parts(&[
+                b"hepta.root.independent-b.accepted-completion.v1\0",
+                &serde_json::to_vec(fact).map_err(io::Error::other)?,
+            ]),
+            Digest32::from_array(fact.evaluation_attestation),
+        ))
+    }
+
     /// Only the actual Root operation calls this after native execution and
     /// its complete Root-context postchecks. The enclosing record's Ready CAS
     /// still has to succeed before any later reader may rely on these bytes.
