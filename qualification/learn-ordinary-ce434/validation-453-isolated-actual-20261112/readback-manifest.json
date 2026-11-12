@@ -1,0 +1,130 @@
+{
+  "schema": "learn.453-isolated-original-readback-manifest.v1",
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "job_id": "1a1d0856c55-2564-1b94",
+  "request_key": "learn-ce434-4537458b51b6-isolated-full-source-native-v1",
+  "request_blob": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+  "request_document_commit": "c32115b14b7a5f9b5abf6e72bd6b618d0dd7819d",
+  "all_files_are_full_utf8_bytes": true,
+  "original_report_and_log_names_preserved_in_observation_paths": true,
+  "all_original_logs_included": false,
+  "source_result_verified_separately_from_failed_outer": true,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "files": [
+    {
+      "file": "outer-result.original.json",
+      "bytes": 6228,
+      "sha256": "87e1455f6009e63b0cfa5f73f3a2606621626c2570fd16eb20b58cd9c0ff34e1",
+      "git_blob": "d8e9ab09541053474ddd62468269c7651c45f66a",
+      "observation": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1/result.json",
+        "version": "2050:16191393:6228:1794500150410669582:1794500150432668656",
+        "bytes": 6228,
+        "sha256": "87e1455f6009e63b0cfa5f73f3a2606621626c2570fd16eb20b58cd9c0ff34e1"
+      }
+    },
+    {
+      "file": "source-suite.original.json",
+      "bytes": 89701,
+      "sha256": "3e43193067b7f73768968f00835ae8908fea916fed19645c9032051a7baa9f89",
+      "git_blob": "2fa396b5b9873076d0b355e13179dee994e88d0f",
+      "observation": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1/source-suite.json",
+        "version": "2050:16191389:89701:1794500148810373072:1794500148810373072",
+        "bytes": 89701,
+        "sha256": "3e43193067b7f73768968f00835ae8908fea916fed19645c9032051a7baa9f89"
+      }
+    },
+    {
+      "file": "native-preflight.stderr.original.log",
+      "bytes": 677,
+      "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8",
+      "git_blob": "a02cbaf22fe79ef3af3fd7978b96e0b72f200fdd",
+      "observation": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1/original-full-native.log",
+        "version": "2050:16191390:677:1794499851784057131:1794499851784057131",
+        "bytes": 677,
+        "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8"
+      }
+    },
+    {
+      "file": "h-main-status.original-sdk.json",
+      "bytes": 905,
+      "sha256": "880101ce34d0d72cc5093399c9238740588c3824ad4da26b2bd90adef170e52a",
+      "git_blob": "592790774e99a5fed6639cb4f879c22b3441199a",
+      "observation": {
+        "operation_id": "9cb8b3e723d458b62899e7b6fa875395c7ce40c5679e966253a0c0cf6a21c089",
+        "bytes": 905,
+        "sha256": "880101ce34d0d72cc5093399c9238740588c3824ad4da26b2bd90adef170e52a"
+      }
+    },
+    {
+      "file": "v2-creation-receipt.observed.original.json",
+      "bytes": 2506,
+      "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+      "git_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+      "observation": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-e5c7-v2/result.json",
+        "version": "2050:16128862:2506:1794489578446487863:1794489578488441994",
+        "bytes": 2506,
+        "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb"
+      }
+    },
+    {
+      "file": "source-readback-audit.json",
+      "bytes": 1626,
+      "sha256": "038cd1aa6fc31f6a1a91c73dd899af854afd9deb3fcf33c952035ed4994ead80",
+      "git_blob": "d5173d5fd2d9124929244490887f29c72af9796d"
+    },
+    {
+      "file": "runtime-read-observations.json",
+      "bytes": 1565,
+      "sha256": "0ba9860ba82c75776a47f69bbda0e2b4398816eb1cc403ed3c9adfbd42f51d87",
+      "git_blob": "2d033d4bce77b1c8b2afcce737c103a54391eaeb"
+    }
+  ],
+  "read_operations": [
+    {
+      "key": "mainStatus",
+      "operation_id": "9cb8b3e723d458b62899e7b6fa875395c7ce40c5679e966253a0c0cf6a21c089",
+      "original_sdk_bytes": 905,
+      "original_sdk_sha256": "880101ce34d0d72cc5093399c9238740588c3824ad4da26b2bd90adef170e52a"
+    },
+    {
+      "key": "outerRead",
+      "operation_id": "3b7c2faf85846ffe62ae1c3039c0dc4255d2594d4f5cb83e825e160b560f3d79",
+      "original_sdk_bytes": 8742,
+      "original_sdk_sha256": "bd76c0578cc155737e5bd509c89320938a67710aed58f13a0f108e646735732f"
+    },
+    {
+      "key": "nativeFailureLog",
+      "operation_id": "a9777d3364c15f9dd3ad9bb9fafe87fe6caf412abb97b83bdaa207a75867d4a0",
+      "original_sdk_bytes": 1352,
+      "original_sdk_sha256": "81bd67cf01ad6f0994b9d964a281d83ba1d2bfbb30d25ada6fdb2b08822deaa7"
+    },
+    {
+      "key": "sourceJson0",
+      "operation_id": "3f09305a147b982198302e00a11490081f044827603c64329c27f49e3ac81095",
+      "original_sdk_bytes": 87832,
+      "original_sdk_sha256": "fb09f1e485335ee70d742ed2a87a67bc62e74367e977ebb87eee42b0c0761b6a"
+    },
+    {
+      "key": "sourceJson65536",
+      "operation_id": "6184487f131778ce360c30986f3fceb94e2b69abcbcc28bf870e3e9699a5d979",
+      "original_sdk_bytes": 32671,
+      "original_sdk_sha256": "767c026e5c2361d2a9a2aae1637691397b6dd2f0fb0217c0c428b79a63736b7b"
+    },
+    {
+      "key": "v2CreationReceipt",
+      "operation_id": "74d3d43697993d692d4395d84b10d815e9c1b29a41e18f79e826246c1de4fa16",
+      "original_sdk_bytes": 3777,
+      "original_sdk_sha256": "a22feb768c42d18b6144be362b486aa984adfe03f4a2a08b373e983157674979"
+    }
+  ]
+}

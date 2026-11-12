@@ -1,0 +1,42 @@
+{
+  "schema": "learn.453-runtime-read-observations.v1",
+  "notes": [
+    "file_info on directories returned a regular-file/private-sidecar rejection; this does not establish directory existence or absence.",
+    "The original native traceback establishes target ENOENT at that invocation; it does not establish why the directory was absent.",
+    "The old e5c/v2 creation receipt remains historical provenance and is not current target identity."
+  ],
+  "observations": [
+    {
+      "key": "dataInfo",
+      "operation_id": "067560a84e64f03770886dee1ff2681dbd79439b53c76327a9f9650cfbe00b9f",
+      "bytes": 192,
+      "sha256": "6f6f12439443d1fbb6de99bbfe9f8c36dd8717510d88856ee11ae82d96a7f3c1",
+      "original_sdk": {
+        "resultType": "complete",
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on desktop-ts failed with 1\nstdout:\n\nstderr:\nValueError: invalid regular file or private sidecar"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "v2RootInfo",
+      "operation_id": "bb16e1b1e644255dfba752d36d5b66fc6bf268061e1482d817384c53fb5cb37c",
+      "bytes": 192,
+      "sha256": "6f6f12439443d1fbb6de99bbfe9f8c36dd8717510d88856ee11ae82d96a7f3c1",
+      "original_sdk": {
+        "resultType": "complete",
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on desktop-ts failed with 1\nstdout:\n\nstderr:\nValueError: invalid regular file or private sidecar"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ]
+}

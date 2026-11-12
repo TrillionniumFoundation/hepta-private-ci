@@ -1,0 +1,44 @@
+{
+  "schema": "learn.453-source-suite-original-readback.v1",
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "observed_job": "1a1d0856c55-2564-1b94",
+  "outer_state": "failed",
+  "outer_sha256": "87e1455f6009e63b0cfa5f73f3a2606621626c2570fd16eb20b58cd9c0ff34e1",
+  "outer_bytes": 6228,
+  "source_report": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1/source-suite.json",
+    "version": "2050:16191389:89701:1794500148810373072:1794500148810373072",
+    "bytes": 89701,
+    "sha256": "3e43193067b7f73768968f00835ae8908fea916fed19645c9032051a7baa9f89"
+  },
+  "methods": 443,
+  "modules": 62,
+  "passed": 443,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 297.22826777002774,
+  "original_443_id_multiset_equal": true,
+  "original_443_id_sequence_equal": true,
+  "ids_sha256": "882cef9fa4d3172587586a17cb9f991a73d264a3c254914f5e50ba727721f528",
+  "source_runner_sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+  "source_before": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "status": ""
+  },
+  "source_after": {
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "status": ""
+  },
+  "native_preflight_failed_before_tests": true,
+  "native_passes_claimed": 0,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}
