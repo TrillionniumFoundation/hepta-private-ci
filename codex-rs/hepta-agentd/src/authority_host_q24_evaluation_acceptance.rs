@@ -165,3 +165,7 @@ impl OriginalBCompletedAcceptanceV1 {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "authority_host_q24_evaluation_acceptance_tests.rs"]
+mod tests;
