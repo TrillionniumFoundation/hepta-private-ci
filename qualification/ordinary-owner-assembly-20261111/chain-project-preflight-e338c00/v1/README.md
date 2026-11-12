@@ -1,0 +1,7 @@
+# Original Chain project boundary preflight
+
+The exact e338c000f26e9357ed33213624da787a3a009ed9 source and tree 876aa62d1ab49458d29e9168f4c69e7b47b8884b were fetched into a new isolated development checkout on ai395. The unchanged bash scripts/project-preflight.sh returned PASS in --dev mode for trillionnium-chain and 26 packages. The source remained clean. No builds, tests, remote policy or remote refs were changed.
+
+Chain AGENTS requires assistant GitHub pushes/API writes as ProfHepta through the HeptaRuntime local GitHub channel. A subsequent read-only existing gh lookup through that operator PTY returned no installed gh command. It made no authentication query and verified no administrator identity. Credentials and tooling were not installed or repaired. The designated write channel remains unverified; no subsequent Chain mutation is authorized by this preflight alone.
+
+These are cross-project integration evidence stored with the Hepta task. They are not Chain release, consensus activation, independent adoption, ordinary FinalUse or restart acceptance. Any later code proposal remains reviewable and uninstalled until its actual permitted write channel and full project gates are satisfied. The preflight's original start acknowledgement was observed before a controller reset; only its recovered original complete terminal and records are included here. The later channel-query start acknowledgement is retained exactly.

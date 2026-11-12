@@ -1,0 +1,192 @@
+{
+  "schema": "chain.original-project-preflight.v1",
+  "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+  "expected_tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b",
+  "branch": "fix/chain-heplcp04-local-decision-20261111-af52",
+  "read_only_project_check": true,
+  "native_compile_executed": false,
+  "tests_executed": false,
+  "remote_policy_mutated": false,
+  "remote_ref_mutated": false,
+  "records": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records",
+  "steps": [
+    {
+      "name": "isolated-git-init",
+      "command": [
+        "git",
+        "init",
+        "--initial-branch=af52-unborn",
+        "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0017490049358457327,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/isolated-git-init.log",
+        "bytes": 123,
+        "sha256": "54a66a5a701abfc894471c3c52ec41a7e1989d1f7de13877e4d2f4379c8a74aa"
+      }
+    },
+    {
+      "name": "canonical-origin",
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/TrillionniumFoundation/Trillionnium-Chain.git"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "exit_code": 0,
+      "elapsed_seconds": 0.001236933981999755,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/canonical-origin.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "fetch-exact-source",
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "origin",
+        "e338c000f26e9357ed33213624da787a3a009ed9"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "exit_code": 0,
+      "elapsed_seconds": 84.80868772603571,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/fetch-exact-source.log",
+        "bytes": 144,
+        "sha256": "2799dd57762de1ce5f29abf9b64d2bf24f8afb4c4e3df2fac88bca784237c6e9"
+      }
+    },
+    {
+      "name": "checkout-exact-development",
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+        "switch",
+        "-c",
+        "fix/chain-heplcp04-local-decision-20261111-af52",
+        "e338c000f26e9357ed33213624da787a3a009ed9"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "exit_code": 0,
+      "elapsed_seconds": 3.724619126180187,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/checkout-exact-development.log",
+        "bytes": 75,
+        "sha256": "8a3f85cd1079d98548fa2711f1a28005807914d19a13a16d809feb14a5ad89d8"
+      }
+    },
+    {
+      "name": "source-head",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00238246307708323,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/source-head.log",
+        "bytes": 41,
+        "sha256": "af05bd56eadb51692b2e3d335a1244594d1217f5ed4251c83acd71ea690cc946"
+      }
+    },
+    {
+      "name": "source-tree",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0014620660804212093,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/source-tree.log",
+        "bytes": 41,
+        "sha256": "7791cd0def40f4b34a7a4e3ff0315104658dfc70eaa70a369b5f11e2425f1236"
+      }
+    },
+    {
+      "name": "source-status-before",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.9443083850201219,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/source-status-before.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "original-project-preflight",
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.026545999106019735,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/original-project-preflight.log",
+        "bytes": 178,
+        "sha256": "f9ceb2e281f6c13617d7d0e20b4af06f62759d3b5898d367160daeca0e53c8d2"
+      }
+    },
+    {
+      "name": "source-status-after",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.030511183897033334,
+      "log": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1/records/source-status-after.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "status": "passed-original-project-boundary-only",
+  "before": {
+    "head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b",
+    "status": ""
+  },
+  "after": {
+    "head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b",
+    "status": ""
+  },
+  "original_preflight": {
+    "result": "PASS",
+    "mode": "--dev",
+    "project": "trillionnium-chain",
+    "packages": 26,
+    "branch": "fix/chain-heplcp04-local-decision-20261111-af52",
+    "remote_policy_mutated": false
+  }
+}

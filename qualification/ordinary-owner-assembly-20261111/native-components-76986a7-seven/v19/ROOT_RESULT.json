@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.original-v44-root-review.v1",
+  "status": "FAILED",
+  "source": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "tree": "f21843ca6d042b46f87df4ac1208e95752936291",
+  "attempt": "ordinary-76986a7-seven-final-v19",
+  "original_pty": "dpty-beb615d479af11f87971bb7bbddb7e3b7e32622c933f85531ea74473e59c962c",
+  "terminal_exit": 1,
+  "output_complete": true,
+  "capture_error": null,
+  "format_scoped_fix_bins": "passed on exact clean source",
+  "qa": {
+    "passed": 236,
+    "failed": 0,
+    "components": [
+      221,
+      5,
+      5,
+      5
+    ]
+  },
+  "caller_self_test": "passed",
+  "full_caller": {
+    "exit": 1,
+    "elapsed_seconds": 2075.0150005470496,
+    "started_at": "2026-11-12T17:49:41.144973+00:00",
+    "finished_at": "2026-11-12T18:24:16.160717+00:00",
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "stdout_bytes": 194,
+    "stdout_sha256": "6e63c7f54336b55d6624a87253d9ca83ff0ff408447f01adcb41bfc5ab9a5176",
+    "failure": "FAIL_HEPTA_CALLER_PROOF: root_same_actor_context_current: codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs: unresolved possible OriginalSameActorRootContext::require_current receiver"
+  },
+  "ordinary_seven_packages": "NOT_REACHED",
+  "root_17": "NOT_REACHED",
+  "earlier_root_initial_final_use_failure": "NOT_RETESTED_OR_RESOLVED",
+  "source_clean_before_after": true,
+  "maintenance_patch_bytes": 0,
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "reference_unchanged": true,
+  "external_tools_unchanged": true,
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "typed_helper_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "harness_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "native_retries": 0,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "original_start_receipt_raw_recovered": false,
+  "source_fix_is_future_candidate": true
+}

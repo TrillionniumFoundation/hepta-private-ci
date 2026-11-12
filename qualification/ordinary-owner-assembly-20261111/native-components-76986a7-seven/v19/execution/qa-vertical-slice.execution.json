@@ -1,0 +1,54 @@
+{
+  "after": {
+    "commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+    "dirty": false,
+    "parents": [
+      "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd"
+    ],
+    "tree": "f21843ca6d042b46f87df4ac1208e95752936291"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+    "dirty": false,
+    "parents": [
+      "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd"
+    ],
+    "tree": "f21843ca6d042b46f87df4ac1208e95752936291"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/vertical-slice",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 0.06671359995380044,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T17:49:40.914386+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 806,
+  "log_file": "qa-vertical-slice.execution.json.66272d88cce2424fbaa29fb893e1898c.log",
+  "log_sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 5,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "started_at": "2026-11-12T17:49:40.846809+00:00",
+  "status": "passed",
+  "tested_sha": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source"
+}

@@ -1,0 +1,49 @@
+{
+  "failed_read_only_acquisitions": [
+    {
+      "read": "v44LaunchSmall",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "native_rerun": false
+    },
+    {
+      "read": "v44LaunchBig0",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "native_rerun": false
+    },
+    {
+      "read": "bigTail",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "native_rerun": false
+    }
+  ],
+  "resolution": "Later bounded reads recovered all reached original logs. Large launcher recovered in two exact version-pinned binary chunks; child stdout recovered from actual launcher tees and original executor hashes. Native execution was not restarted.",
+  "big_file": {
+    "version": "66306:77900965:73458:1794505689362253793:1794505689362253793",
+    "bytes": 73458,
+    "sha256": "9096511d1f586b5fd3f1177c055ce8d5eb041df23a894050c465b024bce8e55a"
+  }
+}

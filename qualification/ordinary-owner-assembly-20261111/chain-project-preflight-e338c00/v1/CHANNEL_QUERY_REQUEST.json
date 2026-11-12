@@ -1,0 +1,13 @@
+{
+  "host": "ai395",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-u",
+    "-c",
+    "import json, os, shutil, subprocess, hashlib\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==1000\nroot=Path(\"/home/qq/af52-learning-local-decision-20261111/chain-e338c00-preflight-v1\")\np=json.loads((root/\"records/progress.json\").read_text())\nassert p[\"status\"]==\"passed-original-project-boundary-only\"\nassert p[\"source\"]==\"e338c000f26e9357ed33213624da787a3a009ed9\"\ngh=shutil.which(\"gh\")\nr={\"schema\":\"chain.local-github-channel-identity.v1\",\"host\":\"ai395\",\"transport\":\"existing HeptaRuntime operator PTY\",\"project_preflight\":\"passed-original-project-boundary-only\",\"read_only\":True,\"credential_changes\":False,\"remote_writes\":False,\"command\":[\"gh\",\"api\",\"user\",\"--jq\",\".login\"],\"gh_path\":gh}\nif gh is None:\n    r[\"status\"]=\"existing-gh-unavailable\"\nelse:\n    try:\n        c=subprocess.run([gh,\"api\",\"user\",\"--jq\",\".login\"],cwd=root/\"source\",capture_output=True,timeout=45)\n        r.update(returncode=c.returncode,stdout_bytes=len(c.stdout),stdout_sha256=hashlib.sha256(c.stdout).hexdigest(),stderr_bytes=len(c.stderr),stderr_sha256=hashlib.sha256(c.stderr).hexdigest())\n        if c.returncode==0 and len(c.stdout)<=128:\n            login=c.stdout.decode(\"utf-8\").strip()\n            r[\"observed_login\"]=login\n            r[\"status\"]=\"verified-ProfHepta\" if login==\"ProfHepta\" else \"required-actor-not-observed\"\n        else:\n            r[\"status\"]=\"identity-query-failed\"\n    except subprocess.TimeoutExpired:\n        r[\"status\"]=\"identity-query-timeout\"\nout=root/\"records/local-github-channel.json\"\nwith out.open(\"x\",encoding=\"utf-8\") as f:\n    json.dump(r,f,ensure_ascii=False,indent=2); f.write(\"\\n\")\nprint(json.dumps(r),flush=True)\nraise SystemExit(0 if r[\"status\"]==\"verified-ProfHepta\" else 1)\n"
+  ],
+  "cwd": "/home/qq/af52-learning-local-decision-20261111",
+  "idempotency_key": "af52-chain-e338c00-existing-github-identity-v1",
+  "cols": 140,
+  "rows": 40
+}

@@ -1,0 +1,796 @@
+{
+  "after_maintenance": {
+    "head": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+    "status": "",
+    "tree": "f21843ca6d042b46f87df4ac1208e95752936291"
+  },
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "current_stage": "finished-or-awaiting-original",
+  "errors": [],
+  "execution_records": [
+    {
+      "name": "operator-toolchain",
+      "passed": true,
+      "record": {
+        "bytes": 1441,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/operator-toolchain.execution.json",
+        "sha256": "848981ca6bffb28406413df13874f78008053c6885db56d06f5684889b08ad99"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fmt-before",
+      "passed": true,
+      "record": {
+        "bytes": 1460,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-before.execution.json",
+        "sha256": "e9b7c70d399e875d4a039e3c4ddc41195ae29d1ae8f7d4b6980e923837b7f07d"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fix-seven-crates",
+      "passed": true,
+      "record": {
+        "bytes": 1729,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fix-seven-crates.execution.json",
+        "sha256": "5a2b15993bc6ceacdf38bf615b2fde4c2e86c3bc23ce464ed7110d85f020e066"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fmt-after",
+      "passed": true,
+      "record": {
+        "bytes": 1461,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-after.execution.json",
+        "sha256": "c951acf4c427e7e06f9494c430ffb73519513d1be81e8701db19cc151d22d324"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "bins-check",
+      "passed": true,
+      "record": {
+        "bytes": 1747,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/bins-check.execution.json",
+        "sha256": "5c205ff7ae1f3985f6a7babc21aab78b907c252b18b4b467ea2dd02fbac7cce4"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "passed": true,
+      "record": {
+        "bytes": 1525,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-b4-no-bypass.execution.json",
+        "sha256": "65ab351fd9df0193a29cbd8b780daf7ad7297f9b45b81855ae9e34001f82ecc4"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-fault-matrix",
+      "passed": true,
+      "record": {
+        "bytes": 1522,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-fault-matrix.execution.json",
+        "sha256": "a7b50b9cf204047ac40afaa105b9fde15983b4984e9abd6d36d6e45cdfd91ee4"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-performance",
+      "passed": true,
+      "record": {
+        "bytes": 1520,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-performance.execution.json",
+        "sha256": "bf274942c4f0bff55664d913864125fab487b6b1e638ab30aaeb655f4d0fda6c"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-vertical-slice",
+      "passed": true,
+      "record": {
+        "bytes": 1526,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-vertical-slice.execution.json",
+        "sha256": "3b305db9b6960d8f428a3f4b266bd09d976ed41e9c35229a6ec1ba331fa2c452"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "caller-self-test",
+      "passed": true,
+      "record": {
+        "bytes": 1456,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-self-test.execution.json",
+        "sha256": "13b5534a255128a30e3d7371fd869b4d643a2a29fba887e00c367a92d26e0f3d"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "caller-full-verify",
+      "passed": false,
+      "record": {
+        "bytes": 1455,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-full-verify.execution.json",
+        "sha256": "b04cbc42c94df318ffb29bef825b50d25be8cbdd8f4bdf9efe7ddd66cf155337"
+      },
+      "required_uid": 1000
+    }
+  ],
+  "expected_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+  ],
+  "external_tools_after": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "failure": "RuntimeError: caller-full-verify failed; original execution and raw log retained",
+  "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "maintenance_patch": {
+    "bytes": 0,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/maintenance.patch",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "operator_euid": 1000,
+  "operator_gid": 1000,
+  "operator_uid": 1000,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "ordinary_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-fleet"
+  ],
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+  "root_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-contracts"
+  ],
+  "schema": "hepta.final-ordinary-root-native.v2",
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+  "source_sha": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "source_tree": "f21843ca6d042b46f87df4ac1208e95752936291",
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.03262820094823837,
+      "exit_code": 0,
+      "launcher_pid": 1777729,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.8156875930726528,
+      "exit_code": 0,
+      "launcher_pid": 1777756,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/isolated-clone.launch.log",
+        "sha256": "bcdb44bfce11f5f2f4ab7c7b2905effa7ec27af067a4cccf510f79e23c2c0124"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "76986a7eae272bc34912b709a8d060b6b06d8e3d"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 13.401181250112131,
+      "exit_code": 0,
+      "launcher_pid": 1777810,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fetch-exact-source.launch.log",
+        "sha256": "31eddbcb67a7dfba73c3b35888672e10c8855382dadd0d21e4bcfe8a290f44d4"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+        "checkout",
+        "--detach",
+        "76986a7eae272bc34912b709a8d060b6b06d8e3d"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.5742177499923855,
+      "exit_code": 0,
+      "launcher_pid": 1777860,
+      "log": {
+        "bytes": 196,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/checkout-exact-source.launch.log",
+        "sha256": "64eb7c27e2b31558d7088832bb77efb5444d463f43ba2b9e9b33acd13bbede7e"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+        "merge-base",
+        "--is-ancestor",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+        "76986a7eae272bc34912b709a8d060b6b06d8e3d"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.004752476932480931,
+      "exit_code": 0,
+      "launcher_pid": 1777861,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "60",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/operator-toolchain.execution.json",
+        "--",
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs",
+      "elapsed_seconds": 0.46614385792054236,
+      "exit_code": 0,
+      "launcher_pid": 1777912,
+      "log": {
+        "bytes": 1505,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/operator-toolchain.launch.log",
+        "sha256": "7d24f1a9078cb37deb39fd0cdbe6224ed4c9a81a57264e98ce9873e2ced1da8f"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-before.execution.json",
+        "--",
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 3.5693258801475167,
+      "exit_code": 0,
+      "launcher_pid": 1778018,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-before.launch.log",
+        "sha256": "0fd6b4f9ddfc64703dac0be061790048ff15b639d647d88d149c8bf4336cb640"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fix-seven-crates.execution.json",
+        "--",
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-fleet"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 127.49741302710027,
+      "exit_code": 0,
+      "launcher_pid": 1781102,
+      "log": {
+        "bytes": 73458,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fix-seven-crates.launch.log",
+        "sha256": "9096511d1f586b5fd3f1177c055ce8d5eb041df23a894050c465b024bce8e55a"
+      },
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-after.execution.json",
+        "--",
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 3.61960608093068,
+      "exit_code": 0,
+      "launcher_pid": 1782654,
+      "log": {
+        "bytes": 1321,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/fmt-after.launch.log",
+        "sha256": "353d4086fb949e2f4d00121813d4065a7db57d6a5be08d3748c73568e9b0c08d"
+      },
+      "name": "fmt-after",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/bins-check.execution.json",
+        "--",
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-fleet",
+        "--bins"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs",
+      "elapsed_seconds": 67.30332227097824,
+      "exit_code": 0,
+      "launcher_pid": 1785737,
+      "log": {
+        "bytes": 41051,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/bins-check.launch.log",
+        "sha256": "587dbf1c9bf5806aa8e94d59ea1cd2a045d07d5aeb5c6b6865e894c7c6565ec4"
+      },
+      "name": "bins-check",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-b4-no-bypass.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 20.005181167041883,
+      "exit_code": 0,
+      "launcher_pid": 1786911,
+      "log": {
+        "bytes": 45150,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-b4-no-bypass.launch.log",
+        "sha256": "cb345d2b818d18c8310fbb23f69688e8296ab13e1e30be04cc60f9e80af484f1"
+      },
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-fault-matrix.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/fault-matrix",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 0.1144404869992286,
+      "exit_code": 0,
+      "launcher_pid": 1787039,
+      "log": {
+        "bytes": 2166,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-fault-matrix.launch.log",
+        "sha256": "3aa03cab6176828e1abad52ea34c7c168f2dbd10f93bb6c3299938608c376f57"
+      },
+      "name": "qa-fault-matrix",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-performance.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/performance",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 0.11433306219987571,
+      "exit_code": 0,
+      "launcher_pid": 1787136,
+      "log": {
+        "bytes": 2154,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-performance.launch.log",
+        "sha256": "dd6928c67ec3de695190466bca033e402aaddf02e248cacf3a1b5900934ae2f8"
+      },
+      "name": "qa-performance",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-vertical-slice.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/vertical-slice",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 0.1143552609719336,
+      "exit_code": 0,
+      "launcher_pid": 1787233,
+      "log": {
+        "bytes": 2168,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/qa-vertical-slice.launch.log",
+        "sha256": "54750e596402be88d803a82d2d1dbd1c28e1d4bebd5dca846c5fdaf03377c453"
+      },
+      "name": "qa-vertical-slice",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "300",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-self-test.execution.json",
+        "--",
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 0.11436830111779273,
+      "exit_code": 0,
+      "launcher_pid": 1787330,
+      "log": {
+        "bytes": 1368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-self-test.launch.log",
+        "sha256": "07f327c88cb0eb31707f7e37c89b52fbf3d749204ef5718199c505f1d65a83cf"
+      },
+      "name": "caller-self-test",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-full-verify.execution.json",
+        "--",
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source",
+      "elapsed_seconds": 2075.0966780851595,
+      "exit_code": 1,
+      "launcher_pid": 1787427,
+      "log": {
+        "bytes": 1513,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/records/caller-full-verify.launch.log",
+        "sha256": "ac50f5212a18f5c78a94db72b136948a1b02fd4de287deb644b32ab987781c48"
+      },
+      "name": "caller-full-verify",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 754, in <module>\n    recorded(\"caller-full-verify\", [\"python3\",\"scripts/verify_hepta_callers.py\",\"verify\"],\n    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n             timeout=CONFIG[\"full_caller_timeout_seconds\"])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 489, in recorded\n    raise RuntimeError(name + \" failed; original execution and raw log retained\")\nRuntimeError: caller-full-verify failed; original execution and raw log retained\n"
+}

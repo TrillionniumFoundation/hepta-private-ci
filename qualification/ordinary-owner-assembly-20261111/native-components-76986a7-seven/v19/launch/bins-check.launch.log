@@ -1,0 +1,495 @@
+    Checking codex-utils-absolute-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/rustls-provider)
+    Checking codex-http-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/http-client)
+    Checking codex-utils-home-dir v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/home-dir)
+    Checking codex-utils-cache v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/cache)
+    Checking codex-execpolicy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/image)
+    Checking codex-utils-path-uri v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/async-utils)
+    Checking codex-utils-pty v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/pty)
+    Checking codex-websocket-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-client)
+    Checking codex-hepta-contracts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-contracts)
+    Checking codex-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/protocol)
+    Checking codex-utils-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/path-utils)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/windows-sandbox-rs)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+    Checking codex-keyring-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/keyring-store)
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking codex-utils-template v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/template)
+    Checking codex-workload-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/terminal-detection)
+    Checking codex-hepta-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-types)
+    Checking codex-install-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/install-context)
+    Checking aws-config v1.12.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/code-mode-protocol)
+    Checking codex-collaboration-mode-templates v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/collaboration-mode-templates)
+    Checking codex-aws-auth v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/aws-auth)
+    Checking codex-diagnostics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/diagnostics)
+    Checking codex-file-search v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/file-search)
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/cargo-bin)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-skills v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/skills)
+    Checking codex-utils-stream-parser v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/stream-parser)
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-cognitive-types)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-paths v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-paths)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-kg v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-kg)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-cognitive-read)
+    Checking codex-backend-openapi-models v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-backend-openapi-models)
+    Checking codex-hepta-memory-federation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-memory-federation)
+    Checking codex-hepta-intuition v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-intuition)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/linux-sandbox)
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-learning-ledger)
+    Checking codex-uds v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/uds)
+    Checking codex-process-hardening v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/process-hardening)
+    Checking codex-file-watcher v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/file-watcher)
+    Checking codex-hepta-fleet v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-fleet)
+    Checking codex-hepta-ndu v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-ndu)
+    Checking codex-file-system v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/exec-server-protocol)
+    Checking codex-otel v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/model-provider-info)
+    Checking codex-secrets v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/secrets)
+    Checking codex-history v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/history)
+    Checking codex-state v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/state)
+    Checking codex-features v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/features)
+    Checking codex-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/config)
+    Checking codex-sandboxing v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/sandboxing)
+    Checking codex-agent-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/agent-identity)
+    Checking codex-utils-output-truncation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/output-truncation)
+    Checking codex-response-debug-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/response-debug-context)
+    Checking codex-code-mode v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/code-mode)
+    Checking codex-exec-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/login)
+    Checking codex-models-manager v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/feedback)
+    Checking codex-model-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/model-provider)
+    Checking codex-context-fragments v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/rollout)
+    Checking codex-utils-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/plugins)
+    Checking codex-rmcp-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/rmcp-client)
+    Checking codex-plugin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/plugin)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+    Checking codex-connectors v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/connectors)
+    Checking codex-exec-server-test-support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/exec-server/tests/support)
+    Checking codex-tools v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/tools)
+    Checking codex-app-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/app-server-protocol)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+    Checking codex-mcp v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-mcp)
+    Checking codex-extension-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/extension-api)
+    Checking codex-hooks v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/shell-escalation)
+    Checking codex-prompts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/audio)
+    Checking codex-hepta-operations v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-operations)
+    Checking codex-backend-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/backend-client)
+    Checking codex-hepta-memory v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-memory)
+    Checking codex-analytics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/analytics)
+    Checking codex-core-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/skills)
+    Checking codex-thread-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/thread-store)
+    Checking codex-hepta-authbus v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-authbus)
+    Checking codex-hepta-evidence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-evidence)
+    Checking codex-connectors-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/connectors)
+    Checking codex-utils-cli v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/cli)
+    Checking codex-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/core)
+    Checking codex-arg0 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/arg0)
+    Checking codex-hepta-governance v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/hepta-memory)
+    Checking codex-git-attribution v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/hepta-prompt)
+    Checking codex-home v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/codex-home)
+    Checking codex-hepta-wire v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-wire)
+    Checking codex-utils-json-to-toml v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/utils/json-to-toml)
+    Checking codex-hepta-automation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-automation)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-infer-core)
+    Checking codex-hepta-neuron v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-neuron)
+    Checking codex-hepta-agent-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-control-plane)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-objective v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-objective)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-plasticity)
+    Checking codex-hepta-matrix-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-matrix-protocol)
+    Checking codex-hepta-supervisor v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-supervisor)
+    Checking codex-hepta-intelligence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-intelligence)
+    Checking codex-hepta-cognitive-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-cognitive-store)
+    Checking codex-hepta-bellman-operator v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-bellman-operator)
+    Checking codex-memories-write v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/memories/write)
+    Checking codex-guardian-v2 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/guardian-v2)
+    Checking codex-app-server-transport v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/app-server-transport)
+    Checking codex-external-agent-migration v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/external-agent-migration)
+    Checking codex-image-generation-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/image-generation)
+    Checking codex-queue-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/queue)
+    Checking codex-memories-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/memories)
+    Checking codex-mcp-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/mcp)
+    Checking codex-chatgpt v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/chatgpt)
+    Checking codex-history-notes-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/history-notes)
+    Checking codex-goal-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/goal)
+    Checking codex-cloud-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/cloud-config)
+    Checking codex-agent-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/agent)
+    Checking codex-web-search-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/ext/web-search)
+    Checking codex-app-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/app-server)
+    Checking codex-app-server-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/app-server-client)
+    Checking codex-hepta-codex-adapter v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-agentd v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs/hepta-agentd)
+warning: field `notes` is never read
+   --> hepta-agentd/src/root_production_same_actor_phase_inputs.rs:121:5
+    |
+112 | pub(crate) struct OriginalSameActorRootContext {
+    |                   ---------------------------- field in this struct
+...
+121 |     notes: FinalUseAuthority,
+    |     ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `notes` is never used
+   --> hepta-agentd/src/root_production_same_actor_phase_inputs.rs:174:19
+    |
+135 | impl OriginalSameActorRootContext {
+    | --------------------------------- method in this implementation
+...
+174 |     pub(crate) fn notes(&self) -> FinalUseAuthority {
+    |                   ^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized] target(s) in 1m 07s
+{"after": {"commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d", "dirty": false, "parents": ["314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd"], "tree": "f21843ca6d042b46f87df4ac1208e95752936291"}, "base_sha": "", "before": {"commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d", "dirty": false, "parents": ["314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd"], "tree": "f21843ca6d042b46f87df4ac1208e95752936291"}, "command": ["cargo", "check", "--locked", "--offline", "-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts", "-p", "codex-hepta-neuron", "-p", "codex-hepta-learning-ledger", "-p", "codex-hepta-fleet", "--bins"], "command_exit_code": 0, "elapsed_seconds": 67.2423285159748, "exit_code": 0, "finished_at": "2026-11-12T17:49:20.387067+00:00", "job": null, "lane": "source-head", "log_bytes": 39504, "log_file": "bins-check.execution.json.99e88cdead0a4db691cfc7e9467bc40d.log", "log_sha256": "997cf0ebd2f93e8e1f6b5caa3947d5144d9a14c2441024ca33d1b6b0656f0bbd", "minimum_tests": 0, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "76986a7eae272bc34912b709a8d060b6b06d8e3d", "started_at": "2026-11-12T17:48:13.143764+00:00", "status": "passed", "tested_sha": "76986a7eae272bc34912b709a8d060b6b06d8e3d", "timed_out": false, "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-76986a7-seven-final-v19/source/codex-rs"}
