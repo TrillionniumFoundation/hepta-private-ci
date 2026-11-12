@@ -26,7 +26,8 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
             self.assertEqual(rows[key]["product_callers"], [HISTORY])
         self.assertEqual(rows["q24_original_historical_dataset_batch"]["product_callers"],
                          [AGENT + "cell_q24_prepared_learning.rs"])
-        self.assertEqual(rows["q24_original_historical_preparation"]["product_callers"], [])
+        self.assertEqual(rows["q24_original_historical_preparation"]["product_callers"],
+                         [AGENT + "production_post_a_q24.rs"])
 
     def test_capture_uses_original_current_cut_and_deadline(self):
         self.check_markers(HISTORY, "fn capture_historical(", (

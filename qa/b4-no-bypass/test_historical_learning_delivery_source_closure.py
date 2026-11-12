@@ -106,14 +106,14 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
             self.reject_removal(path, "fn require_current_successor_context(",
                                 "self.session.require_current_successor_session()", occurrence)
 
-    def test_closed_new_inventory_does_not_claim_an_unwired_main(self):
+    def test_closed_new_inventory_uses_only_actual_post_a_assembly(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         selected = {name: row for name, row in rows.items() if name.startswith("q24_historical_delivery_")}
         self.assertEqual(len(selected), 7)
         for name in selected:
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
         for name in ("q24_historical_delivery_capture", "q24_historical_delivery_install"):
-            self.assertEqual(rows[name]["product_callers"], [])
+            self.assertEqual(rows[name]["product_callers"], [AGENT + "production_post_a_q24.rs"])
         self.assertEqual(rows["q24_historical_delivery_async_claim"]["product_callers"], [SOURCE])
 
 

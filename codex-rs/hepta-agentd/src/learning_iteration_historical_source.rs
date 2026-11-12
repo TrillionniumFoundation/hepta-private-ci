@@ -37,7 +37,7 @@ impl RegisteredHistoricalLearningSourceV1 {
         if receipt.initial_snapshot().request.agent_id.as_str() != identity.agent_id.as_str() {
             return Err(refused("original recipient agent differs"));
         }
-        let source = Arc::new(Self {
+        let source: Arc<RegisteredHistoricalLearningSourceV1> = Arc::new(Self {
             receipt,
             prepared,
             identity,
@@ -95,7 +95,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         mode: OriginalCellQ24LearningOpenV1,
     ) -> Result<Self, AgentdError> {
         self.require_identity(identity)?;
-        let original = self
+        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self
             .original_q24
             .as_ref()
             .ok_or_else(|| refused("actual assembled Q24 owners absent"))?;
