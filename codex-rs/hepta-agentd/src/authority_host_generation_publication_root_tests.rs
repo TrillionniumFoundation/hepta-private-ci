@@ -206,24 +206,15 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     assert_eq!(std::fs::read(&claims_path)?, claimed);
 
-    // The serving owner has finished. Reopen the exact original issuer solely
-    // for its administrative revocation; no second owner is opened while live.
-    {
-        let (_, _leases, issuer) =
-            crate::authority_host_runtime::open_registered_issuer(&fixture.config)?;
-        let grant = &published
-            .published
-            .as_ref()
-            .ok_or_else(|| anyhow::anyhow!("published record"))?
-            .signed
-            .grant;
-        issuer.revoke(&grant.grant_id)?;
-    }
+    // The Revoked phase first opens its original five lanes and restores the
+    // registered publication. Its same serving issuer then revokes this exact
+    // published FinalUse grant; the child waits for the original consumer feed.
     fixture
         .run_phase(Phase::Revoked)
         .context("publication component Revoked phase")?;
     assert_eq!(fixture.current.original_broker_head()?, published);
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
+    assert_eq!(std::fs::read(&claims_path)?, claimed);
     fixture.child.release()?;
     let output = fixture.child.finish()?;
     assert!(

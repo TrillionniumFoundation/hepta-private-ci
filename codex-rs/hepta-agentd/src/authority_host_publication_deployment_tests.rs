@@ -15,6 +15,16 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
+#[cfg(test)]
+impl crate::PreparedHostAuthoritySession {
+    /// Retain the same serving issuer for a live, test-only grant revocation.
+    pub(crate) fn component_registered_publication_issuer(
+        &self,
+    ) -> std::sync::Arc<crate::DeploymentFinalUseIssuer> {
+        self.service.component_original_issuer_handle()
+    }
+}
+
 fn write_original_data(path: &Path, bytes: &[u8]) -> io::Result<()> {
     let mut file = OpenOptions::new()
         .write(true)

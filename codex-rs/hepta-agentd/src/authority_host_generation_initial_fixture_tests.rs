@@ -457,6 +457,11 @@ impl Fixture {
                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
                     send_data(&self.offer, &true)?;
                 }
+                if phase == Phase::RetiredSession {
+                    control(&self.offer, b"RETIRE_READY")
+                        .with_context(|| format!("initial parent {phase:?}: awaiting RETIRE_READY"))?;
+                    assert_eq!(self.offer.send(b"RETIRE")?, 6);
+                }
                 control(&self.offer, b"STABLE")
                     .with_context(|| format!("initial parent {phase:?}: awaiting STABLE"))?;
                 if !reject {
@@ -469,6 +474,9 @@ impl Fixture {
                 assert_eq!(self.offer.send(b"CHECKED")?, 7);
                 control(&self.offer, b"DONE")
                     .with_context(|| format!("initial parent {phase:?}: awaiting DONE"))?;
+                assert_eq!(self.offer.send(b"STOP")?, 4);
+                control(&self.offer, b"CLOSED")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting CLOSED"))?;
                 Ok(())
             });
             let served = prepared.serve_with_ready(move || {
@@ -508,6 +516,9 @@ impl Fixture {
             } else {
                 served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
             }
+            // CLOSED alone is insufficient: all original service threads and
+            // the original success/refusal result above must also be complete.
+            assert_eq!(self.offer.send(b"PHASE_COMPLETE")?, 14);
             Ok(())
         })
     }

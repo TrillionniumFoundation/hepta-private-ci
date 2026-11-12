@@ -27,7 +27,6 @@ pub(super) struct Fixture {
     _protected: tempfile::TempDir,
     _runtime: tempfile::TempDir,
     _witnesses: tempfile::TempDir,
-    pub(super) config: HostAuthorityServiceConfig,
     config_file: PathBuf,
     registration_file: PathBuf,
     profile_file: PathBuf,
@@ -400,7 +399,6 @@ impl Fixture {
             _protected: protected,
             _runtime: runtime_directory,
             _witnesses: witnesses,
-            config,
             config_file,
             registration_file,
             profile_file,
@@ -432,6 +430,11 @@ impl Fixture {
             self.pin.try_clone()?,
         )?
         .with_registered_learning(&self.profile_file)?;
+        let revocation_issuer = if matches!(phase, Phase::Revoked) {
+            Some(prepared.component_registered_publication_issuer())
+        } else {
+            None
+        };
         let mut sealed = prepared.seal_bootstrap(&self.local)?;
         let mut raw = Vec::new();
         sealed.rewind()?;
@@ -515,6 +518,34 @@ impl Fixture {
                     "actual Root acknowledgement"
                 );
                 send_data(&self.offer, &self.intent)?;
+                if matches!(phase, Phase::Revoked) {
+                    // The existing schema3 owners and recovered publication
+                    // are now live. Revoke only the original published grant,
+                    // then let their original authenticated feed synchronize.
+                    let head = self.current.original_broker_head()?;
+                    let record = head
+                        .published
+                        .as_ref()
+                        .ok_or_else(|| anyhow::anyhow!("original published grant to revoke"))?;
+                    assert_eq!(record.intent, self.intent);
+                    let issuer = revocation_issuer
+                        .as_ref()
+                        .ok_or_else(|| anyhow::anyhow!("same serving issuer"))?;
+                    let before = issuer.revocations()?;
+                    assert_eq!(before.authority_epoch, record.signed.grant.authority_epoch);
+                    assert!(!before.revoked_grant_ids.contains(&record.signed.grant.grant_id));
+                    let mut expected = before.clone();
+                    expected.revision = expected
+                        .revision
+                        .checked_add(1)
+                        .ok_or_else(|| anyhow::anyhow!("original revocation revision exhausted"))?;
+                    expected
+                        .revoked_grant_ids
+                        .insert(record.signed.grant.grant_id.clone());
+                    let actual = issuer.revoke(&record.signed.grant.grant_id)?;
+                    assert_eq!(actual, expected);
+                    send_data(&self.offer, &actual)?;
+                }
                 if matches!(phase, Phase::Publish) {
                     control(&self.offer, b"PREPARED")?;
                     let file = OpenOptions::new()

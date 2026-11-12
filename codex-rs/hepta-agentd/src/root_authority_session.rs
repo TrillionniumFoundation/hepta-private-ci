@@ -47,6 +47,8 @@ struct LiveRoot {
     // One asynchronous admission token covers the entire observation and
     // consumer barrier. There is no shared payload behind this permit.
     serial: tokio::sync::Semaphore,
+    #[cfg(test)]
+    refresh_failed: AtomicBool,
 }
 
 // Only operational lifetimes retain this private, exact original File. Fenced
@@ -268,6 +270,8 @@ impl AgentdRootAuthoritySession {
             active: AtomicBool::new(false),
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Semaphore::new(1),
+            #[cfg(test)]
+            refresh_failed: AtomicBool::new(false),
         });
         let writer_file = Arc::new(OnceLock::new());
         refresh(&live, &stream, &writer_file).await?;
@@ -437,6 +441,9 @@ async fn refresh(
             #[cfg(test)]
             eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}");
         })?;
+    // The test witness drops before this same serial permit on every failure.
+    #[cfg(test)]
+    let mut refresh_completion = tests::RefreshCompletion::new(&live.refresh_failed);
     let started = boottime_ns().inspect_err(|_error| {
         #[cfg(test)]
         eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-start-boottime error={_error:?}");
@@ -502,6 +509,8 @@ async fn refresh(
             "ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}"
         );
     })?;
+    #[cfg(test)]
+    refresh_completion.complete();
     Ok(())
 }
 async fn synchronize_consumers(
