@@ -1,0 +1,109 @@
+name: HCSN real checkpoint CPU recovery
+
+on:
+  push:
+    paths:
+      - qualification/hcsn_differentiable/replay_v1/**
+      - .github/workflows/hcsn-real-checkpoint-cpu.yml
+  pull_request:
+    paths:
+      - qualification/hcsn_differentiable/replay_v1/**
+      - .github/workflows/hcsn-real-checkpoint-cpu.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-real-checkpoint-cpu-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONHASHSEED: "0"
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  CUDA_VISIBLE_DEVICES: ""
+
+jobs:
+  adapter-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - name: Reject archive and relocation counterexamples without model execution
+        run: python -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p test_cpu_migration.py -v
+
+  real-recovery:
+    needs: adapter-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+        working-directory: source
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: source
+      - name: Require an observed immutable original artifact before any model setup
+        id: artifact
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+          pointer = json.loads(Path('qualification/hcsn_differentiable/replay_v1/CPU-ARTIFACT.json').read_bytes())
+          assert pointer['schema'] == 'hcsn-cpu-replay-artifact-pointer-v1'
+          assert pointer['status'] == 'FROZEN', 'HOLD: immutable archive publication is not yet observed; zero model calls'
+          assert re.fullmatch('[0-9a-f]{40}', pointer['commit'])
+          assert pointer['archive'] == {'bytes': 11397159, 'sha256': '37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75'}
+          source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          out = Path(os.environ['RUNNER_TEMP']) / 'hcsn-cpu-source-identity.json'
+          out.write_text(json.dumps({'source_commit': source, 'artifact_pointer': pointer}, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('commit=' + pointer['commit'] + '\n')
+          PY
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ steps.artifact.outputs.commit }}
+          persist-credentials: false
+          path: original-artifact
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - name: Install the separate pinned CPU runtime
+        run: |
+          python -m pip install --disable-pip-version-check 'torch==2.8.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'mpmath==1.3.0'
+          python -m pip freeze --all > "$RUNNER_TEMP/hcsn-cpu-pip-freeze.txt"
+      - name: Execute the actual six-checkpoint recovery and declared controls
+        run: |
+          python -B qualification/hcsn_differentiable/replay_v1/ci_replay.py \
+            --parts-manifest "$GITHUB_WORKSPACE/original-artifact/qualification/hcsn_differentiable/replay_v1/artifact/EXPORT.json" \
+            --output "$RUNNER_TEMP/hcsn-cpu-replay" 2>&1 | tee "$RUNNER_TEMP/hcsn-cpu-replay.log"
+      - name: Require unchanged tracked source
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain complete runtime, worker failures and actual checkpoint results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-real-cpu-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hcsn-cpu-source-identity.json
+            ${{ runner.temp }}/hcsn-cpu-pip-freeze.txt
+            ${{ runner.temp }}/hcsn-cpu-replay.log
+            ${{ runner.temp }}/hcsn-cpu-replay/
+          if-no-files-found: warn
+          retention-days: 14
