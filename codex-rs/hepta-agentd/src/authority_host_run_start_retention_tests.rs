@@ -163,21 +163,38 @@ fn finalize_component(
 #[test]
 #[ignore = "actual UID0 and original Root-owned directory custody"]
 fn root_run_start_data_never_promotes_pending_or_missing_refusal() -> anyhow::Result<()> {
-    let (_directory, root) = root()?;
-    let (refusal, mut success) = pending(Arc::clone(&root), "positive")?;
-    finalize_component(&refusal, &mut success)?;
-    let target = success.expected.original.target.clone();
-    RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target)?.readback_digest()?;
-    let (_refusal, state) = pending(Arc::clone(&root), "pending")?;
-    let target = state.expected.original.target;
-    assert!(RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target).is_err());
-    let old = original("old-primary-without-marker")?;
-    let target = old.target.clone();
-    let store = RunStartRecordStore::initialize_unchecked(Arc::clone(&root), old)?;
-    assert!(RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target).is_err());
-    assert!(pending(Arc::clone(&root), "old-primary-without-marker").is_err());
-    assert!(RootDataRefusalV1::open_existing(root, RootDataKind::RunStart, &target).is_err());
-    assert_eq!(store.store.load(&store.owner)?, store.expected);
+    {
+        let (_directory, root) = root()?;
+        let (refusal, mut success) = pending(Arc::clone(&root), "positive")?;
+        finalize_component(&refusal, &mut success)?;
+        let target = success.expected.original.target.clone();
+        let retained = RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target)?;
+        let before = retained.readback_digest()?;
+        // The persistent slot deliberately excludes run_id. Changing it must
+        // not register a second marker or replace this original primary.
+        assert_eq!(owner(&target)?, owner(&original("another-run")?.target)?);
+        assert!(pending(root, "another-run").is_err());
+        assert_eq!(retained.readback_digest()?, before);
+        assert_eq!(success.store.load(&success.owner)?, success.expected);
+    }
+    {
+        // Each independent storage case needs its own real protected scope.
+        let (_directory, root) = root()?;
+        let (_refusal, state) = pending(Arc::clone(&root), "pending")?;
+        let target = state.expected.original.target;
+        assert!(RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target).is_err());
+        assert!(RootDataRefusalV1::open_existing(root, RootDataKind::RunStart, &target).is_err());
+    }
+    {
+        let (_directory, root) = root()?;
+        let old = original("old-primary-without-marker")?;
+        let target = old.target.clone();
+        let store = RunStartRecordStore::initialize_unchecked(Arc::clone(&root), old)?;
+        assert!(RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target).is_err());
+        assert!(pending(Arc::clone(&root), "old-primary-without-marker").is_err());
+        assert!(RootDataRefusalV1::open_existing(root, RootDataKind::RunStart, &target).is_err());
+        assert_eq!(store.store.load(&store.owner)?, store.expected);
+    }
     Ok(())
 }
 
