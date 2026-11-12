@@ -19,7 +19,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         original: &OriginalRootModelMaterialV1<'_, '_>,
     ) -> Result<Self, Error> {
         let observed = admission::validate_original_root_material(original)?;
-        let owner = Self::create_bound(
+        let owner = CellQ24ModelProposalOwnerV1::create_bound(
             file,
             witness,
             observed.dataset,
@@ -36,7 +36,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         original: &OriginalRootModelMaterialV1<'_, '_>,
     ) -> Result<Self, Error> {
         let observed = admission::validate_original_root_material(original)?;
-        let owner = Self::recover_bound(
+        let owner = CellQ24ModelProposalOwnerV1::recover_bound(
             file,
             witness,
             observed.dataset,
