@@ -34,6 +34,11 @@ pub struct OriginalCircuitSelectionReadbackConnectionV1 {
     initial_binding: Digest32,
 }
 
+enum ReadbackOrigin {
+    PinnedBeforeRead,
+    ReadFromOriginal,
+}
+
 #[cfg(test)]
 #[path = "circuit_selection_readback_support_tests.rs"]
 pub(crate) mod test_support;
@@ -89,6 +94,86 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
         training: &OriginalCellQ24TrainingCommandReceiptV1,
         selection: OriginalCircuitSelectionCommandReceiptV1,
     ) -> Result<LearningIterationEvidenceClientV1, Error> {
+        self.bind_completed(dataset, training, selection, ReadbackOrigin::PinnedBeforeRead)
+    }
+
+    /// Read the original completed S after actual opaque D/T have arrived.
+    /// The same read-only stream is retained, including its original deadline
+    /// and its next request id. This cannot execute or initialize a Selector.
+    pub async fn read_original_selection(
+        mut self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+    ) -> Result<
+        (OriginalCircuitSelectionCommandReceiptV1, LearningIterationEvidenceClientV1),
+        Error,
+    > {
+        let started_at = now()?;
+        let context = OriginalCircuitSelectionCommandContextV1::from_original_training(
+            dataset.snapshot().clone(),
+            self.material.scope.clone(),
+            self.material.verifier.clone(),
+            training,
+        )?;
+        if context.initial()? != self.material.initial {
+            return Err(Error::Binding("same original Ready Selection initial cut"));
+        }
+        let (initial, before) =
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
+                .map_err(|_| Error::Binding("original Ready Selection initial context"))?;
+        let verified_at =
+            OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+                &dataset, &self.material,
+            )
+            .map_err(|_| Error::Binding("actual Dataset before Ready Selection read"))?;
+        if before < started_at || verified_at < before || initial != self.initial_binding {
+            return Err(Error::Binding("original Ready Selection clock and initial context"));
+        }
+        self.peer.check_peer_lifetime()?;
+        let binding = context_binding(&context, verified_at)?;
+        let request = request(&context, binding, /*request_id*/ 1);
+        let encoded = serde_json::to_vec(&request)?;
+        let (original, bytes) = tokio::task::spawn_blocking(move || {
+            let bytes = self.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
+            Ok::<_, Error>((self, bytes))
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
+        let response: wire::Response = serde_json::from_slice(&bytes)?;
+        response.require_request(&request)?;
+        original.peer.check_peer_lifetime()?;
+        let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            &dataset, &original.material,
+        )
+        .map_err(|_| Error::Binding("actual Dataset after Ready Selection read"))?;
+        if current < verified_at || context_binding(&context, current)? != binding {
+            return Err(Error::Binding("unchanged Ready Selection clock and context"));
+        }
+        let selection = match response.result {
+            wire::CommandResult::Completed { snapshot, evidence } => {
+                wire::decode_completed(&context, snapshot, evidence, current)?
+            }
+            wire::CommandResult::Missing => return Err(Error::Missing),
+            wire::CommandResult::Pending => return Err(Error::Pending),
+            wire::CommandResult::Busy => return Err(Error::Busy),
+            wire::CommandResult::Expired => return Err(Error::DeadlineExceeded),
+            wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired),
+            wire::CommandResult::Uncertain => return Err(Error::CommitUncertain),
+            wire::CommandResult::Unavailable => return Err(Error::Unavailable),
+        };
+        let reader = original.bind_completed(
+            dataset, training, selection.clone(), ReadbackOrigin::ReadFromOriginal,
+        )?;
+        Ok((selection, reader))
+    }
+
+    fn bind_completed(
+        self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        selection: OriginalCircuitSelectionCommandReceiptV1,
+        origin: ReadbackOrigin,
+    ) -> Result<LearningIterationEvidenceClientV1, Error> {
         let started_at = now()?;
         let context = OriginalCircuitSelectionCommandContextV1::from_original_training(
             dataset.snapshot().clone(),
@@ -135,7 +220,10 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
         let verifier = self.material.verifier.clone();
         let reader = OriginalSelectionReadbackV1 {
             peer: Some(self.peer),
-            next_request_id: 1,
+            next_request_id: match origin {
+                ReadbackOrigin::PinnedBeforeRead => 1,
+                ReadbackOrigin::ReadFromOriginal => 2,
+            },
             material: self.material,
             dataset,
             selection,

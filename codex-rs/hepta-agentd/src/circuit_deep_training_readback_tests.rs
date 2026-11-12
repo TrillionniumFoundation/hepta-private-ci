@@ -69,21 +69,20 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         connection: trainer,
         server: trainer_c,
     } = f.trainer_for_c.take().expect("initial original T for C");
-    let observer_config = f.observer_config(&selected);
+    let (actual_training, trainer) = trainer.read_original_training(f.dataset.clone()).await?;
+    assert_eq!(actual_training, f.training);
+    let (actual_selection, selector_read) = selector_read
+        .read_original_selection(f.dataset.clone(), &actual_training)
+        .await?;
+    assert_eq!(actual_selection, selected);
+    let observer_config = f.observer_config(&actual_selection);
     let (published, published_c) = f.published(
-        selected.snapshot().clone(),
-        Some(selected.attestation().clone()),
+        actual_selection.snapshot().clone(),
+        Some(actual_selection.attestation().clone()),
     )?;
     let observer = Arc::new(
         f.observer(&observer_config, /*create*/ true)?
-            .into_command_owner_from_original_readbacks(
-                published,
-                trainer,
-                selector_read,
-                f.dataset.clone(),
-                f.training.clone(),
-                selected.clone(),
-            )?,
+            .into_command_owner(published, trainer, selector_read)?,
     );
     // The Observer does not execute C. This different request/session/input
     // runs through the ordinary feature task and consumes the retained model.
@@ -137,13 +136,13 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         selector_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual S readback for C"))??,
-        4
+        5
     );
     assert_eq!(
         trainer_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual T readback for C"))??,
-        4
+        5
     );
 
     // Reopen only the same Observer files/witness. Its incoming T/S channels
@@ -214,13 +213,13 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         published_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S publication"))??,
-        15
+        17
     );
     assert_eq!(
         trainer_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S Trainer"))??,
-        14
+        16
     );
     let counts = f.finish().await?;
     assert_eq!(counts[0], 1, "the original Dataset bootstrap is read once");
@@ -232,14 +231,14 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         counts[2], counts[3],
         "same original Experience/Dataset sessions"
     );
-    // The twenty real T readbacks each bracket native/Generator CURRENT with
+    // The twenty-three real T readbacks each bracket native/Generator CURRENT with
     // two live captures; each capture reads every original Material peer twice.
     // Bootstrap/fit may add reads. Do not replace the actual lower bound with
     // a cached receipt, accept a timeout, or pin an incidental exact total.
-    assert!(counts[1] >= 80);
+    assert!(counts[1] >= 92);
     assert!(counts[1..].iter().all(|count| *count < 128));
     eprintln!(
-        "HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=20 selector_reads=6 c_commands=3",
+        "HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=23 selector_reads=7 c_commands=3",
         started.elapsed().as_millis()
     );
     Ok(())

@@ -97,6 +97,19 @@ async fn original_training_readback_unready_and_wrong_purpose_never_initialize()
         State::Awaiting(_)
     ));
     assert_eq!(fixture.training_bytes()?, original);
+    let (initial, initial_server) = prebound(
+        Arc::clone(&owner), fixture.config.clone(), Duration::from_secs(300),
+    )?;
+    assert!(matches!(
+        initial.read_original_training(dataset.clone()).await,
+        Err(CommandError::ReadbackRequired)
+    ));
+    assert_eq!(
+        initial_server.join().expect("unready original first read")?,
+        1
+    );
+    assert!(matches!(&*owner.state.lock().expect("state"), State::Awaiting(_)));
+    assert_eq!(fixture.training_bytes()?, original);
     drop(owner);
     assert_eq!(finish_material(peers)?, [0; 4]);
 
@@ -135,14 +148,15 @@ async fn original_training_readback_preserves_cold_signature_and_initial_deadlin
     let training = train(&fixture, &owner, &dataset).await?;
     let retained = fixture.training_bytes()?;
     let material = fixture.bytes()?;
-    let evidence = connection.bind_original_training(dataset.clone(), training.clone())?;
+    let (actual, evidence) = connection.read_original_training(dataset.clone()).await?;
+    assert_eq!(actual, training);
     assert_eq!(
         evidence
             .readback(dataset.snapshot(), training.receipt())
             .await?,
         *training.attestation()
     );
-    assert_eq!(join_readback(evidence, readonly_server)?, 1);
+    assert_eq!(join_readback(evidence, readonly_server)?, 2);
     assert_eq!(fixture.training_bytes()?, retained);
     assert_eq!(fixture.bytes()?, material);
 
