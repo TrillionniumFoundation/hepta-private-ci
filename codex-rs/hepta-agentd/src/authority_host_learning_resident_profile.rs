@@ -142,7 +142,7 @@ pub struct RootResidentLearningReadbackAuthorizationV3 {
 }
 
 impl RootResidentLearningReadbackAuthorizationV3 {
-    pub fn new(
+    pub fn from_original_root(
         profile: &RootResidentLearningProfileV3,
         intent: SignedFinalUseGrant,
         lease: AuthorityLease,

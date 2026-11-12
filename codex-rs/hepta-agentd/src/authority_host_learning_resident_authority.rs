@@ -201,3 +201,7 @@ fn require_time(now_ms: u64, lease: &AuthorityLease, deadline_ms: u64, access: R
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "authority_host_learning_resident_root_tests.rs"]
+mod tests;

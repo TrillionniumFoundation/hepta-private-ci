@@ -9,6 +9,8 @@ use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -54,6 +56,17 @@ enum ClientOriginV3 {
 enum ResidentExchangeV3 {
     Observed(RootResidentLearningObservationV3),
     Refused(Error),
+}
+
+/// Cancelling this one await can withdraw a queued local send. It neither
+/// revokes a request already written to the peer nor stops an admitted Root
+/// continuation. The channel was taken before queueing and is not returned.
+struct ResidentExchangeDropV3(Arc<AtomicBool>);
+
+impl Drop for ResidentExchangeDropV3 {
+    fn drop(&mut self) {
+        self.0.store(true, Ordering::Release);
+    }
 }
 
 /// No owner writer or execution token crosses this process boundary. A lost
@@ -189,7 +202,10 @@ impl AgentdRootResidentLearningClientV3 {
 
     async fn exchange(&self, action: wire::Action) -> Result<RootResidentLearningObservationV3, Error> {
         let permit = Arc::clone(&self.lane).try_acquire_owned().map_err(|_| Error::QueueFull)?;
-        let slot = Arc::clone(&self.channel);
+        let channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
+            .take().ok_or(Error::Unavailable)?;
+        let cancelled = ResidentExchangeDropV3(Arc::new(AtomicBool::new(false)));
+        let send_cancelled = Arc::clone(&cancelled.0);
         let profile = self.profile.clone();
         let verifier = self.verifier.clone();
         let origin = Arc::clone(&self.origin);
@@ -198,8 +214,7 @@ impl AgentdRootResidentLearningClientV3 {
             let _permit = permit;
             let started = now()?;
             require_window(&profile, &origin, started)?;
-            let mut channel = slot.lock().map_err(|_| Error::Unavailable)?
-                .take().ok_or(Error::Unavailable)?;
+            let mut channel = channel;
             if matches!(action, wire::Action::Admit) {
                 if channel.execution_requested {
                     return Err(Error::CommitUncertain);
@@ -213,6 +228,11 @@ impl AgentdRootResidentLearningClientV3 {
             channel.next = id.checked_add(1).ok_or(Error::Unavailable)?;
             let request = wire::request(action, id, profile.binding, authorization);
             let bytes = serde_json::to_vec(&request).map_err(|_| Error::Unavailable)?;
+            // This check occurs on the actual blocking lane immediately
+            // before sending, including when the task waited in its queue.
+            if send_cancelled.load(Ordering::Acquire) {
+                return Err(Error::CommitUncertain);
+            }
             let response = channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?;
             if response.len() > wire::BOUND {
                 return Err(Error::WrongScope);
@@ -370,3 +390,7 @@ fn now() -> Result<u64, Error> {
         .map_err(|_| Error::Unavailable)?.as_millis().try_into()
         .map_err(|_| Error::Unavailable)
 }
+
+#[cfg(test)]
+#[path = "authority_host_learning_resident_transport_tests.rs"]
+pub(super) mod test_support;

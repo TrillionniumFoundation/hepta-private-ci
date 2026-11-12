@@ -23,6 +23,7 @@ use crate::AgentdError;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::OriginalCellQ24NoUpdateStageOwnersV1;
+use crate::RootResidentLearningEffectGateV3;
 
 pub(super) enum ResidentRequestModeV3 {
     Admit,
@@ -267,17 +268,17 @@ async fn continue_original(
                     if stage == LearningIterationStageV1::Training =>
                         return Err(Error::CommitUncertain),
                 result = &mut call => break result?,
-                _ = watchdog.tick() => gate.require_current(&predecessor, &profile.scope).await?,
+                _ = watchdog.tick() => RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?,
             }
         };
-        gate.require_current(&predecessor, &profile.scope).await?;
+        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?;
         profile.scope.validate_observation(&receipt.observation)?;
         let (_, now) = owner.read(gate.cancellation()).await?;
         coordinator.record(receipt, now / 1_000)?;
         let signatures = authentication::original_attestations(
             &owner, &stages, &verifier, coordinator.snapshot(), gate.cancellation(),
         ).await?;
-        gate.require_current(&predecessor, &profile.scope).await?;
+        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?;
         let (_, fresh) = owner.read(gate.cancellation()).await?;
         authentication::verify_attestations(
             profile, &verifier, coordinator.snapshot(), &signatures, fresh / 1_000,
