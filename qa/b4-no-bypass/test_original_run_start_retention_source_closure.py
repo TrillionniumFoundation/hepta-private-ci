@@ -34,7 +34,7 @@ CALLERS = {
     "root_initial_run_start_live_retain": (TRANSPORT,),
     "root_initial_run_start_original_pin": (STORE,),
     "root_initial_run_start_original_observe": (CONTEXT, STORE),
-    "root_initial_run_start_cold_data": (),
+    "root_initial_run_start_cold_data": (A + "authority_host_historical_task.rs",),
     "root_initial_run_start_cold_digest": (),
     "root_initial_run_start_cold_physical": (),
     "root_initial_run_start_client": (A + "neuron_generation_current_initial_run_start.rs",),

@@ -17,7 +17,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers
 
-    def test_actual_capture_callers_are_fixed_and_history_is_not_yet_admitted(self):
+    def test_actual_capture_and_complete_task_read_callers_are_fixed(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         expected = {
             "root_original_ledger_metadata": ["authority_host_historical_source_deployment.rs", "authority_host_historical_ledger_history.rs"],
@@ -30,10 +30,10 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "root_original_ledger_capture_context": ["authority_host_historical_source_data.rs"],
             "root_original_ledger_capture": ["authority_host_historical_source_pin.rs"],
             "root_original_ledger_physical_open": ["authority_host_historical_ledger_pin.rs", "authority_host_historical_ledger_history.rs"],
-            "root_original_ledger_historical_context": [],
-            "root_original_ledger_historical_observation": [],
-            "root_original_ledger_historical_cut": [],
-            "root_original_ledger_read_data": [],
+            "root_original_ledger_historical_context": ["authority_host_historical_task.rs"],
+            "root_original_ledger_historical_observation": ["authority_host_historical_task.rs"],
+            "root_original_ledger_historical_cut": ["authority_host_historical_task.rs"],
+            "root_original_ledger_read_data": ["authority_host_historical_task.rs"],
         }
         for identifier, callers in expected.items():
             with self.subTest(boundary=identifier):
