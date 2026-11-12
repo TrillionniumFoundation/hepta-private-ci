@@ -483,6 +483,8 @@ def _verify_boundary(
     boundary: Boundary,
     source_index: dict[str, str],
     ignored_fragments: tuple[str, ...],
+    *,
+    fields_by_receiver_type: dict[str, typed_callers.AuthorityFields] | None = None,
 ) -> dict[str, Any]:
     definition = root / boundary.definition_path
     if not definition.is_file():
@@ -499,11 +501,17 @@ def _verify_boundary(
     else:
         call_pattern = re.compile(boundary.call_pattern)
     try:
-        fields = (
-            authority_fields(source_index, boundary.receiver_type)
-            if boundary.receiver_type
-            else {}
-        )
+        if not boundary.receiver_type:
+            fields = {}
+        elif fields_by_receiver_type is None:
+            # Preserve the uncached four-argument path for independent checks.
+            fields = authority_fields(source_index, boundary.receiver_type)
+        else:
+            if boundary.receiver_type not in fields_by_receiver_type:
+                fields_by_receiver_type[boundary.receiver_type] = authority_fields(
+                    source_index, boundary.receiver_type
+                )
+            fields = fields_by_receiver_type[boundary.receiver_type]
     except UnresolvedTypedReceiver as error:
         raise VerificationFailure(f"{boundary.identifier}: {error}") from error
     observed: set[str] = set()
@@ -732,8 +740,17 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(
             code
         )
+    # This index is immutable for this verify call. Never retain derived fields
+    # across invocations: source-closure tests edit the same paths between checks.
+    fields_by_receiver_type: dict[str, typed_callers.AuthorityFields] = {}
     results = [
-        _verify_boundary(root, boundary, source_index, ignored)
+        _verify_boundary(
+            root,
+            boundary,
+            source_index,
+            ignored,
+            fields_by_receiver_type=fields_by_receiver_type,
+        )
         for boundary in boundaries
     ]
     protected = _verify_protected_files(root, data)
@@ -746,6 +763,140 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         "rustFilesScanned": len(files),
         "authorityGranted": False,
     }
+
+
+def _self_test_typed_field_cache() -> None:
+    """Compare real cached/uncached scans and invalidate on fresh source reads."""
+    from unittest.mock import patch
+
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        source = root / "src"
+        source.mkdir()
+        definition = source / "owner.rs"
+        holder = source / "holder.rs"
+        caller = source / "caller.rs"
+        definition.write_text(
+            "pub struct ActualAuthority;\npub struct Unrelated;\n"
+            "impl ActualAuthority {\n"
+            "    pub fn run(&self) {}\n"
+            "    pub fn inspect(&self) {}\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        manifest = (
+            'schema_version = 2\n'
+            'plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"\n'
+            'source_roots = ["src"]\n'
+            'ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]\n'
+            '[authority]\nproduction = false\n'
+            '[privileged_inventory]\n'
+            'required_boundary_ids = ["actual_run", "actual_inspect"]\n'
+        )
+        for method in ("run", "inspect"):
+            manifest += (
+                '[[boundary]]\n'
+                f'id = "actual_{method}"\n'
+                f'symbol = "ActualAuthority::{method}"\n'
+                'definition_path = "src/owner.rs"\n'
+                'definition_markers = ["pub struct ActualAuthority;"]\n'
+                'product_callers = ["src/caller.rs"]\n'
+                'caller_markers = ["fn check("]\n'
+                'receiver_type = "ActualAuthority"\n'
+                f'receiver_methods = ["{method}"]\n'
+            )
+        manifest += (
+            '[[protected_file]]\npath = "src/owner.rs"\n'
+            'required = ["pub struct ActualAuthority;"]\nforbidden = ["unsafe"]\n'
+        )
+        (root / "CALLERS.toml").write_text(manifest, encoding="utf-8")
+
+        def uncached_boundaries() -> list[dict[str, Any]]:
+            data = _load_manifest(root / "CALLERS.toml")
+            ignored = _string_tuple(data, "ignored_path_fragments")
+            source_index = {
+                path.relative_to(root).as_posix(): _strip_cfg_test_items(
+                    _strip_rust_non_code(path.read_text(encoding="utf-8"))
+                )
+                for path in _source_files(root, _string_tuple(data, "source_roots"))
+            }
+            return [
+                _verify_boundary(root, boundary, source_index, ignored)
+                for boundary in _boundary_rows(data)
+            ]
+
+        # The same root and receiver type acquire a different alias and field
+        # owner on the second verify. A cache outside verify would be stale.
+        versions = (
+            (
+                "use crate::owner::ActualAuthority as CurrentAlias;\n"
+                "pub struct Holder { held: CurrentAlias }\n",
+                "Holder",
+            ),
+            (
+                "use crate::owner::Unrelated as CurrentAlias;\n"
+                "use crate::owner::ActualAuthority as NextAlias;\n"
+                "pub struct Holder { held: CurrentAlias }\n"
+                "pub struct NewHolder { held: NextAlias }\n",
+                "NewHolder",
+            ),
+        )
+        for declaration, receiver in versions:
+            holder.write_text(declaration, encoding="utf-8")
+            caller.write_text(
+                f"fn check(owner: &{receiver}) {{\n"
+                "    owner.held.run();\n    owner.held.inspect();\n}\n",
+                encoding="utf-8",
+            )
+            with patch.object(
+                sys.modules[__name__], "authority_fields", wraps=authority_fields
+            ) as cached_fields:
+                receipt = verify(root)
+            if cached_fields.call_count != 1:
+                raise VerificationFailure("typed fields must be built once per verify")
+            with patch.object(
+                sys.modules[__name__], "authority_fields", wraps=authority_fields
+            ) as uncached_fields:
+                original = uncached_boundaries()
+            if uncached_fields.call_count != 2 or receipt["boundaries"] != original:
+                raise VerificationFailure("cached and uncached caller reports differ")
+
+        caller.write_text(
+            "fn opaque(owner: &NewHolder) -> &ActualAuthority { &owner.held }\n"
+            "fn check(owner: &NewHolder) {\n"
+            "    let unknown = opaque(owner);\n"
+            "    unknown.run();\n    owner.held.inspect();\n}\n",
+            encoding="utf-8",
+        )
+        expected = (
+            "actual_run: src/caller.rs: "
+            "unresolved possible ActualAuthority::run receiver"
+        )
+        for scan in (lambda: verify(root), uncached_boundaries):
+            try:
+                scan()
+            except VerificationFailure as error:
+                if str(error) != expected:
+                    raise VerificationFailure(
+                        "cached and uncached unresolved diagnostics differ"
+                    ) from error
+            else:
+                raise VerificationFailure("typed cache accepted an unresolved receiver")
+
+        holder.write_text(
+            versions[1][0] + "pub struct Broken { held: ActualAuthority,\n",
+            encoding="utf-8",
+        )
+        for scan in (lambda: verify(root), uncached_boundaries):
+            try:
+                scan()
+            except VerificationFailure as error:
+                if str(error) != "actual_run: unbalanced Rust authority context":
+                    raise VerificationFailure(
+                        "cached and uncached field-error attribution differs"
+                    ) from error
+            else:
+                raise VerificationFailure("typed cache accepted unbalanced fields")
 
 
 def main() -> int:
@@ -801,6 +952,7 @@ def main() -> int:
                 pass
             else:
                 raise VerificationFailure("protected code boundary self-test failed")
+        _self_test_typed_field_cache()
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )
