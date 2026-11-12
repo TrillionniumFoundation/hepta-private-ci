@@ -145,7 +145,7 @@ class OriginalCellSourceClosureTests(unittest.TestCase):
                         "files.require_original_cell_baseline()?", occurrence)
 
     def test_initial_ack_and_post_drain_consume_keep_original_custody(self):
-        self.reject(A + "authority_host_generation_initial_runtime.rs", "fn serve_optional(",
+        self.reject(A + "authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",
                     ".register_original_source_cell(context)")
         self.reject(A + "authority_host_historical_cell_session.rs",
                     "fn take_original_source_cell(", "self.close()")

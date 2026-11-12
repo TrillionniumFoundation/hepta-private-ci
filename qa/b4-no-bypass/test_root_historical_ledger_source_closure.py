@@ -23,7 +23,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "root_original_ledger_metadata": ["authority_host_historical_source_deployment.rs", "authority_host_historical_ledger_history.rs"],
             "root_original_ledger_custody": ["authority_host_historical_ledger_session.rs", "authority_host_historical_ledger_history.rs"],
             "root_original_ledger_install": ["authority_host_historical_source_deployment.rs"],
-            "root_original_ledger_runtime_registration": ["authority_host_generation_initial_runtime.rs"],
+            "root_original_ledger_runtime_registration": ["authority_host_initial_enrollment_runtime.rs"],
             "root_original_ledger_baseline": ["authority_host_historical_ledger_session.rs"],
             "root_original_ledger_runtime_take": ["authority_host_historical_source_session.rs"],
             "root_original_source_data_context": ["authority_host_historical_source_pin.rs"],
@@ -165,8 +165,8 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "OriginalLedgerCustody::Registered(original) => Ok(Some(original))", "OriginalLedgerCustody::Held(_)", "self.close()"))
 
     def test_actual_registration_precedes_ack_and_nested_context_keeps_cell(self):
-        self.reject_removal(AGENT + "authority_host_generation_initial_runtime.rs", "fn serve_optional(",
-                            ".and_then(|()| source.register_original_source_ledger(context))")
+        self.reject_removal(AGENT + "authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",
+                            "source.register_original_source_ledger(context)?")
         self.check_markers(AGENT + "authority_host_historical_source_data.rs", "fn with_original_capture<T>(", (
             "original.ledger.is_some() && original.cell.is_none()",
             "RegisteredOriginalCellCaptureV1::with_original_cell_capture(",

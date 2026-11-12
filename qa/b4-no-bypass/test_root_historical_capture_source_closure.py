@@ -46,6 +46,8 @@ CALLERS = {
         AGENT + "authority_host_run_start_context.rs",
         AGENT + "authority_host_historical_ledger_registration.rs",
         AGENT + "authority_host_historical_ledger_session.rs",
+        AGENT + "authority_host_initial_peer_deployment.rs",
+        AGENT + "authority_host_initial_enrollment_runtime.rs",
     ),
     "root_historical_source_fixed_inputs": (SESSION, AGENT + "authority_host_successor_files_read.rs"),
     "root_historical_source_registered_inputs": (PIN, AGENT + "authority_host_successor_files_read.rs"),
