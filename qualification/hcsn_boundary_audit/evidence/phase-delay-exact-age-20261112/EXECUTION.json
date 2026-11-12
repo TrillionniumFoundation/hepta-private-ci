@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-p1-rational-phase-delay-oracle-v1",
+  "subject": "deterministic remaining-delay-only, released mass absorbing",
+  "date_utc": "2026-11-12",
+  "parent_head": "d22266f04da2c419883ed57161861e86df184d19",
+  "host": "desktop",
+  "python": "3.12.3",
+  "cpu_quota_percent": 25,
+  "memory_max_bytes": 2147483648,
+  "timeout_seconds": 90,
+  "source_sha256": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b",
+  "red": {
+    "job_id": "1a1ce038a30-2564-144c",
+    "exit_code": 1,
+    "expected_falsification": true,
+    "stdout_bytes": 819,
+    "stderr_bytes": 402
+  },
+  "green": {
+    "job_id": "1a1ce03c6b2-2564-144e",
+    "exit_code": 0,
+    "tests": 4,
+    "failed": 0,
+    "skipped": 0,
+    "stdout_bytes": 821,
+    "stderr_bytes": 728
+  },
+  "max_phase_only_tv": {
+    "n2": 0.32,
+    "n4": 0.3904,
+    "n8": 0.41736248,
+    "n16": 0.42936701587219733,
+    "n32": 0.4350502473421146
+  },
+  "unprojected_age_tv": "exact 0 for tested fixed source law",
+  "original_c2_restarted": false,
+  "original_files_modified": false,
+  "p1_qualified": false,
+  "scientific_admission": "HOLD_NO_GO"
+}
