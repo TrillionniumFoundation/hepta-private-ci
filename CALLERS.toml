@@ -11842,9 +11842,10 @@ required_order = [
   ["fn read_model_proposal<", "self.in_model_lane(", "require_original_training(inputs, completed)?", "CellQ24ModelProposalOwnerV1::readback(model, training, inputs)"],
   ["fn in_model_lane<T>", "let _permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "self.owners.try_lock()", "Error::CommitUncertain", "training\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?", "let original = owners.read_original_completion()?", "let result = work(&mut owners.training, &original)", "let current = owners", ".read_original_completion().map_err(", "Error::CommitUncertain", "if current.receipt != original.receipt || current.attestation != original.attestation", "return Err(Error::CommitUncertain)", "result"],
 ]
-required_function_order = [
-  { function = "fn require_original_training(", sequence = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "|| inputs.training_attestation != &completed.attestation", "return Err(Error::Binding(", "Ok(())"], top_level = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "Ok(())"] },
-]
+[[protected_file.required_function_order]]
+function = "fn require_original_training("
+sequence = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "|| inputs.training_attestation != &completed.attestation", "return Err(Error::Binding(", "Ok(())"]
+top_level = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "Ok(())"]
 
 [[protected_file.required_function_order]]
 function = "fn read_candidate_material("
