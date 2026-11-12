@@ -19,11 +19,11 @@ impl HistoricalTaskReadRuntime {
             .post_a
             .as_ref()
             .ok_or_else(|| io::Error::other("original post-A deployment missing"))?;
-        let session_end = self
+        let worker: &post_a_worker::PostALearningWorker = self
             .post_a_worker
             .as_ref()
-            .ok_or_else(|| io::Error::other("original post-A worker missing"))?
-            .original_session_end(end)?;
+            .ok_or_else(|| io::Error::other("original post-A worker missing"))?;
+        let session_end = post_a_worker::PostALearningWorker::original_session_end(worker, end)?;
         let (installation, reply) =
             RootRetainedHistoricalCompleteTaskV1::with_original_historical_task(
                 &self.task,
