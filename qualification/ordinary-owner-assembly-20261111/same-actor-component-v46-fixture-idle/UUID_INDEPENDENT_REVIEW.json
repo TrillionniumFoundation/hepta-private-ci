@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-of-V45-shared-component-agent-id-fixture",
+  "scope": "Git GET / pure V8 exact-byte comparison; no execution",
+  "packet": "697429d523feeb53e3ce238781f99c7f2305c36a",
+  "base": {
+    "commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+    "tree": "6449ad41525799e42166ffca8131f0d63af7c0b3"
+  },
+  "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase_tests.rs",
+  "pre": {
+    "git_blob": "07865e5309beb34ad3860f8929a351eefffae689",
+    "bytes": 20136,
+    "sha256": "eb3021227003fa6be37871a0bec49e75966c3f1776c23762de8ee2ffcada9bca"
+  },
+  "post": {
+    "git_blob": "fba1d7b285cc265d1cb632eac545a00918919491",
+    "bytes": 20157,
+    "sha256": "9305f2326c8a08aa6732c11de2b7865b1e3543a687f91700e2e94a1095089abf"
+  },
+  "parser": {
+    "git_blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+    "bytes": 3196,
+    "sha256": "456b322e28ab0ab6f26f7ae5b2fde5d6d8a9a28b9bb467371664e185e2a88650"
+  },
+  "change": {
+    "kind": "replace_exact_once",
+    "before": "        let agent_id = AgentId::parse(\"queue-component\").unwrap();",
+    "after": "        let agent_id = AgentId::parse(\"00000000-0000-4000-8000-000000000001\").unwrap();"
+  },
+  "checks": {
+    "forward_unique": true,
+    "reverse_unique": true,
+    "all_other_bytes_identical": true,
+    "one_parse_site": true,
+    "tests": [
+      "pending_and_bare_phase_paths_cannot_build_or_queue",
+      "wrong_identity_record_or_invocation_closes_without_build",
+      "closing_cut_keeps_an_admitted_build_but_refuses_later_admission",
+      "closing_a_ticket_queues_once_and_cancelled_work_stays_counted",
+      "full_original_queue_rolls_back_transfer_and_closes_phase",
+      "lost_original_ack_closes_before_return_without_readback_or_resend",
+      "queue_quiescence_requires_both_ticket_and_actual_worker_drain",
+      "cancelled_observation_remains_counted_until_blocking_callback_finishes",
+      "stopped_original_observer_closes_phase_instead_of_becoming_outcome_pending"
+    ],
+    "assert_macros": 31,
+    "assert_eq_macros": 43,
+    "wrong_identity_capacity_mutation_exact": true,
+    "actual_parser": "36 UTF-8 bytes; hyphens exactly8/13/18/23; all other bytes lowercase hex; version byte14 in1..8; variant byte19 in8,9,a,b",
+    "new_literal_passes_each_static_character_contract": true,
+    "old_literal_rejected_by_first_length_guard": true
+  },
+  "finding": "No confirmed blocker in this one-literal component-fixture repair. The unchanged actual parser necessarily rejects queue-component before intended queue/admission assertions. The explicit synthetic UUID meets that parser; it does not manufacture a production identity, owner, signed Outcome or successful business receipt.",
+  "metadata_note": "The author packet labels85 assertion_invocations. This review directly counts74 actual assert!/assert_eq! macros (31+43), and9 matches! invocations separately. All such original bytes are unchanged; the author has been notified of the count difference. It does not change the sole source operation.",
+  "execution_evidence": "This review did not retrieve or rerun V45 native execution. The1988/9 shared failure remains Root-reported here. All9 original methods and all assertions are unchanged outside the one literal.",
+  "qualification": {
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "refs_changed": false
+  },
+  "remaining": "A new fixed source must pass the unchanged original native gates. The separate Root RetiredSession failure is outside this repair."
+}

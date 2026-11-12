@@ -458,6 +458,9 @@ pub(crate) async fn drop_original_production_after_idle(
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
     tokio::time::timeout(timeout, async move {
+        // This read-only validation may perform several original owner reads.
+        // Keep the original feed running; this is not the final live check.
+        before_drop()?;
         let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
@@ -465,7 +468,6 @@ pub(crate) async fn drop_original_production_after_idle(
             ));
         }
         live.current().map_err(std::io::Error::other)?;
-        before_drop()?;
         // The permit prevents any new refresh from starting during this check
         // and the actual Drop. A retained task can now test that original Drop.
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-original-V45-retired-session-test-helper",
+  "reviewer": "/root/runtime_access",
+  "author": "/root/hepta_audit",
+  "packet": "169b70fe7d89dadf684418a008ce836e0ea68ffe",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "conclusion": "No confirmed local blocker in the two test-only changes; native rerun remains required and is Root-owned.",
+  "verified": {
+    "all_four_original_source_blobs_get_hash_bytes_sha256": true,
+    "unique_forward_reverse_both_ops": true,
+    "read_helper_complete": true,
+    "read_both_actual_callers": true,
+    "original_parent_Session_refresh_and_serial_body_read": true,
+    "raw_Root_scan_and_transcript_get_hash_read": true,
+    "original_failure_stderr_get_hash_read": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "pre": {
+        "git_blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "post": {
+        "git_blob": "45035861a00ae2419c9eaeaccdfe609ec1bc69f5",
+        "bytes": 27145,
+        "sha256": "e6d17a58b6fde17a9cb78987cf569668572c832309c5fb4e5ace79634be97d9e"
+      },
+      "ops": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "pre": {
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "post": {
+        "git_blob": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+        "bytes": 14949,
+        "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+      },
+      "ops": 1
+    }
+  ],
+  "findings": [
+    "The same before_drop FnOnce runs once inside the unchanged cooperative tokio timeout, before acquiring the same original serial semaphore.",
+    "The same final live.current and both original worker/refresh_failed checks remain under that permit and precede actual drop(inputs).",
+    "The actual RetiredSession callback is task.require_bundle; the selected child uses the original two-worker multi-thread runtime, so moving the callback out of serial permits the independent original feed to run. It does not guarantee a refreshed sample or retry.",
+    "The second actual caller is the original no-op validation. The controlled lost-ACK path still directly drops production; no error path was converted to a normal result.",
+    "Original actual drop, worker.is_finished/yield loop, timeout mapping, claims equality, after-Drop negative assertion and STABLE/CHECKED/DONE/STOP ordering remain unchanged.",
+    "Only the caller comment changes in the second file; executable bytes are identical outside that precise comment."
+  ],
+  "failure_evidence": {
+    "stderr": {
+      "git_blob": "096196201ec7486f2b74fdd31b0010dd5f326a0e",
+      "bytes": 63110,
+      "sha256": "b16587974f16ee75c4c742dc1e99d3d5c6ff67f672928a2363d3d29f792ee66a"
+    },
+    "observed_age_ns": 509605142,
+    "unchanged_limit_ns": 500000000,
+    "scope": "This is the retained-time refusal actually logged for RetiredSession, not a measured complete callback duration. Earlier capped Recover timing is not relabelled."
+  },
+  "inventory": {
+    "report": {
+      "git_blob": "aff43c47efa1679e48e482b85ffbae5111cbe4d2",
+      "bytes": 1608,
+      "sha256": "46e226539430b98d1d99181379a14c98a818a05866b69243d6eec77e44515d0f"
+    },
+    "raw": {
+      "git_blob": "7743a0b4f37fd57502c741e6340ff745fc6f3059",
+      "bytes": 3476,
+      "sha256": "272e2404fc9aa21a8e4b1f7f0c82a5989432d9082f11e0613dffa38f0a84efbe"
+    },
+    "provenance": "Root original-checkout scan; reviewer verified report/raw and both actual matching sources, did not independently run the 6533-file scan.",
+    "actual_hits": 3,
+    "callers": 2
+  },
+  "limits": [
+    "Moving callback earlier can change first error when callback and worker both fail; no full failure-priority equivalence claimed.",
+    "Test-only helper; original worker.is_finished remains its old observation and is not a new physical-join capability.",
+    "No production runtime, deadline, Root permission, replay policy, checker, timeout or retry is changed.",
+    "Compiler/native/checker/test execution by reviewer: zero."
+  ]
+}

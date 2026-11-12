@@ -174,8 +174,9 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                     assert_eq!(socket.send(b"RETIRE_READY")?, 12);
                     control(&socket, b"RETIRE")
                         .with_context(|| format!("initial child {phase:?}: awaiting parent RETIRE"))?;
-                    // Validate the retained task under the original serial
-                    // permit, then let actual inputs/session Drop fence it.
+                    // Validate the retained task with the original feed running.
+                    // The helper then takes the serial permit for the final live
+                    // check and actual inputs/session Drop.
                     crate::root_authority_session::tests::drop_original_production_after_idle(
                         production,
                         TIMEOUT,

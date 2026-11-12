@@ -123,7 +123,7 @@ impl Fixture {
         observation: Option<Block>,
     ) -> Self {
         let directory = tempfile::tempdir().unwrap();
-        let agent_id = AgentId::parse("queue-component").unwrap();
+        let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap();
         let fleet_root = directory.path().join("fleet");
         let layout = HeptaFleetRoot::parse(fleet_root.clone())
             .unwrap()

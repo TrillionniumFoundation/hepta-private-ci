@@ -1,0 +1,31 @@
+{
+  "matched_sources": [
+    {
+      "bytes": 14877,
+      "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+    },
+    {
+      "bytes": 26989,
+      "git_blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+    }
+  ],
+  "matches": [
+    "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs:179:                    crate::root_authority_session::tests::drop_original_production_after_idle(",
+    "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs:216:                crate::root_authority_session::tests::drop_original_production_after_idle(",
+    "codex-rs/hepta-agentd/src/root_authority_session_tests.rs:453:pub(crate) async fn drop_original_production_after_idle("
+  ],
+  "method": "Python exact UTF-8 substring fallback after observed FileNotFoundError for rg; no tool installation or repair",
+  "needle": "drop_original_production_after_idle",
+  "refs_changed": false,
+  "schema_version": 1,
+  "scope": "All tracked .rs paths below codex-rs in the original completed V45 checkout",
+  "source_modified": false,
+  "source_sha": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "tests_run": false,
+  "tracked_paths_sha256": "c43b35d5c57c453a18363f7757d5df566a8f697180ed8920007441bbb807be89",
+  "tracked_rust_files": 6533
+}

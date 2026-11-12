@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "Root independent source and failure review",
+  "base_commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "base_tree": "6449ad41525799e42166ffca8131f0d63af7c0b3",
+  "status": "REVIEWED_TEST_ONLY_REPAIR_NOT_YET_QUALIFIED",
+  "source_paths": 3,
+  "exact_operations": 3,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase_tests.rs",
+      "pre": {
+        "git_blob": "07865e5309beb34ad3860f8929a351eefffae689",
+        "bytes": 20136,
+        "sha256": "eb3021227003fa6be37871a0bec49e75966c3f1776c23762de8ee2ffcada9bca"
+      },
+      "post": {
+        "git_blob": "fba1d7b285cc265d1cb632eac545a00918919491",
+        "bytes": 20157,
+        "sha256": "9305f2326c8a08aa6732c11de2b7865b1e3543a687f91700e2e94a1095089abf"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "pre": {
+        "git_blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "post": {
+        "git_blob": "45035861a00ae2419c9eaeaccdfe609ec1bc69f5",
+        "bytes": 27145,
+        "sha256": "e6d17a58b6fde17a9cb78987cf569668572c832309c5fb4e5ace79634be97d9e"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "pre": {
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "post": {
+        "git_blob": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+        "bytes": 14949,
+        "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true
+    }
+  ],
+  "packets": {
+    "uuid": "a6b817734f0d58b134dd512ab4f0b8aa4a7ea029",
+    "retirement": "169b70fe7d89dadf684418a008ce836e0ea68ffe"
+  },
+  "independent_reviews": {
+    "uuid_source": "6cc9743240b8fa1bbac2c9e20f445c6b3555a673",
+    "retirement": "5b5f1c73fb27b243a918df19e222092fcfe6a251"
+  },
+  "original_evidence": {
+    "commit": "401ca8aa035d8b1741144f61d62e232f8f047b42",
+    "root_stderr": "096196201ec7486f2b74fdd31b0010dd5f326a0e",
+    "failures": "4c1b2b949519ddd3232548f902e43f11b6fb6871",
+    "helper_all_tracked_rust_scan": "aff43c47efa1679e48e482b85ffbae5111cbe4d2",
+    "scan_raw_output": "7743a0b4f37fd57502c741e6340ff745fc6f3059"
+  },
+  "findings": [
+    "The sole invalid AgentId fixture literal is replaced by a canonical explicit synthetic version4 UUID; the actual production parser and all nine test bodies/assertions remain unchanged.",
+    "The same FnOnce readonly validation remains inside the same cooperative timeout, now before the original live.serial acquisition. The same final live.current and both original failure/worker checks remain inside the permit before actual drop(inputs).",
+    "The complete original6533-file tracked Rust scan found exactly the helper definition and two calls in the same original Initial child. One callback is the actual task.require_bundle and the other is no-op.",
+    "The caller comment is corrected to match the actual ordering; all executable child bytes are unchanged.",
+    "No production runtime, original500ms window/request_started, timeout argument, fixture process budget, timing64 cap, test selection, retry policy, original parser/checker/helper or metadata is changed.",
+    "The independently reviewed UUID source is byte-identical to the source in the superseded metadata packet697429; the final packet corrects the count label to74 assertions,9 matches and2 panic macros, all unchanged."
+  ],
+  "limits": [
+    "First error may differ when both callback and worker fail; all original failures propagate.",
+    "No guaranteed refresh or hard wall-clock guarantee is invented for the existing synchronous callback inside a cooperative timeout.",
+    "Old worker.is_finished remains a component observation; this repair does not create a physical join or business proof.",
+    "V45 remains failed. The new exact source must pass the unchanged original harness; no predecessor result is inherited."
+  ],
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_C_accepted": false,
+  "physical_daemon_root_restart_accepted": false
+}

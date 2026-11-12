@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "kind": "v45_retired_session_test_helper_feed_progress",
+  "status": "Candidate produced and independently byte-verified through Git only; no rerun or acceptance claim",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "base_tree": "6449ad41525799e42166ffca8131f0d63af7c0b3",
+  "path_count": 2,
+  "operation_count": 2,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "postimage": {
+        "git_blob": "45035861a00ae2419c9eaeaccdfe609ec1bc69f5",
+        "bytes": 27145,
+        "sha256": "e6d17a58b6fde17a9cb78987cf569668572c832309c5fb4e5ace79634be97d9e"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact_once",
+          "before": "    tokio::time::timeout(timeout, async move {\n        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;\n        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {\n            return Err(std::io::Error::other(\n                \"original Root observation worker failed or finished before deliberate Drop\",\n            ));\n        }\n        live.current().map_err(std::io::Error::other)?;\n        before_drop()?;\n",
+          "after": "    tokio::time::timeout(timeout, async move {\n        // This read-only validation may perform several original owner reads.\n        // Keep the original feed running; this is not the final live check.\n        before_drop()?;\n        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;\n        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {\n            return Err(std::io::Error::other(\n                \"original Root observation worker failed or finished before deliberate Drop\",\n            ));\n        }\n        live.current().map_err(std::io::Error::other)?;\n"
+        }
+      ],
+      "scope": "One test-only helper: reposition the existing callback inside the same timeout before acquiring the original serial permit."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "postimage": {
+        "git_blob": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+        "bytes": 14949,
+        "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+      },
+      "ops": [
+        {
+          "kind": "replace_exact_once",
+          "before": "                    // Validate the retained task under the original serial\n                    // permit, then let actual inputs/session Drop fence it.\n",
+          "after": "                    // Validate the retained task with the original feed running.\n                    // The helper then takes the serial permit for the final live\n                    // check and actual inputs/session Drop.\n"
+        }
+      ],
+      "scope": "Comment only; executable Rust, caller arguments, assertions, timer and control-message order unchanged."
+    }
+  ],
+  "separate_uuid_fix": "a6b817734f0d58b134dd512ab4f0b8aa4a7ea029",
+  "actual_failure": {
+    "stderr": {
+      "git_blob": "096196201ec7486f2b74fdd31b0010dd5f326a0e",
+      "bytes": 63110,
+      "sha256": "b16587974f16ee75c4c742dc1e99d3d5c6ff67f672928a2363d3d29f792ee66a"
+    },
+    "stdout": {
+      "git_blob": "689a4b8a7d535a81e93cb8a9872d64ab3b2cdd73",
+      "bytes": 396,
+      "sha256": "0ac5eb4c631869037831b42e29be2ae62be8c05092469a0750ee7a33920fdf31"
+    },
+    "phase": "RetiredSession",
+    "leaf": "current retained-time refusal, then original-error-fence -> Session current-cache Unavailable -> CURRENT store-load RootGenerationInitialUncertain -> live-current-before Unavailable -> child retiring original idle session",
+    "observed_nanoseconds": {
+      "now": "1539308816451657",
+      "last_checked": "1539308729566727",
+      "request_started": "1539308306846515",
+      "age": "509605142",
+      "limit": "500000000",
+      "excess": "9605142",
+      "time_regressed": false
+    },
+    "parent": "Original Root serve returned Ok, then parent awaited STABLE and received os error 11. This is not a successful RetiredSession result.",
+    "inference": "The existing before_drop callback invokes task.require_bundle. Its real CURRENT read chain emits the observed current-store-load/live-current-before errors. The helper held the same serial semaphore required by the normal refresh worker for the entire multi-read callback; this prevents that worker from refreshing during the callback.",
+    "limits": "The original per-process timing record cap is 64 and was exhausted before RetiredSession. No exact total callback duration, particular numbered frame, or per-frame pre/post point is inferred. Earlier timed Recover frames are not relabelled as RetiredSession. Production correctly rejected stale retained time."
+  },
+  "caller_inventory": {
+    "method": "Root performed the actual fixed-checkout read-only fallback after rg was unavailable. Author independently GET/hash-checked the original report and full raw terminal transcript, then read both matching full source files.",
+    "report": {
+      "git_blob": "aff43c47efa1679e48e482b85ffbae5111cbe4d2",
+      "bytes": 1608,
+      "sha256": "46e226539430b98d1d99181379a14c98a818a05866b69243d6eec77e44515d0f"
+    },
+    "raw_terminal": {
+      "git_blob": "7743a0b4f37fd57502c741e6340ff745fc6f3059",
+      "bytes": 3476,
+      "sha256": "272e2404fc9aa21a8e4b1f7f0c82a5989432d9082f11e0613dffa38f0a84efbe"
+    },
+    "scan": {
+      "matched_sources": [
+        {
+          "bytes": 14877,
+          "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+          "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+        },
+        {
+          "bytes": 26989,
+          "git_blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+          "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+          "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+        }
+      ],
+      "matches": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs:179:                    crate::root_authority_session::tests::drop_original_production_after_idle(",
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs:216:                crate::root_authority_session::tests::drop_original_production_after_idle(",
+        "codex-rs/hepta-agentd/src/root_authority_session_tests.rs:453:pub(crate) async fn drop_original_production_after_idle("
+      ],
+      "method": "Python exact UTF-8 substring fallback after observed FileNotFoundError for rg; no tool installation or repair",
+      "needle": "drop_original_production_after_idle",
+      "refs_changed": false,
+      "schema_version": 1,
+      "scope": "All tracked .rs paths below codex-rs in the original completed V45 checkout",
+      "source_modified": false,
+      "source_sha": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+      "tests_run": false,
+      "tracked_paths_sha256": "c43b35d5c57c453a18363f7757d5df566a8f697180ed8920007441bbb807be89",
+      "tracked_rust_files": 6533
+    },
+    "interpretation": "All 6533 tracked Rust source paths under codex-rs at fixed V45 contain exactly three raw helper-name hits: its definition and the two Initial child calls. Both actual calls were individually read; no alias/import or other raw hit exists in this inventory.",
+    "failed_prior_scan": "The prior rg process failed because rg was unavailable. That exit is not absence evidence. Root preserves its original failure receipts; this successful fallback is the caller evidence."
+  },
+  "actual_callers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": "ed60831777e416b41eae33e265a090012781b618",
+      "line": 179,
+      "purpose": "RetiredSession positive original task.require_bundle validation immediately before deliberate input/session Drop.",
+      "preserved": "Same production object, same TIMEOUT, same callback body, subsequent task.require_bundle is_err assertion, claim-file equality, task Drop, and STABLE/CHECKED/DONE/STOP ordering. Only its now inaccurate serial-permit comment is updated."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": "ed60831777e416b41eae33e265a090012781b618",
+      "line": 216,
+      "purpose": "Ordinary idle-session shutdown after original phase work; callback is exactly || Ok(()).",
+      "preserved": "Same timeout and final checks/Drop. The controlled Publish ACK-loss branch still directly drops production and remains a separate error path."
+    }
+  ],
+  "actual_new_order": [
+    "Inside the same original tokio::time::timeout(timeout, async move { ... }), call the same before_drop once while the normal feed is allowed to run.",
+    "Acquire the same live.serial semaphore; its permit remains held through the final checks and actual Drop.",
+    "Keep the first original refresh_failed/worker.is_finished rejection.",
+    "Call the same live.current() under the permit; prior callback success is not a replacement live proof.",
+    "Keep the second original refresh_failed/worker.is_finished rejection.",
+    "Perform the same drop(inputs), then wait on the same worker abort handle's is_finished with the original yield_now loop.",
+    "Preserve the original timeout mapping and TimedOut message. The caller keeps its task-after-Drop negative assertion."
+  ],
+  "semantic_limits": [
+    "The callback now precedes the first worker-state check. If both callback and worker are already failing, which original error is surfaced first can change; all failures still propagate. No full failure-priority equivalence is claimed.",
+    "This is the existing synchronous callback inside the existing cooperative Tokio timeout. No new hard wall-clock guarantee is asserted.",
+    "Allowing the feed to run does not guarantee a refreshed sample or force a retry; every original final live/cache/worker check still independently rejects stale or failed state.",
+    "worker.is_finished remains the old helper observation. This test patch does not convert it into a new physical join capability or normal phase-completion proof."
+  ],
+  "preservation": {
+    "test_only": "The actual Session parent declares #[cfg(test)] #[path = \"root_authority_session_tests.rs\"] pub(crate) mod tests. No production implementation changes.",
+    "unchanged": "Original 500 ms threshold, request_started, timing cap 64, all production guards, all timeout values, callback body, failure messages, negative assertions, and original checker/typed helper remain unchanged.",
+    "no_workarounds": "No new refresh, retry, rearm, delay, exception, relaxed assertion, skipped test, reconstructed source observation, or replacement business outcome.",
+    "metadata": "Fixed CALLERS cd24b18a3ade8ae0a400bb2d52a27ad67f928074 contains neither this helper name nor either test path. CALLERS and allowlist are not changed."
+  },
+  "source_evidence": [
+    {
+      "name": "initial_child",
+      "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+      "bytes": 14877,
+      "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+    },
+    {
+      "name": "initial_fixture",
+      "git_blob": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+      "bytes": 24933,
+      "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca"
+    },
+    {
+      "name": "session",
+      "git_blob": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "bytes": 30409,
+      "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393"
+    },
+    {
+      "name": "cache",
+      "git_blob": "8bd1f6251b9fdbffc443155cdf5e88cec1daaf88",
+      "bytes": 23863,
+      "sha256": "4f733f028622d8944678350c59a505bb14a685ffa6651cd8c92bd2f87ec9737c"
+    },
+    {
+      "name": "task",
+      "git_blob": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163"
+    },
+    {
+      "name": "live",
+      "git_blob": "23b86bf6aafc8fea35cc220fb987dbe2592b6f59",
+      "bytes": 8890,
+      "sha256": "62a1fd55f3be9d3b447f1ca4acfcac3826d87822ac0a6484972cd9b7f577fdfe"
+    },
+    {
+      "name": "current",
+      "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+      "bytes": 15464,
+      "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+    },
+    {
+      "name": "current_store",
+      "git_blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "bytes": 5779,
+      "sha256": "12cd56df56fedf2a12a36dca8bb54e0981c90333fd34eeeaebfd738a6a6de8b9"
+    },
+    {
+      "name": "initial_client",
+      "git_blob": "d970542fd254c994ae12510ad3a8c463cacf22c1",
+      "bytes": 8612,
+      "sha256": "b02b68f6b8881befe6baf699d11bb65c258d457407d2d1aae5237fbc7101d168"
+    },
+    {
+      "name": "connection",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "bytes": 4477,
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0"
+    },
+    {
+      "name": "callers",
+      "git_blob": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "bytes": 891809,
+      "sha256": "561ee83c6451ea1f8e584f7c281fd56a3d7907b084c287eaae256044382308cd"
+    }
+  ],
+  "static_checks": {
+    "source_gets_equal": true,
+    "helper_unique_forward_reverse": true,
+    "child_unique_forward_reverse": true,
+    "child_outside_comment_exact": true,
+    "child_masked_nonwhitespace_equal": true,
+    "scan_matched_sources_equal": true,
+    "scanned_files": 6533,
+    "raw_occurrences": 3,
+    "actual_calls": 2,
+    "internal_comparison_note": "An initial byte equality of whitespace-preserving comment masks was inapplicable after comment-length changes. Corrected check removes only the exact old/new comment blocks and requires every remaining byte equal; also checks masked non-whitespace equality.",
+    "function_order_projection": {
+      "scope": "Exact function string marker order, not original checker",
+      "signature": "pub(crate) async fn drop_original_production_after_idle(\n    inputs: crate::AgentdRootProductionInputs,\n    timeout: Duration,\n    before_drop: impl FnOnce() -> std::io::Result<()>,\n) -> std::io::Result<()> {",
+      "ordered": [
+        {
+          "marker": "tokio::time::timeout(timeout, async move {",
+          "offset": 317
+        },
+        {
+          "marker": "before_drop()?;",
+          "offset": 524
+        },
+        {
+          "marker": "let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;",
+          "offset": 548
+        },
+        {
+          "marker": "if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished()",
+          "offset": 631
+        },
+        {
+          "marker": "live.current().map_err(std::io::Error::other)?;",
+          "offset": 878
+        },
+        {
+          "marker": "if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished()",
+          "offset": 1094
+        },
+        {
+          "marker": "drop(inputs);",
+          "offset": 1341
+        },
+        {
+          "marker": "while !worker.is_finished()",
+          "offset": 1363
+        },
+        {
+          "marker": "tokio::task::yield_now().await;",
+          "offset": 1405
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 1455
+        },
+        {
+          "marker": "std::io::ErrorKind::TimedOut",
+          "offset": 1540
+        }
+      ],
+      "only_callback_reposition_and_two_comments": true,
+      "prefix_equal": true,
+      "suffix_equal": true
+    },
+    "original_checker_run": false,
+    "compiler_run": false,
+    "tests_run": false,
+    "formatter_run": false
+  },
+  "integration": {
+    "future_overlay": "A separate future Session-test postimage 81813409fd03a46a7be97b3b5b0d338b4e37d9a7 also contains the unchanged original helper block. Root must replay this same operation when later composing that future graph; this packet does not overwrite that graph.",
+    "source_fix_priority": "Replay these two exact test-source operations plus the independent one-literal UUID packet onto the fixed V45 candidate. Preserve V45 failed records as historical evidence.",
+    "reviews": "Independent review requested after freezing this exact packet; not assumed complete."
+  },
+  "qualification": {
+    "ordinary_complete": 0,
+    "independent_consumer": 0,
+    "physical_cold_restart": 0,
+    "production_or_native_pass": false,
+    "ref_modified": false
+  }
+}

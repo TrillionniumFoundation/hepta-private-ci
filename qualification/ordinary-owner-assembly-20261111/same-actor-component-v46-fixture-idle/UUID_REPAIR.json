@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.exact-source-fixture-repair.v1",
+  "base": {
+    "commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+    "tree": "6449ad41525799e42166ffca8131f0d63af7c0b3"
+  },
+  "scope": "One test fixture literal; all production source, parser, checker, metadata, assertions, timings, and test control flow unchanged.",
+  "reported_failure": {
+    "source": "Root's original V45 terminal observation; this author did not independently retrieve the original execution log in this packet",
+    "ordinary_passed": 1988,
+    "ordinary_failed": 9,
+    "shared_location": "circuit_task_same_actor_phase_tests.rs:126:58",
+    "message": "agent id must be a canonical 36-byte UUID",
+    "native_retries_by_author": 0
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase_tests.rs",
+      "preimage": {
+        "git_blob": "07865e5309beb34ad3860f8929a351eefffae689",
+        "bytes": 20136,
+        "sha256": "eb3021227003fa6be37871a0bec49e75966c3f1776c23762de8ee2ffcada9bca"
+      },
+      "postimage": {
+        "git_blob": "fba1d7b285cc265d1cb632eac545a00918919491",
+        "bytes": 20157,
+        "sha256": "9305f2326c8a08aa6732c11de2b7865b1e3543a687f91700e2e94a1095089abf"
+      },
+      "operations": [
+        {
+          "kind": "replace_exact_once",
+          "before": "        let agent_id = AgentId::parse(\"queue-component\").unwrap();",
+          "after": "        let agent_id = AgentId::parse(\"00000000-0000-4000-8000-000000000001\").unwrap();"
+        }
+      ]
+    }
+  ],
+  "source_dependencies": [
+    {
+      "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+      "git_blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+      "bytes": 3196,
+      "sha256": "456b322e28ab0ab6f26f7ae5b2fde5d6d8a9a28b9bb467371664e185e2a88650"
+    }
+  ],
+  "rationale": [
+    "All nine component tests construct Fixture::new; its sole AgentId::parse call rejects queue-component before any intended queue/admission behavior.",
+    "The replacement is explicit synthetic component data: 00000000-0000-4000-8000-000000000001. It is 36 ASCII bytes, lower-case hexadecimal with exact UUID hyphens, supported version 4 and RFC 9562 variant 8.",
+    "The complete test file contains exactly one AgentId::parse call. The existing wrong-identity case changes identity.resources.turn_queue_capacity, not AgentId; its original mutation and rejection assertion remain byte-identical. There is no second malformed wrong-AgentId sample to replace.",
+    "The module's existing component-only disclaimer remains unchanged. A syntactically valid fixture does not supply production authority, A/C assembly, signed Outcome or a successful business receipt."
+  ],
+  "verification": {
+    "pre": {
+      "git_blob": "07865e5309beb34ad3860f8929a351eefffae689",
+      "bytes": 20136,
+      "sha256": "eb3021227003fa6be37871a0bec49e75966c3f1776c23762de8ee2ffcada9bca"
+    },
+    "post": {
+      "git_blob": "fba1d7b285cc265d1cb632eac545a00918919491",
+      "bytes": 20157,
+      "sha256": "9305f2326c8a08aa6732c11de2b7865b1e3543a687f91700e2e94a1095089abf"
+    },
+    "operation": {
+      "before": "        let agent_id = AgentId::parse(\"queue-component\").unwrap();",
+      "after": "        let agent_id = AgentId::parse(\"00000000-0000-4000-8000-000000000001\").unwrap();"
+    },
+    "chosen_fixture_checks": {
+      "length": true,
+      "lowercase_and_hyphens": true,
+      "version": true,
+      "variant": true
+    },
+    "tests": [
+      "pending_and_bare_phase_paths_cannot_build_or_queue",
+      "wrong_identity_record_or_invocation_closes_without_build",
+      "closing_cut_keeps_an_admitted_build_but_refuses_later_admission",
+      "closing_a_ticket_queues_once_and_cancelled_work_stays_counted",
+      "full_original_queue_rolls_back_transfer_and_closes_phase",
+      "lost_original_ack_closes_before_return_without_readback_or_resend",
+      "queue_quiescence_requires_both_ticket_and_actual_worker_drain",
+      "cancelled_observation_remains_counted_until_blocking_callback_finishes",
+      "stopped_original_observer_closes_phase_instead_of_becoming_outcome_pending"
+    ],
+    "parse_sites": 1,
+    "wrong_identity_mutation": "\"identity\" => identity.resources.turn_queue_capacity += 1,",
+    "all_other_bytes_identical": true,
+    "executed": false,
+    "post_created_and_get_verified": true,
+    "parser_rust_executed": false,
+    "source_parse_checks": "Pure V8 character checks of fixed literal against the actual unchanged AgentId::parse source; no Rust test or parser execution.",
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "refs_modified": false,
+    "macro_invocations": {
+      "by_kind": {
+        "assert": 31,
+        "matches": 9,
+        "assert_eq": 43,
+        "panic": 2
+      },
+      "total": 85,
+      "unchanged": true
+    }
+  },
+  "remaining": "The original V45 failed attempt remains failed. Root must run the unchanged original harness against a new fixed source to establish any new result. Root's separate RetiredSession failure is not addressed by this fixture patch.",
+  "supersedes": {
+    "git_blob": "697429d523feeb53e3ce238781f99c7f2305c36a",
+    "reason": "Metadata count label precision only; fixed source and exact operation unchanged. The previous 85 count included matches! and panic! as well as assertions."
+  }
+}
