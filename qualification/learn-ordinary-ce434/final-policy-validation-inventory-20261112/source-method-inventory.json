@@ -1,0 +1,1917 @@
+{
+  "method": "Pure source token/indent inventory, exact full FDE actual report cross-check; not unittest execution",
+  "baseline_report_blob": "6efb2f5f44367fcff393011e7ee463ebf1238afd",
+  "before": {
+    "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "modules": 59,
+    "methods": 423,
+    "table": [
+      {
+        "module": "test_artifact_publication_readback_source_closure",
+        "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "sha": "3a0ebd3b5359ed95c8ab4a70e913919b8b77b891",
+        "ids": [
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_service_is_the_only_host_caller_and_no_publication_cap_is_created",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_exact_started_operation_and_scan_bound_are_not_optional",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_original_checkpoint_and_current_are_physically_read_twice",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_original_signature_window_is_checked_after_all_io",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_service_never_rebinds_original_storage_or_withdrawal_scope",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_readback_cannot_resume_write_repair_or_gain_authority",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_each_actual_receipt_scan_is_bounded_before_metadata_and_decode",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_seven_real_artifact_cases_are_package_qualified"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_cell_generation_physical_current_source_closure",
+        "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+        "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+        "ids": [
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_physical_current_has_an_exact_closed_caller_set",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_full_original_descriptor_replay_and_same_retained_state_are_required",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_both_witness_observations_and_cursor_restoration_precede_success",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_any_failure_fences_recovery_even_after_original_bytes_are_restored"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_cell_learning_evaluation_source_closure",
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "sha": "5e700c20d3744562bcbf224605bbc6a2743fec69",
+        "ids": [
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_learning_profile_freeze_keeps_nonzero_and_signed_binding",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_profile_is_required_before_training_and_in_checkpoint_identity",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_checkpoint_codec_preserves_request_profile_without_legacy_inference",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_bridge_binds_full_bundles_original_training_and_profile",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_bridge_revalidates_signed_result_before_mapping_or_recording",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_original_readback_refreshes_clock_and_verifies_both_signed_roles",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_fresh_clock_cannot_move_before_either_original_owner_wait"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_circuit_selection_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+        "sha": "904bb3b8bce261590fc86c26bab5ffd54cbd84db",
+        "ids": [
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_original_selector_authority_entries_stay_closed",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_selection_reads_the_original_sealed_publication",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_original_training_pin_and_physical_readbacks_cannot_be_skipped",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_completed_readback_keeps_physical_brackets_and_permanent_failure_fence",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_missing_pending_deadline_and_role_separation_remain_distinct"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_generation_learning_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "sha": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39",
+        "ids": [
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_original_evidence_and_new_reader_caller_sets_remain_closed",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_predecessor_replay_cannot_skip_history_or_receipt_binding",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_stage_read_keeps_original_observation_current_role_and_scope",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_post_attestation_actor_check_cannot_be_hidden_or_moved",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_actor_profiles_cannot_substitute_a_different_read",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_learning_checkpoint_source_closure",
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "ids": [
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_original_typed_callers_cannot_be_omitted_or_extended",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_original_writer_checks_cannot_be_borrowed_from_other_methods",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_service_requires_same_agent_peer_and_both_lifetime_checks",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_request_binding_and_original_checkpoint_dispatch_are_required",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_scoped_profile_and_material_validation_cannot_be_omitted",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_unvalidated_reply_cannot_restore_the_consumed_connection"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_learning_evaluation_recovery_source_closure",
+        "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "sha": "8d607e733cf950165475cd80b9e3a080b13ed949",
+        "ids": [
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_original_recovery_callers_remain_closed",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_cell_profile_journals_and_exact_plan_precede_execution",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_authentication_cannot_move_after_private_execution_decode",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_execution_context_keeps_canonical_original_owner_key_before_claim",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_cannot_skip_checks_in_dead_blocks"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_artifact_head_source_closure",
+        "path": "qa/b4-no-bypass/test_original_artifact_head_source_closure.py",
+        "sha": "eeaf7a43ec7d5e90560ca5489bc281cce7eaf881",
+        "ids": [
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_edges_and_unregistered_native_entrances_remain_exact",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_cold_protocol_and_low_level_effects",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_fresh_writer_continuation",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_physical_original_registry",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_key_and_saved_signature",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_command_and_unknown_effect",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_process_pinned_source",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_registered_context_and_complete_claims",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_canonical_purpose_and_bytes"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_material_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "sha": "1bc8feef36a00badf2606f22f804001f6c4f11c6",
+        "ids": [
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_begin_and_finish_require_actual_owner_and_complete_current_tail",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_transfer_nonce_and_next_independent_begin_cannot_reuse_current",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_cancelled_or_unfinished_transfer_consumes_the_original_channel"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+        "sha": "cfd8f724d44bc762c6e47ffe4380ab51485a2374",
+        "ids": [
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_only_concrete_same_operation_callers_can_borrow_or_consume",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_full_original_prefix_brackets_work_and_failure_keeps_the_lane_fenced",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_private_proof_cannot_be_cloned_forged_deserialized_or_rearmed_on_drop",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_root_consumes_only_after_actual_root_io_and_independent_reads_start_again",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_model_finish_precedes_last_actual_model_current_and_fresh_authentication",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_actual_checkpoint_clock_revalidates_all_evidence_before_any_next_stage",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_ineligible_and_uncertain_effects_cannot_become_model_success"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "sha": "f3430124c1aca3cbcfb6521daf9d87543cac6675",
+        "ids": [
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_circuit_observer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "sha": "58b6a0774f868c9cb5f19db4bf5cb4d5b0001a40",
+        "ids": [
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_configuration_and_physical_read_guards_cannot_be_dead_branches",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_new_attestation_deadline_and_readback_window_are_distinct",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_failed_post_commit_observation_fences_both_effect_and_readback",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_no_key_generation_execution_or_unbound_stage_assembly_is_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_host_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "sha": "74a8fb799883b344a9f2fc9d271b696e6d2210ab",
+        "ids": [
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_original_brand_and_all_current_reads_precede_final_full_authentication",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_initial_original_connection_cannot_renew_or_promote_recovery",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_wrong_context_queued_cancellation_and_completed_regression_never_rearm",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+        "sha": "d35214f712441dda4caeacef3cfe0decbe231582",
+        "ids": [
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_private_original_operation_edges_have_exact_typed_callers",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_actual_before_after_full_context_and_same_connection_cannot_be_removed",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_whole_completion_and_export_finish_original_training_before_final_authentication",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_consuming_factory_and_independent_public_paths_cannot_share_claimed_observations",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_staged_material_keeps_original_channel_full_body_clock_and_cancellation",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_unfinished_material_cannot_restore_client_or_publish_a_transferable_proof",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_native_inventory_keeps_original_panels_and_adds_only_explicit_operation_mechanisms"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_panel_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "sha": "83ebe8fdc7b8646c7e98301e8d89100552181bd6",
+        "ids": [
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_exact_original_panel_edges_remain_closed",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_registration_rejects_empty_duplicate_and_rebound_original_tasks",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_each_member_retains_full_original_training_roles_and_config",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_both_physical_cells_and_actual_completed_qualification_are_read",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_primary_signature_must_name_the_complete_actual_nonempty_panel",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_each_member_consumes_exact_original_cohort_custody",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_original_cohort_current_brackets_all_members_before_final_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_provider_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "sha": "3b446cfc03d872049c492a2ec6fdb11cdebaf5e3",
+        "ids": [
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_exact_cohort_capture_provider_and_original_policy_edges",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_complete_preregistered_rule_binds_units_time_and_all_original_runs",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_candidate_training_and_full_signature_are_revalidated",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_actual_independent_outcomes_join_original_execution_without_completion_labels",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_all_physical_reads_precede_fresh_original_windows_and_sticky_fence",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_only_the_original_consumed_holdout_releases_rows_once_without_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_receipt_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "sha": "c1b35606604c81a4edf59ec41d04ae2839a02957",
+        "ids": [
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_original_read_edges_have_exact_typed_registered_callers",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_receipt_ports_and_stage_assembly_remain_closed",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_exact_training_scope_and_enrolled_key_precede_journal_custody",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_execution_and_sealed_qualification_bind_full_recovered_history",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_current_original_sources_and_durable_pending_precede_exact_signature",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_actual_time_full_principals_and_controller_separation_remain_required",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_signature_readback_revalidates_sources_and_witness_before_ack",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_execution_adapter_rejects_writes_and_substituted_namespace",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_owner_cannot_generate_keys_replace_trust_or_assemble_stage_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_transfer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py",
+        "sha": "608d857f599f5905a9f660fcdaae333175a66cb0",
+        "ids": [
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_all_e_transfer_records_validate",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_new_private_edges_have_exact_typed_callers",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_guards_cannot_move_to_comments_or_out_of_function",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_private_observations_cannot_gain_clone_decode_public_state_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_execution_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+        "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+        "ids": [
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_existing_owner_authentication_precedes_private_evidence_and_final_time",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_original_signature_window_and_principal_are_reverified",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_cell_adapter_keeps_actual_journals_and_exact_product_plan",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_readback_cannot_acquire_execution_signing_or_mutation_capabilities",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_only_actual_cell_adapter_calls_product_evidence_reader"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_execution_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+        "ids": [
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_every_physical_mutation_recovery_and_fence_guard_is_effective",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_original_constructors_are_closed_and_selector_gets_only_readback",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_recovery_and_all_readback_functions_have_no_effect_calls",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_selector_cannot_reopen_raw_parts_or_initialize_witnesses",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_no_owner_can_extract_raw_custody_or_provision_signing_authority",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_positive_fixture_uses_production_owner_and_retains_custody_limits",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_current_checks_full_history_cursor_and_sticky_poison",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_open_and_cas_preserve_bounds_lock_and_physical_effect_order",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_readback_cannot_reopen_write_clear_poison_or_return_cache"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_holdout_current_source_closure",
+        "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+        "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+        "ids": [
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_each_original_physical_read_write_and_fence_guard_is_effective",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_cache_is_advanced_only_after_the_actual_post_write_read",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_same_handle_read_has_no_reopen_unlock_or_effect_fallback",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_recovery_retains_original_minimum_and_byte_record_bounds",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_no_new_public_port_and_known_non_effect_errors_are_retained",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_native_group_uses_actual_eval_package_and_registered_file_owner_cases"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_learning_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+        "ids": [
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_original_sealed_request_cannot_be_replaced_by_caller_bytes",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_claim_and_witness_must_precede_signing_and_saved_readback",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_recovered_evidence_must_match_original_key_actor_and_identity",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_constructor_checks_registered_signer_without_probe_signature",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_registered_controller_revocation_and_role_are_required",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_feature_dispatch_must_receive_original_durable_cell_admission",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_native_control_fences_unknown_execution_and_persists_before_return",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_source_pending_and_readback_cannot_become_new_work",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_observer_views_cannot_gain_original_writer_capabilities",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_published_task_keeps_original_profile_and_distinct_successor",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_historical_read_never_reactivates_or_repairs_previous_owner",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_live_original_owner_current_brackets_physical_read_with_witness",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_live_execution_current_replays_original_locked_bytes"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+        "ids": [
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_retained_evidence_getter_never_permits_new_struct_construction",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_private_origin_shared_admission_and_recovery_cannot_be_rearmed",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_fixed_roles_exact_context_and_no_uploaded_signing_body",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_actual_stage_sources_precede_signatures_and_dataset_never_creates_experience",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_live_readback_full_signatures_and_internal_clock_prevent_renewal",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_guards_cannot_move_into_comments_helpers_or_optional_branches",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_peer_liveness_io_precedes_final_signature_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+        "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+        "ids": [
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_consuming_custody_factory_and_uninstalled_service_stay_closed",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_exact_readback_callers_reject_an_additional_product_consumer",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_fixed_peer_limits_and_failed_exchange_cannot_be_bypassed",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_original_pair_derives_dataset_cut_with_no_network_under_ledger_lock",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_each_request_correlation_and_monotonic_id_precede_original_response",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_fresh_clock_and_registered_original_signer_follow_actual_reads",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_wire_retains_every_original_attestation_field_and_window",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_service_cannot_sign_execute_cache_or_acquire_replacement_capabilities",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_comments_nested_helpers_and_conditional_guards_cannot_supply_checks"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+        "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+        "ids": [
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_both_original_custodies_and_full_freeze_signature_bind_before_open",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_actual_material_and_claim_precede_experience_signature",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_dataset_requires_original_experience_readback_and_exact_signature_bytes",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_completed_readback_rechecks_physical_owners_and_original_windows",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_completed_reader_has_exact_original_owner_callers_and_fixed_system_clock",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_material_owner_cannot_acquire_ambient_trust_training_or_root_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_source_peer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+        "ids": [
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_only_actual_material_edges_open_and_host_handoff_remains_closed",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_explicit_uid_stream_has_only_the_actual_production_callers",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_decoder_cannot_detach_signatures_provenance_batch_or_frozen_scope",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_peer_is_original_finite_and_exhausted_on_uncertainty",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_final_material_authentication_follows_original_peer_io",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_source_purpose_only_reads_original_completed_pair"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_continuation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+        "sha": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+        "ids": [
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_actual_continuation_edges_and_private_receivers_remain_exact",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_begin_takes_the_original_channel_once_and_never_resets_its_budget",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_pages_require_complete_canonical_body_and_monotone_original_transfer",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_execute_keeps_original_custody_cancellation_and_native_before_after",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_finish_reads_actual_e_then_last_native_model_before_fresh_release",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_service_cancellation_and_eof_cannot_resume_a_partial_operation",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_candidate_closes_actual_prefix_inside_the_same_model_operation",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_completed_and_provisional_proofs_cannot_be_cloned_exported_or_reconnected"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_root_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "sha": "352e30aa82a15ac0d88c9f5aee399638224f83de",
+        "ids": [
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_root_projection_requires_the_original_complete_model_and_full_context",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_every_non_model_receipt_keeps_one_original_role_signature",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_dispatch_rereads_dte_then_original_model_and_preserves_unknown",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_initial_model_stream_and_final_root_io_cannot_be_replaced_by_future_dtos",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_cold_model_pin_is_readonly_and_wire_none_preserves_prior_shape",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_model_record_codec_reconstructs_only_original_proposal"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_selection_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "sha": "fee138b3322c52d4df9639a116eb67b0f210dc36",
+        "ids": [
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_each_original_owner_and_fresh_signature_guard_is_effective",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_actual_model_execution_and_publication_edges_are_exact",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_new_selector_owner_and_root_route_remain_closed",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_sources_cannot_replace_source_bound_model_or_original_execution_witness",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selector_cannot_execute_model_holdout_publication_or_provision_custody"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_next_use_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "sha": "15d633eae74b889609d07844732bdda7f50b7c6d",
+        "ids": [
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_fresh_context_pins_actual_selection_and_both_original_signatures",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_attestation_and_readback_use_live_original_owners_without_running_c",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_response_requires_actual_retained_c_with_new_run_and_original_roles",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_no_update_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "sha": "08a785b5c94374e3d2f5f6fb45d5535095481633",
+        "ids": [
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_initial_fixed_context_and_original_deadlines_precede_all_late_binding",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_recovery_and_attestation_use_real_owner_reads_and_final_clock",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_only_original_unresolved_publication_remains_pending",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_on_policy_evaluation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "sha": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+        "ids": [
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_exact_original_paired_and_closed_cohort_edges",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_complete_records_preserve_shared_and_paired_guards",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_each_actual_producer_guard_cannot_move_to_a_comment",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_original_authority_and_outcome_substitutions_are_rejected",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_freeze_guards_stay_inside_the_one_original_generic_function",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_shared_release_and_cross_mode_current_are_explicitly_closed"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_paired_product_source_closure",
+        "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+        "sha": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+        "ids": [
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_complete_records_and_actual_composed_callers_are_installed",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_frozen_protocol_and_temporal_parameters_cannot_drift",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_run_source_outcome_and_principal_identities_cannot_merge",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_single_original_consumption_and_signed_qualification_path_remain",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_domains_are_actual_literals_in_the_original_functions",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_shared_function_code_is_preserved",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_positive_root_suffix_source_closure",
+        "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+        "sha": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+        "ids": [
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_fixed_model_prefix_cannot_absorb_unsigned_suffix_or_another_model",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_verifier_uses_original_evidence_scope_and_all_three_context_pins",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_published_read_source_closure",
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "sha": "a80bca9a11c81a4d9057086acbb4689ebde45520",
+        "ids": [
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_mode_frozen_scope_cut_and_complete_original_signatures_are_bound",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_no_historical_read_replaces_remote_io_or_fresh_window_validation",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_actual_task_source_selection_and_c_completion_precede_wire_response",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_private_wire_is_bounded_mode_exact_and_has_no_writer_or_signer_factory"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_qualification_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "sha": "c5a25db4eea151de3d158d123db0d15d583ad597",
+        "ids": [
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_each_original_custody_effect_and_fresh_clock_guard_is_effective",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_recovery_and_readback_cannot_acquire_or_repeat_effects",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_complete_original_signatures_context_and_decision_remain_bound",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_only_concrete_original_sources_and_internal_time_can_satisfy_readback",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_actual_fixture_uses_original_owner_and_native_inventory_preserves_limits"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_readonly_ready_source_closure",
+        "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+        "sha": "d11dab3c405e88d0c34e5351003802ed5efa8796",
+        "ids": [
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_first_actual_response_cannot_restart_sequence_or_initial_deadline",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_unknown_read_and_changed_complete_signature_permanently_consume_channel",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_retention_admission_source_closure",
+        "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+        "sha": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2",
+        "ids": [
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_complete_material_records_validate_without_execution_authority",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_acceptance_cannot_skip_actual_members_signatures_or_the_complete_retention_set",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_all_verified_members_govern_admission_without_rewriting_primary_observation",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_model_and_selector_require_the_same_verified_acceptance_gate"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_selector_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "sha": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9",
+        "ids": [
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_fresh_context_uses_opaque_actual_training_and_full_original_binding",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_response_verifies_exact_extension_baseline_and_independent_original_roles",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_source_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+        "sha": "648601003eb46a404940fbf498d799263040a3b6",
+        "ids": [
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_exact_original_callers_and_private_operations_remain_closed",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_actual_before_after_full_material_and_same_custody_are_required",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_native_tail_and_fresh_original_windows_precede_once_only_finish",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_cancellation_drop_and_failed_proof_fence_original_custody",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_candidate_and_admission_use_this_borrowed_operation_proof",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_independent_capture_and_native_precommit_withdrawal_checks_remain",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_operation_cannot_gain_clone_deserialization_effects_or_reset",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_generic_lane_markers_cannot_be_transplanted_outside_function"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "sha": "c50d3afdcf55df291298cf18775a5278843ff94e",
+        "ids": [
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_dataset_attenuation_keeps_role_full_context_peer_and_original_window",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_source_connection_retains_initial_peer_and_never_restarts_lifetime",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_actual_dataset_and_request_are_checked_before_custody_is_consumed",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_uninitialized_or_missing_material_never_claims_a_training_status",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_writer_lane_rereads_actual_source_then_checks_time_before_either_writer",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_ready_is_retained_before_work_and_failed_initialization_never_rearms",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_original_captured_native_and_generator_enter_the_same_stage"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "sha": "1a712f18b636154edce08fb07e30148dbfe8b6be",
+        "ids": [
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_external_original_process_and_existing_transport_limits_remain_required",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_client_consumes_once_and_pins_complete_original_response",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_original_captured_stage_is_required_before_any_command",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_command_calls_actual_execution_and_actual_readback_without_replay",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_recovery_preserves_same_job_and_original_validity_window",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_completed_wire_is_bounded_canonical_exact_dataset_extension",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_existing_evidence_protocol_reads_real_original_stage_each_time",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_peer_liveness_io_precedes_final_signature_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_initial_connection_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "sha": "09f83ec2a0fa55b07918f11309f2ec14c6cee747",
+        "ids": [
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_actual_dataset_moves_the_same_transport_after_final_peer_io_and_authentication",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_opaque_material_keeps_original_freeze_binding_and_full_signatures",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_late_binding_accepts_only_the_sealed_original_material_cut"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+        "ids": [
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_training_receipt_ports_have_only_the_original_bootstrap_and_stage_callers",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_pair_and_model_lane_keep_exact_native_callers",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_signer_enrollment_exact_dataset_and_scope_precede_signature_custody",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_native_completed_read_precedes_claim_and_no_caller_payload_is_signed",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_readback_requires_original_time_exact_payload_identity_and_both_current_heads"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_snapshot_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+        "ids": [
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_full_structure_retained_receipt_and_original_completion_are_all_required",
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_checks_cannot_hide_in_dead_blocks_or_start_work",
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_only_original_snapshot_and_source_gate_read_stage_without_host_registration"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_source_capture_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "sha": "835953d9e8b670d6713a6f2728e716182acc542d",
+        "ids": [
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_live_material_and_full_original_signatures_cannot_be_detached",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_source_domain_does_not_replace_frozen_data_or_original_missing",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_existing_native_and_model_lanes_keep_live_checks_before_return"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_positive_circuit_next_use_source_closure",
+        "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+        "sha": "d3a91ad569289d7d33371e44f8d5fc54953ecd8b",
+        "ids": [
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_exact_typed_edges_and_unregistered_callers_are_rejected",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_complete_positive_protected_records_validate",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_security_guards_cannot_be_removed_from_their_actual_function",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_new_adapters_cannot_gain_keys_writers_task_execution_or_reconnect",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_positive_purposes_are_real_code_not_comment_evidence",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_positive_c_signature_cannot_outlive_original_s_or_model_windows",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_original_no_update_hard_profiles_are_preserved"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_positive_model_version_source_closure",
+        "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+        "sha": "407b721f88d864fb80fd39810469710a57a5ec4d",
+        "ids": [
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_complete_positive_owner_records_validate",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_each_actual_function_keeps_a_security_guard_in_code",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_generic_publication_and_cold_recovery_keep_actual_order",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_generic_publication_orders_remain_inside_the_actual_function",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_version_releases_mutex_before_original_model_root_and_native_io",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_owner_provisioning_reconnect_and_public_capability_mutations_fail",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_version_and_selector_purposes_remain_distinct_real_constants"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_dataset_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+        "sha": "75f50ba377a9e67154ee5043cd20c6fdeca0ce67",
+        "ids": [
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_original_current_and_freeze_cannot_be_replaced_by_cached_material",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_clock_and_expiry_guards_cannot_be_exposed_or_disabled",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_target_requires_independent_authenticated_exact_outcome",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_material_cannot_acquire_signing_training_or_publication_effects"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_model_proposal_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "sha": "1de53089884500596231d0b92fd46e56ba4469b8",
+        "ids": [
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_original_training_header_and_receipt_bindings_cannot_be_removed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_original_manifests_and_qualified_evaluation_are_required",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_final_readback_cannot_skip_current_witness",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_owner_creation_cannot_skip_original_trainer",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_readback_preserves_original_bytes_and_timestamp",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_training_plan_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+        "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+        "ids": [
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_scope_and_material_entrypoints_keep_exact_callers",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_rejection_guards_cannot_be_disabled_by_a_false_condition",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_canonical_rule_keeps_baseline_row_and_nonzero_optimizer",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_dataset_cut_cannot_omit_original_scope_or_loaded_baseline",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_training_requires_original_prefix_one_receipt_and_actual_bytes",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_scope_checks_cannot_move_after_material_acceptance_or_hide"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_resident_candidate_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "sha": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+        "ids": [
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_both_factories_consume_original_values_under_the_same_root_registration",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_resident_root_source_closure",
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "sha": "577398a11b3568d52fecee3f9453e31acd40fa51",
+        "ids": [
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_only_actual_strict_cas_can_mint_the_nonrecoverable_token",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_original_grant_registry_revocation_and_local_only_fence_are_mandatory",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_retained_publication_source_closure",
+        "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "sha": "fc8207a8cb6d4bd04fb6587c881560437800f966",
+        "ids": [
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_version_final_artifact_read_follows_control_and_source_io",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_version_exports_remain_inside_the_linux_module_boundary",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_context_requires_actual_opaque_training_and_strict_no_update",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_training_is_live_and_complete_original_signature_never_renews",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_prepare_keeps_original_selection_and_actual_no_update_operation",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_publish_consumes_separate_exact_final_use_and_checks_original_current",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_distinct_c_uses_actual_task_content_not_nonce_or_new_run_alone",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_cold_unknown_only_reads_exact_original_files_and_does_not_prepare",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_dropped_queued_work_cannot_send_a_new_publication",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_no_resident_grant_candidate_upgrade_or_local_signer_shortcut"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_retained_version_issuer_source_closure",
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+        "ids": [
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_original_issuer_has_only_actual_version_callers",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_publication_and_c_runtime_keep_the_original_verifier_tail",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_admin_source_closure",
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "ids": [
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_slow_check_cannot_drop_its_post_check_deadline",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_original_registry_cannot_drop_its_locked_deadline",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_two_cas_stages_cannot_skip_the_original_context_recheck",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_consumer_confirmation_must_observe_both_original_owners",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_strict_own_signature_cannot_be_replaced_by_ordinary_verify",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_valid_signed_artifact_cannot_skip_existing_full_lease_binding",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_retained_read_only_verification_cannot_authorize_mutation",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_root_preparation_cannot_unlock_shared_original_file_custody",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_writer_custody_cannot_replace_original_verification",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_retirement_cannot_release_consumers_before_fencing",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_admin_activation_cannot_precede_original_ready_callback"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_learning_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+        "ids": [
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_registration_cannot_omit_original_authority_or_postchecks",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_recovery_is_open_only_and_uses_original_owner",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_profile_requires_canonical_empty_initial_and_original_writer",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_handoff_requires_original_root_and_exact_two_rights",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_client_requires_cross_lane_scope_and_original_current",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_unassembled_stage_owners_are_refused_before_runtime_side_effects",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_original_source_scope_requires_registered_membership",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_original_root_source_join_cannot_be_dropped_or_downgraded",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_pending_guard_must_execute_at_top_level",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_registered_learning_cannot_be_silently_dropped_by_retained_serve",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_learning_scope_source_closure",
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+        "ids": [
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_scoped_product_caller_sets_remain_exact",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_evidence_uid_constructor_distinguishes_other_stream_types",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_profile_requires_original_scope_rule_and_matching_schema",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_transport_cannot_downgrade_or_accept_another_profile",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_restored_training_and_checkpoint_are_checked_before_cas",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_root_handoff_retains_scope_through_the_worker_choice",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_frozen_component_boundary_and_rule_cannot_be_widened"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_training_no_update_source_closure",
+        "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+        "sha": "0cbecba3be2293586637938a5bd3ddd825023c68",
+        "ids": [
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_boundary_only_admits_original_receipt_and_material_owners",
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_requires_original_completed_bytes_scope_and_current_witness",
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_no_update_keeps_frozen_rule_and_generator_selector_separation"
+        ],
+        "load_tests": false
+      }
+    ]
+  },
+  "after": {
+    "ref": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "modules": 62,
+    "methods": 443,
+    "table": [
+      {
+        "module": "test_artifact_publication_readback_source_closure",
+        "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "sha": "3a0ebd3b5359ed95c8ab4a70e913919b8b77b891",
+        "ids": [
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_service_is_the_only_host_caller_and_no_publication_cap_is_created",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_exact_started_operation_and_scan_bound_are_not_optional",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_original_checkpoint_and_current_are_physically_read_twice",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_original_signature_window_is_checked_after_all_io",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_service_never_rebinds_original_storage_or_withdrawal_scope",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_readback_cannot_resume_write_repair_or_gain_authority",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_each_actual_receipt_scan_is_bounded_before_metadata_and_decode",
+          "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_seven_real_artifact_cases_are_package_qualified"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_cell_generation_physical_current_source_closure",
+        "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+        "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+        "ids": [
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_physical_current_has_an_exact_closed_caller_set",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_full_original_descriptor_replay_and_same_retained_state_are_required",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_both_witness_observations_and_cursor_restoration_precede_success",
+          "test_cell_generation_physical_current_source_closure.CellGenerationPhysicalCurrentClosureTests.test_any_failure_fences_recovery_even_after_original_bytes_are_restored"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_cell_learning_evaluation_source_closure",
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "sha": "5e700c20d3744562bcbf224605bbc6a2743fec69",
+        "ids": [
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_learning_profile_freeze_keeps_nonzero_and_signed_binding",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_profile_is_required_before_training_and_in_checkpoint_identity",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_checkpoint_codec_preserves_request_profile_without_legacy_inference",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_bridge_binds_full_bundles_original_training_and_profile",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_bridge_revalidates_signed_result_before_mapping_or_recording",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_original_readback_refreshes_clock_and_verifies_both_signed_roles",
+          "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_fresh_clock_cannot_move_before_either_original_owner_wait"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_circuit_selection_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+        "sha": "904bb3b8bce261590fc86c26bab5ffd54cbd84db",
+        "ids": [
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_original_selector_authority_entries_stay_closed",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_selection_reads_the_original_sealed_publication",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_original_training_pin_and_physical_readbacks_cannot_be_skipped",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_completed_readback_keeps_physical_brackets_and_permanent_failure_fence",
+          "test_circuit_selection_owner_source_closure.OriginalCircuitSelectionOwnerSourceClosureTests.test_missing_pending_deadline_and_role_separation_remain_distinct"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_generation_learning_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "sha": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39",
+        "ids": [
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_original_evidence_and_new_reader_caller_sets_remain_closed",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_predecessor_replay_cannot_skip_history_or_receipt_binding",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_stage_read_keeps_original_observation_current_role_and_scope",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_post_attestation_actor_check_cannot_be_hidden_or_moved",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_actor_profiles_cannot_substitute_a_different_read",
+          "test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_learning_checkpoint_source_closure",
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "ids": [
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_original_typed_callers_cannot_be_omitted_or_extended",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_original_writer_checks_cannot_be_borrowed_from_other_methods",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_service_requires_same_agent_peer_and_both_lifetime_checks",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_request_binding_and_original_checkpoint_dispatch_are_required",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_scoped_profile_and_material_validation_cannot_be_omitted",
+          "test_learning_checkpoint_source_closure.LearningCheckpointSourceClosureTests.test_unvalidated_reply_cannot_restore_the_consumed_connection"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_learning_evaluation_recovery_source_closure",
+        "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "sha": "8d607e733cf950165475cd80b9e3a080b13ed949",
+        "ids": [
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_original_recovery_callers_remain_closed",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_cell_profile_journals_and_exact_plan_precede_execution",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_authentication_cannot_move_after_private_execution_decode",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_execution_context_keeps_canonical_original_owner_key_before_claim",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication",
+          "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_cannot_skip_checks_in_dead_blocks"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_artifact_head_source_closure",
+        "path": "qa/b4-no-bypass/test_original_artifact_head_source_closure.py",
+        "sha": "eeaf7a43ec7d5e90560ca5489bc281cce7eaf881",
+        "ids": [
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_edges_and_unregistered_native_entrances_remain_exact",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_cold_protocol_and_low_level_effects",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_fresh_writer_continuation",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_physical_original_registry",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_key_and_saved_signature",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_command_and_unknown_effect",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_process_pinned_source",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_registered_context_and_complete_claims",
+          "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_canonical_purpose_and_bytes"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_material_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "sha": "1bc8feef36a00badf2606f22f804001f6c4f11c6",
+        "ids": [
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_begin_and_finish_require_actual_owner_and_complete_current_tail",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_transfer_nonce_and_next_independent_begin_cannot_reuse_current",
+          "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_cancelled_or_unfinished_transfer_consumes_the_original_channel"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+        "sha": "cfd8f724d44bc762c6e47ffe4380ab51485a2374",
+        "ids": [
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_only_concrete_same_operation_callers_can_borrow_or_consume",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_full_original_prefix_brackets_work_and_failure_keeps_the_lane_fenced",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_private_proof_cannot_be_cloned_forged_deserialized_or_rearmed_on_drop",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_root_consumes_only_after_actual_root_io_and_independent_reads_start_again",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_model_finish_precedes_last_actual_model_current_and_fresh_authentication",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_actual_checkpoint_clock_revalidates_all_evidence_before_any_next_stage",
+          "test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_ineligible_and_uncertain_effects_cannot_become_model_success"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_candidate_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "sha": "f3430124c1aca3cbcfb6521daf9d87543cac6675",
+        "ids": [
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+          "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_circuit_observer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "sha": "58b6a0774f868c9cb5f19db4bf5cb4d5b0001a40",
+        "ids": [
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_configuration_and_physical_read_guards_cannot_be_dead_branches",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_new_attestation_deadline_and_readback_window_are_distinct",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_failed_post_commit_observation_fences_both_effect_and_readback",
+          "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_no_key_generation_execution_or_unbound_stage_assembly_is_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_host_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "sha": "74a8fb799883b344a9f2fc9d271b696e6d2210ab",
+        "ids": [
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_original_brand_and_all_current_reads_precede_final_full_authentication",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_initial_original_connection_cannot_renew_or_promote_recovery",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_wrong_context_queued_cancellation_and_completed_regression_never_rearm",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+          "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+        "sha": "d35214f712441dda4caeacef3cfe0decbe231582",
+        "ids": [
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_private_original_operation_edges_have_exact_typed_callers",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_actual_before_after_full_context_and_same_connection_cannot_be_removed",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_whole_completion_and_export_finish_original_training_before_final_authentication",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_consuming_factory_and_independent_public_paths_cannot_share_claimed_observations",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_staged_material_keeps_original_channel_full_body_clock_and_cancellation",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_unfinished_material_cannot_restore_client_or_publish_a_transferable_proof",
+          "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_native_inventory_keeps_original_panels_and_adds_only_explicit_operation_mechanisms"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_panel_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "sha": "83ebe8fdc7b8646c7e98301e8d89100552181bd6",
+        "ids": [
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_exact_original_panel_edges_remain_closed",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_registration_rejects_empty_duplicate_and_rebound_original_tasks",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_each_member_retains_full_original_training_roles_and_config",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_both_physical_cells_and_actual_completed_qualification_are_read",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_primary_signature_must_name_the_complete_actual_nonempty_panel",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_each_member_consumes_exact_original_cohort_custody",
+          "test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_original_cohort_current_brackets_all_members_before_final_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_provider_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "sha": "3b446cfc03d872049c492a2ec6fdb11cdebaf5e3",
+        "ids": [
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_exact_cohort_capture_provider_and_original_policy_edges",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_complete_preregistered_rule_binds_units_time_and_all_original_runs",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_candidate_training_and_full_signature_are_revalidated",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_actual_independent_outcomes_join_original_execution_without_completion_labels",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_all_physical_reads_precede_fresh_original_windows_and_sticky_fence",
+          "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_only_the_original_consumed_holdout_releases_rows_once_without_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_receipt_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "sha": "c1b35606604c81a4edf59ec41d04ae2839a02957",
+        "ids": [
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_original_read_edges_have_exact_typed_registered_callers",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_receipt_ports_and_stage_assembly_remain_closed",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_exact_training_scope_and_enrolled_key_precede_journal_custody",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_execution_and_sealed_qualification_bind_full_recovered_history",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_current_original_sources_and_durable_pending_precede_exact_signature",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_actual_time_full_principals_and_controller_separation_remain_required",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_signature_readback_revalidates_sources_and_witness_before_ack",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_original_execution_adapter_rejects_writes_and_substituted_namespace",
+          "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_owner_cannot_generate_keys_replace_trust_or_assemble_stage_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_evaluation_transfer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py",
+        "sha": "608d857f599f5905a9f660fcdaae333175a66cb0",
+        "ids": [
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_all_e_transfer_records_validate",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_new_private_edges_have_exact_typed_callers",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_guards_cannot_move_to_comments_or_out_of_function",
+          "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_private_observations_cannot_gain_clone_decode_public_state_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_execution_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+        "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+        "ids": [
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_existing_owner_authentication_precedes_private_evidence_and_final_time",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_original_signature_window_and_principal_are_reverified",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_cell_adapter_keeps_actual_journals_and_exact_product_plan",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_readback_cannot_acquire_execution_signing_or_mutation_capabilities",
+          "test_original_execution_evidence_source_closure.OriginalExecutionEvidenceClosureTests.test_only_actual_cell_adapter_calls_product_evidence_reader"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_execution_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+        "ids": [
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_every_physical_mutation_recovery_and_fence_guard_is_effective",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_original_constructors_are_closed_and_selector_gets_only_readback",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_recovery_and_all_readback_functions_have_no_effect_calls",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_selector_cannot_reopen_raw_parts_or_initialize_witnesses",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_no_owner_can_extract_raw_custody_or_provision_signing_authority",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_positive_fixture_uses_production_owner_and_retains_custody_limits",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_current_checks_full_history_cursor_and_sticky_poison",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_open_and_cas_preserve_bounds_lock_and_physical_effect_order",
+          "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_file_witness_readback_cannot_reopen_write_clear_poison_or_return_cache"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_holdout_current_source_closure",
+        "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+        "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+        "ids": [
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_each_original_physical_read_write_and_fence_guard_is_effective",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_cache_is_advanced_only_after_the_actual_post_write_read",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_same_handle_read_has_no_reopen_unlock_or_effect_fallback",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_recovery_retains_original_minimum_and_byte_record_bounds",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_no_new_public_port_and_known_non_effect_errors_are_retained",
+          "test_original_holdout_current_source_closure.OriginalHoldoutCurrentSourceClosureTests.test_native_group_uses_actual_eval_package_and_registered_file_owner_cases"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_learning_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+        "ids": [
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_original_sealed_request_cannot_be_replaced_by_caller_bytes",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_claim_and_witness_must_precede_signing_and_saved_readback",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_recovered_evidence_must_match_original_key_actor_and_identity",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_constructor_checks_registered_signer_without_probe_signature",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_registered_controller_revocation_and_role_are_required",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_feature_dispatch_must_receive_original_durable_cell_admission",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_native_control_fences_unknown_execution_and_persists_before_return",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_source_pending_and_readback_cannot_become_new_work",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_observer_views_cannot_gain_original_writer_capabilities",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_published_task_keeps_original_profile_and_distinct_successor",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_historical_read_never_reactivates_or_repairs_previous_owner",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_live_original_owner_current_brackets_physical_read_with_witness",
+          "test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_live_execution_current_replays_original_locked_bytes"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+        "ids": [
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_retained_evidence_getter_never_permits_new_struct_construction",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_private_origin_shared_admission_and_recovery_cannot_be_rearmed",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_fixed_roles_exact_context_and_no_uploaded_signing_body",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_actual_stage_sources_precede_signatures_and_dataset_never_creates_experience",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_live_readback_full_signatures_and_internal_clock_prevent_renewal",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_guards_cannot_move_into_comments_helpers_or_optional_branches",
+          "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_peer_liveness_io_precedes_final_signature_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_evidence_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+        "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+        "ids": [
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_consuming_custody_factory_and_uninstalled_service_stay_closed",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_exact_readback_callers_reject_an_additional_product_consumer",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_fixed_peer_limits_and_failed_exchange_cannot_be_bypassed",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_original_pair_derives_dataset_cut_with_no_network_under_ledger_lock",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_each_request_correlation_and_monotonic_id_precede_original_response",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_fresh_clock_and_registered_original_signer_follow_actual_reads",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_wire_retains_every_original_attestation_field_and_window",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_service_cannot_sign_execute_cache_or_acquire_replacement_capabilities",
+          "test_original_material_evidence_source_closure.OriginalMaterialEvidenceClosureTests.test_comments_nested_helpers_and_conditional_guards_cannot_supply_checks"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+        "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+        "ids": [
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_both_original_custodies_and_full_freeze_signature_bind_before_open",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_actual_material_and_claim_precede_experience_signature",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_dataset_requires_original_experience_readback_and_exact_signature_bytes",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_completed_readback_rechecks_physical_owners_and_original_windows",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_completed_reader_has_exact_original_owner_callers_and_fixed_system_clock",
+          "test_original_material_owner_source_closure.OriginalMaterialOwnerClosureTests.test_material_owner_cannot_acquire_ambient_trust_training_or_root_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_material_source_peer_source_closure",
+        "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+        "ids": [
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_only_actual_material_edges_open_and_host_handoff_remains_closed",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_explicit_uid_stream_has_only_the_actual_production_callers",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_decoder_cannot_detach_signatures_provenance_batch_or_frozen_scope",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_peer_is_original_finite_and_exhausted_on_uncertainty",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_final_material_authentication_follows_original_peer_io",
+          "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_source_purpose_only_reads_original_completed_pair"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_continuation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+        "sha": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+        "ids": [
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_actual_continuation_edges_and_private_receivers_remain_exact",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_begin_takes_the_original_channel_once_and_never_resets_its_budget",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_pages_require_complete_canonical_body_and_monotone_original_transfer",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_execute_keeps_original_custody_cancellation_and_native_before_after",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_finish_reads_actual_e_then_last_native_model_before_fresh_release",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_service_cancellation_and_eof_cannot_resume_a_partial_operation",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_candidate_closes_actual_prefix_inside_the_same_model_operation",
+          "test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_completed_and_provisional_proofs_cannot_be_cloned_exported_or_reconnected"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_root_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "sha": "352e30aa82a15ac0d88c9f5aee399638224f83de",
+        "ids": [
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_root_projection_requires_the_original_complete_model_and_full_context",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_every_non_model_receipt_keeps_one_original_role_signature",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_dispatch_rereads_dte_then_original_model_and_preserves_unknown",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_initial_model_stream_and_final_root_io_cannot_be_replaced_by_future_dtos",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_cold_model_pin_is_readonly_and_wire_none_preserves_prior_shape",
+          "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_model_record_codec_reconstructs_only_original_proposal"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_model_selection_source_closure",
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "sha": "fee138b3322c52d4df9639a116eb67b0f210dc36",
+        "ids": [
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_each_original_owner_and_fresh_signature_guard_is_effective",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_actual_model_execution_and_publication_edges_are_exact",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_new_selector_owner_and_root_route_remain_closed",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_sources_cannot_replace_source_bound_model_or_original_execution_witness",
+          "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selector_cannot_execute_model_holdout_publication_or_provision_custody"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_next_use_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "sha": "15d633eae74b889609d07844732bdda7f50b7c6d",
+        "ids": [
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_fresh_context_pins_actual_selection_and_both_original_signatures",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_attestation_and_readback_use_live_original_owners_without_running_c",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_response_requires_actual_retained_c_with_new_run_and_original_roles",
+          "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_no_update_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "sha": "08a785b5c94374e3d2f5f6fb45d5535095481633",
+        "ids": [
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_initial_fixed_context_and_original_deadlines_precede_all_late_binding",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_recovery_and_attestation_use_real_owner_reads_and_final_clock",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_only_original_unresolved_publication_remains_pending",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+          "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_on_policy_evaluation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "sha": "decb1e0c4386191cee405cc44cf7259d38bc9382",
+        "ids": [
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_exact_original_paired_and_closed_cohort_edges",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_complete_records_preserve_shared_and_paired_guards",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_each_actual_producer_guard_cannot_move_to_a_comment",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_original_authority_and_outcome_substitutions_are_rejected",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_freeze_guards_stay_inside_the_one_original_generic_function",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+          "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_shared_release_and_cross_mode_current_are_explicitly_closed"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_paired_product_source_closure",
+        "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+        "sha": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+        "ids": [
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_complete_records_and_actual_composed_callers_are_installed",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_frozen_protocol_and_temporal_parameters_cannot_drift",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_run_source_outcome_and_principal_identities_cannot_merge",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_single_original_consumption_and_signed_qualification_path_remain",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_domains_are_actual_literals_in_the_original_functions",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_original_shared_function_code_is_preserved",
+          "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_panel_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
+        "sha": "05c2d7e1ab078176f3f45cd9a17cbf593f50a693",
+        "ids": [
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_v2_metadata_cannot_become_public_custody_or_deserialized_authority",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_material_policy_precedes_both_original_journals_and_each_current_read",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_training_v2_retains_policy_while_v1_has_no_implicit_upgrade",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_actual_dataset_and_queued_writer_require_the_retained_full_policy",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_policy_calls_cannot_move_under_an_extra_condition",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_no_policy_bridge_can_acquire_keys_peers_or_cross_host_arc_identity"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_positive_root_suffix_source_closure",
+        "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+        "sha": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+        "ids": [
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_fixed_model_prefix_cannot_absorb_unsigned_suffix_or_another_model",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_verifier_uses_original_evidence_scope_and_all_three_context_pins",
+          "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_pre_b_policy_source_closure",
+        "path": "qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py",
+        "sha": "8a60ac66ce60d75cc2fe8f2bbdd8c69bac298a12",
+        "ids": [
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_records_are_preserved_as_a_multiset",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_original_v2_callers_are_closed",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_actual_policy_guards_cannot_move_to_comments",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_policy_domains_and_json_fields_are_actual_syntax",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_no_legacy_upgrade_or_post_b_policy_substitution",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_metadata_never_creates_original_owner_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_product_policy_v2_source_closure",
+        "path": "qa/b4-no-bypass/test_original_product_policy_v2_source_closure.py",
+        "sha": "e14e4c5837cd99da7f60b4ac652e90fed47ad336",
+        "ids": [
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_records_and_exact_policy_edges_are_installed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_pre_b_policy_and_original_normalization_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_raw_comparison_and_original_seal_bindings_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_strict_bounded_codec_and_canonical_full_values_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_original_domains_and_limits_are_actual_code",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_only_the_two_original_freezers_call_the_receipt_seal_helper",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_policy_metadata_cannot_mint_keys_or_runtime_authority"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_published_read_source_closure",
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "sha": "a80bca9a11c81a4d9057086acbb4689ebde45520",
+        "ids": [
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_mode_frozen_scope_cut_and_complete_original_signatures_are_bound",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_no_historical_read_replaces_remote_io_or_fresh_window_validation",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_actual_task_source_selection_and_c_completion_precede_wire_response",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+          "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_private_wire_is_bounded_mode_exact_and_has_no_writer_or_signer_factory"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_qualification_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "sha": "c5a25db4eea151de3d158d123db0d15d583ad597",
+        "ids": [
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_each_original_custody_effect_and_fresh_clock_guard_is_effective",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_recovery_and_readback_cannot_acquire_or_repeat_effects",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_complete_original_signatures_context_and_decision_remain_bound",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_only_concrete_original_sources_and_internal_time_can_satisfy_readback",
+          "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_actual_fixture_uses_original_owner_and_native_inventory_preserves_limits"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_readonly_ready_source_closure",
+        "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+        "sha": "d11dab3c405e88d0c34e5351003802ed5efa8796",
+        "ids": [
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_first_actual_response_cannot_restart_sequence_or_initial_deadline",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_unknown_read_and_changed_complete_signature_permanently_consume_channel",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose",
+          "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_retention_admission_source_closure",
+        "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+        "sha": "37824c19349b2ae43ccb508f927c7a63890af896",
+        "ids": [
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_complete_material_records_validate_without_execution_authority",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_acceptance_cannot_skip_actual_members_signatures_or_the_complete_retention_set",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_all_verified_members_govern_admission_without_rewriting_primary_observation",
+          "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_model_and_selector_require_the_same_verified_acceptance_gate"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_selector_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "sha": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9",
+        "ids": [
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_fresh_context_uses_opaque_actual_training_and_full_original_binding",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_response_verifies_exact_extension_baseline_and_independent_original_roles",
+          "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_source_operation_source_closure",
+        "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+        "sha": "648601003eb46a404940fbf498d799263040a3b6",
+        "ids": [
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_exact_original_callers_and_private_operations_remain_closed",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_actual_before_after_full_material_and_same_custody_are_required",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_native_tail_and_fresh_original_windows_precede_once_only_finish",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_cancellation_drop_and_failed_proof_fence_original_custody",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_candidate_and_admission_use_this_borrowed_operation_proof",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_independent_capture_and_native_precommit_withdrawal_checks_remain",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_operation_cannot_gain_clone_deserialization_effects_or_reset",
+          "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_generic_lane_markers_cannot_be_transplanted_outside_function"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "sha": "c50d3afdcf55df291298cf18775a5278843ff94e",
+        "ids": [
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_dataset_attenuation_keeps_role_full_context_peer_and_original_window",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_source_connection_retains_initial_peer_and_never_restarts_lifetime",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_actual_dataset_and_request_are_checked_before_custody_is_consumed",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_uninitialized_or_missing_material_never_claims_a_training_status",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_writer_lane_rereads_actual_source_then_checks_time_before_either_writer",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_ready_is_retained_before_work_and_failed_initialization_never_rearms",
+          "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_original_captured_native_and_generator_enter_the_same_stage"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_command_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "sha": "1a712f18b636154edce08fb07e30148dbfe8b6be",
+        "ids": [
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_external_original_process_and_existing_transport_limits_remain_required",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_client_consumes_once_and_pins_complete_original_response",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_original_captured_stage_is_required_before_any_command",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_command_calls_actual_execution_and_actual_readback_without_replay",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_recovery_preserves_same_job_and_original_validity_window",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_completed_wire_is_bounded_canonical_exact_dataset_extension",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_existing_evidence_protocol_reads_real_original_stage_each_time",
+          "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_peer_liveness_io_precedes_final_signature_clock"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_initial_connection_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "sha": "09f83ec2a0fa55b07918f11309f2ec14c6cee747",
+        "ids": [
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_actual_dataset_moves_the_same_transport_after_final_peer_io_and_authentication",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_opaque_material_keeps_original_freeze_binding_and_full_signatures",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence",
+          "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_late_binding_accepts_only_the_sealed_original_material_cut"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_owner_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+        "ids": [
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_training_receipt_ports_have_only_the_original_bootstrap_and_stage_callers",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_pair_and_model_lane_keep_exact_native_callers",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_signer_enrollment_exact_dataset_and_scope_precede_signature_custody",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_native_completed_read_precedes_claim_and_no_caller_payload_is_signed",
+          "test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_readback_requires_original_time_exact_payload_identity_and_both_current_heads"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_snapshot_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+        "ids": [
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_full_structure_retained_receipt_and_original_completion_are_all_required",
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_checks_cannot_hide_in_dead_blocks_or_start_work",
+          "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_only_original_snapshot_and_source_gate_read_stage_without_host_registration"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_original_training_source_capture_source_closure",
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "sha": "835953d9e8b670d6713a6f2728e716182acc542d",
+        "ids": [
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_live_material_and_full_original_signatures_cannot_be_detached",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_source_domain_does_not_replace_frozen_data_or_original_missing",
+          "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_existing_native_and_model_lanes_keep_live_checks_before_return"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_positive_circuit_next_use_source_closure",
+        "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+        "sha": "d3a91ad569289d7d33371e44f8d5fc54953ecd8b",
+        "ids": [
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_exact_typed_edges_and_unregistered_callers_are_rejected",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_complete_positive_protected_records_validate",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_security_guards_cannot_be_removed_from_their_actual_function",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_new_adapters_cannot_gain_keys_writers_task_execution_or_reconnect",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_positive_purposes_are_real_code_not_comment_evidence",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_positive_c_signature_cannot_outlive_original_s_or_model_windows",
+          "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_original_no_update_hard_profiles_are_preserved"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_positive_model_version_source_closure",
+        "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+        "sha": "407b721f88d864fb80fd39810469710a57a5ec4d",
+        "ids": [
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_complete_positive_owner_records_validate",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_each_actual_function_keeps_a_security_guard_in_code",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_generic_publication_and_cold_recovery_keep_actual_order",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_generic_publication_orders_remain_inside_the_actual_function",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_version_releases_mutex_before_original_model_root_and_native_io",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_owner_provisioning_reconnect_and_public_capability_mutations_fail",
+          "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_version_and_selector_purposes_remain_distinct_real_constants"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_dataset_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+        "sha": "75f50ba377a9e67154ee5043cd20c6fdeca0ce67",
+        "ids": [
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_original_current_and_freeze_cannot_be_replaced_by_cached_material",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_clock_and_expiry_guards_cannot_be_exposed_or_disabled",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_target_requires_independent_authenticated_exact_outcome",
+          "test_q24_dataset_source_closure.Q24DatasetSourceClosureTests.test_material_cannot_acquire_signing_training_or_publication_effects"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_model_proposal_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "sha": "1de53089884500596231d0b92fd46e56ba4469b8",
+        "ids": [
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_original_training_header_and_receipt_bindings_cannot_be_removed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_original_manifests_and_qualified_evaluation_are_required",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_final_readback_cannot_skip_current_witness",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_owner_creation_cannot_skip_original_trainer",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_readback_preserves_original_bytes_and_timestamp",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+          "test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_q24_training_plan_source_closure",
+        "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+        "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+        "ids": [
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_scope_and_material_entrypoints_keep_exact_callers",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_rejection_guards_cannot_be_disabled_by_a_false_condition",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_canonical_rule_keeps_baseline_row_and_nonzero_optimizer",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_dataset_cut_cannot_omit_original_scope_or_loaded_baseline",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_training_requires_original_prefix_one_receipt_and_actual_bytes",
+          "test_q24_training_plan_source_closure.Q24TrainingPlanSourceClosureTests.test_scope_checks_cannot_move_after_material_acceptance_or_hide"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_resident_candidate_stage_source_closure",
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "sha": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+        "ids": [
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_both_factories_consume_original_values_under_the_same_root_registration",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+          "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_resident_root_source_closure",
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "sha": "577398a11b3568d52fecee3f9453e31acd40fa51",
+        "ids": [
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_only_actual_strict_cas_can_mint_the_nonrecoverable_token",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_original_grant_registry_revocation_and_local_only_fence_are_mandatory",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads",
+          "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_retained_publication_source_closure",
+        "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "sha": "fc8207a8cb6d4bd04fb6587c881560437800f966",
+        "ids": [
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_version_final_artifact_read_follows_control_and_source_io",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_version_exports_remain_inside_the_linux_module_boundary",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_context_requires_actual_opaque_training_and_strict_no_update",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_training_is_live_and_complete_original_signature_never_renews",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_prepare_keeps_original_selection_and_actual_no_update_operation",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_publish_consumes_separate_exact_final_use_and_checks_original_current",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_distinct_c_uses_actual_task_content_not_nonce_or_new_run_alone",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_cold_unknown_only_reads_exact_original_files_and_does_not_prepare",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_dropped_queued_work_cannot_send_a_new_publication",
+          "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_no_resident_grant_candidate_upgrade_or_local_signer_shortcut"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_retained_version_issuer_source_closure",
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+        "ids": [
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_original_issuer_has_only_actual_version_callers",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_publication_and_c_runtime_keep_the_original_verifier_tail",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+          "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_admin_source_closure",
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "ids": [
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_slow_check_cannot_drop_its_post_check_deadline",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_original_registry_cannot_drop_its_locked_deadline",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_two_cas_stages_cannot_skip_the_original_context_recheck",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_consumer_confirmation_must_observe_both_original_owners",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_strict_own_signature_cannot_be_replaced_by_ordinary_verify",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_valid_signed_artifact_cannot_skip_existing_full_lease_binding",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_retained_read_only_verification_cannot_authorize_mutation",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_root_preparation_cannot_unlock_shared_original_file_custody",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_writer_custody_cannot_replace_original_verification",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_retirement_cannot_release_consumers_before_fencing",
+          "test_root_admin_source_closure.RootAdminSourceClosureTests.test_admin_activation_cannot_precede_original_ready_callback"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_learning_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+        "ids": [
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_registration_cannot_omit_original_authority_or_postchecks",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_recovery_is_open_only_and_uses_original_owner",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_profile_requires_canonical_empty_initial_and_original_writer",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_handoff_requires_original_root_and_exact_two_rights",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_client_requires_cross_lane_scope_and_original_current",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_unassembled_stage_owners_are_refused_before_runtime_side_effects",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_original_source_scope_requires_registered_membership",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_original_root_source_join_cannot_be_dropped_or_downgraded",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_pending_guard_must_execute_at_top_level",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_registered_learning_cannot_be_silently_dropped_by_retained_serve",
+          "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_root_learning_scope_source_closure",
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+        "ids": [
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_scoped_product_caller_sets_remain_exact",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_evidence_uid_constructor_distinguishes_other_stream_types",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_profile_requires_original_scope_rule_and_matching_schema",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_transport_cannot_downgrade_or_accept_another_profile",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_restored_training_and_checkpoint_are_checked_before_cas",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_worker_checks_scope_before_authentication_and_progress",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_root_handoff_retains_scope_through_the_worker_choice",
+          "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_frozen_component_boundary_and_rule_cannot_be_widened"
+        ],
+        "load_tests": false
+      },
+      {
+        "module": "test_training_no_update_source_closure",
+        "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+        "sha": "0cbecba3be2293586637938a5bd3ddd825023c68",
+        "ids": [
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_boundary_only_admits_original_receipt_and_material_owners",
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_requires_original_completed_bytes_scope_and_current_witness",
+          "test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_no_update_keeps_frozen_rule_and_generator_selector_separation"
+        ],
+        "load_tests": false
+      }
+    ]
+  },
+  "original_423_exact_ids_preserved": true,
+  "all_original_static_ids_equal_actual_report": true,
+  "unchanged_original_module_blobs": 57,
+  "changed_original_module_blobs": [
+    {
+      "module": "test_original_on_policy_evaluation_source_closure",
+      "before": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+      "after": "decb1e0c4386191cee405cc44cf7259d38bc9382",
+      "method_ids_unchanged": true
+    },
+    {
+      "module": "test_original_retention_admission_source_closure",
+      "before": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2",
+      "after": "37824c19349b2ae43ccb508f927c7a63890af896",
+      "method_ids_unchanged": true
+    }
+  ],
+  "additions": [
+    {
+      "module": "test_original_panel_bootstrap_source_closure",
+      "path": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
+      "sha": "05c2d7e1ab078176f3f45cd9a17cbf593f50a693",
+      "ids": [
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_v2_metadata_cannot_become_public_custody_or_deserialized_authority",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_material_policy_precedes_both_original_journals_and_each_current_read",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_training_v2_retains_policy_while_v1_has_no_implicit_upgrade",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_actual_dataset_and_queued_writer_require_the_retained_full_policy",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_policy_calls_cannot_move_under_an_extra_condition",
+        "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_no_policy_bridge_can_acquire_keys_peers_or_cross_host_arc_identity"
+      ],
+      "load_tests": false
+    },
+    {
+      "module": "test_original_pre_b_policy_source_closure",
+      "path": "qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py",
+      "sha": "8a60ac66ce60d75cc2fe8f2bbdd8c69bac298a12",
+      "ids": [
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_records_are_preserved_as_a_multiset",
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_original_v2_callers_are_closed",
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_actual_policy_guards_cannot_move_to_comments",
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_policy_domains_and_json_fields_are_actual_syntax",
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_no_legacy_upgrade_or_post_b_policy_substitution",
+        "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_metadata_never_creates_original_owner_authority"
+      ],
+      "load_tests": false
+    },
+    {
+      "module": "test_original_product_policy_v2_source_closure",
+      "path": "qa/b4-no-bypass/test_original_product_policy_v2_source_closure.py",
+      "sha": "e14e4c5837cd99da7f60b4ac652e90fed47ad336",
+      "ids": [
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_records_and_exact_policy_edges_are_installed",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_pre_b_policy_and_original_normalization_cannot_be_removed",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_raw_comparison_and_original_seal_bindings_cannot_be_removed",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_strict_bounded_codec_and_canonical_full_values_cannot_be_removed",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_original_domains_and_limits_are_actual_code",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_only_the_two_original_freezers_call_the_receipt_seal_helper",
+        "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_policy_metadata_cannot_mint_keys_or_runtime_authority"
+      ],
+      "load_tests": false
+    }
+  ],
+  "no_load_tests_hooks": true,
+  "python_executed": false
+}

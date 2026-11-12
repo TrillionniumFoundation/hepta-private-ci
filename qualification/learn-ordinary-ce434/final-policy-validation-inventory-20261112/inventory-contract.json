@@ -1,0 +1,184 @@
+{
+  "schema": "hepta.final-policy-validation-inventory.delta.v1",
+  "source_basis": {
+    "commit": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "tree": "23bada5abc6754c73f1e681f476d0afe62e410cc"
+  },
+  "baseline": {
+    "commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17",
+    "actual_source_report_blob": "6efb2f5f44367fcff393011e7ee463ebf1238afd",
+    "actual_native_report_blob": "2cf7c33e6061041a898085ada79e4bb577a5bd54",
+    "outer_driver_blob": "c44de5c5a5d02de6f54912a7f0ff4591f3c5e6c2",
+    "original_request_blob": "3033475665b7bfa9c64799cb643df674db35e683",
+    "native_driver_blob": "22fd228a5e5f2bb829180628466788e43268ff36"
+  },
+  "source": {
+    "discovery_directory": "qa/b4-no-bypass",
+    "discovery_pattern": "test_*source_closure.py",
+    "old_modules": 59,
+    "old_methods": 423,
+    "new_modules": 62,
+    "new_methods": 443,
+    "added_modules": [
+      {
+        "module": "test_original_panel_bootstrap_source_closure",
+        "path": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
+        "sha": "05c2d7e1ab078176f3f45cd9a17cbf593f50a693",
+        "methods": 7,
+        "class": "OriginalPanelBootstrapClosureTests",
+        "ids": [
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_v2_metadata_cannot_become_public_custody_or_deserialized_authority",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_material_policy_precedes_both_original_journals_and_each_current_read",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_training_v2_retains_policy_while_v1_has_no_implicit_upgrade",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_actual_dataset_and_queued_writer_require_the_retained_full_policy",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_policy_calls_cannot_move_under_an_extra_condition",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_no_policy_bridge_can_acquire_keys_peers_or_cross_host_arc_identity"
+        ]
+      },
+      {
+        "module": "test_original_pre_b_policy_source_closure",
+        "path": "qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py",
+        "sha": "8a60ac66ce60d75cc2fe8f2bbdd8c69bac298a12",
+        "methods": 6,
+        "class": "OriginalPreBPolicyClosureTests",
+        "ids": [
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_records_are_preserved_as_a_multiset",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_original_v2_callers_are_closed",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_actual_policy_guards_cannot_move_to_comments",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_policy_domains_and_json_fields_are_actual_syntax",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_no_legacy_upgrade_or_post_b_policy_substitution",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_metadata_never_creates_original_owner_authority"
+        ]
+      },
+      {
+        "module": "test_original_product_policy_v2_source_closure",
+        "path": "qa/b4-no-bypass/test_original_product_policy_v2_source_closure.py",
+        "sha": "e14e4c5837cd99da7f60b4ac652e90fed47ad336",
+        "methods": 7,
+        "class": "OriginalProductPolicyV2SourceClosureTests",
+        "ids": [
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_records_and_exact_policy_edges_are_installed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_pre_b_policy_and_original_normalization_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_raw_comparison_and_original_seal_bindings_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_strict_bounded_codec_and_canonical_full_values_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_original_domains_and_limits_are_actual_code",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_only_the_two_original_freezers_call_the_receipt_seal_helper",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_policy_metadata_cannot_mint_keys_or_runtime_authority"
+        ]
+      }
+    ],
+    "all_old_423_complete_ids_retained": true,
+    "original_modules_byte_identical": 57,
+    "changed_old_modules": [
+      {
+        "module": "test_original_on_policy_evaluation_source_closure",
+        "before": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+        "after": "decb1e0c4386191cee405cc44cf7259d38bc9382",
+        "method_ids_unchanged": true
+      },
+      {
+        "module": "test_original_retention_admission_source_closure",
+        "before": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2",
+        "after": "37824c19349b2ae43ccb508f927c7a63890af896",
+        "method_ids_unchanged": true
+      }
+    ],
+    "all_64_distinct_module_blobs_read_and_independent_git_hash_verified": true,
+    "distinct_module_bytes": 869206,
+    "static_original_class_method_ids_equal_actual_FDE_report": true,
+    "new_modules_have_no_load_tests_hook_or_dynamic_generation": true,
+    "actual_current_unittest_executed": false
+  },
+  "native": {
+    "inventory_path": "scripts/hepta_c_observer_coverage.py",
+    "before_blob": "672a90aef6c8791265891fd31b9b2cadb8660952",
+    "after_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+    "old_groups": 41,
+    "old_tuples": 190,
+    "new_groups": 43,
+    "new_tuples": 201,
+    "added_groups": [
+      {
+        "name": "original_pre_b_product_policy_v2",
+        "package": "codex-hepta-intelligence-eval",
+        "cases": [
+          "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+          "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+          "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+          "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+          "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+          "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+          "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact"
+        ]
+      },
+      {
+        "name": "original_pre_b_agentd_policy_v2",
+        "package": "codex-hepta-agentd",
+        "cases": [
+          "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical",
+          "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity",
+          "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity",
+          "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution"
+        ]
+      }
+    ],
+    "all_original_group_contents_and_relative_order_retained": true,
+    "all_original_190_package_name_tuples_and_relative_order_retained": true,
+    "original_metadata_evaluation_exactly_matches_actual_FDE_expected_owner_cases": true,
+    "exact_reverse_inventory_edits_recover_original_bytes": true,
+    "packages_unchanged": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-neuron"
+    ],
+    "actual_current_native_executed": false
+  },
+  "driver": {
+    "source_count_change": "423 -> 443",
+    "source_exact_id_precheck": "The draft asserts the complete 443 IDs before running; it adds no test case and preserves original Recording callbacks, report and failure/skip behavior.",
+    "source_draft_sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+    "native_inventory_edits": 6,
+    "outer_counter_updates": {
+      "source_methods_expected": 443,
+      "native_cases_expected": 201,
+      "native_groups_expected": 43
+    },
+    "original_native_timeout_seconds": 3600,
+    "original_test_threads": 2,
+    "original_retries": 0,
+    "no_tests": "fail",
+    "ordinary_acceptance_always_separate": true,
+    "final_source_sha_and_tree": "Root must bind the final unified candidate after runtime fixes; this inventory contract is not a run receipt.",
+    "final_native_driver": "Root must independently bind and validate actual target-v2 recovery and directory identity, keep original target-v1 recovery evidence unchanged, and hash the complete final driver. Supplied native changes are inventory-only.",
+    "old_native_190_hash_and_runner_bytes_remain_recorded": true,
+    "H_execution": false
+  },
+  "existing_case_scope": "Only already authored Source/Product/Agentd QA and eleven metadata mechanisms are installed. No new validation cases, authority, production grant/key/policy or runtime budget is created.",
+  "historical_results_are_not_current_passes": "FDE source 423 passed; FDE native inventory ran 190 and had runtime failures. Neither result is a pass for the final unified candidate.",
+  "files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/final-policy-validation-inventory-20261112/source-method-inventory.json",
+      "sha": "c31028073f9121fdb1fd4b363051099e0a821c7d",
+      "bytes": 179528
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/final-policy-validation-inventory-20261112/native-tuple-inventory.json",
+      "sha": "5c120970c6cd3a9bbbac22417b3c49b0118b907b",
+      "bytes": 160131
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/final-policy-validation-inventory-20261112/driver-inventory-contract.json",
+      "sha": "5ff5d722d8f0d7574090ef375c0c62c35232dcf4",
+      "bytes": 75867
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/final-policy-validation-inventory-20261112/source-suite-runner-443.py",
+      "sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126
+    }
+  ],
+  "ordinary_acceptance": 0
+}
