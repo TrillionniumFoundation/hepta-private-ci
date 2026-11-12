@@ -1,0 +1,88 @@
+{
+  "archive_bytes": 1211050,
+  "archive_name": "review6247-originals.tar.gz",
+  "archive_sha256": "769ce507561480314dfb97edf04ce53ab8dc8e918d4e06672456e8b08174d09c",
+  "deterministic_double_build_identical": true,
+  "format": "USTAR; sorted member names; uid/gid/mtime=0; uname/gname empty; mode0644; gzip filename empty/mtime0/compresslevel9",
+  "members": [
+    {
+      "bytes": 16290,
+      "name": "CI_JOB_RESPONSE.json",
+      "sha256": "19881d526c8d92a3d14cb3ee584a4a85a68908a17d69187987a349ae86f6ab5b"
+    },
+    {
+      "bytes": 344506,
+      "name": "EXTRA_PAYLOAD.json",
+      "sha256": "3eaa34695fbbb6a9e8a38e61e4123025887b64ac1d9a2f43928675b4c223ea7c"
+    },
+    {
+      "bytes": 2064,
+      "name": "EXTRA_READBACK.json",
+      "sha256": "009b21aca66294fddbf3a5015effdcce49fe2df4525bd6b33a154c543477f5ea"
+    },
+    {
+      "bytes": 8954,
+      "name": "GIT_READBACK.json",
+      "sha256": "8679d76d767cb209a09317baeea8e5347ccb1d30a606140d002e2c29854975a7"
+    },
+    {
+      "bytes": 6780,
+      "name": "PR.json",
+      "sha256": "c841e55edee0b65f89803e0489c45221c3a173e9f9496c06b8de67b7f9b7b1b4"
+    },
+    {
+      "bytes": 2004551,
+      "name": "REMOTE_PAYLOAD.json",
+      "sha256": "b01178a125b76a91b01130c8c0f0794e496a4ca843fb211a2f88f6a0e1611cd3"
+    },
+    {
+      "bytes": 32094,
+      "name": "REVIEW.json",
+      "sha256": "8b6cde84a0f7826e44da0afbac4bf7fd215e0851ad79aabeceffb14fd95c69ef"
+    },
+    {
+      "bytes": 0,
+      "name": "REVIEW.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 927,
+      "name": "REVIEW.stdout",
+      "sha256": "3651f43e71890028ec19365cc2892f5d54ba3d1fc40520fa7ecce57ded5ce5c0"
+    },
+    {
+      "bytes": 22414,
+      "name": "review_retained.py",
+      "sha256": "5afd526c6a09b627f4e798af96f5158c4484f66252257a920c3b4252daab8a0d"
+    }
+  ],
+  "original_bytes_unchanged": true,
+  "part_size_bytes": 524288,
+  "payloads": [
+    {
+      "bytes": 524288,
+      "index": 0,
+      "name": "review6247-originals.tar.gz.part000",
+      "sha256": "4d36b0f7ee4c1417fa82d1a202252ad3fe50ab3f03c82439afcdd6aae12537f2"
+    },
+    {
+      "bytes": 524288,
+      "index": 1,
+      "name": "review6247-originals.tar.gz.part001",
+      "sha256": "dfd9a564e63e6ab7119271788380345a531819f48fe00e795df9f7880b08d92a"
+    },
+    {
+      "bytes": 162474,
+      "index": 2,
+      "name": "review6247-originals.tar.gz.part002",
+      "sha256": "af16c082c6a037ad4bb8d22f574ffbf4feae0f50f576812bf0fafd0c49fd65ab"
+    }
+  ],
+  "provenance": "Only packages ten already-created read-only-review originals. No review, candidate, integral, expm or model code is executed by packaging or restoration.",
+  "restore_script": "restore_review.py",
+  "restore_script_sha256": "706b61c60510e641d70e2716644bd58e34176465075f6e9dcd9cc429d8e20226",
+  "reviewed_exact_head": "46e614bc719e773e9d7cb2597cf18302108c2b0f",
+  "reviewed_repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "deterministic-review-originals-archive-v1",
+  "split_threshold_bytes": 1048576
+}

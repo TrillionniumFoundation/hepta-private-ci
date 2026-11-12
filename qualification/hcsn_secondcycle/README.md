@@ -1,5 +1,7 @@
 # Second-cycle deterministic-delay/reset statistics — HOLD
 
+**Overall second-cycle gate: NOT PASSED; HOLD.** Reset-return mass is a required feedback component. At T=.22 (offset .02), near800's noncancelling returned-mass and discounted-returned-mass errors are **1.3280769% / 1.3280968%**. These exceed 1%; smaller M2/H2 errors cannot establish full feedback accuracy. Near960 is .9849900% / .9850034%, still exposed and limited by the remaining domain/state gates. No prospective risk qualification is created here.
+
 The first-cycle fixtures never reached reset feedback. This new research kernel keeps both frozen rate/reset laws (near800/.32 and near960/.32725), sends actual lower-exit flow into a serial second excursion, and shifts the second event by one exact deterministic delay. It does not spread a step's hit mass uniformly. No prior DDE, neural model, training loop or checkpoint job is rerun, and no mesh/reset/floor is tuned.
 
 The object, identities, complete query roster, controls and budgets were frozen at c3a5b3d64693222dc44687c82079084860a01dd9 before execution. All six original gaps are used as offsets: T=float(.2+gap). Actual T-.2, original gaps and their floating differences are retained. Every T is below 2d, so only two events can occur. Kernel and reference stages are separate: the latter hash-pins already completed kernel files and never repeats their computation.
@@ -10,7 +12,14 @@ The readouts include M/H, delayed return mass, refractory probability R, active 
 
 Independent controls comprise a killed-Erlang positive density (lower2/upper.3) and the already-published serial phase-type expm reference on a small two-state killed chain with initial law [.6,.4] and reset [.25,.75]. The latter is a FP64 expm/positive release quadrature control, not falsely relabeled as a 120-digit refinement. Maximum absolute residuals are 4.27e-15 / 1.05e-14. Maximum eligible relative residuals, including cancellation in rare loss readout, are 1.24e-10 / 3.33e-11. These measured agreements are not newly chosen scientific pass gates.
 
-For the constant-coefficient continuum, strong Markov and the first-hit Laplace transform give tau_x+tau_y equal in law to tau_(x+y). The analytic comparison therefore uses the exact binary-input distance sum and T-d in mp arithmetic, comparing both the actual nodal reset mixture and the unquantized reset. At T=.28:
+For the constant-coefficient continuum, strong Markov and the first-hit Laplace transform give tau_x+tau_y equal in law to tau_(x+y). The analytic comparison therefore uses the exact binary-input distance sum and T-d in mp arithmetic, comparing both the actual nodal reset mixture and the unquantized reset. The required reset feedback component must be reported before M2:
+
+| Fixed lane, T=.22 | Returned mass error | Discounted returned mass error |
+| --- | ---: | ---: |
+| near800/.32 | **1.3280769%** | **1.3280968%** |
+| near960/.32725 | .9849900% | .9850034% |
+
+The near800 result prevents overall second-cycle admission. At T=.28, the following M2 table is only a partial component diagnostic:
 
 | Fixed lane | Candidate M2 | Noncancelling M2 error vs unquantized law | H2 error bound |
 | --- | ---: | ---: | ---: |
@@ -26,3 +35,5 @@ The positive stage used 72 new finite-state kernel evaluations and 2,127,264 ser
 All original arrays, all scalar rows, source/input guards, raw output, budgets and static mathematical review are retained. Every original artifact is below1MiB. A read-only verifier checks all72 retained calls/24 query rows/336 error rows without rerunning a kernel, integral or expm.
 
 Draft / HOLD_NO_GO / all_closed=false. This exposed, fixed-physics two-cycle result does not close prospective risk, arbitrary laws/parameters, third-or-later cycles, whole spatial state transport, signed content, gradients, original training replay, baselines, real asynchronous benefits, full cost/energy or adoption. Existing first-cycle negative results remain unchanged.
+
+The exact46e independent read-only Git review is retained as three deterministic archive parts. The reconstructed 1,211,050-byte tar.gz has SHA256 769ce507561480314dfb97edf04ce53ab8dc8e918d4e06672456e8b08174d09c. Its manifest binds all10 original members and each part; the stdlib restore tool verifies archive/member hashes without executing archived code. Original restore verification reports10/10 member-byte matches. This review is same-session independent arithmetic/source verification, not external custody or a new numerical run.
