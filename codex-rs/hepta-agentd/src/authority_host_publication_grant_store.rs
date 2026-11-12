@@ -165,3 +165,7 @@ impl RegisteredPublicationGrant {
         Ok(record)
     }
 }
+
+#[cfg(test)]
+#[path = "authority_host_publication_grant_store_tests.rs"]
+mod tests;
