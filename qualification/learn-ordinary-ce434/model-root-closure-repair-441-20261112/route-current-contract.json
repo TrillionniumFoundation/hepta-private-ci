@@ -704,7 +704,7 @@
         "NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)",
         "Candidate(OriginalCellQ24CandidateStageOwnersV1)",
         "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
-        "Err(Error::OwnerUnavailable(\n                    \"original Candidate selection and adoption route is absent\",\n                ))",
+        "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
         "pub(super) struct ResidentStageCompletion<'a>",
         "candidate: Option<OriginalCandidateOperationEvidence<'a>>"
       ],
@@ -771,7 +771,11 @@
             "Self::Candidate(_) => Ok(())",
             "Stage::Selection | Stage::NextUse",
             "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()",
-            "Err(Error::OwnerUnavailable(\n                                                                               ,\n                ))",
+            "let Self::Candidate(stages) = self else {",
+            "return Err(Error::WrongScope);",
+            "};",
+            "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+            "stages, snapshot, stage",
             "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training\n            | Stage::Selection\n            | Stage::NextUse => Ok(())"
           ],
           "top_level": [
@@ -1845,7 +1849,9 @@
         "selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>",
         "next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>",
         "publication: Option<OriginalCircuitModelVersionPublicationV1>",
-        "failed: bool"
+        "failed: bool",
+        "pub(crate) fn require_original_adoption_stage(",
+        "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
       ],
       "forbidden": [
         "SigningKey",
@@ -1869,7 +1875,8 @@
         "pub channel:",
         "channel.next = 1",
         "execution_requested = false",
-        "RootResidentLearningEffectGateV3::new"
+        "RootResidentLearningEffectGateV3::new",
+        "pub fn require_original_adoption_stage"
       ],
       "required_order": [],
       "required_function_order": [
@@ -2129,6 +2136,28 @@
             "}"
           ],
           "top_level": []
+        },
+        {
+          "function": "fn require_original_adoption_stage(",
+          "sequence": [
+            "fn require_original_adoption_stage(",
+            "&self,",
+            "snapshot: &LearningIterationSnapshotV1,",
+            "stage: Stage,",
+            ") -> Result<(), Error> {",
+            "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+            "if self.common.root.is_none() {",
+            "return Err(Error::OwnerUnavailable(",
+            "));",
+            "}",
+            "Ok(())",
+            "}"
+          ],
+          "top_level": [
+            "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+            "if self.common.root.is_none() {",
+            "Ok(())"
+          ]
         }
       ]
     },
@@ -4988,7 +5017,9 @@
         "selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>",
         "next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>",
         "publication: Option<OriginalCircuitModelVersionPublicationV1>",
-        "failed: bool"
+        "failed: bool",
+        "pub(crate) fn require_original_adoption_stage(",
+        "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
       ],
       "forbidden": [
         "SigningKey",
@@ -5012,7 +5043,8 @@
         "pub channel:",
         "channel.next = 1",
         "execution_requested = false",
-        "RootResidentLearningEffectGateV3::new"
+        "RootResidentLearningEffectGateV3::new",
+        "pub fn require_original_adoption_stage"
       ],
       "required_order": [],
       "required_function_order": [
@@ -5272,6 +5304,28 @@
             "}"
           ],
           "top_level": []
+        },
+        {
+          "function": "fn require_original_adoption_stage(",
+          "sequence": [
+            "fn require_original_adoption_stage(",
+            "&self,",
+            "snapshot: &LearningIterationSnapshotV1,",
+            "stage: Stage,",
+            ") -> Result<(), Error> {",
+            "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+            "if self.common.root.is_none() {",
+            "return Err(Error::OwnerUnavailable(",
+            "));",
+            "}",
+            "Ok(())",
+            "}"
+          ],
+          "top_level": [
+            "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+            "if self.common.root.is_none() {",
+            "Ok(())"
+          ]
         }
       ]
     },
@@ -6507,10 +6561,28 @@
           "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
         ],
         "caller_markers": []
+      },
+      {
+        "id": "learning_original_candidate_adoption_stage",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage",
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "definition_markers": [
+          "pub(crate) fn require_original_adoption_stage(",
+          "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+          "if self.common.root.is_none() {",
+          "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+        ],
+        "caller_markers": [
+          "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+        ]
       }
     ]
   },
-  "boundary_status": "All historical 24 after-records and 8 additions already equal final 441 exactly. This refresh adds/removes no boundary, caller or authority.",
+  "boundary_status": "The historical 24 boundary changes and 8 additions remain complete and unchanged. This update adds only learning_original_candidate_adoption_stage, whose sole product caller is the concrete Root stages module; no existing caller set or authority posture changes.",
   "mutations": [
     {
       "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
@@ -6856,6 +6928,31 @@
       "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
       "function": "fn authenticate_at_current(",
       "marker": "verify_signed_actor_separation(&verified[2], &verified[3], current)?"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "let Self::Candidate(stages) = self else {"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "self.require_adoption_cut(snapshot, stage, Action::Execute)?;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "if self.common.root.is_none() {"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
     }
   ],
   "source_pins": [
@@ -6877,7 +6974,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
-      "blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733"
+      "blob": "02671dff43091e3bb56a050166d3990a64f57e79"
     },
     {
       "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
@@ -6897,7 +6994,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
-      "blob": "936300641ff24012652f186713f840d908d283e3"
+      "blob": "65137e97220c76a891ac390c56f9bfd8d2aa506b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
@@ -6928,5 +7025,16 @@
     "self_issued_acceptance": false,
     "promotion": false,
     "release": false
+  },
+  "private_adoption_dispatch_update": {
+    "parent_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "previous_contract_blob": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+    "scope": "Update exactly the two current complete protected records and their actual source pins; add the unique private qualification boundary and five deletion controls. Existing historical record refreshes, 69 mutations, unrelated rows and all generic-denial/effect guards are preserved.",
+    "qualification": "Exact original Candidate cut, Fresh origin, matching next stage, model prefix and original deadline, followed by presence of the already installed Root gate. This is not a CURRENT read or an effect authorization.",
+    "validation": {
+      "original_python_rust_native_not_run": true,
+      "ordinary_acceptance_count": 0
+    },
+    "previous_boundary_status": "All historical 24 after-records and 8 additions already equal final 441 exactly. This refresh adds/removes no boundary, caller or authority."
   }
 }

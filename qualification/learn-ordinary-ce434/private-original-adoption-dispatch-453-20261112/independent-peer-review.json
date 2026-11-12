@@ -1,0 +1,329 @@
+{
+  "schema": "learn.original-root-adoption-route-independent-peer.v1",
+  "reviewer": "learn_evaluator_budget",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "status": "NO BLOCKING FINDING IN THE REVIEWED FIXED SOURCE AND RECORD DELTAS; STATIC ONLY",
+  "ordinary_acceptance_count": 0,
+  "scope": {
+    "production": "The two fixed postimages qualify the concrete Root positive Candidate Selection/NextUse route. They do not change the generic Candidate trait route, original effect implementations, credentials, grant policies, peers, deadlines, statistical rules, resource limits or wire protocols.",
+    "evidence": "Git API full UTF-8 reads with independently recomputed Git blob hashes; whole-file forward/inverse production comparisons; complete-record multiset and raw-record preservation; old QA method and live-contract preservation.",
+    "not_run": [
+      "H",
+      "shell",
+      "Python verifier",
+      "full typed caller scan",
+      "Rust compiler",
+      "native mechanism tests",
+      "ordinary A/B/C/cold execution"
+    ],
+    "current_baseline_note": "Root separately reported the original source453 full-caller process terminal failed1. Its detailed original result was not available for attribution at this peer's completion. That result does not describe this unexecuted child; this review does not override it."
+  },
+  "fixed_inputs": {
+    "source_audit": "a894b5473aa265838ee467941cdb222deb7de14b",
+    "exact_production_patch": "8a4441cd7f5341544d76b20fc81e5fbcb1f8901b",
+    "manifest_before": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "manifest_after": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "live_contract_before": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+    "live_contract_final": "d762c02f5a9f1574d50bb7d0a1846401d15022d7",
+    "resident_qa_before": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+    "resident_qa_after": "40e257dfe3eaf926a95711e95949425fc4387ae9",
+    "ownership_audit_final": "aebad12ca8cf4a29562b05d2f4bafacf3283fefd",
+    "author_static_projection": "067ffd360f58f06c31110d69242216dbe09a1de7"
+  },
+  "production_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "before": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "after": "02671dff43091e3bb56a050166d3990a64f57e79",
+      "before_bytes": 8213,
+      "after_bytes": 8347,
+      "whole_forward_inverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "before": "936300641ff24012652f186713f840d908d283e3",
+      "after": "65137e97220c76a891ac390c56f9bfd8d2aa506b",
+      "before_bytes": 12398,
+      "after_bytes": 13021,
+      "whole_forward_inverse_equal": true
+    }
+  ],
+  "authority_findings": [
+    "Root retains the Candidate discriminant and absence-of-NoUpdate branch guard, obtains the concrete Candidate reference and calls the new crate-private helper. All other stage branch and private execution bytes remain unchanged.",
+    "The helper first invokes the unchanged require_adoption_cut with Action::Execute. It preserves the complete training/model prefix, exact Selection=5 / NextUse=6 cut, Fresh origin, actual coordinator next-stage, original scope and absolute deadline checks. It then rejects a missing original installed gate. Presence is deliberately not CURRENT or effect authorization.",
+    "The unchanged runtime must perform actual gate.begin before private execute_original_evidence, enforce cancellation and actual gate CURRENT around the operation, consume only the original opaque proof, authenticate complete evidence, and apply the existing checkpoint/post-CAS checks.",
+    "The unchanged generic Candidate execute and generic Model/adoption attestation routes remain denied. Recovered origin, wrong cut/model/next-stage/scope, absent gate and expired absolute deadline retain their original rejection categories; no bool, new signer, stream, capability or recovered-to-fresh conversion replaces them.",
+    "Actual Model reading and context authentication still require the full original E material. The existing material verifier requires all policies bound and all authenticated primary plus nonempty retention members qualified; Selector reuses the same adoption-grade gate. This change does not upgrade legacy/read-only or Ineligible evidence.",
+    "The existing Version flow uses actual Model/E and publication reads, exact original Prepared/FinalUse binding, the retained issuer transport and original policy decision. Unknown/cancel and finish errors retain uncertain fencing; C capability is installed only after the original completion and tail checks."
+  ],
+  "completed_record_checks": {
+    "counts_before": {
+      "boundaries": 736,
+      "protected": 506
+    },
+    "counts_after": {
+      "boundaries": 737,
+      "protected": 506
+    },
+    "semantic_delta": {
+      "removed": [
+        {
+          "kind": "protected_file",
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "count": 1
+        },
+        {
+          "kind": "protected_file",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "count": 1
+        }
+      ],
+      "added": [
+        {
+          "kind": "protected_file",
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "count": 1
+        },
+        {
+          "kind": "protected_file",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "count": 1
+        },
+        {
+          "kind": "boundary",
+          "id": "learning_original_candidate_adoption_stage",
+          "count": 1
+        }
+      ]
+    },
+    "unchanged_full_raw_record_instances": 1240,
+    "raw_removed_records": 2,
+    "raw_added_records": 3,
+    "original_required_id_sequence_and_multiplicity_preserved": true,
+    "added_id_once": true,
+    "root_metadata_fields_equal": true,
+    "authority_fields_equal": true,
+    "authority": {
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    },
+    "final_whitespace_only_difference": {
+      "before": 1,
+      "after": 2
+    },
+    "existing_adoption_function_rules_removed": 0,
+    "only_root_blanket_denial_rule_replaced": true,
+    "new_helper_top_level_sequence": "require_adoption_cut Execute -> missing-gate rejection -> Ok",
+    "required_order_and_function_sequence_schema": {
+      "records": 506,
+      "bad": []
+    },
+    "new_boundary": {
+      "id": "learning_original_candidate_adoption_stage",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "sole_declared_and_reviewed_product_caller": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "actual_call": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(stages, snapshot, stage)"
+    }
+  },
+  "live_contract_checks": {
+    "original_live_rows": 13,
+    "final_live_rows": 13,
+    "changed_rows": [
+      {
+        "index": 4,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "keys": [
+          "required",
+          "required_function_order"
+        ]
+      },
+      {
+        "index": 9,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "keys": [
+          "required",
+          "forbidden",
+          "required_function_order"
+        ]
+      }
+    ],
+    "all_complete_live_rows_installed_exactly_once": true,
+    "all_additions_installed_exactly_once": true,
+    "original_24_boundary_changes_preserved": true,
+    "original_8_boundary_additions_preserved": true,
+    "new_private_boundary_count": 1,
+    "all_live_boundary_rows_installed_exactly_once": true,
+    "original_mutations": 69,
+    "final_mutations": 74,
+    "original_mutation_complete_prefix_preserved": true,
+    "final_boundary_status_correctly_names_one_new_boundary": true,
+    "historical_contract_and_authority_fields_unchanged": true
+  },
+  "qa_checks": {
+    "old_method_preservation": [
+      {
+        "method": "test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+        "present": true,
+        "whole_function_byte_equal": true,
+        "non_comment_lines_equal": true
+      },
+      {
+        "method": "test_both_factories_consume_original_values_under_the_same_root_registration",
+        "present": true,
+        "whole_function_byte_equal": true,
+        "non_comment_lines_equal": true
+      },
+      {
+        "method": "test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+        "present": true,
+        "whole_function_byte_equal": true,
+        "non_comment_lines_equal": true
+      },
+      {
+        "method": "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied",
+        "present": true,
+        "whole_function_byte_equal": false,
+        "non_comment_lines_equal": true
+      }
+    ],
+    "original_setup_verifies_rejects_bytes_preserved": true,
+    "new_methods": [
+      "test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate",
+      "test_private_adoption_never_replaces_generic_denials_or_actual_root_fences"
+    ],
+    "no_load_tests": true,
+    "static_expected_source_count": {
+      "before": 443,
+      "after": 445,
+      "modules_unchanged": 62
+    },
+    "native_inventory_unchanged": {
+      "cases": 201,
+      "groups": 43,
+      "additional_root_cases": 29
+    },
+    "author_reported_projection": {
+      "contract_deletions": 74,
+      "private_injections": 12,
+      "new_resident_controls": 46
+    },
+    "reviewer_limit": "The reported V8 negative-control results are explicitly static projections. This peer independently checked their fixed source/record changes and old method preservation, but did not execute the original Python scanner or native mechanisms."
+  },
+  "resolved_documentation_finding": {
+    "before": "01fdc7c7c35c06cf05e987d84ea6590f60ceb8da",
+    "after": "aebad12ca8cf4a29562b05d2f4bafacf3283fefd",
+    "old": "If such original inputs are supplied, retained E-ineligible/issuer-denied cases can prove zero Version/C effect and terminal fencing. They were not manufactured or executed here.",
+    "new": "If such original inputs are supplied, retained E-ineligible or issuer-denied cases can verify that no selected CURRENT is published and no C capability is released. Version may already have durably recorded Prepared before issuer denial; the existence and complete bytes of that original Prepared state must be independently read and preserved. Those cases were not manufactured or executed here.",
+    "only_field_changed": true
+  },
+  "mechanism_limits": [
+    "New eligibility-positive native execution and the full actual resident5->6->7 path remain NOT DEMONSTRATED.",
+    "The existing original Root Model projection fixture has actual SourceBound/Model records but explicitly synthetic E/Product fixture metadata; it does not provide a genuinely Qualified V2 primary plus independent nonempty retention panel.",
+    "Its callback exports projection data, not transferable original Fresh common Material/Trainer clients, baseline and initial Training connection. Existing adapters provide either material-only Fresh inputs without Trainer or Recovered Candidate clients. They cannot be relabeled, reconstructed from opaque metadata, or replaced by a fabricated Root gate.",
+    "A meaningful future eligibility/effect fixture must retain and transfer the actual already-admitted original inputs and obtain the actual Root gate from the same original admission. No new fixture signer, fake Qualified result, policy weakening or execution custody was added to claim coverage.",
+    "On issuer denial, original Prepared may already be durable. The corrected ownership audit promises neither selected CURRENT publication nor C capability release, and requires separate actual observation/preservation of Prepared; it does not claim zero writes."
+  ],
+  "inspected_unchanged_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "git_blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "bytes": 13085
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "git_blob": "5a43a41181b071aeb61562596ccb0e3601af45c8",
+      "bytes": 15757
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+      "git_blob": "9df7156f13e7bf19c2686c55bdff96bce2ff8fee",
+      "bytes": 9687
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "git_blob": "43e24b94f0bdf5c5703ba52fc79cc55db6de673b",
+      "bytes": 13470
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "git_blob": "9961e00c4a1ce2f3822a45034c378a0e0a525bee",
+      "bytes": 12706
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "git_blob": "40fb1e1206e05810a90e6d46c48b2a9519d2997e",
+      "bytes": 13435
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "git_blob": "fe8f78c9fd3de48e7ff13318317fa33863749e94",
+      "bytes": 10328
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_read_operation.rs",
+      "git_blob": "72dc323f02e86c0e49c712d6d49492eb744d1401",
+      "bytes": 12829
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+      "git_blob": "6ac986d34788acb8301f5ef6100dcba93986c4b2",
+      "bytes": 12594
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "git_blob": "ecaf44f44b0c3d04456cf41e16e2f13bf176bd43",
+      "bytes": 9276
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_model_version_issuer.rs",
+      "git_blob": "05b712efd6dd9953c5503cb4b5ba35f212cc377f",
+      "bytes": 2648
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "git_blob": "c52f9dc88f00e599d046c79997f08940b7cd9d85",
+      "bytes": 9363
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "git_blob": "8a70c3b256a4f7e47d348d62417e45c1266f26eb",
+      "bytes": 10301
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "git_blob": "bb536a7d4dd4edd8f9bed768bf00353d1d3137e6",
+      "bytes": 10674
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_model_support_tests.rs",
+      "git_blob": "74ae0e122ec5264cf3c858b31bb802e93a45d138",
+      "bytes": 7059
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+      "git_blob": "3966455f65c97dfb71749e85a497cb6336e555e4",
+      "bytes": 15074
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "git_blob": "f46ca31538e114546c64aa283ac5b9c430020a15",
+      "bytes": 2878
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "git_blob": "83e76788acc7e65a912d9507a11afb2a6117e5bf",
+      "bytes": 15004
+    }
+  ],
+  "next_step": "Publish the independent source child with these exact records, then evaluate actual original Python/full-caller and native outcomes on a fixed source. Missing ordinary B/issuer/custody and full route execution evidence remain separate prerequisites."
+}

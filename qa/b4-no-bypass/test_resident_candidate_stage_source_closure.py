@@ -24,7 +24,10 @@ STAGES = AGENT + "authority_host_learning_resident_stages.rs"
 RUNTIME = AGENT + "authority_host_learning_resident_runtime.rs"
 AUTH = AGENT + "authority_host_learning_resident_auth.rs"
 CANDIDATE = AGENT + "cell_q24_candidate_stage_owners.rs"
+ADOPTION = AGENT + "cell_q24_candidate_stage_adoption.rs"
+GATE = AGENT + "authority_host_learning_resident_gate.rs"
 EXPECTED = {
+    "learning_original_candidate_adoption_stage": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_no_update_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
     "learning_original_no_update_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
     "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
@@ -169,9 +172,96 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
             "proposal_count != 1 || snapshot.receipts.len() != 7",
         ):
             self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
-        # The suffix verifier remains independently typed; ordinary dispatch
-        # still requires the original closed gate until actual custody exists.
+        # Keep Candidate and NoUpdate separate. The concrete private Candidate
+        # route now checks the original cut and installed gate before dispatch.
         self.rejects(STAGES, "fn require_stage(", "snapshot.training_no_update_v2().is_none()")
+
+
+    def test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate(self):
+        # Baseline verification is source qualification, not a successful
+        # runtime adoption or an independent Qualified B/retention panel.
+        for path in (STAGES, ADOPTION, CANDIDATE):
+            self.verifies(path, (ROOT / path).read_text())
+        for marker in (
+            "let Self::Candidate(stages) = self else {",
+            "return Err(Error::WrongScope);",
+            "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+            "stages, snapshot, stage,",
+        ):
+            self.rejects(STAGES, "fn require_stage(", marker)
+        for marker, replacement in (
+            ("self.require_adoption_cut(snapshot, stage, Action::Execute)?;", ""),
+            ("Action::Execute", "Action::Readback"),
+            ("if self.common.root.is_none() {", ""),
+            ('return Err(Error::OwnerUnavailable("fresh resident continuation"));', ""),
+        ):
+            self.rejects(ADOPTION, "fn require_original_adoption_stage(", marker, replacement)
+        for marker, replacement in (
+            ("self.require_live_deadline()?;", ""),
+            ("model_cut(self, snapshot)?;", ""),
+            ("(Stage::Selection, Action::Execute) => 5,", "(Stage::Selection, Action::Execute) => 6,"),
+            ("(Stage::NextUse, Action::Execute) => 6,", "(Stage::NextUse, Action::Execute) => 5,"),
+            ("snapshot.receipts.len() != expected", ""),
+            ("action == Action::Execute", "action == Action::Readback"),
+            ("self.common.origin != Origin::Fresh", ""),
+            ("LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()", ""),
+            ("!= Some(stage)", ""),
+            ("_ => return Err(Error::WrongScope),", ""),
+        ):
+            self.rejects(ADOPTION, "fn require_adoption_cut(", marker, replacement)
+        for marker in (
+            "owners.training_prefix(snapshot)?;",
+            "if !(5..=7).contains(&snapshot.receipts.len()) {",
+            "owners.common.material.initial.clone(),",
+            "for receipt in &snapshot.receipts[..5] {",
+            "cut.record(receipt.clone(), receipt.observed_unix_seconds)?;",
+            "if cut.next_stage() != Some(Stage::Selection) {",
+            "owners.common.material.scope.validate_snapshot(cut.snapshot())?;",
+        ):
+            self.rejects(ADOPTION, "fn model_cut(", marker)
+        source = (ROOT / ADOPTION).read_text()
+        private = "pub(crate) fn require_original_adoption_stage("
+        self.assertEqual(source.count(private), 1)
+        with self.assertRaises(PROOF.VerificationFailure):
+            self.verifies(ADOPTION, source.replace(
+                private, "pub fn require_original_adoption_stage(", 1,
+            ))
+
+    def test_private_adoption_never_replaces_generic_denials_or_actual_root_fences(self):
+        for function, marker in (
+            ("fn execute_stage<'a>", "matches!(stage, Stage::Selection | Stage::NextUse)"),
+            ("fn execute_stage<'a>", "snapshot.training_no_update_v2().is_none()"),
+            ("fn execute_stage<'a>", 'return Err(Error::OwnerUnavailable(\n                        "original Candidate Model, Selector, version and FinalUse capabilities are required",\n                    ));'),
+            ("fn receipt_attestation<'a>", 'return Err(Error::OwnerUnavailable(\n                        "original Candidate Model and adoption attestation capabilities are required",\n                    ));'),
+            ("fn require_live_deadline(", "Instant::now() >= self.end"),
+            ("fn require_live_deadline(", "return Err(Error::DeadlineExceeded);"),
+        ):
+            self.rejects(CANDIDATE, function, marker)
+        # The predicate cannot establish CURRENT. The original runtime must
+        # begin its real durable dispatch and enforce cancellation/current.
+        for marker in (
+            "gate.begin(&predecessor, stage).await?",
+            "ResidentOriginalStageOwnersV3::execute_original_stage(",
+            "gate.cancellation().cancelled()",
+            "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?",
+        ):
+            self.rejects(RUNTIME, "fn continue_original(", marker)
+        for marker in (
+            "!self.inner.active.load(Ordering::Acquire)",
+            "self.inner.cancellation.is_cancelled()",
+            "predecessor.request != profile.initial.request",
+            "predecessor.owners != profile.initial.owners",
+            "profile.scope.validate_snapshot(predecessor).is_err()",
+            "result.is_err() || self.inner.cancellation.is_cancelled()",
+        ):
+            self.rejects(GATE, "fn local(", marker)
+        for marker in (
+            "self.require_live_deadline()?;",
+            "self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+            "RootResidentLearningEffectGateV3::require_current(",
+            "gate, snapshot, &self.common.material.scope,",
+        ):
+            self.rejects(ADOPTION, "fn require_adoption_effect(", marker)
 
 
 if __name__ == "__main__":

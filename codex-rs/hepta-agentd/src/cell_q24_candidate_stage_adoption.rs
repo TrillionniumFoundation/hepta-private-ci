@@ -106,6 +106,21 @@ fn require_published_selection(
 }
 
 impl Owners {
+    /// Qualify only the concrete original positive route. This does not read
+    /// CURRENT or authorize an effect; Root still begins the durable dispatch
+    /// and each original owner rechecks the same gate at its effect boundary.
+    pub(crate) fn require_original_adoption_stage(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        stage: Stage,
+    ) -> Result<(), Error> {
+        self.require_adoption_cut(snapshot, stage, Action::Execute)?;
+        if self.common.root.is_none() {
+            return Err(Error::OwnerUnavailable("fresh resident continuation"));
+        }
+        Ok(())
+    }
+
     fn require_adoption_cut(
         &self,
         snapshot: &LearningIterationSnapshotV1,
