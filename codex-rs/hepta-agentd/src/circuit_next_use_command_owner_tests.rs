@@ -519,3 +519,67 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
 
 #[path = "circuit_completion_readiness_owner_tests.rs"]
 mod readiness;
+
+// Temporary timing diagnostic for the FDE bounded evidence failure. It uses
+// the unchanged original 30 s command and 500 ms evidence transports. Every
+// read reaches the same live original owners; no timeout or cache is changed.
+#[tokio::test]
+async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
+    let f = CompletionFixture::ready(None).await?;
+    f.complete_c().await?;
+    let context = f.context()?;
+    let service = ObserverService::start(&f, f.f.original.create_owner()?)?;
+    let (client, channel) = next::client(context.clone(), false, None)?;
+    let server = next::serve(Arc::clone(&service.owner), channel);
+    let completed = client.attest_completed_task().await?;
+    let before = f.f.original.bytes()?;
+
+    let started = std::time::Instant::now();
+    let command_current = client.readback().await;
+    eprintln!(
+        "LEARN_FDE_C_TIMING command_readback_elapsed_us={} result={:?}",
+        started.elapsed().as_micros(),
+        command_current.as_ref().map(|_| ()),
+    );
+    let command_current = command_current?;
+    assert_eq!(command_current, completed);
+    assert_eq!(f.f.original.bytes()?, before);
+
+    let (evidence, channel) = next::evidence_client(&context)?;
+    let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);
+    let started = std::time::Instant::now();
+    let evidence_current = evidence
+        .readback(completed.snapshot(), completed.receipt())
+        .await;
+    eprintln!(
+        "LEARN_FDE_C_TIMING evidence_readback_elapsed_us={} result={:?}",
+        started.elapsed().as_micros(),
+        evidence_current.as_ref().map(|_| ()),
+    );
+    drop(evidence);
+    let evidence_terminal = evidence_server
+        .join()
+        .map_err(|_| anyhow::anyhow!("diagnostic original evidence peer panicked"))?;
+    eprintln!(
+        "LEARN_FDE_C_TIMING evidence_peer_terminal={:?}",
+        evidence_terminal,
+    );
+    assert_eq!(f.f.original.bytes()?, before);
+    let command_terminal = finish_observer(client, server);
+    eprintln!(
+        "LEARN_FDE_C_TIMING command_peer_terminal={:?}",
+        command_terminal,
+    );
+    let service_terminal = service.finish(false, false);
+    eprintln!(
+        "LEARN_FDE_C_TIMING underlying_peer_terminal={:?}",
+        service_terminal,
+    );
+    f.finish(false).await?;
+    command_terminal?;
+    service_terminal?;
+    let evidence_current = evidence_current?;
+    assert_eq!(evidence_current, *completed.attestation());
+    evidence_terminal?;
+    Ok(())
+}
