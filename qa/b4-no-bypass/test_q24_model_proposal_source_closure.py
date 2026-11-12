@@ -7,6 +7,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -18,6 +20,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_model_proposal.rs"
+CURRENT = AGENT + "cell_q24_model_current_owner.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
 LANE = AGENT + "cell_q24_training_model_lane.rs"
 TRAINER = AGENT + "cell_composed_q24_training_owner.rs"
@@ -26,6 +29,10 @@ BOUNDARIES = {
     "cell_q24_model_material_owner_" + method: (LANE,)
     for method in ("create", "recover", "commit", "readback")
 }
+BOUNDARIES.update({
+    "cell_q24_current_model_owner_" + method: (LANE,)
+    for method in ("create", "recover", "commit", "readback")
+})
 BOUNDARIES.update({
     "learning_original_training_model_" + method: (BOUND,)
     for method in ("create", "recover", "commit", "readback")
@@ -43,7 +50,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION, LANE, TRAINER, BOUND)
+            for path in (OWNER, CURRENT, ADMISSION, LANE, TRAINER, BOUND)
         }
 
     def rejects(self, path, function, marker, *, within=None):
@@ -92,6 +99,44 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                     f"fn extra(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
                 )
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                    PROOF._verify_boundary(ROOT, row, sources, ())
+
+
+        # The split current-material impl contains the Model owner type, but
+        # both readbacks belong to its original durable journal. Reverting
+        # either real call independently must reproduce the closed scanner
+        # refusal, never add this file to the Model-owner caller allowlist.
+        original = (ROOT / CURRENT).read_text()
+        row = self.boundaries["cell_q24_model_material_owner_readback"]
+        call = (
+            "ProductEvaluationExecutionStoreV1::readback("
+            "&mut self.journal, &admission.key(self.binding))"
+        )
+        for function in (
+            "fn commit_current_material_or_readback<",
+            "fn read_current_material<",
+        ):
+            with self.subTest(function=function):
+                code = self.sources[CURRENT]
+                self.assertEqual(code.count(function), 1)
+                start = code.index(function)
+                end = PROOF._rust_item_end(code, start)
+                self.assertIsNotNone(end)
+                assert end is not None
+                first, after = source_marker_span(original, call, start, end + 1)
+                reverted = (
+                    original[:first]
+                    + "self.journal.readback(&admission.key(self.binding))"
+                    + original[after:]
+                )
+                sources = dict(self.sources)
+                sources[CURRENT] = PROOF._strip_cfg_test_items(
+                    PROOF._strip_rust_non_code(reverted)
+                )
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure,
+                    "unresolved possible CellQ24ModelProposalOwnerV1::readback receiver",
+                ):
                     PROOF._verify_boundary(ROOT, row, sources, ())
 
     def test_original_training_header_and_receipt_bindings_cannot_be_removed(self):
