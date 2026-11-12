@@ -1,0 +1,550 @@
+{
+  "status": "ARTIFACT_ONLY_ACTUAL_FMT_VERIFIED_NATIVE_UNRUN",
+  "parent_checkpoint": "6bce0a6646f5f4527679e55ab0ebd3b3c213d9e2",
+  "source_base": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "integrates_on_source": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "main_pr_touched": false,
+  "global_callers_modified": false,
+  "ordinary_qualifications": 0,
+  "files": [
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 17561,
+      "sha256": "57cabfb5381d834910aa470b8a3c4b9db10a7250700566aa003f6f86466007b5",
+      "blob": "71d28396530520fd9c430856aa019d01f03d7db7"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 3544,
+      "sha256": "679a2d5a8284abc691ec46cf022eb1243a0959c80a674c96f4d627c7b4590dc5",
+      "blob": "b0a9a831e06c3499edd00a9eab5cf024e1ff2441"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 7939,
+      "sha256": "5fa617604a8524b6fc8094b77205c5ca168e61d17aa1e7e2a19bf8584143f3cd",
+      "blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 7766,
+      "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+      "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "encoding": "utf-8",
+      "bytes": 12526,
+      "sha256": "2a5a5324f2d706017b74e0ef9453eca9268c0a5afe4444ebf54f9424601541dd",
+      "blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "encoding": "utf-8",
+      "bytes": 3852,
+      "sha256": "57c5a8b40d313f2f69e220b41bc005495fcefcc11752dc110980eafbe7699304",
+      "blob": "90b880ff4446600afc669fe36fca7437232fd04e"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "encoding": "utf-8",
+      "bytes": 7213,
+      "sha256": "3a945a8fee7bd172a495514eb0b4bfca671118c6681ec02761273435c5793c8d",
+      "blob": "07c68b6971721515ad819544d9cc8dc442a20336"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "encoding": "utf-8",
+      "bytes": 7463,
+      "sha256": "5f5d206208a37307eed55209a83e55e0fde8446c47ff1f047b6b58946f852022",
+      "blob": "49f23508db7805fc7fec663af10269f39fa3a271"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "encoding": "utf-8",
+      "bytes": 11223,
+      "sha256": "6a41fe8d0bf18d14e6f29853c1096439a8bfcaf39edde8093ef3805cee7b0933",
+      "blob": "514d6cbf873acddb19c7e4540d198e3a498fe084"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "encoding": "utf-8",
+      "bytes": 7204,
+      "sha256": "f210d96f1908ac37a3191cab817a369515e5a62ab71e2f41f36ff54bcb07cdb0",
+      "blob": "91a3a5b87a1746d1cb4178cc652f9480574986c1"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "encoding": "utf-8",
+      "bytes": 4629,
+      "sha256": "982f6e072989ee6ddafa1a746d3baba4b040cd0d2bbb61a1d8b48dd17609b434",
+      "blob": "a193092ffd45d4c894999b126072f6d9c48fb7b2"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 2891,
+      "sha256": "ce68ef34cc4b83f2f06964df125d2e53dcc8216c11d6a6181cd56ed7ed2817b0",
+      "blob": "7130b04357861ded3a20c8707d25b280009bd09c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "encoding": "utf-8",
+      "bytes": 8712,
+      "sha256": "ec290abe362c52d33320b0321e1dfc9c284092dd38481bcc6ead60e9a724af02",
+      "blob": "0b328d77083060c943234ae0d8bf68088474bd6f"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "encoding": "utf-8",
+      "bytes": 10749,
+      "sha256": "4083c4420bc3849b230d22ac6b6b5e8ef0f5f84c35cb39666b1f99f1dddbdda3",
+      "blob": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/postimages/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "encoding": "utf-8",
+      "bytes": 15767,
+      "sha256": "41742af761c8a0f37dcc7575e723ab7027789d7031f4aff0620ba606e038f521",
+      "blob": "1c4b608895e09c0215a30212282402b8c2dd8169"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/manifest.json",
+      "encoding": "utf-8",
+      "bytes": 17571,
+      "sha256": "4aa9b086cee1d3f8fe1f5a03f430b49103e8a1a93919679d2292d1f650f5e610",
+      "blob": "59835778dcf9a6c38fe19b104df7b94db7df9c5c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-postimages.json.gz",
+      "encoding": "base64",
+      "bytes": 35374,
+      "sha256": "645a6ec87110f985da2fdc78d55e84ab49e33be2b62fb24e431a11c110022f07",
+      "blob": "53d0a369a3a7e1a89dc2628072b97913c8fa7882"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/collector.stdout.raw.log",
+      "encoding": "utf-8",
+      "bytes": 68544,
+      "sha256": "1c08db8208f09bac86930864c937213bce9e68edba327226b675e118285fcecd",
+      "blob": "30b5dfb19d56f4054e7aa108f173c7e05ba88aeb"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/collector-request.json",
+      "encoding": "utf-8",
+      "bytes": 1573,
+      "sha256": "5699c37078a7c94baa648f7baf12738ca3ff0b8b201d61918f8a5646b77210b2",
+      "blob": "fb4df9947b80ac5567feb5bacd527ce3ec505cad"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/collector-driver-meta.json",
+      "encoding": "utf-8",
+      "bytes": 154,
+      "sha256": "88c2cf5be2f73a5c5c2cdb7d7f9b0a95829143d602b117038ff787f6d5599edd",
+      "blob": "726da800bcf85d7d21a25c27870030f46f96e72c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/panel-training-formatted.patch",
+      "encoding": "utf-8",
+      "bytes": 51387,
+      "sha256": "4903736bf65bfc25b5994416bac43c058ebed835afeb64443c91f91e69b62ac8",
+      "blob": "9e347fe73ed8098649dd7a92aa0d6a4884395d9f"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/panel-training-57b-corrected.patch",
+      "encoding": "utf-8",
+      "bytes": 51115,
+      "sha256": "c201543dfaffaa9ca9e620b40e5f9ed1169108b26f23808adf946938cdff956a",
+      "blob": "c5d851f4b7dff626b11a5857f7f33e563e0f9a55"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/panel-training-d397-complete.patch",
+      "encoding": "utf-8",
+      "bytes": 63714,
+      "sha256": "88a5e8ecf75e6b577697804c2481b14151d5818540efd5785eebbd4d1f294482",
+      "blob": "c3c88cf685d22088201fc59ee8873d65c8b507f7"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/format-only.patch",
+      "encoding": "utf-8",
+      "bytes": 31402,
+      "sha256": "f6e43900740c6adca585454754e571140ac41a377b133e28a805028d4437b233",
+      "blob": "caeedfd35a9736aba5c20031c412d940c9ba3192"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/panel-training-prefmt.patch",
+      "encoding": "utf-8",
+      "bytes": 49758,
+      "sha256": "b85db4a6ed038fa6d910a1e5acf5ac11bb31ccd72716be06cea4a54edbb09a01",
+      "blob": "616f4aaa75aa5b8a390dc2515ee3c54444a50afc"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/panel-training-prefmt-57b-corrected.patch",
+      "encoding": "utf-8",
+      "bytes": 49486,
+      "sha256": "06f2afd10dfa8f2eefbea4268c5b937236e993bed9d1cf59f0ac04fce83c61f2",
+      "blob": "c7af6f1914874e23e8b67eb18a538e7e9261834c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/CALLERS-DELTA.actual.json",
+      "encoding": "utf-8",
+      "bytes": 76672,
+      "sha256": "76823f2d14399c2e815bcc8a7d8b7f6c10b24d67ddb88e1f75aa81444b37c7f2",
+      "blob": "bdd841c3a96d8eb6f236294f85d352baedbb0702"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/FORMAT-MARKER-ADAPTATIONS.json",
+      "encoding": "utf-8",
+      "bytes": 2983,
+      "sha256": "a95667b8551994356135aa5ae1d8217e56fddd01020f660e8d9f134853eada22",
+      "blob": "b9f0ba48c1d3624871c2f0525763830556e0833d"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/NATIVE-PROOF-MAPPING.json",
+      "encoding": "utf-8",
+      "bytes": 12335,
+      "sha256": "8f79313370b9e3b2fd31e590d96e9af28c070626a1e52f076a13b9ad05dfc782",
+      "blob": "768615e02e3147bddbadd1755cce9b04f42cccf9"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/PRESERVED_FUNCTIONS.formatted.json",
+      "encoding": "utf-8",
+      "bytes": 15703,
+      "sha256": "3ff56c08cb7e3800f6a2b0b47b026ee3a36c2dd35769347c2e3eae77ef886694",
+      "blob": "de27a551bf460633f9ea5f52bd071e636f2fd699"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/VERIFIED_MANIFEST.json",
+      "encoding": "utf-8",
+      "bytes": 16031,
+      "sha256": "f10a97f3c3b4df3ed80594ee56f74d80eaa41624f114e041c141bd437021a350",
+      "blob": "b73f8a2115c13d13981cd7fcd19fea64a3893f65"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/BASE-ABSENCE.original-readbacks.json",
+      "encoding": "utf-8",
+      "bytes": 6214,
+      "sha256": "65b9d8554b2c09b97425bcaa5de28508976ab5def0762f2feb3b091750ecc72b",
+      "blob": "b425da5c742ec2787d4b300e5c7d3e8cc166826b"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/D397-COMPARE.original.json",
+      "encoding": "utf-8",
+      "bytes": 7567,
+      "sha256": "019296192ee1fa20e5075c86144a369fa5edc141811d7f02e38d05c8b67209dd",
+      "blob": "0a74cb300fc94eb3fa25f30d48198fb8463a4ab7"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/D397-COMPATIBILITY.json",
+      "encoding": "utf-8",
+      "bytes": 2330,
+      "sha256": "5c6a29da3021ab404aced8ec341016375c122bdd20405add479d6ade74b5c5b1",
+      "blob": "8df29e8933b129d1bd94babd34214bc8b84fb1ca"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/READBACK-TRANSPORT-NOTES.json",
+      "encoding": "utf-8",
+      "bytes": 2236,
+      "sha256": "c738e003624b0dc1ea601363af147baa3c4d59ee920f89e3dbaa141116a33903",
+      "blob": "5be1f60216948e975a2a3e511ebc0f82a9255e21"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/qa-format-only.patch",
+      "encoding": "utf-8",
+      "bytes": 1772,
+      "sha256": "b96fbf0d1e3de25e97b93662dc7fd74dca665a9d0364d585d6bfc40e9e1897ab",
+      "blob": "cce6928bf60418c423e70318bcdaa3675bdab04c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/adapt_actual_guards.py",
+      "encoding": "utf-8",
+      "bytes": 7096,
+      "sha256": "d81e472fde0d777b9d97e27730008f04cf70a370d60ec4af9aca4e914ff834e8",
+      "blob": "3604ef3a939663e1367e2b2b2ce646a34bcfb98c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/verify_strict_replay.py",
+      "encoding": "utf-8",
+      "bytes": 8085,
+      "sha256": "3257135a4c167ab08ed697369a1e872d8da29f1927dab82365494f686ae00410",
+      "blob": "b23ad3ad2ceae1418078dba2a0a0a3d5540b6adb"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/build_complete_delivery_patch.py",
+      "encoding": "utf-8",
+      "bytes": 4179,
+      "sha256": "c7f71978ec90ae2fa3b9be0491c9ca5d6d53c750d5462ad7740c1443a79aece6",
+      "blob": "0bab73f10a2fdd36c08eba159e8a483a56dfb007"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/finalize_delivery.py",
+      "encoding": "utf-8",
+      "bytes": 13299,
+      "sha256": "9a53b586130a574f2154f8047b8935e88bf40b86a257dbc20f6e0eaa9b831921",
+      "blob": "e5f37b5223f489af8b2d1da3c863818cf1b8a90e"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/legacy-qa-review/host-marker-migration.patch",
+      "encoding": "utf-8",
+      "bytes": 1078,
+      "sha256": "07a72959ecd58b7faac641dee6675320a8fa2cdb5c425203eb991d31fbe4ce30",
+      "blob": "1405483be5c22f9f836d6ba1c372772b05dd0c4d"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/legacy-qa-review/base/test_original_evaluation_host_source_closure.py",
+      "encoding": "utf-8",
+      "bytes": 15713,
+      "sha256": "e71d3a3fb1a6949bd8101cb228e4909dc503b84b17100f640efdae39c3aac6be",
+      "blob": "5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/legacy-qa-review/base/test_original_evaluation_receipt_owner_source_closure.py",
+      "encoding": "utf-8",
+      "bytes": 14341,
+      "sha256": "120515ba8fb5c3e99361e38ec93515e2439b6cdf2eaa279279be94b7ac9b3b0c",
+      "blob": "670769b271ce007d396ff8eb09e3522f03dd80b3"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/guard-final-actual-v1/inputs.json",
+      "encoding": "utf-8",
+      "bytes": 3777,
+      "sha256": "3ea850d5732c4eb0ecb18954068b8a1583f920438df3502d4941e22ed5c669b7",
+      "blob": "75393856d5d3eca62992b143b923e263a04306cc"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/guard-final-actual-v1/result.json",
+      "encoding": "utf-8",
+      "bytes": 853,
+      "sha256": "b72c29a78934cd5846c8a07781e0ade8e109af14074ca86073a87b667ba14320",
+      "blob": "41ab2584a10f96322a361636f8e1b85f3305b9ca"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/guard-final-actual-v1/source-guard.raw.log",
+      "encoding": "utf-8",
+      "bytes": 1562,
+      "sha256": "e2ec37563fc593c8b36535e6e5d35c95bbfafa461d533bcef228cb7b78c86264",
+      "blob": "6e24f9d18b2b7f3403db129a8c0e723170515beb"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/guard-attempt-1/raw.log",
+      "encoding": "utf-8",
+      "bytes": 184006,
+      "sha256": "e8d47986c9efa7e7dafff5480a542c479c24fed827935bac53b2c8458b3d0e14",
+      "blob": "601050cf35f8e2ff5a558472c6192b34f9d924e0"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/guard-attempt-1/result.json",
+      "encoding": "utf-8",
+      "bytes": 734,
+      "sha256": "44fd6561412ea3e86f842fcd12791dc16736c66aca68ee382217142e7f8cd5b8",
+      "blob": "eb62f05c105c4da4cbe38e96d510c3de69966518"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/actual-format-only-apply.raw.log",
+      "encoding": "utf-8",
+      "bytes": 2216,
+      "sha256": "af0d1f78e7a047407a63b07db403bbd4029a8051e9cabd8df036470417487ab0",
+      "blob": "2238eeacd88a3dc0afdbe459786e33c1771b375d"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/actual-format-only-check.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/corrected-exact57b-to-actual-apply.raw.log",
+      "encoding": "utf-8",
+      "bytes": 2580,
+      "sha256": "e80ca0668558380c6a8e0595e49d0956e7fc413ec3fd212ff137e60216ea34df",
+      "blob": "d91d419423003d9ce41de305a80227f3c2eee234"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/corrected-exact57b-to-actual-check.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/corrected-exact57b-to-prefmt-apply.raw.log",
+      "encoding": "utf-8",
+      "bytes": 2580,
+      "sha256": "e80ca0668558380c6a8e0595e49d0956e7fc413ec3fd212ff137e60216ea34df",
+      "blob": "d91d419423003d9ce41de305a80227f3c2eee234"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/corrected-exact57b-to-prefmt-check.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/exact57b-paths-to-actual-add-base.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/exact57b-paths-to-actual-init.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/exact57b-via-prefmt-to-actual-add-base.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/exact57b-via-prefmt-to-actual-init.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/original-formatter-new-file-header-check.raw.log",
+      "encoding": "utf-8",
+      "bytes": 542,
+      "sha256": "588a4d71e6efe23230c7593a4d4987d39cb78651a7ba3f7c4979c9658e2a2478",
+      "blob": "49e0101c1ee45b8b4f686d118aa8db69520fa550"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/prefmt-then-format-only-apply.raw.log",
+      "encoding": "utf-8",
+      "bytes": 2216,
+      "sha256": "af0d1f78e7a047407a63b07db403bbd4029a8051e9cabd8df036470417487ab0",
+      "blob": "2238eeacd88a3dc0afdbe459786e33c1771b375d"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/prefmt-then-format-only-check.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/prefmt-to-actual-add-base.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/prefmt-to-actual-init.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/strict-replay-v1/result.json",
+      "encoding": "utf-8",
+      "bytes": 14948,
+      "sha256": "b0c41b906fa4e875bbc48f7cb276571e4dc0b508e00c14bdd19809f402a178f4",
+      "blob": "8a33eb42bdabd0039441416b1deab39ad64b25c0"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/legacy-host-qa-scoped-v1/raw.log",
+      "encoding": "utf-8",
+      "bytes": 338,
+      "sha256": "d3b15273379f851731c4883f639dfaffb2806acbb669a506c52fbf85ee92b59d",
+      "blob": "5ee252d896454ae5078ce0a8d18a9e3045185209"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/legacy-host-qa-scoped-v1/result.json",
+      "encoding": "utf-8",
+      "bytes": 1382,
+      "sha256": "b600cc6b385f90e69b99716814e8c3077635b2d1a93ccc0868463f306b70a23e",
+      "blob": "4caf90fc7d32f13544d4d82ed46424f9633551a8"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-delivery-replay-v1/0.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-delivery-replay-v1/1.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-delivery-replay-v1/2.raw.log",
+      "encoding": "utf-8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-delivery-replay-v1/3.raw.log",
+      "encoding": "utf-8",
+      "bytes": 2940,
+      "sha256": "746d6cff709201203b4615417ada5857e24d6e15e1747147dbb9239032153e86",
+      "blob": "2e4568cb3fb9a96a7ee2557b01f33d1b6af41bb9"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/complete-delivery-replay-v1/result.json",
+      "encoding": "utf-8",
+      "bytes": 2779,
+      "sha256": "c565c2118c8ba85cf4338838b9aa53d844b44506c018d7386046053133aceebd",
+      "blob": "d3482300499386d3e2fc5a1a857f8976c3b8d7f7"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/original-formatter-request/h-pty-start-request.json",
+      "encoding": "utf-8",
+      "bytes": 80004,
+      "sha256": "a4e8bf50ce0639da11b78f38c915a962c993899e0a1a2111b1266eafdf42feff",
+      "blob": "a663622ff8a3d00003372c504c8cfa7f681ef474"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/original-formatter-request/input-payload.json.gz",
+      "encoding": "base64",
+      "bytes": 52256,
+      "sha256": "703e87b7147da6bb022136a130570f49d0d26abedc3b2356f33aadb85760a6ce",
+      "blob": "0ae0ea41067bb3ff30318e136de93e9ceab0a821"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/original-formatter-request/input-manifest.json",
+      "encoding": "utf-8",
+      "bytes": 9107,
+      "sha256": "2f5e054deae8a447f508cc05b6e0805f5b0c06bd8ac9ccfb3054629f69b699f5",
+      "blob": "451968c23992ed186e95264770fa4475af4d789c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/original-formatter-request/format-method-provenance.json",
+      "encoding": "utf-8",
+      "bytes": 3143,
+      "sha256": "dcccc0bc78e2804ee8f2c2b1e81e6c77f1102c78bd4fcb247b4c49a52279cfdb",
+      "blob": "3c8a58af38d41e02dbc9938471908ceecd2d6dfe"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/actual/original-formatter-request/template-adaptation.patch",
+      "encoding": "utf-8",
+      "bytes": 4331,
+      "sha256": "9a33d78f335024987ee3942bd56762949e13c0e97b7b9daadbe7afbe2397dd84",
+      "blob": "1e87d2bf2be3e15c0e3fdd4589221115ccce4cbd"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_original_panel_training_transaction_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror",
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988 + actual14 isolated postimages",
+  "guard_inputs": "original prefmt6 guard/delta; detect exact formatting drift",
+  "started_at": "2026-11-12T18:15:14.656929+00:00",
+  "elapsed_seconds": 0.7412768699941807,
+  "returncode": 1,
+  "raw_log": {
+    "bytes": 184006,
+    "sha256": "e8d47986c9efa7e7dafff5480a542c479c24fed827935bac53b2c8458b3d0e14"
+  },
+  "native_tests_run": false
+}

@@ -1,0 +1,11 @@
+--- a/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
++++ b/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
+@@ -100,7 +100,7 @@
+         for path, function, markers in (
+             (SOURCE, 'fn prepare_with_training(', ['let before = self.read_original(config)?', 'OriginalPanelTrainingReadV1::read(training, self, config).await?', 'let after = self.read_original(config)?', 'binding::authenticate(config, &after, current)?']),
+             (READ, 'fn finish_readback_with_training(', ['runner.qualify_and_persist(', 'drop(sink)', 'OriginalPanelTrainingReadV1::read(training, source, &self.config).await?', 'source.verify_current(&self.config, prepared)?', 'if self.completed_bytes()? != bytes', 'binding::authenticate(&self.config, prepared, current)?', 'revalidate_product_qualification_v1(']),
+-            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
++            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
+         ):
+             for marker in markers:
+                 with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)

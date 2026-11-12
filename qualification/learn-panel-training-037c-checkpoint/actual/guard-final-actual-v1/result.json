@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_original_panel_training_transaction_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror",
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988 + exact actual14 postimages + format-adjusted QA/delta",
+  "started_at": "2026-11-12T18:17:36.775073+00:00",
+  "elapsed_seconds": 1.0908942700043553,
+  "returncode": 0,
+  "raw_log": {
+    "bytes": 1562,
+    "sha256": "e2ec37563fc593c8b36535e6e5d35c95bbfafa461d533bcef228cb7b78c86264"
+  },
+  "input_count": 20,
+  "source_unchanged": true,
+  "native_tests_run": false,
+  "ordinary_qualification": 0,
+  "scope": "local partial mirror with proposed CALLERS only; not the full source or caller gate"
+}

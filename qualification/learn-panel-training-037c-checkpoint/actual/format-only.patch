@@ -1,0 +1,659 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs
+index bac103c40f2279e904618bb4cac70e8b6f7a6ca6..b0a9a831e06c3499edd00a9eab5cf024e1ff2441 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs
+@@ -9,7 +9,10 @@
+ 
+ pub(crate) enum PanelReadControl {
+     Original,
+-    Withdraw { request: u64, path: PathBuf },
++    Withdraw {
++        request: u64,
++        path: PathBuf,
++    },
+     Pause {
+         request: u64,
+         entered: tokio::sync::oneshot::Sender<()>,
+@@ -54,15 +57,21 @@
+                                 .and_then(|file| file.set_len(0))
+                                 .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                         }
+-                        PanelReadControl::Pause { entered, release, .. } => {
+-                            entered.send(()).map_err(|_| HostIssuerTransportError::Unavailable)?;
+-                            release.recv_timeout(Duration::from_millis(250))
++                        PanelReadControl::Pause {
++                            entered, release, ..
++                        } => {
++                            entered
++                                .send(())
++                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
++                            release
++                                .recv_timeout(Duration::from_millis(250))
+                                 .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                         }
+                         PanelReadControl::Original => {}
+                     }
+                 }
+-                let response = owner.original_training_readback_response(bytes, request_id)
++                let response = owner
++                    .original_training_readback_response(bytes, request_id)
+                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                 let decoded: wire::Response = serde_json::from_slice(&response)
+                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+index d652c4915eb0f4d1e20886c1a4527e152b45919b..ff7dc74a1bb6f74178f4cfe76c5d937eb1238439 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+@@ -114,11 +114,12 @@
+         }
+         let mut host = match training {
+             TrainingComposition::Fixture => evaluator.into_original_evaluation_host(panel)?,
+-            TrainingComposition::Original { connection, dataset, training } => {
+-                evaluator.into_host_from_original_training_readback(
+-                    panel, connection, dataset, training,
+-                )?
+-            }
++            TrainingComposition::Original {
++                connection,
++                dataset,
++                training,
++            } => evaluator
++                .into_host_from_original_training_readback(panel, connection, dataset, training)?,
+         };
+         host.fixture_original_clock(at)?;
+         fixture.host = Some(Arc::new(host));
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
+index 5206b45a9d8f30e48690b75d54893e03058245bd..5c71c629246309e7dfa5793d776aa56aa608aa78 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
+@@ -18,7 +18,8 @@
+ use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
+ use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
+ 
+-type Trainer = OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++type Trainer =
++    OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+ 
+ enum Control {
+     Original,
+@@ -41,10 +42,14 @@
+         let panel = Box::pin(PanelFixture::completed_for_publication(
+             TrainingPeer::Original,
+             PublicationMode::RetainOriginalA,
+-        )).await?;
++        ))
++        .await?;
+         let dataset = original_dataset(&panel.original).await?;
+         let mut training_cut = panel.primary.config.training.clone();
+-        let completed = training_cut.receipts.pop().context("actual original Training")?;
++        let completed = training_cut
++            .receipts
++            .pop()
++            .context("actual original Training")?;
+         training_cut.head_digest = completed.predecessor;
+         assert_eq!(dataset.snapshot(), &training_cut);
+         let context = OriginalCellQ24TrainingCommandContextV1 {
+@@ -52,36 +57,51 @@
+             scope: panel.primary.config.scope.clone(),
+             verifier: panel.primary.config.verifier.clone(),
+         };
+-        let trainer = Arc::new(Trainer::recover_original_stage(
+-            Arc::clone(&panel.original.stage),
+-            context.clone(),
+-            Arc::new(AtomicBool::new(false)),
+-        ).await?);
++        let trainer = Arc::new(
++            Trainer::recover_original_stage(
++                Arc::clone(&panel.original.stage),
++                context.clone(),
++                Arc::new(AtomicBool::new(false)),
++            )
++            .await?,
++        );
+         let (client, channel) = commands::client(context, true, None)?;
+         let original_peer = commands::serve(Arc::clone(&trainer), channel);
+         let training = client.readback().await?;
+         assert_eq!(training.receipt(), &completed);
+-        assert_eq!(training.attestation(), &panel.primary.config.training_evidence);
++        assert_eq!(
++            training.attestation(),
++            &panel.primary.config.training_evidence
++        );
+         drop(client);
+         assert_eq!(original_peer.join().expect("original Trainer command")?, 1);
+-        let (connection, channel) = training_ports::readonly_channel(
+-            panel.original.command_config.clone(),
+-        )?;
++        let (connection, channel) =
++            training_ports::readonly_channel(panel.original.command_config.clone())?;
+         let control = match control {
+             Control::Original => commands::PanelReadControl::Original,
+             Control::WithdrawNativeAt(request) => commands::PanelReadControl::Withdraw {
+                 request,
+                 path: panel.original.root.join("positive-native-training"),
+             },
+-            Control::PauseAt { request, entered, release } => commands::PanelReadControl::Pause {
+-                request, entered, release,
++            Control::PauseAt {
++                request,
++                entered,
++                release,
++            } => commands::PanelReadControl::Pause {
++                request,
++                entered,
++                release,
+             },
+         };
+         let (peer, trace) = commands::panel_readonly(trainer, channel, control);
+         let host = HostFixture::from_panel_with_training(
+             panel,
+             false,
+-            TrainingComposition::Original { connection, dataset, training },
++            TrainingComposition::Original {
++                connection,
++                dataset,
++                training,
++            },
+         )?;
+         Ok(Self { host, peer, trace })
+     }
+@@ -104,10 +124,15 @@
+     }
+ }
+ 
+-async fn original_dataset(original: &PositiveFixture) -> anyhow::Result<OriginalCellQ24MaterialCommandReceiptV1> {
++async fn original_dataset(
++    original: &PositiveFixture,
++) -> anyhow::Result<OriginalCellQ24MaterialCommandReceiptV1> {
+     let config = original.command_config.clone();
+     let open = |name: &str| -> anyhow::Result<File> {
+-        Ok(OpenOptions::new().read(true).write(true).open(original.root.join(name))?)
++        Ok(OpenOptions::new()
++            .read(true)
++            .write(true)
++            .open(original.root.join(name))?)
+     };
+     let witness = |name: &str| -> anyhow::Result<FileAnchorWitnessStore> {
+         Ok(FileAnchorWitnessStore::open(
+@@ -140,7 +165,9 @@
+         Arc::clone(&original.baseline),
+     )?);
+     let (client, peer) = material_ports::commands_for_original(
+-        owner, config.clone(), OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
++        owner,
++        config.clone(),
++        OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
+     )?;
+     let readback = client.into_original_dataset_readback(&config)?;
+     let receipt = readback.readback().await?;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs
+index c900980522a2f860fdec349a3f4786b0a202f5ed..8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs
+@@ -13,7 +13,14 @@
+     let fixture = Box::pin(TrainingFixture::new(Control::Original)).await?;
+     let before = fixture.host.upstream_files()?;
+     let evaluator = fixture.host.original_files()?;
+-    tokio::task::block_in_place(|| fixture.host.host.as_ref().unwrap().fixture_training_proof_lifecycle())?;
++    tokio::task::block_in_place(|| {
++        fixture
++            .host
++            .host
++            .as_ref()
++            .unwrap()
++            .fixture_training_proof_lifecycle()
++    })?;
+     assert_eq!(fixture.requests(), 5);
+     assert_eq!(fixture.current_responses(), 5);
+     assert_eq!(fixture.host.upstream_files()?, before);
+@@ -31,7 +38,10 @@
+     let (client, peer) = fixture.host.commands(false, None, "original")?;
+     // Missing does not complete or retain a partial proof. The next call must
+     // perform a new first actual T read on the same finite channel.
+-    assert!(matches!(client.readback().await, Err(CommandError::Missing)));
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::Missing)
++    ));
+     assert_eq!(fixture.requests(), 1);
+     assert_eq!(fixture.host.original_files()?, missing);
+     let original = client.execute_evaluation().await?;
+@@ -65,8 +75,14 @@
+     assert_ne!(durable, before);
+     assert_eq!(finish(client, peer)?, 1);
+     let (client, peer) = fixture.host.commands(false, None, "original")?;
+-    assert!(matches!(client.execute_evaluation().await, Err(CommandError::ReadbackRequired)));
+-    assert!(matches!(client.readback().await, Err(CommandError::CommitUncertain)));
++    assert!(matches!(
++        client.execute_evaluation().await,
++        Err(CommandError::ReadbackRequired)
++    ));
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::CommitUncertain)
++    ));
+     assert_eq!(fixture.requests(), 4);
+     assert_eq!(fixture.host.original_files()?, durable);
+     assert_eq!(finish(client, peer)?, 2);
+@@ -75,13 +91,15 @@
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+-async fn original_panel_last_training_slot_keeps_the_actual_cohort_tail()
+--> anyhow::Result<()> {
++async fn original_panel_last_training_slot_keeps_the_actual_cohort_tail() -> anyhow::Result<()> {
+     let (entered, observed) = tokio::sync::oneshot::channel();
+     let (release, blocked) = std::sync::mpsc::channel();
+     let fixture = Box::pin(TrainingFixture::new(Control::PauseAt {
+-        request: 4, entered, release: blocked,
+-    })).await?;
++        request: 4,
++        entered,
++        release: blocked,
++    }))
++    .await?;
+     let before = fixture.host.original_files()?;
+     let (client, peer) = fixture.host.commands(false, None, "original")?;
+     let client = Arc::new(client);
+@@ -101,7 +119,10 @@
+     let client = Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("completed B request"))?;
+     assert_eq!(finish(client, peer)?, 1);
+     let (client, peer) = fixture.host.commands(true, None, "original")?;
+-    assert!(matches!(client.readback().await, Err(CommandError::CommitUncertain)));
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::CommitUncertain)
++    ));
+     assert_eq!(fixture.requests(), 4);
+     assert_eq!(fixture.host.original_files()?, durable);
+     assert_eq!(finish(client, peer)?, 1);
+@@ -110,13 +131,15 @@
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+-async fn original_panel_cancel_keeps_the_held_lane_and_consumed_channel()
+--> anyhow::Result<()> {
++async fn original_panel_cancel_keeps_the_held_lane_and_consumed_channel() -> anyhow::Result<()> {
+     let (entered, observed) = tokio::sync::oneshot::channel();
+     let (release, blocked) = std::sync::mpsc::channel();
+     let fixture = Box::pin(TrainingFixture::new(Control::PauseAt {
+-        request: 1, entered, release: blocked,
+-    })).await?;
++        request: 1,
++        entered,
++        release: blocked,
++    }))
++    .await?;
+     let (client, peer) = fixture.host.commands(false, None, "original")?;
+     let client = Arc::new(client);
+     let active = Arc::clone(&client);
+@@ -129,19 +152,35 @@
+     release.send(())?;
+     assert!(matches!(occupied, Err(CommandError::Busy)));
+     assert_eq!(finish(contender, contender_peer)?, 1);
+-    assert!(matches!(client.readback().await, Err(CommandError::Unavailable)));
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::Unavailable)
++    ));
+     let client = Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("canceled B client"))?;
+     // The original blocking exchange finishes naturally. Canceling its waiter
+     // cannot free the owner lane or reopen the taken transport.
+     assert_eq!(finish(client, peer)?, 1);
+     assert_eq!(fixture.requests(), 4);
+     assert_eq!(fixture.current_responses(), 4);
+-    assert!(fixture.host.host.as_ref().unwrap().fixture_dispatch_consumed());
++    assert!(
++        fixture
++            .host
++            .host
++            .as_ref()
++            .unwrap()
++            .fixture_dispatch_consumed()
++    );
+     let durable = fixture.host.original_files()?;
+     let (client, peer) = fixture.host.commands(false, None, "original")?;
+-    assert!(matches!(client.execute_evaluation().await, Err(CommandError::ReadbackRequired)));
++    assert!(matches!(
++        client.execute_evaluation().await,
++        Err(CommandError::ReadbackRequired)
++    ));
+     let original = client.readback().await?;
+-    assert_eq!(original.training_attestation(), &fixture.host.original.config.training_evidence);
++    assert_eq!(
++        original.training_attestation(),
++        &fixture.host.original.config.training_evidence
++    );
+     assert_eq!(fixture.requests(), 7);
+     assert_eq!(fixture.host.original_files()?, durable);
+     assert_eq!(finish(client, peer)?, 2);
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+index e02f3ed5b4855dd057d788fbe35dca89c73ef872..d8c8a62d8c82397aa23f5bcfd68fee34efe13096 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+@@ -13,8 +13,8 @@
+ use tokio::runtime::Handle;
+ use tokio::sync::Semaphore;
+ 
++use super::super::training_read_proof::OriginalPanelTrainingCallV1;
+ use super::super::training_read_proof::OriginalPanelTrainingReadV1;
+-use super::super::training_read_proof::OriginalPanelTrainingCallV1;
+ use super::super::training_read_proof::OriginalPanelTrainingSourceV1;
+ use super::OriginalCellEvaluationPanelOwnerV1;
+ use super::OriginalCellEvaluationPanelReadbackV1;
+@@ -152,7 +152,10 @@
+     ) -> Result<Receipt, Error> {
+         let started_at = self.current_time()?;
+         context.authenticate(started_at)?;
+-        let call = OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?;
++        let call = OriginalPanelTrainingSourceV1::call(
++            &self.training_source,
++            self.panel.retention.len() + 1,
++        )?;
+         let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
+         let before = self.read_panel_with_training(&mut training).await?;
+         if before.training() != &context.training
+@@ -259,10 +262,12 @@
+                 .map_err(Error::from);
+         }
+         OriginalCellEvaluationPanelOwnerV1::read_current_with_training(
+-            &mut self.panel, super::original::now, training,
++            &mut self.panel,
++            super::original::now,
++            training,
+         )
+-            .await
+-            .map_err(Error::from)
++        .await
++        .map_err(Error::from)
+     }
+ 
+     async fn read_panel(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
+index ea2f9f5e1c669aa37258c86a9a393fd661d5b3c9..90b880ff4446600afc669fe36fca7437232fd04e 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
+@@ -9,8 +9,8 @@
+ 
+ use super::Error;
+ use super::OriginalCellEvaluationHostV1;
++use super::OriginalPanelTrainingSourceV1;
+ use super::Panel;
+-use super::OriginalPanelTrainingSourceV1;
+ use crate::OriginalCellEvaluationReceiptOwnerV1;
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+index d1418d6cd1b01401f2505ec430190248c167f91c..07c68b6971721515ad819544d9cc8dc442a20336 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+@@ -152,8 +152,10 @@
+         );
+         for (owner, task) in self.retention.iter_mut().zip(self.registration.retention()) {
+             results.push(
+-                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)
+-                    .await?,
++                OriginalCellEvaluationPanelMemberOwnersV1::read_original(
++                    owner, task, clock, training,
++                )
++                .await?,
+             );
+         }
+         Ok(results)
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
+index 3076ad2130497e82d9850c8d145df982e6c5518e..49f23508db7805fc7fec663af10269f39fa3a271 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
+@@ -72,9 +72,14 @@
+         };
+         let bytes = self.qualification.completed_bytes()?;
+         let prepared = OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(
+-            &mut sources, &self.qualification.config, started_at, training,
+-        ).await?;
+-        let qualification = OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(
++            &mut sources,
++            &self.qualification.config,
++            started_at,
++            training,
++        )
++        .await?;
++        let qualification =
++            OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(
+                 &mut self.qualification,
+                 &mut sources,
+                 &prepared,
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
+index 35de0290b766d457d44e043e5ee8cc9c93cac947..91a3a5b87a1746d1cb4178cc652f9480574986c1 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
+@@ -7,8 +7,8 @@
+ use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
+ use codex_hepta_types::Digest32;
+ 
++use super::training_read_proof::OriginalPanelTrainingReadV1;
+ use super::*;
+-use super::training_read_proof::OriginalPanelTrainingReadV1;
+ 
+ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
+     /// Work expiry never renews or erases an original completed publication.
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
+index 100be7ebc6050623074e8cb2ad019efb1afc9b30..a193092ffd45d4c894999b126072f6d9c48fb7b2 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
+@@ -4,8 +4,8 @@
+ use codex_hepta_intelligence_eval::ProductProviderErrorV1;
+ use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
+ 
++use super::training_read_proof::OriginalPanelTrainingReadV1;
+ use super::*;
+-use super::training_read_proof::OriginalPanelTrainingReadV1;
+ use crate::CellEvaluationJournalsV1;
+ use crate::LearningIterationEvidenceClientV1;
+ 
+@@ -83,8 +83,12 @@
+         config: &OriginalCellEvaluationQualificationConfigV1,
+         started_at: u64,
+     ) -> Result<Prepared, Error> {
+-        self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)
+-            .await
++        self.prepare_with_training(
++            config,
++            started_at,
++            &mut OriginalPanelTrainingReadV1::Individual,
++        )
++        .await
+     }
+ 
+     pub(super) async fn prepare_with_training(
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs
+index 52d9c5fdcc36d70f0aff6b95d3e3c41113e88126..7130b04357861ded3a20c8707d25b280009bd09c 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs
+@@ -6,46 +6,80 @@
+ 
+ impl OriginalCellEvaluationHostV1 {
+     pub(crate) fn fixture_training_proof_lifecycle(&self) -> anyhow::Result<()> {
+-        let mut owners = self.owners.try_lock().map_err(|_| anyhow::anyhow!("original B lane"))?;
+-        self.runtime.block_on(Box::pin(check_lifecycle(&mut owners)))
++        let mut owners = self
++            .owners
++            .try_lock()
++            .map_err(|_| anyhow::anyhow!("original B lane"))?;
++        self.runtime
++            .block_on(Box::pin(check_lifecycle(&mut owners)))
+     }
+ }
+ 
+ async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
+-        let members = owners.panel.retention.len() + 1;
+-        let call = owners.training_source.call(members)?;
+-        let proof = call.begin()?;
+-        assert!(call.begin().is_err());
+-        let other_call = owners.training_source.call(members)?;
+-        assert!(matches!(proof.finish(&other_call, owners.current_time()?), Err(QualificationError::Binding(_))));
+-        assert!(call.begin().is_err(), "dropping a proof does not renew admission");
++    let members = owners.panel.retention.len() + 1;
++    let call = owners.training_source.call(members)?;
++    let proof = call.begin()?;
++    assert!(call.begin().is_err());
++    let other_call = owners.training_source.call(members)?;
++    assert!(matches!(
++        proof.finish(&other_call, owners.current_time()?),
++        Err(QualificationError::Binding(_))
++    ));
++    assert!(
++        call.begin().is_err(),
++        "dropping a proof does not renew admission"
++    );
+ 
+-        let call = owners.training_source.call(members)?;
+-        let mut proof = call.begin()?;
+-        let before = Box::pin(owners.read_panel_with_training(&mut proof)).await?;
+-        assert!(matches!(proof.finish(&call, owners.current_time()?), Err(QualificationError::CommitUncertain)));
+-        assert!(call.begin().is_err());
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    let before = Box::pin(owners.read_panel_with_training(&mut proof)).await?;
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(call.begin().is_err());
+ 
+-        let call = owners.training_source.call(members)?;
+-        let mut proof = call.begin()?;
+-        assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
+-        assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
+-        // Keep this call identity while replacing only the Source allocation;
+-        // same client/signature bytes cannot substitute for its original brand.
+-        let new_call = call.fixture_same_call_new_source();
+-        assert!(matches!(
+-            proof.finish(&new_call, owners.current_time()?),
+-            Err(QualificationError::Binding("same completed panel Training call and Source"))
+-        ));
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    // Keep this call identity while replacing only the Source allocation;
++    // same client/signature bytes cannot substitute for its original brand.
++    let new_call = call.fixture_same_call_new_source();
++    assert!(matches!(
++        proof.finish(&new_call, owners.current_time()?),
++        Err(QualificationError::Binding(
++            "same completed panel Training call and Source"
++        ))
++    ));
+ 
+-        let call = owners.training_source.call(members)?;
+-        let mut proof = call.begin()?;
+-        assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
+-        assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
+-        // An extra slot fails before peer I/O and consumes the proof. A valid
+-        // prefix cannot be recovered after an out-of-order continuation.
+-        assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
+-        assert!(matches!(proof.finish(&call, owners.current_time()?), Err(QualificationError::CommitUncertain)));
+-        assert!(owners.panel.fenced);
+-        Ok(())
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    // An extra slot fails before peer I/O and consumes the proof. A valid
++    // prefix cannot be recovered after an out-of-order continuation.
++    assert!(
++        Box::pin(owners.read_panel_with_training(&mut proof))
++            .await
++            .is_err()
++    );
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(owners.panel.fenced);
++    Ok(())
+ }
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
+index 93c97ef2547e771f25092285ce40e56c85e38937..0b328d77083060c943234ae0d8bf68088474bd6f 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
+@@ -91,7 +91,9 @@
+             .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+             .map_err(|_| Error::CommitUncertain)?;
+         match &self.source {
+-            OriginalPanelTrainingSourceV1::Individual => Ok(OriginalPanelTrainingReadV1::Individual),
++            OriginalPanelTrainingSourceV1::Individual => {
++                Ok(OriginalPanelTrainingReadV1::Individual)
++            }
+             OriginalPanelTrainingSourceV1::Bound(_) => Ok(OriginalPanelTrainingReadV1::Panel(
+                 OriginalPanelTrainingProofV1 {
+                     call: self,
+@@ -114,9 +116,12 @@
+         config: &OriginalCellEvaluationQualificationConfigV1,
+     ) -> Result<(), Error> {
+         match self {
+-            Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await,
++            Self::Individual => {
++                OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await
++            }
+             Self::Panel(proof) => {
+-                let Cursor::Next(slot) = std::mem::replace(&mut proof.cursor, Cursor::Refused) else {
++                let Cursor::Next(slot) = std::mem::replace(&mut proof.cursor, Cursor::Refused)
++                else {
+                     return Err(Error::CommitUncertain);
+                 };
+                 // A failed or canceled await never leaves a reusable slot.
+@@ -127,7 +132,8 @@
+                 if slot == 0 || slot + 1 == proof.call.slots {
+                     // These are the existing prepare / finish_readback slots,
+                     // never an earlier read moved outside the physical work.
+-                    OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?;
++                    OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)
++                        .await?;
+                 }
+                 original.authenticate(binding::now()?)?;
+                 proof.cursor = if slot + 1 == proof.call.slots {
+@@ -161,7 +167,9 @@
+                 if !Arc::ptr_eq(&proof.call.identity, &expected.identity)
+                     || !Arc::ptr_eq(original, expected_source)
+                 {
+-                    return Err(Error::Binding("same completed panel Training call and Source"));
++                    return Err(Error::Binding(
++                        "same completed panel Training call and Source",
++                    ));
+                 }
+                 if !matches!(proof.cursor, Cursor::Complete) {
+                     return Err(Error::CommitUncertain);
+@@ -180,7 +188,8 @@
+         };
+         Self {
+             source: OriginalPanelTrainingSourceV1::from_original_training_readback(
+-                Arc::clone(&original.trainer), &original.config,
++                Arc::clone(&original.trainer),
++                &original.config,
+             ),
+             identity: Arc::clone(&self.identity),
+             slots: self.slots,
+@@ -204,7 +213,9 @@
+             || self.config.verifier.scope_digest() != config.verifier.scope_digest()
+             || self.config.verifier.objective_digest() != config.verifier.objective_digest()
+         {
+-            return Err(Error::Binding("same actual panel Trainer channel and full Training pin"));
++            return Err(Error::Binding(
++                "same actual panel Trainer channel and full Training pin",
++            ));
+         }
+         Ok(())
+     }

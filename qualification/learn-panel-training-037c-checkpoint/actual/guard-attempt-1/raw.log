@@ -1,0 +1,1067 @@
+test_actual_factory_binds_all_members_before_minting_private_source (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_actual_factory_binds_all_members_before_minting_private_source) ... ERROR
+test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) ... 
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='.checked_mul(8)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='identity: Arc::new(())') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='admitted: AtomicBool::new(false)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='call: self') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='cursor: Cursor::Next(0)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!Arc::ptr_eq(&proof.call.identity, &expected.identity)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!Arc::ptr_eq(original, expected_source)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!matches!(proof.cursor, Cursor::Complete)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='original.authenticate(current)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='!std::ptr::eq(self.trainer.as_ref(), trainer)') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.training != config.training') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.scope != config.scope') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.training_evidence != config.training_evidence') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.context.generator != config.context.generator') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.trust_digest() != config.verifier.trust_digest()') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.scope_digest() != config.verifier.scope_digest()') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.objective_digest() != config.verifier.objective_digest()') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='self.config.verifier.verify(') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='LearningEvidenceRoleV1::Generator') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?') ... ERROR
+  test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='original.principal() != &self.config.context.generator') ... ERROR
+test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) ... 
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='let before = self.read_members(clock, training).await?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='let after = self.read_members(clock, training).await?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='if before != after') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.require_observed_panel(&after)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.primary.authenticate(&after[0], current)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='owner.authenticate(observed, current)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.retained = Some(result.clone())') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingSourceV1::call(') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingCallV1::begin(&call)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='let before = self.read_panel_with_training(&mut training).await?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::readback(') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='let after = self.read_panel_with_training(&mut training).await?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingReadV1::finish(training, &call, current)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='self.authenticate_panel(&after, current)?') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='config.signing.verifier.require_signer_binding(') ... ERROR
+  test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='contract::authenticate_receipt(') ... ERROR
+test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) ... 
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='let before = self.read_original(config)?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='OriginalPanelTrainingReadV1::read(training, self, config).await?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='let after = self.read_original(config)?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='binding::authenticate(config, &after, current)?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='std::mem::replace(&mut proof.cursor, Cursor::Refused)') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='original.require_source(source.trainer, config)?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='if slot == 0 || slot + 1 == proof.call.slots') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='original.authenticate(binding::now()?)?') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='Cursor::Complete') ... ERROR
+  test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='Cursor::Next(slot + 1)') ... ERROR
+test_original_effect_owner_and_transport_budgets_are_unchanged (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_original_effect_owner_and_transport_budgets_are_unchanged) ... ERROR
+test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) ... ok
+
+======================================================================
+ERROR: test_actual_factory_binds_all_members_before_minting_private_source (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_actual_factory_binds_all_members_before_minting_private_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 97, in test_actual_factory_binds_all_members_before_minting_private_source
+    self.rejects(HOST, 'fn from_original_receipt_owner(', 'training_source: OriginalPanelTrainingSourceV1::Individual')
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='.checked_mul(8)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='identity: Arc::new(())')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn call(', marker='admitted: AtomicBool::new(false)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='call: self')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn begin(', marker='cursor: Cursor::Next(0)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!Arc::ptr_eq(&proof.call.identity, &expected.identity)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!Arc::ptr_eq(original, expected_source)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='!matches!(proof.cursor, Cursor::Complete)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn finish(', marker='original.authenticate(current)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='!std::ptr::eq(self.trainer.as_ref(), trainer)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.training != config.training')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.scope != config.scope')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.training_evidence != config.training_evidence')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.context.generator != config.context.generator')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.trust_digest() != config.verifier.trust_digest()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.scope_digest() != config.verifier.scope_digest()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn require_source(', marker='self.config.verifier.objective_digest() != config.verifier.objective_digest()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='self.config.verifier.verify(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='LearningEvidenceRoleV1::Generator')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) (function='fn authenticate(', marker='original.principal() != &self.config.context.generator')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 117, in test_call_identity_counter_and_immutable_signature_cannot_be_substituted
+    with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='let before = self.read_members(clock, training).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='let after = self.read_members(clock, training).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='if before != after')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.require_observed_panel(&after)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.primary.authenticate(&after[0], current)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='owner.authenticate(observed, current)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', marker='self.retained = Some(result.clone())')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(: required code order missing: ['fn read_members(', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(', '&mut self.primary', 'self.registration.primary()', 'clock,', '.await?', 'for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())', 'OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?', 'Ok(results)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingSourceV1::call(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingCallV1::begin(&call)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='let before = self.read_panel_with_training(&mut training).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::readback(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='let after = self.read_panel_with_training(&mut training).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='OriginalPanelTrainingReadV1::finish(training, &call, current)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='self.authenticate_panel(&after, current)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='config.signing.verifier.require_signer_binding(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', marker='contract::authenticate_receipt(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 129, in test_cohort_cells_qualification_and_receipt_tails_remain_real
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='let before = self.read_original(config)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs:fn prepare(: required code order missing: ['self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)', '.await']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='OriginalPanelTrainingReadV1::read(training, self, config).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs:fn prepare(: required code order missing: ['self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)', '.await']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='let after = self.read_original(config)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs:fn prepare(: required code order missing: ['self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)', '.await']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', marker='binding::authenticate(config, &after, current)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs:fn prepare(: required code order missing: ['self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)', '.await']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='std::mem::replace(&mut proof.cursor, Cursor::Refused)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='original.require_source(source.trainer, config)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='if slot == 0 || slot + 1 == proof.call.slots')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='original.authenticate(binding::now()?)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='Cursor::Complete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) (path='codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs', marker='Cursor::Next(slot + 1)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 106, in test_first_and_last_reads_stay_in_the_original_physical_slots
+    with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:fn read(: required code order missing: ['Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await', 'Self::Panel(proof)', 'std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'return Err(Error::CommitUncertain)', '&proof.call.source', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?', 'original.authenticate(binding::now()?)?', 'proof.cursor = if slot + 1 == proof.call.slots', 'Cursor::Complete', 'Cursor::Next(slot + 1)', 'Ok(())']
+
+======================================================================
+ERROR: test_original_effect_owner_and_transport_budgets_are_unchanged (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_original_effect_owner_and_transport_budgets_are_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 135, in test_original_effect_owner_and_transport_budgets_are_unchanged
+    self.rejects(HOST, 'fn completion(', 'self.fenced = true')
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 53, in rejects
+    self.verifies(path, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 49, in verifies
+    PROOF._verify_protected_files(root, {'protected_file': rows})
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/guard-mirror/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(: required code order missing: ['self.current_time()?', 'context.authenticate(started_at)?', 'OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'before.training() != &context.training', 'before.training_evidence() != &context.training_evidence', 'before.registration() != &context.registration', 'if action == wire::Action::Execute', 'self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'let primary = &mut self.panel.primary', 'OriginalCellEvaluationReceiptSourcesV1', 'qualification: before.primary().qualification()', 'context: &config.context', 'evidence: &config.product_evidence', 'trainer: primary.trainer.as_ref()', 'wire::Action::Execute =>', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'wire::Action::Readback =>', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'if before != after', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', '&completed.0,\n            &completed.1', 'let current = self.current_time()?', 'require_clock(started_at, current)?', 'current >= context.training.request.envelope.expiry_unix_seconds', 'return Err(Error::CommitUncertain)', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)', 'config.signing.verifier.require_signer_binding(', 'LearningEvidenceRoleV1::Evaluator', 'contract::authenticate_receipt(context, completed.0, completed.1, current)?', 'self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)', 'self.retained = Some(original.clone())', 'Ok(original)']
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.631s
+
+FAILED (errors=53)

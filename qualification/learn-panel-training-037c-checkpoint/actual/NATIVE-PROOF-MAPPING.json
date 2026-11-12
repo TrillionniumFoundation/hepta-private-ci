@@ -1,0 +1,179 @@
+{
+  "status": "STATIC_MAPPING_NATIVE_UNRUN",
+  "base_source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "native_budgets_to_preserve": {
+    "nextest_test_seconds": 60,
+    "rust_min_stack_bytes": 8388608,
+    "test_threads": 2,
+    "retries": 0,
+    "readonly_request_limit": 128,
+    "readonly_request_millis": 500
+  },
+  "names_note": "Expected fully qualified names derive from the historical original panel test prefix and the unchanged/added module mounts. A fresh native listing/JUnit must confirm them; no compiled listing or native result exists for this cohort.",
+  "fixture_chain": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "line": 42,
+      "marker": "PanelFixture::completed_for_publication(",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "line": 61,
+      "marker": "Trainer::recover_original_stage(",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "line": 70,
+      "marker": "let training = client.readback().await?",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "line": 79,
+      "marker": "training_ports::readonly_channel(",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "line": 100,
+      "marker": "TrainingComposition::Original {",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "line": 122,
+      "marker": "into_host_from_original_training_readback(",
+      "bytes": 7939,
+      "sha256": "5fa617604a8524b6fc8094b77205c5ca168e61d17aa1e7e2a19bf8584143f3cd",
+      "blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "line": 69,
+      "marker": "OriginalPanelTrainingSourceV1::from_original_training_readback(",
+      "bytes": 3852,
+      "sha256": "57c5a8b40d313f2f69e220b41bc005495fcefcc11752dc110980eafbe7699304",
+      "blob": "90b880ff4446600afc669fe36fca7437232fd04e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "line": 74,
+      "marker": "original_training_readback_response(bytes, request_id)",
+      "bytes": 3544,
+      "sha256": "679a2d5a8284abc691ec46cf022eb1243a0959c80a674c96f4d627c7b4590dc5",
+      "blob": "b0a9a831e06c3499edd00a9eab5cf024e1ff2441"
+    }
+  ],
+  "frame_scope": "Counts apply to one actual T readonly channel after fixture setup. The initial D and T command reads are separate closed setup peers. These tests do not establish the aggregate Root/Version/S/C 128-frame budget.",
+  "fixture_limits": "Same-process fixed-purpose transport fixture, real SourceBound T handler and original owner/journal reads. Role credentials, Product declarations and B clock remain explicit fixtures. This bridge does not itself prove production four-connection admission or ordinary deployment.",
+  "cases": [
+    {
+      "name": "original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots",
+      "expected_native_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+        "line": 11,
+        "marker": "async fn original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots(",
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "expected_actual_t_requests": 5,
+      "expected_actual_t_completed_replies": 5,
+      "behavior": "A begun call cannot begin again or finish against another call. One panel is insufficient. A completed proof rejects a newly allocated Source even with the same call identity and same T bytes. An extra slot poisons the proof before another peer read.",
+      "assertions": "The actual private lifecycle helper runs while holding the original B mutex; partial panel uses 1 T, two complete-panel transactions use 2 T each. No B effect is dispatched and all upstream/B files stay identical.",
+      "why_legacy_or_wrong_slot_cannot_pass": "Individual fallback fails the same-call lifecycle expectations or performs original 8N reads, rather than the exact total 5; a canned fixture would leave actual-T trace at zero.",
+      "native_status": "UNRUN"
+    },
+    {
+      "name": "original_panel_same_call_training_keeps_four_execute_and_three_readback_frames",
+      "expected_native_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_same_call_training_keeps_four_execute_and_three_readback_frames",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+        "line": 33,
+        "marker": "async fn original_panel_same_call_training_keeps_four_execute_and_three_readback_frames(",
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "expected_actual_t_requests": 11,
+      "expected_actual_t_completed_replies": 11,
+      "behavior": "Known Missing performs one actual first read and does not renew a partial proof. The same finite channel then performs Execute4, Readback3 and Readback3; both reads return the identical original opaque B receipt.",
+      "assertions": "Trace milestones are 1, 5, 8, 11. Only the first actual Execute changes the B journal; later readbacks and all upstream files remain unchanged.",
+      "why_legacy_or_wrong_slot_cannot_pass": "N=2 Individual fallback costs 18/17 per Execute/Readback, so it cannot satisfy 4/3; old member peers cannot satisfy actual-T trace counts.",
+      "native_status": "UNRUN"
+    },
+    {
+      "name": "original_panel_last_actual_training_failure_never_returns_or_resigns_b",
+      "expected_native_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_actual_training_failure_never_returns_or_resigns_b",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+        "line": 64,
+        "marker": "async fn original_panel_last_actual_training_failure_never_returns_or_resigns_b(",
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "expected_actual_t_requests": 4,
+      "expected_actual_t_completed_replies": 3,
+      "behavior": "At actual readonly T request4, truncate only the same fixture native-training artifact before calling the original T handler. This is the final panel T slot, after the original receipt owner completed its two T checks and durable B effect.",
+      "assertions": "B Execute returns an error, B journal differs from before, a new Execute is ReadbackRequired, later Readback is CommitUncertain, the journal does not change again, and no fifth T request occurs.",
+      "why_legacy_or_wrong_slot_cannot_pass": "Trace4 plus three original Completed replies proves the failure was not the first panel read or either receipt-owner T read. The test deliberately permits an uncertain durable B signature and forbids return/re-sign.",
+      "native_status": "UNRUN"
+    },
+    {
+      "name": "original_panel_last_training_slot_keeps_the_actual_cohort_tail",
+      "expected_native_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_training_slot_keeps_the_actual_cohort_tail",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+        "line": 94,
+        "marker": "async fn original_panel_last_training_slot_keeps_the_actual_cohort_tail(",
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "expected_actual_t_requests": 4,
+      "expected_actual_t_completed_replies": 4,
+      "behavior": "Pause actual readonly T request4, withdraw the actual retention cohort target, then release the same request. The original T handler must still succeed and the later non-T physical tail must refuse the B response.",
+      "assertions": "Four actual requests and four original Completed responses exclude T transport failure as the reason. B is already durable; later readback remains fenced without more T requests or journal writes.",
+      "why_legacy_or_wrong_slot_cannot_pass": "If the last panel or its post-T cohort/Cell/qualification tail were omitted, this negative case would return B. The exact fourth-slot admission and 4/4 completed count distinguish it from an early failure.",
+      "native_status": "UNRUN"
+    },
+    {
+      "name": "original_panel_cancel_keeps_the_held_lane_and_consumed_channel",
+      "expected_native_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+        "line": 134,
+        "marker": "async fn original_panel_cancel_keeps_the_held_lane_and_consumed_channel(",
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "expected_actual_t_requests": 7,
+      "expected_actual_t_completed_replies": 7,
+      "behavior": "Pause first actual T, cancel only the async B waiter, observe Busy from a separate B consumer while the same original mutex remains held, then release. The original blocking exchange completes naturally on the taken channel.",
+      "assertions": "The canceled client stays Unavailable; the original work consumes 4 actual T. A fresh Execute is ReadbackRequired, and an allowed readback consumes 3 more for total7 while preserving the durable B journal.",
+      "why_legacy_or_wrong_slot_cannot_pass": "The fixture does not kill a Rust process or release the original owner lane. Actual Busy, consumed client, dispatch-once flag and 4 then7 frame counts detect cancellation reuse/fallback.",
+      "native_status": "UNRUN"
+    }
+  ],
+  "independent_review": {
+    "reviewer": "candidate_audit",
+    "type": "static code review only",
+    "finding": "Confirmed actual consuming factory, Bound pin, real T replies, expected 5/11/4/4/7 requests and 5/11/3/4/7 Completed replies; no legacy/canned fallback found.",
+    "native_or_latency_proven": false
+  }
+}

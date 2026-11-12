@@ -1,0 +1,40 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_original_brand_and_all_current_reads_precede_final_full_authentication",
+    "-v"
+  ],
+  "started_at": "2026-11-12T18:35:30.181052+00:00",
+  "elapsed_seconds": 0.629383591003716,
+  "returncode": 0,
+  "raw": {
+    "bytes": 338,
+    "sha256": "d3b15273379f851731c4883f639dfaffb2806acbb669a506c52fbf85ee92b59d",
+    "blob": "5ee252d896454ae5078ce0a8d18a9e3045185209"
+  },
+  "base_sha": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "before": {
+    "bytes": 15713,
+    "sha256": "e71d3a3fb1a6949bd8101cb228e4909dc503b84b17100f640efdae39c3aac6be",
+    "blob": "5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f"
+  },
+  "after": {
+    "bytes": 15767,
+    "sha256": "41742af761c8a0f37dcc7575e723ab7027789d7031f4aff0620ba606e038f521",
+    "blob": "1c4b608895e09c0215a30212282402b8c2dd8169"
+  },
+  "changes": [
+    [
+      "let before = self.read_panel().await?",
+      "let before = self.read_panel_with_training(&mut training).await?"
+    ],
+    [
+      "let after = self.read_panel().await?",
+      "let after = self.read_panel_with_training(&mut training).await?"
+    ]
+  ],
+  "scope": "one unchanged legacy Host security test with two marker spellings migrated; original scanner and expected-caller tuple untouched",
+  "native_tests_run": false
+}

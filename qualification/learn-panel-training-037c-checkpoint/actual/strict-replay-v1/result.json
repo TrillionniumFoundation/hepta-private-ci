@@ -1,0 +1,405 @@
+{
+  "status": "PASS",
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "scope": "All 14 complete repository-relative touched paths; exact nine verified 57b blobs and five absent paths. This is a path-limited replay, not a full repository checkout or full gate.",
+  "existing_paths": 9,
+  "new_paths": 5,
+  "roundtrips": 3,
+  "offset_or_fuzz": false,
+  "original_formatter_patch_check_returncode": 1,
+  "corrected_patch": {
+    "bytes": 51115,
+    "sha256": "c201543dfaffaa9ca9e620b40e5f9ed1169108b26f23808adf946938cdff956a",
+    "blob": "c5d851f4b7dff626b11a5857f7f33e563e0f9a55"
+  },
+  "corrected_prefmt_patch": {
+    "bytes": 49486,
+    "sha256": "06f2afd10dfa8f2eefbea4268c5b937236e993bed9d1cf59f0ac04fce83c61f2",
+    "blob": "c7af6f1914874e23e8b67eb18a538e7e9261834c"
+  },
+  "original_formatter_patch": {
+    "bytes": 51387,
+    "sha256": "4903736bf65bfc25b5994416bac43c058ebed835afeb64443c91f91e69b62ac8",
+    "blob": "9e347fe73ed8098649dd7a92aa0d6a4884395d9f"
+  },
+  "reconstructed_manifest_pinned_format_only": {
+    "bytes": 31402,
+    "sha256": "f6e43900740c6adca585454754e571140ac41a377b133e28a805028d4437b233",
+    "blob": "caeedfd35a9736aba5c20031c412d940c9ba3192"
+  },
+  "after_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "bytes": 17561,
+      "sha256": "57cabfb5381d834910aa470b8a3c4b9db10a7250700566aa003f6f86466007b5",
+      "blob": "71d28396530520fd9c430856aa019d01f03d7db7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "bytes": 3544,
+      "sha256": "679a2d5a8284abc691ec46cf022eb1243a0959c80a674c96f4d627c7b4590dc5",
+      "blob": "b0a9a831e06c3499edd00a9eab5cf024e1ff2441"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "bytes": 7939,
+      "sha256": "5fa617604a8524b6fc8094b77205c5ca168e61d17aa1e7e2a19bf8584143f3cd",
+      "blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "bytes": 6855,
+      "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+      "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "bytes": 7766,
+      "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+      "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "bytes": 12526,
+      "sha256": "2a5a5324f2d706017b74e0ef9453eca9268c0a5afe4444ebf54f9424601541dd",
+      "blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "bytes": 3852,
+      "sha256": "57c5a8b40d313f2f69e220b41bc005495fcefcc11752dc110980eafbe7699304",
+      "blob": "90b880ff4446600afc669fe36fca7437232fd04e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "bytes": 7213,
+      "sha256": "3a945a8fee7bd172a495514eb0b4bfca671118c6681ec02761273435c5793c8d",
+      "blob": "07c68b6971721515ad819544d9cc8dc442a20336"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "bytes": 7463,
+      "sha256": "5f5d206208a37307eed55209a83e55e0fde8446c47ff1f047b6b58946f852022",
+      "blob": "49f23508db7805fc7fec663af10269f39fa3a271"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "bytes": 11223,
+      "sha256": "6a41fe8d0bf18d14e6f29853c1096439a8bfcaf39edde8093ef3805cee7b0933",
+      "blob": "514d6cbf873acddb19c7e4540d198e3a498fe084"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "bytes": 7204,
+      "sha256": "f210d96f1908ac37a3191cab817a369515e5a62ab71e2f41f36ff54bcb07cdb0",
+      "blob": "91a3a5b87a1746d1cb4178cc652f9480574986c1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "bytes": 4629,
+      "sha256": "982f6e072989ee6ddafa1a746d3baba4b040cd0d2bbb61a1d8b48dd17609b434",
+      "blob": "a193092ffd45d4c894999b126072f6d9c48fb7b2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs",
+      "bytes": 2891,
+      "sha256": "ce68ef34cc4b83f2f06964df125d2e53dcc8216c11d6a6181cd56ed7ed2817b0",
+      "blob": "7130b04357861ded3a20c8707d25b280009bd09c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "bytes": 8712,
+      "sha256": "ec290abe362c52d33320b0321e1dfc9c284092dd38481bcc6ead60e9a724af02",
+      "blob": "0b328d77083060c943234ae0d8bf68088474bd6f"
+    }
+  ],
+  "commands": [
+    {
+      "name": "exact57b-paths-to-actual-init",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-paths-to-actual",
+        "init",
+        "-q"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "exact57b-paths-to-actual-init.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "exact57b-paths-to-actual-add-base",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-paths-to-actual",
+        "add",
+        "--",
+        "."
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "exact57b-paths-to-actual-add-base.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "original-formatter-new-file-header-check",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-paths-to-actual",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-formatted.patch"
+      ],
+      "returncode": 1,
+      "log": {
+        "path": "original-formatter-new-file-header-check.raw.log",
+        "bytes": 542,
+        "sha256": "588a4d71e6efe23230c7593a4d4987d39cb78651a7ba3f7c4979c9658e2a2478",
+        "blob": "49e0101c1ee45b8b4f686d118aa8db69520fa550"
+      }
+    },
+    {
+      "name": "corrected-exact57b-to-actual-check",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-paths-to-actual",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-57b-corrected.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "corrected-exact57b-to-actual-check.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "corrected-exact57b-to-actual-apply",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-paths-to-actual",
+        "apply",
+        "--index",
+        "--verbose",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-57b-corrected.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "corrected-exact57b-to-actual-apply.raw.log",
+        "bytes": 2580,
+        "sha256": "e80ca0668558380c6a8e0595e49d0956e7fc413ec3fd212ff137e60216ea34df",
+        "blob": "d91d419423003d9ce41de305a80227f3c2eee234"
+      }
+    },
+    {
+      "name": "prefmt-to-actual-init",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/prefmt-to-actual",
+        "init",
+        "-q"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "prefmt-to-actual-init.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "prefmt-to-actual-add-base",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/prefmt-to-actual",
+        "add",
+        "--",
+        "."
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "prefmt-to-actual-add-base.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "actual-format-only-check",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/prefmt-to-actual",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/format-only.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "actual-format-only-check.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "actual-format-only-apply",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/prefmt-to-actual",
+        "apply",
+        "--index",
+        "--verbose",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/format-only.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "actual-format-only-apply.raw.log",
+        "bytes": 2216,
+        "sha256": "af0d1f78e7a047407a63b07db403bbd4029a8051e9cabd8df036470417487ab0",
+        "blob": "2238eeacd88a3dc0afdbe459786e33c1771b375d"
+      }
+    },
+    {
+      "name": "exact57b-via-prefmt-to-actual-init",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "init",
+        "-q"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "exact57b-via-prefmt-to-actual-init.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "exact57b-via-prefmt-to-actual-add-base",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "add",
+        "--",
+        "."
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "exact57b-via-prefmt-to-actual-add-base.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "corrected-exact57b-to-prefmt-check",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-prefmt-57b-corrected.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "corrected-exact57b-to-prefmt-check.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "corrected-exact57b-to-prefmt-apply",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "apply",
+        "--index",
+        "--verbose",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-prefmt-57b-corrected.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "corrected-exact57b-to-prefmt-apply.raw.log",
+        "bytes": 2580,
+        "sha256": "e80ca0668558380c6a8e0595e49d0956e7fc413ec3fd212ff137e60216ea34df",
+        "blob": "d91d419423003d9ce41de305a80227f3c2eee234"
+      }
+    },
+    {
+      "name": "prefmt-then-format-only-check",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/format-only.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "prefmt-then-format-only-check.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "prefmt-then-format-only-apply",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/strict-replay-v1/exact57b-via-prefmt-to-actual",
+        "apply",
+        "--index",
+        "--verbose",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/format-only.patch"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": "prefmt-then-format-only-apply.raw.log",
+        "bytes": 2216,
+        "sha256": "af0d1f78e7a047407a63b07db403bbd4029a8051e9cabd8df036470417487ab0",
+        "blob": "2238eeacd88a3dc0afdbe459786e33c1771b375d"
+      }
+    }
+  ],
+  "native_tests_run": false
+}

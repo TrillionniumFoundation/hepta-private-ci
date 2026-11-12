@@ -1,0 +1,45 @@
+{
+  "copied_driver": "/workspace/scratch/037c0371c195/training-read-transaction-format-v3/format-driver.template.py",
+  "copied_driver_meta": {
+    "bytes": 8930,
+    "sha256": "f1c59f1b14f4e40188766fd832cad673af1ed6de79a31c9efa756e36b467d6e2",
+    "blob": "7ba0b48ca6e8a98da7cf9a4eaf25fea2d1756353"
+  },
+  "only_template_changes": [
+    [
+      "/home/qian-qi/hepta-learn-037c-evidence/format-training-read-transaction-v3",
+      "/home/qian-qi/hepta-learn-037c-evidence/format-panel-training-proof-v1"
+    ],
+    [
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "57b27c81d0d5321b873ee751fd0e58e1d905b988"
+    ],
+    [
+      "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+      "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+    ],
+    [
+      "assert len(payload[\"files\"]) == 9",
+      "assert len(payload[\"files\"]) == 14"
+    ],
+    [
+      "training-readonly-prefmt.patch",
+      "panel-training-prefmt.patch"
+    ],
+    [
+      "training-readonly-formatted.patch",
+      "panel-training-formatted.patch"
+    ],
+    [
+      "isolated original Source readonly transaction v3 formatting only; no native or ordinary qualification",
+      "isolated same-call B panel Training proof formatting only; no native or ordinary qualification"
+    ],
+    [
+      "EXPECTED_PATHS = {'codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_stage.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_source.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs'}",
+      "EXPECTED_PATHS = {'codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs'}"
+    ]
+  ],
+  "unchanged_rustfmt_sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c",
+  "same_config": "imports_granularity=Item,skip_children=true",
+  "no_checkout_target_cargo_native_access": true
+}

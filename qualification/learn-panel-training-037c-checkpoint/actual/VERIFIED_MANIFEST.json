@@ -1,0 +1,412 @@
+{
+  "status": "ACTUAL_FORMAT_VERIFIED_SCOPED_GUARDS_PASSED_NATIVE_UNRUN",
+  "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "base_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "rust_product_files": 8,
+  "rust_test_files": 6,
+  "python_source_guards": 2,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 17338,
+        "sha256": "dfe09c06d1480dfffd656b5af8dd5262f45742c39730d4a359a1279451b211b6",
+        "blob": "8a93a403597cb69c9360e9861fbe90c95dc83818"
+      },
+      "after": {
+        "bytes": 17561,
+        "sha256": "57cabfb5381d834910aa470b8a3c4b9db10a7250700566aa003f6f86466007b5",
+        "blob": "71d28396530520fd9c430856aa019d01f03d7db7"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 3544,
+        "sha256": "679a2d5a8284abc691ec46cf022eb1243a0959c80a674c96f4d627c7b4590dc5",
+        "blob": "b0a9a831e06c3499edd00a9eab5cf024e1ff2441"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 6991,
+        "sha256": "b08d5a1c024a970ca0143833c7a3827148046d84974257e6deb2894df8be46d4",
+        "blob": "7f2fd5d54dfb0a391a260db864d4d989c87cac8e"
+      },
+      "after": {
+        "bytes": 7939,
+        "sha256": "5fa617604a8524b6fc8094b77205c5ca168e61d17aa1e7e2a19bf8584143f3cd",
+        "blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 6855,
+        "sha256": "720673553630d630d53bdaf64fb0b18201237da9fe03fee449cd65f1e1489da4",
+        "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 7766,
+        "sha256": "c60f0091c35ddad4bbdab6eb1dbdb1e2f0b5295f5c73c4ba49917307d231d149",
+        "blob": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 10958,
+        "sha256": "7b6858cbe0454c48f0bd7be47ce535276f9dd592cd4512023ab5ec86a02d9456",
+        "blob": "002394b4a405abfdb51c6f80f19a203a68a62e18"
+      },
+      "after": {
+        "bytes": 12526,
+        "sha256": "2a5a5324f2d706017b74e0ef9453eca9268c0a5afe4444ebf54f9424601541dd",
+        "blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 3464,
+        "sha256": "1b72670f9f5608c4ac099d38661b4080f42fca517e89bbc375f3a1f4733bec54",
+        "blob": "6c8e5ae94ff4753a48cb92c6b46b8a7559f00793"
+      },
+      "after": {
+        "bytes": 3852,
+        "sha256": "57c5a8b40d313f2f69e220b41bc005495fcefcc11752dc110980eafbe7699304",
+        "blob": "90b880ff4446600afc669fe36fca7437232fd04e"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 6536,
+        "sha256": "4498d4c2d918feee5a82304037d5cf6d9bf2c5f2a7139459e0354d4c3d45ed13",
+        "blob": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae"
+      },
+      "after": {
+        "bytes": 7213,
+        "sha256": "3a945a8fee7bd172a495514eb0b4bfca671118c6681ec02761273435c5793c8d",
+        "blob": "07c68b6971721515ad819544d9cc8dc442a20336"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 7129,
+        "sha256": "4e4a5c402948d6aa85490727a85652434788e096a97a3e93e20a18a5e6c6cb65",
+        "blob": "162325dfed6dbb61b749806f34c71f95bf4a6f9b"
+      },
+      "after": {
+        "bytes": 7463,
+        "sha256": "5f5d206208a37307eed55209a83e55e0fde8446c47ff1f047b6b58946f852022",
+        "blob": "49f23508db7805fc7fec663af10269f39fa3a271"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 11139,
+        "sha256": "245a9bb534a97c630d4381e4e346304b551102e057e0df9bdb55a23c25d080a9",
+        "blob": "b7f4bf79795381a21f77680498cb4431895e673b"
+      },
+      "after": {
+        "bytes": 11223,
+        "sha256": "6a41fe8d0bf18d14e6f29853c1096439a8bfcaf39edde8093ef3805cee7b0933",
+        "blob": "514d6cbf873acddb19c7e4540d198e3a498fe084"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 6365,
+        "sha256": "15f72e88853a2db8642581ddbe5fe5f327ee28023adc3e706d9f94cd29695afc",
+        "blob": "a9136612ec334f2d91ac3864193a5b23f9260673"
+      },
+      "after": {
+        "bytes": 7204,
+        "sha256": "f210d96f1908ac37a3191cab817a369515e5a62ab71e2f41f36ff54bcb07cdb0",
+        "blob": "91a3a5b87a1746d1cb4178cc652f9480574986c1"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": {
+        "bytes": 4122,
+        "sha256": "15576c387f84a0a94528749fd28e16359f5e251683209ad78f29f665e4fb0b15",
+        "blob": "31c97708e059d1e1a68bc512cd6728cf6df2970c"
+      },
+      "after": {
+        "bytes": 4629,
+        "sha256": "982f6e072989ee6ddafa1a746d3baba4b040cd0d2bbb61a1d8b48dd17609b434",
+        "blob": "a193092ffd45d4c894999b126072f6d9c48fb7b2"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 2891,
+        "sha256": "ce68ef34cc4b83f2f06964df125d2e53dcc8216c11d6a6181cd56ed7ed2817b0",
+        "blob": "7130b04357861ded3a20c8707d25b280009bd09c"
+      },
+      "kind": "test_or_guard",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "local_area": "postimages",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 8712,
+        "sha256": "ec290abe362c52d33320b0321e1dfc9c284092dd38481bcc6ead60e9a724af02",
+        "blob": "0b328d77083060c943234ae0d8bf68088474bd6f"
+      },
+      "kind": "product",
+      "actual_rustfmt": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "local_area": "work",
+      "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "base": null,
+      "after": {
+        "bytes": 10749,
+        "sha256": "4083c4420bc3849b230d22ac6b6b5e8ef0f5f84c35cb39666b1f99f1dddbdda3",
+        "blob": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b"
+      },
+      "kind": "new_source_guard",
+      "actual_rustfmt": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "local_area": "legacy-qa-review/postimages",
+      "base_commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+      "base": {
+        "bytes": 15713,
+        "sha256": "e71d3a3fb1a6949bd8101cb228e4909dc503b84b17100f640efdae39c3aac6be",
+        "blob": "5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f"
+      },
+      "after": {
+        "bytes": 15767,
+        "sha256": "41742af761c8a0f37dcc7575e723ab7027789d7031f4aff0620ba606e038f521",
+        "blob": "1c4b608895e09c0215a30212282402b8c2dd8169"
+      },
+      "kind": "existing_source_guard_two_marker_migration",
+      "actual_rustfmt": false
+    }
+  ],
+  "validation": {
+    "actual_formatter_returncode": 0,
+    "formatted_rust_files": 14,
+    "formatted_files_changed": 12,
+    "new_guard_tests_passed": 6,
+    "one_legacy_security_test_passed": 1,
+    "guard_scope": "Local partial mirrors with proposed CALLERS. No full source/caller gate for B has run.",
+    "strict_touched_path_replays_passed": 3,
+    "replay_offsets_or_fuzz": false,
+    "original_formatter_patch_real_absence_check_returncode": 1,
+    "unchanged_original_functions": 22,
+    "body_migrations_preserving_remaining_bytes": 4,
+    "compile_run": false,
+    "native_tests_run": false
+  },
+  "global_inventory_merge": {
+    "delta_base": "sha256:abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+    "current_registry_to_preserve": "sha256:a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757",
+    "never_overwrite_with_old_full_manifest": true,
+    "already_fixed_callers_not_repeated_in_delta": [
+      "learning_original_owner_command_channel",
+      "learning_original_evaluation_host_profile",
+      "learning_original_evaluation_host_constructor"
+    ]
+  },
+  "qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_root_cold_recovery": 0
+  },
+  "open_risks": [
+    "The 14 Rust files and five mechanism tests have not been compiled or executed; private visibility, lifetime, clippy and runtime issues may remain.",
+    "The original 500ms readonly exchange and 60s per-test budgets are unchanged; the new real-owner fixtures must prove they finish within them.",
+    "Three/four actual T reads close only the B Host panel transaction. Model-material export retains its original read path; aggregate Root/Version/S/C 128-frame and four-session closure remains separate.",
+    "Only the new six guards and one affected legacy Host security case were executed locally. A full exact-head source gate and full caller verifier are required after central union.",
+    "The exact d397 legacy Host QA migration preserves its added factory caller tuple. Other unseen legacy QA in the full repository still require the complete gate."
+  ],
+  "artifacts": [
+    {
+      "path": "manifest.json",
+      "bytes": 17571,
+      "sha256": "4aa9b086cee1d3f8fe1f5a03f430b49103e8a1a93919679d2292d1f650f5e610",
+      "blob": "59835778dcf9a6c38fe19b104df7b94db7df9c5c"
+    },
+    {
+      "path": "complete-postimages.json.gz",
+      "bytes": 35374,
+      "sha256": "645a6ec87110f985da2fdc78d55e84ab49e33be2b62fb24e431a11c110022f07",
+      "blob": "53d0a369a3a7e1a89dc2628072b97913c8fa7882"
+    },
+    {
+      "path": "collector.stdout.raw.log",
+      "bytes": 68544,
+      "sha256": "1c08db8208f09bac86930864c937213bce9e68edba327226b675e118285fcecd",
+      "blob": "30b5dfb19d56f4054e7aa108f173c7e05ba88aeb"
+    },
+    {
+      "path": "panel-training-formatted.patch",
+      "bytes": 51387,
+      "sha256": "4903736bf65bfc25b5994416bac43c058ebed835afeb64443c91f91e69b62ac8",
+      "blob": "9e347fe73ed8098649dd7a92aa0d6a4884395d9f"
+    },
+    {
+      "path": "panel-training-57b-corrected.patch",
+      "bytes": 51115,
+      "sha256": "c201543dfaffaa9ca9e620b40e5f9ed1169108b26f23808adf946938cdff956a",
+      "blob": "c5d851f4b7dff626b11a5857f7f33e563e0f9a55"
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 31402,
+      "sha256": "f6e43900740c6adca585454754e571140ac41a377b133e28a805028d4437b233",
+      "blob": "caeedfd35a9736aba5c20031c412d940c9ba3192"
+    },
+    {
+      "path": "CALLERS-DELTA.actual.json",
+      "bytes": 76672,
+      "sha256": "76823f2d14399c2e815bcc8a7d8b7f6c10b24d67ddb88e1f75aa81444b37c7f2",
+      "blob": "bdd841c3a96d8eb6f236294f85d352baedbb0702"
+    },
+    {
+      "path": "FORMAT-MARKER-ADAPTATIONS.json",
+      "bytes": 2983,
+      "sha256": "a95667b8551994356135aa5ae1d8217e56fddd01020f660e8d9f134853eada22",
+      "blob": "b9f0ba48c1d3624871c2f0525763830556e0833d"
+    },
+    {
+      "path": "NATIVE-PROOF-MAPPING.json",
+      "bytes": 12335,
+      "sha256": "8f79313370b9e3b2fd31e590d96e9af28c070626a1e52f076a13b9ad05dfc782",
+      "blob": "768615e02e3147bddbadd1755cce9b04f42cccf9"
+    },
+    {
+      "path": "PRESERVED_FUNCTIONS.formatted.json",
+      "bytes": 15703,
+      "sha256": "3ff56c08cb7e3800f6a2b0b47b026ee3a36c2dd35769347c2e3eae77ef886694",
+      "blob": "de27a551bf460633f9ea5f52bd071e636f2fd699"
+    },
+    {
+      "path": "guard-final-actual-v1/result.json",
+      "bytes": 853,
+      "sha256": "b72c29a78934cd5846c8a07781e0ade8e109af14074ca86073a87b667ba14320",
+      "blob": "41ab2584a10f96322a361636f8e1b85f3305b9ca"
+    },
+    {
+      "path": "guard-final-actual-v1/source-guard.raw.log",
+      "bytes": 1562,
+      "sha256": "e2ec37563fc593c8b36535e6e5d35c95bbfafa461d533bcef228cb7b78c86264",
+      "blob": "6e24f9d18b2b7f3403db129a8c0e723170515beb"
+    },
+    {
+      "path": "guard-final-actual-v1/inputs.json",
+      "bytes": 3777,
+      "sha256": "3ea850d5732c4eb0ecb18954068b8a1583f920438df3502d4941e22ed5c669b7",
+      "blob": "75393856d5d3eca62992b143b923e263a04306cc"
+    },
+    {
+      "path": "guard-attempt-1/result.json",
+      "bytes": 734,
+      "sha256": "44fd6561412ea3e86f842fcd12791dc16736c66aca68ee382217142e7f8cd5b8",
+      "blob": "eb62f05c105c4da4cbe38e96d510c3de69966518"
+    },
+    {
+      "path": "guard-attempt-1/raw.log",
+      "bytes": 184006,
+      "sha256": "e8d47986c9efa7e7dafff5480a542c479c24fed827935bac53b2c8458b3d0e14",
+      "blob": "601050cf35f8e2ff5a558472c6192b34f9d924e0"
+    },
+    {
+      "path": "strict-replay-v1/result.json",
+      "bytes": 14948,
+      "sha256": "b0c41b906fa4e875bbc48f7cb276571e4dc0b508e00c14bdd19809f402a178f4",
+      "blob": "8a33eb42bdabd0039441416b1deab39ad64b25c0"
+    },
+    {
+      "path": "legacy-qa-review/host-marker-migration.patch",
+      "bytes": 1078,
+      "sha256": "07a72959ecd58b7faac641dee6675320a8fa2cdb5c425203eb991d31fbe4ce30",
+      "blob": "1405483be5c22f9f836d6ba1c372772b05dd0c4d"
+    },
+    {
+      "path": "legacy-host-qa-scoped-v1/result.json",
+      "bytes": 1382,
+      "sha256": "b600cc6b385f90e69b99716814e8c3077635b2d1a93ccc0868463f306b70a23e",
+      "blob": "4caf90fc7d32f13544d4d82ed46424f9633551a8"
+    },
+    {
+      "path": "legacy-host-qa-scoped-v1/raw.log",
+      "bytes": 338,
+      "sha256": "d3b15273379f851731c4883f639dfaffb2806acbb669a506c52fbf85ee92b59d",
+      "blob": "5ee252d896454ae5078ce0a8d18a9e3045185209"
+    }
+  ],
+  "main_pr_modified_by_this_delivery": false
+}

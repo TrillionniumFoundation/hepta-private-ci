@@ -1,0 +1,61 @@
+{
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "rust_files_edited_after_format": false,
+  "scanner_edited": false,
+  "all_forbidden_preserved": true,
+  "all_boundary_callers_preserved": true,
+  "marker_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "before": "self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)",
+      "after": "self.prepare_with_training(\n            config,\n            started_at,\n            &mut OriginalPanelTrainingReadV1::Individual,\n        )",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "before": "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?",
+      "after": "OriginalCellEvaluationPanelMemberOwnersV1::read_original(\n                    owner, task, clock, training,\n                )\n                .await?",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": "OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?",
+      "after": "OriginalPanelTrainingSourceV1::call(\n            &self.training_source,\n            self.panel.retention.len() + 1,\n        )?",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": "&mut self.panel, super::original::now, training,",
+      "after": "&mut self.panel,\n            super::original::now,\n            training,",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "before": "Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await",
+      "after": "Self::Individual => {\n                OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await\n            }",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "before": "OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?",
+      "after": "OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?",
+      "manifest_uses": 1,
+      "delta_after_uses": 1
+    }
+  ],
+  "qa_before": {
+    "bytes": 10723,
+    "sha256": "28cd99b7c2b0277f869687b60b81881b29009403c62ce01537f86d9a8e1f7608",
+    "blob": "9f182803ac6fdf9305f4b40d94ad1e9ca4757023"
+  },
+  "qa_after": {
+    "bytes": 10749,
+    "sha256": "4083c4420bc3849b230d22ac6b6b5e8ef0f5f84c35cb39666b1f99f1dddbdda3",
+    "blob": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b"
+  }
+}

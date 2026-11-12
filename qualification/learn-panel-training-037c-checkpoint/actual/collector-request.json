@@ -1,0 +1,12 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "from pathlib import Path\nimport base64,gzip,hashlib,json,os,stat\nroot=Path('/home/qian-qi/hepta-learn-037c-evidence/format-panel-training-proof-v1')\nspecs=[[\"manifest.json\",17571,\"4aa9b086cee1d3f8fe1f5a03f430b49103e8a1a93919679d2292d1f650f5e610\"],[\"complete-postimages.json.gz\",35374,\"645a6ec87110f985da2fdc78d55e84ab49e33be2b62fb24e431a11c110022f07\"],[\"panel-training-formatted.patch\",51387,\"4903736bf65bfc25b5994416bac43c058ebed835afeb64443c91f91e69b62ac8\"]]\nout=[]\nfor name,size,digest in specs:\n p=root/name\n before=p.lstat()\n assert stat.S_ISREG(before.st_mode) and not p.is_symlink()\n b=p.read_bytes()\n assert len(b)==size and hashlib.sha256(b).hexdigest()==digest,(name,len(b),hashlib.sha256(b).hexdigest())\n after=p.lstat()\n assert (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns)\n assert p.read_bytes()==b\n packed=b if name.endswith('.gz') else gzip.compress(b,mtime=0)\n out.append({'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'encoding':'original-gzip-base64' if name.endswith('.gz') else 'gzip-base64','payload_bytes':len(packed),'payload_sha256':hashlib.sha256(packed).hexdigest(),'data_base64':base64.b64encode(packed).decode('ascii')})\nprint(json.dumps({'status':'READ_ONLY_COMPLETE','files':out},sort_keys=True),flush=True)\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "rows": 40,
+  "cols": 180,
+  "idempotency_key": "learn-037c-read-panel-format-v1"
+}

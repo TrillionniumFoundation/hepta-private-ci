@@ -1,0 +1,78 @@
+{
+  "kind": "transcribed transport observations; exact source artifacts are separately verified",
+  "prior_agent_store": "Earlier keys were observed unavailable after the parent NEW_TASK. These entries describe original visible tool outputs and are not claimed as byte-identical serialized MCP payloads.",
+  "direct_binary_reads": {
+    "paths": [
+      "manifest.json",
+      "complete-postimages.json.gz",
+      "panel-training-formatted.patch"
+    ],
+    "offset": 0,
+    "limit": 8192,
+    "observed_error": "Mcp error: -32603: MCP request timed out",
+    "formatter_failure_inferred": false
+  },
+  "readonly_background_operations": [
+    {
+      "operation_id": "f8f05557787691e5467c1866af04b3a916ac02c9e05b55478467e7cbc2dbf224",
+      "last_observed": "queued",
+      "reused": false,
+      "terminal_result_retrieved": false
+    },
+    {
+      "operation_id": "81749ad7bc46bc7872589cad0064ae67d314465a788327ff4bf0e96d2ef2e90e",
+      "last_observed": "queued",
+      "reused": false,
+      "terminal_result_retrieved": false
+    }
+  ],
+  "collector": {
+    "idempotency_key": "learn-037c-read-panel-format-v1",
+    "session_id": "dpty-4ab4f6a8edfea797a55c33137e0c08668297ba33d3fe7ebbfb5083aecc09ed4f",
+    "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+    "created_unix_ms": 1794506806706,
+    "owner_pid": 1899004,
+    "pid": 1899006,
+    "observed_exit_code": 0,
+    "output_complete": true,
+    "capture_error": null,
+    "raw_stdout": {
+      "bytes": 68544,
+      "sha256": "1c08db8208f09bac86930864c937213bce9e68edba327226b675e118285fcecd",
+      "blob": "30b5dfb19d56f4054e7aa108f173c7e05ba88aeb"
+    },
+    "successful_raw_byte_pages": [
+      {
+        "offset": 0,
+        "next_offset": 16384
+      },
+      {
+        "offset": 16384,
+        "next_offset": 32768
+      },
+      {
+        "offset": 32768,
+        "next_offset": 49152
+      },
+      {
+        "offset": 49152,
+        "next_offset": 57344
+      },
+      {
+        "offset": 57344,
+        "next_offset": 68544
+      }
+    ],
+    "first_tail_attempts_timed_out": [
+      {
+        "offset": 49152,
+        "limit": 16384
+      },
+      {
+        "offset": 65536,
+        "limit": 16384
+      }
+    ],
+    "formatter_or_native_restarted": false
+  }
+}

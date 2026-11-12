@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "base_commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "scope": "All 16 complete repository-relative touched paths. Path-limited exact preimages, not a full source/caller or native gate.",
+  "patch": {
+    "bytes": 63714,
+    "sha256": "88a5e8ecf75e6b577697804c2481b14151d5818540efd5785eebbd4d1f294482",
+    "blob": "c3c88cf685d22088201fc59ee8873d65c8b507f7"
+  },
+  "files": 16,
+  "new_paths": 6,
+  "rust_files": 14,
+  "python_qa_files": 2,
+  "global_callers_in_patch": false,
+  "offset_or_fuzz": false,
+  "commands": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/complete-delivery-replay-v1/d397-touched-paths",
+        "init",
+        "-q"
+      ],
+      "returncode": 0,
+      "raw_log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/complete-delivery-replay-v1/d397-touched-paths",
+        "add",
+        "--",
+        "."
+      ],
+      "returncode": 0,
+      "raw_log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/complete-delivery-replay-v1/d397-touched-paths",
+        "apply",
+        "--check",
+        "--index",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-d397-complete.patch"
+      ],
+      "returncode": 0,
+      "raw_log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/complete-delivery-replay-v1/d397-touched-paths",
+        "apply",
+        "--index",
+        "--verbose",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-formatted-v1/panel-training-d397-complete.patch"
+      ],
+      "returncode": 0,
+      "raw_log": {
+        "bytes": 2940,
+        "sha256": "746d6cff709201203b4615417ada5857e24d6e15e1747147dbb9239032153e86",
+        "blob": "2e4568cb3fb9a96a7ee2557b01f33d1b6af41bb9"
+      }
+    }
+  ],
+  "native_tests_run": false
+}

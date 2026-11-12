@@ -1,0 +1,1411 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+index 8a93a403597cb69c9360e9861fbe90c95dc83818..71d28396530520fd9c430856aa019d01f03d7db7 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+@@ -1,5 +1,11 @@
+ //! Explicit same-process transport fixture. Public bootstraps still refuse
+ //! this custody. Native owners and both journals in the caller are actual.
++
++#[path = "cell_q24_training_panel_read_peer_tests.rs"]
++mod panel_read_peer;
++pub(crate) use panel_read_peer::PanelReadControl;
++pub(crate) use panel_read_peer::PanelReadTrace;
++pub(crate) use panel_read_peer::panel_readonly;
+ 
+ use std::os::fd::FromRawFd;
+ use std::os::fd::OwnedFd;
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..b0a9a831e06c3499edd00a9eab5cf024e1ff2441
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs
+@@ -0,0 +1,89 @@
++//! Observe the original bounded readonly handler; every response comes from
++//! the actual SourceBound Trainer. Faults change only this fixture's own file
++//! or pause an already-admitted request, never manufacture a T signature.
++
++use std::path::PathBuf;
++use std::sync::atomic::AtomicU64;
++
++use super::*;
++
++pub(crate) enum PanelReadControl {
++    Original,
++    Withdraw {
++        request: u64,
++        path: PathBuf,
++    },
++    Pause {
++        request: u64,
++        entered: tokio::sync::oneshot::Sender<()>,
++        release: std::sync::mpsc::Receiver<()>,
++    },
++}
++
++#[derive(Clone)]
++pub(crate) struct PanelReadTrace {
++    pub(crate) requests: Arc<AtomicU64>,
++    pub(crate) current_responses: Arc<AtomicU64>,
++}
++
++pub(crate) fn panel_readonly<
++    TW: AnchorWitnessStore + Send + 'static,
++    RW: AnchorWitnessStore + Send + 'static,
++>(
++    owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
++    mut channel: HostAuthorityPeerChannel,
++    mut control: PanelReadControl,
++) -> (std::thread::JoinHandle<anyhow::Result<u64>>, PanelReadTrace) {
++    let trace = PanelReadTrace {
++        requests: Arc::new(AtomicU64::new(0)),
++        current_responses: Arc::new(AtomicU64::new(0)),
++    };
++    let observed = trace.clone();
++    let peer = std::thread::spawn(move || {
++        for request_id in 1..=128_u64 {
++            if !channel.exchange(|bytes| {
++                observed.requests.fetch_add(1, Ordering::AcqRel);
++                let trigger = match &control {
++                    PanelReadControl::Original => false,
++                    PanelReadControl::Withdraw { request, .. }
++                    | PanelReadControl::Pause { request, .. } => *request == request_id,
++                };
++                if trigger {
++                    match std::mem::replace(&mut control, PanelReadControl::Original) {
++                        PanelReadControl::Withdraw { path, .. } => {
++                            std::fs::OpenOptions::new()
++                                .write(true)
++                                .open(path)
++                                .and_then(|file| file.set_len(0))
++                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
++                        }
++                        PanelReadControl::Pause {
++                            entered, release, ..
++                        } => {
++                            entered
++                                .send(())
++                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
++                            release
++                                .recv_timeout(Duration::from_millis(250))
++                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
++                        }
++                        PanelReadControl::Original => {}
++                    }
++                }
++                let response = owner
++                    .original_training_readback_response(bytes, request_id)
++                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
++                let decoded: wire::Response = serde_json::from_slice(&response)
++                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
++                if matches!(decoded.result, wire::CommandResult::Completed { .. }) {
++                    observed.current_responses.fetch_add(1, Ordering::AcqRel);
++                }
++                Ok(response)
++            })? {
++                return Ok(request_id - 1);
++            }
++        }
++        anyhow::bail!("bounded original panel Trainer peer")
++    });
++    (peer, trace)
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+index 7f2fd5d54dfb0a391a260db864d4d989c87cac8e..ff7dc74a1bb6f74178f4cfe76c5d937eb1238439 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+@@ -31,6 +31,15 @@
+ }
+ pub(super) type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
+ 
++enum TrainingComposition {
++    Fixture,
++    Original {
++        connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
++        dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
++        training: crate::OriginalCellQ24TrainingCommandReceiptV1,
++    },
++}
++
+ impl HostFixture {
+     pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
+@@ -51,6 +60,14 @@
+     }
+ 
+     fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
++        Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
++    }
++
++    fn from_panel_with_training(
++        panel: PanelFixture,
++        pending_claim: bool,
++        training: TrainingComposition,
++    ) -> anyhow::Result<Self> {
+         let PanelFixture {
+             panel,
+             original,
+@@ -95,7 +112,15 @@
+         if pending_claim {
+             evaluator.fixture_pending_original_host()?;
+         }
+-        let mut host = evaluator.into_original_evaluation_host(panel)?;
++        let mut host = match training {
++            TrainingComposition::Fixture => evaluator.into_original_evaluation_host(panel)?,
++            TrainingComposition::Original {
++                connection,
++                dataset,
++                training,
++            } => evaluator
++                .into_host_from_original_training_readback(panel, connection, dataset, training)?,
++        };
+         host.fixture_original_clock(at)?;
+         fixture.host = Some(Arc::new(host));
+         Ok(fixture)
+@@ -192,3 +217,6 @@
+     peer.join()
+         .map_err(|_| anyhow::anyhow!("original Evaluation command peer panicked"))?
+ }
++
++#[path = "circuit_original_evaluation_training_read_support_tests.rs"]
++mod training_read_support;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c71c629246309e7dfa5793d776aa56aa608aa78
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
+@@ -0,0 +1,182 @@
++//! Same original A, native Candidate, actual D/T owners and independent B.
++//! Role credentials, Product declarations and B observation time remain
++//! explicit mechanism fixtures; this does not qualify ordinary deployment.
++
++use anyhow::Context as _;
++use pretty_assertions::assert_eq;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++
++use super::*;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialEvidenceRoleV1;
++use crate::OriginalCellQ24MaterialReceiptFilesV1;
++use crate::OriginalCellQ24MaterialReceiptOwnersV1;
++use crate::OriginalCellQ24TrainingCommandContextV1;
++use crate::OriginalCellQ24TrainingCommandOwnerV1;
++use crate::learning_iteration_evidence_client::command_test_support as commands;
++use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
++use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
++
++type Trainer =
++    OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++
++enum Control {
++    Original,
++    WithdrawNativeAt(u64),
++    PauseAt {
++        request: u64,
++        entered: tokio::sync::oneshot::Sender<()>,
++        release: std::sync::mpsc::Receiver<()>,
++    },
++}
++
++struct TrainingFixture {
++    host: HostFixture,
++    peer: std::thread::JoinHandle<anyhow::Result<u64>>,
++    trace: commands::PanelReadTrace,
++}
++
++impl TrainingFixture {
++    async fn new(control: Control) -> anyhow::Result<Self> {
++        let panel = Box::pin(PanelFixture::completed_for_publication(
++            TrainingPeer::Original,
++            PublicationMode::RetainOriginalA,
++        ))
++        .await?;
++        let dataset = original_dataset(&panel.original).await?;
++        let mut training_cut = panel.primary.config.training.clone();
++        let completed = training_cut
++            .receipts
++            .pop()
++            .context("actual original Training")?;
++        training_cut.head_digest = completed.predecessor;
++        assert_eq!(dataset.snapshot(), &training_cut);
++        let context = OriginalCellQ24TrainingCommandContextV1 {
++            dataset: training_cut,
++            scope: panel.primary.config.scope.clone(),
++            verifier: panel.primary.config.verifier.clone(),
++        };
++        let trainer = Arc::new(
++            Trainer::recover_original_stage(
++                Arc::clone(&panel.original.stage),
++                context.clone(),
++                Arc::new(AtomicBool::new(false)),
++            )
++            .await?,
++        );
++        let (client, channel) = commands::client(context, true, None)?;
++        let original_peer = commands::serve(Arc::clone(&trainer), channel);
++        let training = client.readback().await?;
++        assert_eq!(training.receipt(), &completed);
++        assert_eq!(
++            training.attestation(),
++            &panel.primary.config.training_evidence
++        );
++        drop(client);
++        assert_eq!(original_peer.join().expect("original Trainer command")?, 1);
++        let (connection, channel) =
++            training_ports::readonly_channel(panel.original.command_config.clone())?;
++        let control = match control {
++            Control::Original => commands::PanelReadControl::Original,
++            Control::WithdrawNativeAt(request) => commands::PanelReadControl::Withdraw {
++                request,
++                path: panel.original.root.join("positive-native-training"),
++            },
++            Control::PauseAt {
++                request,
++                entered,
++                release,
++            } => commands::PanelReadControl::Pause {
++                request,
++                entered,
++                release,
++            },
++        };
++        let (peer, trace) = commands::panel_readonly(trainer, channel, control);
++        let host = HostFixture::from_panel_with_training(
++            panel,
++            false,
++            TrainingComposition::Original {
++                connection,
++                dataset,
++                training,
++            },
++        )?;
++        Ok(Self { host, peer, trace })
++    }
++
++    fn requests(&self) -> u64 {
++        self.trace.requests.load(Ordering::Acquire)
++    }
++
++    fn current_responses(&self) -> u64 {
++        self.trace.current_responses.load(Ordering::Acquire)
++    }
++
++    async fn finish(mut self) -> anyhow::Result<(u64, [usize; 2])> {
++        // Close every actual T client before joining its owner. No process or
++        // native worker is killed; the original finite channel observes EOF.
++        drop(self.host.host.take());
++        let frames = self.peer.join().expect("actual panel Trainer readonly")?;
++        let members = Box::pin(self.host.finish()).await?;
++        Ok((frames, members))
++    }
++}
++
++async fn original_dataset(
++    original: &PositiveFixture,
++) -> anyhow::Result<OriginalCellQ24MaterialCommandReceiptV1> {
++    let config = original.command_config.clone();
++    let open = |name: &str| -> anyhow::Result<File> {
++        Ok(OpenOptions::new()
++            .read(true)
++            .write(true)
++            .open(original.root.join(name))?)
++    };
++    let witness = |name: &str| -> anyhow::Result<FileAnchorWitnessStore> {
++        Ok(FileAnchorWitnessStore::open(
++            open(name)?,
++            JournalScope {
++                scope_digest: config.scope.binding(),
++                objective_digest: config.initial.request.envelope.objective_digest,
++            },
++            Generation::new(1)?,
++            64,
++        )?)
++    };
++    let before = original.predecessor_bytes()?;
++    let owners = OriginalCellQ24MaterialReceiptOwnersV1::recover(
++        OriginalCellQ24MaterialReceiptFilesV1 {
++            experience: open("positive-experience")?,
++            experience_witness: witness("positive-experience-witness")?,
++            dataset: open("positive-dataset")?,
++            dataset_witness: witness("positive-dataset-witness")?,
++        },
++        config.clone(),
++        SigningKey::from_bytes(&[44; 32]),
++        SigningKey::from_bytes(&[45; 32]),
++    )?;
++    let a = original.session.0.as_ref().context("same original A")?;
++    let owner = Arc::new(owners.into_command_owner(
++        a.source.as_ref().clone(),
++        a.runtime.identity.clone(),
++        Arc::clone(&original.ledger),
++        Arc::clone(&original.baseline),
++    )?);
++    let (client, peer) = material_ports::commands_for_original(
++        owner,
++        config.clone(),
++        OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
++    )?;
++    let readback = client.into_original_dataset_readback(&config)?;
++    let receipt = readback.readback().await?;
++    assert_eq!(receipt.attestations(), &original.material_evidence);
++    assert_eq!(original.predecessor_bytes()?, before);
++    drop(readback);
++    assert_eq!(peer.join().expect("same original Dataset")?, 1);
++    Ok(receipt)
++}
++
++#[path = "circuit_original_evaluation_training_read_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs
+@@ -0,0 +1,189 @@
++//! Real bounded T transport and actual B/retention owners; no replacement T
++//! replies or CURRENT DTOs. Each case retains the original 60-second budget.
++
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++
++use super::*;
++use crate::OriginalCellEvaluationCommandErrorV1 as CommandError;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(TrainingFixture::new(Control::Original)).await?;
++    let before = fixture.host.upstream_files()?;
++    let evaluator = fixture.host.original_files()?;
++    tokio::task::block_in_place(|| {
++        fixture
++            .host
++            .host
++            .as_ref()
++            .unwrap()
++            .fixture_training_proof_lifecycle()
++    })?;
++    assert_eq!(fixture.requests(), 5);
++    assert_eq!(fixture.current_responses(), 5);
++    assert_eq!(fixture.host.upstream_files()?, before);
++    assert_eq!(fixture.host.original_files()?, evaluator);
++    assert_eq!(fixture.finish().await?.0, 5);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_panel_same_call_training_keeps_four_execute_and_three_readback_frames()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(TrainingFixture::new(Control::Original)).await?;
++    let upstream = fixture.host.upstream_files()?;
++    let missing = fixture.host.original_files()?;
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    // Missing does not complete or retain a partial proof. The next call must
++    // perform a new first actual T read on the same finite channel.
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::Missing)
++    ));
++    assert_eq!(fixture.requests(), 1);
++    assert_eq!(fixture.host.original_files()?, missing);
++    let original = client.execute_evaluation().await?;
++    assert_eq!(fixture.requests(), 5);
++    let completed = fixture.host.original_files()?;
++    assert_ne!(completed, missing);
++    assert_eq!(client.readback().await?, original);
++    assert_eq!(fixture.requests(), 8);
++    assert_eq!(client.readback().await?, original);
++    assert_eq!(fixture.requests(), 11);
++    assert_eq!(fixture.current_responses(), 11);
++    assert_eq!(finish(client, peer)?, 4);
++    assert_eq!(fixture.host.original_files()?, completed);
++    assert_eq!(fixture.host.upstream_files()?, upstream);
++    assert_eq!(fixture.finish().await?.0, 11);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_panel_last_actual_training_failure_never_returns_or_resigns_b()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(TrainingFixture::new(Control::WithdrawNativeAt(4))).await?;
++    let before = fixture.host.original_files()?;
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    assert!(client.execute_evaluation().await.is_err());
++    assert_eq!(fixture.requests(), 4);
++    assert_eq!(fixture.current_responses(), 3);
++    // The unchanged receipt owner already committed before the last panel
++    // read. This is an uncertain durable effect, not a no-effect assertion.
++    let durable = fixture.host.original_files()?;
++    assert_ne!(durable, before);
++    assert_eq!(finish(client, peer)?, 1);
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    assert!(matches!(
++        client.execute_evaluation().await,
++        Err(CommandError::ReadbackRequired)
++    ));
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::CommitUncertain)
++    ));
++    assert_eq!(fixture.requests(), 4);
++    assert_eq!(fixture.host.original_files()?, durable);
++    assert_eq!(finish(client, peer)?, 2);
++    assert_eq!(fixture.finish().await?.0, 4);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_panel_last_training_slot_keeps_the_actual_cohort_tail() -> anyhow::Result<()> {
++    let (entered, observed) = tokio::sync::oneshot::channel();
++    let (release, blocked) = std::sync::mpsc::channel();
++    let fixture = Box::pin(TrainingFixture::new(Control::PauseAt {
++        request: 4,
++        entered,
++        release: blocked,
++    }))
++    .await?;
++    let before = fixture.host.original_files()?;
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    let client = Arc::new(client);
++    let active = Arc::clone(&client);
++    let request = tokio::spawn(async move { active.execute_evaluation().await });
++    observed.await?;
++    // Last T is unchanged. A real non-T Source withdrawal at that exact slot
++    // must still be detected by the original retention cohort's physical tail.
++    let withdrawal = fixture.host.retention_b.withdraw_target();
++    release.send(())?;
++    withdrawal?;
++    assert!(request.await?.is_err());
++    assert_eq!(fixture.requests(), 4);
++    assert_eq!(fixture.current_responses(), 4);
++    let durable = fixture.host.original_files()?;
++    assert_ne!(durable, before);
++    let client = Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("completed B request"))?;
++    assert_eq!(finish(client, peer)?, 1);
++    let (client, peer) = fixture.host.commands(true, None, "original")?;
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::CommitUncertain)
++    ));
++    assert_eq!(fixture.requests(), 4);
++    assert_eq!(fixture.host.original_files()?, durable);
++    assert_eq!(finish(client, peer)?, 1);
++    assert_eq!(fixture.finish().await?.0, 4);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_panel_cancel_keeps_the_held_lane_and_consumed_channel() -> anyhow::Result<()> {
++    let (entered, observed) = tokio::sync::oneshot::channel();
++    let (release, blocked) = std::sync::mpsc::channel();
++    let fixture = Box::pin(TrainingFixture::new(Control::PauseAt {
++        request: 1,
++        entered,
++        release: blocked,
++    }))
++    .await?;
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    let client = Arc::new(client);
++    let active = Arc::clone(&client);
++    let request = tokio::spawn(async move { active.execute_evaluation().await });
++    observed.await?;
++    request.abort();
++    assert!(request.await.unwrap_err().is_cancelled());
++    let (contender, contender_peer) = fixture.host.commands(true, None, "original")?;
++    let occupied = contender.readback().await;
++    release.send(())?;
++    assert!(matches!(occupied, Err(CommandError::Busy)));
++    assert_eq!(finish(contender, contender_peer)?, 1);
++    assert!(matches!(
++        client.readback().await,
++        Err(CommandError::Unavailable)
++    ));
++    let client = Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("canceled B client"))?;
++    // The original blocking exchange finishes naturally. Canceling its waiter
++    // cannot free the owner lane or reopen the taken transport.
++    assert_eq!(finish(client, peer)?, 1);
++    assert_eq!(fixture.requests(), 4);
++    assert_eq!(fixture.current_responses(), 4);
++    assert!(
++        fixture
++            .host
++            .host
++            .as_ref()
++            .unwrap()
++            .fixture_dispatch_consumed()
++    );
++    let durable = fixture.host.original_files()?;
++    let (client, peer) = fixture.host.commands(false, None, "original")?;
++    assert!(matches!(
++        client.execute_evaluation().await,
++        Err(CommandError::ReadbackRequired)
++    ));
++    let original = client.readback().await?;
++    assert_eq!(
++        original.training_attestation(),
++        &fixture.host.original.config.training_evidence
++    );
++    assert_eq!(fixture.requests(), 7);
++    assert_eq!(fixture.host.original_files()?, durable);
++    assert_eq!(finish(client, peer)?, 2);
++    assert_eq!(fixture.finish().await?.0, 7);
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+index 002394b4a405abfdb51c6f80f19a203a68a62e18..d8c8a62d8c82397aa23f5bcfd68fee34efe13096 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+@@ -13,6 +13,9 @@
+ use tokio::runtime::Handle;
+ use tokio::sync::Semaphore;
+ 
++use super::super::training_read_proof::OriginalPanelTrainingCallV1;
++use super::super::training_read_proof::OriginalPanelTrainingReadV1;
++use super::super::training_read_proof::OriginalPanelTrainingSourceV1;
+ use super::OriginalCellEvaluationPanelOwnerV1;
+ use super::OriginalCellEvaluationPanelReadbackV1;
+ use crate::CellEvaluationJournalsV1;
+@@ -59,6 +62,7 @@
+ struct Owners {
+     panel: Panel,
+     evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>,
++    training_source: OriginalPanelTrainingSourceV1,
+     retained: Option<Receipt>,
+     fenced: bool,
+     #[cfg(test)]
+@@ -102,6 +106,7 @@
+             owners: Mutex::new(Owners {
+                 panel,
+                 evaluator,
++                training_source: OriginalPanelTrainingSourceV1::Individual,
+                 retained: None,
+                 fenced: false,
+                 #[cfg(test)]
+@@ -147,7 +152,12 @@
+     ) -> Result<Receipt, Error> {
+         let started_at = self.current_time()?;
+         context.authenticate(started_at)?;
+-        let before = self.read_panel().await?;
++        let call = OriginalPanelTrainingSourceV1::call(
++            &self.training_source,
++            self.panel.retention.len() + 1,
++        )?;
++        let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
++        let before = self.read_panel_with_training(&mut training).await?;
+         if before.training() != &context.training
+             || before.training_evidence() != &context.training_evidence
+             || before.registration() != &context.registration
+@@ -196,7 +206,7 @@
+                 }
+             }
+         };
+-        let after = self.read_panel().await?;
++        let after = self.read_panel_with_training(&mut training).await?;
+         if before != after {
+             return Err(Error::CommitUncertain);
+         }
+@@ -214,6 +224,7 @@
+             // A durable signature may exist; never report a known no-effect expiry.
+             return Err(Error::CommitUncertain);
+         }
++        OriginalPanelTrainingReadV1::finish(training, &call, current)?;
+         self.authenticate_panel(&after, current)?;
+         let (config, _) =
+             OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator);
+@@ -235,6 +246,30 @@
+         Ok(original)
+     }
+ 
++    async fn read_panel_with_training(
++        &mut self,
++        training: &mut OriginalPanelTrainingReadV1<'_>,
++    ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
++        if matches!(training, OriginalPanelTrainingReadV1::Individual) {
++            return self.read_panel().await;
++        }
++        #[cfg(test)]
++        if let Some(current) = self.fixture_clock {
++            return self
++                .panel
++                .read_current_with_training(|| Ok(current), training)
++                .await
++                .map_err(Error::from);
++        }
++        OriginalCellEvaluationPanelOwnerV1::read_current_with_training(
++            &mut self.panel,
++            super::original::now,
++            training,
++        )
++        .await
++        .map_err(Error::from)
++    }
++
+     async fn read_panel(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+         #[cfg(test)]
+         if let Some(current) = self.fixture_clock {
+@@ -293,3 +328,7 @@
+ pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialV1;
++
++#[cfg(test)]
++#[path = "neuron_cell_evaluation_training_read_access_tests.rs"]
++mod training_read_tests;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
+index 6c8e5ae94ff4753a48cb92c6b46b8a7559f00793..90b880ff4446600afc669fe36fca7437232fd04e 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs
+@@ -9,6 +9,7 @@
+ 
+ use super::Error;
+ use super::OriginalCellEvaluationHostV1;
++use super::OriginalPanelTrainingSourceV1;
+ use super::Panel;
+ use crate::OriginalCellEvaluationReceiptOwnerV1;
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+@@ -65,6 +66,15 @@
+         for member in &mut panel.retention {
+             member.trainer = Arc::clone(&trainer);
+         }
+-        OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
++        let training_source = OriginalPanelTrainingSourceV1::from_original_training_readback(
++            trainer,
++            &panel.primary.qualification.config,
++        );
++        let mut host = OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)?;
++        host.owners
++            .get_mut()
++            .map_err(|_| Error::Unavailable)?
++            .training_source = training_source;
++        Ok(host)
+     }
+ }
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+index ea8b12aebdfb2441c09efa56830ff9e6417be6ae..07c68b6971721515ad819544d9cc8dc442a20336 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+@@ -11,6 +11,7 @@
+ 
+ use super::OriginalCellEvaluationQualificationErrorV1;
+ use super::binding as original;
++use super::training_read_proof::OriginalPanelTrainingReadV1;
+ #[path = "neuron_cell_evaluation_panel_binding.rs"]
+ mod binding;
+ #[path = "neuron_cell_evaluation_panel_contract.rs"]
+@@ -83,11 +84,20 @@
+         &mut self,
+         mut clock: impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send,
+     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
++        self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)
++            .await
++    }
++
++    async fn read_current_with_training(
++        &mut self,
++        mut clock: impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send,
++        training: &mut OriginalPanelTrainingReadV1<'_>,
++    ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+         if self.fenced {
+             return Err(Error::CommitUncertain);
+         }
+         self.fenced = true;
+-        let result = self.read_original_panel(&mut clock).await;
++        let result = self.read_original_panel(&mut clock, training).await;
+         if result.is_ok() {
+             self.fenced = false;
+         }
+@@ -97,10 +107,11 @@
+     async fn read_original_panel(
+         &mut self,
+         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
++        training: &mut OriginalPanelTrainingReadV1<'_>,
+     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+         let started_at = clock()?;
+-        let before = self.read_members(clock).await?;
+-        let after = self.read_members(clock).await?;
++        let before = self.read_members(clock, training).await?;
++        let after = self.read_members(clock, training).await?;
+         if before != after {
+             return Err(Error::CommitUncertain);
+         }
+@@ -127,6 +138,7 @@
+     async fn read_members(
+         &mut self,
+         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
++        training: &mut OriginalPanelTrainingReadV1<'_>,
+     ) -> Result<Vec<OriginalCellEvaluationPanelMemberReadbackV1>, Error> {
+         let mut results = Vec::with_capacity(self.retention.len() + 1);
+         results.push(
+@@ -134,13 +146,16 @@
+                 &mut self.primary,
+                 self.registration.primary(),
+                 clock,
++                training,
+             )
+             .await?,
+         );
+         for (owner, task) in self.retention.iter_mut().zip(self.registration.retention()) {
+             results.push(
+-                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)
+-                    .await?,
++                OriginalCellEvaluationPanelMemberOwnersV1::read_original(
++                    owner, task, clock, training,
++                )
++                .await?,
+             );
+         }
+         Ok(results)
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
+index 162325dfed6dbb61b749806f34c71f95bf4a6f9b..49f23508db7805fc7fec663af10269f39fa3a271 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs
+@@ -13,6 +13,7 @@
+ use super::super::OriginalCellEvaluationQualificationErrorV1;
+ use super::super::OriginalCellEvaluationQualificationOwnerV1;
+ use super::super::OriginalCellEvaluationQualificationSourcesV1;
++use super::super::training_read_proof::OriginalPanelTrainingReadV1;
+ use super::Error;
+ use super::OriginalCellEvaluationPanelMemberReadbackV1;
+ use super::OriginalCellEvaluationPanelTaskV1;
+@@ -50,6 +51,7 @@
+         &mut self,
+         task: &OriginalCellEvaluationPanelTaskV1,
+         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
++        training: &mut OriginalPanelTrainingReadV1<'_>,
+     ) -> Result<OriginalCellEvaluationPanelMemberReadbackV1, Error> {
+         // The original Qualification owns its internal SystemTime checks.
+         // The panel's final common clock reauthenticates every window later.
+@@ -69,17 +71,22 @@
+             trainer: self.trainer.as_ref(),
+         };
+         let bytes = self.qualification.completed_bytes()?;
+-        let prepared = sources
+-            .prepare(&self.qualification.config, started_at)
+-            .await?;
+-        let qualification = self
+-            .qualification
+-            .finish_readback(
++        let prepared = OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(
++            &mut sources,
++            &self.qualification.config,
++            started_at,
++            training,
++        )
++        .await?;
++        let qualification =
++            OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(
++                &mut self.qualification,
+                 &mut sources,
+                 &prepared,
+                 &bytes,
+                 started_at,
+                 /*new_publication*/ false,
++                training,
+             )
+             .await?;
+         drop(sources);
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
+index b7f4bf79795381a21f77680498cb4431895e673b..514d6cbf873acddb19c7e4540d198e3a498fe084 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
+@@ -48,6 +48,9 @@
+ #[path = "neuron_cell_evaluation_qualification_sources.rs"]
+ mod sources;
+ pub use sources::OriginalCellEvaluationQualificationSourcesV1;
++
++#[path = "neuron_cell_evaluation_training_read_proof.rs"]
++mod training_read_proof;
+ 
+ #[path = "neuron_cell_evaluation_panel.rs"]
+ mod panel;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
+index a9136612ec334f2d91ac3864193a5b23f9260673..91a3a5b87a1746d1cb4178cc652f9480574986c1 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs
+@@ -7,6 +7,7 @@
+ use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
+ use codex_hepta_types::Digest32;
+ 
++use super::training_read_proof::OriginalPanelTrainingReadV1;
+ use super::*;
+ 
+ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
+@@ -63,6 +64,31 @@
+         started_at: u64,
+         new_publication: bool,
+     ) -> Result<CellEvaluationQualificationV1, Error> {
++        self.finish_readback_with_training(
++            source,
++            prepared,
++            bytes,
++            started_at,
++            new_publication,
++            &mut OriginalPanelTrainingReadV1::Individual,
++        )
++        .await
++    }
++
++    pub(super) async fn finish_readback_with_training(
++        &mut self,
++        source: &mut OriginalCellEvaluationQualificationSourcesV1<
++            '_,
++            impl AnchorWitnessStore,
++            impl AnchorWitnessStore,
++            impl AnchorWitnessStore,
++        >,
++        prepared: &Prepared,
++        bytes: &[u8],
++        started_at: u64,
++        new_publication: bool,
++        training: &mut OriginalPanelTrainingReadV1<'_>,
++    ) -> Result<CellEvaluationQualificationV1, Error> {
+         let current = binding::now()?;
+         binding::clock_time(started_at, current)?;
+         binding::authenticate(&self.config, prepared, current)?;
+@@ -90,7 +116,7 @@
+         }
+         let qualification = result?;
+         drop(sink);
+-        source.read_trainer(&self.config).await?;
++        OriginalPanelTrainingReadV1::read(training, source, &self.config).await?;
+         source.verify_current(&self.config, prepared)?;
+         if self.completed_bytes()? != bytes {
+             return Err(Error::CommitUncertain);
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
+index 31c97708e059d1e1a68bc512cd6728cf6df2970c..a193092ffd45d4c894999b126072f6d9c48fb7b2 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs
+@@ -4,6 +4,7 @@
+ use codex_hepta_intelligence_eval::ProductProviderErrorV1;
+ use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
+ 
++use super::training_read_proof::OriginalPanelTrainingReadV1;
+ use super::*;
+ use crate::CellEvaluationJournalsV1;
+ use crate::LearningIterationEvidenceClientV1;
+@@ -82,8 +83,22 @@
+         config: &OriginalCellEvaluationQualificationConfigV1,
+         started_at: u64,
+     ) -> Result<Prepared, Error> {
++        self.prepare_with_training(
++            config,
++            started_at,
++            &mut OriginalPanelTrainingReadV1::Individual,
++        )
++        .await
++    }
++
++    pub(super) async fn prepare_with_training(
++        &mut self,
++        config: &OriginalCellEvaluationQualificationConfigV1,
++        started_at: u64,
++        training: &mut OriginalPanelTrainingReadV1<'_>,
++    ) -> Result<Prepared, Error> {
+         let before = self.read_original(config)?;
+-        self.read_trainer(config).await?;
++        OriginalPanelTrainingReadV1::read(training, self, config).await?;
+         let after = self.read_original(config)?;
+         if before != after {
+             return Err(Error::CommitUncertain);
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..7130b04357861ded3a20c8707d25b280009bd09c
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs
+@@ -0,0 +1,85 @@
++//! Private proof lifecycle checks over the same actual panel and Trainer.
++use pretty_assertions::assert_eq;
++
++use super::*;
++use crate::OriginalCellEvaluationQualificationErrorV1 as QualificationError;
++
++impl OriginalCellEvaluationHostV1 {
++    pub(crate) fn fixture_training_proof_lifecycle(&self) -> anyhow::Result<()> {
++        let mut owners = self
++            .owners
++            .try_lock()
++            .map_err(|_| anyhow::anyhow!("original B lane"))?;
++        self.runtime
++            .block_on(Box::pin(check_lifecycle(&mut owners)))
++    }
++}
++
++async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
++    let members = owners.panel.retention.len() + 1;
++    let call = owners.training_source.call(members)?;
++    let proof = call.begin()?;
++    assert!(call.begin().is_err());
++    let other_call = owners.training_source.call(members)?;
++    assert!(matches!(
++        proof.finish(&other_call, owners.current_time()?),
++        Err(QualificationError::Binding(_))
++    ));
++    assert!(
++        call.begin().is_err(),
++        "dropping a proof does not renew admission"
++    );
++
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    let before = Box::pin(owners.read_panel_with_training(&mut proof)).await?;
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(call.begin().is_err());
++
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    // Keep this call identity while replacing only the Source allocation;
++    // same client/signature bytes cannot substitute for its original brand.
++    let new_call = call.fixture_same_call_new_source();
++    assert!(matches!(
++        proof.finish(&new_call, owners.current_time()?),
++        Err(QualificationError::Binding(
++            "same completed panel Training call and Source"
++        ))
++    ));
++
++    let call = owners.training_source.call(members)?;
++    let mut proof = call.begin()?;
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    assert_eq!(
++        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
++        before
++    );
++    // An extra slot fails before peer I/O and consumes the proof. A valid
++    // prefix cannot be recovered after an out-of-order continuation.
++    assert!(
++        Box::pin(owners.read_panel_with_training(&mut proof))
++            .await
++            .is_err()
++    );
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(owners.panel.fenced);
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b328d77083060c943234ae0d8bf68088474bd6f
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
+@@ -0,0 +1,235 @@
++//! One private panel read transaction on the same actual bounded Trainer peer.
++//! Intermediate slots authenticate the original immutable Training pin. They
++//! are not CURRENT results: only the original first and last peer reads close
++//! this call, and no proof, signature or authority is returned to a caller.
++
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++
++use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
++use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::Error;
++use super::OriginalCellEvaluationQualificationConfigV1;
++use super::OriginalCellEvaluationQualificationSourcesV1;
++use super::binding;
++use crate::LearningIterationEvidenceClientV1;
++
++pub(super) enum OriginalPanelTrainingSourceV1 {
++    Individual,
++    Bound(Arc<OriginalPanelTrainingPinV1>),
++}
++
++pub(super) struct OriginalPanelTrainingPinV1 {
++    trainer: Arc<LearningIterationEvidenceClientV1>,
++    config: OriginalCellEvaluationQualificationConfigV1,
++}
++
++/// This scope lives only in one held Host call. Its borrowed proof cannot
++/// escape that call, and a canceled read cannot begin another proof in it.
++pub(super) struct OriginalPanelTrainingCallV1 {
++    source: OriginalPanelTrainingSourceV1,
++    identity: Arc<()>,
++    slots: usize,
++    admitted: AtomicBool,
++}
++
++pub(super) enum OriginalPanelTrainingReadV1<'call> {
++    Individual,
++    Panel(OriginalPanelTrainingProofV1<'call>),
++}
++
++pub(super) struct OriginalPanelTrainingProofV1<'call> {
++    call: &'call OriginalPanelTrainingCallV1,
++    cursor: Cursor,
++}
++
++enum Cursor {
++    Next(usize),
++    Complete,
++    Refused,
++}
++
++impl OriginalPanelTrainingSourceV1 {
++    /// Only the consuming actual Trainer-readback factory installs this pin.
++    /// The Arc allocation distinguishes another Source with identical bytes.
++    pub(super) fn from_original_training_readback(
++        trainer: Arc<LearningIterationEvidenceClientV1>,
++        config: &OriginalCellEvaluationQualificationConfigV1,
++    ) -> Self {
++        Self::Bound(Arc::new(OriginalPanelTrainingPinV1 {
++            trainer,
++            config: config.clone(),
++        }))
++    }
++
++    pub(super) fn call(&self, members: usize) -> Result<OriginalPanelTrainingCallV1, Error> {
++        if members < 2 {
++            return Err(Error::Binding("original nonempty retention panel"));
++        }
++        let slots = members
++            .checked_mul(8)
++            .ok_or(Error::Binding("original panel Training read bound"))?;
++        let source = match self {
++            Self::Individual => Self::Individual,
++            Self::Bound(original) => Self::Bound(Arc::clone(original)),
++        };
++        Ok(OriginalPanelTrainingCallV1 {
++            source,
++            identity: Arc::new(()),
++            slots,
++            admitted: AtomicBool::new(false),
++        })
++    }
++}
++
++impl OriginalPanelTrainingCallV1 {
++    pub(super) fn begin(&self) -> Result<OriginalPanelTrainingReadV1<'_>, Error> {
++        self.admitted
++            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
++            .map_err(|_| Error::CommitUncertain)?;
++        match &self.source {
++            OriginalPanelTrainingSourceV1::Individual => {
++                Ok(OriginalPanelTrainingReadV1::Individual)
++            }
++            OriginalPanelTrainingSourceV1::Bound(_) => Ok(OriginalPanelTrainingReadV1::Panel(
++                OriginalPanelTrainingProofV1 {
++                    call: self,
++                    cursor: Cursor::Next(0),
++                },
++            )),
++        }
++    }
++}
++
++impl OriginalPanelTrainingReadV1<'_> {
++    pub(super) async fn read(
++        &mut self,
++        source: &OriginalCellEvaluationQualificationSourcesV1<
++            '_,
++            impl AnchorWitnessStore,
++            impl AnchorWitnessStore,
++            impl AnchorWitnessStore,
++        >,
++        config: &OriginalCellEvaluationQualificationConfigV1,
++    ) -> Result<(), Error> {
++        match self {
++            Self::Individual => {
++                OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await
++            }
++            Self::Panel(proof) => {
++                let Cursor::Next(slot) = std::mem::replace(&mut proof.cursor, Cursor::Refused)
++                else {
++                    return Err(Error::CommitUncertain);
++                };
++                // A failed or canceled await never leaves a reusable slot.
++                let OriginalPanelTrainingSourceV1::Bound(original) = &proof.call.source else {
++                    return Err(Error::CommitUncertain);
++                };
++                original.require_source(source.trainer, config)?;
++                if slot == 0 || slot + 1 == proof.call.slots {
++                    // These are the existing prepare / finish_readback slots,
++                    // never an earlier read moved outside the physical work.
++                    OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)
++                        .await?;
++                }
++                original.authenticate(binding::now()?)?;
++                proof.cursor = if slot + 1 == proof.call.slots {
++                    Cursor::Complete
++                } else {
++                    Cursor::Next(slot + 1)
++                };
++                Ok(())
++            }
++        }
++    }
++
++    pub(super) fn finish(
++        self,
++        expected: &OriginalPanelTrainingCallV1,
++        current: u64,
++    ) -> Result<(), Error> {
++        match self {
++            Self::Individual => match &expected.source {
++                OriginalPanelTrainingSourceV1::Individual => Ok(()),
++                OriginalPanelTrainingSourceV1::Bound(_) => Err(Error::CommitUncertain),
++            },
++            Self::Panel(proof) => {
++                let (
++                    OriginalPanelTrainingSourceV1::Bound(original),
++                    OriginalPanelTrainingSourceV1::Bound(expected_source),
++                ) = (&proof.call.source, &expected.source)
++                else {
++                    return Err(Error::CommitUncertain);
++                };
++                if !Arc::ptr_eq(&proof.call.identity, &expected.identity)
++                    || !Arc::ptr_eq(original, expected_source)
++                {
++                    return Err(Error::Binding(
++                        "same completed panel Training call and Source",
++                    ));
++                }
++                if !matches!(proof.cursor, Cursor::Complete) {
++                    return Err(Error::CommitUncertain);
++                }
++                original.authenticate(current)
++            }
++        }
++    }
++}
++
++#[cfg(test)]
++impl OriginalPanelTrainingCallV1 {
++    pub(super) fn fixture_same_call_new_source(&self) -> Self {
++        let OriginalPanelTrainingSourceV1::Bound(original) = &self.source else {
++            panic!("actual original Trainer composition is required");
++        };
++        Self {
++            source: OriginalPanelTrainingSourceV1::from_original_training_readback(
++                Arc::clone(&original.trainer),
++                &original.config,
++            ),
++            identity: Arc::clone(&self.identity),
++            slots: self.slots,
++            admitted: AtomicBool::new(true),
++        }
++    }
++}
++
++impl OriginalPanelTrainingPinV1 {
++    fn require_source(
++        &self,
++        trainer: &LearningIterationEvidenceClientV1,
++        config: &OriginalCellEvaluationQualificationConfigV1,
++    ) -> Result<(), Error> {
++        if !std::ptr::eq(self.trainer.as_ref(), trainer)
++            || self.config.training != config.training
++            || self.config.scope != config.scope
++            || self.config.training_evidence != config.training_evidence
++            || self.config.context.generator != config.context.generator
++            || self.config.verifier.trust_digest() != config.verifier.trust_digest()
++            || self.config.verifier.scope_digest() != config.verifier.scope_digest()
++            || self.config.verifier.objective_digest() != config.verifier.objective_digest()
++        {
++            return Err(Error::Binding(
++                "same actual panel Trainer channel and full Training pin",
++            ));
++        }
++        Ok(())
++    }
++
++    fn authenticate(&self, current: u64) -> Result<(), Error> {
++        let original = self.config.verifier.verify(
++            LearningEvidenceRoleV1::Generator,
++            &self.config.training_evidence,
++            &learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?,
++            current,
++        )?;
++        if original.principal() != &self.config.context.generator {
++            return Err(Error::Binding("original panel Training Generator custody"));
++        }
++        Ok(())
++    }
++}
+diff --git a/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py b/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py
+index 5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f..1c4b608895e09c0215a30212282402b8c2dd8169 100644
+--- a/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py
++++ b/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py
+@@ -115,12 +115,12 @@
+         ):
+             self.rejects(HOST, "fn from_original_receipt_owner(", marker)
+         for marker in (
+-            "let before = self.read_panel().await?",
++            "let before = self.read_panel_with_training(&mut training).await?",
+             "before.training_evidence() != &context.training_evidence",
+             "qualification: before.primary().qualification()",
+             "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
+             "OriginalCellEvaluationReceiptOwnerV1::readback(",
+-            "let after = self.read_panel().await?", "if before != after",
++            "let after = self.read_panel_with_training(&mut training).await?", "if before != after",
+             "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+             "self.authenticate_panel(&after, current)?",
+             "config.signing.verifier.require_signer_binding(",
+diff --git a/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py b/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5a2786e6ec8c93d89e608a835d94a5bec26cb8b
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
+@@ -0,0 +1,145 @@
++"""Close the private same-call panel T proof without weakening real tails.
++
++These use the original caller verifier and mutation attacks. They do not claim
++native capacity, latency, ordinary NoUpdate or daemon/Root cold qualification.
++"""
++import hashlib
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location('panel_training_transaction_proof', ROOT / 'scripts/verify_hepta_callers.py')
++assert SPEC and SPEC.loader
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++A = 'codex-rs/hepta-agentd/src/'
++SOURCE = A + 'neuron_cell_evaluation_qualification_sources.rs'
++READ = A + 'neuron_cell_evaluation_qualification_readback.rs'
++PANEL = A + 'neuron_cell_evaluation_panel.rs'
++MEMBER = A + 'neuron_cell_evaluation_panel_member.rs'
++HOST = A + 'neuron_cell_evaluation_host.rs'
++FACTORY = A + 'neuron_cell_evaluation_host_training_readback.rs'
++TRANSACTION = A + 'neuron_cell_evaluation_training_read_proof.rs'
++SERVICE = A + 'neuron_cell_evaluation_host_service.rs'
++RECEIPT = A + 'neuron_cell_evaluation_receipt_owner.rs'
++
++
++class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.manifest = tomllib.loads((ROOT / 'CALLERS.toml').read_text())
++        cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
++
++    def code(self, text):
++        return PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(text))
++
++    def verifies(self, path, text):
++        rows = [r for r in self.manifest['protected_file'] if r['path'] == path]
++        self.assertTrue(rows)
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(text)
++            PROOF._verify_protected_files(root, {'protected_file': rows})
++
++    def rejects(self, path, function, marker):
++        text = (ROOT / path).read_text()
++        self.verifies(path, text)
++        code = self.code(text)
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        offset = code.index(marker, start, end + 1)
++        with self.assertRaises(PROOF.VerificationFailure):
++            self.verifies(path, text[:offset] + text[offset + len(marker):])
++
++    def test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls(self):
++        expected = {
++            'source': (FACTORY,), 'call': (HOST,), 'begin': (HOST,),
++            'slot': (SOURCE, READ), 'finish': (HOST,), 'actual': (TRANSACTION,),
++            'prepare': (MEMBER,), 'qualification': (MEMBER,),
++            'panel': (HOST,),
++        }
++        paths = {TRANSACTION, SOURCE, READ, PANEL, MEMBER, HOST, FACTORY}
++        index = {p: self.code((ROOT / p).read_text()) for p in paths}
++        for suffix, callers in expected.items():
++            identifier = 'learning_original_panel_training_' + suffix
++            row = self.boundaries[identifier]
++            with self.subTest(boundary=identifier):
++                self.assertEqual(row.product_callers, callers)
++                self.assertIn(identifier, self.manifest['privileged_inventory']['required_boundary_ids'])
++                PROOF._verify_boundary(ROOT, row, index, ())
++                extra = dict(index)
++                extra[A + 'unregistered_panel_proof.rs'] = 'fn bypass(value: &' + row.receiver_type + ') { ' + row.symbol + '(value); }'
++                with self.assertRaisesRegex(PROOF.VerificationFailure, 'unexpected'):
++                    PROOF._verify_boundary(ROOT, row, extra, ())
++
++    def test_actual_factory_binds_all_members_before_minting_private_source(self):
++        for marker in (
++            'original.training != *actual.snapshot()',
++            'original.training_evidence != *training.attestation()',
++            'original.scope != receipt.scope', 'original.verifier.trust_digest()',
++            'original.verifier.scope_digest()', 'original.verifier.objective_digest()',
++            'OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(',
++            'panel.primary.trainer = Arc::clone(&trainer)',
++            'member.trainer = Arc::clone(&trainer)',
++            'OriginalPanelTrainingSourceV1::from_original_training_readback(',
++            '.training_source = training_source',
++        ):
++            with self.subTest(marker=marker):
++                self.rejects(FACTORY, 'fn into_host_from_original_training_readback(', marker)
++        self.rejects(HOST, 'fn from_original_receipt_owner(', 'training_source: OriginalPanelTrainingSourceV1::Individual')
++
++    def test_first_and_last_reads_stay_in_the_original_physical_slots(self):
++        for path, function, markers in (
++            (SOURCE, 'fn prepare_with_training(', ['let before = self.read_original(config)?', 'OriginalPanelTrainingReadV1::read(training, self, config).await?', 'let after = self.read_original(config)?', 'binding::authenticate(config, &after, current)?']),
++            (READ, 'fn finish_readback_with_training(', ['runner.qualify_and_persist(', 'drop(sink)', 'OriginalPanelTrainingReadV1::read(training, source, &self.config).await?', 'source.verify_current(&self.config, prepared)?', 'if self.completed_bytes()? != bytes', 'binding::authenticate(&self.config, prepared, current)?', 'revalidate_product_qualification_v1(']),
++            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
++        ):
++            for marker in markers:
++                with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
++
++    def test_call_identity_counter_and_immutable_signature_cannot_be_substituted(self):
++        for function, markers in (
++            ('fn call(', ['.checked_mul(8)', 'identity: Arc::new(())', 'admitted: AtomicBool::new(false)']),
++            ('fn begin(', ['.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)', 'call: self', 'cursor: Cursor::Next(0)']),
++            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', '!Arc::ptr_eq(original, expected_source)', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),
++            ('fn require_source(', ['!std::ptr::eq(self.trainer.as_ref(), trainer)', 'self.config.training != config.training', 'self.config.scope != config.scope', 'self.config.training_evidence != config.training_evidence', 'self.config.context.generator != config.context.generator', 'self.config.verifier.trust_digest() != config.verifier.trust_digest()', 'self.config.verifier.scope_digest() != config.verifier.scope_digest()', 'self.config.verifier.objective_digest() != config.verifier.objective_digest()']),
++            ('fn authenticate(', ['self.config.verifier.verify(', 'LearningEvidenceRoleV1::Generator', 'learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?', 'original.principal() != &self.config.context.generator']),
++        ):
++            for marker in markers:
++                with self.subTest(function=function, marker=marker): self.rejects(TRANSACTION, function, marker)
++        for injected in ('impl Clone for OriginalPanelTrainingProofV1 {}', 'struct Escape { source: *const Source }', 'fn leak() { Box::leak(proof); }', 'pub fn arbitrary_proof() {}', 'fn forge() { signer.sign(value); }'):
++            with self.subTest(injected=injected), self.assertRaises(PROOF.VerificationFailure):
++                self.verifies(TRANSACTION, (ROOT / TRANSACTION).read_text() + '\n' + injected + '\n')
++
++    def test_cohort_cells_qualification_and_receipt_tails_remain_real(self):
++        for path, function, markers in (
++            (MEMBER, 'fn read_original(', ['let before = self.read_cells()?', 'OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?', 'OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(', 'OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(', 'drop(sources)', 'let after = self.read_cells()?', 'if before != after || cohort_before != cohort_after', 'self.authenticate(&observed, current)?']),
++            (PANEL, 'fn read_original_panel(', ['let before = self.read_members(clock, training).await?', 'let after = self.read_members(clock, training).await?', 'if before != after', 'self.require_observed_panel(&after)?', 'self.primary.authenticate(&after[0], current)?', 'owner.authenticate(observed, current)?', 'self.retained = Some(result.clone())']),
++            (HOST, 'fn read_original_completion(', ['OriginalPanelTrainingSourceV1::call(', 'OriginalPanelTrainingCallV1::begin(&call)?', 'let before = self.read_panel_with_training(&mut training).await?', 'OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(', 'OriginalCellEvaluationReceiptOwnerV1::readback(', 'let after = self.read_panel_with_training(&mut training).await?', 'OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(', 'OriginalPanelTrainingReadV1::finish(training, &call, current)?', 'self.authenticate_panel(&after, current)?', 'config.signing.verifier.require_signer_binding(', 'contract::authenticate_receipt(']),
++        ):
++            for marker in markers:
++                with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
++
++    def test_original_effect_owner_and_transport_budgets_are_unchanged(self):
++        self.assertEqual(hashlib.sha256((ROOT / RECEIPT).read_bytes()).hexdigest(), 'b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7')
++        self.assertEqual(hashlib.sha256((ROOT / SERVICE).read_bytes()).hexdigest(), '806f44f2e3da47d09a307893b1daca5c0fa5c24217b6a5bb3a62adeb1a575c29')
++        self.verifies(SERVICE, (ROOT / SERVICE).read_text())
++        self.rejects(HOST, 'fn completion(', 'self.fenced = true')
++        for function, marker in (
++            ('fn prepare(', '&mut OriginalPanelTrainingReadV1::Individual'),
++        ): self.rejects(SOURCE, function, marker)
++        self.rejects(READ, 'fn finish_readback(', '&mut OriginalPanelTrainingReadV1::Individual')
++        self.rejects(PANEL, 'fn read_current_with_clock(', '&mut OriginalPanelTrainingReadV1::Individual')
++        self.rejects(HOST, 'fn read_panel_with_training(', 'return self.read_panel().await')
++
++
++if __name__ == '__main__':
++    unittest.main()
