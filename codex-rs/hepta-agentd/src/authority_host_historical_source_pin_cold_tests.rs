@@ -56,6 +56,7 @@ fn root_source_pin_physical_corruption_then_restore_stays_refused_across_process
     let original = std::fs::read(&path)?;
     drop(retained);
     for (bytes, phase) in [
+        (original.as_slice(), "baseline"),
         (&b"{broken-pin"[..], "observe_corruption"),
         (original.as_slice(), "restore_then_reopen"),
     ] {
@@ -112,9 +113,17 @@ fn root_source_pin_refusal_child() -> anyhow::Result<()> {
     let target = serde_json::from_str(&std::env::var("HEPTA_SOURCE_PIN_TEST_TARGET")?)?;
     let root = RootAuthorityDirectory::open(&directory)?;
     let phase = std::env::var("HEPTA_SOURCE_PIN_TEST_PHASE")?;
-    assert!(
-        RootHistoricalSourcePinV1::open_existing(root, &target).is_err(),
-        "restored primary unexpectedly reopened: {phase}"
-    );
+    match phase.as_str() {
+        "baseline" => {
+            RootHistoricalSourcePinV1::open_existing(root, &target)?.readback_digest()?;
+        }
+        "observe_corruption" | "restore_then_reopen" | "missing_primary_after_failed_capture" => {
+            assert!(
+                RootHistoricalSourcePinV1::open_existing(root, &target).is_err(),
+                "restored primary unexpectedly reopened: {phase}"
+            );
+        }
+        _ => anyhow::bail!("unknown Source pin child phase: {phase}"),
+    }
     Ok(())
 }
