@@ -1089,3 +1089,7 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     result?;
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "control_source_capture_tests.rs"]
+mod source_capture_tests;
