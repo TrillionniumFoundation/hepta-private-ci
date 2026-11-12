@@ -27,7 +27,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::CellQ24LearningPreparationErrorV1;
 use crate::CellQ24PreparedLearningV1;
-use crate::cell_composed_q24_training::OriginalPreparedReadV1;
+use crate::cell_composed_q24::OriginalPreparedReadV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
