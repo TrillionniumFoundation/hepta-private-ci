@@ -1,6 +1,10 @@
 //! A synchronous borrow of the original consumed holdout owner. The public
 //! journal receipt remains data: it cannot construct this borrow, authenticate
 //! an Evaluator, admit held-out inputs or establish independent data custody.
+//! The runner still accepts a caller-supplied CAS store. Even an exact namespace
+//! match does not authenticate a Root-registered physical owner. A production
+//! host must privately retain its actual store and independently admitted data;
+//! it must not expose the provider to arbitrary runners as a permission oracle.
 
 use codex_hepta_types::Digest32;
 
