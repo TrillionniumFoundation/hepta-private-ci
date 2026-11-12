@@ -20,9 +20,9 @@
     },
     {
       "id": "MEM-RAW-REPRODUCIBILITY",
-      "status": "ARCHIVE_START_RECOVERY_OPEN",
-      "evidence": "Original 4000 files/77913835 bytes retained on ai395; core and arithmetic audit published in#5676. Original archival start and one identical-key reconciliation timed out; registry reads timed out and identity remains UNRESOLVED/outcome UNKNOWN. Stop extra starts; recover original identity/INDEX read-only.",
-      "limit": "Do not claim all actor sidecars or pixels independently replayed before their corresponding checks"
+      "status": "CONTENT_RECONSTRUCTION_VERIFIED_ORIGINAL_JOB_ID_UNRESOLVED",
+      "evidence": "Original ai395 output contains INDEX.json (2764B SHA256 470cb2217d2d4727c551b6f935f8f1ffaa66f7702af87ea1fdaa15b86e0b69f4) plus 84 original tar.xz assets. Published 469-line strict-v2 SHA256 3e8466d63a03306f8e52de6e5f68bd378ce235731f98f9022ec47a4696677897 executed only --verify in durable read-only job 1a1cd38a5b9-2564-1227, exact exit0/complete stdout, reconstructs all 4000 files/77913835 bytes, 2825 unique objects/2859 chunks, manifest SHA256 c98d559d76dee6d80b509397813e5f57128e53174d2e05b527f1df13a2339304. Full technical receipt #6063. No archive or actor rerun.",
+      "limit": "Content reconstruction is verified on the existing ai395 archive; original archive-start idempotency job identity/outcome still UNRESOLVED/UNKNOWN. No source Owner authentication, remote replication, independent cold host restore, full actor/pixel sidecar reexecution, sealed confirmation or scientific/production adoption. Do not conflate read-only verifier job with unknown original archive producer."
     },
     {
       "id": "MEM-REPLAY-COVERAGE-CONTROL",
