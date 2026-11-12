@@ -1,5 +1,5 @@
 //! The daemon retains an original Root reader, never B's runner, key or file
-//! writers. Completion is data-only until the current Root verifies the actual
+//! result writers. Its sole input FD accepts only actual Trainer model data. Completion is data-only until the current Root verifies the actual
 //! original Trainer signature against its own retained Training checkpoint.
 
 use std::sync::Arc;
@@ -24,6 +24,8 @@ use crate::learning_owner_evidence;
 use crate::root_generation_current_client::OriginalPublicationStream;
 use crate::root_independent_b_protocol::*;
 
+#[path = "root_independent_b_candidate_data.rs"]
+mod candidate_data;
 #[path = "root_independent_b_client_connect.rs"]
 mod connect;
 #[path = "root_independent_b_training.rs"]
@@ -38,6 +40,7 @@ pub(crate) struct OriginalRootIndependentBEvaluationClientV1 {
     bootstrap: Bootstrap,
     connection: OriginalRootBEvaluationConnectionV1,
     lane: Mutex<Lane>,
+    candidate_data: Mutex<std::fs::File>,
     refused: AtomicBool,
 }
 

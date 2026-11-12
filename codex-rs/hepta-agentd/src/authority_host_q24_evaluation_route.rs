@@ -19,6 +19,7 @@ pub(crate) use serve::serve_optional_until;
 
 pub struct RootIndependentBEvaluationOfferV1 {
     pub(crate) bootstrap: File,
+    pub(crate) candidate_data: File,
 }
 
 pub(crate) struct PreparedRootIndependentBEvaluationV1 {
@@ -55,8 +56,8 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         }
         let end = request_end;
         self.require_original_learning(learning)?;
-        let (bootstrap, sealed) = self.record.inspect(end, |enrollment| {
-            let state = self
+        let (bootstrap, sealed, candidate_data) = self.record.inspect(end, |enrollment| {
+            let mut state = self
                 .state
                 .try_lock()
                 .map_err(|_| io::Error::other("B custody busy"))?;
@@ -84,6 +85,8 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     if let Some(current) = &before {
                         scope.validate_snapshot(current).map_err(io::Error::other)?;
                     }
+                    let candidate_data = state.files.candidate_data.take_original_writer()?;
+                    let candidate_metadata = candidate_data.metadata()?;
                     let bootstrap = Bootstrap {
                         purpose: PURPOSE.into(),
                         root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
@@ -103,6 +106,8 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         scope: scope.binding().to_string(),
                         writer,
                         binding: self.original_binding().to_string(),
+                        candidate_data_device: candidate_metadata.dev(),
+                        candidate_data_inode: candidate_metadata.ino(),
                         socket: config
                             .sockets
                             .observation
@@ -123,7 +128,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                             "original B checkpoint changed during route capture",
                         ));
                     }
-                    Ok((bootstrap, sealed))
+                    Ok((bootstrap, sealed, candidate_data))
                 },
             )?;
             owner_alive(owner, end)?;
@@ -141,7 +146,10 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 phase: AtomicU8::new(0),
                 end: self.end,
             },
-            offer: RootIndependentBEvaluationOfferV1 { bootstrap: sealed },
+            offer: RootIndependentBEvaluationOfferV1 {
+                bootstrap: sealed,
+                candidate_data,
+            },
         })
     }
 
