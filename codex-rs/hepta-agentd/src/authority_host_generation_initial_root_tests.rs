@@ -71,11 +71,18 @@ enum Phase {
     Restored,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+enum ArtifactAccess {
+    OriginalWriter,
+    OriginalReadView,
+}
+
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Plan {
     phase: Phase,
     lose_ack: bool,
+    artifact_access: ArtifactAccess,
     model_directory: PathBuf,
     artifacts: artifacts::Transfer,
     target: data::ObserverData,
@@ -209,10 +216,21 @@ fn initial_feature_preflight_rejects_inexecutable_target_before_current() -> any
 #[test]
 #[ignore = "actual UID0, original protected bind domains and dedicated non-Root child"]
 fn root_initial_publication_uses_original_consumer_and_readonly_recovery() -> anyhow::Result<()> {
+    exercise_original_initial_artifacts(ArtifactAccess::OriginalWriter)
+}
+
+#[test]
+#[ignore = "actual UID0, original protected bind domains and dedicated non-Root child"]
+fn root_initial_readview_keeps_original_writer_locked_and_binds_live_session() -> anyhow::Result<()>
+{
+    exercise_original_initial_artifacts(ArtifactAccess::OriginalReadView)
+}
+
+fn exercise_original_initial_artifacts(artifact_access: ArtifactAccess) -> anyhow::Result<()> {
     // SAFETY: only observes the parent process's actual kernel credentials.
     assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
     for lose_ack in [false, true] {
-        let mut fixture = fixture::Fixture::new(lose_ack)?;
+        let mut fixture = fixture::Fixture::new(lose_ack, artifact_access)?;
         // CURRENT does not exist until the child passes complete Feature and
         // original Artifact/target validation and requests this purpose.
         assert!(fixture.head().is_err());

@@ -60,10 +60,23 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             let connection = production.take_generation_publication_connection()?;
             assert!(production.take_generation_publication_connection().is_err());
             let claims = production.bootstrap.consumers.device.local_state_dir.join("authority.claims");
-            // Only the same original Artifact writer is reopened, after the
-            // parent released it and transferred its retained signed inputs.
-            let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)
-                .with_context(|| format!("initial child {phase:?}: reopening original Artifact owner"))?;
+            let original_artifacts = match plan.artifact_access {
+                ArtifactAccess::OriginalWriter => Some(plan.artifacts.reopen(now_ms()?)
+                    .with_context(|| format!("initial child {phase:?}: reopening original Artifact owner"))?),
+                ArtifactAccess::OriginalReadView => {
+                    // Root retains the actual writer, so a writer fallback is
+                    // physically unavailable throughout this entire scenario.
+                    let error = plan.artifacts.reopen(now_ms()?).err()
+                        .ok_or_else(|| anyhow::anyhow!("retained original Artifact writer must stay locked"))?;
+                    assert!(matches!(
+                        error.downcast_ref::<codex_hepta_learning_artifacts::LearningArtifactOwnerServiceError>(),
+                        Some(codex_hepta_learning_artifacts::LearningArtifactOwnerServiceError::Host(
+                            codex_hepta_learning_artifacts::ArtifactOwnerHostError::WriterFenceBusy
+                        ))
+                    ), "original writer refusal: {error}");
+                    None
+                }
+            };
             let (model, bundle, definition) = material::load(&plan.model_directory)
                 .with_context(|| format!("initial child {phase:?}: loading actual model material"))?;
             let source = material::source(identity.agent_id.as_str())?;
@@ -73,9 +86,6 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 },
                 model, bundle: bundle.clone(), definition, source,
             };
-            let authorities = crate::AgentdGenerationUpdateAuthoritiesV1::new(
-                artifacts, Arc::new(production.device.clone()), production.session.clock(),
-            ).with_context(|| format!("initial child {phase:?}: binding original publication authorities"))?;
             assert_eq!(socket.send(b"ORIGINAL_INPUTS_READY")?, 21);
             eprintln!("ROOT_INITIAL_CHILD phase={phase:?} stage=original_inputs_ready_sent");
             let enrolled: bool = data(&socket)
@@ -84,7 +94,7 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 assert!(!enrolled, "existing CURRENT, actual corrupt or durably fenced original material rejected");
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(Some(std::fs::read(&claims)?), original_claims);
-                drop((initial, connection, authorities, selected, target));
+                drop((initial, connection, original_artifacts, target));
                 assert_eq!(socket.send(b"STABLE")?, 6);
                 control(&socket, b"CHECKED")
                     .with_context(|| format!("initial child {phase:?}: awaiting parent CHECKED"))?;
@@ -102,6 +112,26 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             assert!(enrolled);
             let initial = initial.connect(connection, TIMEOUT, LIFETIME).await
                 .with_context(|| format!("initial child {phase:?}: connecting original initial lane"))?;
+            let (authorities, selected) = match original_artifacts {
+                Some((artifacts, selected)) => (
+                    crate::AgentdGenerationUpdateAuthoritiesV1::new(
+                        artifacts, Arc::new(production.device.clone()), production.session.clock(),
+                    ).with_context(|| format!("initial child {phase:?}: binding original publication authorities"))?,
+                    selected,
+                ),
+                None => {
+                    let claims_before = std::fs::read(&claims)?;
+                    let mut different = plan.artifacts.inputs()?;
+                    different.storage_binding = Digest32::of_bytes(b"different-original-storage-binding");
+                    assert!(initial.client.open_original_artifact_authorities(&production, different).is_err());
+                    assert_eq!(std::fs::read(&claims)?, claims_before);
+                    let (authorities, selected) = initial.client.open_original_artifact_authorities(
+                        &production, plan.artifacts.inputs()?,
+                    ).with_context(|| format!("initial child {phase:?}: binding original readonly Artifact view"))?;
+                    assert!(authorities.artifacts.writer().is_err());
+                    (authorities, selected)
+                }
+            };
             if phase == Phase::Publish {
                 assert_eq!(production.device.capacity()?.used_nonces, 0);
                 let prepared = initial.prepare_feature(authorities, selected, target)
