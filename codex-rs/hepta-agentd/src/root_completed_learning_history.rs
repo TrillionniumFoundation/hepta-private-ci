@@ -25,7 +25,7 @@ impl RootHistoricalTaskReadClientV1 {
             client: self,
             armed: true,
         };
-        self.require_same_original_session(session)?;
+        RootHistoricalTaskReadClientV1::require_same_original_session(self, session)?;
         self.require_completed_identity(identity)?;
         if self.completed_attempted.swap(true, Ordering::AcqRel) {
             return Err(AgentdError::Io(refused()));
@@ -35,11 +35,11 @@ impl RootHistoricalTaskReadClientV1 {
                 self,
                 HistoricalReadOperationV1::AcceptCompletedLearning,
             )? {
-                Reply::CompletedAcceptance(response) => response,
+                Reply::Acceptance(response) => response,
                 Reply::Task(_)
                 | Reply::LearningTrust(_)
                 | Reply::PostAFrozenLearning(_)
-                | Reply::CompletedHistory(_) => return Err(refused()),
+                | Reply::History(_) => return Err(refused()),
             };
             if response.initial != self.initial.head_digest.to_string() {
                 return Err(refused());
@@ -47,7 +47,8 @@ impl RootHistoricalTaskReadClientV1 {
             Ok(response)
         })();
         let identity_after = self.require_completed_identity(identity);
-        let session_after = self.require_same_original_session(session);
+        let session_after =
+            RootHistoricalTaskReadClientV1::require_same_original_session(self, session);
         identity_after?;
         session_after?;
         let response = result?;
@@ -65,7 +66,7 @@ impl RootHistoricalTaskReadClientV1 {
             client: self,
             armed: true,
         };
-        self.require_same_original_session(session)?;
+        RootHistoricalTaskReadClientV1::require_same_original_session(self, session)?;
         self.require_completed_identity(identity)?;
         let result = (|| {
             let captured = match mode {
@@ -93,7 +94,8 @@ impl RootHistoricalTaskReadClientV1 {
             Ok(response)
         })();
         let identity_after = self.require_completed_identity(identity);
-        let session_after = self.require_same_original_session(session);
+        let session_after =
+            RootHistoricalTaskReadClientV1::require_same_original_session(self, session);
         identity_after?;
         session_after?;
         let response = result?;
@@ -126,11 +128,11 @@ impl RootHistoricalTaskReadClientV1 {
         self.require_completed_identity(identity)?;
         let result = (|| {
             let response = match RootHistoricalTaskReadClientV1::exchange(self, operation)? {
-                Reply::CompletedHistory(response) => response,
+                Reply::History(response) => response,
                 Reply::Task(_)
                 | Reply::LearningTrust(_)
                 | Reply::PostAFrozenLearning(_)
-                | Reply::CompletedAcceptance(_) => return Err(AgentdError::Io(refused())),
+                | Reply::Acceptance(_) => return Err(AgentdError::Io(refused())),
             };
             if response.completion.initial != self.initial.head_digest.to_string()
                 || response.completion.identity_digest

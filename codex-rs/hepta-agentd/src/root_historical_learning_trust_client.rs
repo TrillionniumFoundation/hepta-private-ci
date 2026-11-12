@@ -48,8 +48,8 @@ impl OriginalHistoricalTaskReadReceiptV1 {
                 Reply::LearningTrust(response) => *response,
                 Reply::Task(_)
                 | Reply::PostAFrozenLearning(_)
-                | Reply::CompletedAcceptance(_)
-                | Reply::CompletedHistory(_) => return Err(refused()),
+                | Reply::Acceptance(_)
+                | Reply::History(_) => return Err(refused()),
             };
             if response.data_cut != self.data.data_cut.to_string() {
                 return Err(refused());
