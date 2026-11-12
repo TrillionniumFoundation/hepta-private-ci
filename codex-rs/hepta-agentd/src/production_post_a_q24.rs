@@ -15,6 +15,9 @@ use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 mod artifacts;
 #[path = "production_post_a_c_task.rs"]
 mod c_task;
+#[path = "production_post_a_continuation.rs"]
+mod continuation;
+pub(crate) use continuation::OriginalPostAContinuationV1;
 #[path = "production_post_a_q24_deployment.rs"]
 mod deployment;
 #[path = "production_post_a_generation.rs"]
@@ -29,21 +32,11 @@ mod material;
 mod owners;
 pub(super) use handoff::PendingHandoffs;
 
-/// Own only the actual continuation handles. The independent B host retains
-/// its own dataset and signing keys; it must later install a real B completion.
-pub(super) struct OriginalPostAContinuationV1 {
-    _owners: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
-    _trust: Arc<OriginalHistoricalLearningTrustV1>,
-    _receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
-    _handle: crate::LearningIterationHandleV1,
-    _successor: crate::OriginalQ24SuccessorHandoffV1,
-    _publication: crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute,
-}
-
 impl AgentdProductionLaunch {
     /// The explicit ordinary post-A profile uses the same actual Root session
     /// from historical admission through Dataset freeze and scoped assembly.
-    /// Missing external B/C owners retain their existing refusal behavior.
+    /// Independent B remains its original Root host's capability. Actual C is
+    /// installed by the supervised continuation after the checkpointed result.
     pub async fn assemble_original_post_a_q24(
         mut self,
         mut config: AgentdConfig,
@@ -61,7 +54,6 @@ impl AgentdProductionLaunch {
         if self.q24_model.is_some()
             || self.initial_publication.is_some()
             || self.publication.is_some()
-            || self.post_a_continuation.is_some()
             || self.original_source_capture.is_some()
             || self.original_run_start_retention.is_some()
         {
@@ -86,6 +78,7 @@ impl AgentdProductionLaunch {
             receipt.initial_snapshot(),
             &mut files,
         )?;
+        let baseline = Arc::clone(&preparation.baseline);
         let task = CellQ24DatasetTaskV1::capture_historical(
             Arc::clone(&receipt),
             &client,
@@ -127,6 +120,19 @@ impl AgentdProductionLaunch {
         self.q24_model = Some(model);
         self.publication = Some(publication);
         let authorities = OriginalHistoricalLearningTrustV1::original_stage_authorities(&trust)?;
+        let generation = data
+            .continuation
+            .generation
+            .open_original(&mut files, &authorities)?;
+        let artifacts = artifacts::OriginalArtifactPlan::open_original(
+            data.continuation.artifacts,
+            &mut files,
+            self.session_end,
+        )?;
+        let task = data
+            .continuation
+            .task
+            .open_original(&mut files, self.session_end)?;
         // Retain one tracker from the baseline through every signing/journal
         // file, including dispatch. Earlier writer/read aliases are refused.
         let delivery = owners::JournalData::open(
@@ -161,32 +167,63 @@ impl AgentdProductionLaunch {
         let bootstrap =
             crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source(
                 bootstrap,
-                source,
+                Arc::clone(&source),
                 &identity,
                 journal,
                 witness,
                 data.delivery_mode.original(),
             )?;
         config = config.with_learning_iteration_bootstrap(bootstrap)?;
-        let (launch, config, successor) = self
+        let (launch, mut config, successor) = self
             .prepare_original_q24_successor(config, data.queue_capacity)
             .await?;
         self = launch;
         self.require_original_post_a_context(&identity)?;
-        self.post_a_continuation = Some(OriginalPostAContinuationV1 {
-            _owners: stage_owners,
-            _trust: trust,
-            _receipt: receipt,
-            _handle: handle,
-            _successor: successor,
-            _publication: crate::RootGenerationPublicationHandoffV1::retain_original_preparation(
-                self.take_generation_publication_handoff()?,
-                self.take_generation_publication_connection()?,
-                &prepared,
-                self.session_end,
-            )?,
-        });
-        drop(files);
+        let publication = crate::RootGenerationPublicationHandoffV1::retain_original_preparation(
+            self.take_generation_publication_handoff()?,
+            self.take_generation_publication_connection()?,
+            &prepared,
+            self.session_end,
+        )?;
+        let material = material::OriginalMaterialWriter::open_from_original_root(
+            &publication,
+            &mut files,
+            self.session_end,
+        )?;
+        let final_use = publication.with_original_data(|fixed| {
+            Ok(Arc::new(match fixed.inputs.consumer {
+                crate::RootPublicationFinalUseConsumerV1::Device => self.root.device.clone(),
+                crate::RootPublicationFinalUseConsumerV1::Notes => self.root.notes.clone(),
+            }))
+        })?;
+        let continuation = OriginalPostAContinuationV1::from_original_inputs(
+            continuation::OriginalContinuationInputs {
+                source,
+                owners: stage_owners,
+                trust,
+                receipt,
+                successor,
+                publication,
+                material,
+                artifacts,
+                task,
+                generation,
+                files,
+                baseline,
+                final_use,
+                grants: Arc::clone(&self.root.grants),
+                clock: self.root.session.clock(),
+                identity: identity.clone(),
+                end: self.session_end,
+            },
+        )?;
+        let bootstrap = config
+            .take_learning_iteration_bootstrap()
+            .ok_or_else(|| refused("original successor learning bootstrap absent"))?;
+        let bootstrap = bootstrap.with_original_post_a_continuation(continuation, &identity)?;
+        config = config.with_learning_iteration_bootstrap(bootstrap)?;
+        // The mandatory delivery now owns both the handle and continuation.
+        drop(handle);
         Ok((self, config))
     }
 

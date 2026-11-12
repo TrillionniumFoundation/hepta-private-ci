@@ -30,6 +30,15 @@ pub(super) struct Deployment {
     pub(super) delivery: owners::JournalData,
     pub(super) delivery_mode: owners::OpenMode,
     pub(super) queue_capacity: usize,
+    pub(super) continuation: ContinuationData,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct ContinuationData {
+    pub(super) artifacts: artifacts::ArtifactFilesData,
+    pub(super) task: c_task::CTaskData,
+    pub(super) generation: generation::GenerationFilesData,
 }
 
 #[derive(Deserialize)]
