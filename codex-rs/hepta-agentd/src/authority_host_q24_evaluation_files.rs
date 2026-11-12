@@ -137,6 +137,56 @@ impl OriginalBFile {
         self.require_original()
     }
 
+    pub(super) fn require_nonempty(&self) -> io::Result<()> {
+        self.require_original()?;
+        if self.file.metadata()?.len() == 0 {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(io::Error::other(
+                "original B recovery cannot initialize missing content",
+            ));
+        }
+        self.require_original()
+    }
+
+    /// The private B executor retains this file's original exclusive native
+    /// writer while observing its read-only identity pin. Acquiring a second
+    /// shared flock would conflict with that already-held original owner.
+    /// This returns data only; it does not authenticate or acquire a writer.
+    pub(super) fn observe_owned_output(&self) -> io::Result<Digest32> {
+        self.require_original()?;
+        if !matches!(self.access, OriginalBFileAccess::ReadOnly) {
+            return Err(io::Error::other(
+                "original B output owner has not taken custody",
+            ));
+        }
+        let result = (|| {
+            let mut previous = None;
+            for _ in 0..2 {
+                let before = self.file.metadata()?;
+                if before.len() == 0 || before.len() > 32 * 1024 * 1024 {
+                    return Err(io::Error::other("original bounded B output is missing"));
+                }
+                let mut bytes = vec![0; usize::try_from(before.len()).map_err(io::Error::other)?];
+                self.file.read_exact_at(&mut bytes, /*offset*/ 0)?;
+                let digest = Digest32::of_bytes(&bytes);
+                if stamp(&before) != stamp(&self.file.metadata()?)
+                    || previous.is_some_and(|old| old != digest)
+                {
+                    return Err(io::Error::other(
+                        "original B output changed during observation",
+                    ));
+                }
+                self.require_original()?;
+                previous = Some(digest);
+            }
+            previous.ok_or_else(|| io::Error::other("original B output was not read"))
+        })();
+        if result.is_err() {
+            self.poisoned.store(true, Ordering::Release);
+        }
+        result
+    }
+
     /// Private, data-only physical observation. The Root durable attempt and
     /// original holdout consumption must surround any production label read.
     pub(super) fn read_stable(&self, maximum: usize) -> io::Result<Vec<u8>> {

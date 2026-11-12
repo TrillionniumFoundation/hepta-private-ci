@@ -46,6 +46,8 @@ pub(super) struct OriginalBEnrollment {
     pub(super) realized_training_head: Option<[u8; 32]>,
     pub(super) realized_plan: Option<[u8; 32]>,
     pub(super) completed_receipt: Option<[u8; 32]>,
+    pub(super) released_source: Option<super::provider::OriginalBReleasedSource>,
+    pub(super) output_images: Vec<[u8; 32]>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -111,6 +113,8 @@ impl OriginalBRecord {
             || enrollment.realized_plan.is_some()
             || enrollment.realized_training_head.is_some()
             || enrollment.completed_receipt.is_some()
+            || enrollment.released_source.is_some()
+            || !enrollment.output_images.is_empty()
             || enrollment.files.is_empty()
             || enrollment.files.len() > 64
             || enrollment.namespace == [0; 32]
@@ -190,6 +194,8 @@ impl OriginalBRecord {
             immutable.realized_training_head = original.realized_training_head;
             immutable.realized_plan = original.realized_plan;
             immutable.completed_receipt = original.completed_receipt;
+            immutable.released_source = original.released_source.clone();
+            immutable.output_images = original.output_images.clone();
             if &immutable != original || self.poisoned.load(Ordering::Acquire) {
                 return Err(io::Error::other("original B registration was changed"));
             }

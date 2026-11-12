@@ -21,3 +21,6 @@ mod deployment;
 
 #[path = "authority_host_q24_evaluation_provider.rs"]
 mod provider;
+
+#[path = "authority_host_q24_evaluation_outputs.rs"]
+mod outputs;
