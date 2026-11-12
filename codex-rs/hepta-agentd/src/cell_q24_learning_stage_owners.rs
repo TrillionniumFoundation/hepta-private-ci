@@ -41,10 +41,15 @@ mod successor;
 mod evaluation_root;
 use evaluation_root::OriginalRootBEvaluationActionV1;
 
+#[path = "cell_q24_learning_historical_operation.rs"]
+mod historical_operation;
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
 #[path = "cell_q24_learning_model_root.rs"]
 mod model_root;
+pub(crate) use historical_operation::OriginalHistoricalRestoreModeV1;
+pub(crate) use historical_operation::OriginalHistoricalResultV1;
+pub(crate) use historical_operation::OriginalHistoricalWorkV1;
 #[path = "cell_q24_publication_material.rs"]
 mod publication_material;
 #[path = "cell_q24_training_material.rs"]
