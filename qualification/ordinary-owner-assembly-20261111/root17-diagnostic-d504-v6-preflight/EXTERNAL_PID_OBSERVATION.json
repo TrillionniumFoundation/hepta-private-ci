@@ -1,0 +1,23 @@
+{
+  "kind": "read-only-host-process-page",
+  "request": {
+    "host": "ai395",
+    "after_pid": 2299149,
+    "limit": 1
+  },
+  "observation": {
+    "has_more": true,
+    "next_after_pid": 2299568,
+    "processes": [
+      {
+        "identity": "linux:b1620269-aaef-43e7-bf47-bc6eb1c1a447:147485801",
+        "name": "kworker/21:1",
+        "pid": 2299568,
+        "uid": 0
+      }
+    ],
+    "sampled_at_unix_ms": 1794449974599,
+    "snapshot_atomic": false
+  },
+  "global_rust_idle_established": false
+}

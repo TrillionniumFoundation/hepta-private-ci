@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.root17.preflight_refusal.v1",
+  "requested_source": "d50474f93da462e278cf3ec95acef88701d16799",
+  "requested_tree": "60a51518d2dd9e2a95510d24794fee4cbf3f8164",
+  "original_harness_status": "failed",
+  "classification": "terminal-preflight-refusal-before-source-materialization",
+  "source_materialized": false,
+  "compiler_invocations": 0,
+  "test_invocations": 0,
+  "scheduled_root_parents": 17,
+  "root_tests_executed": 0,
+  "root_tests_passed": null,
+  "root_tests_failed": null,
+  "root_tests_skipped": null,
+  "test_retries": 0,
+  "no_test_result_or_junit_exists": true,
+  "actual_preflight_uid": 0,
+  "observed_external_rust": {
+    "pid": 2299150,
+    "comm": "cargo",
+    "cwd": "/home/qq/chain-system-security-20261112-306929",
+    "uid": "not recorded"
+  },
+  "original_pty": {
+    "session_id": "dpty-f3d67dc8479a0102731e3d9a3c05e5244efaa6630d535c0ce931eeb0b5c8afcc",
+    "exit_code": 1,
+    "state": "exited",
+    "output_complete": true,
+    "capture_error": null
+  },
+  "original_evidence": [
+    {
+      "name": "progress.json",
+      "blob": "42f1df1e7288d6693a7bce456e3f3407ee61e70d",
+      "bytes": 6202,
+      "sha256": "e602e970ee743db24d89af714f0ef2ffd4832d015caede7fe285db19104075f0"
+    },
+    {
+      "name": "original-rust-idle-preflight.launch.log",
+      "blob": "7c8cfc28cc86ea3cea39a09dcb3bbc513ee627aa",
+      "bytes": 137,
+      "sha256": "7395f025de83ab883ce75d7f200016af1f871d6e781b56cb109516373764a847"
+    }
+  ],
+  "exact_request": "364240d62d425a8678e18edae96b731011464678",
+  "script": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+  "secondary_donor_diagnostic": {
+    "original_message": "RuntimeError('read-only donor metadata changed during this attempt')",
+    "before_snapshot_recorded": false,
+    "after_snapshot": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "conclusion": "Not a valid before/after comparison. The unconditional cleanup compared missing before (None) to the after dict; no donor change is established."
+  },
+  "classification_review": "9ca2b95c01efc0acd9865600b9a850d80077864a",
+  "external_process_signaled": false,
+  "guard_changed": false,
+  "permissions_changed": false,
+  "full_qualification": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

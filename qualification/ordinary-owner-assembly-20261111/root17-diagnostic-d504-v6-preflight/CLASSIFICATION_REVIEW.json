@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "read-only-static-failure-classification",
+  "attempted_candidate": {
+    "commit": "d50474f93da462e278cf3ec95acef88701d16799",
+    "tree": "60a51518d2dd9e2a95510d24794fee4cbf3f8164",
+    "request_blob": "364240d62d425a8678e18edae96b731011464678"
+  },
+  "reviewed_harness": {
+    "git_blob": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+    "bytes": 49475,
+    "sha256": "f3e19377e7208c495c00d02131a5171d28be88d1635532fbe37748396f249ff6",
+    "content_read": "Complete fixed Git blob; no remote host or program execution."
+  },
+  "reported_attempt_evidence": {
+    "source": "Parent's actual terminal/raw-log report; not independently fetched from h in this static task",
+    "exit_code": 1,
+    "stop_step": "original-rust-idle-preflight",
+    "preflight_scanner_uid": 0,
+    "observed_rust_process": {
+      "pid": 2299150,
+      "comm": "cargo",
+      "cwd": "/home/qq/chain-system-security-20261112-306929",
+      "process_uid": "Not recorded by this preflight script; scanner UID is not evidence of the observed process UID."
+    },
+    "candidate_cloned": false,
+    "compilations": 0,
+    "tests_executed": 0,
+    "reported_reference_after": "3c8 / 6fe2, clean"
+  },
+  "classification": {
+    "primary": "Terminal preflight refusal because a Rust command was active. This is an environment scheduling refusal before candidate materialization, not a compile failure, test failure, timeout, or unknown completion.",
+    "secondary": "The unconditional read-only-reference cleanup reports a baseline-missing comparison as donor metadata change. It does not establish an actual donor change.",
+    "candidate_qualification": "No compilation or behavioral evidence was produced for this candidate by this attempt; no previous result may be transferred to it."
+  },
+  "source_control_flow": [
+    {
+      "lines": "643-664",
+      "fact": "RUST_PREFLIGHT scans /proc comm/cwd, prints its own UID and active process entries, and exits 1 when the active list is nonempty. It does not signal or alter those processes."
+    },
+    {
+      "lines": "171-203",
+      "fact": "raw(..., check=True) waits for and records the original launcher result and raises immediately on nonzero exit. A reported exit 1 is a terminal refusal, distinct from its explicit timeout/unknown branch."
+    },
+    {
+      "lines": "707-723",
+      "fact": "The idle preflight call is before reference_before assignment, clone/fetch/checkout and source_ready. On that refusal, reference_before remains absent and candidate setup is unreachable."
+    },
+    {
+      "lines": "128-129, 802-819, 820-880",
+      "fact": "The exception is recorded as failed. source_ready/root_setup_started/root_touched_records remain false, so source inventory, Root mount setup cleanup and Root record ownership cleanup are not entered. WORK/RECORDS and raw preflight evidence may already exist."
+    },
+    {
+      "lines": "209-212, 916-920",
+      "fact": "identity(REFERENCE) returns a dictionary of HEAD/tree/status. reference_unchanged assigns reference_after then compares result.get('reference_before') against it. With no before key, None differs from any successful identity dictionary, generating the secondary message even if the repository never changed."
+    }
+  ],
+  "limits": [
+    "The after identity is a point-in-time clean observation, not a valid within-attempt before/after proof.",
+    "This review does not assert that the donor changed, nor certify unchanged donor bytes without a recorded baseline.",
+    "Keep the original exit, raw log, progress and secondary cleanup error intact, with this explanation alongside them.",
+    "No harness, idle guard, shared source, reference repository, credentials, process or Rust job was changed; no new h/native/Cargo attempt was started."
+  ],
+  "mutations": {
+    "harness_changes": 0,
+    "guard_changes": 0,
+    "source_ref_changes": 0,
+    "remote_calls": 0,
+    "rust_commands": 0,
+    "external_process_actions": 0,
+    "git_action": "Create only this unreferenced review blob."
+  }
+}
