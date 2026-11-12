@@ -1,8 +1,9 @@
 """Read-only host evidence around the unchanged strict MEM namespace launcher.
 
-Missing policy files and inaccessible kernel labels remain unknown. This does
-not collect AppArmor audit logs or establish why a kernel operation was denied.
-No host policy, namespace flag, or required isolation test is changed.
+Missing policy files, inaccessible kernel labels and unavailable audit journals
+remain unknown. A bounded, time-scoped kernel-journal query runs after the
+unchanged probe; its output is diagnostic and cannot replace the required
+isolation tests. No host policy, namespace flag or test assertion is changed.
 """
 
 import argparse
@@ -21,10 +22,17 @@ from .episodic_isolation import run_isolated_actor
 
 
 MAX_FILE_BYTES = 65536
+MAX_AUDIT_LINES = 256
 POLICY_PATHS = (
     "/proc/self/attr/current",
+    "/proc/self/uid_map",
+    "/proc/self/gid_map",
+    "/proc/self/setgroups",
+    "/sys/kernel/security/apparmor/profiles",
     "/sys/kernel/security/lsm",
     "/sys/module/apparmor/parameters/enabled",
+    "/etc/apparmor.d/bwrap-userns-restrict",
+    "/usr/share/apparmor/extra-profiles/bwrap-userns-restrict",
     "/proc/sys/kernel/apparmor_restrict_unprivileged_userns",
     "/proc/sys/kernel/apparmor_restrict_unprivileged_unconfined",
     "/proc/sys/kernel/unprivileged_userns_clone",
@@ -85,6 +93,62 @@ def _snapshot():
     }
 
 
+def _kernel_audit(started_at_unix_ns):
+    """Retain only bounded policy-related kernel lines since this observation."""
+    journalctl = shutil.which("journalctl")
+    if journalctl is None:
+        return {"state": "UNAVAILABLE", "error": "FileNotFoundError", "errno": 2}
+    command = [
+        journalctl,
+        "--dmesg",
+        "--no-pager",
+        "--output",
+        "short-monotonic",
+        "--since",
+        f"@{max(0, started_at_unix_ns // 1_000_000_000 - 1)}",
+        "--lines",
+        str(MAX_AUDIT_LINES),
+        "--case-sensitive=no",
+        "--grep",
+        "apparmor|audit|denied|bwrap|rtnetlink|rtm_newaddr",
+    ]
+    try:
+        observed = subprocess.run(
+            command,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {
+            "state": "UNAVAILABLE",
+            "error": type(error).__name__,
+            "errno": getattr(error, "errno", None),
+        }
+    stdout = observed.stdout[:MAX_FILE_BYTES]
+    stderr = observed.stderr[:MAX_FILE_BYTES]
+    return {
+        "state": "OBSERVED",
+        "returncode": observed.returncode,
+        "command": command,
+        "stdout": {
+            "state": (
+                "TRUNCATED" if len(observed.stdout) > MAX_FILE_BYTES else "OBSERVED"
+            ),
+            "raw_base64": base64.b64encode(stdout).decode("ascii"),
+            **_pin(stdout),
+        },
+        "stderr": {
+            "state": (
+                "TRUNCATED" if len(observed.stderr) > MAX_FILE_BYTES else "OBSERVED"
+            ),
+            "raw_base64": base64.b64encode(stderr).decode("ascii"),
+            **_pin(stderr),
+        },
+    }
+
+
 def record_host(output):
     """Retain one diagnostic probe; never convert its result into a test pass.
 
@@ -139,6 +203,12 @@ def record_host(output):
         mode="off",
         timeout_seconds=5,
     )
+    kernel_audit = _kernel_audit(started)
+    kernel_audit_evidence_retained = (
+        kernel_audit.get("state") == "OBSERVED"
+        and kernel_audit.get("returncode") == 0
+        and kernel_audit["stdout"]["bytes"] > 0
+    )
     report = {
         "schema": "hepta.mem11.isolation-host-observation.v1",
         "started_at_unix_ns": started,
@@ -155,6 +225,8 @@ def record_host(output):
             "status": probe["status"],
             "receipt": _pin((output / "probe" / "RECEIPT.json").read_bytes()),
         },
+        "kernel_audit": kernel_audit,
+        "kernel_audit_evidence_retained": kernel_audit_evidence_retained,
         "probe_counts_as_required_test": False,
         "host_policy_mutation_requested": False,
         "apparmor_audit_attribution": "UNKNOWN",
@@ -176,7 +248,10 @@ def main():
         json.dumps(
             {
                 "probe_status": report["probe"]["status"],
-                "apparmor_audit_attribution": "UNKNOWN",
+                "apparmor_audit_attribution": report["apparmor_audit_attribution"],
+                "kernel_audit_evidence_retained": report[
+                    "kernel_audit_evidence_retained"
+                ],
             }
         )
     )

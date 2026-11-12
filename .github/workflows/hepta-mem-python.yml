@@ -142,7 +142,7 @@ jobs:
           bwrap --version >> "$records/host.txt"
       - name: Record read-only host policy and unchanged strict namespace probe
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 30 --minimum-tests 4 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 30 --minimum-tests 6 \
             --output "$RUNNER_TEMP/mem9-isolation-records/host-observer-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_isolation_host
           python scripts/hepta_ci_exec.py --timeout-seconds 45 \
