@@ -252,7 +252,7 @@ pub(crate) fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
+pub(crate) fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
     let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
@@ -269,7 +269,7 @@ fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdErro
     Ok(digest)
 }
 
-fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {
+pub(crate) fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {
     let mut bytes = b"hepta:agentd:objective-run-start-owner:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     bytes.extend_from_slice(profile_digest.as_array());
@@ -393,7 +393,7 @@ fn require_replay_admission(
     }
 }
 
-fn authentication_is_current(
+pub(crate) fn authentication_is_current(
     record: &RunStartRecordV1,
     trust: &TextTrust,
     identity: &AgentdIdentity,
