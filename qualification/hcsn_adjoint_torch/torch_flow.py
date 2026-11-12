@@ -40,8 +40,38 @@ class CallBudget:
     label: str = "unspecified"
     forward_records: list = field(default_factory=list)
     backward_records: list = field(default_factory=list)
+    _locked_limits: object = field(default=None, init=False, repr=False)
+
+    def validate(self):
+        for name, maximum in (("forward_limit", 220), ("adjoint_limit", 32)):
+            value = getattr(self, name)
+            if type(value) is not int or not 1 <= value <= maximum:
+                raise ValueError("exact positive bounded integer call limits required")
+        for name in (
+            "forward_calls",
+            "adjoint_calls",
+            "backward_attempts",
+            "guard_rejections",
+            "metadata_checks",
+            "recorded_scalars",
+        ):
+            value = getattr(self, name)
+            if type(value) is not int or value < 0:
+                raise ValueError("exact nonnegative integer call counters required")
+        if (
+            self.forward_calls > 220
+            or self.adjoint_calls > 32
+            or self.recorded_scalars > 1000000
+        ):
+            raise ValueError("absolute prototype budget exceeded")
+        limits = (self.forward_limit, self.adjoint_limit)
+        if self._locked_limits is None:
+            self._locked_limits = limits
+        elif self._locked_limits != limits:
+            raise ValueError("call limits changed after admission")
 
     def retain(self, arrays):
+        self.validate()
         self.recorded_scalars += sum(value.size for value in arrays)
         if self.recorded_scalars > 1000000:
             raise ValueError("small-probe recorded-array payload budget exceeded")
@@ -158,7 +188,8 @@ def _primal(problem, inputs, options):
 class _Amplitude(torch.autograd.Function):
     @staticmethod
     def forward(ctx, problem, metadata, options, budget, *inputs):
-        if budget.forward_calls >= budget.forward_limit:
+        budget.validate()
+        if budget.forward_calls >= min(220, budget.forward_limit):
             raise ValueError("prefrozen Torch forward-call budget exceeded")
         budget.forward_calls += 1
         metadata.check(budget)
@@ -196,6 +227,7 @@ class _Amplitude(torch.autograd.Function):
     @once_differentiable
     def backward(ctx, gradient):
         budget = ctx.budget
+        budget.validate()
         budget.backward_attempts += 1
         try:
             saved = ctx.saved_tensors  # Standard Torch version checks read originals.
@@ -216,7 +248,8 @@ class _Amplitude(torch.autograd.Function):
             (gradient.abs() > 1e6).any()
         ):
             raise ValueError("bounded finite output cotangent required")
-        if budget.adjoint_calls >= budget.adjoint_limit:
+        budget.validate()
+        if budget.adjoint_calls >= min(32, budget.adjoint_limit):
             raise ValueError("prefrozen Torch adjoint-call budget exceeded")
         budget.adjoint_calls += 1
         rtol, atol, max_step = ctx.options
@@ -291,12 +324,9 @@ def amplitude_flow(
         raise ValueError("explicit bounded numerical controls required")
     if budget is None:
         budget = CallBudget()
-    if (
-        type(budget) is not CallBudget
-        or budget.forward_limit > 220
-        or budget.adjoint_limit > 32
-    ):
+    if type(budget) is not CallBudget:
         raise ValueError("bounded prototype call ledger required")
+    budget.validate()
     metadata = _LiveMetadata(
         model, query_times, supports, repr(model), problem.identity
     )

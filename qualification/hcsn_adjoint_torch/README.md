@@ -56,3 +56,11 @@ Torch runtime validation, all native guard controls and independent audit
 remain OPEN. Adam updates/restoration are a later independent stage. Physics,
 delay, supports, migration, broader tasks, N=128/512 and full-network training
 remain unqualified.
+
+Pre-admission static review found that a NaN call limit or a later raised live
+limit could bypass the earlier ledger check. The source now requires exact
+positive bounded integer limits and exact nonnegative integer counters, locks
+the limits at admission, and independently checks the absolute 220/32 caps at
+every forward/backward admission. This fix has no prior Torch runtime credit;
+the native probe uses one controlled default ledger. The earlier source
+revision is retained in Git and was never admitted.
