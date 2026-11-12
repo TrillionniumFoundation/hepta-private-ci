@@ -171,7 +171,7 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         codex_hepta_neuron::CellDecisionReceiptV1,
     )> {
         let result = (|| {
-            let observed = self.client.observe()?;
+            let observed: HistoricalTaskReadDataV1 = self.client.observe()?;
             if observed != self.data {
                 return Err(refused());
             }
