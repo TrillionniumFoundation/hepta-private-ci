@@ -98,7 +98,10 @@ impl OrdinaryAPlan {
             .tempdir_in(&parent)?;
         owned_mode(protected.path(), 0, 0, 0o700)?;
         let run_directory = tempfile::Builder::new().prefix("oq-").tempdir_in("/run")?;
-        owned_mode(run_directory.path(), 0, 60001, 0o2710)?;
+        // Register the original private Root control directories before
+        // enabling group inheritance for later shared runtime inputs. Linux
+        // otherwise adds SGID to a requested 0700 child, producing 02700.
+        owned_mode(run_directory.path(), 0, 60001, 0o710)?;
         let workspace = run_directory.path().join("workspace");
         directory(&workspace, 0, 60001, 0o710)?;
         let fleet = HeptaFleetRoot::parse(run_directory.path().join("fleet"))?;
@@ -120,6 +123,14 @@ impl OrdinaryAPlan {
         };
         let identity = registered.identity()?;
         drop(registry);
+        for path in [identity.layout.agent_root(), identity.layout.run_root()] {
+            let metadata = std::fs::symlink_metadata(path)?;
+            anyhow::ensure!(
+                metadata.is_dir() && metadata.uid() == 0 && metadata.mode() & 0o7777 == 0o700,
+                "original Registry control directory was not created in private Root custody"
+            );
+        }
+        owned_mode(run_directory.path(), 0, 60001, 0o2710)?;
         let model_directory = run_directory.path().join("model");
         directory(&model_directory, 0, 0, 0o700)?;
         let (model, bundle, mut definition) = material::model(&model_directory)?;
