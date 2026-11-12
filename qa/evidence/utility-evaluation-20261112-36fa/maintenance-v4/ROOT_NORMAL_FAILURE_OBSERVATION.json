@@ -1,0 +1,35 @@
+{
+  "actual_maintenance_attempted_commands": [],
+  "complete_durable_output": true,
+  "detailed_original_result_retrieval": "The original durable read_multiple_files operation 9b3a91ad0faaea0f2281204dbaa8eba5586d0d90756e57b4d45149d5769e7231 requested only the original run-v4/RESULT.json and SOURCE_COORDINATION_EX_V4.json. Admission is preserved; its immutable original result page is awaiting transport delivery.",
+  "format": "hepta-root-maintenance-v4-normal-failure-observation-v1",
+  "job_id": "1a1d15cdf42-2564-1c3a",
+  "limits": "Normal process failure and absence of dispatched fix/fmt are known from complete stdout and supervisor. Specific failure cause remains Unknown until the original detailed RESULT is retrieved. No gate, source or control is changed on speculation, and this attempt is not replayed.",
+  "normal_failed_exit_code": 1,
+  "normal_supervisor": {
+    "bytes": 949,
+    "git_blob": "def3a50de17e89e637b9fbe06c847964ac31548e",
+    "sha256": "81c929d5ca1122c25083ee8d3b5713c8dbe10bbcd9c1464f80c4e59aebb983b5"
+  },
+  "not_yet_observed": [
+    "specific precondition error and original trace",
+    "complete original maintenance RESULT fields and final conservation audits",
+    "actual source-coordination lease bytes"
+  ],
+  "observed_at": "2026-11-12T20:11:23.830230+00:00",
+  "original_stdout_read": {
+    "bytes": 2590,
+    "git_blob": "246c61fa41d51b719dbddcab7163cdf47a87b981",
+    "sha256": "cf3a85baf88c826955bf7b0e175557ab4a466f17eca7a5519f0b49dfc56ded9c"
+  },
+  "qualification": false,
+  "status": "KNOWN_NORMAL_FAILED_PRECONDITION_WITH_DETAIL_READ_PENDING",
+  "stdout": {
+    "bytes": 649,
+    "git_blob": "2153a4a915e4efebcbeb0b771c34ed9a29d8ee1e",
+    "sha256": "df51aa34300feecaf51a0c70c7f2850e4126ad80d8829016f4758cdd67a91540"
+  },
+  "terminal_at_unix_ms": 1794513903835,
+  "test_commands_dispatched": 0,
+  "timed_out": false
+}

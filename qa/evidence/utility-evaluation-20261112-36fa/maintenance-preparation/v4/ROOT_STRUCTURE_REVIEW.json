@@ -1,0 +1,39 @@
+{
+  "added_definitions": [
+    "validate_source_advance"
+  ],
+  "all_historical_proofs_preserved_exactly": true,
+  "archive_diff_only_disables_auto_stat_refresh": true,
+  "base_driver": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+  "changed_definitions": [
+    "validate_materialization",
+    "validate_runtime_restoration",
+    "archive_transition",
+    "validate_config",
+    "initial_preflight"
+  ],
+  "driver": {
+    "bytes": 62957,
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9"
+  },
+  "driver_full_github_readback_equal": true,
+  "execution_approved": false,
+  "expected_inventory_sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+  "format": "hepta-root-successor-maintenance-v4-structure-review-v1",
+  "historical_seed_head": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "missing_for_execution": [
+    "Actual forward source advancement with full source/Git/inputs terminal evidence",
+    "Exact filled configuration review and pinned single-use launcher"
+  ],
+  "old_maintenance_unknown_reclassified": false,
+  "original_definitions": 49,
+  "original_main_and_stage_and_git_state_and_environment_guard_unchanged": true,
+  "qualification": false,
+  "source_advance_actual_fields_missing": true,
+  "source_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "source_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "strict_actual_source_advance_proof_required": true,
+  "structure_approved_for_create_only_control_staging": true,
+  "unchanged_definitions": 44
+}

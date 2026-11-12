@@ -1,0 +1,54 @@
+{
+  "action_seconds": 600,
+  "all_10_manifest_file_bytes_match": true,
+  "allowed_unique_key": "hepta-utility-36fa-source-advance-9c4-v1",
+  "approved_config": {
+    "bytes": 2519,
+    "git_blob": "3c7846934a01c0c58216f3cdee68dc62363c5d8e",
+    "sha256": "d52cd8dbbeed417091bc30c40a93b888f14ac8a282f6b1b64b20dcc1c7f63180"
+  },
+  "approved_config_changed_fields": [
+    "root_execution_approved",
+    "status"
+  ],
+  "approved_for_single_source_advance_after_exact_input_staging_and_launcher_review": true,
+  "canonical_packet": {
+    "bytes": 98087,
+    "git_blob": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb",
+    "sha256": "e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0"
+  },
+  "current_before_git_state_matches_actual_preserved_final_state": true,
+  "driver": {
+    "bytes": 41629,
+    "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed",
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae"
+  },
+  "driver_complete_github_readback_equal": true,
+  "format": "hepta-root-single-source-advance-final-review-v1",
+  "full_canonical_15188_leaf_one_source_delta_verified": true,
+  "historical_three_proofs_exactly_preserved": true,
+  "maintenance_dispatched": false,
+  "old_unknown_reclassified": false,
+  "outer_timeout_seconds": 900,
+  "qualification": false,
+  "real_authorized_task_chain_qualified_outcomes": 0,
+  "record_seconds": 180,
+  "remote_ref_updates_authorized": false,
+  "resolved_findings": [
+    "Explicit six-object batch-check missing/type/size instead of assumed cat-file exit code",
+    "Original active_build_processes definition reused unchanged at two points",
+    "Single-path update-index; no full-index refresh or zero-stat reconstruction",
+    "15187 serialized entries unchanged, changed entry matches actual file stat, exact write-tree and detached HEAD CAS",
+    "Action600 and record180 timers, bounded object EOF, immediate expiry failure after owned command cleanup",
+    "Partial failures retain actual source/index/HEAD metadata; no rollback or retry"
+  ],
+  "reviewed_at": "2026-11-12T19:38:57.453007+00:00",
+  "source_advance_dispatched": false,
+  "source_after": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "source_before": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "waiting_config": {
+    "bytes": 2506,
+    "git_blob": "155556eeb1ad66bfaf155b2ecebf5390e8bf2155",
+    "sha256": "a84f1482a6307ddbdba352fd807f67fc1ca9a456b1cd1a62ca1749c50fc80fd5"
+  }
+}

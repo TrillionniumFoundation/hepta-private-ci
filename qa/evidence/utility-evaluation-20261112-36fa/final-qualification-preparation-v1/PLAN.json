@@ -1,0 +1,601 @@
+{
+  "schema": "hepta.utility.exact-source-qualification-plan.v1",
+  "prepared_at_utc": "2026-11-12 19:32:52 UTC",
+  "state": "HOLD_FINAL_SOURCE_AND_REVIEW_REQUIRED",
+  "scope": "Read-only recovery of existing qualification commands, budgets and evidence dependencies. No execution, no new tests, no new gate, no source or ref mutation.",
+  "final_source": {
+    "head": null,
+    "tree": null,
+    "full_physical_inventory": null,
+    "original_native_snapshot": null,
+    "workflow_blob": null
+  },
+  "preparation_is_not_qualification": {
+    "observed_source_base": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "strict_forward_candidate": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "candidate_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "actual_candidate_execution_observed_by_this_preparation": false,
+    "source_advance_or_successor_maintenance_pass_claim": false
+  },
+  "unchanged_original_controls": {
+    "native_driver": {
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    "source_gates_driver": {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    "actual_c0f_outer_pipeline_input": {
+      "git_blob": "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+      "purpose": "Evidence for original ordering/budgets/coverage; do not replay its historical environment or maintenance source pins verbatim."
+    },
+    "reviewed_source_pins": {
+      "ref": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "bytes": 22519,
+          "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+          "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+        },
+        {
+          "path": "justfile",
+          "bytes": 7838,
+          "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+          "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "scripts/run-nextest.py",
+          "bytes": 10206,
+          "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+          "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "codex-rs/.config/nextest.toml",
+          "bytes": 6617,
+          "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158",
+          "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c"
+        },
+        {
+          "path": "scripts/hepta_ci_exec.py",
+          "bytes": 12863,
+          "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+          "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+        },
+        {
+          "path": "scripts/hepta_ci_junit.py",
+          "bytes": 6613,
+          "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec",
+          "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8"
+        },
+        {
+          "path": "scripts/hepta_cell_test_helpers.py",
+          "bytes": 18658,
+          "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae",
+          "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3"
+        },
+        {
+          "path": "scripts/hepta_c_observer_coverage.py",
+          "bytes": 28918,
+          "sha256": "a2138ead7b212acf8f4fb747c7bf41b07df56aa51b34f45544d1a1690911a0df",
+          "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078"
+        },
+        {
+          "path": ".github/workflows/hepta-daemon-learning-native.yml",
+          "bytes": 28133,
+          "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1",
+          "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed"
+        },
+        {
+          "path": "scripts/format.py",
+          "bytes": 16599,
+          "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+          "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+        },
+        {
+          "path": "scripts/just-shell.py",
+          "bytes": 2030,
+          "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+          "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+        },
+        {
+          "path": "codex-rs/rust-toolchain.toml",
+          "bytes": 78,
+          "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+          "git_blob": "917d2492264a35bc9c0feaef41878d8825870866"
+        }
+      ]
+    }
+  },
+  "test_runtime_contract": {
+    "entrypoint": "just test; no direct cargo test",
+    "rust_min_stack_bytes": 8388608,
+    "nextest_profile": "local",
+    "nextest_no_fail_fast": true,
+    "retries": 0,
+    "default_slow_timeout": {
+      "period_seconds": 30,
+      "terminate_after": 2,
+      "total_seconds": 60
+    },
+    "original_config_preserved": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+    "original_overrides": "Keep every existing override verbatim. In the ordinary five-package inventory the ledger history test has 180s and signed growth measurement has 600s; do not describe all ordinary cases as 60s. This plan changes no override, assertion, stack or deadline.",
+    "shared_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "cargo_net_offline": "true",
+    "cargo_build_jobs": "2",
+    "cargo_incremental": "0",
+    "cargo_profile_test_debug": "0",
+    "cargo_profile_dev_debug": "0",
+    "dependency_proofs": {
+      "seed_source": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "result": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "environment": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "terminal": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "restriction": "Reuse only the actual fixed restored tool/material identities and source-forward proof chain. These are dependency preparation, not fresh-source compilation/test evidence. No re-download/relabel of restoration is required or authorized here."
+    },
+    "invocation_environment": "Source-bound SOURCE_SHA/TESTED_SHA/HEPTA_CI_LANE, CODEX_REPO_ROOT/PYTHONPATH must identify the actual final checkout for command invocation; preserve original runtime controls and actual restored UV/V8 paths. Original restoration observed CODEX_REPO_ROOT/PYTHONPATH null, so distinguish original observation from per-invocation source variables.",
+    "no_concurrency_inheritance": "Observe current source/target/process ownership and global build/formatter guard at dispatch; old empty process observations do not establish current availability. Native remains sole H/Cargo operator."
+  },
+  "phases": [
+    {
+      "id": "eval-lib",
+      "cwd": "${FINAL_REPO}/codex-rs",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--test-threads",
+        "2"
+      ],
+      "runner": "original scripts/hepta_ci_exec.py run",
+      "timeout_seconds": 3600,
+      "minimum_tests": 1,
+      "threads": 2,
+      "required_coverage": {
+        "executed_unique_tests": 163,
+        "passed_tests": 163,
+        "required_four": [
+          "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+          "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+          "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+          "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+        ]
+      },
+      "evidence": "Fresh original runner JSON/log + fresh JUnit and collector summary; exact 163 inventory and all four named tests. Do not borrow old 163 PASS.",
+      "stop_rule": "Failure, missing/stale JUnit, wrong inventory or source change stops later native suites."
+    },
+    {
+      "id": "native-toolchain",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']];[subprocess.run(c,check=True) for c in commands]"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0,
+      "scope": "Executed by each invocation of original b92 native driver."
+    },
+    {
+      "id": "helper-build",
+      "cwd": "${FINAL_REPO}",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers"
+      ],
+      "timeout_seconds": 3600,
+      "minimum_tests": 0,
+      "inner_original_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "offline_via_environment": true,
+      "evidence": "Original Cargo JSONL/stderr, build-finished success, compiler-artifact executable, immutable copied helper bytes/hash, source-bound manifest.json and env.json; no guessed existing binary.",
+      "stop_rule": "Any incomplete helper or source mismatch stops tests."
+    },
+    {
+      "id": "helper-verify-before",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0
+    },
+    {
+      "id": "focused",
+      "cwd": "${FINAL_REPO}",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "-E",
+        "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "runner": "original CLI hepta_ci_exec.py --timeout-seconds 7200 --minimum-tests 1 --output ${RECORDS}/focused.json -- <command>",
+      "timeout_seconds": 7200,
+      "outer_driver_budget_seconds": 12000,
+      "threads": 2,
+      "filter_tokens_exact": [
+        "cell_q24_dataset::tests::",
+        "circuit_experience_intake::tests::",
+        "original_execution_owner_",
+        "neuron_cell_evaluation::tests::learning::",
+        "holdout_current_completed_execution_readback_requires_physical_original",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+      ],
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_FOCUSED_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "focused"
+      ],
+      "required_existing_case": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "stop_rule": "Nextest retains --no-fail-fast inside the selected suite. Any suite/collection/source failure stops the later all driver; no retries."
+    },
+    {
+      "id": "ordinary",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "timeout_seconds": 7200,
+      "threads": 2,
+      "scope": "All library tests in the exact five existing workflow packages; not the full Rust workspace.",
+      "required_evidence": "Original hepta_ci_junit.collect plus exact named owner coverage from final-source hepta_c_observer_coverage.py, with matching original terminal log and JUnit; skipped/flaky/repeated/missing named cases cannot pass.",
+      "stop_rule": "Failure or missing coverage prevents Root setup/tests."
+    },
+    {
+      "id": "root-setup",
+      "timeout_seconds": 60,
+      "scope": "Original b92 sudo -n setup of one fresh direct /run child containing source/bind/checkpoints; actual UID0 and bind mount, no fabricated readiness."
+    },
+    {
+      "id": "root",
+      "command_payload": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        "${EXACT_FINAL_WORKFLOW_PARENT_EXPRESSION}",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "timeout_seconds": 7200,
+      "threads": 1,
+      "execution_wrapper": "Original b92 sudo -n env -i whitelist + original hepta_ci_exec.py via UID0 assertion; no command rewrite.",
+      "inventory_source": "Parse parents AST from the final-source workflow. Prepared 86dd currently has exactly 33, namely the original c0f 32 plus the one registered evaluated-Version late-failure UID0 case.",
+      "prepared_parent_count": 33,
+      "prepared_parent_names": [
+        "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+        "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+        "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+        "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+        "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+        "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+        "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+        "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+        "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+        "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+        "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+        "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+        "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+        "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+        "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c"
+      ],
+      "stop_rule": "Original collector must retain fresh JUnit and sorted non-skipped names must equal exact parents; default ignored skips never count. Cleanup and source audit remain mandatory on failure."
+    },
+    {
+      "id": "all-native-driver",
+      "outer_driver_budget_seconds": 21000,
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_ALL_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "all",
+        "--root-parent",
+        "${FRESH_DIRECT_RUN_CHILD}"
+      ],
+      "scope": "all = ordinary then Root, not focused plus ordinary plus Root. Repeats original toolchain/helper preparation for this new invocation/records; do not skip its helper manifest checks."
+    },
+    {
+      "id": "helper-verify-after",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0,
+      "condition": "Original normal success path only; if an earlier stage failed this is not run, not implicitly passed."
+    },
+    {
+      "id": "root-cleanup",
+      "timeout_seconds": 60,
+      "scope": "Original ownership restoration/unmount in finally when Root setup was attempted; retain fixture/error if unsuccessful."
+    },
+    {
+      "id": "source-closure",
+      "command": [
+        "python3",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "${SOURCE_RECORDS}/source-closure/source-closure.json",
+        "--",
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "timeout_seconds": 600,
+      "minimum_tests": 1,
+      "scope": "Original complete discovery on final source, no path subset or new filtering.",
+      "stop_rule": "Known failure stays failed. In original 5118 independent caller self-test may still run if source unchanged; it does not cancel or turn closure failure into pass."
+    },
+    {
+      "id": "caller-self-test",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "runner": "original execute_logged",
+      "timeout_seconds": 300,
+      "minimum_tests": 0,
+      "stop_rule": "Any nonzero returncode/timed_out/output_limit_exceeded prevents full verify."
+    },
+    {
+      "id": "caller-verify",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "runner": "original execute_logged",
+      "timeout_seconds": 4800,
+      "minimum_tests": 0,
+      "scope": "Complete final-source collector, CALLERS and every protected row; previous scoped diagnostics or c0f PASS do not replace this."
+    }
+  ],
+  "execution_order": {
+    "prerequisites": [
+      "Actual strict-forward source proof",
+      "Actual original scoped maintenance fix7200/fmt900 and complete raw postimages",
+      "Actual formatted-source non-Rust fencing/QA integration and review",
+      "Canonical final commit/tree plus actual clean materialization and complete original inventories",
+      "Frozen exact-source launch input and current dependency/process/resource observations"
+    ],
+    "native": [
+      "eval-lib",
+      "focused b92 driver",
+      "all b92 driver: ordinary then Root"
+    ],
+    "source_gates": [
+      "source-closure600",
+      "independent self-test300 if source unchanged",
+      "verify4800 only after self-test passed"
+    ],
+    "no_extra_rust_tests": true,
+    "no_budget_or_stack_increase": true,
+    "hosted_workflow_distinction": "Existing hosted workflow is separate: source-closure600, existing observer-parser controls, helper-build3600, ordinary/Root7200 each, then original five-package fix7200/fmt600 at its FORMAT_BASE_SHA and bins-check7200. Do not relabel those hosted steps as desktop maintenance900 or infer a hosted run from local results."
+  },
+  "inventory_contract": {
+    "native_original": "b92 and c0f outer snapshot enumerate git ls-files plus nonignored untracked files, save per-file mode/bytes/SHA256/Git blob and exact HEAD/tree/status. Preserve this original snapshot and its final equality.",
+    "complete_physical": "5118 inventory walks all physical source paths including ignored files and permissions, plus every index entry. Keep its exact bytes/schema in the independent source-gate clone. Require every entry matches index and before/after equality.",
+    "no_hash_substitution": "Historical native c7f8f0... and complete physical cdb6cea... are different schemas/scopes. Native JUnit is generated under codex-rs/target/nextest/local even when CARGO_TARGET_DIR is external; do not falsely demand that generated test output was part of the initial clean physical source or call the native snapshot a complete physical inventory.",
+    "final_freeze": "Bind all source-controlled files and initial complete physical materialization to final Git tree/index. Preserve actual generated reports separately with exact identities. Any full physical post-observation must record them honestly, not silently omit them or substitute a different serializer."
+  },
+  "reusable_controls_and_actual_outputs": {
+    "source_gates_5118": "Code can be reused unchanged: fill exact final source_sha/source_tree, pinned driver/helper hash, unique run identity/new paths, budgets unchanged. Its main constructs and validates the full clone inventory; config has no expected-inventory-hash enforcement. A native_ready handoff remains externally reviewed actual evidence, not a truth created by adding a JSON field.",
+    "native_b92": "Code can be reused unchanged with exact --source/paths/suite/fresh Root parent and actual fixed environment. It extracts final workflow arrays. Surrounding exact-source handoff must bind tree and full initial materialization; b92 itself takes SHA, not an expected tree/inventory CLI parameter.",
+    "eval_existing_original_call": "Use original run(timeout=3600, minimum=1), collector and original 163/four-name checks. Supply final source identity and fresh output paths; actual execution remains required.",
+    "historical_outer_pipeline": "Do not blindly replay d64: it embeds historical MAINTENANCE_STARTED, fmt_base and source pins and performs maintenance. Current reviewed maintenance v4 is a distinct prerequisite. Any small successor qualification launcher must preserve these original commands/budgets/order and be reviewed with real final identity/environment.",
+    "source_outputs_that_cannot_be_filled_from_metadata": [
+      "Maintenance terminal and actual formatted postimages",
+      "Final complete physical materialization / index and original native snapshot",
+      "Actual toolchain and helper Cargo artifact manifest/verification",
+      "Each original execution terminal, bounded log, fresh JUnit and exact required coverage",
+      "Source-closure, caller self-test and full caller verify original outcomes",
+      "Exact-head GitHub workflow/check/status observations if hosted qualification is claimed"
+    ]
+  },
+  "evidence_retention": {
+    "original_execution": "hepta_ci_exec.py c9434... run/execute_logged retains at most 64MiB original log, original returncode, timeout and output-limit flags, source before/after, timestamps. Preserve every original failure and unknown state.",
+    "junit": "Move any prior report aside before test dispatch; collect fresh original file within command timestamps; retain exact execution/log/JUnit bytes+SHA and parser summary. Do not pair a later XML with an earlier execution.",
+    "stages": "Retain input/config/driver pins, started/attempted events, actual normal supervisor terminal, raw logs, complete per-stage original records, helper Cargo JSONL/stderr/manifests/env/copies, coverage and source inventories. Missing terminal/retention is Unknown, never NOT_RUN after dispatch or PASS.",
+    "no_inherited_pass": true,
+    "no_real_ordinary_task_qualification": "Even complete mechanism gates do not by themselves establish a real authorized A→original T→independent B→Adopt/complete NoUpdate→new C→daemon/Root cold recovery or full cost/independence/availability claims."
+  },
+  "historical_observations": [
+    {
+      "phase": "eval-lib",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "f49dddd0796c3d976fc40273be49d2b9659a9af5",
+      "actual": "163 PASS; rc0; 33.0136s",
+      "inheritable": false
+    },
+    {
+      "phase": "helper-build",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "f4c385753dd372a3458db971e372fa3ba8d883ba",
+      "actual": "rc0; 745.7373s",
+      "inheritable": false
+    },
+    {
+      "phase": "helper-verify-before",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "fae227350483cad21bee0603ab3567460e53c79f",
+      "actual": "rc0; 0.3381s",
+      "inheritable": false
+    },
+    {
+      "phase": "focused",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "465232e636f286344d9a4941960decee4d97c4e5",
+      "actual": "81 PASS / 28 FAIL; command rc100; no timeout; outer driver stopped; ordinary/all/Root not run",
+      "inheritable": false
+    },
+    {
+      "phase": "native-pipeline",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "e57711ed470fd82560be1645eb0c9e97924f9cc6",
+      "actual": "failed at focused; final native source snapshot equal",
+      "inheritable": false
+    },
+    {
+      "phase": "source-closure",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "13eedbbd41f4f10706c24d598fee2e4f58d9eb3c",
+      "actual": "timed_out=true; command -9, recorder exit124;602.9541s; no completed unittest total",
+      "inheritable": false
+    },
+    {
+      "phase": "caller-self-test",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "4ffc489665f1982207b300394b194dbbe32f6897",
+      "actual": "return0, no timeout/output limit",
+      "inheritable": false
+    },
+    {
+      "phase": "caller-verify",
+      "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "record": "e9a23c31c7fc7575348b1b4720a4200d45f9d632",
+      "actual": "return0, no timeout/output limit; overall source-gates still failed",
+      "inheritable": false
+    }
+  ],
+  "ports_reexport_note": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+    "before": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+    "after": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+    "after_bytes": 5190,
+    "change": "one cfg(test)-mounted reexport, +57 bytes; no production authority or test assertion changed.",
+    "static_handoff": "ordinary_path acknowledged actual final postfmt bytes must replace the old preimage in full inventory/planned protection work. This preparation did not modify or claim that all final protection markers/allowlist are already synchronized."
+  }
+}

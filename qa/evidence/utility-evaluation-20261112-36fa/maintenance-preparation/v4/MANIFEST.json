@@ -1,0 +1,226 @@
+{
+  "format": "hepta-successor-scoped-maintenance-v4-preparation-manifest-v1",
+  "status": "HOLD_NOT_AUTHORIZED_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original_driver": {
+    "bytes": 54853,
+    "sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce",
+    "git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13"
+  },
+  "artifacts": {
+    "driver": {
+      "bytes": 62957,
+      "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9",
+      "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731"
+    },
+    "waiting": {
+      "bytes": 8616,
+      "sha256": "c3e0497d2c77f75e3f65d797041b186fe11faa5c5a7a7ac9e26f18604ada5bbc",
+      "git_blob": "4887a2ac21f5dcacf63a27b886e1362c442deec3"
+    },
+    "validator": {
+      "bytes": 6552,
+      "sha256": "2f42f119660b25f93dfc400ad0117d8123da50d62d19cd3bee869088cc13ff28",
+      "git_blob": "3598868db5e356bfbd1ed667fb977fab941a3eda"
+    },
+    "patch": {
+      "bytes": 14634,
+      "sha256": "68b309dd549dc096f22ed0a803922002ad59fda73f157e7d2d88387020587e9c",
+      "git_blob": "0d0249b406925171d68d78dede9b05eda9588bb3"
+    },
+    "config_field_diff": {
+      "bytes": 2646,
+      "sha256": "c84e7ec417a884fcd367f6f064e69d8f4eff24388478da34460816395d2d5375",
+      "git_blob": "04634fb2bee12ab5221155a66088259615309dc4"
+    },
+    "static_review": {
+      "bytes": 1685,
+      "sha256": "f22f977177198309bd6a8cc9ace7b075a5daf0808a26cff2da27be6923187d7a",
+      "git_blob": "f7af6fd67955ef3ea569d1aeb3075dda3ce3cdb1"
+    },
+    "source_advance_contract": {
+      "bytes": 6589,
+      "sha256": "ff781d283f274cb20115734cf007e3f7c2565468381205ebd4df8aa2652ae977",
+      "git_blob": "a1ef48291d34646c4c5c763ba51a63d32a76c3f7"
+    }
+  },
+  "historical_source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "parents": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "tracked_entries": 15188
+    }
+  },
+  "successor_source": {
+    "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "parents": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ],
+    "expected_inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+      "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+      "tracked_entries": 15188
+    },
+    "actual_advance_observed_by_this_preparation": false,
+    "canonical_packet": {
+      "bytes": 98087,
+      "sha256": "e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0",
+      "git_blob": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb"
+    }
+  },
+  "only_admitted_source_change": {
+    "after_bytes": 5190,
+    "after_git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+    "after_sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1",
+    "before_bytes": 5133,
+    "before_git_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+    "before_sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+    "mode": "100644",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"
+  },
+  "control_locations": {
+    "directory": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1",
+    "new_driver_recommended_name": "driver-v4.py",
+    "formal_config": "APPROVED_CONFIG_V4.json",
+    "output_directory": "run-v4",
+    "staging_and_execution": "Not performed. Driver and formal config each require exact pinned Root/native review; the HOLD file must not be relabeled as observed completion."
+  },
+  "strict_source_advance": {
+    "contract": {
+      "bytes": 6589,
+      "sha256": "ff781d283f274cb20115734cf007e3f7c2565468381205ebd4df8aa2652ae977",
+      "git_blob": "a1ef48291d34646c4c5c763ba51a63d32a76c3f7"
+    },
+    "validator": {
+      "bytes": 6552,
+      "sha256": "2f42f119660b25f93dfc400ad0117d8123da50d62d19cd3bee869088cc13ff28",
+      "git_blob": "3598868db5e356bfbd1ed667fb977fab941a3eda"
+    },
+    "required_actual_documents": "Original source-advance RESULT and complete normal supervisor, actual job ID and exact byte pins.",
+    "fields_pending_in_HOLD": [
+      "job_id",
+      "result_path",
+      "result",
+      "supervisor_path",
+      "supervisor"
+    ],
+    "requires_before_actual_index": {
+      "bytes": 2072488,
+      "sha256": "b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15"
+    },
+    "notes": [
+      "Historical original materialization/runtime proof bytes and all six runtime commands/three final audits remain required.",
+      "Current full physical source, ordered canonical parents, sole exact object diff, full after Git state and changed blob bodies are rechecked independently before any maintenance command.",
+      "Expected c006 inventory is a prediction until actual native source advancement and current source inventory both match.",
+      "Authorized local detached HEAD advancement is explicitly true in the required producer record; source branch and remote ref mutation remain false."
+    ]
+  },
+  "exact_changes": {
+    "old_top_level_function_and_class_definitions": 49,
+    "unchanged_old_definitions": 44,
+    "changed_old_definitions": [
+      "archive_transition",
+      "initial_preflight",
+      "validate_config",
+      "validate_materialization",
+      "validate_runtime_restoration"
+    ],
+    "new_definition": "validate_source_advance",
+    "removed_definitions": [],
+    "ordered_exact_text_edits": 14,
+    "original_controls_kept_byte_identical": [
+      "stage",
+      "main",
+      "git_state",
+      "environment_preflight",
+      "capture_source",
+      "metadata_inventory",
+      "verify_stage_source_entries",
+      "verify_original_inputs",
+      "parse_supervisor",
+      "bounded_record",
+      "finalize_source",
+      "retain_terminal"
+    ],
+    "archive_diff_only": "The single archive_transition worktree diff invocation gains \"-c\",\"diff.autoRefreshIndex=false\". The global Git helper and raw equality comparisons are unchanged."
+  },
+  "unchanged_execution": {
+    "fix": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "fix_seconds": 7200,
+    "fmt": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fmt_seconds": 900,
+    "preflight_seconds": 600,
+    "record_seconds": 300,
+    "maximum_log_bytes": 67108864,
+    "minimum_target_free_bytes": 34359738368,
+    "original_execute_logged_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "original_inventory_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "global_process_gate_unchanged": true,
+    "tool_runtime_environment_and_material_pins_unchanged": true,
+    "source_entry_checks_unchanged": true,
+    "raw_git_and_metadata_equality_unchanged": true,
+    "all_postimages_and_raw_retention_unchanged": true,
+    "tests_authorized": false
+  },
+  "prior_failure": {
+    "actual_job": "1a1d10d8ad0-2564-1bff",
+    "actual_fix_returncode": 101,
+    "actual_fix_timed_out": false,
+    "fmt_not_run": true,
+    "actual_test_commands": 0,
+    "fix_after_source_change_count": 0,
+    "wrapper_status": "UNKNOWN",
+    "classification_changed": false,
+    "full_original_fix_log": {
+      "bytes": 116897,
+      "sha256": "e30ead233ff190511d27e06d3465d25aa162bc1f075f50a6114102243b81af93",
+      "git_blob": "e3595315f3e98e4232dfac34d82cbec9032b997c"
+    },
+    "index_evidence_scope": "Root/ordinary reported an exact reversible stat-only byte relationship. This wrapper does not infer a unique writer, reset the original index or reclassify the original UNKNOWN."
+  },
+  "validation_performed": {
+    "local_source_AST_parse": true,
+    "local_source_compile_to_code_object_only": true,
+    "module_top_level_or_main_execution": false,
+    "exact_ordered_edit_application": true,
+    "source_controls_direct_definition_text_comparison": true,
+    "configuration_preserved_field_comparison": true,
+    "all_published_artifact_full_Git_readbacks_equal": true,
+    "source_advance_execution": false,
+    "H": false,
+    "Cargo": false,
+    "formatter": false,
+    "tests": false,
+    "source_edits": false,
+    "ref_updates": false
+  },
+  "local_preparation_directory": "/tmp/hepta-36fa-successor-maintenance-v4",
+  "limitations": [
+    "No actual source-advance job or normal terminal is supplied yet.",
+    "No successor maintenance, source gate, compilation, Rust mechanism test or qualification is claimed.",
+    "The driver remains dependent on a separately reviewed exact actual source-advance producer and formal execution approval."
+  ]
+}

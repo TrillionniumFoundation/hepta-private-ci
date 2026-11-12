@@ -1,0 +1,87 @@
+{
+  "actual_filled_hold": {
+    "bytes": 9156,
+    "git_blob": "a59f74497e2f78043fa0c54b2dd4755462506adb",
+    "sha256": "457c1e644b1e8d657159a61c2ab7cf1bd13c2cd6c6e61b7dad5baa967c0cf587"
+  },
+  "all_other_fields_equal": true,
+  "base_hold_config": {
+    "bytes": 8616,
+    "git_blob": "4887a2ac21f5dcacf63a27b886e1362c442deec3",
+    "sha256": "c3e0497d2c77f75e3f65d797041b186fe11faa5c5a7a7ac9e26f18604ada5bbc"
+  },
+  "budgets": {
+    "fix_seconds": 7200,
+    "fmt_seconds": 900,
+    "preflight_seconds": 600,
+    "record_seconds": 300
+  },
+  "changed_fields_from_frozen_hold": [
+    "status",
+    "root_execution_approved",
+    "waiting_for_actual_records",
+    "formal_approved_config_created",
+    "source_advance",
+    "source_inventory_observation"
+  ],
+  "config": {
+    "bytes": 9384,
+    "git_blob": "ec0efd8dfbbe89d91eb36a0b35e6abe593ebdaaf",
+    "sha256": "5eae92aa481694e1df88220471ad3c4ca10a84c83e12b505ebaa1c64d7d4f6ab"
+  },
+  "driver": {
+    "bytes": 62957,
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9"
+  },
+  "fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "format": "hepta-root-maintenance-v4-actual-final-approval-v1",
+  "original_maintenance_semantics": "Original v4 driver, original fix/fmt commands, budgets, tool/environment pins, global build-process preflight, 32 GiB live target prerequisite, full before/after physical inventory, complete source postimages and strict raw Git metadata equality remain unchanged. The narrow diff.autoRefreshIndex=false archive change is the already-reviewed v4 change.",
+  "outer_timeout_seconds": 9300,
+  "prospective_lock": "Reviewed launcher obtains task-owned external SOURCE_COORDINATION.lock LOCK_EX|LOCK_NB and retains inheritable fd across exec until this original maintenance process exits. Later cooperating collectors take SH on the same inode. No machine-wide or historical coverage is claimed. Exact launcher PINS/request must bind this config and frozen driver.",
+  "qualification": false,
+  "reviewed_at": "2026-11-12T20:02:40.457811+00:00",
+  "source": {
+    "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+      "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+      "tracked_entries": 15188
+    },
+    "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  },
+  "source_advance": {
+    "job_id": "1a1d1490a3b-2564-1c26",
+    "result": {
+      "bytes": 111744,
+      "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef",
+      "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",
+    "supervisor": {
+      "bytes": 952,
+      "git_blob": "a3a12b364e139032ef190951199b9af9421406cc",
+      "sha256": "fc981d45535041a457c11b444281a2a1fba9ce62da3387c361914a0d744f102b"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_ADVANCE_SUPERVISOR.original.json"
+  },
+  "source_advance_actual_root_review": "69453c8c528a9a4b30871622fb35c6287fcca60c",
+  "source_ref_updates_authorized": false,
+  "status": "APPROVED_FOR_ONE_ORIGINAL_SCOPED_MAINTENANCE_EXECUTION",
+  "test_commands_authorized": false
+}

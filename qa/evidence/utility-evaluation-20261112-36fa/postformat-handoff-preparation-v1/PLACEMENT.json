@@ -1,0 +1,37 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "status": "PREPARATION_WAITING_FOR_ACTUAL_POSTFMT",
+  "qualification": false,
+  "source_mutations": 0,
+  "native_captures": 0,
+  "extractor_runs": 0,
+  "entries": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-handoff-preparation-v1/POSTFORMAT_HANDOFF_REQUEST.json",
+      "local_path": "/tmp/hepta-36fa-postformat-handoff-v1/POSTFORMAT_HANDOFF_REQUEST.json",
+      "bytes": 20972,
+      "sha256": "ffa7132a6bfc6db19e0cd8d067caa4d5cdca516b4d146d5e1a07aac2ac98da39",
+      "blob_sha": "3480e1788552c5613ddb996459b0df070247327e",
+      "github_full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-handoff-preparation-v1/CAPTURE_PATHS.txt",
+      "local_path": "/tmp/hepta-36fa-postformat-handoff-v1/CAPTURE_PATHS.txt",
+      "bytes": 4496,
+      "sha256": "e54fd7d8c47e9fac104598c4e5ed194982d4f44f75bf7dbadb26f12f9123ff2f",
+      "blob_sha": "66a19f69967e4eb2a48488f27110ac69a2f1c8b4",
+      "github_full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-handoff-preparation-v1/README.md",
+      "local_path": "/tmp/hepta-36fa-postformat-handoff-v1/README.md",
+      "bytes": 5323,
+      "sha256": "fbc45506947fd8f3e5ef026b1ee22f58588b8792c5421af76a60ad4e80498b4d",
+      "blob_sha": "3bf03209b115168d9df9a0f8a7c082ffe518e3cb",
+      "github_full_readback_equal": true
+    }
+  ],
+  "placement_document_destination": "qa/evidence/utility-evaluation-20261112-36fa/postformat-handoff-preparation-v1/PLACEMENT.json",
+  "scope": "Existing f868/ffaab/432b scheme plus exact union of existing QA input cohorts;73 current bytes requested, no final source or gate claim.",
+  "lock_protocol": "Root/native agreed prospective task-owned EX-through-exec / SH-reader coordination; actual establishment and lease remain unobserved in this preparation artifact."
+}

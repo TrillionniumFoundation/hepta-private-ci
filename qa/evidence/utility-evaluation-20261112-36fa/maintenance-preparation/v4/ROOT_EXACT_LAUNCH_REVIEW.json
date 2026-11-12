@@ -1,0 +1,34 @@
+{
+  "actual_launcher_records": "ACTUAL_LAUNCHER_V4.py and ACTUAL_LAUNCHER_ARGV_V4.json are create-only and distinct from historical records.",
+  "approved_config": {
+    "bytes": 9384,
+    "git_blob": "ec0efd8dfbbe89d91eb36a0b35e6abe593ebdaaf",
+    "sha256": "5eae92aa481694e1df88220471ad3c4ca10a84c83e12b505ebaa1c64d7d4f6ab"
+  },
+  "dispatch": "Native remains sole H executor. After observing the one staged config identity matches these pins, execute this exact request once. A lost callback must be reconciled under this same idempotency key, never replayed with a new key.",
+  "driver": {
+    "bytes": 62957,
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9"
+  },
+  "format": "hepta-root-maintenance-v4-exact-launch-review-v1",
+  "idempotency_key": "hepta-utility-36fa-fresh-maintenance-9c4-v4",
+  "launcher": {
+    "bytes": 4315,
+    "git_blob": "d56e8074ff710e3c7be94143fef5d1e0fb15f60c",
+    "sha256": "16b1e89d7fff69171db0f4bd60cfbc875662271f04fdee0c985d85b0a06cb942"
+  },
+  "no_semantic_or_gate_change": true,
+  "outer_timeout_seconds": 9300,
+  "qualification": false,
+  "reviewed_at": "2026-11-12T20:04:09.931062+00:00",
+  "source_coordination": "External fixed SOURCE_COORDINATION.lock is owned uid1000 mode0600 single link. Launcher acquires LOCK_EX|LOCK_NB, marks fd inheritable and retains it across exec of the original immutable v4 driver. Lease applies only prospectively to cooperating task writers/readers.",
+  "status": "APPROVED_FOR_ONE_EXACT_ORIGINAL_MAINTENANCE_LAUNCH_AFTER_ACTUAL_CONFIG_STAGING_MATCHES",
+  "template_only_two_exact_pins_substituted": true,
+  "typed_request": {
+    "bytes": 4745,
+    "git_blob": "614575c65020bc699cd7c0576fc9b88ba1d6f14c",
+    "sha256": "de404297f7abb9cb3ca2d45d15bd293d48afc9f59aa6146460b3a4f3383c3187"
+  },
+  "typed_request_exact_six_fields": true
+}

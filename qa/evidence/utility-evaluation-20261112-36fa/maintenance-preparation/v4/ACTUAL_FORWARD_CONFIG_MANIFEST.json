@@ -1,0 +1,57 @@
+{
+  "format": "hepta-maintenance-v4-actual-forward-config-fill-v1",
+  "status": "HOLD_FOR_ROOT_FINAL_CONFIG_REVIEW",
+  "before": {
+    "bytes": 8616,
+    "sha256": "c3e0497d2c77f75e3f65d797041b186fe11faa5c5a7a7ac9e26f18604ada5bbc",
+    "git_blob": "4887a2ac21f5dcacf63a27b886e1362c442deec3"
+  },
+  "after": {
+    "bytes": 9156,
+    "sha256": "457c1e644b1e8d657159a61c2ab7cf1bd13c2cd6c6e61b7dad5baa967c0cf587",
+    "git_blob": "a59f74497e2f78043fa0c54b2dd4755462506adb"
+  },
+  "diff": {
+    "bytes": 1503,
+    "sha256": "b4af3f0d98b04ce90bbdd517d360c09176c3f20a65507f95d012c300a06fb9e7",
+    "git_blob": "5c0b0c50af80a8c74e7c27018e391b8a6c5d9367"
+  },
+  "actual_source_advance_result": {
+    "bytes": 111744,
+    "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9",
+    "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef"
+  },
+  "actual_source_advance_supervisor": {
+    "bytes": 952,
+    "sha256": "fc981d45535041a457c11b444281a2a1fba9ce62da3387c361914a0d744f102b",
+    "git_blob": "a3a12b364e139032ef190951199b9af9421406cc"
+  },
+  "exact_changed_json_pointers": [
+    "/source_advance/job_id",
+    "/source_advance/result_path",
+    "/source_advance/result",
+    "/source_advance/supervisor_path",
+    "/source_advance/supervisor"
+  ],
+  "all_other_config_values_unchanged": true,
+  "status_and_root_approval_unchanged": true,
+  "historical_hold_explanatory_strings_preserved": "Original waiting_for_actual_records and source_inventory_observation text is retained verbatim under the requested five-field-only edit. Actual proof identities are now populated; these historical explanatory strings are not new observations. Root may separately freeze its formal approved successor config.",
+  "maintenance_executed_by_this_preparation": false,
+  "h_calls": 0,
+  "source_or_ref_writes": false,
+  "runtime_and_materialization_seed_proofs_unchanged": true,
+  "budgets_unchanged": {
+    "fix": 7200,
+    "fmt": 900,
+    "preflight": 600,
+    "record": 300
+  },
+  "actual_after_inventory": {
+    "bytes": 5611182,
+    "filesystem_entries": 15188,
+    "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+    "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+    "tracked_entries": 15188
+  },
+  "actual_after_index_sha256": "01caa6fd0abf858fc04292a4b9aa7792585df023fc34b5f8b8f8bcb2defb9e7d"
+}

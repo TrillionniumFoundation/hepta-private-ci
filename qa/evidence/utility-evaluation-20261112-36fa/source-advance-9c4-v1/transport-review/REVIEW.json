@@ -1,0 +1,305 @@
+{
+  "at": "2026-11-12T20:04:09.033159+00:00",
+  "format": "hepta-source-advance-existing-transfer-peer-review-v1",
+  "inputs": {
+    "ACTUAL_PROCESS_INPUT.json": {
+      "bytes": 3452,
+      "git_blob": "155c73d0e3d59dc35b62675404ce6f00603acf43",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/ACTUAL_PROCESS_INPUT.json",
+      "sha256": "6a1808c0dcdcc582779bf6c72655dc08b5dff2e9c2b34abb2ad1667dfb4d6a1c"
+    },
+    "APPROVED_CONFIG.json": {
+      "bytes": 2519,
+      "git_blob": "3c7846934a01c0c58216f3cdee68dc62363c5d8e",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/APPROVED_CONFIG.json",
+      "sha256": "d52cd8dbbeed417091bc30c40a93b888f14ac8a282f6b1b64b20dcc1c7f63180"
+    },
+    "MAIN.stdout.log": {
+      "bytes": 630,
+      "git_blob": "407b5338d7da3193817b19a0f2fdfd152f2b64de",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN.stdout.log",
+      "sha256": "21410092486c8319bead7e8fe80ab7a750bcd7d5c77e6d5d77818fe5209a34ce"
+    },
+    "MAIN_READ0.original.json": {
+      "bytes": 2539,
+      "git_blob": "0d3ad039e3fb2eca08fb3791240f34d551e4a802",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN_READ0.original.json",
+      "sha256": "5f1e26f2a9e5f75d366da3b1950497abd7ee40b7a16cd191a41577f56d72d5ab"
+    },
+    "MAIN_REGISTRY_ERROR.original.json": {
+      "bytes": 288,
+      "git_blob": "9749b1dd1177ffc84a0ade432f0d42c8b69007f9",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN_REGISTRY_ERROR.original.json",
+      "sha256": "f5580f7449bcf692dbfb7855d2b4375a551087137b417c9cfe8f42a52d9e6d13"
+    },
+    "MAIN_SAME_KEY_RECONCILIATION.original.json": {
+      "bytes": 5432,
+      "git_blob": "8dca65bb70a017116dcac9e8849317ef7671ef38",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN_SAME_KEY_RECONCILIATION.original.json",
+      "sha256": "3324de7e5281b8718bc05fb4c955066bbdb17e18510e1a1aacf5f75fd27e01fc"
+    },
+    "MAIN_TERMINAL.original.json": {
+      "bytes": 952,
+      "git_blob": "a3a12b364e139032ef190951199b9af9421406cc",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN_TERMINAL.original.json",
+      "sha256": "fc981d45535041a457c11b444281a2a1fba9ce62da3387c361914a0d744f102b"
+    },
+    "RESULT.json": {
+      "bytes": 111744,
+      "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/RESULT.json",
+      "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9"
+    },
+    "RESULT_FULL_READBACK.json": {
+      "bytes": 1401,
+      "git_blob": "7425f00c90f0c12c821aa6f5c09d8672daeb6eb5",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/RESULT_FULL_READBACK.json",
+      "sha256": "9e006ddbafc24c57861272da938cd8a6c7e1c491d8cbdd4155dbfd6feff03bd6"
+    },
+    "RESULT_READ_SDK.part00000.original.json": {
+      "bytes": 87806,
+      "git_blob": "3131ff6527344f34faee1ac3aff668a2df6ccd89",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/RESULT_READ_SDK.part00000.original.json",
+      "sha256": "062d2bb56231862aada99c3236755e2b90736643e7bb667f7485351f380c8d0f"
+    },
+    "RESULT_READ_SDK.part65536.original.json": {
+      "bytes": 62082,
+      "git_blob": "88bc2f151f5f9e1b9370f2ea474dece3d1fa7d23",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/RESULT_READ_SDK.part65536.original.json",
+      "sha256": "6ed3dfd86826d205ed30dabdfa9014d60dbba6a6650fbc2e35207b2e5475be05"
+    },
+    "driver.py": {
+      "bytes": 41629,
+      "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/driver.py",
+      "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae"
+    }
+  },
+  "job_binding": {
+    "idempotency_key": "hepta-utility-36fa-source-advance-9c4-v1",
+    "job_id": "1a1d1490a3b-2564-1c26",
+    "launch_response": null,
+    "normal": {
+      "at_unix_ms": 1794512618544,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1d1490a3b-2564-1c26",
+      "launch_nonce": "78c2527667e6c084c536738c188eab9d",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 630,
+          "stored": 630
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "normal_and_reconciled_status_equal": true,
+    "original_request_fields_equal": true,
+    "retried_launch": false,
+    "reused": true,
+    "stdout_bytes": {
+      "bytes": 630,
+      "git_blob": "407b5338d7da3193817b19a0f2fdfd152f2b64de",
+      "sha256": "21410092486c8319bead7e8fe80ab7a750bcd7d5c77e6d5d77818fe5209a34ce"
+    },
+    "stdout_events": [
+      {
+        "config_sha256": "d52cd8dbbeed417091bc30c40a93b888f14ac8a282f6b1b64b20dcc1c7f63180",
+        "driver_sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae",
+        "event": "fixed_original_source_advance_launcher_verified",
+        "qualification": false
+      },
+      {
+        "at": "2026-11-12T19:43:20.984593+00:00",
+        "event": "preconditions_verified",
+        "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+        "tracked_entries": 15188,
+        "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+      },
+      {
+        "at": "2026-11-12T19:43:38.494574+00:00",
+        "event": "source_advance_terminal",
+        "local_head_advanced": true,
+        "status": "SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY"
+      }
+    ],
+    "stdout_hex_text_and_file_equal": true
+  },
+  "limits": [
+    "No new native read, producer run, formatter, Cargo, or source edit was performed.",
+    "Same-key reused=true and retried_launch=false are actual reconciliation fields; this does not assert an unobserved global process inventory.",
+    "The source-advance result is maintenance-only. It is not successful fix/fmt, a final formatted source, source-gate PASS, runtime qualification, or real A/B/C evidence.",
+    "Earlier maintenance UNKNOWN and compiler return 101 remain unchanged."
+  ],
+  "new_h_calls": 0,
+  "producer_executions": 0,
+  "qualification": false,
+  "registry_observation_error": {
+    "content": [
+      {
+        "text": "Durable job inventory exceeds the 1 MiB response budget; narrow using the configured host filter. No partial inventory returned.",
+        "type": "text"
+      }
+    ],
+    "envelope_identity": {
+      "bytes": 288,
+      "git_blob": "9749b1dd1177ffc84a0ade432f0d42c8b69007f9",
+      "local_path": "/tmp/hepta-36fa-source-advance-9c4-v1/MAIN_REGISTRY_ERROR.original.json",
+      "sha256": "f5580f7449bcf692dbfb7855d2b4375a551087137b417c9cfe8f42a52d9e6d13"
+    },
+    "interpretation": "Registry inventory response-budget error retained separately; it is not the job normal terminal and does not imply another launch.",
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  "reported_source_advance": {
+    "after": {
+      "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "git_state": {
+        "config_bytes": 102,
+        "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+        "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+        "head_raw_sha256": "7c61d8265f2d2f889ca81f0e9b83067f17a9536d75524816a03dba0bd476e847",
+        "index_bytes": 2072488,
+        "index_sha256": "01caa6fd0abf858fc04292a4b9aa7792585df023fc34b5f8b8f8bcb2defb9e7d",
+        "refs_bytes": 0,
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+      },
+      "inventory": {
+        "bytes": 5611182,
+        "filesystem_entries": 15188,
+        "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+        "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+        "tracked_entries": 15188
+      },
+      "parents": [
+        "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+      ],
+      "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+    },
+    "before": {
+      "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "git_state": {
+        "config_bytes": 102,
+        "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+        "head": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+        "head_raw_sha256": "e7d60dc484e5a5d8cbd86714f8cd70141e2a12d3470167f2dddaac7483401f61",
+        "index_bytes": 2072488,
+        "index_sha256": "b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15",
+        "refs_bytes": 0,
+        "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+      },
+      "inventory": {
+        "bytes": 5611182,
+        "filesystem_entries": 15188,
+        "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+        "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+        "tracked_entries": 15188
+      },
+      "parents": [
+        "c0f78493f815780f68b9bf5e390a21314d79311f",
+        "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+      ],
+      "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+    },
+    "changes": [
+      {
+        "after_bytes": 5190,
+        "after_git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+        "after_sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1",
+        "before_bytes": 5133,
+        "before_git_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+        "before_sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"
+      }
+    ],
+    "final_audits": [
+      {
+        "check": "source",
+        "finished_at": "2026-11-12T19:43:35.924423+00:00",
+        "started_at": "2026-11-12T19:43:31.863719+00:00",
+        "status": "verified"
+      },
+      {
+        "check": "git",
+        "finished_at": "2026-11-12T19:43:38.451890+00:00",
+        "started_at": "2026-11-12T19:43:35.924450+00:00",
+        "status": "verified"
+      },
+      {
+        "check": "inputs",
+        "finished_at": "2026-11-12T19:43:38.483138+00:00",
+        "started_at": "2026-11-12T19:43:38.451911+00:00",
+        "status": "verified"
+      }
+    ],
+    "finished_at": "2026-11-12T19:43:38.483184+00:00",
+    "scope_note": "These are fields from the byte-verified original result; this peer check does not reexecute or independently repeat source/object audits.",
+    "started_at": "2026-11-12T19:43:15.443701+00:00",
+    "status": "SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY"
+  },
+  "result_transfer": {
+    "chunks": [
+      {
+        "chunk_sha256": "b836ec416c33629a293bdb38aee78898a6fd82f03ddb91ed8aa7047132150c22",
+        "decoded_bytes": 65536,
+        "eof": false,
+        "next_offset": 65536,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",
+        "sdk": "RESULT_READ_SDK.part00000.original.json",
+        "size": 111744,
+        "version": "2050:50139276:111744:1794512618489189978:1794512618489189978"
+      },
+      {
+        "chunk_sha256": "32e6c4ba2138027d7a1e95d38d7ca9c07c977b89de8b7152e4742905d5e10b89",
+        "decoded_bytes": 46208,
+        "eof": true,
+        "next_offset": 111744,
+        "offset": 65536,
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",
+        "sdk": "RESULT_READ_SDK.part65536.original.json",
+        "size": 111744,
+        "version": "2050:50139276:111744:1794512618489189978:1794512618489189978"
+      }
+    ],
+    "concatenation_equals_existing_result_bytes": true,
+    "existing_full_readback_metadata_matches": true,
+    "fixed_version": "2050:50139276:111744:1794512618489189978:1794512618489189978",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",
+    "result_identity": {
+      "bytes": 111744,
+      "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef",
+      "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9"
+    }
+  },
+  "scope": "Existing retained SDK byte decoding, exact RESULT identity, same job and same-key reconciliation only.",
+  "source_or_control_executions": 0,
+  "status": "OFFLINE_TRANSPORT_AND_JOB_BINDING_VERIFIED"
+}

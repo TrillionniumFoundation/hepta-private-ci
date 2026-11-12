@@ -1,0 +1,56 @@
+{
+  "format": "hepta-exact-source-advance-independent-static-peer-review-v1",
+  "at": "2026-11-12T19:39:15.108159+00:00",
+  "status": "NO_REMAINING_CONCRETE_BLOCKER_IN_FINAL_FROZEN_PRODUCER_AND_CONSUMER",
+  "qualification": false,
+  "execution_authorized_by_this_review": false,
+  "native_or_cargo_or_control_main_executed": false,
+  "writer_files_modified": false,
+  "producer": {
+    "bytes": 41629,
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae",
+    "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed"
+  },
+  "producer_hold_config_blob": "155556eeb1ad66bfaf155b2ecebf5390e8bf2155",
+  "producer_manifest_blob": "f89f8ed65ec2c72b129a0887e32825f8c0dbaff6",
+  "consumer_driver_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
+  "consumer_review_blob": "7f6b9e04bf9a97ecc2e80b45bca197d02ef5cb76",
+  "fixed_input_review_blob": "517e8fbe3ab1d83c7514db37c8e164507efe35f1",
+  "contract_blob": "a1ef48291d34646c4c5c763ba51a63d32a76c3f7",
+  "canonical_packet_blob": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb",
+  "verified": [
+    "Six original canonical object bodies, one exact ports reexport, old/new complete Merkle roots and predicted15188 inventory independently checked.",
+    "Preflight requires the retained original full Git state including b19 index, old86dd/383ab full physical inventory and exact historical seed proof pins.",
+    "Original057da same-UID Cargo/formatter rejection function is byte-identical and invoked before work and immediately before physical source replacement.",
+    "Single physical source temporary publication checks exact preimage, mode, owner, inode/time stability; fsync follows chmod; no other source path is deliberately written.",
+    "Single update-index path operation; no cacheinfo/global refresh. All15187 other serialized entries including stat/flags/padding are compared byte-for-byte.",
+    "Changed entry retains exact mode/flags and expectedOID and must carry actual current stat values. Non-TREE extensions remain byte-identical.",
+    "write-tree must produce exact ee42, then update-ref --no-deref HEAD uses expected old86dd CAS. No branch or remote ref update is authorized.",
+    "Full source after inventory must equal predictedc006; all15187 other physical records equal before; full staged entries match observed successor.",
+    "Git metadata changes are constrained to the approved object imports, necessary object directory metadata, index and detachedHEAD; config/refs unchanged.",
+    "Mutation intent and command original evidence are retained; completed flag plus all three final audits verified are required for success. Partial/error/expired cases cannot satisfy consumer normal-success proof.",
+    "Action600/record180 retain absolute deadlines; alarms cover Python work, owned Git uses remaining-time deadlines, EOF is bounded, expired rearming now raises, both Popen calls check remaining first.",
+    "Producer success fields exactly match frozen consumer contract; consumer also independently rechecks complete before/after identity, actual normal terminal, original commit bodies/parents, full one-record diff and both blob contents."
+  ],
+  "resolved_peer_findings": [
+    {
+      "finding": "Unbounded final EOF read in object batch.",
+      "resolution": "select with original remaining deadline followed by one os.read; exact EOF still required."
+    },
+    {
+      "finding": "update-index --refresh is global even with later file argument.",
+      "resolution": "One normal update-index -- CHANGED operation; all original raw-entry and tree assertions retained."
+    },
+    {
+      "finding": "Expired arm_if_remaining silently returned.",
+      "resolution": "Expired branch raises TimeoutError; no budget reset; remaining checked before both Popen calls."
+    }
+  ],
+  "primary_source_for_refresh_semantics": "https://github.com/git/git/blob/v2.43.0/builtin/update-index.c",
+  "limits": [
+    "Static review only; source advance has not been observed by this reviewer.",
+    "Root still must approve exact execution config and review actual normal terminal/results before maintenance.",
+    "Original maintenance UNKNOWN/fix101/fmt-not-run remain unchanged.",
+    "No qualification result, source-gate result, Rust behavior result or final postfmt byte claim is made."
+  ]
+}

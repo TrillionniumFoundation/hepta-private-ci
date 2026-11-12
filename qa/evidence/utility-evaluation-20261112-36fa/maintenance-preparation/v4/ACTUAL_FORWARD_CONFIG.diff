@@ -1,0 +1,27 @@
+--- WAITING_CONFIG_V4.json
++++ WAITING_CONFIG_V4_ACTUAL_FORWARD.json
+@@ -189,11 +189,19 @@
+   "waiting_for_actual_records": "Historical 86dd materialization/runtime proof bytes and actual tools are preserved unchanged. The required actual source_advance job/RESULT/supervisor are absent. This is HOLD, not approval. No source advancement or successor maintenance is claimed. A create-only APPROVED_CONFIG_V4.json must be separately frozen after actual completion and Root review.",
+   "formal_approved_config_created": false,
+   "source_advance": {
+-    "job_id": null,
+-    "result_path": null,
+-    "result": null,
+-    "supervisor_path": null,
+-    "supervisor": null
++    "job_id": "1a1d1490a3b-2564-1c26",
++    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",
++    "result": {
++      "bytes": 111744,
++      "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9",
++      "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef"
++    },
++    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_ADVANCE_SUPERVISOR.original.json",
++    "supervisor": {
++      "bytes": 952,
++      "sha256": "fc981d45535041a457c11b444281a2a1fba9ce62da3387c361914a0d744f102b",
++      "git_blob": "a3a12b364e139032ef190951199b9af9421406cc"
++    }
+   },
+   "source_inventory_observation": "Root-verified frozen prediction only until the actual native source-advance proof and current preflight both match."
+ }

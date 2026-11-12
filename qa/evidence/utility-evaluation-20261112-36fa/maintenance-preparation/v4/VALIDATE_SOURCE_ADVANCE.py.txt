@@ -1,0 +1,93 @@
+def validate_source_advance(current_inventory,current_git_state):
+    proof=cfg.get("source_advance")
+    check(isinstance(proof,dict) and set(proof)==
+          {"job_id","result_path","result","supervisor_path","supervisor"},
+          "one actual source-advance proof descriptor required")
+    check(isinstance(proof["job_id"],str) and bool(proof["job_id"]) and
+          all(isinstance(proof[key],str) and bool(proof[key])
+              for key in ("result_path","supervisor_path")),
+          "HOLD: actual source-advance job and original paths are absent")
+    raw=read_input(proof["result_path"],proof["result"])
+    terminal_raw=read_input(proof["supervisor_path"],proof["supervisor"])
+    observed=parse(raw);terminal=parse_supervisor(terminal_raw)
+    check(terminal.get("job_id")==proof["job_id"],"same actual source-advance job")
+    check(observed.get("format")=="hepta-exact-source-advance-result-v1" and
+          observed.get("status")=="SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY" and
+          observed.get("source_repo")==str(REPO),"actual completed exact source advance")
+    before=observed.get("before");after=observed.get("after")
+    check(isinstance(before,dict) and isinstance(after,dict),"actual source-advance endpoints")
+    check(before.get("commit")==SEED_HEAD and before.get("tree")==SEED_TREE and
+          before.get("parents")==SEED_PARENTS and before.get("inventory")==SEED_INVENTORY,
+          "source-advance original complete seed endpoint")
+    check(after.get("commit")==HEAD and after.get("tree")==TREE and
+          after.get("parents")==PARENTS and after.get("inventory")==SUCCESSOR_INVENTORY,
+          "source-advance complete frozen successor endpoint")
+    pin_bytes(current_inventory,SUCCESSOR_INVENTORY,"current source after actual advance")
+    check(after.get("git_state")==current_git_state,"actual post-advance raw Git state still current")
+    before_git=before.get("git_state")
+    check(isinstance(before_git,dict) and set(before_git)==set(current_git_state),
+          "complete actual pre-advance Git state")
+    check(before_git.get("head")==SEED_HEAD and before_git.get("tree")==SEED_TREE and
+          before_git.get("head_raw_sha256")==sha256((SEED_HEAD+"\n").encode()) and
+          before_git.get("index_bytes")==SOURCE_ADVANCE_BEFORE_INDEX["bytes"] and
+          before_git.get("index_sha256")==SOURCE_ADVANCE_BEFORE_INDEX["sha256"],
+          "actual pre-advance original HEAD/tree/index; prior Unknown is not rewritten")
+    check(all(before_git[key]==current_git_state[key] for key in
+          ("config_bytes","config_sha256","refs_bytes","refs_sha256")),
+          "source advance changed no repository config or branch refs")
+    check(observed.get("changes")==[SOURCE_ADVANCE_CHANGE] and
+          observed.get("canonical_packet")==SOURCE_ADVANCE_PACKET_PIN,
+          "only reviewed canonical six-object, one-source-path advancement")
+    check(observed.get("seed_proofs")=={
+          "materialization_result":cfg["materialization"]["result"],
+          "runtime_restoration_result":cfg["runtime_restoration"]["result"],
+          "runtime_environment":cfg["runtime_restoration"]["environment"]},
+          "source advance retains the exact historical materialization/runtime proofs")
+    actual=observed.get("actual")
+    check(isinstance(actual,dict) and type(actual.get("verified_canonical_objects")) is int and
+          actual["verified_canonical_objects"]==6 and
+          all(actual.get(key) is True for key in
+              ("detached","index_equals_tree","physical_bytes_equal","other_tracked_paths_unchanged")),
+          "actual original objects and complete source/index completion")
+    check(observed.get("local_head_advanced") is True,"authorized detached HEAD advancement observed")
+    for key in ("source_branch_refs_updated","remote_ref_updates","dependency_installation_started",
+                "cargo_or_formatter_started","qualification","automatic_retry"):
+        check(observed.get(key) is False,"source advancement did not authorize "+key)
+    check(type(observed.get("test_commands_dispatched")) is int and
+          observed["test_commands_dispatched"]==0,"source advancement executed no tests")
+    audits=observed.get("final_audits")
+    check(isinstance(audits,list) and len(audits)==3 and all(isinstance(row,dict) for row in audits) and
+          {row.get("check"):row.get("status") for row in audits}==
+          {"source":"verified","git":"verified","inputs":"verified"},
+          "all actual source-advance final audits complete")
+    # These are object-only reads. Preserve the exact canonical commit bodies;
+    # never synthesize new metadata or use a same-tree replacement.
+    for name,commit,tree,parents in (
+            ("seed",SEED_HEAD,SEED_TREE,SEED_PARENTS),("successor",HEAD,TREE,PARENTS)):
+        commit_raw=git("cat-file","commit",commit)
+        headers=commit_raw.split(b"\n\n",1)[0].split(b"\n")
+        check(oid("commit",commit_raw)==commit and headers[0]==("tree "+tree).encode() and
+              [line[7:].decode("ascii") for line in headers if line.startswith(b"parent ")]==parents,
+              "authentic exact "+name+" commit/tree/ordered parents")
+        write("SOURCE_ADVANCE."+name+".commit.raw",commit_raw)
+    change=SOURCE_ADVANCE_CHANGE
+    delta=git("diff-tree","--no-commit-id","--raw","-r","-z","--no-renames","--no-abbrev",
+              SEED_HEAD,HEAD,"--")
+    expected_delta=(":"+change["mode"]+" "+change["mode"]+" "+change["before_git_blob"]+" "+
+                    change["after_git_blob"]+" M\0"+change["path"]+"\0").encode()
+    check(delta==expected_delta,"complete canonical source delta is exactly the one reviewed record")
+    write("SOURCE_ADVANCE.complete-object-diff.raw",delta)
+    for side in ("before","after"):
+        blob_raw=git("cat-file","blob",change[side+"_git_blob"])
+        expected_pin={"bytes":change[side+"_bytes"],"sha256":change[side+"_sha256"],
+                      "git_blob":change[side+"_git_blob"]}
+        pin_bytes(blob_raw,expected_pin,"reviewed original "+side+" test-port bytes")
+        write("SOURCE_ADVANCE."+side+".source.rs",blob_raw)
+    write("SOURCE_ADVANCE_RESULT.original.json",raw)
+    write("SOURCE_ADVANCE_SUPERVISOR.original.json",terminal_raw)
+    result["actual_source_advance_job"]=proof["job_id"]
+    result["actual_source_advance_result"]=proof["result"]
+    result["source_provenance_seed"]={"commit":SEED_HEAD,"tree":SEED_TREE,"parents":SEED_PARENTS,
+                                      "inventory":SEED_INVENTORY}
+    return observed
+

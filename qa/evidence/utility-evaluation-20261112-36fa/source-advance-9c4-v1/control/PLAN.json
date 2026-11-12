@@ -1,0 +1,55 @@
+{
+  "action_seconds": 600,
+  "budgets": "The 600-second total action alarm covers pure observations. Owned Git commands temporarily disable the wrapper alarm and own their remaining-time timeout and cleanup; elapsed time still counts. The 180-second record phase reserves its last 15 seconds for small terminal records. No test/maintenance command budget is changed.",
+  "canonical_packet": {
+    "bytes": 98087,
+    "git_blob": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb",
+    "sha256": "e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0"
+  },
+  "config_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/APPROVED_CONFIG.json",
+  "contract": {
+    "bytes": 6589,
+    "git_blob": "a1ef48291d34646c4c5c763ba51a63d32a76c3f7",
+    "sha256": "ff781d283f274cb20115734cf007e3f7c2565468381205ebd4df8aa2652ae977"
+  },
+  "control_dir": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1",
+  "current_state": "Source HEAD86dd/tree383ab/15188,bca1; current original index2072488/B19, not the reconstructed111345 zero-stat original.",
+  "driver": {
+    "bytes": 41629,
+    "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed",
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae"
+  },
+  "driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/driver.py",
+  "failure_behavior": "Original failure/Unknown records remain immutable. Each mutation intent is first persisted. Any partial effect is retained with actual endpoint observations and failed/Unknown status, never rollback/reset/retry. No success consumer qualification without complete actual RESULT and normal complete supervisor terminal.",
+  "format": "hepta-exact-source-advance-control-plan-v1",
+  "host": "desktop",
+  "index_update": "The standard single-path git update-index -- <CHANGED> reads only the exact reviewed physical file; no --refresh or read-tree is used. All other 15187 raw entries (including stat/flags/padding) must remain byte-identical, and the changed entry must match the actual stat and reviewed blob.",
+  "known_exclusions": [
+    "no Cargo/fmt/test/download",
+    "no remote or branch ref update",
+    "no recursive ancestry/fsck",
+    "no zero-stat index restoration",
+    "no dependency/cache rebuild or deletion"
+  ],
+  "mutation_order": [
+    "six authentic missing objects (explicit batch-check only; existing bodies readback)",
+    "one atomic exact physical file replacement",
+    "single-path update-index",
+    "write-tree exact ee42",
+    "detached HEAD compare-and-swap old86dd to new9c4"
+  ],
+  "operator_uid": 1000,
+  "outer_timeout_seconds": 900,
+  "output_dir": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run",
+  "proposed_unique_key": "hepta-utility-36fa-source-advance-9c4-v1",
+  "record_seconds": 180,
+  "record_terminal_reserve_seconds": 15,
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "staging": "Only create-only immutable driver, original packet and contract. HOLD may be saved only as WAITING_CONFIG.json. APPROVED_CONFIG.json remains absent until Root freezes the approved bytes. No existing control/source/cache files are replaced during staging.",
+  "status": "PREPARATION_ONLY_HOLD",
+  "waiting_config": {
+    "bytes": 2506,
+    "git_blob": "155556eeb1ad66bfaf155b2ecebf5390e8bf2155",
+    "sha256": "a84f1482a6307ddbdba352fd807f67fc1ca9a456b1cd1a62ca1749c50fc80fd5"
+  }
+}

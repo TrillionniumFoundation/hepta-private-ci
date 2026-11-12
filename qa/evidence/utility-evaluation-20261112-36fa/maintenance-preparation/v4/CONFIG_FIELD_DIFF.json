@@ -1,0 +1,65 @@
+{
+  "driver_git_blob": {
+    "before": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+    "after": "b9d2459f02cb174fc60356156efd08b2dce46731"
+  },
+  "driver_sha256": {
+    "before": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce",
+    "after": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9"
+  },
+  "parents": {
+    "before": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "after": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ]
+  },
+  "source_advance": {
+    "before": null,
+    "after": {
+      "job_id": null,
+      "result_path": null,
+      "result": null,
+      "supervisor_path": null,
+      "supervisor": null
+    }
+  },
+  "source_commit": {
+    "before": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "after": "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  },
+  "source_inventory": {
+    "before": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "tracked_entries": 15188
+    },
+    "after": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+      "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+      "tracked_entries": 15188
+    }
+  },
+  "source_inventory_observation": {
+    "before": null,
+    "after": "Root-verified frozen prediction only until the actual native source-advance proof and current preflight both match."
+  },
+  "source_tree": {
+    "before": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "after": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  },
+  "status": {
+    "before": "WAITING_FOR_ROOT_REVIEW_ACTUAL_RUNTIME_PROOFS_FILLED",
+    "after": "HOLD_WAITING_FOR_ACTUAL_SOURCE_ADVANCE_AND_ROOT_REVIEW"
+  },
+  "waiting_for_actual_records": {
+    "before": "Actual runtime RESULT, ENVIRONMENT_READY and complete normal supervisor are filled from verified original bytes. Root/native review and a separately pinned approved config remain required. Original live source, tool, disk, environment and global process preflight have not been run by this fill operation.",
+    "after": "Historical 86dd materialization/runtime proof bytes and actual tools are preserved unchanged. The required actual source_advance job/RESULT/supervisor are absent. This is HOLD, not approval. No source advancement or successor maintenance is claimed. A create-only APPROVED_CONFIG_V4.json must be separately frozen after actual completion and Root review."
+  }
+}

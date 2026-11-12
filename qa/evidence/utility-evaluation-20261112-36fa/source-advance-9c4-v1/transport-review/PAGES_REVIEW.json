@@ -1,0 +1,106 @@
+{
+  "admission": {
+    "bytes": 706,
+    "git_blob": "e6144bb10317f713efc1b49a9e68ab455e011b85",
+    "name": "RESULT_READ_ADMISSION.original.json",
+    "sha256": "e18752ce52e273becc6ad89138a90f9e07d45f7ad65b9fd929e9a2ecba7f69ed"
+  },
+  "at": "2026-11-12T20:05:35.049747+00:00",
+  "equals_original_sdk_bytes": true,
+  "format": "hepta-source-advance-existing-sdk-page-peer-review-v1",
+  "limits": [
+    "Admission alone is not completion; equality is established from all six complete retained payload pages.",
+    "The first complete SDK then contributes only the first 65536 bytes of RESULT, as separately verified in REVIEW.json.",
+    "No new native read or execution occurred."
+  ],
+  "operation_id": "bb127858059511433824d0903c3e1256f395bf7ef3417bca57a5cefede42bc93",
+  "pages": [
+    {
+      "bytes": 22705,
+      "decoded_chunk": {
+        "bytes": 16384,
+        "git_blob": "8e24248275f2e5d367af9dd862692941469fa880",
+        "sha256": "ffa59d2025d4fec7d845f766fba59e58ab771475d5e352c36a860d89573fc141"
+      },
+      "git_blob": "6944fcc6159c5328665fc09dcf2e2a7ed7ec57bf",
+      "name": "RESULT_READ_PAGE00000.original.json",
+      "next_offset": 16384,
+      "offset": 0,
+      "sha256": "1ceec001fe580a280e231d5d8f881191576b45d0b19730549829c626b8e271a2"
+    },
+    {
+      "bytes": 22709,
+      "decoded_chunk": {
+        "bytes": 16384,
+        "git_blob": "99ae0d253011efea67d1ce9ee62b71c63f4366d0",
+        "sha256": "27f73e4d6564eecdbb631875d2aeb6d8fe837dca85b5eed1c242fe71fb6dd397"
+      },
+      "git_blob": "06c3c940b46278194ff141ef78922be8a098d9f0",
+      "name": "RESULT_READ_PAGE16384.original.json",
+      "next_offset": 32768,
+      "offset": 16384,
+      "sha256": "1b70e5478e8130bde5e164a6e83e4fbd658544db3751b681b3a18a1ed02ba518"
+    },
+    {
+      "bytes": 22709,
+      "decoded_chunk": {
+        "bytes": 16384,
+        "git_blob": "619549af4ce0a4f155307c59e797f959eb63f2b1",
+        "sha256": "ef1c7f0009c9a72daf1618f2302c935664a6a71cad0837c6d51c7f3e9b979afa"
+      },
+      "git_blob": "2c8bbc36a65d1b1aaf163070f6bf279c06dc1491",
+      "name": "RESULT_READ_PAGE32768.original.json",
+      "next_offset": 49152,
+      "offset": 32768,
+      "sha256": "292115516001f6d9e27c68b44b14026e47c468f20a1928f3d0ac9d166c9262e8"
+    },
+    {
+      "bytes": 22709,
+      "decoded_chunk": {
+        "bytes": 16384,
+        "git_blob": "1534bbb5731bd4d869c4447cc479c422c97cbafc",
+        "sha256": "ccdc62bdb2b0009281bbdf45ee43a6d35075201e5f6b441e7d6c7de193310f51"
+      },
+      "git_blob": "48a3e13cce67b04eb3d9296d06d45687d595427a",
+      "name": "RESULT_READ_PAGE49152.original.json",
+      "next_offset": 65536,
+      "offset": 49152,
+      "sha256": "39be0940c9f0f57e6a57e7ed1d69e2b1e05220f3729110c8f9e4ca953c808941"
+    },
+    {
+      "bytes": 22709,
+      "decoded_chunk": {
+        "bytes": 16384,
+        "git_blob": "d5e0e589132114003197922ff93ac328be186a02",
+        "sha256": "ac42666d5884b4ae0bb0f9db82f455b22a89ab003eb4736ac032b5ba79c27a8e"
+      },
+      "git_blob": "582dedc545d51acbb4afaf8507b96d638fe00634",
+      "name": "RESULT_READ_PAGE65536.original.json",
+      "next_offset": 81920,
+      "offset": 65536,
+      "sha256": "6c67539ba097ac4c41bce6926d66944020a0d7b0e01e00f5427f5bfa0c2a38b8"
+    },
+    {
+      "bytes": 8708,
+      "decoded_chunk": {
+        "bytes": 5886,
+        "git_blob": "e29bf2986af52474ab20b02a7652196e94076211",
+        "sha256": "f1558cda61edf3c71d5b6713bf79e2003f92d94012ea88e51f097443030f7075"
+      },
+      "git_blob": "d0c9cbd0b09daec6e3ed1d3d241e06f2443bceaf",
+      "name": "RESULT_READ_PAGE81920.original.json",
+      "next_offset": 87806,
+      "offset": 81920,
+      "sha256": "67114fd2d2789b9104b51b55ef5ba63a230e9dbd758cda103faf11927bbc4ab3"
+    }
+  ],
+  "qualification": false,
+  "reassembled_sdk": {
+    "bytes": 87806,
+    "git_blob": "3131ff6527344f34faee1ac3aff668a2df6ccd89",
+    "name": "RESULT_READ_SDK.part00000.original.json",
+    "sha256": "062d2bb56231862aada99c3236755e2b90736643e7bb667f7485351f380c8d0f"
+  },
+  "scope": "Offline reassembly of retained operation-result pages only; no H or producer call.",
+  "status": "OFFLINE_PAGE_REASSEMBLY_VERIFIED"
+}

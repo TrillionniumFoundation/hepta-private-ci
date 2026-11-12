@@ -1,0 +1,51 @@
+{
+  "format": "hepta-successor-v4-peer-static-input-review-v1",
+  "qualification": false,
+  "native_execution": false,
+  "source_mutation": false,
+  "status": "STATIC_INPUT_IDENTITIES_AND_SINGLE_LEAF_PROJECTION_MATCH",
+  "contract": {
+    "bytes": 6589,
+    "sha256": "ff781d283f274cb20115734cf007e3f7c2565468381205ebd4df8aa2652ae977",
+    "git_blob_sha": "a1ef48291d34646c4c5c763ba51a63d32a76c3f7"
+  },
+  "packet": {
+    "bytes": 98087,
+    "sha256": "e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0",
+    "git_blob_sha": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb"
+  },
+  "canonical_objects_verified": 6,
+  "object_types": {
+    "commit": 1,
+    "tree": 4,
+    "blob": 1
+  },
+  "complete_leaves": 15188,
+  "before_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "before_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "after_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "after_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "after_parents": [
+    "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+  ],
+  "changed_source": {
+    "after_bytes": 5190,
+    "after_git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+    "after_sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1",
+    "before_bytes": 5133,
+    "before_git_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+    "before_sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+    "mode": "100644",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"
+  },
+  "only_source_change": "One pub(crate) recovered_peer reexport line; inverse deletion exactly returns the original blob.",
+  "predicted_inventory": {
+    "bytes": 5611182,
+    "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+    "git_blob_sha": "07b1d331bcc1d84c8483c3b056e88682f9252cd1"
+  },
+  "prediction_not_actual_observation": true,
+  "no_source_advance_result_reviewed_yet": true,
+  "no_maintenance_driver_v4_reviewed_yet": true,
+  "review_note": "An initial local checker stopped on an incorrect pretty-JSON formatting assumption before projection. This version first proves the original compact JSON serialization byte-identical; no native command or gate was involved."
+}

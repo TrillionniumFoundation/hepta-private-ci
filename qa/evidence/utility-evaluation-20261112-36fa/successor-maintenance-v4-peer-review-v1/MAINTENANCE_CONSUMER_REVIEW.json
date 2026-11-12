@@ -1,0 +1,110 @@
+{
+  "format": "hepta-successor-maintenance-v4-independent-static-review-v1",
+  "at": "2026-11-12T19:27:19.491592+00:00",
+  "status": "NO_BLOCKING_FINDING_IN_FROZEN_MAINTENANCE_CONSUMER",
+  "qualification": false,
+  "execution_approved_by_this_review": false,
+  "native_or_cargo_or_formatter_commands_run": false,
+  "controller_main_executed": false,
+  "files_modified_in_writer_directories": false,
+  "base_driver": {
+    "bytes": 54853,
+    "sha256": "b4972a27ad75806b98c6b62a8e2e652ed75efa6ed71701f5089f8c5dba60adce",
+    "git_blob": "057da9d456348b1da2a2a6627f7ca20ef04f3a13"
+  },
+  "reviewed_driver": {
+    "bytes": 62957,
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9",
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731"
+  },
+  "hold_config": {
+    "bytes": 8616,
+    "sha256": "c3e0497d2c77f75e3f65d797041b186fe11faa5c5a7a7ac9e26f18604ada5bbc",
+    "git_blob": "4887a2ac21f5dcacf63a27b886e1362c442deec3"
+  },
+  "unchanged_definitions": [
+    "IntegrityError",
+    "OriginalBlobReader",
+    "PreconditionError",
+    "active_build_processes",
+    "actual_leaf_map",
+    "alarm_handler",
+    "bounded_record",
+    "capture_source",
+    "check",
+    "check_fmt_base",
+    "environment_preflight",
+    "event",
+    "external_directory",
+    "finalize_inputs",
+    "finalize_source",
+    "git",
+    "git_state",
+    "gzrecord",
+    "installed_file_observation",
+    "jbytes",
+    "jwrite",
+    "load_module",
+    "main",
+    "merkle",
+    "metadata_inventory",
+    "nodup",
+    "now",
+    "oid",
+    "parse",
+    "parse_supervisor",
+    "pin_bytes",
+    "project_runtime_file",
+    "read_actual_leaf",
+    "read_input",
+    "real_directory",
+    "regular_read",
+    "retain_terminal",
+    "run_readonly",
+    "set_alarm",
+    "sha256",
+    "stage",
+    "verify_original_inputs",
+    "verify_stage_source_entries",
+    "write"
+  ],
+  "changed_definitions": [
+    "archive_transition",
+    "initial_preflight",
+    "validate_config",
+    "validate_materialization",
+    "validate_runtime_restoration"
+  ],
+  "new_definitions": [
+    "validate_source_advance"
+  ],
+  "source_advance_producer_review": "PENDING_FIXED_DRAFT",
+  "actual_source_advance_observation": "NOT_REVIEWED_NO_SUCCESS_CLAIM",
+  "historical_proofs": "All historical materialization/runtime identity comparisons remain exact SEED 86dd/383ab/bca1. Historical actual result and normal terminal bytes remain pinned; no new success record is manufactured.",
+  "current_source": "Exact new9c4/ee42/parent86dd/15188 complete inventory c006, independently reconstructed from full bca1 source with one fixed ports blob change.",
+  "advance_validation": [
+    "Exact descriptor and actual complete succeeded terminal for same approved job; null HOLD descriptor cannot pass.",
+    "Complete before seed endpoint and original latest b19 raw index; config/refs equal current.",
+    "Complete after endpoint; all inventory bytes pinned; after raw Git state equal current actual initial state.",
+    "Exact six-object packet identity and sole source change; original historical proof pins retained.",
+    "Original seed and successor commit bodies independently hashed, exact trees and ordered parents.",
+    "Full object-only diff-tree raw output equals the sole fixed mode/OID/path M record, not a path-filtered comparison.",
+    "Both before/after source blobs checked for exact bytes/SHA256/Git identity.",
+    "Actual six objects and no tests/install/ref-update fields type-checked; exactly three distinct verified final audit names."
+  ],
+  "unchanged_guards": [
+    "Full raw Git-state equality and full Git metadata/object-file equality.",
+    "Complete source inventories, physical Merkle, raw postimages including untracked/ignored leaves, before/after retention stability.",
+    "All six original source-entry pins; archived original execute_logged; real stage entry checks.",
+    "Same-UID global Cargo/formatter process gate, unreadable-process rejection, existing external target and 32GiB approved live free-space condition.",
+    "Original fix argv7200 then fmt argv900; unchanged600 preflight/300 evidence budgets, max log, unknown/failed semantics and original stage/main."
+  ],
+  "archive_diff_change": "Only command-local -c diff.autoRefreshIndex=false before diff; exact inverse substitution reproduces original archive_transition byte-for-byte.",
+  "source_entry_proof": "Six SOURCE_PINS identities were compared with full bca1 inventory; the only advanced source path is none of those six.",
+  "next_required_observation": "Frozen producer code review plus actual successful source-advance RESULT/normal terminal and Root-approved exact config before any maintenance launch.",
+  "original_failure_preserved": {
+    "fix_returncode": 101,
+    "fmt": "not_run",
+    "wrapper": "UNKNOWN"
+  }
+}

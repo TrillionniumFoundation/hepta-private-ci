@@ -1,0 +1,147 @@
+{
+  "format": "hepta-exact-source-advance-proof-contract-v1",
+  "status": "PREPARATION_SCHEMA_NOT_AN_ACTUAL_RESULT",
+  "consumer_driver_basis": "057da9d456348b1da2a2a6627f7ca20ef04f3a13",
+  "description": "The native producer must emit observed facts with this shape. This contract, predictions and placeholders never qualify as a completed source advance. Missing data, partial advancement or Unknown completion must not satisfy the consumer.",
+  "original_failure_preserved": {
+    "job_id": "1a1d10d8ad0-2564-1bff",
+    "fix_returncode": 101,
+    "wrapper_status": "UNKNOWN",
+    "fmt_not_run": true
+  },
+  "successful_result_required_fields": {
+    "format": "hepta-exact-source-advance-result-v1",
+    "status": "SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY",
+    "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "before": {
+      "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+      "parents": [
+        "c0f78493f815780f68b9bf5e390a21314d79311f",
+        "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+      ],
+      "inventory": {
+        "bytes": 5611182,
+        "filesystem_entries": 15188,
+        "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+        "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+        "tracked_entries": 15188
+      },
+      "git_state": "ACTUAL full git_state() dictionary, same keys as after; original detached HEAD/tree, index bytes 2072488/SHA256 b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15; config/refs exactly unchanged"
+    },
+    "after": {
+      "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+      "parents": [
+        "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+      ],
+      "inventory": {
+        "bytes": 5611182,
+        "filesystem_entries": 15188,
+        "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+        "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+        "tracked_entries": 15188
+      },
+      "git_state": "ACTUAL full git_state() dictionary, exactly equal to the next maintenance initial_git_state"
+    },
+    "changes": [
+      {
+        "after_bytes": 5190,
+        "after_git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+        "after_sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1",
+        "before_bytes": 5133,
+        "before_git_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+        "before_sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"
+      }
+    ],
+    "seed_proofs": {
+      "materialization_result": {
+        "bytes": 69974,
+        "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+        "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb"
+      },
+      "runtime_restoration_result": {
+        "bytes": 21366,
+        "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90",
+        "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09"
+      },
+      "runtime_environment": {
+        "bytes": 21724,
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+      }
+    },
+    "canonical_packet": {
+      "bytes": 98087,
+      "sha256": "e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0",
+      "git_blob": "a62a7e701f42ea18dfa93fc0d5eb521f836750cb"
+    },
+    "actual": {
+      "verified_canonical_objects": 6,
+      "detached": true,
+      "index_equals_tree": true,
+      "physical_bytes_equal": true,
+      "other_tracked_paths_unchanged": true
+    },
+    "local_head_advanced": true,
+    "source_branch_refs_updated": false,
+    "remote_ref_updates": false,
+    "dependency_installation_started": false,
+    "cargo_or_formatter_started": false,
+    "test_commands_dispatched": 0,
+    "qualification": false,
+    "automatic_retry": false,
+    "final_audits": [
+      {
+        "check": "source",
+        "status": "verified"
+      },
+      {
+        "check": "git",
+        "status": "verified"
+      },
+      {
+        "check": "inputs",
+        "status": "verified"
+      }
+    ]
+  },
+  "git_state_fields": [
+    "head_raw_sha256",
+    "head",
+    "tree",
+    "index_bytes",
+    "index_sha256",
+    "config_bytes",
+    "config_sha256",
+    "refs_bytes",
+    "refs_sha256"
+  ],
+  "supervisor": "Original complete tool envelope accepted by unchanged parse_supervisor: same actual job_id, succeeded/exit0, timed_out=false,cancelled=false,automatic_retry=false,output_complete=true,output_durable=true,terminal_publication_confirmed=true, no truncation.",
+  "approval_descriptor": {
+    "job_id": null,
+    "result_path": null,
+    "result": null,
+    "supervisor_path": null,
+    "supervisor": null
+  },
+  "independent_consumer_checks": [
+    "All original historical materialization and runtime-result checks remain fixed to SEED.",
+    "Current complete 15188-leaf inventory and physical Merkle must match frozen successor.",
+    "Canonical original seed and successor commit bodies must hash to exact IDs and have exact tree/ordered parents.",
+    "Complete object-only raw diff-tree must equal the sole fixed M record including mode/old blob/new blob/path.",
+    "Both changed blob bodies must match exact bytes/SHA256/Git pins.",
+    "After git_state must equal current initial state; before index exact latest observed hash; config and refs unchanged.",
+    "Every original entry, tool, material, global process gate and free-space condition remains checked."
+  ],
+  "producer_scope": [
+    "Import only the reviewed six canonical objects with raw body verification.",
+    "Retain complete original before/after source, index/Git state, object allowlist and immutable input evidence.",
+    "Authorized local detached HEAD CAS is allowed and must be recorded; source branch and remote refs remain unchanged.",
+    "No dependency download, Cargo, formatter, test, reset, rollback, cache deletion or automatic retry.",
+    "Partial failure remains failed/Unknown and cannot supply successful fields."
+  ],
+  "counts_and_inventory_note": "The successor inventory pin is a Root-verified prediction until the native producer actually observes equality. All five inventory summary fields are required. Final audits are exactly three unique check names; rows may retain additional raw evidence fields."
+}

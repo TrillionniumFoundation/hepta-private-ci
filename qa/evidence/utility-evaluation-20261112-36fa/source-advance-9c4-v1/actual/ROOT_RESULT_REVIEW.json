@@ -1,0 +1,100 @@
+{
+  "actual_qualified_authorized_task_chain_outcomes": 0,
+  "after": {
+    "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "head_raw_sha256": "7c61d8265f2d2f889ca81f0e9b83067f17a9536d75524816a03dba0bd476e847",
+      "index_bytes": 2072488,
+      "index_sha256": "01caa6fd0abf858fc04292a4b9aa7792585df023fc34b5f8b8f8bcb2defb9e7d",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+    },
+    "inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+      "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ],
+    "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  },
+  "before": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "head_raw_sha256": "e7d60dc484e5a5d8cbd86714f8cd70141e2a12d3470167f2dddaac7483401f61",
+      "index_bytes": 2072488,
+      "index_sha256": "b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+    },
+    "inventory": {
+      "bytes": 5611182,
+      "filesystem_entries": 15188,
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+  },
+  "checks": {
+    "all_10_mutation_intents_observed_complete": true,
+    "all_48_observed_command_terminals_zero": true,
+    "all_three_final_audits_verified": true,
+    "full_inventory_pins_match_original_before_and_independent_after_projection": true,
+    "full_original_result_bytes_and_git_blob": true,
+    "full_stdout_hex_matches_630_original_bytes": true,
+    "no_branch_or_remote_refs_updated": true,
+    "no_dependency_cargo_formatter_or_test_command": true,
+    "normal_supervisor_success_complete_durable": true,
+    "only_allowed_15_git_metadata_paths_changed": true,
+    "original_single_file_change_matches_reviewed_patch": true,
+    "six_canonical_objects_and_16445_snapshot_objects_reported_verified": true
+  },
+  "format": "hepta-root-actual-source-advance-review-v1",
+  "job_id": "1a1d1490a3b-2564-1c26",
+  "limits": [
+    "Root inspected the full 111744-byte RESULT and actual complete normal supervisor/stdout. Large auxiliary native artifacts are hash-indexed in this RESULT and remain retained; not every large artifact has yet been copied off-host.",
+    "The independent full after-inventory projection exactly matches the observed full-inventory pin; this comparison is not described as a new raw native inventory download.",
+    "Maintenance fix/fmt, final formatted source qualification, all later learning and Root recovery gates remain unexecuted for this revision at review time.",
+    "Task-owned coordination lock is prospective, not a retroactive proof for this source advance."
+  ],
+  "normal_supervisor": {
+    "bytes": 952,
+    "git_blob": "a3a12b364e139032ef190951199b9af9421406cc",
+    "sha256": "fc981d45535041a457c11b444281a2a1fba9ce62da3387c361914a0d744f102b"
+  },
+  "original_stdout_read": {
+    "bytes": 2539,
+    "git_blob": "0d3ad039e3fb2eca08fb3791240f34d551e4a802",
+    "sha256": "5f1e26f2a9e5f75d366da3b1950497abd7ee40b7a16cd191a41577f56d72d5ab"
+  },
+  "qualification": false,
+  "recovery_provenance": "Original main admission callback was lost on a code-mode host-generation reset. An identical six-field start request with the original idempotency key reconciled the durable original job with reused=true. It was not a new execution. Original complete normal supervisor, stdout read and full fixed-version RESULT were recovered. Reconciliation records will be preserved separately from the original missing callback.",
+  "result": {
+    "bytes": 111744,
+    "git_blob": "d91a27aeddcd10bc729792a565b2e8489e8b03ef",
+    "sha256": "fc41dfca19277e3e8ba70f98fc545a8ed3c4bf8d3548447b27a4d19857197ab9"
+  },
+  "reviewed_at": "2026-11-12T20:00:19.678675+00:00",
+  "status": "ACTUAL_SINGLE_SOURCE_ADVANCE_VERIFIED_FOR_MAINTENANCE_ONLY",
+  "stdout": {
+    "bytes": 630,
+    "git_blob": "407b5338d7da3193817b19a0f2fdfd152f2b64de",
+    "sha256": "21410092486c8319bead7e8fe80ab7a750bcd7d5c77e6d5d77818fe5209a34ce"
+  }
+}

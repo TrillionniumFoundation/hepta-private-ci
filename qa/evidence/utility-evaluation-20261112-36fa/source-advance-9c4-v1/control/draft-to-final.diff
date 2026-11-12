@@ -1,0 +1,278 @@
+--- driver.draft-c6bac4.py
++++ driver.py
+@@ -92,13 +92,15 @@
+         s = current.lstat()
+         check(stat.S_ISDIR(s.st_mode) and not stat.S_ISLNK(s.st_mode), 'non-real directory: '+str(current))
+ 
+-def regular_read(path, maximum=40000000):
++def regular_read(path, maximum=40000000, expected_uid=None):
+     path = pathlib.Path(path)
++    if expected_uid is None:
++        expected_uid=os.getuid()
+     real_directory(path.parent)
+     fd = os.open(path, os.O_RDONLY|os.O_NOFOLLOW)
+     try:
+         a = os.fstat(fd)
+-        check(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_uid==os.getuid(), 'regular owned single-link input: '+str(path))
++        check(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_uid==expected_uid, 'regular owned single-link input: '+str(path))
+         check(a.st_size<=maximum, 'read ceiling')
+         chunks = []
+         total = 0
+@@ -158,7 +160,46 @@
+     check(value>0,'operation budget exhausted')
+     return min(maximum,value)
+ 
++def alarm_handler(signum, frame):
++    raise TimeoutError('exact source-advance phase deadline exhausted')
++
++def disarm():
++    signal.setitimer(signal.ITIMER_REAL,0)
++
++def arm_if_remaining():
++    value=deadline-time.monotonic()
++    if value<=0:
++        raise TimeoutError('exact source-advance phase deadline exhausted after owned command cleanup')
++    signal.setitimer(signal.ITIMER_REAL,value)
++
++def active_build_processes():
++    active=[];unreadable=[]
++    for item in pathlib.Path("/proc").iterdir():
++        if not item.name.isdecimal():continue
++        try:
++            name=(item/"comm").read_text().strip()
++            if name not in ("cargo","cargo-clippy","clippy-driver","rustc","rustfmt","just","uv","ruff"):
++                continue
++            status=(item/"status").read_text()
++            uid_line=next(x for x in status.splitlines() if x.startswith("Uid:"))
++            uid=int(uid_line.split()[1])
++            if uid!=os.getuid():continue
++            active.append({"pid":int(item.name),"comm":name,"uid":uid})
++        except FileNotFoundError:
++            continue
++        except (OSError,StopIteration,ValueError) as error:
++            unreadable.append({"pid":int(item.name),"error":type(error).__name__})
++    return {"active_matching_processes":active,"unreadable_matching_processes":unreadable,
++            "scope":"Same-UID process names only; no environment/argument values or credentials inspected; no processes killed."}
++
++def concurrency_check(name):
++    observed=active_build_processes()
++    jwrite(name+'.process-preflight.json',observed)
++    check(not observed['active_matching_processes'] and not observed['unreadable_matching_processes'],
++          'active/unknown same-UID build/formatter process; source advance is blocked')
++
+ def intent(kind, **details):
++    remaining()
+     row = {'ordinal':len(intents)+1,'at':now(),'action':kind,'terminal':'unknown_not_observed',**details}
+     jwrite('intent-%02d.json'%row['ordinal'],row)
+     intents.append(row)
+@@ -175,7 +216,11 @@
+     if data is not None:
+         row['stdin'] = write(prefix+'.stdin',data)
+     process = None
++    # The owned Git subprocess has its own remaining-time deadline. Never
++    # interrupt its cleanup/retention with a second, concurrent wrapper alarm.
++    disarm()
+     try:
++        remaining()
+         process = subprocess.Popen(argv,stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=REPO)
+         try:
+@@ -197,6 +242,7 @@
+             process.kill(); process.wait()
+         row['finished_at'] = now()
+         jwrite(prefix+'.terminal.json',row)
++        arm_if_remaining()
+ 
+ def git(*args):
+     return command(list(args))[0]
+@@ -377,7 +423,9 @@
+             chunks.append(part); count+=len(part)
+         return b''.join(chunks)
+     try:
++        disarm()
+         with open(OUT/'OBJECT_REQUESTS.txt','rb') as requests, open(OUT/'OBJECT_BATCH.stderr','xb') as errors:
++            remaining()
+             proc = subprocess.Popen(argv,stdin=requests,stdout=subprocess.PIPE,stderr=errors,cwd=REPO,bufsize=0)
+             for expected in order:
+                 header = b''
+@@ -395,7 +443,8 @@
+                 if expected in expected_blobs:
+                     check((len(body),sha256(body))==expected_blobs[expected],'original snapshot blob bytes')
+                 observed.append({'sha':expected,'type':objects[expected],'bytes':size,'sha256':sha256(body)})
+-            check(proc.stdout.read(1)==b'','unexpected trailing object payload')
++            check(select.select([proc.stdout],[],[],remaining())[0], 'object batch final EOF deadline')
++            check(os.read(proc.stdout.fileno(),1)==b'','unexpected trailing object payload')
+             row['returncode']=proc.wait(timeout=remaining())
+             row['actual_terminal']='observed'
+             errors.flush();os.fsync(errors.fileno())
+@@ -406,7 +455,14 @@
+         if proc is not None and proc.poll() is None:
+             proc.kill();proc.wait()
+         row['finished_at']=now();row['objects_observed']=len(observed)
++        error_path=OUT/'OBJECT_BATCH.stderr'
++        if error_path.exists():
++            error_raw=regular_read(error_path)
++            entry={'name':error_path.name,'bytes':len(error_raw),'sha256':sha256(error_raw),'git_blob':oid('blob',error_raw)}
++            artifacts.append(entry)
++            row['stderr']=entry
+         jwrite('OBJECT_BATCH.terminal.json',row)
++        arm_if_remaining()
+ 
+ def load_inventory():
+     raw = read_input(INVENTORY,INVENTORY_PIN)
+@@ -431,7 +487,7 @@
+     # Git is system-owned; unlike source/control inputs its expected owner is root.
+     tool=pathlib.Path(GIT);s=tool.lstat()
+     check(stat.S_ISREG(s.st_mode) and not stat.S_ISLNK(s.st_mode) and s.st_uid==0,'fixed Git executable')
+-    with tool.open('rb') as stream: git_bytes=stream.read()
++    git_bytes=regular_read(tool,expected_uid=0)
+     pin(git_bytes,GIT_PIN,'actual Git executable')
+     inputs[str(tool)] = GIT_PIN
+     for key in ('GIT_DIR','GIT_WORK_TREE','GIT_INDEX_FILE','GIT_COMMON_DIR','GIT_OBJECT_DIRECTORY',
+@@ -459,7 +515,9 @@
+         read_input(descriptor['path'],expected)
+     result.update(seed_proofs=expected_proofs,canonical_packet=PACKET_PIN,changes=packet['changed_source'])
+     inventory_module = load_inventory()
++    concurrency_check('initial')
+     before_git = git_state(OLD,OLD_TREE)
++    check(before_git==cfg['expected_before_git_state'],'complete current Git state equals retained actual final state')
+     check(before_git['index_bytes']==BEFORE_INDEX['bytes'] and before_git['index_sha256']==BEFORE_INDEX['sha256'], 'actual original stat-populated index, not reconstructed zero-stat seed')
+     before_index = regular_read(REPO/'.git'/'index')
+     parse_index(before_index)
+@@ -486,13 +544,20 @@
+     event('preconditions_verified',source_commit=OLD,tree=OLD_TREE,tracked_entries=LEAVES)
+ 
+ def import_objects():
++    requested=b''.join((obj['sha']+'\n').encode() for obj in packet['objects'])
++    checked=command(['cat-file','--batch-check'],data=requested)[0].splitlines()
++    check(len(checked)==6,'one normal explicit batch-check result per canonical object')
++    presence={}
++    for obj,line in zip(packet['objects'],checked):
++        missing=(obj['sha']+' missing').encode()
++        present=(obj['sha']+' '+obj['type']+' '+str(obj['bytes'])).encode()
++        check(line in (missing,present),'unrecognized original object presence/type/size')
++        presence[obj['sha']]=line==present
+     for obj in packet['objects']:
+         raw = object_raw[obj['sha']]
+-        _, code = command(['cat-file','-e',obj['sha']],allow_nonzero=True)
+-        if code==0:
++        if presence[obj['sha']]:
+             check(git('cat-file',obj['type'],obj['sha'])==raw,'pre-existing canonical body')
+             continue
+-        check(code==1,'absence must be an explicit cat-file missing status')
+         action = intent('import_missing_canonical_object',sha=obj['sha'],type=obj['type'],bytes=len(raw))
+         observed = command(['hash-object','-t',obj['type'],'-w','--stdin'],data=raw,mutation=True)[0]
+         check(observed==(obj['sha']+'\n').encode(),'imported authentic object SHA')
+@@ -524,6 +589,7 @@
+     check(git_state(OLD,OLD_TREE)==before_git,'CAS source precondition before any physical/index/HEAD write')
+     current = inventory_module.inventory(REPO)
+     check(current==before_inventory,'complete original source still exact immediately before mutation')
++    concurrency_check('immediately-before-source-change')
+     path = REPO/CHANGED
+     old_stat = path.lstat()
+     check(stat.S_ISREG(old_stat.st_mode) and old_stat.st_nlink==1 and old_stat.st_uid==os.getuid() and
+@@ -536,8 +602,9 @@
+                     before_git_blob=change['before_git_blob'],after_git_blob=change['after_git_blob'])
+     fd = os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,stat.S_IMODE(old_stat.st_mode))
+     with os.fdopen(fd,'wb') as stream:
+-        stream.write(object_raw[change['after_git_blob']]);stream.flush();os.fsync(stream.fileno())
++        stream.write(object_raw[change['after_git_blob']]);stream.flush()
+         os.fchmod(stream.fileno(),stat.S_IMODE(old_stat.st_mode))
++        os.fsync(stream.fileno())
+     check(regular_read(temporary)==object_raw[change['after_git_blob']],'source temporary full readback')
+     current_stat=path.lstat()
+     check(all(getattr(old_stat,k)==getattr(current_stat,k) for k in
+@@ -549,11 +616,10 @@
+     finally:os.close(directory)
+     check(regular_read(path)==object_raw[change['after_git_blob']],'actual physical source after publication')
+     action.update(terminal='observed',completed_at=now())
+-    action = intent('update_index_single_cacheinfo',path=CHANGED,mode='100644',sha=change['after_git_blob'])
+-    command(['update-index','--cacheinfo','100644',change['after_git_blob'],CHANGED],mutation=True)
+-    action.update(terminal='observed',completed_at=now())
+-    action = intent('refresh_actual_index_stat',path=CHANGED)
+-    command(['update-index','--refresh','--',CHANGED],mutation=True)
++    action = intent('update_index_one_actual_file',path=CHANGED,mode='100644',sha=change['after_git_blob'])
++    # Unlike --refresh, this normal path operation reads only the named file.
++    # Every other serialized entry is compared byte-for-byte afterwards.
++    command(['update-index','--',CHANGED],mutation=True)
+     action.update(terminal='observed',completed_at=now())
+     action = intent('write_and_verify_actual_index_tree',expected_tree=NEW_TREE)
+     check(command(['write-tree'],mutation=True)[0]==(NEW_TREE+'\n').encode(),'actual index write-tree exact successor')
+@@ -587,13 +653,13 @@
+ def final_git():
+     raw = regular_read(REPO/'.git'/'index')
+     gzrecord('INDEX.final.raw',raw)
++    actual = metadata_inventory()
++    gzrecord('GIT_METADATA.final.json',encoded(actual))
+     preservation = index_preservation(before_index,raw)
+     jwrite('INDEX.final-preservation.json',preservation)
+     current = git_state(NEW,NEW_TREE)
+     check(after_git is not None and current==after_git,'final exact raw Git state stable')
+     check(all(current[k]==before_git[k] for k in ('config_bytes','config_sha256','refs_bytes','refs_sha256')), 'no config or branch ref changes')
+-    actual = metadata_inventory()
+-    gzrecord('GIT_METADATA.final.json',encoded(actual))
+     changes = verify_metadata(before_metadata,actual)
+     jwrite('GIT_METADATA.allowed-actual-delta.json',changes)
+     staged = git('ls-files','--stage','-z')
+@@ -607,7 +673,7 @@
+ def final_inputs():
+     for path, expected in inputs.items():
+         if path==GIT:
+-            with open(path,'rb') as stream: raw=stream.read()
++            raw=regular_read(path,expected_uid=0)
+         else:
+             raw=regular_read(path)
+         pin(raw,expected,'unchanged original input '+path)
+@@ -639,6 +705,10 @@
+     os.environ['GIT_OPTIONAL_LOCKS']='0'
+     os.environ['PYTHONDONTWRITEBYTECODE']='1';sys.dont_write_bytecode=True
+     deadline=time.monotonic()+ACTION_SECONDS
++    signal.signal(signal.SIGALRM,alarm_handler)
++    arm_if_remaining()
++    result['action_budget_started_at']=now()
++    result['action_budget_seconds']=ACTION_SECONDS
+     completed=False
+     try:
+         preflight()
+@@ -649,7 +719,15 @@
+         result.update(status='FAILED_SOURCE_ADVANCE',error=repr(error),traceback=traceback.format_exc())
+         event('source_advance_failed',error=repr(error),local_head_advanced=result['local_head_advanced'])
+     finally:
+-        deadline=time.monotonic()+RECORD_SECONDS
++        disarm()
++        result['action_finished_at']=now()
++        record_end=time.monotonic()+RECORD_SECONDS
++        # Keep fifteen seconds inside the original 180-second record phase
++        # for small terminal records if a full audit exhausts its allocation.
++        deadline=record_end-15
++        arm_if_remaining()
++        result['record_budget_started_at']=now()
++        result['record_budget_seconds']=RECORD_SECONDS
+         for name,action in (('source',final_source),('git',final_git),('inputs',final_inputs)):
+             row={'check':name,'status':'unknown','started_at':now()}
+             try:
+@@ -665,7 +743,15 @@
+         elif any(r['status']!='verified' for r in result['final_audits']):
+             result['status']='UNKNOWN_PARTIAL_SOURCE_ADVANCE'
+         if result['status']!='SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY':
+-            retain_partial()
++            try:
++                remaining()
++                retain_partial()
++            except BaseException as error:
++                result['partial_retention_error']=repr(error)
++        disarm()
++        deadline=record_end
++        remaining()
++        arm_if_remaining()
+         result['finished_at']=now()
+         result['commands']=commands
+         jwrite('MUTATION_PROGRESS.json',intents)
+@@ -675,6 +761,7 @@
+         jwrite('ARTIFACTS.json',artifacts)
+         os.fsync(lock_fd);os.close(lock_fd)
+         event('source_advance_terminal',status=result['status'],local_head_advanced=result['local_head_advanced'])
++        disarm()
+     return 0 if result['status']=='SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY' else 1
+ 
+ if __name__=='__main__':

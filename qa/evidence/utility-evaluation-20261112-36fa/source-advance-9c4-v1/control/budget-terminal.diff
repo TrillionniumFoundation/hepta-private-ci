@@ -1,0 +1,30 @@
+--- driver.draft-b0be4d.py
++++ driver.py
+@@ -168,8 +168,9 @@
+ 
+ def arm_if_remaining():
+     value=deadline-time.monotonic()
+-    if value>0:
+-        signal.setitimer(signal.ITIMER_REAL,value)
++    if value<=0:
++        raise TimeoutError('exact source-advance phase deadline exhausted after owned command cleanup')
++    signal.setitimer(signal.ITIMER_REAL,value)
+ 
+ def active_build_processes():
+     active=[];unreadable=[]
+@@ -219,6 +220,7 @@
+     # interrupt its cleanup/retention with a second, concurrent wrapper alarm.
+     disarm()
+     try:
++        remaining()
+         process = subprocess.Popen(argv,stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=REPO)
+         try:
+@@ -423,6 +425,7 @@
+     try:
+         disarm()
+         with open(OUT/'OBJECT_REQUESTS.txt','rb') as requests, open(OUT/'OBJECT_BATCH.stderr','xb') as errors:
++            remaining()
+             proc = subprocess.Popen(argv,stdin=requests,stdout=subprocess.PIPE,stderr=errors,cwd=REPO,bufsize=0)
+             for expected in order:
+                 header = b''

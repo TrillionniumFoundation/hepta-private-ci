@@ -1,0 +1,344 @@
+{
+  "schema": "hepta.utility.actual-postformat-handoff-request.v1",
+  "status": "WAITING_FOR_ACTUAL_SUCCESSFUL_NATIVE_FIX_FMT_AND_ROOT_REVIEW",
+  "executable": false,
+  "qualification": false,
+  "source_mutations_authorized": false,
+  "new_tests_or_gates_authorized": false,
+  "purpose": "Obtain the actual formatted bytes and complete source identity needed for the already reviewed non-Rust fence/QA/allowlist work without waiting for every large raw log to transfer off host.",
+  "fixed_preparation": {
+    "extractor": {
+      "git_blob_sha": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+      "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb",
+      "bytes": 23468
+    },
+    "fence_matrix": {
+      "git_blob_sha": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+      "sha256": "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d"
+    },
+    "extractor_waiting_template": "432b443aacc5ab56cb248e1bc3c01d6d39e58748",
+    "qa_attack_migration_map": "8f7cfef232e975495f01b3c2cf4437a5ce27ab2a",
+    "qa_method_inventory": "d21368dedf663cfa4ae3a57db77141710dfae8d1",
+    "structural_callers": {
+      "git_blob_sha": "50eee584787ed0706ef2f900a09f1ca9d9cd8819",
+      "bytes": 1294564,
+      "sha256": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da",
+      "boundary_count": 569,
+      "protected_rows": 412,
+      "authority_flags_unchanged": true
+    },
+    "original_verifier": {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    },
+    "typed_helper": {
+      "path": "scripts/hepta_typed_callers.py",
+      "git_blob_sha": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+      "bytes": 7759,
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2"
+    },
+    "original_inventory_driver": {
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "bytes": 22946
+    },
+    "scope": {
+      "existing_rows": 39,
+      "new_rows": 10,
+      "formatted_rust_paths": 46,
+      "selectors": 382,
+      "critical_literals": 17,
+      "module_mounts": 10,
+      "structural_boundary_count": 569,
+      "structural_protected_rows": 412
+    }
+  },
+  "provenance": {
+    "original_plan_preparation_reference": {
+      "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+      "meaning": "Historical, unformatted plan provenance only; never a substitute for current native bytes."
+    },
+    "expected_maintenance_head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "expected_maintenance_head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "expected_maintenance_parents": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ],
+    "source_advance_producer": "89434a961e4cc117874464f0308aa8b216c760ed",
+    "maintenance_consumer": "b9d2459f02cb174fc60356156efd08b2dce46731",
+    "expected_source_root": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "expected_record_root": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/run-v4",
+    "current_source_advance_and_maintenance_success": "Not asserted by this request. Fill only from actual original results and normal supervisor records."
+  },
+  "first_small_originals": [
+    {
+      "name": "fix.execute_logged.original.json",
+      "must_equal": {
+        "/returncode": 0,
+        "/timed_out": false,
+        "/output_limit_exceeded": false
+      },
+      "retain_other_fields_unchanged": true
+    },
+    {
+      "name": "fmt.execute_logged.original.json",
+      "must_equal": {
+        "/returncode": 0,
+        "/timed_out": false,
+        "/output_limit_exceeded": false
+      },
+      "retain_other_fields_unchanged": true
+    },
+    {
+      "name": "fix.terminal.json",
+      "expected_complete_stage_fields": {
+        "/status": "completed_review_required",
+        "/command_returned": true,
+        "/retention/complete": true
+      },
+      "preserve_original_status": true
+    },
+    {
+      "name": "fmt.terminal.json",
+      "expected_complete_stage_fields": {
+        "/status": "completed_review_required",
+        "/command_returned": true,
+        "/retention/complete": true
+      },
+      "preserve_original_status": true
+    },
+    {
+      "name": "RESULT.json",
+      "all_original_failure_or_unknown_states_preserved": true,
+      "expected_normal_completion_status": "MAINTENANCE_COMMANDS_COMPLETED_REVIEW_REQUIRED",
+      "read_original_final_audits": [
+        "actual_complete_source_and_git:verified",
+        "original_inputs:verified"
+      ],
+      "read_original_complete_source_flags": [
+        "git_metadata_unchanged",
+        "actual_final_source.complete"
+      ],
+      "if_abnormal": "Preserve the actual status and submit the concrete source/evidence gap to Root. This handoff request does not override existing f868 preconditions or convert a failed/Unknown wrapper to success."
+    },
+    {
+      "name": "Actual normal supervisor original SDK",
+      "path": null,
+      "required": "Actual same maintenance job, exit0, not timed out/cancelled/retried, terminal publication confirmed, output complete/durable and not truncated. Preserve original envelope."
+    },
+    {
+      "name": "final.postimages-summary.json",
+      "required_fields": [
+        "change_count",
+        "paths",
+        "all_actual_physical_leaf_count",
+        "all_actual_physical_tree",
+        "HEAD_working_patch_bytes",
+        "HEAD_working_patch_sha256"
+      ]
+    },
+    {
+      "name": "final.git-state.json",
+      "required": "Exact actual HEAD/tree and full raw index/config/refs identities; compare with the v4 original before state."
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "required": "Original complete artifact registry, including log/inventory/postimage byte and hash identities."
+    }
+  ],
+  "complete_source_evidence": {
+    "required_inventory": "Losslessly recover the full original final.inventory.json.gz payload, including every filesystem/index entry and original source identity/status; keep its original raw bytes and original gzip/parts identities.",
+    "required_postimages": "Original final.postimages.json.gz and its summary, containing every actual source difference from the v4 initial complete inventory, including untracked/ignored leaves. Do not omit changes outside the 73 capture paths.",
+    "current_identity": "source_identity must be copied exactly from decoded inventory.source. Its tree is HEAD^{tree}; working-tree physical Merkle is reported separately from final.postimages-summary. Preserve actual dirty/clean status text.",
+    "source_count": "Expected initial source has15188 leaves; record the actual full final count. Any extra/missing path requires Root review, never filtering it out to retain an expected count.",
+    "capture_stability": "Use the unchanged original51181866 inventory before and after the scoped byte capture and require exact full-byte equality to the approved final inventory.",
+    "raw_logs": "Original fix.raw.log/fmt.raw.log and all other evidence remain fully retained and eventually archived. Their complete original small runner records and stable log identities can be transferred first; large log-body transfer is not a prerequisite for source-fence proposal work.",
+    "no_same_tree_substitution": "Do not replace canonical commits, invent new index/HEAD metadata, reconstruct source from the46-file subset, or label a preformat tree actual postfmt."
+  },
+  "actual_byte_capture": {
+    "total_unique_paths": 73,
+    "groups": {
+      "formatted_rust_scope": {
+        "count": 46,
+        "paths": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs"
+        ],
+        "feeds": "Exactly these46 keys go to f868 formatted_source_pins."
+      },
+      "existing_qa_preimages": {
+        "count": 21,
+        "paths": [
+          "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+          "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+          "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+          "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+          "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+          "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+          "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+          "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+          "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+          "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+          "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+          "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+          "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+          "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+          "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+          "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+        ],
+        "reason": "Union of the prior17-file QA method cohort and earlier12-file structural cohort; collection scope only, not new permission to change tests."
+      },
+      "supporting_preimages": {
+        "count": 6,
+        "paths": [
+          "CALLERS.toml",
+          ".github/blob-size-allowlist.txt",
+          "scripts/verify_hepta_callers.py",
+          "scripts/hepta_typed_callers.py",
+          ".github/workflows/hepta-daemon-learning-native.yml",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"
+        ],
+        "reason": "Current CALLERS/allowlist, original verifier and typed helper, dynamic Root case inventory, and advanced cfg(test) ports bytes. These are not extra f868 scope keys."
+      }
+    },
+    "each_file_required_fields": [
+      "path",
+      "kind",
+      "mode",
+      "permissions",
+      "bytes",
+      "sha256",
+      "git_blob_sha",
+      "content_base64",
+      "read_started_at",
+      "read_finished_at",
+      "stable"
+    ],
+    "bytes_rule": "Actual complete bytes, with no newline/encoding rewrite; base64 is transport only. Missing/deleted/unstable files are reported as such and keep the handoff pending; do not substitute prior blobs.",
+    "full_inventory_match": "Each actual file bytes/SHA256/Git blob must equal its complete-inventory row bytes/sha256/working_blob, and actual permission/mode observations must agree with the physical row. Do not substitute index_blob/index_mode for changed working-tree bytes/modes. Preserve matches_index=false when formatting creates real diffs. The entire73-file path set is exact and disjoint by roles.",
+    "transport": "A gzip+base64 packet is acceptable. If needed use decoded chunks at most262144B and base64+oneLF parts below500KB; include each encoded/decoded size/SHA256/Git identity, order, offsets, whole gzip/raw identities and precise reconstruction instructions.",
+    "initial_early_transfer": "Send small originals and one file/packet manifest first. The whole73-file actual packet and complete inventory are needed before final preimages/markers can be frozen."
+  },
+  "source_freeze": {
+    "source_lock_path": null,
+    "coordination_owner": null,
+    "frozen_at": null,
+    "requirement": "Identify a real external lock/lease that coordinates this exact source and an explicit no-source-write window through before/capture/after and extractor completion. f868 requires an existing non-symlink lock outside the source and takes nonblocking SH.",
+    "no_unrelated_lock": "Do not populate the field with an unrelated old-worktree or source-advance-only lock unless its actual coordination protocol now covers this exact frozen source and is confirmed by Root/native.",
+    "v4_unchanged": "Do not alter the already frozen/staged/running v4 driver to add capture. Reuse its original evidence and, after actual completion, perform any separately authorized read-only capture outside the source.",
+    "if_unavailable": "Keep source_lock_path and ready status unset; Root may approve a specific equivalent frozen snapshot/coordination arrangement only after complete native identity is proven.",
+    "proposed_coordination": {
+      "status": "PREPARED_NOT_CREATED_OR_ACQUIRED",
+      "proposed_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+      "prefer_equivalent_existing_actual_mechanism": true,
+      "launcher": "Before exec of the unchanged v4 driver, acquire LOCK_EX|LOCK_NB on the task-owned external regular single-link lock file, set its fd inheritable, and retain it through exec until the original main process exits.",
+      "control_invariants": "Do not change v4 bytes, original fix/fmt argv, command budgets, or runtime environment. Do not block waiting for a lock or introduce a new maintenance timeout.",
+      "record": "Retain the actual lock path/device/inode, owner PID/UID, acquired time, fd/inheritable observation, and planned unchanged driver identity before exec. This records acquisition only; actual maintenance and release depend on later original terminal/observed shared lease.",
+      "readers": "After actual maintenance completion, capture and f868 acquire LOCK_SH on the same actual file. All later native source writers in this task acquire LOCK_EX.",
+      "limits": "Cooperative-writer coordination only; not a global filesystem freeze and not retrospective proof for previous runs. Full inventory before/after comparisons and original process checks remain necessary.",
+      "actual_establishment_observed": false
+    }
+  },
+  "extractor_activation": {
+    "run_identity": null,
+    "root_review_blob": null,
+    "actual_contract_sha256": null,
+    "status_required_by_f868": "root_reviewed_actual_native_formatted_source",
+    "maintenance_records_mapping": {
+      "fix": {
+        "path": "actual external original fix.execute_logged.original.json",
+        "exit_code_pointer": "/returncode",
+        "timeout_pointer": "/timed_out",
+        "required_json_values": {
+          "/returncode": 0,
+          "/timed_out": false,
+          "/output_limit_exceeded": false
+        }
+      },
+      "fmt": {
+        "path": "actual external original fmt.execute_logged.original.json",
+        "exit_code_pointer": "/returncode",
+        "timeout_pointer": "/timed_out",
+        "required_json_values": {
+          "/returncode": 0,
+          "/timed_out": false,
+          "/output_limit_exceeded": false
+        }
+      }
+    },
+    "key_translation": "For f868 pins copy the same original byte identities; v4 registry git_blob becomes git_blob_sha. This is a key mapping, never rewriting the original JSON evidence.",
+    "original_inputs_required": "Supply the frozen f868 extractor, ffaab matrix, original51181866 inventory driver and frozen50eee structural CALLERS as external inputs. The two actual in-source verifier/helper files must match the matrix's exact pins. Unexpected changes require review/rebase; no automatic fallback.",
+    "full_collector_contract": {
+      "source_roots": [
+        "codex-rs"
+      ],
+      "ignored_path_fragments": [
+        "/tests/",
+        "/examples/",
+        "_tests.rs"
+      ],
+      "meaning": "All Rust enters the original authority/field collector for actual QA/gates. Ignored fragments apply only to product-caller decisions. The46-file marker read is not a substitute for that collector."
+    },
+    "output_status": "Unapplied postfmt proposals requiring independent review; sourceclosure/fullcaller/Rust tests remain not_run in extractor output.",
+    "no_final_source_write_now": true
+  },
+  "final_work_boundaries": [
+    "Preserve all existing assertions/attacks; explicitly map changed methods. Do not repeat the historical140-functions-AST-unchanged claim after approved migrations.",
+    "Use current actual QA preimages; the approved full-collector hunk is directly applicable only if its exact4b824 preimage is still current.",
+    "Keep the original Root32 plus registered1 case; derive required cases from the actual frozen workflow. The ignored UID0 case is not a default PASS.",
+    "Compute final CALLERS markers and allowlist SHA only after actual formatted source and final non-Rust content are reviewed.",
+    "No real authorized A/B/C, ordinary deployment, daemon/Root recovery, runtime guard success, or qualification PASS is inferred from collection or source proposals."
+  ],
+  "admission_rule": "This is a collection request, not an additional qualification gate. f868's existing exact fix/fmt zero-exit, no-timeout, Root-reviewed complete stable source and lock preconditions remain unchanged. Collect anomalous original records as-is; do not synthesize success or silently use old source. Root decides whether independently observed actual formatted-source evidence meets the existing proposal-only contract."
+}
