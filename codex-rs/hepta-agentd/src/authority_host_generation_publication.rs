@@ -70,6 +70,11 @@ pub(crate) use successor::RootCompletedSuccessorDataV1;
 #[path = "authority_host_publication_grant_store.rs"]
 mod grant_store;
 use grant_store::RegisteredPublicationGrant;
+#[path = "authority_host_publication_grant.rs"]
+mod grant;
+#[path = "authority_host_publication_grant_context.rs"]
+mod grant_context;
+pub(crate) use grant::RootPreparedPublicationGrantV1;
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
