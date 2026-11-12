@@ -23,7 +23,7 @@ use codex_hepta_types::StableId;
 use serde_json::json;
 
 use super::super::artifacts;
-use super::super::assign_component_artifacts;
+use super::super::fixture::assign_component_artifacts;
 use super::super::material;
 use super::super::observer_config;
 use super::super::owned_mode;

@@ -1,6 +1,8 @@
 //! Actual task/Ledger component owners exercise borrow identity and withdrawal.
 //! Their explicit test issuers do not prove a deployed Root historical loop.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::cell_composed_q24::OriginalPreparedReadV1;
 use crate::cell_composed_q24::OriginalQ24DatasetReadV1;

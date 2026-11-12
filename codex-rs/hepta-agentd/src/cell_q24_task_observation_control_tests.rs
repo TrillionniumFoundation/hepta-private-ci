@@ -3,6 +3,7 @@
 
 use codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY;
 use codex_hepta_agent_protocol::Q24OriginalTaskObservationV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 

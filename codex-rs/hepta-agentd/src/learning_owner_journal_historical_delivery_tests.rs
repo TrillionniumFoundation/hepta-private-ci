@@ -3,8 +3,8 @@ use std::fs::OpenOptions;
 use std::path::Path;
 
 use codex_hepta_neuron::FileAnchorWitnessStore;
-use codex_hepta_neuron::Generation;
 use codex_hepta_neuron::JournalScope;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
