@@ -1,0 +1,97 @@
+{
+  "schema": "hepta-deployment-capability-qualification-summary-v1",
+  "source_commit": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "health": {
+    "configured_hosts": 7,
+    "observed_hosts": 7,
+    "authenticated_hosts": 7,
+    "reachable_hosts": 7,
+    "healthy_hosts": 7,
+    "platform_counts": {
+      "linux": 5,
+      "macos": 2
+    },
+    "challenge_deadline_ms": 10000,
+    "meaning": "Authenticated SSH reachability through the fixed bounded challenge; does not establish application capability delivery."
+  },
+  "exact_service_labels": [
+    {
+      "label": "ai.hepta.gateway",
+      "source_references": [
+        {
+          "repository_relative_source": "scripts/hepta-immutable-release-tree",
+          "lines": [
+            14,
+            912
+          ]
+        },
+        {
+          "repository_relative_source": "scripts/hepta-launchd-cutover-bridge",
+          "lines": [
+            2380,
+            2566
+          ]
+        },
+        {
+          "repository_relative_source": "scripts/hepta-runtime-tests/canary-e2e.sh",
+          "lines": [
+            370,
+            373
+          ]
+        }
+      ]
+    },
+    {
+      "label": "ai.hepta.installed-live-watchdog",
+      "source_references": [
+        {
+          "repository_relative_source": "scripts/hepta-launchd-cutover-bridge",
+          "lines": [
+            2380,
+            2566
+          ]
+        },
+        {
+          "repository_relative_source": "scripts/hepta-runtime-tests/canary-e2e.sh",
+          "lines": [
+            370,
+            373
+          ]
+        }
+      ]
+    }
+  ],
+  "service_observations": {
+    "total_observations": 4,
+    "observations_per_exact_label": {
+      "ai.hepta.gateway": 2,
+      "ai.hepta.installed-live-watchdog": 2
+    },
+    "common_result": {
+      "resolution": "system_domain_only",
+      "scope": "system",
+      "scopes_checked": [
+        "system"
+      ],
+      "exit_code": 113,
+      "observation_complete": false
+    },
+    "user_domain_covered": false,
+    "gui_domain_covered": false,
+    "user_domain_service_state": "Unverified",
+    "inference_limit": "System-only incomplete observations cannot determine whether these services are present or running in a user or GUI domain."
+  },
+  "original_owner_capability_delivery": {
+    "notes": "Unverified",
+    "observer": "Unverified",
+    "root": "Unverified",
+    "original_capabilities_obtained": false,
+    "meaning": "This audit did not acquire or verify delivery of original Notes, independent Observer, or Root owner capabilities."
+  },
+  "scope": {
+    "source": "Previously retained read-only DTO and exact service observations; no new remote calls used to generate this summary.",
+    "raw_configuration_included": false,
+    "host_identities_included": false,
+    "private_runtime_information_included": false
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "hepta-caller-progress-and-deployment-observation-checkpoint-v1",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "recorded_at_utc": "2026-11-12 01:30:27 UTC",
+  "files": [
+    {
+      "path": "caller-diagnostic/4453ce70-caller-context-wrapper.py",
+      "bytes": 3067,
+      "sha256": "babcc686d5a805d8661876cded695248bd83daf9269321071e86c2b864919025",
+      "github_blob_sha": "886c97f3e33b5b88021b455217330f9b6f97e5bc"
+    },
+    {
+      "path": "caller-diagnostic/4453ce70-caller-context.log",
+      "bytes": 11573,
+      "sha256": "0f03746bb1e95929a013b02245cff19d20cfd8af56b197849d5e4d98ab069388",
+      "github_blob_sha": "af29421d50377c862acdd1c2c6865bb5378a3d17"
+    },
+    {
+      "path": "caller-diagnostic/4453ce70-caller-context.json",
+      "bytes": 1528,
+      "sha256": "b29a27a208118fd6e43431202be411505e6b4814ac78fe8cad7508902334073e",
+      "github_blob_sha": "544f796fdc37ff12b05bb6a138825b6bd5203d07"
+    },
+    {
+      "path": "4453ce70-caller-source-coverage.json",
+      "bytes": 330,
+      "sha256": "edda975e7f040fd2892647edab0f1aae0922248f6c0255d3ac1afd79bd8024be",
+      "github_blob_sha": "763d72837733012475a7cb1da452079901aaa4fb"
+    },
+    {
+      "path": "deployment/sanitized-qualification-summary.json",
+      "bytes": 2830,
+      "sha256": "d0599387b9d639a0508d4503711f53d6e0466db6f4bde3bc63458dd41b6c8a04",
+      "github_blob_sha": "bc4136056a17344577a5e087ef34770dc84bad68"
+    }
+  ],
+  "diagnostic_observation": {
+    "status": "TIMEOUT, diagnostic only",
+    "budget_seconds": 125,
+    "total_boundaries": 330,
+    "typed_boundaries": 133,
+    "protected_files": 264,
+    "materialized_rust_files": 6370,
+    "missing": 0,
+    "extra": 0,
+    "observed_progress": {
+      "boundary": "final_use_open_state",
+      "boundary_ordinal": 14,
+      "samples": [
+        {
+          "seconds": 60,
+          "source_ordinal": 665
+        },
+        {
+          "seconds": 80,
+          "source_ordinal": 2729
+        },
+        {
+          "seconds": 100,
+          "source_ordinal": 4301
+        },
+        {
+          "seconds": 120,
+          "source_ordinal": 5634
+        }
+      ]
+    },
+    "interpretation": "The fixed source scan continued through different files; this is not evidence of an infinite regex match, nor a completed gate."
+  },
+  "complete_verifier_at_recording": {
+    "command": [
+      "python",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "outer_budget_seconds": 5400,
+    "status": "RUNNING; no terminal receipt yet",
+    "original_code_manifest_and_scan_set_unchanged": true,
+    "business_protocol_deadlines_changed": false
+  },
+  "deployment_observation": {
+    "healthy_authenticated_hosts": 7,
+    "linux": 5,
+    "macos": 2,
+    "owner_capability_delivery": "Unverified",
+    "service_scope": "4 exact-label observations cover system domain only and explicitly report observation_complete=false",
+    "interpretation": "Reachable configured hosts do not establish original owner custody. Incomplete system-domain observations do not establish absence of user-domain services. No raw host identifiers or private configuration are published."
+  },
+  "root_exact_source_label_readback": [
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-immutable-release-tree:14:  --gateway-label LABEL     default: ai.hepta.gateway",
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-immutable-release-tree:15:  --watchdog-label LABEL    default: ai.hepta.installed-live-watchdog",
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-immutable-release-tree:320:  gateway_path=\"$HOME/Library/LaunchAgents/$gateway_label.plist\"",
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-immutable-release-tree:321:  watchdog_path=\"$HOME/Library/LaunchAgents/$watchdog_label.plist\"",
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-runtime-tests/canary-e2e.sh:371:  local output=\"$1\" launch_root=\"$HOME/Library/LaunchAgents\" plist listener executable",
+    "4453ce7089168c583553c434ce1bee92e209f8dd:scripts/hepta-runtime-tests/canary-e2e.sh:373:  for plist in \"$launch_root/ai.hepta.gateway.plist\" \"$launch_root/ai.hepta.installed-live-watchdog.plist\"; do"
+  ],
+  "acceptance": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "new_real_ordinary_learning_chains": 0,
+    "new_independent_net_benefit_updates": 0,
+    "production_adoption": false,
+    "rsi_claim": false
+  }
+}
