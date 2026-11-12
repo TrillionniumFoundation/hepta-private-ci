@@ -1,0 +1,938 @@
+{
+  "schema": "ctrl.v2-calibration-domain-observations.v1",
+  "execution_source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "archive_commit": "928a2603a7911cb5e8db439b7b814b9e033b6007",
+  "analysis_kind": "Read-only JavaScript arithmetic on immutable JSON, preserving original number/string lexemes for all Python canonical input-digest checks; no policy fitting or actor execution",
+  "calibration": {
+    "frozen": {
+      "export_canonical_sha256": "45edca420f1e32d3d2183cc3485f961b62d01576136f0a0a2a4a294b0cd44f16",
+      "selected_input_sha256": {
+        "fit": "e127b5b3e79e230306ae47f4ba8d85a8d6ad4f2efcc8e6042c13d3fab9502700",
+        "calibration": "d36fbe48a8be3129f564af9eeb497e61e0a7908e3a688988c16ebf0fcb3e0661"
+      },
+      "planned_pairs": 126,
+      "fit_rows": 72,
+      "calibration_rows": 54,
+      "known_calibration_rows": 54,
+      "train_hull_exact_match": true,
+      "admitted_calibration_rows": 45,
+      "rejected_calibration_rows": 9,
+      "rejected_sources": 7,
+      "admitted_source_groups": 18,
+      "recomputed_complete": false,
+      "cells": {
+        "[false,false,1]": {
+          "source_groups": 9,
+          "rank": 1,
+          "sources": [
+            "merchant-0c33b8cb557a1c71e01357da",
+            "merchant-16ac5095cbab37d6a4beeecd",
+            "merchant-69c63e3abd97234884c69dad",
+            "merchant-75b47ee8168019293e1cf32b",
+            "merchant-7b3647263d44c496a5e484a2",
+            "merchant-9ff2a942290576d7554881f5",
+            "merchant-d5edfe942c45361da38fc849",
+            "merchant-dcf206507ae7c5dde2cd1010",
+            "merchant-ecae8cf994fefe3ad1e69322"
+          ],
+          "planned_rows": 27,
+          "excluded_rows": 3,
+          "admitted_rows": 24
+        },
+        "[false,false,3]": {
+          "source_groups": 9,
+          "rank": 1,
+          "sources": [
+            "merchant-03aae37ad4f4ad8c8ad0944e",
+            "merchant-1201a5bb478c190e196c6fea",
+            "merchant-1c5081feae9b550140ec86cb",
+            "merchant-203f77bf803003c33121fe35",
+            "merchant-2d4f59a602bd0c185e8606af",
+            "merchant-6d5a1b2fed9d08df4291eb49",
+            "merchant-6dd6bc1cee9282a3df96c05e",
+            "merchant-9fa2f6563cdeebc029a0c464",
+            "merchant-aed2f9f0bb5b67ff098bf209"
+          ],
+          "planned_rows": 27,
+          "excluded_rows": 6,
+          "admitted_rows": 21
+        }
+      },
+      "rejected_coordinates_count": {
+        "features[34]": 2,
+        "features[16]": 2,
+        "features[19]": 2,
+        "features[22]": 1,
+        "features[5]": 3,
+        "features[21]": 3,
+        "features[1]": 1,
+        "features[18]": 1
+      },
+      "rejected": [
+        {
+          "source_id": "merchant-16ac5095cbab37d6a4beeecd",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0073",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 34,
+              "value": 0.044342417269945145,
+              "minimum": 0.04559677094221115,
+              "maximum": 1,
+              "component": "features[34]",
+              "direction": "below",
+              "overrun": 0.0012543536722660065
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-d5edfe942c45361da38fc849",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0094",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 16,
+              "value": 0.8065587282180786,
+              "minimum": -0.939179003238678,
+              "maximum": 0.7981781959533691,
+              "component": "features[16]",
+              "direction": "above",
+              "overrun": 0.008380532264709473
+            },
+            {
+              "index": 19,
+              "value": 0.8445595502853394,
+              "minimum": -0.8544260859489441,
+              "maximum": 0.8275715112686157,
+              "component": "features[19]",
+              "direction": "above",
+              "overrun": 0.016988039016723633
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-7b3647263d44c496a5e484a2",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0098",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 22,
+              "value": 0.8907217383384705,
+              "minimum": -0.8041679859161377,
+              "maximum": 0.8751459121704102,
+              "component": "features[22]",
+              "direction": "above",
+              "overrun": 0.015575826168060303
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-9fa2f6563cdeebc029a0c464",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0100",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 34,
+              "value": 0.0430217906832695,
+              "minimum": 0.04559677094221115,
+              "maximum": 1,
+              "component": "features[34]",
+              "direction": "below",
+              "overrun": 0.0025749802589416504
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-9fa2f6563cdeebc029a0c464",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0101",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 5,
+              "value": -0.9066125750541687,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283,
+              "component": "features[5]",
+              "direction": "below",
+              "overrun": 0.0005003809928894043
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-aed2f9f0bb5b67ff098bf209",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0107",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 5,
+              "value": -0.9183475375175476,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283,
+              "component": "features[5]",
+              "direction": "below",
+              "overrun": 0.01223534345626831
+            },
+            {
+              "index": 21,
+              "value": 0.6353017091751099,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049,
+              "component": "features[21]",
+              "direction": "above",
+              "overrun": 0.01546180248260498
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-203f77bf803003c33121fe35",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0110",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 21,
+              "value": 0.6779042482376099,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049,
+              "component": "features[21]",
+              "direction": "above",
+              "overrun": 0.05806434154510498
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0112",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 1,
+              "value": 0.9219256043434143,
+              "minimum": -0.9667892456054688,
+              "maximum": 0.9129244685173035,
+              "component": "features[1]",
+              "direction": "above",
+              "overrun": 0.00900113582611084
+            },
+            {
+              "index": 16,
+              "value": 0.815360426902771,
+              "minimum": -0.939179003238678,
+              "maximum": 0.7981781959533691,
+              "component": "features[16]",
+              "direction": "above",
+              "overrun": 0.017182230949401855
+            },
+            {
+              "index": 18,
+              "value": 0.9071825742721558,
+              "minimum": -0.9668505191802979,
+              "maximum": 0.8996025323867798,
+              "component": "features[18]",
+              "direction": "above",
+              "overrun": 0.0075800418853759766
+            },
+            {
+              "index": 19,
+              "value": 0.8507335186004639,
+              "minimum": -0.8544260859489441,
+              "maximum": 0.8275715112686157,
+              "component": "features[19]",
+              "direction": "above",
+              "overrun": 0.023162007331848145
+            },
+            {
+              "index": 21,
+              "value": -0.4538893699645996,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049,
+              "component": "features[21]",
+              "direction": "below",
+              "overrun": 0.007423073053359985
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0113",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 5,
+              "value": -0.9096182584762573,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283,
+              "component": "features[5]",
+              "direction": "below",
+              "overrun": 0.0035060644149780273
+            }
+          ]
+        }
+      ],
+      "excluded_source_ids": [
+        "merchant-16ac5095cbab37d6a4beeecd",
+        "merchant-203f77bf803003c33121fe35",
+        "merchant-2d4f59a602bd0c185e8606af",
+        "merchant-7b3647263d44c496a5e484a2",
+        "merchant-9fa2f6563cdeebc029a0c464",
+        "merchant-aed2f9f0bb5b67ff098bf209",
+        "merchant-d5edfe942c45361da38fc849"
+      ]
+    },
+    "adapted": {
+      "export_canonical_sha256": "920794db51b7473f16f2adf537792280183ece71cc92a278ae5407cf067147d5",
+      "selected_input_sha256": {
+        "fit": "3b4cc49c6c1a49dca68ea93e163821c26af93245359aeabdcab9483f270a305f",
+        "calibration": "784a4fb81456e5fc4573e52a78bb43551b2ce7875740719cd3a42851eabc2a56"
+      },
+      "planned_pairs": 126,
+      "fit_rows": 72,
+      "calibration_rows": 54,
+      "known_calibration_rows": 54,
+      "train_hull_exact_match": true,
+      "admitted_calibration_rows": 47,
+      "rejected_calibration_rows": 7,
+      "rejected_sources": 7,
+      "admitted_source_groups": 18,
+      "recomputed_complete": false,
+      "cells": {
+        "[false,false,1]": {
+          "source_groups": 9,
+          "rank": 1,
+          "sources": [
+            "merchant-0c33b8cb557a1c71e01357da",
+            "merchant-16ac5095cbab37d6a4beeecd",
+            "merchant-69c63e3abd97234884c69dad",
+            "merchant-75b47ee8168019293e1cf32b",
+            "merchant-7b3647263d44c496a5e484a2",
+            "merchant-9ff2a942290576d7554881f5",
+            "merchant-d5edfe942c45361da38fc849",
+            "merchant-dcf206507ae7c5dde2cd1010",
+            "merchant-ecae8cf994fefe3ad1e69322"
+          ],
+          "planned_rows": 27,
+          "excluded_rows": 3,
+          "admitted_rows": 24
+        },
+        "[false,false,3]": {
+          "source_groups": 9,
+          "rank": 1,
+          "sources": [
+            "merchant-03aae37ad4f4ad8c8ad0944e",
+            "merchant-1201a5bb478c190e196c6fea",
+            "merchant-1c5081feae9b550140ec86cb",
+            "merchant-203f77bf803003c33121fe35",
+            "merchant-2d4f59a602bd0c185e8606af",
+            "merchant-6d5a1b2fed9d08df4291eb49",
+            "merchant-6dd6bc1cee9282a3df96c05e",
+            "merchant-9fa2f6563cdeebc029a0c464",
+            "merchant-aed2f9f0bb5b67ff098bf209"
+          ],
+          "planned_rows": 27,
+          "excluded_rows": 4,
+          "admitted_rows": 23
+        }
+      },
+      "rejected_coordinates_count": {
+        "features[13]": 2,
+        "features[18]": 1,
+        "features[19]": 2,
+        "features[16]": 1,
+        "features[22]": 1,
+        "features[5]": 2,
+        "features[21]": 1,
+        "features[14]": 1
+      },
+      "rejected": [
+        {
+          "source_id": "merchant-75b47ee8168019293e1cf32b",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0079",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 13,
+              "value": 0.8506913781166077,
+              "minimum": -0.8859497308731079,
+              "maximum": 0.8126106858253479,
+              "component": "features[13]",
+              "direction": "above",
+              "overrun": 0.038080692291259766
+            },
+            {
+              "index": 18,
+              "value": 0.8477358222007751,
+              "minimum": -0.9575867056846619,
+              "maximum": 0.8293153047561646,
+              "component": "features[18]",
+              "direction": "above",
+              "overrun": 0.018420517444610596
+            },
+            {
+              "index": 19,
+              "value": 0.76739501953125,
+              "minimum": -0.8292630314826965,
+              "maximum": 0.749003529548645,
+              "component": "features[19]",
+              "direction": "above",
+              "overrun": 0.01839148998260498
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-d5edfe942c45361da38fc849",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0094",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 16,
+              "value": 0.7650898098945618,
+              "minimum": -0.920149564743042,
+              "maximum": 0.7610929608345032,
+              "component": "features[16]",
+              "direction": "above",
+              "overrun": 0.003996849060058594
+            },
+            {
+              "index": 19,
+              "value": 0.7756906151771545,
+              "minimum": -0.8292630314826965,
+              "maximum": 0.749003529548645,
+              "component": "features[19]",
+              "direction": "above",
+              "overrun": 0.02668708562850952
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-7b3647263d44c496a5e484a2",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0098",
+          "cell": "[false,false,1]",
+          "coordinates": [
+            {
+              "index": 22,
+              "value": 0.8738152384757996,
+              "minimum": -0.7222830653190613,
+              "maximum": 0.868251383304596,
+              "component": "features[22]",
+              "direction": "above",
+              "overrun": 0.005563855171203613
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-aed2f9f0bb5b67ff098bf209",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0107",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 5,
+              "value": -0.899480938911438,
+              "minimum": -0.8903844356536865,
+              "maximum": 0.7939639091491699,
+              "component": "features[5]",
+              "direction": "below",
+              "overrun": 0.009096503257751465
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-203f77bf803003c33121fe35",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0110",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 21,
+              "value": 0.6968660950660706,
+              "minimum": -0.43811318278312683,
+              "maximum": 0.6687629222869873,
+              "component": "features[21]",
+              "direction": "above",
+              "overrun": 0.028103172779083252
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0113",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 5,
+              "value": -0.8969440460205078,
+              "minimum": -0.8903844356536865,
+              "maximum": 0.7939639091491699,
+              "component": "features[5]",
+              "direction": "below",
+              "overrun": 0.006559610366821289
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-6d5a1b2fed9d08df4291eb49",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0118",
+          "cell": "[false,false,3]",
+          "coordinates": [
+            {
+              "index": 13,
+              "value": -0.886126697063446,
+              "minimum": -0.8859497308731079,
+              "maximum": 0.8126106858253479,
+              "component": "features[13]",
+              "direction": "below",
+              "overrun": 0.00017696619033813477
+            },
+            {
+              "index": 14,
+              "value": -0.8361234068870544,
+              "minimum": -0.8246031999588013,
+              "maximum": 0.6330782175064087,
+              "component": "features[14]",
+              "direction": "below",
+              "overrun": 0.011520206928253174
+            }
+          ]
+        }
+      ],
+      "excluded_source_ids": [
+        "merchant-203f77bf803003c33121fe35",
+        "merchant-2d4f59a602bd0c185e8606af",
+        "merchant-6d5a1b2fed9d08df4291eb49",
+        "merchant-75b47ee8168019293e1cf32b",
+        "merchant-7b3647263d44c496a5e484a2",
+        "merchant-aed2f9f0bb5b67ff098bf209",
+        "merchant-d5edfe942c45361da38fc849"
+      ]
+    }
+  },
+  "conditional_evaluation": {
+    "frozen": {
+      "records": 48,
+      "source_groups": 16,
+      "reasons": {
+        "insufficient_calibration": 46,
+        "outside_observed_feature_envelope": 2
+      },
+      "observed_READ": 0,
+      "observed_STOP": 48,
+      "outside_rows": [
+        {
+          "source_id": "merchant-dad04fa0b1f8b4f71295ac14",
+          "case_id": "case-cec614ca042812e30008c41a",
+          "cell": "[false,false,1]",
+          "public_state_sha256": "e1c9ed02c044c7df10e1c51e3d03441dfde40de52f4844f05a54404a139fea26",
+          "coordinates": [
+            {
+              "index": 16,
+              "value": 0.8003638386726379,
+              "minimum": -0.939179003238678,
+              "maximum": 0.7981781959533691,
+              "component": "features[16]",
+              "direction": "above",
+              "overrun": 0.002185642719268799
+            },
+            {
+              "index": 22,
+              "value": -0.8109265565872192,
+              "minimum": -0.8041679859161377,
+              "maximum": 0.8751459121704102,
+              "component": "features[22]",
+              "direction": "below",
+              "overrun": 0.006758570671081543
+            }
+          ]
+        },
+        {
+          "source_id": "merchant-a836241e4cc70ced0b85032d",
+          "case_id": "case-8620f006a753f96c76cb17d3",
+          "cell": "[false,false,3]",
+          "public_state_sha256": "c1fe59bc4b7801e6ff7ed3cdce6df347f13d8d181b7f9cdb57a10bdb17fc5e8d",
+          "coordinates": [
+            {
+              "index": 14,
+              "value": 0.6995145678520203,
+              "minimum": -0.8516638875007629,
+              "maximum": 0.6987173557281494,
+              "component": "features[14]",
+              "direction": "above",
+              "overrun": 0.0007972121238708496
+            }
+          ]
+        }
+      ],
+      "state_hashes_checked": 48,
+      "within_budget_guard": "remaining_seconds=40, read_seconds_bound=30, finalizer_seconds_reserve=5; 30+5 <=40; not the blocking guard"
+    },
+    "adapted": {
+      "records": 48,
+      "source_groups": 16,
+      "reasons": {
+        "insufficient_calibration": 48
+      },
+      "observed_READ": 0,
+      "observed_STOP": 48,
+      "outside_rows": [],
+      "state_hashes_checked": 48,
+      "within_budget_guard": "remaining_seconds=40, read_seconds_bound=30, finalizer_seconds_reserve=5; 30+5 <=40; not the blocking guard"
+    }
+  },
+  "partitions": {
+    "calibration": [
+      "merchant-03aae37ad4f4ad8c8ad0944e",
+      "merchant-0c33b8cb557a1c71e01357da",
+      "merchant-1201a5bb478c190e196c6fea",
+      "merchant-16ac5095cbab37d6a4beeecd",
+      "merchant-1c5081feae9b550140ec86cb",
+      "merchant-203f77bf803003c33121fe35",
+      "merchant-2d4f59a602bd0c185e8606af",
+      "merchant-69c63e3abd97234884c69dad",
+      "merchant-6d5a1b2fed9d08df4291eb49",
+      "merchant-6dd6bc1cee9282a3df96c05e",
+      "merchant-75b47ee8168019293e1cf32b",
+      "merchant-7b3647263d44c496a5e484a2",
+      "merchant-9fa2f6563cdeebc029a0c464",
+      "merchant-9ff2a942290576d7554881f5",
+      "merchant-aed2f9f0bb5b67ff098bf209",
+      "merchant-d5edfe942c45361da38fc849",
+      "merchant-dcf206507ae7c5dde2cd1010",
+      "merchant-ecae8cf994fefe3ad1e69322"
+    ],
+    "evaluation": [
+      "merchant-143c44441eb6c25249d329d6",
+      "merchant-3b819d0f45c5841fbd483fbc",
+      "merchant-4fc32cae2f60fcd9908166be",
+      "merchant-4fca23dc8bbeb9bcb9975e8d",
+      "merchant-5c29904ee2eb4422e25f9030",
+      "merchant-68c830ec3f7c0d94ede0ae3a",
+      "merchant-720fa20b5c1b822a695d7601",
+      "merchant-7d8d9fb52ebdf19d8e099b90",
+      "merchant-83e3cd2399f8af4d0dadda2f",
+      "merchant-8be0cc526665e1b3713e88d9",
+      "merchant-a836241e4cc70ced0b85032d",
+      "merchant-ac7dff025170a6ee898d500b",
+      "merchant-b3a647071736013313212585",
+      "merchant-dad04fa0b1f8b4f71295ac14",
+      "merchant-f1ec6e62d3d92ac03e6ce52f",
+      "merchant-f3b516cd5df367d7a17d50a4"
+    ],
+    "fit": [
+      "merchant-311891ad56272ccc25cbb13d",
+      "merchant-50f46908878b39ed0bd3853f",
+      "merchant-53d609f32d26c4af265269fe",
+      "merchant-58be5300ebeed60df7b53412",
+      "merchant-5c0e813f616a4362d46f91a9",
+      "merchant-5d4b99c3062c5faa80efd221",
+      "merchant-68a3ce1760cdbfc23690d940",
+      "merchant-7027cec87ad982afb10a81b6",
+      "merchant-77373c612cf6f484499c237d",
+      "merchant-81a74a14a3243f4a7caceaf0",
+      "merchant-8b02fd486d08f02ccd063336",
+      "merchant-8e162dc70b702e24dacc7db4",
+      "merchant-97640bd2b749bf214e2685b3",
+      "merchant-a00334471fe4253ed529ff1e",
+      "merchant-aad9008f95d8de8b69949ee5",
+      "merchant-bd1804bb290a96349b65a9ab",
+      "merchant-be4b468c89b8dbbe18c10a39",
+      "merchant-bf774f31334b830df22ec52d",
+      "merchant-d23242452060c104ee056a58",
+      "merchant-e7e178522dc7bb97834dd1ea",
+      "merchant-e92afbe9a45feef1da5bd489",
+      "merchant-ea9b41f5d08e33143d643448",
+      "merchant-eab91830c3a77d7309c019dd",
+      "merchant-f76aded3d78a0e21cf2d3f40"
+    ]
+  },
+  "training_envelope_recomputation": {
+    "frozen": {
+      "rows": 72,
+      "width": 47,
+      "minimum_equal_dimensions": 47,
+      "maximum_equal_dimensions": 47,
+      "mismatch_dimensions": [],
+      "recomputed_minimum": [
+        -0.8991902470588684,
+        -0.9667892456054688,
+        -0.9197415709495544,
+        -0.9120668172836304,
+        -0.8360702395439148,
+        -0.9061121940612793,
+        -0.8577399253845215,
+        -0.9418526291847229,
+        -0.8622763752937317,
+        -0.965038537979126,
+        -0.8418254256248474,
+        -0.7811473608016968,
+        -0.9708359241485596,
+        -0.9082539081573486,
+        -0.8516638875007629,
+        -0.8538530468940735,
+        -0.939179003238678,
+        -0.9786384105682373,
+        -0.9668505191802979,
+        -0.8544260859489441,
+        -0.9499439001083374,
+        -0.4464662969112396,
+        -0.8041679859161377,
+        -0.9708083271980286,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0.04559677094221115,
+        0.00005857646465301514,
+        0,
+        0,
+        0.6666666865348816,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3.713572066704308
+      ],
+      "recomputed_maximum": [
+        0.7943000793457031,
+        0.9129244685173035,
+        0.8280152082443237,
+        0.8483114242553711,
+        0.9336628913879395,
+        0.886525571346283,
+        0.923352062702179,
+        0.8546236753463745,
+        0.9555351138114929,
+        0.9137938022613525,
+        0.9375052452087402,
+        0.8915665745735168,
+        0.9159747958183289,
+        0.8919885754585266,
+        0.6987173557281494,
+        0.9410555958747864,
+        0.7981781959533691,
+        0.8934474587440491,
+        0.8996025323867798,
+        0.8275715112686157,
+        0.8439696431159973,
+        0.6198399066925049,
+        0.8751459121704102,
+        0.9125484228134155,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0.49000000953674316,
+        0,
+        0.6666666865348816,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        3.713572066704308
+      ],
+      "time_transform_check": "All audited states have pending=false, freshness=0, remaining=40; Math.log1p(40) exactly equals the stored original Python-produced checkpoint value. No arbitrary-time cross-runtime transform was admitted."
+    },
+    "adapted": {
+      "rows": 72,
+      "width": 47,
+      "minimum_equal_dimensions": 47,
+      "maximum_equal_dimensions": 47,
+      "mismatch_dimensions": [],
+      "recomputed_minimum": [
+        -0.8516658544540405,
+        -0.953917920589447,
+        -0.9008447527885437,
+        -0.8714174628257751,
+        -0.7634434700012207,
+        -0.8903844356536865,
+        -0.7705082297325134,
+        -0.9282289147377014,
+        -0.7949370741844177,
+        -0.9565818309783936,
+        -0.7285934686660767,
+        -0.6615325808525085,
+        -0.9665879607200623,
+        -0.8859497308731079,
+        -0.8246031999588013,
+        -0.8161716461181641,
+        -0.920149564743042,
+        -0.9706181287765503,
+        -0.9575867056846619,
+        -0.8292630314826965,
+        -0.9374642968177795,
+        -0.43811318278312683,
+        -0.7222830653190613,
+        -0.9631174206733704,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0.04767018184065819,
+        0.000423334538936615,
+        0,
+        0,
+        0.6666666865348816,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3.713572066704308
+      ],
+      "recomputed_maximum": [
+        0.749905526638031,
+        0.8878656625747681,
+        0.7738971710205078,
+        0.7960894703865051,
+        0.925239086151123,
+        0.7939639091491699,
+        0.9062992334365845,
+        0.7906220555305481,
+        0.945696234703064,
+        0.8662483096122742,
+        0.9263504147529602,
+        0.8792831301689148,
+        0.8559714555740356,
+        0.8126106858253479,
+        0.6330782175064087,
+        0.909527599811554,
+        0.7610929608345032,
+        0.836440920829773,
+        0.8293153047561646,
+        0.749003529548645,
+        0.7929283976554871,
+        0.6687629222869873,
+        0.868251383304596,
+        0.8507658243179321,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0.49000000953674316,
+        0,
+        0.6666666865348816,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        3.713572066704308
+      ],
+      "time_transform_check": "All audited states have pending=false, freshness=0, remaining=40; Math.log1p(40) exactly equals the stored original Python-produced checkpoint value. No arbitrary-time cross-runtime transform was admitted."
+    }
+  },
+  "input_manifest": [
+    {
+      "mode": "frozen",
+      "name": "FROZEN.json",
+      "blob": "b6ea62526c4b31eff1c3ae8b2404350d489e6002",
+      "bytes": 189780,
+      "sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/frozen/FROZEN.json"
+    },
+    {
+      "mode": "frozen",
+      "name": "EXPORT.json",
+      "blob": "1ba9021128d033622540e9292a519c4626fdb29a",
+      "bytes": 2358610,
+      "sha256": "1fd00505b3d59e5a6755603d93d0ebd7634b311a71588ee7b1809ae1fc608910",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/frozen/EXPORT.json"
+    },
+    {
+      "mode": "frozen",
+      "name": "EXPORT_PIN.json",
+      "blob": "a111e62a4f5aa4855d3bc87bba5fd085471c47d4",
+      "bytes": 93,
+      "sha256": "ded0c2edf3b6035bbd3127a6daaaa71248966dcae17260592deb58c4362a26ae",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/frozen/EXPORT_PIN.json"
+    },
+    {
+      "mode": "frozen",
+      "name": "CHECKPOINT.json",
+      "blob": "dc9712e34b4e4f8e3a9d3bc204fe7d359980ff0e",
+      "bytes": 11489,
+      "sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+    },
+    {
+      "mode": "adapted",
+      "name": "FROZEN.json",
+      "blob": "8385c26ad3a828bcd42070af6a02f587729f2b4f",
+      "bytes": 189901,
+      "sha256": "247b1e67b276d27476ad58b0c3c7dedb27b2a74877d6728be52d04875c8ab413",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/adapted/FROZEN.json"
+    },
+    {
+      "mode": "adapted",
+      "name": "EXPORT.json",
+      "blob": "cb5c3190dcd9cb21200f857f2cdba5bcf70c1d95",
+      "bytes": 2350217,
+      "sha256": "290d93428109f08906b6db69567c02c50f8c2760738124f8c71e77fe3e4f1ec6",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/adapted/EXPORT.json"
+    },
+    {
+      "mode": "adapted",
+      "name": "EXPORT_PIN.json",
+      "blob": "b29d214994cb110ea218df2723e661cba5495905",
+      "bytes": 93,
+      "sha256": "63713fd48b084f1f464a0d448c20419d366d64007e010c12a953167833a9f7c2",
+      "repository_path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/adapted/EXPORT_PIN.json"
+    },
+    {
+      "mode": "adapted",
+      "name": "CHECKPOINT.json",
+      "blob": "6c83e806e33ff0ea8b8d04145db65870b8d33f74",
+      "bytes": 11474,
+      "sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858"
+    },
+    {
+      "name": "factorial/FROZEN.json",
+      "blob": "ec68dd11c2503fe5f9737da3028c4f2f4c4d7195",
+      "bytes": 54229,
+      "sha256": "f75c44d6092aa1a91af1db859823a7d1e20d9219016d00ce69b843ac5d462325"
+    },
+    {
+      "name": "factorial/REPORT.json",
+      "blob": "7a1545248aa4a9e8d4f551c05db0abb03158609a",
+      "bytes": 3108442,
+      "sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a"
+    }
+  ],
+  "original_native_artifacts_readmitted": false,
+  "owner_decision": null,
+  "research_state": "HOLD",
+  "new_actor_executions": 0,
+  "exports_or_fits_executed": 0
+}

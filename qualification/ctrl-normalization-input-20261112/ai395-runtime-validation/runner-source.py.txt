@@ -1,0 +1,116 @@
+import hashlib, json, os, pathlib, subprocess, sys, time, traceback
+from datetime import datetime, timezone
+from urllib.parse import urlsplit
+
+cfg = json.loads(sys.argv[1])
+checkout = pathlib.Path(cfg["checkout"])
+evidence = pathlib.Path(cfg["evidence"])
+evidence.mkdir(parents=True, exist_ok=False)
+summary = {"schema_version": 1, "source_sha": cfg["sha"], "expected_test_count": sum(n for _, n in cfg["suites"]), "status": "preparing", "sudo_or_escalation_attempted": False, "source_helper_used": False, "junit": {"status": "not_emitted_by_original_unittest_command", "path": None}, "suites": [], "started_at": datetime.now(timezone.utc).isoformat()}
+(evidence / "request.json").write_text(json.dumps(cfg, indent=2, sort_keys=True) + "\n")
+(evidence / "runner.py").write_text(pathlib.Path(sys.argv[0]).read_text() if sys.argv[0] != "-c" else cfg["runner_source"] if "runner_source" in cfg else "Original runner preserved in durable h request argv.\n")
+prep = (evidence / "preparation.log").open("xb")
+def emit(value):
+    print(json.dumps(value, sort_keys=True), flush=True)
+def plain(command, cwd=None, timeout=180):
+    result = subprocess.run(command, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout, check=False)
+    prep.write(result.stdout); prep.flush(); os.fsync(prep.fileno())
+    if result.returncode != 0:
+        raise RuntimeError("preparation command failed, code=" + str(result.returncode) + "; see preparation.log")
+    return result.stdout
+def git(*args):
+    return subprocess.check_output(["git", "-C", str(checkout), *args], stderr=subprocess.PIPE).decode().strip()
+def snapshot():
+    names = subprocess.check_output(["git", "-C", str(checkout), "ls-files", "-z", "--", "AGENTS.md", "scripts", cfg["qualification"], ".github/workflows/hepta-ctrl-critic-contracts.yml"]).split(b"\0")
+    files = []
+    for raw in names:
+        if not raw:
+            continue
+        name = os.fsdecode(raw)
+        target = checkout / name
+        data = os.fsencode(os.readlink(target)) if target.is_symlink() else target.read_bytes()
+        files.append({"path": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "symlink": target.is_symlink()})
+    return {"head": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"), "status": git("status", "--porcelain", "--untracked-files=normal"), "files": files}
+def save_json(name, obj):
+    data = (json.dumps(obj, indent=2, sort_keys=True) + "\n").encode()
+    (evidence / name).write_bytes(data)
+    return {"path": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+exit_code = 2
+try:
+    if checkout.exists():
+        raise RuntimeError("new checkout path already exists; refusing overwrite")
+    plain(["git", "clone", "--no-checkout", "--no-hardlinks", "--no-tags", cfg["object_source"], str(checkout)], timeout=600)
+    object_test = subprocess.run(["git", "-C", str(checkout), "cat-file", "-e", cfg["sha"] + "^{commit}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    summary["target_object_available_after_local_clone"] = object_test.returncode == 0
+    if object_test.returncode != 0:
+        raw_origin = subprocess.check_output(["git", "-C", cfg["object_source"], "remote", "get-url", "origin"], stderr=subprocess.PIPE).decode().strip()
+        parsed = urlsplit(raw_origin)
+        if parsed.username is not None or parsed.password is not None:
+            raise RuntimeError("configured origin includes URL credentials; no credential content logged, fetch not dispatched")
+        if parsed.scheme not in ("https", "ssh") and not raw_origin.startswith("git@"):
+            raise RuntimeError("configured origin is not a supported repository transport")
+        summary["network_source_fetch"] = True
+        plain(["git", "-C", str(checkout), "fetch", "--no-tags", raw_origin, cfg["sha"]], timeout=600)
+    else:
+        summary["network_source_fetch"] = False
+    plain(["git", "-C", str(checkout), "checkout", "--detach", cfg["sha"]], timeout=180)
+    if git("rev-parse", "HEAD") != cfg["sha"] or git("status", "--porcelain", "--untracked-files=normal"):
+        raise RuntimeError("checkout is not clean at exact requested source")
+    if git("hash-object", "AGENTS.md") != "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a":
+        raise RuntimeError("root AGENTS.md differs from previously read rules")
+    unknown_rules = [rel for rel in cfg["rule_paths"] if (checkout / rel).exists()]
+    if unknown_rules:
+        summary["rules_requiring_read"] = unknown_rules
+        raise RuntimeError("additional scope rules require reading before dispatch")
+    before = snapshot()
+    summary["source_before"] = save_json("source-before.json", before)
+    summary["tree"] = before["tree"]
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONPATH"] = os.pathsep.join([str(checkout / "scripts"), str(checkout), str(checkout / cfg["analysis_path"]), cfg["dependencies"]])
+    env["SOURCE_SHA"] = cfg["sha"]
+    env["TESTED_SHA"] = cfg["sha"]
+    env["HEPTA_CI_LANE"] = "source-head"
+    versions_code = "import json,sys,os,importlib.util; import numpy; import PIL; print(json.dumps({'python':sys.version,'executable':sys.executable,'numpy':numpy.__version__,'numpy_file':numpy.__file__,'pillow':PIL.__version__,'pillow_file':PIL.__file__,'uid':os.getuid(),'euid':os.geteuid(),'module_origins':{n:importlib.util.find_spec(n).origin for n in " + repr([module for module, _ in cfg["suites"]]) + "}},sort_keys=True))"
+    versions = subprocess.run([sys.executable, "-B", "-c", versions_code], cwd=checkout, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=60, check=False)
+    (evidence / "runtime.log").write_bytes(versions.stdout)
+    summary["runtime_probe_exit_code"] = versions.returncode
+    if versions.returncode == 0:
+        summary["runtime"] = json.loads(versions.stdout)
+        for origin in summary["runtime"]["module_origins"].values():
+            if not pathlib.Path(origin).resolve().is_relative_to(checkout.resolve()):
+                raise RuntimeError("test module resolves outside exact independent source")
+    else:
+        raise RuntimeError("runtime/dependency/module-origin probe failed; no test dispatched")
+    emit({"phase": "testing", "source": cfg["sha"], "tree": before["tree"], "checkout": str(checkout), "evidence": str(evidence), "expected_tests": summary["expected_test_count"], "runtime": summary["runtime"]})
+    for module, minimum in cfg["suites"]:
+        stem = module.replace(".", "_")
+        out = evidence / (stem + ".json")
+        command = [sys.executable, "-B", str(checkout / "scripts/hepta_ci_exec.py"), "--timeout-seconds", "120", "--minimum-tests", str(minimum), "--output", str(out), "--", sys.executable, "-B", "-m", "unittest", "-v", module]
+        with (evidence / (stem + ".runner.log")).open("xb") as log:
+            result = subprocess.run(command, cwd=checkout, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180, check=False)
+        record = json.loads(out.read_bytes()) if out.exists() else {"status": "no_record", "exit_code": result.returncode}
+        record["runner_returncode"] = result.returncode
+        summary["suites"].append({"module": module, "expected_count": minimum, "record": record})
+        emit({"phase": "suite_completed", "source": cfg["sha"], "module": module, "status": record["status"], "exit_code": result.returncode, "passed": record.get("observed_passed_tests"), "failed": record.get("observed_failed_tests"), "raw_log": record.get("log_file")})
+    after = snapshot()
+    summary["source_after"] = save_json("source-after.json", after)
+    summary["source_unchanged"] = after == before
+    summary["observed_passed_tests"] = sum(s["record"].get("observed_passed_tests", 0) for s in summary["suites"])
+    summary["observed_failed_tests"] = sum(s["record"].get("observed_failed_tests", 0) for s in summary["suites"])
+    success = after == before and summary["observed_passed_tests"] == summary["expected_test_count"] and all(s["record"].get("status") == "passed" and s["record"]["runner_returncode"] == 0 for s in summary["suites"])
+    summary["status"] = "passed" if success else "failed"
+    exit_code = 0 if success else 1
+except Exception as error:
+    summary["status"] = "preparation_or_execution_failed"
+    summary["error_type"] = type(error).__name__
+    summary["error"] = str(error) if isinstance(error, RuntimeError) else "Exception detail retained without command arguments"
+    exit_code = 2
+finally:
+    prep.close()
+    summary["finished_at"] = datetime.now(timezone.utc).isoformat()
+    summary["exit_code"] = exit_code
+    summary["evidence_files"] = [{"path": p.name, "bytes": p.stat().st_size, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(evidence.iterdir()) if p.is_file()]
+    save_json("RESULT.json", summary)
+    emit(summary)
+raise SystemExit(exit_code)

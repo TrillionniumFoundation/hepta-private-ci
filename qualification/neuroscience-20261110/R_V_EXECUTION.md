@@ -1,6 +1,6 @@
 # R/V 实际执行入口与资产缺口（2026-11-12）
 
-`replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文不是完成实验的结果。
+`replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文记录 wrapper 入口与当前上游实际结果；wrapper 自身的 B/C actor 尚未执行。最新状态以 [TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md) 为准。
 
 ## 已核实可复用资产
 
@@ -8,8 +8,8 @@
 | --- | --- | --- |
 | [#6159，397632651912513e24030476d98a5b101a0a0e0e](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6159) | `scripts/ctrl_macro_{prepare,study,analysis,content,factorial}.py`；`scripts/ndu_real_runtime/macro_{execution,execution_plan,policy}.py` | 原始 train/calibration pairs、实际 fit、独立 cold-load、真实 OCR／效果、完整计划分母；现有 campaign 使用已暴露 development。复用已拟合结果，禁止重复启动另一线程的同源 campaign。 |
 | [#6072，a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6072) | `scripts/perc1/{source_capture,active_capture,source_qualification}.py`；`qualification/perc-real-observation-20261112/PRIVATE_ARCHIVE.json` | 原始 FUNSD→Tesseract/MobileNet→native 诊断 owner 已有工程链；64/16/32 来源全部复用，active 视觉系数为零。 |
-| [#6136，ea5d3f77e275906f6623f7f4b64be1678d640f8d](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6136) | `scripts/ndu_real_runtime/episodic_provider_handoff.py` 与原 Rust episodic owner | 120 个组合软件控制不是记忆效益；真实模型尝试 ACK 超时且结果 UNKNOWN，不能新 key 重派发。 |
-| [#6113，8c11ca58559f0fc05678387e09588bf2368d4d84](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6113) | `scripts/act2_learning/{qualify_operational,skill_lifecycle,durable_lifecycle,durable_async_owner}.py` | 真文件／进程恢复控制，仍是受控 probe；不是独立真实任务，缺原 Root/AuthBus/FinalUse 与通用技能回放效果链。 |
+| [#6136，ea5d3f77e275906f6623f7f4b64be1678d640f8d](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6136) | `scripts/ndu_real_runtime/episodic_provider_handoff.py` 与原 Rust episodic owner | 120 个组合软件控制不是记忆效益。独立 #6201 原件已对账旧 fa3b624... 的 v3：1 次生成 RETURNED/exit0；原 process registry 仍 UNKNOWN，其他旧身份不变，不能新 key 重派发。 |
+| [#6113，ba7d4a55bce09be44bf03fd86504f129220c513a](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6113) | `scripts/act2_learning/{qualify_operational,skill_lifecycle,durable_lifecycle,durable_async_owner}.py` | 真文件／进程死亡及原 invocation＋GRU hidden恢复控制，仍是同UID/boot受控 probe；独立真实任务、原 Root/AuthBus/FinalUse 与通用技能回放效果链仍缺。 |
 
 已公开路径只确认旧云工作区 `/workspace/scratch/e11c579132dc/hepta-perc`、`/workspace/scratch/e11c579132dc/perc-real-source-native-001`，不代表本机或 ai395 仍有这些文件。
 PERC 私有包名 `perc-real-observation-20261112-evidence.zip`，39,224,877 bytes，SHA256 `8038206cf0219ab9ea1b7547ddc74aa6041c552c2843ecd1509c26215e0744b5`；仓库未给当前 host 路径。
@@ -56,7 +56,7 @@ python3 replay_perception_native.py reconcile-B --expected-sha256 "$RV_FREEZE_SH
 ## 未闭合项与本地机械验证
 
 - **wrapper 真实调用仍待运行（actor=0）：** 原 run-v2 frozen fit 与强制独立子进程 cold-load 已完成，CHECKPOINT_PIN、COLD_LOAD 与实际文件 hash 一致。其 fit72／cal54，但 `calibration.complete=false`、`full_cost_observed=false`；还须在 wrapper 原入口实际验证新 freeze／source pins／plan 及 B/C 配对登记，不能把上游 fit 成功计作 wrapper 的 4 次 actor 已执行。
-- **R 2×2 仍 OPEN：** 尚无同一真实任务上的 episodic／skill replay 可用执行适配器，不能把 ACT controlled probe 与 MEM UNKNOWN 拼成配对效果。
+- **R 2×2 仍 OPEN：** 尚无同一真实任务上的 episodic／skill replay 可用执行适配器，不能把 ACT controlled probe 与 MEM 单次未评分生成拼成配对效果；MEM registry/其他旧请求的UNKNOWN分别保留。
 - **同信息循环与 VERIFY 付费检查仍 OPEN：** 当前 native 宏只有 STOP／真实 READ，不提供任意同输入循环或独立 checker 的等预算接口；没有伪造“同信息”对照。
 - **新来源 B/C 与原 owner 仍 OPEN：** 需要原来源登记／暴露证据和原有授权链，不接受自签名替代；现有 development 不重标 confirmation。
 - **效益／采用仍 OPEN：** 强基线训练资格、完整成本、功效、顺序平衡、多重校正、旧能力以及原生选择／不同 C／冷恢复另验收。
@@ -73,15 +73,18 @@ python3 replay_perception_native.py reconcile-B --expected-sha256 "$RV_FREEZE_SH
 
 完整参考套件在本次最终 Python 源码上实际运行 **129/129 通过、0 跳过**（119 继承＋10 新增），unittest 用时 1.198 s，含进程启动的 wall 1.5757 s。随后 `just fmt` 退出 0，Python 源码字节未变；未在格式化后重复运行测试。`NATIVE_PERCEPTION_EVIDENCE.json` 保留原始日志、每个执行源文件 SHA256、92 文件上游 manifest、接口集成日志及复现脚本。载荷使用 zlib＋base64 无损归档，每项有原字节数与 SHA256；解码校验后才能引用。它记录的是本地原接口机械执行，真实 actor、科学效益与原 owner 决定仍为 0／未取得。
 
-## 原 campaign 的后续状态与复用门
+## 原 campaign 的完整终态与复用门
 
-上表 #6159 的 `39763265...` 是本 wrapper 已执行机械集成的精确版本；新完整 campaign 使用已发布的 `3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd`，位于 `/home/qq/ctrl-real-policy-20261112-1333-v3`。只有新原件的 freeze/thaw、原 plan/checkpoint 校验及 wrapper 配对登记实际通过后，才能据此接通调用；源代码存在不等于该调用已经通过。
-旧 run-v1 保留 126/126 pairs、UNKNOWN 0、完整 EXPORT 与 FIT_FAILED。归一化 producer 的真正修复来自上游 3c94；[#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) 新增的是原始公开输入回归，未重复修改生产实现。新旧 converter/fitter pin 不同，禁止把旧 EXPORT 改 pin 后喂给新代码。
-原 [v2 请求](evidence/rv-predeploy-20261112/campaign-bootstrap-pty-request-v2.json) 的 host=`ai395`、key=`ctrl-1333-real-campaign-pty-v2`；完整原请求对账返回 `reused=true`，原 session=`dpty-40ff97e76f70d0a5e1c37280afeab264b349cee40962d4e6b77d543fdb391c65`。输出目录为 `/home/qq/ctrl-real-study-20261112-1333/run-v2`；这是原身份读回，不是新采集。初次 session 读回超时不能判为执行失败。
-后续原 `bootstrap-v2/campaign.log` 已记录 frozen collect／export／fit、content adaptation，以及 adapted collect／export／fit 和 factorial freeze 的 exit 0；最新完整读取快照末条为 factorial_evaluate STARTED。完整内容因子实验、终态评分与科学分析尚未闭合。这些执行属于上游 campaign；wrapper actor 仍为 0，来源数及成本不与它拼接。
-新 frozen freeze SHA256=`7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497`。11,489 B checkpoint 的实际文件 SHA256 与 CHECKPOINT_PIN／COLD_LOAD 一致：`c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096`；context=`2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058`。FIT 与 COLD-LOAD 的 START／COMPLETED 原件均已读回；export126/126、UNKNOWN0、fit72／cal54。两个 conditional 分组各9来源，unconditional18，`calibration.complete=false`；这不会因 fit 返回0而自动成为已校准、有效益或可采用的策略。
-同一原 source 的 `ctrl_macro_factorial.py::reconcile` 将 `REPORT.json` 的 `decision` 硬编码为 `"NoUpdate"`，没有原 owner 签发。该原始研究标签必须留在原报告，统一台账仍为 `owner_decision=null`；不以报告字符串关闭 G4。当前运行的冻结源码／已受理请求保持不变，语义修正只能进入另一个明确版本。
-原 bootstrap 的收尾语句误读 `run-v1/COMPLETED.json`，实际运行目录仍是 run-v2。保持已接收原请求不变；应先 reconcile run-v2 原阶段与产物，不能据 bootstrap 尾部报错重派。未来 launch 生成器应从同一 `campaign_output` 生成执行参数和 completion 路径，但这里没有修改原请求或启动任何新任务。
-当前科学资格继续 HOLD／未完成，`adoption=NOT_REQUESTED`、`owner_decision=null`。精确阶段、原始字节／摘要与后续读回统一登记于 [NEXT_STEP_EVIDENCE.json](NEXT_STEP_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md)。
+此前08:37版本已保存在 [历史快照](evidence/history-20261112/R_V_EXECUTION-0837.md)。原3c94 campaign使用相同key/session完成全部12阶段；原 run-v2 576/576 factorial执行全部COMPLETED，UNKNOWN/FAILED/缺失0。完整REPORT和content receipt已无损回读并独立解压/SHA校验，详见[终态原件说明](evidence/terminal-20261112/README.md)。没有重新采集、export、fit或因尾部launcher错误重派。wrapper actor仍为0。
 
-最新 adapted 原件也已读取：其 CHECKPOINT_PIN／COLD_LOAD=`11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858`，context=`3d17b06cfd5df77ed383e7045048a4cd068102d662aadce1e7bb969be61d973b`；fit72／cal54，校准仍 incomplete、完整成本仍 unknown。factorial 冻结 pin=`f75c44d6092aa1a91af1db859823a7d1e20d9219016d00ce69b843ac5d462325`，计划 576 次执行。完整终态仍待读取，不将 START 或计划数写成完成数。
+两真实模型各fit72/cal54、126/126 export、独立子进程cold-load均完成。frozen checkpoint SHA256为c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096；adapted为11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858。两份calibration.complete=false、full_cost_observed=false。9来源的有限分位数门已满足，完整原run-v2 EXPORT与root独立重算已证明frozen有9/54、adapted有7/54校准行越界，各涉及7来源，全部paired gain已知。真实READ30＋reserve5≤action40，episode wall60；预算不阻断。详见[域审计](evidence/v-calibration-domain-20261112/V_CALIBRATION_DOMAIN_AUDIT.md)。下一研究须另冻结真实训练域覆盖、来源与完整成本，不能任意扩大envelope、删越界行或改alpha后沿用原计划。
+
+conditional的96次均STOP：94校准不完整、2 evaluation特征域越界；与STOP的质量差及内容×conditional质量交互均0。仅任务计时成本净值交互约−0.00028103645，完整成本交互null。60步实际内容训练使用observed_auxiliary_losses，不证明完整recursive NDU，也未清除历史暴露。当前结果是development描述，来源/成本/power/独立确认门仍OPEN。
+
+原REPORT的decision="NoUpdate"来自3c94源码硬编码，保留原文字节；当前投影owner_decision=null。未来语义修正[#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact241126已实际19项通过；[#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact2d1f的原公开输入回归已实际26项通过。它们不更改已经执行campaign的source pin或原输出。
+
+原bootstrap结尾错误读取run-v1/COMPLETED.json，导致外层exit1；实际run-v2 COMPLETED和12个成功stage原件已核验。保留FAILED原件，不据该收尾错误重跑actor。未来启动器才可在新明确版本统一campaign_output与completion路径。
+
+MEM v3的生成终态已按#6201原7文件hash闭合，执行源fa3b624不能归给后来的#6136组合源码。ACT #6113的受控GRU恢复不是回放效益；#6127原native seed case实际因effective Core profile不符失败。新增[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243)给出显式finite-v2 seed启动修复，当前静态审查完成，原native positive和5回归仍待实际验证。没有改写其旧失败或授予Root身份。
+
+要执行wrapper B/C，仍须按新run-v2自身清单完成原freeze/thaw、source/analysis/weights/control/material pin和配对计划校验，独立核验实际可用性；旧fixture成功和原模型cold-load不代替此步骤。新的B/C仍是development，不得复用已暴露来源冒充confirmation。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。

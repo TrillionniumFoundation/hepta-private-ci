@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.mem11.root-raw-verification.v1",
+  "source_commit": "a21bea479bc51726da4a6e5ee15e4b1911f84716",
+  "execution_commit": "fa3b62440f3dbe21e904dfbd390d346d03322b7e",
+  "original_files": [
+    {
+      "name": "ADMISSION.json",
+      "bytes": 2155,
+      "sha256": "8858b2192ba42d03905eff489ba94a79d300a9d8f603d475cd77ea1e4f9ea95c",
+      "git_blob": "a274ea32a4fa3f871c4abe5d0913f31494470314",
+      "github_sha": "a274ea32a4fa3f871c4abe5d0913f31494470314",
+      "git_matches": true
+    },
+    {
+      "name": "GENERATION_RESULT.json",
+      "bytes": 4065,
+      "sha256": "9bd98fa187f0ccba9fdb143aad70e4be4aef3c5f669c01e044a44dd8509ee160",
+      "git_blob": "cf4e7174d57697b1d148b4c713ec72dc13e4ccf6",
+      "github_sha": "cf4e7174d57697b1d148b4c713ec72dc13e4ccf6",
+      "git_matches": true
+    },
+    {
+      "name": "PREEXECUTION.json",
+      "bytes": 3465,
+      "sha256": "2a0d5e17dbb4424b175ffd393cf5035c7458180283489f0ce734e256585128a7",
+      "git_blob": "9b7c09ba54e57491d7281823432e2dfaedff41ef",
+      "github_sha": "9b7c09ba54e57491d7281823432e2dfaedff41ef",
+      "git_matches": true
+    },
+    {
+      "name": "RECEIPT.json",
+      "bytes": 3826,
+      "sha256": "54bd1a94a998baa2f1a5ea00b799ce7b71b1a3c57593a7aa0bc96406706f1b30",
+      "git_blob": "7e7e51d58fd74fb43e956055f7f67412b025b568",
+      "github_sha": "7e7e51d58fd74fb43e956055f7f67412b025b568",
+      "git_matches": true
+    },
+    {
+      "name": "combined.log",
+      "bytes": 463,
+      "sha256": "9d91fca392fc01b0e244c401b067264fb9afedc42dbd48546204c020d438511a",
+      "git_blob": "1d09e7015a239ef6d3f6597fcfb2b84ac375f4bf",
+      "github_sha": "1d09e7015a239ef6d3f6597fcfb2b84ac375f4bf",
+      "git_matches": true
+    },
+    {
+      "name": "generation-request.bin",
+      "bytes": 169,
+      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3",
+      "github_sha": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3",
+      "git_matches": true
+    },
+    {
+      "name": "request.bin",
+      "bytes": 169,
+      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3",
+      "github_sha": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3",
+      "git_matches": true
+    }
+  ],
+  "declared_digest_check": [
+    {
+      "name": "PREEXECUTION.json",
+      "matches": true
+    },
+    {
+      "name": "GENERATION_RESULT.json",
+      "matches": true
+    },
+    {
+      "name": "request.bin",
+      "matches": true
+    },
+    {
+      "name": "ADMISSION.json",
+      "matches": true
+    },
+    {
+      "name": "generation-request.bin",
+      "matches": true
+    },
+    {
+      "name": "combined.log",
+      "matches": true
+    },
+    {
+      "name": "RECEIPT.json",
+      "matches": true
+    }
+  ],
+  "original_acknowledgement": "TIMEOUT",
+  "original_durable_registry_terminal": "UNKNOWN",
+  "original_job_id": null,
+  "generation_terminal": "RETURNED",
+  "model_calls": 1,
+  "scored_memory_benefit_episodes": 0,
+  "owner_decision": null
+}

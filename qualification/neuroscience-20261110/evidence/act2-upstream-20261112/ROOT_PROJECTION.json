@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.act2.upstream-root-projection.v1",
+  "controlled_evidence": {
+    "published_commit": "ba7d4a55bce09be44bf03fd86504f129220c513a",
+    "scope": "Controlled same-UID/boot actual process-death and original-invocation GRU recovery; not independent application families.",
+    "original_labels_preserved": true
+  },
+  "native_seed": {
+    "source_commit": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+    "run_id": 43163424939,
+    "job_id": 130999664797,
+    "status": "FAILED",
+    "distinct_tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "nextest_attempts": 2,
+    "original_log_bytes": 293432,
+    "original_log_sha256": "c38cff690515c344a29840164d29ac22376dcf4bb7992bae894cc92b21633002",
+    "reason": "original Notes effective Core execution profile differs",
+    "fix_pr": 6243,
+    "fix_commit": "7e6affec5ffa987f561f431988cfdb3e2c25ba83",
+    "fix_validation": "NOT_RUN_AT_PUBLICATION"
+  },
+  "owner_decision": null,
+  "overall_status": "HOLD"
+}

@@ -1,0 +1,176 @@
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import stat
+import sys
+import zlib
+
+SOURCE = Path("/home/qq/ctrl-real-study-20261112-1333/run-v2/factorial/REPORT.json")
+TARGET = Path("/home/qq/ctrl-real-study-20261112-1333/report-archive-862531d11598-v1")
+EXPECTED_SIZE = 3108442
+EXPECTED_SHA256 = "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a"
+EXPECTED_VERSION = "66306:56671040:3108442:1794472608162908889:1794472608162908889"
+SOURCE_COMMIT = "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"
+KEY = "neuro4-report-lossless-archive-862531d-v1"
+SCHEMA = "hepta.research.original-report-lossless-archive.v1"
+NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+CLOEXEC = getattr(os, "O_CLOEXEC", 0)
+if not NOFOLLOW:
+    raise RuntimeError("O_NOFOLLOW is required")
+def expired(signum, frame):
+    raise TimeoutError("Bounded archive operation timed out")
+signal.signal(signal.SIGALRM, expired)
+signal.setitimer(signal.ITIMER_REAL, 45)
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def identity(value):
+    return {name: getattr(value, name) for name in (
+        "st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid",
+        "st_size", "st_mtime_ns", "st_ctime_ns"
+    )}
+
+def version(value):
+    return ":".join(str(getattr(value, name)) for name in (
+        "st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns"
+    ))
+
+def regular(value):
+    if not stat.S_ISREG(value.st_mode):
+        raise ValueError("Only a regular nonsymlink file is permitted")
+    return value
+
+def read_original():
+    before = regular(os.lstat(SOURCE))
+    fd = os.open(SOURCE, os.O_RDONLY | NOFOLLOW | CLOEXEC)
+    try:
+        opened = regular(os.fstat(fd))
+        if identity(before) != identity(opened):
+            raise ValueError("Original path and descriptor differ")
+        if before.st_size != EXPECTED_SIZE or version(before) != EXPECTED_VERSION:
+            raise ValueError("Original size or version differs from the observed pin")
+        blocks = []
+        remaining = EXPECTED_SIZE + 1
+        while remaining:
+            block = os.read(fd, min(1048576, remaining))
+            if not block:
+                break
+            blocks.append(block)
+            remaining -= len(block)
+        raw = b"".join(blocks)
+        after_fd = regular(os.fstat(fd))
+        after_path = regular(os.lstat(SOURCE))
+        if any(identity(s) != identity(before) for s in (after_fd, after_path)):
+            raise ValueError("Original changed while being read")
+        if len(raw) != EXPECTED_SIZE or sha(raw) != EXPECTED_SHA256:
+            raise ValueError("Original bytes differ from the expected report")
+        return fd, before, raw
+    except BaseException:
+        os.close(fd)
+        raise
+
+def require_original_unchanged(fd, before):
+    current_fd = regular(os.fstat(fd))
+    current_path = regular(os.lstat(SOURCE))
+    if identity(current_fd) != identity(before) or identity(current_path) != identity(before):
+        raise ValueError("Original path or descriptor changed during archiving")
+
+def read_regular(path, limit):
+    before = regular(os.lstat(path))
+    if before.st_size > limit:
+        raise ValueError("Existing archive member exceeds its bound")
+    fd = os.open(path, os.O_RDONLY | NOFOLLOW | CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        if identity(regular(os.fstat(stream.fileno()))) != identity(before):
+            raise ValueError("Existing archive path and descriptor differ")
+        raw = stream.read(limit + 1)
+        if len(raw) > limit or identity(os.fstat(stream.fileno())) != identity(before):
+            raise ValueError("Existing archive member changed or exceeded its bound")
+    if identity(regular(os.lstat(path))) != identity(before):
+        raise ValueError("Existing archive path changed")
+    return raw, before
+
+def create_only(path, raw):
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | NOFOLLOW | CLOEXEC, 0o600)
+    with os.fdopen(fd, "wb") as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+fd, original_stat, raw = read_original()
+try:
+    compressed = gzip.compress(raw, compresslevel=9, mtime=0)
+    if gzip.decompress(compressed) != raw:
+        raise ValueError("Lossless gzip roundtrip failed")
+    require_original_unchanged(fd, original_stat)
+    script_source = sys.orig_argv[sys.orig_argv.index("-c") + 1]
+    manifest = {
+        "schema": SCHEMA,
+        "host": "ai395",
+        "idempotency_key": KEY,
+        "request_script_sha256": sha(script_source.encode()),
+        "source_commit": SOURCE_COMMIT,
+        "source_path": str(SOURCE),
+        "source_version": version(original_stat),
+        "source_stat": identity(original_stat),
+        "raw_bytes": len(raw),
+        "raw_sha256": sha(raw),
+        "gzip_path": str(TARGET / "REPORT.json.gz"),
+        "gzip_bytes": len(compressed),
+        "gzip_sha256": sha(compressed),
+        "compression": {"format": "gzip", "compresslevel": 9, "mtime": 0, "zlib_version": zlib.ZLIB_VERSION},
+        "lossless_roundtrip_verified": True,
+        "original_lstat_fstat_version_unchanged": True,
+        "actor_executions": 0,
+        "owner_decision": None
+    }
+    manifest_bytes = (json.dumps(manifest, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
+    existing = False
+    try:
+        os.mkdir(TARGET, 0o700)
+    except FileExistsError:
+        existing = True
+        if not stat.S_ISDIR(os.lstat(TARGET).st_mode):
+            raise ValueError("Existing destination is not a nonsymlink directory")
+    if existing:
+        saved_gzip, _ = read_regular(TARGET / "REPORT.json.gz", EXPECTED_SIZE + 65536)
+        saved_manifest, _ = read_regular(TARGET / "MANIFEST.json", 65536)
+        if saved_gzip != compressed or saved_manifest != manifest_bytes:
+            raise ValueError("Existing archive is not the exact expected artifact; no overwrite")
+        if gzip.decompress(saved_gzip) != raw:
+            raise ValueError("Existing archive does not restore the original bytes")
+        action = "VERIFIED_EXISTING_NO_WRITE"
+    else:
+        create_only(TARGET / "REPORT.json.gz", compressed)
+        require_original_unchanged(fd, original_stat)
+        create_only(TARGET / "MANIFEST.json", manifest_bytes)
+        directory_fd = os.open(TARGET, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | NOFOLLOW | CLOEXEC)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+        saved_gzip, _ = read_regular(TARGET / "REPORT.json.gz", EXPECTED_SIZE + 65536)
+        saved_manifest, _ = read_regular(TARGET / "MANIFEST.json", 65536)
+        if saved_gzip != compressed or saved_manifest != manifest_bytes or gzip.decompress(saved_gzip) != raw:
+            raise ValueError("New archive readback differs from exact original bytes")
+        action = "CREATED_EXCLUSIVE"
+    require_original_unchanged(fd, original_stat)
+    gzip_stat = regular(os.lstat(TARGET / "REPORT.json.gz"))
+    manifest_stat = regular(os.lstat(TARGET / "MANIFEST.json"))
+    print(json.dumps({
+        "action": action,
+        "manifest": manifest,
+        "gzip_version": version(gzip_stat),
+        "manifest_path": str(TARGET / "MANIFEST.json"),
+        "manifest_version": version(manifest_stat),
+        "manifest_bytes": len(manifest_bytes),
+        "manifest_sha256": sha(manifest_bytes),
+        "final_original_version": version(os.fstat(fd)),
+        "final_original_unchanged": True
+    }, sort_keys=True, separators=(",", ":"), allow_nan=False), flush=True)
+finally:
+    os.close(fd)

@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.lossless-archive-dispatch-evidence.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "host": "ai395",
+  "job_id": "1a1cf1c8462-2564-1996",
+  "idempotency_key": "neuro4-report-lossless-archive-862531d-v1",
+  "source_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "input_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+  "preserved_files": [
+    {
+      "path": "ARCHIVE_SOURCE.py",
+      "bytes": 7595,
+      "sha256": "790adf1a7533f170e0773cc0043c695fd5a62e3f895bb7019b98b01a3bc114ce",
+      "representation": "Exact submitted -c Python source"
+    },
+    {
+      "path": "ARCHIVE_REQUEST.json",
+      "bytes": 8291,
+      "sha256": "ecd07f6100074ac14fff0a655a53a3bb532fbb4a4f76a0856d1974c1c8a3c66e",
+      "representation": "Serialized exact typed h_process_start argument values"
+    },
+    {
+      "path": "SOURCE_INFO_RETURNED_TEXT.json",
+      "bytes": 459,
+      "sha256": "16166e1947e2e144eaf851dfe98f0fcdcf71d373ad3e3d4d657d098d77a8fb20",
+      "representation": "Exact returned tool TextContent.text; not original SDK payload"
+    },
+    {
+      "path": "START_RETURNED_TEXT.json",
+      "bytes": 9043,
+      "sha256": "bb7c37bad0f642eef98ec4d2e2bf7fd027624d81b87de479359ac1c6327a3e93",
+      "representation": "Exact returned tool TextContent.text; not original SDK payload"
+    },
+    {
+      "path": "STATUS_RETURNED_TEXT.json",
+      "bytes": 731,
+      "sha256": "d0b294f65293c12480879c0c70e898dac49de887b2416b474a61be033cb63788",
+      "representation": "Exact returned tool TextContent.text; not original SDK payload"
+    },
+    {
+      "path": "READ_RETURNED_TEXT.json",
+      "bytes": 5507,
+      "sha256": "da5ea8e7bc02c75d7189a9948327858ce391bb295da121dea776e9d0efb90d14",
+      "representation": "Exact returned tool TextContent.text; stdout hex verified against returned text"
+    },
+    {
+      "path": "OUTPUT.jsonl",
+      "bytes": 1689,
+      "sha256": "5c0cd3f25996d1a7a6588381715d93616e2f4c3b833abb598a135de475c7e626",
+      "representation": "Exact process stdout bytes reconstructed from original read bytes_hex and verified against text"
+    }
+  ],
+  "status": "succeeded",
+  "exit_code": 0,
+  "stdout_complete": true,
+  "stdout_bytes": 1689,
+  "stderr_bytes": 0,
+  "original_run_modified": false,
+  "original_report_modified": false,
+  "original_archive_manifest_reconstructed": false,
+  "raw_gzip_bytes_in_this_tree": false,
+  "downstream_required": "Read original gzip and MANIFEST.json at the reported immutable versions; verify gzip SHA and decompressed raw SHA.",
+  "research_state": "HOLD",
+  "owner_decision": null
+}

@@ -1,0 +1,120 @@
+{
+  "schema": "neuroscience.independent-build-host-readback.v1",
+  "host": "desktop",
+  "hardware_operation_id": "11e2e4fc90a98d0d218867c847d1dac49c33044164298e0b76c58fdf43c2bb35",
+  "hardware_original_sdk_integrity": {
+    "operation_id": "11e2e4fc90a98d0d218867c847d1dac49c33044164298e0b76c58fdf43c2bb35",
+    "original_sdk_bytes": 7169,
+    "original_sdk_sha256": "760e01d56e18e37e3de693a11216bc2dda987a034974413a384120f0f4d79b2c",
+    "integrity_verified": true,
+    "sampled_at_utc": "2026-11-12T08:28:02.223Z",
+    "schema": "hepta-hardware-v1",
+    "platform": "linux",
+    "machine": "x86_64",
+    "kernel": "7.0.0-38-generic",
+    "cpu_model": "Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz",
+    "memory_total_kib": 131760804,
+    "memory_available_kib": 77812672,
+    "memory_total_gib": 125.65689468383789,
+    "memory_available_gib": 74.20794677734375,
+    "swap_total_kib": 8388604,
+    "swap_free_kib": 5132,
+    "swap_used_fraction": 0.9993882176343049,
+    "temperature_range_c": [
+      31,
+      42
+    ],
+    "cpu_count": null,
+    "load": null,
+    "disk_free": null,
+    "uid": null,
+    "toolchain": null,
+    "conclusion": "Resource candidate for CPU native compilation; exact CPU allocation, live pressure, disk, identity and toolchain remain unverified. No build dispatched."
+  },
+  "toolchain_probe": {
+    "request_key": "neuro4-independent-toolchain-read-862531d-v1",
+    "session_id": "dpty-b5390b2d93dda5366917d765d9b3b72c2623596ddf245448f468250923834fd5",
+    "script_sha256": "b4170d9ba71a04313f05443b77731105b1ee8852787e8e7faf8938207c362b8f",
+    "original_start_receipt": "Held by root; not reconstructed here.",
+    "exact_read_request": {
+      "host": "desktop",
+      "session_id": "dpty-b5390b2d93dda5366917d765d9b3b72c2623596ddf245448f468250923834fd5",
+      "offset": 0,
+      "limit": 16384,
+      "raw_bytes": true
+    },
+    "bytes": 4364,
+    "sha256": "c30ceb194a45a8b773a970c80ed406bba114d6b2b06db26025994a0d46382bb2",
+    "output_complete": true,
+    "exit_code": 0,
+    "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-b5390b2d93dda5366917d765d9b3b72c2623596ddf245448f468250923834fd5/output.log"
+  },
+  "files": [
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/HARDWARE_ORIGINAL_SDK.json",
+      "bytes": 7169,
+      "sha256": "760e01d56e18e37e3de693a11216bc2dda987a034974413a384120f0f4d79b2c",
+      "representation": "Exact native SDK payload decoded from original immutable operation result."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/TOOLCHAIN_PROBE_SOURCE.py",
+      "bytes": 5125,
+      "sha256": "b4170d9ba71a04313f05443b77731105b1ee8852787e8e7faf8938207c362b8f",
+      "representation": "Exact 5125-byte proposed source; root independently matched its SHA before dispatch."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/TOOLCHAIN_PROBE_OUTPUT.jsonl",
+      "bytes": 4364,
+      "sha256": "c30ceb194a45a8b773a970c80ed406bba114d6b2b06db26025994a0d46382bb2",
+      "representation": "Exact original PTY bytes, including CRLF; bytes_hex and chunk SHA verified."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/TOOLCHAIN_PTY_READ_ORIGINAL_TEXT.json",
+      "bytes": 14414,
+      "sha256": "cb350ab728dba3946c814776b21f2026f8c37f895428c083c09194f13bdfdb35",
+      "representation": "Exact returned h_pty_read text-content block; not a claim of original pre-normalization SDK envelope bytes."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/ASSET_PROBE_SOURCE.py",
+      "bytes": 9106,
+      "sha256": "ebef3879bb0916ce19f9135b12c8ead175c8a14510293b330b5a65e99b30b3ed",
+      "representation": "Exact submitted script."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/ASSET_PROBE_REQUEST.json",
+      "bytes": 9809,
+      "sha256": "a3a54cc0be9dae6107fa529c8029e724f7a695f951aa6ada6c631ce1f0b6943a",
+      "representation": "Exact typed request values rendered as JSON; formatting is an archive representation."
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/desktop-host-20261112/ASSET_PROBE_ADMISSION_READBACK.json",
+      "bytes": 802,
+      "sha256": "9e10d7c44521c600fdde939f7166bbde0227a554cb8b8e3211c36d918eb2f4d9",
+      "representation": "Retained original tool-result values, with UNKNOWN interpretation; no reconstructed remote session."
+    }
+  ],
+  "bounds": {
+    "new_builds": 0,
+    "installs": 0,
+    "actors": 0,
+    "ai395_touched": false,
+    "filesystem_create_test": false,
+    "hardware_and_toolchain_are_not_native_test_passes": true
+  },
+  "preservation": "No commit or ref created; raw content and normalized manifest remain distinct.",
+  "asset_probe": {
+    "request_key": "neuro4-desktop-assets-read-862531d-v1",
+    "script_bytes": 9106,
+    "script_sha256": "ebef3879bb0916ce19f9135b12c8ead175c8a14510293b330b5a65e99b30b3ed",
+    "admission_attempts": 2,
+    "second_attempt": "Exact same typed request and key; idempotent reconciliation.",
+    "outcome": "Both tool calls returned MCP request timed out; no session id returned.",
+    "execution_state": "UNKNOWN",
+    "new_key_retry": false,
+    "remote_execution_count": null,
+    "validation_source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+    "expected_python_methods": 19,
+    "python_validation": "NOT_RUN",
+    "format_validation": "NOT_RUN"
+  }
+}
