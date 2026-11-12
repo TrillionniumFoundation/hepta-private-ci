@@ -7,14 +7,28 @@ This stage follows `e69beef571bd7ca7b3d70f450dc8998bf171d248` on the isolated
 Source handoff components originally published on `106f5e41f2ff8421c5aad10eeb746d453ed00563`.
 It does not contain the lost, unpublished Root RunStart retention implementation.
 
-The seven new UID0 parent tests are written and enrolled, but have not executed.
-The last observed development executor had UID 1000. The current follow-up
-postimages have not run rustfmt, Python source QA, the full caller checker,
-Clippy, or native tests while that execution service is unavailable. A lexical
-preview and exact old-row comparison were performed in the orchestration
-runtime; neither is the authoritative Python verifier. The generic locator
-dependency uses the exact two blobs from `9e5fe517a94ca7acb285537648f97b378fbb3752`;
-that separate tree's test result is not inherited by this composed candidate.
+The source checks now qualify local commit
+`e4b9579c9d6183145859e16cfbb0d6b1ba2a75ca` and its exact-tree remote counterpart
+`c5dde97e8ee7b3d7e109b4586118124af12578a2`, tree
+`3fb64f7e99b05ed83270f85d12b011f8696a3a65`. On the restored UID 1000 cloud
+executor, all 34 focused source-test methods, 371 protected rows, and 510
+inventory entries passed with identical before/after commit, tree and clean
+status. Actual repository formatting and its subsequent check returned zero.
+The raw records are in `qa/evidence/root-source-durable-refusal-20261112/`.
+
+The first fixed-source run on local `d9829479ec2ca3e551412e320d0b9c48ee26c011`
+(tree `9db8c700fc6199b884438066ab554de05e031015`, remote
+`5577389546e5fd0a705eb00c7353fb2b91ee7214`) reported 6 failures and 1 error
+across 34 methods. Its original failure log and receipt are retained. The
+follow-up uses an explicit typed call for the cold handoff read and requires
+the unique complete bundle comparison and actual callback input declarations;
+it neither relaxes the verifier nor removes a negative assertion.
+
+The seven new UID0 parent tests are written and enrolled but remain unexecuted.
+Clippy, the full caller scan and native execution remain pending. The generic
+locator dependency uses the exact two blobs from
+`9e5fe517a94ca7acb285537648f97b378fbb3752`; the composed tree's results above
+come from its own run, not from that dependency's earlier evidence.
 
 No A execution, authenticated Decision/Outcome, learning admission, independent
 evaluation, CURRENT adoption, later C task, or whole-system cold restart is
@@ -131,9 +145,9 @@ Artifact readview parent, rather than replace this roster.
 
 ## Required validation
 
-Run the original repository formatting and scoped lint commands, then the
-authoritative Python source checks and full caller checker on a fixed tree.
-Relevant focused source checks are:
+The remaining gates are scoped lint, the full caller scan and actual native
+execution on a fixed tree. The following commands reproduce the focused source
+checks whose current raw records are retained:
 
 ```text
 python3 -m unittest discover -s qa/b4-no-bypass -p test_exact_generic_function_order.py
