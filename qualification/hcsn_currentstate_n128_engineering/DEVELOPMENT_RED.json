@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-n128-engineering-development-red-v1",
+  "preserved": true,
+  "failures": [
+    {
+      "kind": "small_fixture_denominator",
+      "failure": "small fixture test initially declared 105 coordinates; the independently enumerated complete stream contained 103",
+      "observed": {
+        "coordinates": 103,
+        "mismatches": 0
+      },
+      "resolution": "corrected only the fixture's exact expected denominator from 105 to 103"
+    },
+    {
+      "kind": "local_roster_mirror_transport",
+      "failure": "the first local transport mirror appended empty JSONL records, so the static audit rejected PACKET_ROSTER before graph materialization",
+      "resolution": "removed only the transport-added empty records; the immutable #6263 source bytes, identities, counts, and N128 gate were not changed"
+    }
+  ],
+  "n128_coordinate_denominator_unchanged": 4623492,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "all_closed": false
+}
