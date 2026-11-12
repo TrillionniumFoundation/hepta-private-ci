@@ -152,7 +152,7 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
         let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
         let before = cohort.bytes()?;
         let source_before = b.source_bytes()?;
-        let runner = ProviderPlanFixture::new(
+        let mut runner = ProviderPlanFixture::new(
             &cohort.original, &b.rule, &BFixture::training(&original)?,
             BFixture::original_manifests(&original),
         )?;
