@@ -35,9 +35,8 @@ guard cases, three original nextest parser cases and shell/YAML checks pass;
 actual native execution remains NOT_RUN while run 43163424939 is queued.
 
 `BLOCKERS.json` records every retained open gate. In particular, these separate
-fixtures do not qualify combined async/restart execution, GRU hidden-state
-restoration, production goal-checking host registration, original Root/AuthBus
-FinalUse, new independent real applications or full lifetime cost. Both target
+fixtures do not qualify production goal-checking host registration, original
+Root/AuthBus FinalUse, new independent real applications or full lifetime cost. Both target
 health calls timed out at MCP level; target reachability remains UNKNOWN.
 The fixed library stays the reference and adoption remains false.
 
@@ -47,3 +46,24 @@ The fixed library stays the reference and adoption remains false.
 passing cases on one assembled async/controller-recovery path. This supersedes
 only the earlier NOT_RUN status for that narrowly scoped gate. It does not join
 the model hidden-state or production-authority gates.
+
+## Archived GRU state on the joint lifecycle
+
+[GRU async recovery](gru/README.md) adds eight exact-source cases using the
+archived `B4_gru-seed-700.npz`. A nonzero post-inference hidden state and exact
+pending invocation are committed in the same durable SQLite owner before the
+sole release. After actual controller death, UNKNOWN cannot replay inference or
+release. Once the original worker's exact payload is confirmed, the restored
+second hidden state, features and `ensure, stop` actions match an uninterrupted
+reference byte-for-byte. A separate actual process death after second inference
+but before its commit recomputes from the retained first checkpoint.
+
+Independent review found and reproduced a freshness defect before publication:
+an effect disappearing after an initial confirmation could advance hidden state
+and clear pending while the final read was UNKNOWN. The retained red/green
+material shows that the repaired code requires the exact invocation and public
+completion to remain confirmed before advancing.
+
+This closes only the controlled single-invocation GRU checkpoint gate. It does
+not qualify a general multi-step policy, model benefit, production authority,
+host power-loss recovery or adoption.

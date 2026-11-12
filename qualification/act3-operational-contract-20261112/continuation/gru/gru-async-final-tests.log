@@ -1,0 +1,13 @@
+test_actual_opaque_effect_never_advances_pending_gru_after_death (__main__.GRUAsyncTests.test_actual_opaque_effect_never_advances_pending_gru_after_death) ... ok
+test_committed_gru_hidden_survives_controller_death_and_late_original_effect (__main__.GRUAsyncTests.test_committed_gru_hidden_survives_controller_death_and_late_original_effect) ... ok
+test_death_after_second_inference_before_commit_recomputes_from_h1 (__main__.GRUAsyncTests.test_death_after_second_inference_before_commit_recomputes_from_h1) ... ok
+test_death_before_release_preserves_pending_hidden_and_unknown (__main__.GRUAsyncTests.test_death_before_release_preserves_pending_hidden_and_unknown) ... ok
+test_different_real_archived_model_cannot_restore_original_hidden (__main__.GRUAsyncTests.test_different_real_archived_model_cannot_restore_original_hidden) ... ok
+test_effect_disappearing_after_confirmation_cannot_advance_hidden (__main__.GRUAsyncTests.test_effect_disappearing_after_confirmation_cannot_advance_hidden) ... ok
+test_failed_hidden_commit_cannot_release_original (__main__.GRUAsyncTests.test_failed_hidden_commit_cannot_release_original) ... ok
+test_semantically_changed_checkpoint_rejects_even_with_new_checksum (__main__.GRUAsyncTests.test_semantically_changed_checkpoint_rejects_even_with_new_checksum) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 9.222s
+
+OK

@@ -1,0 +1,21 @@
+{
+  "schema": "act3_gru_freshness_red_green_v1",
+  "red": {
+    "source_sha256": "ca7d3c581da82fc3e4224c408962f0f98dedbcd95344c2f2ac190c93e03c58b3",
+    "knowledge": "UNKNOWN",
+    "phase": "DONE",
+    "pending": null,
+    "hidden_changed": true,
+    "sequence_before": 1,
+    "sequence_after": 2
+  },
+  "green": {
+    "source_sha256": "dbb14de58a542df79039c588b071b7c3190b7ad0803c00428cd17ff9d2a95913",
+    "result": "REJECTED",
+    "phase": "PENDING",
+    "pending_invocation": "original:0",
+    "hidden_changed": false,
+    "sequence_before": 1,
+    "sequence_after": 1
+  }
+}

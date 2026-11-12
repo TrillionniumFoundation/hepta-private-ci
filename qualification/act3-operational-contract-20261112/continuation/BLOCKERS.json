@@ -7,7 +7,8 @@
   "new_tests": {
     "actual_async_pipe": 8,
     "durable_process_crash": 9,
-    "joint_async_controller_recovery": 5
+    "joint_async_controller_recovery": 5,
+    "gru_async_hidden_recovery": 8
   },
   "gates": [
     {
@@ -50,8 +51,8 @@
     },
     {
       "gate": "recurrent_model_hidden_recovery_in_new_lifecycle",
-      "status": "NOT_IMPLEMENTED",
-      "reason": "model artifact hash is bound; hidden state not restored; earlier continuation evidence is separate"
+      "status": "PASS_CONTROLLED_SINGLE_INVOCATION",
+      "reason": "archived GRU weights, nonzero h1, exact pending invocation and public features share the durable async SQLite; actual controller and post-h2 precommit deaths restore from the committed original checkpoint; UNKNOWN cannot advance hidden. Scope is one deterministic invocation and two public feature states, not a general policy or product owner"
     },
     {
       "gate": "independent_real_application_families",
@@ -75,7 +76,9 @@
     "durable_lifecycle.py": "29f88dbe6a3b933fb84bf362e35323146f32f4c15da6662eb1a1ada1328d4689",
     "test_durable_lifecycle.py": "dc58c4df4f0c2e8e24466310c4b2f97f05b8679a577346a93d4dd3c2567a7c8f",
     "durable_async_owner.py": "e12b19e15bc38278de05689e773d037b2272f66eca6b5c715392e329d1ae2703",
-    "test_durable_async_owner.py": "a898bead9483334a9e04557681f4c2e7a3ee81bde065304897b44c8b9fae2251"
+    "test_durable_async_owner.py": "a898bead9483334a9e04557681f4c2e7a3ee81bde065304897b44c8b9fae2251",
+    "gru_async_continuation.py": "dbb14de58a542df79039c588b071b7c3190b7ad0803c00428cd17ff9d2a95913",
+    "test_gru_async_continuation.py": "070d7ee6a1858cd083b7500de7eaecbde58cf6a2e00f0e92d42a7be14dce09b1"
   },
   "all_blockers_closed": false,
   "production_adoption": false,
