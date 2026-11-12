@@ -8480,7 +8480,7 @@ definition_path = "codex-rs/hepta-agentd/src/authority_host_run_start_store.rs"
 definition_markers = ["fn read_original_publication(", "observed.observed_unix_ms", "frame.frame_start != observed.frame_start"]
 product_callers = []
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)read_original_publication\\s*\\("
+receiver_type = "RootRetainedRunStartDataV1"
 
 [[boundary]]
 id = "root_initial_run_start_client"
