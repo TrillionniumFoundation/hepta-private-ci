@@ -11,6 +11,54 @@ use data::SourceDeploymentData;
 
 const DEPLOYMENT_PURPOSE: &str = "runtime.circuit.single-q24-source-deployment.v1";
 
+impl crate::RootHistoricalSourceInputsV1 {
+    /// Data-only cold opening. The complete task provider calls this only
+    /// beneath its existing Source refusal arm and actual recipient context.
+    pub(crate) fn open_original_source_deployment(
+        path: &Path,
+        identity: &crate::AgentdIdentity,
+    ) -> io::Result<Self> {
+        crate::authority_host_service::generation_initial::original_root()?;
+        let (descriptor, bytes) = MetadataFile::open_metadata(path)?;
+        let data: SourceDeploymentData =
+            serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+        if data.schema_version != 1 || data.purpose != DEPLOYMENT_PURPOSE {
+            return Err(io::Error::other("original Source deployment required"));
+        }
+        let journal = OriginalFile::open_original(&data.source_journal)?;
+        let witness = OriginalFile::open_original(&data.source_witness)?;
+        let inputs = data.into_inputs(
+            identity,
+            journal.original_descriptor()?,
+            witness.original_descriptor()?,
+        )?;
+        journal.require_original_file()?;
+        witness.require_original_file()?;
+        descriptor.require_metadata_unchanged()?;
+        Ok(inputs)
+    }
+}
+
+impl crate::authority_host_service::generation_initial::cell_retention::RootHistoricalCellInputsV1 {
+    /// The original Cell loader is invoked by open_captured inside its own
+    /// persistent arm. Missing old custody is never filled from Source data.
+    pub(crate) fn open_original_cell_deployment(path: &Path) -> io::Result<Self> {
+        crate::authority_host_service::generation_initial::original_root()?;
+        let (descriptor, bytes) = MetadataFile::open_metadata(path)?;
+        let data: SourceDeploymentData =
+            serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+        if data.schema_version != 1 || data.purpose != DEPLOYMENT_PURPOSE {
+            return Err(io::Error::other("original Source/Cell deployment required"));
+        }
+        let cell = data
+            .cell_files
+            .ok_or_else(|| io::Error::other("original captured Cell files required"))?
+            .open_original_cell_inputs()?;
+        descriptor.require_metadata_unchanged()?;
+        Ok(cell)
+    }
+}
+
 impl PreparedHostAuthoritySession {
     /// Retain original readonly inputs before serving the original Initial
     /// session. The unique capability stays in that same Root runtime; A may
