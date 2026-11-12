@@ -106,6 +106,19 @@ pub(super) struct PostALearningInstallation {
 }
 
 impl PostALearningRuntime {
+    pub(super) fn require_completed_plan(
+        &self,
+        deployment: &str,
+        freeze: &super::completed_journal::CompletedJournalFiles,
+    ) -> io::Result<()> {
+        self.require_original_metadata()?;
+        if !self.register || self.metadata.digest().to_string() != deployment {
+            return Err(io::Error::other(
+                "fresh terminal requires the original registered post-A plan",
+            ));
+        }
+        PostAFreezeFiles::require_completed_files(&self.freeze, freeze)
+    }
     pub(super) fn prepare_original_installation(
         &self,
         service: &HostAuthorityService,

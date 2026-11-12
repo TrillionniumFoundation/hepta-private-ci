@@ -29,6 +29,7 @@ pub(super) enum RootDataKind {
     CellSnapshot,
     HistoricalLedger,
     RunStart,
+    CompletedLearning { initial: [u8; 32] },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -240,11 +241,18 @@ fn binding(
     let scope = crate::neuron_generation_current::types::scope_digest(target.scope())
         .map_err(io::Error::other)?;
     let name = match kind {
-        RootDataKind::SourcePin => "source-pin",
-        RootDataKind::SourceHandoff => "source-handoff",
-        RootDataKind::CellSnapshot => "cell-snapshot",
-        RootDataKind::HistoricalLedger => "historical-ledger",
-        RootDataKind::RunStart => "run-start",
+        RootDataKind::SourcePin => "source-pin".to_owned(),
+        RootDataKind::SourceHandoff => "source-handoff".to_owned(),
+        RootDataKind::CellSnapshot => "cell-snapshot".to_owned(),
+        RootDataKind::HistoricalLedger => "historical-ledger".to_owned(),
+        RootDataKind::RunStart => "run-start".to_owned(),
+        RootDataKind::CompletedLearning { initial } => {
+            let initial = codex_hepta_types::Digest32::from_array(initial);
+            if initial.is_zero() {
+                return Err(io::Error::other("original completed initial is empty"));
+            }
+            format!("completed-learning/{initial}")
+        }
     };
     // Match the primary slot's scope namespace. The complete target remains
     // inside the record, so a different target cannot create another gate.
@@ -260,6 +268,53 @@ fn binding(
             phase: Phase::Ready,
         },
     ))
+}
+
+/// Only the completed-learning Root service can select this dedicated kind.
+/// Its namespace also fixes the complete canonical original initial digest;
+/// it neither opens a learning owner nor supplies an execution permission.
+pub(crate) struct RootCompletedLearningRefusalV1(RootDataRefusalV1);
+
+impl RootCompletedLearningRefusalV1 {
+    pub(crate) fn retain_fresh<T>(
+        root: Arc<RootAuthorityDirectory>,
+        target: &CellGenerationOwnerBindingV1,
+        initial: codex_hepta_types::Digest32,
+        action: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<(Self, T)> {
+        let (refusal, value) = RootDataRefusalV1::create_fresh(
+            root,
+            RootDataKind::CompletedLearning {
+                initial: initial.into_array(),
+            },
+            target,
+            action,
+        )?;
+        Ok((Self(refusal), value))
+    }
+
+    pub(crate) fn accept_registered<T>(
+        &self,
+        action: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<T> {
+        RootDataRefusalV1::inspect(&self.0, action)
+    }
+
+    pub(crate) fn read_original<T>(
+        root: Arc<RootAuthorityDirectory>,
+        target: &CellGenerationOwnerBindingV1,
+        initial: codex_hepta_types::Digest32,
+        action: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<T> {
+        let refusal = Self(RootDataRefusalV1::open_existing(
+            root,
+            RootDataKind::CompletedLearning {
+                initial: initial.into_array(),
+            },
+            target,
+        )?);
+        RootDataRefusalV1::inspect(&refusal.0, action)
+    }
 }
 
 #[cfg(test)]
