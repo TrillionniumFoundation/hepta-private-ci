@@ -36,6 +36,21 @@ fn original_files(f: &ReceiptFixture) -> anyhow::Result<[Vec<u8>; 4]> {
     ])
 }
 
+fn original_matrix_parameters(bytes: &[u8]) -> anyhow::Result<u64> {
+    anyhow::ensure!(
+        bytes.len() >= 12 && &bytes[..8] == b"HQ24M001",
+        "original matrix header"
+    );
+    let rows = u64::from(u16::from_le_bytes(bytes[8..10].try_into()?));
+    let columns = u64::from(u16::from_le_bytes(bytes[10..12].try_into()?));
+    let parameters = rows * columns;
+    anyhow::ensure!(
+        bytes.len() as u64 == 12 + parameters * 8,
+        "original matrix extent"
+    );
+    Ok(parameters)
+}
+
 #[test]
 fn original_training_work_matches_signed_native_bytes_and_cold_readback() -> anyhow::Result<()> {
     let f = ReceiptFixture::new(2 * Q)?;
@@ -63,13 +78,29 @@ fn original_training_work_matches_signed_native_bytes_and_cold_readback() -> any
         CellQ24PrivateHeadV1::Drive { index: 0 },
         &candidate.heads,
     )?;
-    let total = ["base", "encoder", "heads"]
+    let mut total = ["base", "encoder", "heads"]
         .into_iter()
         .map(|name| fs::read(f.root.path().join(name)))
         .collect::<std::io::Result<Vec<_>>>()?
         .iter()
-        .map(|bytes| (bytes.len() - 12) / 8)
-        .sum::<usize>() as u64;
+        .map(|bytes| original_matrix_parameters(bytes))
+        .collect::<anyhow::Result<Vec<_>>>()?
+        .into_iter()
+        .sum::<u64>();
+    // Both actual adapters are model parameters even though the optimizer
+    // changes only one private head row. Count their original nested matrices.
+    for name in ["organ", "cell"] {
+        let bytes = fs::read(f.root.path().join(name))?;
+        anyhow::ensure!(
+            bytes.len() >= 12 && &bytes[..8] == b"HQ24A001",
+            "original adapter header"
+        );
+        let down_length = usize::from(u16::from_le_bytes(bytes[8..10].try_into()?));
+        let split = 12 + down_length;
+        anyhow::ensure!(split <= bytes.len(), "original adapter extent");
+        total += original_matrix_parameters(&bytes[12..split])?;
+        total += original_matrix_parameters(&bytes[split..])?;
+    }
     let width = u64::from(u16::from_le_bytes(candidate.heads[10..12].try_into()?));
     let (compute, policy, eligibility, schedule) =
         crate::cell_composed_q24::original_q24_work_contract(
