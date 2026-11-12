@@ -64,12 +64,22 @@ impl OriginalRootInputs {
                 schema_version: 1,
                 required_bind: required_bind.clone(),
                 signer_id: "ordinary-original-root".into(),
-                policies: vec![DeploymentGrantPolicy {
+                // Root declares these exact destinations/scope before A.
+                // Later C still needs its real Root publication admission;
+                // policy data never changes the original issuer lease binding.
+                policies: [
+                    binding.destination_id.as_str(),
+                    "agentd.cell-generation.replace-drained",
+                    "agentd.cell-generation.next-task-same-model",
+                ]
+                .into_iter()
+                .map(|destination| DeploymentGrantPolicy {
                     subject_id: binding.subject_id.clone(),
-                    destination_id: binding.destination_id.clone(),
+                    destination_id: destination.into(),
                     scope_sha256: binding.scope_sha256,
                     lifetime_ms: LIFETIME_MS,
-                }],
+                })
+                .collect(),
                 lease_id: "ordinary-original-root".into(),
                 lease_binding: AuthorityLeaseBinding {
                     principal_id: binding.subject_id.clone(),
