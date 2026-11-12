@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.learn.root29-maintenance8bf-independent-peer.v1",
+  "reviewer": "/root/learn_evaluator_budget",
+  "result": "NO_BLOCKING_FINDING_WITHIN_STATIC_INERT_REVIEW",
+  "source": {
+    "sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443"
+  },
+  "reviewed": {
+    "root29_before": {
+      "blob": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+      "bytes": 35123,
+      "sha256": "e2ea4e03052e5028c8e618f55c6625890ca163b5222c7b32e5035027f6a00970"
+    },
+    "root29_after": {
+      "blob": "057787891e4223e81441db28ba79b34f934bffc7",
+      "bytes": 39520,
+      "sha256": "479f535614629eefdb3ed25da9a2a595fa56e230c706fdea73be8bf91ef854b9"
+    },
+    "maintenance_before": {
+      "blob": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+      "bytes": 37500,
+      "sha256": "b24bc557e36392ac9f447868f5bb31320b09540fcf152e0910545164266c3a78"
+    },
+    "maintenance_after": {
+      "blob": "c948b942a88dd995cbc4ad6cbf85f9be28e090cb",
+      "bytes": 37628,
+      "sha256": "dd4feaf6125ab4852318ccc123d2a441f5a20c6024dcfafe06b371a28e99ba66"
+    },
+    "contract": {
+      "blob": "274ec46549f0a4172b45f2337b45198dce2170be",
+      "bytes": 15292,
+      "sha256": "759f7546dacfc1b7ae011ab08d089fd897346af5822b50d78598813ee6f03d1f"
+    },
+    "root29_edits": {
+      "blob": "5893f4d24e254974b6a39d186a919ed01aad18f0",
+      "bytes": 17070,
+      "sha256": "d40b4b5b489e42e2c9b93fc1dbbe8a772ee561fea610cb3c49830a8ab2f99448"
+    },
+    "root29_patch": {
+      "blob": "e177050a1a7093b3cc6fa9f5c12cca7c12597ec6",
+      "bytes": 11299,
+      "sha256": "06cf227dc807ebbefa31c66967100e21261d8b504c3d255c33b7bb80c22b20a3"
+    },
+    "maintenance_edits": {
+      "blob": "cff424d9d1f6670ac54c336bfcaceabae05d6eba",
+      "bytes": 5567,
+      "sha256": "7cdb4126c2ac403a6aa079f4a2a54d10df79540df1507f23d3637b8352be08b9"
+    },
+    "maintenance_patch": {
+      "blob": "4041d0f7edfa883bd1ffdfca14c524ba23a7930e",
+      "bytes": 2895,
+      "sha256": "aee41434d3f177e5c9aff5472650745438236e20e9748b68c722afd24d5a289a"
+    },
+    "preserved_block_audit": {
+      "blob": "b0f0bdb3c6cf00759466f22e94fd8b576f8ac089",
+      "bytes": 10985,
+      "sha256": "74a394336bbc85c00bf8ffc0df07223351d7bb6569301a4e419aa1d288c37448"
+    }
+  },
+  "whole_replays": [
+    {
+      "script": "root29",
+      "before": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+      "after": "057787891e4223e81441db28ba79b34f934bffc7",
+      "edits": 40,
+      "metadata_equal": true,
+      "exact_forward_equal": true,
+      "exact_inverse_equal": true,
+      "patch_hunks": 35,
+      "patch_forward_equal": true,
+      "patch_inverse_equal": true
+    },
+    {
+      "script": "maintenance",
+      "before": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+      "after": "c948b942a88dd995cbc4ad6cbf85f9be28e090cb",
+      "edits": 17,
+      "metadata_equal": true,
+      "exact_forward_equal": true,
+      "exact_inverse_equal": true,
+      "patch_hunks": 9,
+      "patch_forward_equal": true,
+      "patch_inverse_equal": true
+    }
+  ],
+  "direct_original_block_checks": {
+    "root29_original_list_equal": true,
+    "root29_original_environment_allowlist_equal": true,
+    "root29_original_CI_pins_equal": true,
+    "root29_original_V8_digests_equal": true,
+    "root29_command_argv_section_equal": true,
+    "root29_terminal_to_cleanup_section_equal": true,
+    "root29_cleanup_finally_equal": true,
+    "root29_no_run_or_check_output_left": true,
+    "maintenance_original_COMMANDS_equal": true,
+    "maintenance_postimage_snapshot_command_functions_equal": true,
+    "maintenance_post_maintenance_sha_tree_assignments": [
+      "              \"commands\": [], \"snapshots\": [], \"post_maintenance_sha\": None,",
+      "              \"post_maintenance_tree\": None, \"tests_after_maintenance\": [],"
+    ],
+    "new_none_before_imports": true
+  },
+  "findings": [
+    {
+      "boundary": "Inert before any effect",
+      "conclusion": "Both complete postimages retain BINDING=None and immediate SystemExit before imports, Path construction, filesystem actions or child creation. No H request is part of these inputs. Root29 future binding accepts only the two actual complete native result/execution hashes; those values remain unavailable. No v3 creation or worktree-ready evidence substitutes for native/fullcaller/Root29 terminals."
+    },
+    {
+      "boundary": "Root29 qualification and original scope",
+      "conclusion": "The exact original ordered29 cases, package, run-ignored-only selection, retries0, single thread,7200-second recorder budget, original minimum-tests1 plus strict actual29 JUnit check, CI pins and sudo environment allowlist are unchanged. The added fullhash-bound MAIN/result.json and independent MAIN/focused-native.json checks require same8bf/treec873, original helper success, exact201 main pass and an actual finished clean inner command with all zero exits. Main and inner bytes are reread before Root dispatch and final pass."
+    },
+    {
+      "boundary": "Creation identity is separate from test identity",
+      "conclusion": "Both scripts reference the independently read actual c67 target-v3 receipt12843B/SHA1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b. Creation remains453/tree8cbd, while testing is8bf/treec873. They preserve original runtime directory identity comparisons, original441 dependency recovery and V8 pins. The v3 target is not a new cache scope or enlarged resource budget."
+    },
+    {
+      "boundary": "Owned processes and Root cleanup",
+      "conclusion": "The four former convenience calls are replaced by Popen on the same Git, record_step, bind-mount and unmount commands, with the same cwd/environment/output destinations and checked-return behavior. Exception paths communicate/wait the same owned handle. No kill/terminate/send_signal or process replay is added. The original Root child terminal validation through scoped chown and the finally cleanup conditions are byte-identical. Missing or partial original Root terminal keeps the fixture and forbids chown/unmount; only the certified invocation mount_id/source/bind identities can be unmounted."
+    },
+    {
+      "boundary": "Fullcaller sequencing",
+      "conclusion": "Root29 itself validates original native201 eligibility and its own Root execution; it does not claim to validate fullcaller. Root must still wait for required same-source fullcaller actual terminal evidence before filling and dispatching the prepared continuation, as directed. Maintenance separately preserves every started fullcaller phase's original/started hash, PID/run identity and actual completed child terminal check. A10800-second recorder return without inner termination cannot authorize source maintenance."
+    },
+    {
+      "boundary": "Maintenance and dirty source evidence",
+      "conclusion": "The original five-package just fix --locked --offline is followed by just fmt --base be8adcbb5e9925f72e05330b8fb30509cba4544b. COMMANDS, native_terminal, original process-command helper, postimage and snapshot functions are byte-identical. Before/fix-after/fmt-after retain complete NUL status, binary diff, binary and untracked postimages, deletions, symlink targets and actual stdout/stderr/child exits. Nonzero fix cannot be hidden by zero fmt. post_maintenance_sha/tree remain onlyNone, and HEAD/Gitclean is never assigned as dirty working-tree identity. No tests, commit, publication, cleanup or signals follow final maintenance."
+    },
+    {
+      "boundary": "Failed gate accounting",
+      "conclusion": "Maintenance accepts only actual terminal attempts using the original explicit branches. Root29 not_admissible requires the bound original failed main eligibility basis; it is not forced to execute when201 is not eligible. If the original native gate is eligible, actual Root29 terminal evidence is required. No ordinary-task-success prerequisite or fabricated positive acceptance is introduced."
+    }
+  ],
+  "actual_v3_reference": {
+    "blob": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+    "bytes": 12843,
+    "sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b",
+    "separately_reviewed_in": "7b0436b8f1e41b1b2ce05574ebac275d1bdb1caa",
+    "native_tests_executed_by_creation": 0
+  },
+  "limits": {
+    "method": "Full Git API reads and independent Git/SHA256 checks; exact replacements and unified patches replayed both directions in V8; narrow manual source review.",
+    "H": false,
+    "Python": false,
+    "Rust": false,
+    "tests": false,
+    "PR_or_source_changes": false,
+    "typed_requests_created": false,
+    "actual_8bf_terminal_receipts_reviewed_for_binding": false,
+    "final_bindings": null,
+    "ordinary_acceptance": 0,
+    "not_claimed": [
+      "Python syntax/runtime success",
+      "native201 or fullcaller pass",
+      "Root29 execution/pass",
+      "final maintenance execution",
+      "ordinary A/B/C adoption or cold restart"
+    ]
+  }
+}
