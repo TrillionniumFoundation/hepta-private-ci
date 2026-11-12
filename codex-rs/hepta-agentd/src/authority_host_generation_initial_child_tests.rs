@@ -34,6 +34,7 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
         .enable_all().build()?.block_on(async {
         let mut original_claims: Option<Vec<u8>> = None;
         for phase in [Phase::Publish, Phase::ReserveExisting, Phase::Recover, Phase::RetiredSession, Phase::Corrupt, Phase::Restored] {
+            let original_end = Instant::now() + LIFETIME;
             eprintln!("ROOT_INITIAL_CHILD phase={phase:?} stage=awaiting_original_handoffs");
             let (mut sealed, root_pin) =
                 crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)
@@ -88,13 +89,37 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             };
             assert_eq!(socket.send(b"ORIGINAL_INPUTS_READY")?, 21);
             eprintln!("ROOT_INITIAL_CHILD phase={phase:?} stage=original_inputs_ready_sent");
-            let enrolled: bool = data(&socket)
-                .with_context(|| format!("initial child {phase:?}: awaiting original enrollment result"))?;
+            let rejected = matches!(phase, Phase::ReserveExisting | Phase::Corrupt | Phase::Restored);
+            let initial = match plan.enrollment_route {
+                EnrollmentRoute::OriginalRootTrigger => {
+                    let enrolled: bool = data(&socket)
+                        .with_context(|| format!("initial child {phase:?}: awaiting original enrollment result"))?;
+                    assert_eq!(enrolled, !rejected);
+                    if rejected {
+                        drop((initial, connection));
+                        None
+                    } else {
+                        Some(initial.connect(connection, TIMEOUT, LIFETIME).await
+                            .with_context(|| format!("initial child {phase:?}: connecting original initial lane"))?)
+                    }
+                }
+                EnrollmentRoute::OriginalPeerReady => {
+                    let result = initial.connect_ready_until(connection, TIMEOUT, original_end).await;
+                    if rejected {
+                        anyhow::ensure!(result.is_err(), "original peer readiness must reject bad retained state");
+                        None
+                    } else {
+                        let initial = result.with_context(|| format!("initial child {phase:?}: original peer readiness"))?;
+                        println!("ROOT_INITIAL_PEER_READY phase={phase:?} acknowledgement=observed");
+                        Some(initial)
+                    }
+                }
+            };
             if matches!(phase, Phase::ReserveExisting | Phase::Corrupt | Phase::Restored) {
-                assert!(!enrolled, "existing CURRENT, actual corrupt or durably fenced original material rejected");
+                assert!(initial.is_none(), "existing CURRENT, actual corrupt or durably fenced original material rejected");
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(Some(std::fs::read(&claims)?), original_claims);
-                drop((initial, connection, original_artifacts, target));
+                drop((initial, original_artifacts, target));
                 assert_eq!(socket.send(b"STABLE")?, 6);
                 control(&socket, b"CHECKED")
                     .with_context(|| format!("initial child {phase:?}: awaiting parent CHECKED"))?;
@@ -109,9 +134,7 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                     .with_context(|| format!("initial child {phase:?}: awaiting original server completion"))?;
                 continue;
             }
-            assert!(enrolled);
-            let initial = initial.connect(connection, TIMEOUT, LIFETIME).await
-                .with_context(|| format!("initial child {phase:?}: connecting original initial lane"))?;
+            let initial = initial.ok_or_else(|| anyhow::anyhow!("original enrolled Initial client missing"))?;
             let (authorities, selected) = match original_artifacts {
                 Some((artifacts, selected)) => (
                     crate::AgentdGenerationUpdateAuthoritiesV1::new(
