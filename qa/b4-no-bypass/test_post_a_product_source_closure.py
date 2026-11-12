@@ -23,7 +23,7 @@ CALLERS = {
     "root_post_a_enable": (),
     "root_post_a_independent_b_enable": (CLI,),
     "root_post_a_fixed_plan": (PREPARED,),
-    "root_post_a_derive_profile": (PLAN,),
+    "root_post_a_derive_profile": (A + "authority_host_completed_observation.rs", PLAN),
     "root_post_a_prepare_installation": (PROVIDER,),
     "root_post_a_install_provider": (route.PROVIDER,),
     "root_learning_derived_checkpoint": (PLAN,),

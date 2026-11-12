@@ -29,7 +29,11 @@ CALLERS = {
     "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT, DERIVE),
     "original_task_data_decode": (),
     "original_task_data_decision": (DATA,),
-    "root_historical_task_publication_data": (route.PROVIDER, DERIVE),
+    "root_historical_task_publication_data": (
+        route.PROVIDER,
+        DERIVE,
+        A + "authority_host_completed_learning.rs",
+    ),
     "root_historical_task_publication_read": (TASK,),
     "cell_q24_historical_dataset_task_capture": (A + "production_post_a_q24.rs",),
     "cell_q24_historical_dataset_task_receipt": (A + "cell_q24_dataset_historical_ledger.rs",),

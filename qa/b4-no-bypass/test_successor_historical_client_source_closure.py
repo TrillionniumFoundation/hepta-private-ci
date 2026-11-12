@@ -26,7 +26,10 @@ CONTINUATION = A + "production_post_a_continuation.rs"
 CALLERS = {
     "root_successor_client_read": (STORE,), "root_successor_client_backend": (OWNER,),
     "root_successor_client_owner": (CAP,), "root_successor_live_current": (CAP,),
-    "root_successor_canonical_data": (CAP,), "root_successor_cap_recover": (CONTINUATION,),
+    "root_successor_canonical_data": (
+        CAP, A + "authority_host_publication_completed_next_use.rs",
+    ),
+    "root_successor_cap_recover": (CONTINUATION,),
     "root_successor_cap_read": (), "root_successor_feature_binding": (RECEIPT,),
     "root_successor_feature_observation": (RECEIPT,),
     "root_successor_generation_owner_recover": (HANDOFF,),
