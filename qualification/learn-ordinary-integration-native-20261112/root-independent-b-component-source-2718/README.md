@@ -1,0 +1,5 @@
+# Actual B component tests and prospective cohort correction
+
+The preserved commits add eleven actual file/native-computation test definitions, including original Training signature readback after a second witnessed journal key and refusal before signing when the original witness budget is exhausted. Two new file tests require actual UID0. These tests have not executed. A twelfth data-only case checks that a future decision timestamp is bound by its later policy signature and temporal admission, without requiring preregistration to predict the timestamp. The preregistered cohort uses an explicit v2 digest over its original identities, lineage and action universe.
+
+Formatting and whitespace checks succeeded. No compilation, native B, ordinary-path or complete cold-recovery result is claimed. The completed 223948 diagnostic worktree was retired only after exact clean-tree and process checks; its full failure records were already preserved in the preceding evidence commit. Source objects and branch remain retained.
