@@ -1,0 +1,33 @@
+{
+  "schema": "profile-input-gzip-decoding-v1",
+  "method": "Plain JavaScript in functions V8 isolate; no executor, host process, shell, browser, native test or H call.",
+  "decoder_usage": "Each *.function-body.js is passed as the body of new Function(sourceText), then called to obtain its exported helpers.",
+  "checks": [
+    "gzip DEFLATE header flags",
+    "DEFLATE bounds and code validity",
+    "output exact bound",
+    "CRC32",
+    "ISIZE",
+    "strict UTF-8",
+    "pre-existing exact uncompressed SHA-256 and byte count"
+  ],
+  "originals_commit": "be2f77f4475626f4bfbeeaecba2c1816e08cf339",
+  "results": [
+    {
+      "store_key": "profile_recovery_v4_input_payload_v1",
+      "bytes": 412307,
+      "sha256": "51813570322d9eaac675c01b5a5f43d22ded416b70d8ab5bab3aacde7eba6cd1",
+      "git_blob": "cc3cb2e48749fff17115877e3b1c8fcb7bb214f2",
+      "files": 12
+    },
+    {
+      "store_key": "profile_recovery_root3_input_payload_v1",
+      "bytes": 93902,
+      "sha256": "ea6808d3f0313f58dcdb0db4567bbd3b7046a96fe126a886b7268cccfa4eccb0",
+      "git_blob": "95953504052b9760fc4c19bd318c0e5329f9f128",
+      "files": 3
+    }
+  ],
+  "final_source_qa_57": "UNRUN",
+  "qualification": 0
+}
