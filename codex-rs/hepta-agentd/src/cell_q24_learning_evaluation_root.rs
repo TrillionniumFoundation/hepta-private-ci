@@ -76,7 +76,7 @@ impl Q24StageOwners {
         if self.evaluation.is_some() {
             return Err(Error::WrongScope);
         }
-        let original = self
+        let original: &OriginalRootIndependentBEvaluationClientV1 = self
             .root_evaluation
             .as_deref()
             .ok_or(Error::OwnerUnavailable("original Root B handoff"))?;

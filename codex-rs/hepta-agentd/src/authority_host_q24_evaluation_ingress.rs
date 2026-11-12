@@ -25,7 +25,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         request: &SourceRequest,
     ) -> io::Result<Vec<u8>> {
         let end = self.end.min(frame_end);
-        self.record.inspect(end, |enrollment| {
+        OriginalBRecord::inspect(&self.record, end, |enrollment| {
             if request.schema != 1
                 || request.purpose != PURPOSE
                 || request.binding != self.original_binding().to_string()
