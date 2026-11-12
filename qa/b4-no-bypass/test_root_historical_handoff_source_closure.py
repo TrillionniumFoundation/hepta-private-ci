@@ -34,10 +34,12 @@ def require_read_only_handoff(source):
 
 def require_one_durable_transition_per_request(source):
     code = component.function_code(source, "exchange")
-    for method in ("begin", "acknowledge", "finalize_after_verified_context", "open_finalized"):
+    for method in ("begin", "acknowledge", "finalize_after_verified_context"):
         marker = "RootHistoricalSourceHandoffV1::" + method + "("
         if code.count(marker) != 1:
             raise PROOF.VerificationFailure("one original durable transition site required")
+    if "RootHistoricalSourceHandoffV1::open_finalized(" in code:
+        raise PROOF.VerificationFailure("same-kind recovery cannot nest inside finalization")
 
 
 class RootHistoricalHandoffClosureTests(unittest.TestCase):
@@ -64,8 +66,8 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
             "publisher_epoch: registration.publisher_epoch", "publisher: CognitiveCheckpointPeerLifetime {",
             "target: slot.profile.deployment.target.clone()", "phase: HandoffPhase::Pending",
         ))
-        self.rejects_removal(component.PIN, "require_original_registration", (
-            "self.readback_digest()?", "pin.initial_profile != profile.binding",
+        self.rejects_removal(component.RECORD, "require_original_registration", (
+            "self.inspect_exact(|| {", "pin.initial_profile != profile.binding",
             "pin.identity != profile.identity", "pin.writer != profile.writer",
             "pin.target != profile.deployment.target", "pin.target_files != profile.target_files",
             "pin.publisher_epoch != registration.publisher_epoch", "pin.publisher",
@@ -100,15 +102,22 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
     def test_ack_is_exact_pending_cas_and_conflict_stays_poisoned(self):
         self.rejects_removal(HANDOFF, "acknowledge", (
             "self.require_exact()?", "self.expected.phase != HandoffPhase::Pending",
-            "next.phase = HandoffPhase::PeerAcknowledged",
+            "next.phase = HandoffPhase::PeerAcknowledged", "self.replace(next, || Ok(()))",
+        ))
+        self.rejects_removal(HANDOFF, "replace", (
+            "self.refusal.inspect(|| {",
+            "self.store.load(&self.owner).map_err(io::Error::other)? != self.expected",
             "compare_and_set(&self.owner, &self.expected, &next)",
-            "self.expected = next", "self.require_exact()",
+            "self.store.load(&self.owner).map_err(io::Error::other)? != next",
+            "postcheck()", "self.poisoned = true", "self.expected = next",
         ))
         self.rejects_removal(HANDOFF, "require_exact", (
-            "original_root()?", "if self.poisoned", "record == self.expected", "self.poisoned = true",
+            "original_root()?", "if self.poisoned", "self.refusal.inspect(|| {",
+            "self.store.load(&self.owner).map_err(io::Error::other)? != self.expected",
+            "self.poisoned = true",
         ))
         self.rejects_removal(HANDOFF, "fence", (
-            "self.poisoned = true", "same_binding.phase = self.expected.phase",
+            "self.poisoned = true", "self.refusal.refuse()?", "same_binding.phase = self.expected.phase",
             "if same_binding != self.expected", "observed.phase == HandoffPhase::Fenced",
             "next.phase = HandoffPhase::Fenced", "compare_and_set(&self.owner, &observed, &next)",
         ))
@@ -144,7 +153,8 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
             "RootHistoricalSourceHandoffV1::begin(",
             "RootHistoricalSourceHandoffV1::acknowledge(&mut handoff)",
             "RootHistoricalSourceHandoffV1::finalize_after_verified_context(",
-            "RootHistoricalSourceHandoffV1::open_finalized(", "self.acknowledged = true",
+            "retained_root", "retained_target",
+            "pin.readback_digest()? != receipt.pin_digest()", "self.acknowledged = true",
         ))
         def early_ack(source):
             source = source.replace("self.acknowledged = true;", "", 1)
@@ -159,8 +169,7 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
     def test_peer_ack_cannot_skip_original_context_postchecks_or_durable_finalization(self):
         self.rejects_removal(HANDOFF, "finalize_after_verified_context", (
             "self.require_exact()?", "self.expected.phase != HandoffPhase::PeerAcknowledged",
-            "next.phase = HandoffPhase::Finalized", "compare_and_set(&self.owner, &self.expected, &next)",
-            "self.expected = next", "self.require_finalized()",
+            "next.phase = HandoffPhase::Finalized", "self.replace(next, postcheck)",
         ))
         self.check_mutation(TRANSPORT, lambda source: source.replace(
             "self.handoff = Some(handoff);\n                result?;",
