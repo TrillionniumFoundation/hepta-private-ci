@@ -20,6 +20,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 READBACK = AGENT + "cell_composed_q24_training_observation.rs"
 RECEIPTS = AGENT + "cell_q24_training_receipt_owner.rs"
 MODEL_MATERIAL = AGENT + "cell_q24_model_proposal_admission.rs"
+MODEL_CURRENT = AGENT + "cell_q24_model_current_admission.rs"
 
 
 class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
@@ -46,10 +47,10 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         row = rows["cell_q24_original_training_observation"]
         self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-        self.assertEqual(row.product_callers, (RECEIPTS, MODEL_MATERIAL))
+        self.assertEqual(row.product_callers, (RECEIPTS, MODEL_MATERIAL, MODEL_CURRENT))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
-            for path in (READBACK, RECEIPTS, MODEL_MATERIAL)
+            for path in (READBACK, RECEIPTS, MODEL_MATERIAL, MODEL_CURRENT)
         }
         PROOF._verify_boundary(ROOT, row, sources, ())
         sources[AGENT + "unregistered_training_result.rs"] = (

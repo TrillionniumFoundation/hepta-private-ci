@@ -36,7 +36,7 @@ EXPECTED = {
     "learning_original_published_read_owner_serve": (),
     "learning_original_source_input_current": ('codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
     "learning_original_circuit_selection_remote_attest": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
-    "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"),
+    "learning_original_circuit_selection_remote_readback": ('codex-rs/hepta-agentd/src/circuit_selection_command_service.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs'),
     "learning_original_circuit_next_use_remote_attest": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
     "learning_original_circuit_next_use_remote_readback": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs"),
     "learning_original_owner_physical_current": ("codex-rs/hepta-agentd/src/learning_owner_journal.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs", "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",),
@@ -203,17 +203,31 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             self.rejects(SERVICE, "fn response(", marker)
 
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
-        for path, function, verifier in (
-            (SELECTOR, "fn read_remote_selection(", "authenticate_training"),
-            (OBSERVER, "fn read_remote_next_use(", "authenticate_predecessors"),
+        for path, function, reader, verifier in (
+            (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
+            (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
         ):
             for marker in (
                 "live.require_original_context(",
                 "live.read_current().await?",
-                f"{verifier}(config, &before, now()?)?",
-                f"{verifier}(config, &after, now()?)?",
             ):
                 self.rejects(path, function, marker)
+            for marker in (
+                "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+                f"self.{reader}(&source).await?",
+                f"{verifier}(&self.config, &before, now()?)?",
+                "let bytes = self.journal.read(&self.saved)?;",
+            ):
+                self.rejects(path, "fn readback_source(", marker)
+            for marker in (
+                "ObservationLocation::RemoteOwner",
+                f"self.{reader}(source).await?",
+                "if self.prepare(source).await? != *observed",
+                "if self.journal.read(&self.saved)? != bytes",
+                "let current = now()?;",
+                "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
+            ):
+                self.rejects(path, "fn finish_original_readback(", marker)
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",

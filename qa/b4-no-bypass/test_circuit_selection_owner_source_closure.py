@@ -98,11 +98,34 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             ("fn authenticate_training(", "if evidence != &config.training_evidence"),
             ("fn validate_config(", "&config.training_evidence.signature"),
             ("fn training_evidence(", "training_receipt(&self.config)?"),
-            ("fn authenticate_completed(", "if self.prepare(source).await? != *observed"),
-            ("fn authenticate_completed(", "if self.journal.read(&self.saved)? != bytes"),
-            ("fn authenticate_completed(", "signed.issued_at"),
+            ("fn finish_original_readback(", "if self.prepare(source).await? != *observed"),
+            ("fn finish_original_readback(", "if self.journal.read(&self.saved)? != bytes"),
+            ("fn decode_completed(", "signed.issued_at"),
         ):
             self.rejects(function, marker)
+
+    def test_completed_readback_keeps_physical_brackets_and_permanent_failure_fence(self):
+        for function in ("fn attest_source(", "fn readback_source("):
+            for marker in ("if self.completion_fenced", "if result.is_err()",
+                           "self.completion_fenced = true;"):
+                with self.subTest(function=function, marker=marker):
+                    self.rejects(function, marker)
+        for marker in (
+            "let completed = self.decode_completed(source, observed, bytes)?;",
+            "let evidence = match source.location()",
+            "ObservationLocation::LocalOwner", "ObservationLocation::RemoteOwner",
+            "let current = now()?;",
+            "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects("fn finish_original_readback(", marker)
+        for function in ("fn authenticate_completed(", "fn decode_completed("):
+            start = self.source.index(function)
+            end = PROOF._rust_item_end(PROOF._strip_rust_non_code(self.source), start)
+            body = self.source[start:end + 1]
+            self.assertNotIn(".await", body)
+            self.assertNotIn(".read(", body)
+            self.assertNotIn("now()", body)
 
     def test_missing_pending_deadline_and_role_separation_remain_distinct(self):
         for function, marker in (

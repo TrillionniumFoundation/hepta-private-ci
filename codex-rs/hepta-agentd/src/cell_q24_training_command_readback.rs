@@ -36,6 +36,11 @@ pub struct OriginalCellQ24TrainingReadbackConnectionV1 {
     initial_binding: Digest32,
 }
 
+enum ReadbackOrigin {
+    PinnedBeforeRead,
+    ReadFromOriginal,
+}
+
 impl OriginalCellQ24TrainingReadbackConnectionV1 {
     pub fn from_original_stream(
         stream: UnixStream,
@@ -87,6 +92,82 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
         dataset: OriginalCellQ24MaterialCommandReceiptV1,
         training: OriginalCellQ24TrainingCommandReceiptV1,
     ) -> Result<LearningIterationEvidenceClientV1, Error> {
+        self.bind_completed(dataset, training, ReadbackOrigin::PinnedBeforeRead)
+    }
+
+    /// Obtain T from the already Ready original host after an actual Dataset
+    /// read. No future T, execution action or replacement connection is taken.
+    /// The returned evidence reader continues this same stream at request 2.
+    pub async fn read_original_training(
+        mut self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+    ) -> Result<
+        (OriginalCellQ24TrainingCommandReceiptV1, LearningIterationEvidenceClientV1),
+        Error,
+    > {
+        let started_at = now()?;
+        let context = OriginalCellQ24TrainingCommandContextV1 {
+            dataset: dataset.snapshot().clone(),
+            scope: self.material.scope.clone(),
+            verifier: self.material.verifier.clone(),
+        };
+        if context.validate()? != self.material.initial {
+            return Err(Error::Binding("same original Ready Training initial cut"));
+        }
+        let (initial, before) =
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
+                .map_err(|_| Error::Binding("original Ready Training initial context"))?;
+        let verified_at =
+            OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+                &dataset, &self.material,
+            )
+            .map_err(|_| Error::Binding("actual Dataset before Ready Training read"))?;
+        if before < started_at || verified_at < before || initial != self.initial_binding {
+            return Err(Error::Binding("original Ready Training clock and initial context"));
+        }
+        self.peer.check_peer_lifetime()?;
+        let request = request(&context, binding(&context)?, /*request_id*/ 1);
+        let encoded = serde_json::to_vec(&request)?;
+        let (original, bytes) = tokio::task::spawn_blocking(move || {
+            let bytes = self.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
+            Ok::<_, Error>((self, bytes))
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
+        let response: wire::Response = serde_json::from_slice(&bytes)?;
+        response.require_request(&request)?;
+        original.peer.check_peer_lifetime()?;
+        let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            &dataset, &original.material,
+        )
+        .map_err(|_| Error::Binding("actual Dataset after Ready Training read"))?;
+        if current < verified_at {
+            return Err(Error::Binding("Ready Training read clock moved backwards"));
+        }
+        let training = match response.result {
+            wire::CommandResult::Completed { snapshot, evidence } => {
+                wire::decode_completed(&context, snapshot, evidence, current)?
+            }
+            wire::CommandResult::Missing => return Err(Error::Missing),
+            wire::CommandResult::Pending => return Err(Error::Pending),
+            wire::CommandResult::Busy => return Err(Error::Busy),
+            wire::CommandResult::Expired => return Err(Error::DeadlineExceeded),
+            wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired),
+            wire::CommandResult::Uncertain => return Err(Error::CommitUncertain),
+            wire::CommandResult::Unavailable => return Err(Error::Unavailable),
+        };
+        let reader = original.bind_completed(
+            dataset, training.clone(), ReadbackOrigin::ReadFromOriginal,
+        )?;
+        Ok((training, reader))
+    }
+
+    fn bind_completed(
+        self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        training: OriginalCellQ24TrainingCommandReceiptV1,
+        origin: ReadbackOrigin,
+    ) -> Result<LearningIterationEvidenceClientV1, Error> {
         let started_at = now()?;
         let context = OriginalCellQ24TrainingCommandContextV1 {
             dataset: dataset.snapshot().clone(),
@@ -130,7 +211,10 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
         let verifier = self.material.verifier.clone();
         let reader = OriginalTrainingReadbackV1 {
             peer: Some(self.peer),
-            next_request_id: 1,
+            next_request_id: match origin {
+                ReadbackOrigin::PinnedBeforeRead => 1,
+                ReadbackOrigin::ReadFromOriginal => 2,
+            },
             material: self.material,
             dataset,
             training,
