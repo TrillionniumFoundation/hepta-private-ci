@@ -2,7 +2,6 @@
 //! namespace. Historical accepted evidence never authorizes a fresh append.
 
 use codex_hepta_neuron::CellDecisionReceiptV1;
-use codex_hepta_types::ProbabilityQ32;
 use ed25519_dalek::Signer;
 
 use super::*;
@@ -59,41 +58,13 @@ pub(super) fn configuration(
     }
     let task = crate::circuit_feature_task_digest_v1(published.definition(), published.source())
         .map_err(|_| Error::Binding("original published task"))?;
-    let mut bytes = b"hepta.agentd.original-q24-task-ledger.v1\0".to_vec();
-    for digest in [
+    super::projection::configuration_digest(
+        config,
         task,
         ledger.binding_digest(),
         ledger.verifier().trust_digest(),
-        config.generator_code_digest,
-        config.grammar_digest,
-        config.hard_filter_digest,
-        config.truncation_digest,
-        config.unit_profile_digest,
-        config.expected_delay_profile_digest,
-    ] {
-        if digest.is_zero() {
-            return Err(Error::Binding("nonzero original task ledger profile"));
-        }
-        bytes.extend_from_slice(digest.as_array());
-    }
-    for id in [
-        identity.agent_id.as_str(),
-        config.episode_id.as_str(),
-        config.candidate_set_id.as_str(),
-        config.outcome_record_id.as_str(),
-        config.outcome_id.as_str(),
-        config.generator.principal.principal_id.as_str(),
-        config.observer.principal.principal_id.as_str(),
-    ] {
-        bytes.extend_from_slice(&(id.len() as u64).to_be_bytes());
-        bytes.extend_from_slice(id.as_bytes());
-    }
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&config.generator.verifying_key);
-    bytes.extend_from_slice(&config.observer.verifying_key);
-    bytes.extend_from_slice(&config.claim_deadline_unix_seconds.to_be_bytes());
-    bytes.extend_from_slice(&config.maximum_signature_lifetime_seconds.to_be_bytes());
-    Ok(Digest32::of_bytes(&bytes))
+        identity,
+    )
 }
 
 pub(super) fn decision(
@@ -102,68 +73,13 @@ pub(super) fn decision(
     publication: &CircuitTaskSourcePublicationV1,
     original: &CellDecisionReceiptV1,
 ) -> Result<ProductionDecisionV2, Error> {
-    let mut candidates = original
-        .policy
-        .iter()
-        .map(|entry| entry.candidate_id.clone())
-        .collect::<Vec<_>>();
-    candidates.sort();
-    let mut declared = published
-        .definition()
-        .candidates
-        .iter()
-        .map(|entry| entry.candidate_id.clone())
-        .collect::<Vec<_>>();
-    declared.sort();
-    if candidates != declared
-        || publication.input().scope != published.source().scope
-        || publication.input().objective_digest != published.source().objective_digest
-        || publication.bundle_digest() != published.definition().bundle_digest
-        || original.policy.iter().any(|entry| {
-            entry.probability_ppm
-                != if entry.candidate_id == original.selected_candidate {
-                    1_000_000
-                } else {
-                    0
-                }
-        })
-        || !original
-            .policy
-            .iter()
-            .any(|entry| entry.candidate_id == original.selected_candidate && entry.allowed)
-    {
-        return Err(Error::Binding("complete original finite Cell decision"));
-    }
-    let request = ProductionDecisionV2 {
-        record_id: publication.input().scope.run_id.clone(),
-        episode_id: config.episode_id.clone(),
-        run_snapshot_digest: crate::cell_q24_dataset_run_snapshot_digest_v1(publication),
-        objective_digest: publication.input().objective_digest,
-        policy_digest: Digest32::of_bytes(publication.output()),
-        selected_candidate_id: original.selected_candidate.clone(),
-        selected_propensity: ProbabilityQ32::ONE,
-        completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: config.candidate_set_id.clone(),
-            state_digest: original.semantic_request_digest,
-            generator_id: config.generator.principal.principal_id.clone(),
-            generator_code_digest: config.generator_code_digest,
-            grammar_digest: config.grammar_digest,
-            hard_filter_digest: config.hard_filter_digest,
-            truncation_digest: config.truncation_digest,
-            candidates_digest: candidate_ids_digest_v2(&candidates),
-            candidate_count: u32::try_from(candidates.len())
-                .map_err(|_| Error::Binding("candidate count"))?,
-            omitted_count_bound: 0,
-            canonical_order_digest: candidate_order_digest_v2(&candidates),
-            complete_for_generator: true,
-        },
-        candidate_ids: candidates,
-        support_digest: publication.publication_digest(),
-    };
-    if decision_signing_payload_v2(&request)?.len() > 16_384 {
-        return Err(Error::Binding("bounded original Decision signature"));
-    }
-    Ok(request)
+    super::projection::decision(
+        config,
+        published.definition(),
+        published.source(),
+        publication,
+        original,
+    )
 }
 
 pub(super) fn sign(
