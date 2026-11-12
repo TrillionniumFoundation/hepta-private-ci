@@ -1,0 +1,517 @@
+{
+  "schema_version": 1,
+  "kind": "trusted-root-dynamic-material-producer-closure-review",
+  "status": "read-only bounded source review; no new producer implemented and no native/checker qualification",
+  "source": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+    "callers": {
+      "path": "CALLERS.toml",
+      "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    },
+    "future_packet": "c43a53a8c41002c6f7cc3687f03cf1209e7dfcd2",
+    "future_material_table": "a260b9bcb2320f3a51b250a42856091c0f1812ae"
+  },
+  "conclusion": {
+    "scoped": "A real producer of the profile DATA exists: actual Prepared.root_profile. No trusted Root approval producer was established in the traced ordinary Root entry paths. Root Initial/journal/CURRENT checks cannot supply the missing request/owners/update-rule authorization.",
+    "current": "The original codec, physical Artifact reader, independent Selection verifier, target journal observer and Root enrollment are reusable. They consume actual target resources and a real externally signed Selection. The frozen Root public trust and prior CURRENT cannot issue that signature or create an ordinary C workload/target.",
+    "approval_file": "Writing the received bytes as Root0600 would demonstrate custody, not an independent approval decision. The c43 bridge must keep the separately approved files and exact comparison; no automatic peer-to-Root promotion is justified.",
+    "scope_limit": "This is a bounded constructor/caller and original Root deployment audit, not a new whole-repository caller scan. Registry rows below are read as pinned metadata, not rerun-checker results. No absence of an unregistered encoder caller is inferred solely from lack of a boundary row."
+  },
+  "scoped_fields": [
+    {
+      "fields": [
+        "schema_version",
+        "update_scope.scope"
+      ],
+      "existing_source": "HostAuthorityLearningProfileV1::new_scoped_v2 fixes schema 2 and admits Cell/Organ under FrozenLearningScopeV2; Q24 Root path explicitly requires Cell.",
+      "root_can_derive": "Root can retain the already authorized Cell mode; structural canonical validation is available.",
+      "missing": "This says nothing about approving a particular new request, role-owner set or batch-derived rule.",
+      "evidence": [
+        "S03",
+        "S08"
+      ]
+    },
+    {
+      "fields": [
+        "identity_digest",
+        "writer_proof_digest"
+      ],
+      "existing_source": "Actual AgentdIdentity and the retained original Root writer proof; with_learning_profile recomputes and matches both under the live writer/peer/revocation checks.",
+      "root_can_derive": "These values already have an actual Root-owned source. No fresh identity, key or lease is needed.",
+      "missing": "They authenticate the service/incarnation; they do not approve arbitrary other profile fields.",
+      "evidence": [
+        "S03",
+        "S08"
+      ]
+    },
+    {
+      "fields": [
+        "initial_snapshot.request",
+        "initial_snapshot.owners"
+      ],
+      "existing_source": "The actual Prepared retains the host-frozen LearningIterationRequestV1 and LearningIterationOwnersV1; the encoded snapshot must be exactly the empty coordinator state.",
+      "root_can_derive": "A Root host that independently owns an authorized request and owner-policy input can encode it with the existing constructor.",
+      "missing": "The retained GenV2 A journal/CURRENT verifies agent/cell/source run/principal and selected manifest, not the complete Learning request, budgets, role-owner choices or their administrative approval. The current CLI has no implemented trusted policy/approval producer for those dynamic fields.",
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S06",
+        "S17"
+      ]
+    },
+    {
+      "fields": [
+        "update_scope.update_rule",
+        "update_scope.binding"
+      ],
+      "existing_source": "Prepared.root_profile recomputes cell_q24_single_head_update_rule_v1 from actual selected bundle, private head and rule.digest(actual batch), then freezes the exact request/owners/rule.",
+      "root_can_derive": "The actual Prepared is the available producer and remains required by downstream daemon validation.",
+      "missing": "Root's generation journal and Initial cut do not contain the actual Dataset/batch, projection, head/rule input or live ledger/task capability. Prepared.recover also requires original live ledger, task owners and frozen authorization; it is not receipt-to-capability reconstruction. Receiving a rule digest is not Root approval.",
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S06"
+      ]
+    },
+    {
+      "fields": [
+        "Root approval of the complete canonical profile"
+      ],
+      "existing_source": "RootSameActorScopeEnrollmentCapabilityV1::register accepts a trusted Root-supplied profile, checks the original Root incarnation and consumes the one-shot capability; the two actual daemon join messages must equal it.",
+      "root_can_derive": "Existing typed Root registration can consume an already approved exact profile. The c43 file/pin bridge can carry that authorization without changing its authority source.",
+      "missing": "No traced ordinary Root producer decides and persists that dynamic approval. A real trusted deployment controller/operator policy must supply it; a generic file writer or echoed peer profile does not close this gap.",
+      "evidence": [
+        "S04",
+        "S05",
+        "S07",
+        "S08",
+        "S17"
+      ]
+    }
+  ],
+  "current_fields": [
+    {
+      "fields": [
+        "target.generation",
+        "target.journal_records",
+        "target.witness_scope",
+        "target.witness_objective",
+        "target.witness_generation",
+        "target.witness_records"
+      ],
+      "existing_source": "A real target-resource owner supplies CellGenerationObserverConfigV1 corresponding to its actual journal and independent witness; encode_original_material serializes this exact typed value.",
+      "root_authority_and_validation": "Root freezes target file paths and reads actual descriptors. Enrollment verifies private-file custody, original predecessor cut, complete selected target manifest, same agent/cell/principal scope, distinct run/task digest, generation+1, writer epoch+1 and actual unwritten/genesis target.",
+      "missing": "No new target owner or C task can be derived from the old A CURRENT. The actual C workload/definition/source and matching target File/witness/config remain external production inputs. Root access to a path is not itself a C owner.",
+      "evidence": [
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S18",
+        "S19"
+      ]
+    },
+    {
+      "fields": [
+        "selection.*",
+        "selection.signature"
+      ],
+      "existing_source": "A separately authorized Selector provides SignedArtifactSelectionV1. The existing encoder preserves the entire signed value; the actual daemon accept_selection and Root loader independently validate it.",
+      "root_authority_and_validation": "Frozen selector trust supplies verification keys, epochs, validity and revocation constraints. ArtifactSelectionVerifier rejects producer/selector role collision and owner/selector key collision, and verify_strict checks the actual signature against the authenticated CURRENT.",
+      "missing": "The Root read view contains public trust and authenticated artifact state, not the Selector private key. Selection::signing_bytes is a codec; production selection.rs imports only Signature/VerifyingKey, with SigningKey confined to its tests. An actual external authorized Selection is still required. No key or signature is synthesized.",
+      "evidence": [
+        "S11",
+        "S12",
+        "S13",
+        "S15",
+        "S16",
+        "S19"
+      ]
+    },
+    {
+      "fields": [
+        "canonical approved late_material bytes"
+      ],
+      "existing_source": "RootGenerationPublicationDeploymentV1::encode_original_material(target, signed_selection) is an existing bounded deterministic serializer.",
+      "root_authority_and_validation": "The already trusted Root deployment fixes paths/current/trust/floors. OriginalInputs::enrollment_inputs reads actual Artifact CURRENT/withdrawals, verifies selection and locates immutable files. Actual Root enrollment separately restores the exact Learning decision before admitting the target.",
+      "missing": "The encoder neither authorizes nor persists Root0600 material. A real Root-side trusted owner must first accept the actual target and independently signed Selection and supply the approved bytes. The c43 private-file reader is a consumer, and no ordinary approval writer was established by the traced entry points.",
+      "evidence": [
+        "S10",
+        "S12",
+        "S13",
+        "S14",
+        "S16",
+        "S17"
+      ]
+    },
+    {
+      "fields": [
+        "selection event digest",
+        "recorded decision or artifact head"
+      ],
+      "existing_source": "OriginalSelectionObserved carries a digest after actual acceptance; Root Learning checkpoint/Artifact CURRENT contain their respective real evidence and state.",
+      "root_authority_and_validation": "These are useful comparison/readback anchors and remain revalidated.",
+      "missing": "Neither a digest nor a checkpoint tail reconstructs the signed Selection, target owner or new request. Publication registration happens only after the real decision exists and still requires externally supplied signed Selection and actual target inputs.",
+      "evidence": [
+        "S10",
+        "S14",
+        "S18",
+        "S19"
+      ]
+    }
+  ],
+  "feasible_existing_compositions": [
+    {
+      "name": "Actual profile data derivation",
+      "path": [
+        "real A/Outcome and original Dataset freeze",
+        "actual Prepared retaining original ledger/task capability",
+        "CellQ24PreparedLearningV1::root_profile",
+        "HostAuthorityLearningProfileV1::new_scoped_v2"
+      ],
+      "available": true,
+      "qualification": "Data production only. Root approval remains distinct."
+    },
+    {
+      "name": "Consume an independently approved Scoped profile",
+      "path": [
+        "trusted Root controller provides exact approved profile",
+        "RootSameActorScopeEnrollmentCapabilityV1::register",
+        "actual two-message original A retirement/join",
+        "actual Initial cut + durable claim",
+        "same-service Learning/Model namespaces"
+      ],
+      "available": true,
+      "qualification": "Existing capabilities and validators are usable. Current ordinary Root approval producer/input path is missing; no new approval policy is invented."
+    },
+    {
+      "name": "Compose approved Current material from real external values",
+      "path": [
+        "actual C target owner/config plus externally signed Selection",
+        "RootGenerationPublicationDeploymentV1::encode_original_material",
+        "trusted Root approval/file custody",
+        "original canonical parser + frozen locations + Artifact read-view",
+        "original Root decision/target/Selection enrollment"
+      ],
+      "available": true,
+      "qualification": "Codec and consumption path exist. Real target, independent signature and trusted approval are prerequisites, not fabricated outputs."
+    },
+    {
+      "name": "Generate complete approved material from Root journal/Initial/CURRENT alone",
+      "available": false,
+      "reason": "Those owners attest their specific stored cuts. They do not supply all Learning policy inputs, actual batch capability, C workload resources or independent selector signing authority."
+    }
+  ],
+  "chronological_constraints": [
+    "Scoped profile authorization is submitted before accept_original_phase_join and before claim_same_actor_phase_after_original_a. The later claim is therefore not an independent source of that prior authorization.",
+    "The original Learning checkpoint/Model namespace is created only after the profile and actual A claim. It cannot be used to bootstrap its own first approval.",
+    "Current enrollment restores the real Root Learning decision, but still independently consumes actual target and signed Selection; it cannot manufacture either.",
+    "NoUpdate/retain may permit the actual current model to remain selected, but still requires valid original Selection and distinct real C task/target inputs. It does not authorize copying A's run or inventing a C execution.",
+    "Neither analysis nor the mechanical rebase invokes old wait_and_register, renews a deadline, changes a peer/capability check, signs material or changes completion semantics."
+  ],
+  "caller_evidence": [
+    {
+      "id": "root_learning_explicit_registration",
+      "symbol": "register_host_learning_checkpoint",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "original_block": "[[boundary]]\nid = \"root_learning_explicit_registration\"\nsymbol = \"register_host_learning_checkpoint\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_runtime.rs\"\ndefinition_markers = [\"pub fn register_host_learning_checkpoint(\", \"read_root_json(config_file)?\", \"read_root_json(registration_file)?\", \"open_registered_writer(&config, &registration, owner_pidfd)?\", \"service.register_learning_checkpoint(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "root_learning_scoped_profile_constructor",
+      "symbol": "HostAuthorityLearningProfileV1::new_scoped_v2",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ],
+      "original_block": "[[boundary]]\nid = \"root_learning_scoped_profile_constructor\"\nsymbol = \"HostAuthorityLearningProfileV1::new_scoped_v2\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_learning_profile.rs\"\ndefinition_markers = [\"pub fn new_scoped_v2(\", \"FrozenLearningScopeV2::freeze(\", \"profile.schema_version = 2\", \"profile.require_binding(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs\"]\ncaller_markers = [\"HostAuthorityLearningProfileV1::new_scoped_v2(\"]\n\n"
+    },
+    {
+      "id": "root_same_actor_scope_register",
+      "symbol": "RootSameActorScopeEnrollmentCapabilityV1::register",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+      ],
+      "original_block": "[[boundary]]\nid = \"root_same_actor_scope_register\"\nsymbol = \"RootSameActorScopeEnrollmentCapabilityV1::register\"\nreceiver_type = \"RootSameActorScopeEnrollmentCapabilityV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs\"\ndefinition_markers = [\"pub fn register(\",\"self.sender.try_send(ScopeSubmission\",\"Arc::ptr_eq(&enrolled.gate, &self.gate)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "root_same_actor_phase_host",
+      "symbol": "PreparedRootSameActorQ24PhaseV1::serve_original_same_actor_host",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "product_callers": [],
+      "original_block": "[[boundary]]\nid = \"root_same_actor_phase_host\"\nsymbol = \"PreparedRootSameActorQ24PhaseV1::serve_original_same_actor_host\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)serve_original_same_actor_host\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs\"\ndefinition_markers = [\"pub fn serve_original_same_actor_host(\",\"send_root_production_writer_handoff(\",\"RootSameActorScopeEnrollmentCapabilityV1::register(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "root_artifact_original_selection_files",
+      "symbol": "LearningArtifactReadViewV1::locate_selected_original_files",
+      "definition_path": "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+      ],
+      "original_block": "[[boundary]]\nid = \"root_artifact_original_selection_files\"\nsymbol = \"LearningArtifactReadViewV1::locate_selected_original_files\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs\"\ndefinition_markers = [\"pub fn locate_selected_original_files(\",\"self.read_original_registry(now)?\",\"selector\\n            .verify(\",\"view.registry_snapshot_path(before.receipt())\",\"withdrawals.head_digest() != withdrawals_after.head_digest()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)locate_selected_original_files\\\\s*\\\\(\"\n\n"
+    },
+    {
+      "id": "root_artifact_original_reader_open",
+      "symbol": "LearningArtifactReadViewV1::open_original",
+      "definition_path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+      ],
+      "original_block": "[[boundary]]\nid = \"root_artifact_original_reader_open\"\nsymbol = \"LearningArtifactReadViewV1::open_original\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs\"\ndefinition_markers = [\"pub fn open_original(\", \"fs::canonicalize(&root)?\", \"ArtifactOwnerVerifierV1::new(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\",\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"]\ncaller_markers = []\nreceiver_type = \"LearningArtifactReadViewV1\"\n\n"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "blob": "00ef67ff163336eb582c72d40750e32af03e470e",
+      "bytes": 9000,
+      "sha256": "edc952e82c375073d0e6e6fa3ad9b6bbe82db1fe1d3a80f733605e7515ea9fd3",
+      "methods": [
+        "from_original",
+        "root_profile",
+        "recover"
+      ]
+    },
+    {
+      "id": "S02",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs",
+      "blob": "7388e80da7f99c20e2189a05379190fbae987111",
+      "bytes": 8045,
+      "sha256": "141e444ac5c2e0574a0838158fdd0d581e92784e95d1b44198f509fb98b22995",
+      "methods": [
+        "CellQ24LearningPreparationConfigV1",
+        "CellQ24PreparedLearningV1"
+      ]
+    },
+    {
+      "id": "S03",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+      "bytes": 9377,
+      "sha256": "48b1cd2fbbc38f22b9ebfadc660d2f4071e23d4d3d61a3714959d09f1a0bebd1",
+      "methods": [
+        "new_scoped_v2",
+        "require_binding",
+        "decode_initial"
+      ]
+    },
+    {
+      "id": "S04",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+      "blob": "fd725bca00e67d49fca7357fbd8dfa38d07cc9e1",
+      "bytes": 4977,
+      "sha256": "cda4b48a3330ba07a401416ddd27e33248a822815c42f7b5dc4416d7afffb506",
+      "methods": [
+        "RootSameActorScopeEnrollmentCapabilityV1::register"
+      ]
+    },
+    {
+      "id": "S05",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "blob": "15379b5fd88dfef1e63fe4e317fc6bb2caf56d09",
+      "bytes": 6987,
+      "sha256": "c9526eb5a734aed23c71b70531f1b76a57ed04c4389ff3b6fad56232af875fdc",
+      "methods": [
+        "accept_original_phase_join"
+      ]
+    },
+    {
+      "id": "S06",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "blob": "793bc2510e97fe5ed07336e6d823561aa0e8c58f",
+      "bytes": 10685,
+      "sha256": "9375e499f973ad2149462590347a791d2aed3f55936648a311df3cfcfe06eaab",
+      "methods": [
+        "claim_same_actor_phase_after_original_a"
+      ]
+    },
+    {
+      "id": "S07",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+      "bytes": 13606,
+      "sha256": "4b8c9de8c699a360ca9a2cf233ab11c88ef83ba34185dfceb7f5368129ecfbe7",
+      "methods": [
+        "run_original_scoped_phase"
+      ]
+    },
+    {
+      "id": "S08",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "blob": "67df73589c32c8565bb893b1053c2477987b5cfe",
+      "bytes": 16093,
+      "sha256": "29e5b79b7581e8e8270f757cc8de8e55c4f42d4cb49b4de657478a7f30bcf868",
+      "methods": [
+        "register_learning_checkpoint",
+        "with_learning_profile",
+        "learning_store"
+      ]
+    },
+    {
+      "id": "S09",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "blob": "5edb5484bdba8f0f3c4d063383367d85b9162a1c",
+      "bytes": 17992,
+      "sha256": "38a6834a4687d52f5b457b6399c264f11931a99d8f1ab6dc2a0957cc43e86754",
+      "methods": [
+        "reserve_original_phase_q24_model_factory"
+      ]
+    },
+    {
+      "id": "S10",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "blob": "d4227925ae1d26f065bb62908757ed2fbb4184a4",
+      "bytes": 26917,
+      "sha256": "a4dccdac0ab4cd126be17a5d5dd99755c0f02db302b389c1198890ad397305e1",
+      "methods": [
+        "RootGenerationPublicationEnrollmentV1",
+        "enroll_original_publication_body",
+        "enroll_generation_publication_for_phase"
+      ]
+    },
+    {
+      "id": "S11",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "blob": "43dc9eb7779bb7072030f167342f504e91d7b565",
+      "bytes": 15306,
+      "sha256": "5661fd02bd35570612d196ad145113bf5c3ffff4bc43680e2e27ba481078a91a",
+      "methods": [
+        "LateMaterial",
+        "ObserverData",
+        "SelectorTrustData",
+        "SelectionData"
+      ]
+    },
+    {
+      "id": "S12",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+      "blob": "8e3db1b34ba37719e1b040b551eadac7c042923c",
+      "bytes": 5952,
+      "sha256": "f71f932555c55f4d4790bd354c6089f00c8e0106d1efcc11961abe1d9d12993c",
+      "methods": [
+        "OriginalInputs::enrollment_inputs"
+      ]
+    },
+    {
+      "id": "S13",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "blob": "ddf7003fbf50bfad280c4b2b9bbb9c317f39b394",
+      "bytes": 11818,
+      "sha256": "a2fd8670c0b96df1fa02beb57b2e67462dfbb5ca96230cb5908c8ff5a06b4a8f",
+      "methods": [
+        "encode_original_material"
+      ]
+    },
+    {
+      "id": "S14",
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+      "bytes": 6367,
+      "sha256": "1e2b9905a5c8b9e70887b652d5137d9d42e4ecdf5e17cbf84dc47a4da103c604",
+      "methods": [
+        "read_original_registry",
+        "read_original_withdrawals"
+      ]
+    },
+    {
+      "id": "S15",
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+      "bytes": 29173,
+      "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df",
+      "methods": [
+        "SignedArtifactSelectionV1::signing_bytes",
+        "ArtifactSelectionVerifierV1::verify"
+      ]
+    },
+    {
+      "id": "S16",
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs",
+      "blob": "bb0b6b333e3c89a99afc9a634ce00f02fdf8e90b",
+      "bytes": 2388,
+      "sha256": "01d96d3f2f81622ea6b1b6de1c65c2f71213f7b438bcbc0fb7d6e3ad0e999cbc",
+      "methods": [
+        "locate_selected_original_files"
+      ]
+    },
+    {
+      "id": "S17",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+      "bytes": 23993,
+      "sha256": "728d5c50957034993558dcbb4c96579836da9fc1c47e621778698cf92b4ffe12",
+      "methods": [
+        "register-learning",
+        "register-q24-model-factory",
+        "serve-fresh-session"
+      ]
+    },
+    {
+      "id": "S18",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "blob": "0977e3c79b83aff01688436af99b533bda8c5a46",
+      "bytes": 10184,
+      "sha256": "93bb45c0538239c153ddcf6d567b181d7e3e61f174dabce006a8b2996d86b4c7",
+      "methods": [
+        "OriginalSameActorPhaseCommandV1",
+        "OriginalSameActorPhaseEventV1"
+      ]
+    },
+    {
+      "id": "S19",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "blob": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+      "bytes": 13029,
+      "sha256": "4798705fc526dcc18f69511d8c1420625398fd5250f6e1dab4d3d20d4d63f061",
+      "methods": [
+        "publish_and_observe_original_c"
+      ]
+    }
+  ],
+  "next_missing_inputs": [
+    "An explicit trusted Root deployment controller or operator authorization input for the exact Learning request, owner set and batch-derived update rule/profile; its producer must be distinct from simply echoing the authenticated peer.",
+    "Real ordinary A/C Objective/control execution and independent Outcome inputs, still handled by the separate daemon coordinator work.",
+    "Actual C target resource owner/config and a real independent authorized Selector response, plus the Root-owned approved-material delivery/write path.",
+    "No additional Root key, permissive default, synthetic holdout/receipt or automatic peer approval is justified by the existing sources."
+  ],
+  "related_mechanical_rebase": {
+    "packet": "da0c2dfb21cfa5cfe3d6adfa450751bc415a644f",
+    "formatter_inventory": "705a75d848290e994d95c75c27de8fd549fdf2d4",
+    "existing_parents": 7,
+    "changed_by_fmt": 4,
+    "unchanged": 3,
+    "exact_c43_replacements": 8,
+    "new_semantics": 0,
+    "source_commit_binding_pending": true
+  },
+  "verification": {
+    "read_only_source_analysis": true,
+    "git_blobs_created_for_deliverables_only": true,
+    "original_checker_executed": false,
+    "rust_compiled": false,
+    "tests_executed": false,
+    "h_or_native_invoked": false,
+    "refs_modified": false,
+    "whole_repository_absence_claim": false
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_accepted": false,
+    "real_daemon_and_root_os_restart_accepted": false
+  }
+}

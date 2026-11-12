@@ -1,0 +1,375 @@
+{
+  "schema": "hepta.b-production-provider-sink-bounded-inventory.v1",
+  "source": {
+    "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+    "base": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "callers": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "format_only_of_base": true
+  },
+  "status": "read-only inventory completed; no implementation/native qualification claimed",
+  "scope": {
+    "actual_directory": "codex-rs/hepta-intelligence-eval/src",
+    "all_entries": 46,
+    "production_rs_examined": 26,
+    "rule": "all directory .rs excluding _tests.rs and test_support; exact trait-name occurrence inventory plus relevant full-source reading",
+    "production_files": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+        "blob": "837629cc61da311fa85cf235e51c859a658f07eb",
+        "bytes": 39429
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs",
+        "blob": "a8e58eb73cf7154b1d5dd53755b612e58aaf2676",
+        "bytes": 12794
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+        "blob": "65e92803ba68f2a8073ace91d4586da4f142bf65",
+        "bytes": 14368
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+        "blob": "b6a08ab16dfd972d293733fd34d798b024bf9403",
+        "bytes": 16364
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/holdout_codec.rs",
+        "blob": "6711d44c843b546f01ffd71a59922d3585819442",
+        "bytes": 3732
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/holdout_journal.rs",
+        "blob": "b3e31e5bdc0dbf88b3bc3f1321fbe54b0e136bc2",
+        "bytes": 14227
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "blob": "daf58a153bba73186cd01bbc904a00e5c40ba4c5",
+        "bytes": 15662
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+        "blob": "a75053280ae55e6329eab4276034cbfebb8d23b3",
+        "bytes": 8146
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "blob": "06eaddfeee7e46dd4e983a0d37cbf469e43c76b5",
+        "bytes": 6885
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+        "blob": "c5023f93dab8e088f7bf2e538a6871beeb364044",
+        "bytes": 12235
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs",
+        "blob": "3ef3912f90219066605405e8fa0b1da69166755c",
+        "bytes": 11281
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+        "blob": "52fb8b882012f2561c65a95639a63da8e2c12ff4",
+        "bytes": 13021
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+        "blob": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c",
+        "bytes": 12355
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+        "blob": "ab8912206bc97219f7d6a2bb5f7513ccd4250fce",
+        "bytes": 13379
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+        "blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+        "bytes": 12154
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+        "blob": "4ee15b98a77b0d81fed91e5a8380c0bae2963cce",
+        "bytes": 14041
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+        "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1",
+        "bytes": 2249
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+        "blob": "f904dc721859f2d44f67b955c532298d03360e87",
+        "bytes": 3413
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9",
+        "bytes": 38107
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+        "blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+        "bytes": 28577
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+        "blob": "72d41fe1fd6c2710ba7873778d5b74140c89faa4",
+        "bytes": 10613
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/sequential_model.rs",
+        "blob": "b048d3d6d993053c24cc4b0c07091085794b204e",
+        "bytes": 4424
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/sequential_step.rs",
+        "blob": "d233e88e01d5d290468f86853cc742a9e26bff06",
+        "bytes": 4990
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+        "blob": "35237acc5fa429dcd0eb5e8641a2dad33fa77667",
+        "bytes": 6281
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+        "blob": "5225462749ff1e082ddb6597567b00040a656a56",
+        "bytes": 11217
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+        "blob": "3447e550262f7b85223a90031620a6b95b11dc69",
+        "bytes": 9214
+      }
+    ],
+    "limits": [
+      "This is not a whole-repository absence proof.",
+      "GitHub indexed code search used the default indexed ref 732e934ba496d90fbe042b8d41d479ef901643e5; its hits are leads, not current-source proof.",
+      "All Rust implementation hits outside this crate were then fetched at the fixed source before classification.",
+      "No original checker, Cargo, native test, h process, branch or ref mutation was performed."
+    ]
+  },
+  "actual_contracts": [
+    {
+      "trait": "FinalHoldoutProviderV1",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9",
+      "methods": [
+        "fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1>",
+        "fn release_after_consumption(&mut self, receipt: &FinalHoldoutJournalReceiptV1) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>"
+      ],
+      "meaning": "Release actual training, held-out targets, candidate/baseline OPE observations, cluster assignments and snapshot/future-window IDs only after authoritative consumption.",
+      "real_order": [
+        "Validate frozen product and both canonical temporal plans/objective.",
+        "Require provider manifest equals frozen final_holdout_digest.",
+        "Call actual FencedFinalHoldoutOwnerV1::consume; CAS commits/fsyncs before memory publishes.",
+        "Recorded only; IdempotentReplay refuses before release, including after uncertain provider response.",
+        "Call provider; validate cohort and comparison outcomes/behavior; evaluate both temporal arms with original estimators.",
+        "Validate sealed temporal outputs and derive actual metric/support/confidence/execution commitments."
+      ],
+      "important_limit": "FinalHoldoutJournalReceiptV1 has public fields; shape equality alone is not a nonforgeable proof of the original CAS call. A new file implementation must use the actual runner consumption path, not invent a receipt or treat a digest as owner."
+    },
+    {
+      "trait": "ProductQualificationEvidenceSinkV1",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9",
+      "methods": [
+        "fn persist(&mut self, execution_digest: Digest32, decision: &SignedEvaluationDecisionV1) -> Result<Digest32, ProductEvidenceSinkErrorV1>"
+      ],
+      "meaning": "Persist the actual terminal decision through the declared evidence owner; return a nonzero durable publication digest only after committed publication.",
+      "real_order": [
+        "Runner builds qualification bundle from actual sealed temporal receipt.",
+        "Original V2/V3 routines verify generator/evaluator/observer signatures, trust, scope, exact payload and role separation.",
+        "Sink persists actual execution digest plus full decision/trust/authentication commitments.",
+        "Only after nonzero committed digest does runner construct its privately sealed ProductQualificationReceiptV1."
+      ],
+      "important_limit": "A file containing a precomputed qualification or a nonzero digest is not execution, role authentication, durable sink custody or a sealed runner receipt."
+    }
+  ],
+  "available_real_primitives": [
+    {
+      "name": "LockedFileFinalHoldoutCasStoreV1",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "blob": "b6a08ab16dfd972d293733fd34d798b024bf9403",
+      "facts": [
+        "Owns original authorized regular File under exclusive OS lock.",
+        "Appends actual fence/plan transitions; checks exact predecessor and next canonical state.",
+        "sync_all precedes accepted CAS; uncertain write poisons original handle.",
+        "Recovery validates complete history and independently retained minimum anchor; never truncates torn suffix into success."
+      ],
+      "not": [
+        "It does not supply holdout rows.",
+        "It does not authenticate a deployment namespace or create original role credentials."
+      ]
+    },
+    {
+      "name": "LockedFileProductEvaluationExecutionStoreV1",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "blob": "4ee15b98a77b0d81fed91e5a8380c0bae2963cce",
+      "facts": [
+        "Original host provides authorized File and independent minimum ProductEvaluationExecutionAnchorV1.",
+        "Exclusive original open-file-description ownership; writable duplicates are forbidden by its contract.",
+        "Durable unique-key claim precedes immutable complete; full payload history is checksummed/fsynced.",
+        "Pending/conflict/torn/corrupt/rollback/indeterminate states remain distinct; readback does not grant execution or authentication."
+      ],
+      "not": [
+        "It is not currently a ProductQualificationEvidenceSinkV1 implementation.",
+        "Its completed signed execution is different from subsequent qualification publication."
+      ]
+    },
+    {
+      "name": "CellEvaluationRunnerV1",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "facts": [
+        "Checks real candidate/fixed-expert drained journals and frozen comparison before provider/holdout effects.",
+        "evaluate_or_readback uses actual original execution owner and concrete execution store; completed recovery neither rereleases nor reevaluates.",
+        "qualify_and_persist still requires independent authenticated evidence and actual durable sink."
+      ]
+    },
+    {
+      "name": "OriginalCellQ24EvaluationInputsV1 / OriginalCellQ24EvaluationStageV1",
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs",
+          "blob": "00c64871014d81ef0d01ed9e4407b2f73cc3843d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+          "blob": "55f64838bd24a54be6bb71cd029833ecb8eb1412"
+        }
+      ],
+      "facts": [
+        "Consumes real already-completed B resources and CellEvaluationQualificationV1 bound to actual Training cut.",
+        "Concrete runner remains CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>.",
+        "Original evaluation completion verifies actual journals, evidence, roles, source signatures and cost policy."
+      ],
+      "not": [
+        "This handoff does not run or manufacture B.",
+        "It does not supply the missing provider or qualification sink."
+      ]
+    },
+    {
+      "name": "OriginalCellEvaluationReceiptOwnerV1",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "blob": "2cc5559aa536b127224e7a949de888dd83375510",
+      "facts": [
+        "Readback/attestation consumes actual completed qualification/execution and current owner context.",
+        "Original source contract expressly does not establish qualification sink custody; protected source forbids rerunning qualification/evaluation here."
+      ]
+    }
+  ],
+  "concrete_implementations_in_scanned_production_files": [],
+  "production_occurrences": [
+    "lib.rs exports both traits.",
+    "product_runner.rs defines and consumes both traits.",
+    "product_execution.rs has the generic provider bound; it is not a concrete file provider."
+  ],
+  "test_only_implementations": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "blob": "8d7abd0e20c18382cc14ddc3546fc94fd9993dc1",
+      "types": [
+        "Provider",
+        "Sink"
+      ],
+      "classification": "test module; in-memory sink/digest is not production publication"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "blob": "f34107486cd303ce1875dc790aeed1439fc0f8c1",
+      "classification": "explicit Memory CAS/publication test doubles"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "blob": "af57c7bbd3bd2e2641c7ffad06c856b7303290de",
+      "types": [
+        "Provider",
+        "Sink"
+      ],
+      "classification": "test support; fixed-source fetched"
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+      "blob": "1091e73ea971f82bde1513388ee0abeeb71dba34",
+      "types": [
+        "EvalProvider",
+        "EvalSink"
+      ],
+      "classification": "test module; fixed-source fetched"
+    }
+  ],
+  "indexed_search_leads": [
+    {
+      "query": "ProductQualificationEvidenceSinkV1",
+      "indexed_ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "total_count": 9,
+      "incomplete_results": false,
+      "raw_response": {
+        "bytes": 51804,
+        "sha256": "c16969db385341361649369afd8ce3ac1e9601589c8d2b50d082d2f9b8deb0e6",
+        "git_blob": "72721acfec66e8d1d4c1141e00a98703ea71a7af"
+      },
+      "paths": [
+        "docs/modules/learning.eval/TECHNICAL.md",
+        "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+        "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "qualification/module-execution-dossiers/detail/learning.eval.md",
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs"
+      ]
+    },
+    {
+      "query": "FinalHoldoutProviderV1",
+      "indexed_ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "total_count": 8,
+      "incomplete_results": false,
+      "raw_response": {
+        "bytes": 46032,
+        "sha256": "c1c111c140f763f5c366d999d0ac59dd901122e21ee776f3eaf12972d8dba7c7",
+        "git_blob": "dce81536a58de80c0fd4f6837b0dcc1fc66503a0"
+      },
+      "paths": [
+        "docs/modules/learning.eval/TECHNICAL.md",
+        "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+        "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs"
+      ]
+    }
+  ],
+  "required_external_materials": [
+    "An authorized holdout material file and exact content digest bound before observation into the frozen plan; authentic row provenance and independence remain deployment obligations.",
+    "Original fenced holdout file/namespace, host-authorized writer fence and independently retained recovery anchor.",
+    "Actual candidate and fixed-expert executions/drained journals, original matching budget/capacity and complete authenticated cost evidence.",
+    "Actual original execution attestor and current verifier; independent generator/evaluator/observer signing keys and original signed payloads are never created by file adapters.",
+    "A distinct authorized evidence publication file/namespace with independent recovery anchor and containing-directory durability/retention policy."
+  ],
+  "smallest_implementation_direction": {
+    "provider": "A bounded canonical file material codec plus concrete held-File provider, admitted against the actual frozen product plan. Preserve original runner order and deny replay. Bind release to a nonforgeable same-runner consumption path rather than publicly constructible receipt fields alone.",
+    "sink": "A distinct domain-bound durable evidence journal over existing exclusive File/append/fsync/recovery semantics. Persist only the exact execution/decision/trust/authentication bytes delivered by the real runner; exact readback provides data only, never role authority or a reconstructed ProductQualificationReceipt.",
+    "unchanged": [
+      "original two-arm budget/capacity checks",
+      "no missing/Unknown cost acceptance",
+      "original signature/role/holdout/temporal/statistical validators",
+      "all receipts remain DENY_ALL",
+      "no fixture outcomes or self-issued keys"
+    ]
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_b_executed_by_this_review": 0,
+    "statement": "Static source inventory does not establish an executed B, ordinary chain or production deployment."
+  }
+}

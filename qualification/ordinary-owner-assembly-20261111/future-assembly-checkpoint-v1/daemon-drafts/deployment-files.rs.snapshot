@@ -1,0 +1,345 @@
+//! File custody for the explicit ordinary same-actor deployment.
+//! The Root-owned descriptor chooses paths and pins. File parsing creates data;
+//! the original owner constructors still authenticate every authority and cut.
+
+use std::collections::BTreeSet;
+use std::fs::File;
+use std::fs::Metadata;
+use std::fs::OpenOptions;
+use std::io::Read;
+use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+
+use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::AgentdError;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+
+use super::deployment_error;
+use super::deployment_refused;
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct PinnedFileData {
+    pub path: PathBuf,
+    pub sha256: [u8; 32],
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum OriginalFileMode {
+    CreateNew,
+    ExistingEmpty,
+    Recover,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct MutableFileData {
+    pub path: PathBuf,
+    pub mode: OriginalFileMode,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct PhysicalPin {
+    device: u64,
+    inode: u64,
+    owner: u32,
+    group: u32,
+    mode: u32,
+    links: u64,
+    length: u64,
+    modified_seconds: i64,
+    modified_nanos: i64,
+    changed_seconds: i64,
+    changed_nanos: i64,
+}
+
+impl PhysicalPin {
+    fn of(metadata: &Metadata) -> Self {
+        Self {
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            owner: metadata.uid(),
+            group: metadata.gid(),
+            mode: metadata.mode(),
+            links: metadata.nlink(),
+            length: metadata.len(),
+            modified_seconds: metadata.mtime(),
+            modified_nanos: metadata.mtime_nsec(),
+            changed_seconds: metadata.ctime(),
+            changed_nanos: metadata.ctime_nsec(),
+        }
+    }
+}
+
+/// One actual immutable read. It retains the opened file until its consumer
+/// has constructed the original owner, and checks the same file and path again.
+pub(super) struct OriginalPinnedRead {
+    file: File,
+    path: PathBuf,
+    parent: File,
+    parent_path: PathBuf,
+    parent_identity: (u64, u64, u32, u32, u32),
+    pin: PhysicalPin,
+    bytes: Vec<u8>,
+}
+
+impl OriginalPinnedRead {
+    pub(super) fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    pub(super) fn parse_original<T: serde::de::DeserializeOwned + Serialize>(
+        &self,
+    ) -> Result<T, AgentdError> {
+        self.require_original_pin()?;
+        let data: T = serde_json::from_slice(&self.bytes).map_err(deployment_error)?;
+        if serde_json::to_vec(&data).map_err(deployment_error)? != self.bytes {
+            return Err(deployment_refused("deployment data is not canonical JSON"));
+        }
+        self.require_original_pin()?;
+        Ok(data)
+    }
+
+    pub(super) fn require_original_pin(&self) -> Result<(), AgentdError> {
+        if PhysicalPin::of(&self.file.metadata()?) != self.pin
+            || PhysicalPin::of(&std::fs::symlink_metadata(&self.path)?) != self.pin
+        {
+            return Err(deployment_refused("original deployment file changed"));
+        }
+        let retained = self.parent.metadata()?;
+        let path = std::fs::symlink_metadata(&self.parent_path)?;
+        if !retained.is_dir()
+            || !path.is_dir()
+            || directory_identity(&retained) != self.parent_identity
+            || directory_identity(&path) != self.parent_identity
+            || self.parent_path.canonicalize()? != self.parent_path
+        {
+            return Err(deployment_refused("original deployment parent changed"));
+        }
+        Ok(())
+    }
+}
+
+/// This set records actual inodes, never labels or expected digests. Every
+/// mutable journal, witness, control and signer-key file is opened separately.
+/// A second role cannot acquire another alias to a previously claimed file.
+pub(super) struct OriginalDeploymentFiles {
+    uid: u32,
+    gid: u32,
+    claimed: BTreeSet<(u64, u64)>,
+    context: Arc<OriginalSameActorRootContext>,
+}
+
+impl OriginalDeploymentFiles {
+    pub(super) fn for_original_context(
+        context: Arc<OriginalSameActorRootContext>,
+    ) -> Result<Self, AgentdError> {
+        OriginalSameActorRootContext::require_current(&context)?;
+        let uid = unsafe { libc::geteuid() };
+        let gid = unsafe { libc::getegid() };
+        if uid == 0 || gid == 0 {
+            return Err(deployment_refused(
+                "ordinary deployment requires the actual dedicated non-Root owner",
+            ));
+        }
+        Ok(Self { uid, gid, claimed: BTreeSet::new(), context })
+    }
+
+    pub(super) fn read_root_descriptor(
+        &mut self,
+        input: &PinnedFileData,
+        maximum: usize,
+    ) -> Result<OriginalPinnedRead, AgentdError> {
+        let read = self.read_original(input, maximum)?;
+        // The ordinary process can read this data, but cannot replace the
+        // Root-approved deployment or select its own trust/credential set.
+        if read.pin.owner != 0
+            || read.pin.group != self.gid
+            || read.pin.mode & 0o7777 != 0o640
+        {
+            return Err(deployment_refused(
+                "deployment descriptor requires Root ownership and exact 0640 mode",
+            ));
+        }
+        let parent = read.parent.metadata()?;
+        if parent.uid() != 0
+            || parent.gid() != self.gid
+            || !matches!(parent.mode() & 0o7777, 0o750 | 0o2750)
+        {
+            return Err(deployment_refused(
+                "deployment descriptor requires its original Root-owned read-only parent",
+            ));
+        }
+        read.require_original_pin()?;
+        Ok(read)
+    }
+
+    pub(super) fn read_original(
+        &mut self,
+        input: &PinnedFileData,
+        maximum: usize,
+    ) -> Result<OriginalPinnedRead, AgentdError> {
+        let expected = Digest32::from_array(input.sha256);
+        if expected.is_zero() {
+            return Err(deployment_refused("deployment file digest is missing"));
+        }
+        let read = self.read_original_path(&input.path, maximum)?;
+        if Digest32::of_bytes(read.bytes()) != expected {
+            return Err(deployment_refused("deployment file digest differs"));
+        }
+        read.require_original_pin()?;
+        Ok(read)
+    }
+
+    /// Used only after the concrete coordinator receives the matching actual
+    /// stage event. A late signed attestation is data; its original verifier,
+    /// actual task and same phase must all be checked before any effect.
+    pub(super) fn read_original_stage(
+        &mut self,
+        path: &Path,
+        maximum: usize,
+    ) -> Result<OriginalPinnedRead, AgentdError> {
+        self.read_original_path(path, maximum)
+    }
+
+    fn read_original_path(
+        &mut self,
+        path: &Path,
+        maximum: usize,
+    ) -> Result<OriginalPinnedRead, AgentdError> {
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        if maximum == 0 || maximum > 16 * 1024 * 1024 {
+            return Err(deployment_refused("deployment read bound is invalid"));
+        }
+        let (parent_path, parent) = open_original_parent(path)?;
+        let mut file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC)
+            .open(path)?;
+        let metadata = file.metadata()?;
+        if !metadata.is_file()
+            || metadata.nlink() != 1
+            || (metadata.uid() != 0 && metadata.uid() != self.uid)
+            || metadata.mode() & 0o022 != 0
+            || metadata.len() == 0
+            || metadata.len() > maximum as u64
+        {
+            return Err(deployment_refused("deployment input is not a bounded protected file"));
+        }
+        let pin = PhysicalPin::of(&metadata);
+        self.claim_original_inode(&metadata)?;
+        let parent_metadata = parent.metadata()?;
+        let mut bytes = Vec::new();
+        (&mut file).take(maximum as u64 + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 != metadata.len() || bytes.len() > maximum {
+            return Err(deployment_refused("deployment input changed during bounded read"));
+        }
+        let read = OriginalPinnedRead {
+            file, path: path.to_owned(), parent, parent_path,
+            parent_identity: directory_identity(&parent_metadata),
+            pin, bytes,
+        };
+        read.require_original_pin()?;
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        Ok(read)
+    }
+
+    pub(super) fn open_original_owner(
+        &mut self,
+        input: &MutableFileData,
+    ) -> Result<File, AgentdError> {
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        let (parent_path, parent) = open_original_parent(&input.path)?;
+        let directory = parent.metadata()?;
+        if directory.uid() != self.uid || directory.mode() & 0o077 != 0 {
+            return Err(deployment_refused("mutable owner requires its actual private directory"));
+        }
+        let mut options = OpenOptions::new();
+        options.read(true).write(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC);
+        if matches!(input.mode, OriginalFileMode::CreateNew) {
+            options.create_new(true).mode(0o600);
+        }
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        let file = options.open(&input.path)?;
+        let metadata = file.metadata()?;
+        if !metadata.is_file()
+            || metadata.uid() != self.uid
+            || metadata.nlink() != 1
+            || metadata.mode() & 0o7777 != 0o600
+        {
+            return Err(deployment_refused("mutable owner file must be original private 0600 data"));
+        }
+        let empty = metadata.len() == 0;
+        if match input.mode {
+            OriginalFileMode::CreateNew | OriginalFileMode::ExistingEmpty => !empty,
+            OriginalFileMode::Recover => empty,
+        } {
+            return Err(deployment_refused("explicit owner lifecycle differs from actual file"));
+        }
+        self.claim_original_inode(&metadata)?;
+        let current_parent = std::fs::symlink_metadata(&parent_path)?;
+        let current = std::fs::symlink_metadata(&input.path)?;
+        if directory_identity(&current_parent) != directory_identity(&directory)
+            || parent_path.canonicalize()? != parent_path
+            || PhysicalPin::of(&current) != PhysicalPin::of(&metadata)
+        {
+            return Err(deployment_refused("mutable owner path changed before transfer"));
+        }
+        // Existing owner constructors synchronize their own commits. This
+        // host also makes an explicitly created directory entry durable.
+        if matches!(input.mode, OriginalFileMode::CreateNew) {
+            parent.sync_all()?;
+        }
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        Ok(file)
+    }
+
+    pub(super) fn read_original_signing_key(
+        &mut self,
+        input: &PinnedFileData,
+    ) -> Result<ed25519_dalek::SigningKey, AgentdError> {
+        let read = self.read_original(input, 32)?;
+        if read.pin.owner != self.uid || read.pin.mode & 0o7777 != 0o600 {
+            return Err(deployment_refused("signing key must belong to the actual private owner"));
+        }
+        let key: [u8; 32] = read.bytes().try_into()
+            .map_err(|_| deployment_refused("signing key must contain exactly 32 supplied bytes"))?;
+        read.require_original_pin()?;
+        Ok(ed25519_dalek::SigningKey::from_bytes(&key))
+    }
+
+    fn claim_original_inode(&mut self, metadata: &Metadata) -> Result<(), AgentdError> {
+        if !self.claimed.insert((metadata.dev(), metadata.ino())) {
+            return Err(deployment_refused("deployment roles alias the same actual file"));
+        }
+        Ok(())
+    }
+}
+
+fn open_original_parent(path: &Path) -> Result<(PathBuf, File), AgentdError> {
+    let parent = path.parent()
+        .filter(|parent| path.is_absolute() && path.file_name().is_some() && parent.is_absolute())
+        .ok_or_else(|| deployment_refused("deployment file requires an absolute canonical parent"))?;
+    if parent.canonicalize()? != parent {
+        return Err(deployment_refused("deployment parent contains a symlink or traversal"));
+    }
+    let directory = OpenOptions::new().read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(parent)?;
+    if !directory.metadata()?.is_dir() {
+        return Err(deployment_refused("deployment parent is not an actual directory"));
+    }
+    Ok((parent.to_owned(), directory))
+}
+
+fn directory_identity(metadata: &Metadata) -> (u64, u64, u32, u32, u32) {
+    (metadata.dev(), metadata.ino(), metadata.uid(), metadata.gid(), metadata.mode())
+}

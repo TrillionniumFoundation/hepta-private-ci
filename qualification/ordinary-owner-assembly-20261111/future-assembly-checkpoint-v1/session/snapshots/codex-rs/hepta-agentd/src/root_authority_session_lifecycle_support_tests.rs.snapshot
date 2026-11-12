@@ -1,0 +1,231 @@
+//! Same-UID synthetic proof fixtures for actual phase worker/consumer custody.
+//! These components use real pidfds, sockets, original FinalUse owners and
+//! blocked store calls. They grant no Root deployment or business qualification.
+
+use super::super::*;
+use crate::root_authority_session::OriginalRootSessionCustodySlot;
+use crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use pretty_assertions::assert_eq;
+use std::fs::File;
+use std::sync::mpsc;
+
+pub(super) struct PhaseConnection {
+    pub(super) session: Result<AgentdRootAuthoritySession, AgentdRootAuthorityError>,
+    pub(super) head: Arc<AtomicU64>,
+    pub(super) observation_replies: Arc<AtomicU64>,
+    pub(super) peer: std::thread::JoinHandle<()>,
+    pub(super) key: [u8; 32],
+    pub(super) gate: Arc<SameActorPhaseGate>,
+}
+
+pub(super) async fn phase_connection(
+    custody: &OriginalRootSessionCustodySlot,
+) -> PhaseConnection {
+    let (trust, proof) = fixture();
+    let key = trust.verifying_key;
+    let gate = SameActorPhaseGate::from_original_deadline(
+        SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(10)).unwrap(),
+    )
+    .unwrap();
+    let (client, mut server) = UnixStream::pair().unwrap();
+    let stop = gate.retain_original_stream(&client).unwrap();
+    let pid = std::process::id();
+    let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
+        .unwrap()
+        .trim()
+        .to_string();
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat")).unwrap();
+    let peer = AgentdRootAuthorityPeer {
+        pid,
+        boot_id: boot_id.clone(),
+        process_start_ticks: stat
+            .rsplit_once(") ")
+            .unwrap()
+            .1
+            .split_whitespace()
+            .nth(19)
+            .unwrap()
+            .parse()
+            .unwrap(),
+    };
+    // SAFETY: the live test PID yields an exclusively owned pidfd.
+    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    assert!(fd >= 0);
+    // SAFETY: this successful syscall returned this new owned descriptor.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
+    let stream = RootObservationStream::from_stream_for_uid(
+        client,
+        peer,
+        pidfd,
+        Duration::from_millis(300),
+        Duration::from_secs(10),
+        // Same UID is explicit component scope, not a Root authentication test.
+        unsafe { libc::geteuid() },
+    )
+    .unwrap();
+    let head = Arc::new(AtomicU64::new(1));
+    let next_head = Arc::clone(&head);
+    let observation_replies = Arc::new(AtomicU64::new(0));
+    let replies = Arc::clone(&observation_replies);
+    let base = boottime_ns().unwrap();
+    let peer_boot = boot_id.clone();
+    let peer = std::thread::spawn(move || {
+        server.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
+        loop {
+            let mut prefix = [0; 4];
+            if server.read_exact(&mut prefix).is_err() {
+                return;
+            }
+            let length = u32::from_be_bytes(prefix) as usize;
+            assert!(length > 0 && length <= 16 * 1024);
+            let mut request = vec![0; length];
+            server.read_exact(&mut request).unwrap();
+            let value: serde_json::Value = serde_json::from_slice(&request).unwrap();
+            let response = if value["operation"] == HOST_WRITER_AUTHORIZATION_V1 {
+                serde_json::to_vec(&HostWriterAuthorizationReadResponseV1 {
+                    schema_version: 1,
+                    operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+                    proof: proof.clone(),
+                })
+                .unwrap()
+            } else {
+                assert_eq!(value["operation"], HOST_AUTHORITY_OBSERVATION_V2);
+                let mut sample = observation(&proof);
+                let elapsed = (boottime_ns().unwrap() - base) / 1_000_000;
+                sample.clock.boot_id = peer_boot.clone();
+                sample.clock.anchor_boottime_ns = base;
+                sample.clock.anchor_unix_ms = 2_000;
+                sample.clock.ceiling_unix_ms = 3_001 + elapsed;
+                sample.observed_unix_ms = 2_000 + elapsed;
+                sample.revocations.revision = next_head.load(Ordering::Acquire);
+                if sample.revocations.revision > 1 {
+                    sample.revocations.revoked_grant_ids.insert("revoked-effect".into());
+                }
+                sample.writer.store_revision = 7 + sample.revocations.revision;
+                replies.fetch_add(1, Ordering::AcqRel);
+                serde_json::to_vec(&sample).unwrap()
+            };
+            if server.write_all(&(response.len() as u32).to_be_bytes()).is_err()
+                || server.write_all(&response).is_err()
+            {
+                return;
+            }
+        }
+    });
+    let session = AgentdRootAuthoritySession::connect_original_phase_stream(
+        stream,
+        boot_id,
+        gate.deadline().boottime_ns(),
+        trust,
+        Arc::clone(&gate),
+        stop,
+        custody,
+    )
+    .await;
+    PhaseConnection { session, head, observation_replies, peer, key, gate }
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum BlockedOutcome {
+    Refused,
+    Panicked,
+}
+
+struct BlockingFrontier {
+    value: Mutex<FinalUseFrontier>,
+    entered: Mutex<Option<tokio::sync::oneshot::Sender<()>>>,
+    release: Mutex<mpsc::Receiver<()>>,
+    held: Mutex<Option<UnixStream>>,
+    outcome: BlockedOutcome,
+}
+
+impl AuthorityFrontierStore<FinalUseFrontier> for BlockingFrontier {
+    fn load(&self, _: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        self.value.lock().map(|value| *value).map_err(|_| AuthorityTrustError::Unavailable)
+    }
+
+    fn compare_and_set(
+        &self,
+        _: &str,
+        expected: &FinalUseFrontier,
+        _: &FinalUseFrontier,
+    ) -> Result<(), AuthorityTrustError> {
+        if self.load("component-original-frontier")? != *expected {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        let _held = self.held.lock().map_err(|_| AuthorityTrustError::Unavailable)?
+            .take().ok_or(AuthorityTrustError::Unavailable)?;
+        self.entered.lock().map_err(|_| AuthorityTrustError::Unavailable)?
+            .take().ok_or(AuthorityTrustError::Unavailable)?
+            .send(()).map_err(|_| AuthorityTrustError::Unavailable)?;
+        self.release.lock().map_err(|_| AuthorityTrustError::Unavailable)?
+            .recv_timeout(Duration::from_secs(5))
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        match self.outcome {
+            BlockedOutcome::Refused => Err(AuthorityTrustError::Unavailable),
+            BlockedOutcome::Panicked => panic!("controlled original consumer CAS panic"),
+        }
+    }
+}
+
+pub(super) struct BlockingConsumer {
+    pub(super) owner: FinalUseAuthority,
+    pub(super) directory: tempfile::TempDir,
+    pub(super) entered: tokio::sync::oneshot::Receiver<()>,
+    pub(super) release: mpsc::SyncSender<()>,
+    pub(super) probe: UnixStream,
+}
+
+pub(super) fn blocking_consumer(
+    session: &AgentdRootAuthoritySession,
+    key: [u8; 32],
+    outcome: BlockedOutcome,
+) -> BlockingConsumer {
+    let head = session.revocations().unwrap();
+    let (entered, notified) = tokio::sync::oneshot::channel();
+    let (release, released) = mpsc::sync_channel(1);
+    let (held, probe) = UnixStream::pair().unwrap();
+    probe.set_nonblocking(true).unwrap();
+    let frontier = Arc::new(BlockingFrontier {
+        value: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
+        entered: Mutex::new(Some(entered)),
+        release: Mutex::new(released),
+        held: Mutex::new(Some(held)),
+        outcome,
+    });
+    let directory = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
+    let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory.path(),
+        "root-issuer".into(),
+        vec![FinalUseIssuerTrustKey {
+            key_id: "synthetic-fixture".into(),
+            verifying_key: key,
+            not_before_authority_epoch: 2,
+            not_after_authority_epoch: 2,
+        }],
+        head,
+        session.clock(),
+        frontier,
+    )
+    .unwrap();
+    BlockingConsumer { owner, directory, entered: notified, release, probe }
+}
+
+pub(super) fn takes_lock(file: &File) -> Result<bool, Box<dyn Error>> {
+    match file.try_lock() {
+        Ok(()) => {
+            file.unlock()?;
+            Ok(true)
+        }
+        Err(std::fs::TryLockError::WouldBlock) => Ok(false),
+        Err(std::fs::TryLockError::Error(error)) => Err(error.into()),
+    }
+}
+
+pub(super) async fn join_peer(peer: std::thread::JoinHandle<()>) {
+    tokio::task::spawn_blocking(move || peer.join()).await.unwrap().unwrap();
+}

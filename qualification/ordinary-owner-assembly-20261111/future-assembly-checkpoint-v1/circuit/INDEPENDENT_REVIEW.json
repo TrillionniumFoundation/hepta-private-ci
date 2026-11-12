@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "kind": "independent-bounded-circuit-owner-custody-source-review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "candidate_packet": "173ee1feff9ff9bf2de0d81704a511574b9e0a94",
+  "reviewer": "/root/runtime_access",
+  "verdict": "No confirmed local static blocker in the reviewed six-source component. Required Startup/coordinator callers are not yet implemented by this packet; no whole-phase completion or native qualification follows.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pre": {
+        "blob": "642d83a914e9e6007b5d7d13c00f2ecc4c7afe6b",
+        "bytes": 13110,
+        "sha256": "a31b6026136342209e46e9ff9cedf402bd638cbc636bc8b7efef3495da24a70d"
+      },
+      "post": {
+        "blob": "2b1e7650ceee05aeda579cb9752e7b1a96fef3d3",
+        "bytes": 14296,
+        "sha256": "718fb2aa9efc23ec13373c0bcc347c8befa0247c076c7a798feb6d21745f91df"
+      },
+      "ops": 4,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "pre": {
+        "blob": "542cc950afcd4269b693ac00177446e968a23ab4",
+        "bytes": 18242,
+        "sha256": "5eb417060b172c8ca82654141cf29d7bb4fa504c5d642e1c42fb3fd86d27a121"
+      },
+      "post": {
+        "blob": "10301009f2a48e9f29de82cd22eee75f0a1cf622",
+        "bytes": 19166,
+        "sha256": "1f2aed4df7beb612121e58e41b479d3f4ccf3f8b9f568800d920cc5d6bffc51b"
+      },
+      "ops": 3,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "pre": {
+        "blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+        "bytes": 1822,
+        "sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78"
+      },
+      "post": {
+        "blob": "438aceea54b2654354dbe10abaaf4b2ef1f85c1b",
+        "bytes": 1864,
+        "sha256": "3c90193d4f3f33543321fbc223ae9f725b6dfcc274c47973216c5ec037b9f67b"
+      },
+      "ops": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": {
+        "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "bytes": 5069,
+        "sha256": "fa0fdbc36f92230cf5bd20a59fb94e8f124289efe503dbffb94b26be95101419"
+      },
+      "post": {
+        "blob": "76fb854d6420436cfef09bb16381f00cd37cc786",
+        "bytes": 5477,
+        "sha256": "e78b96283b4a7dc6c2e8849a6e0efc6036b8556c65beb62132897515fc2d52b1"
+      },
+      "ops": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": null,
+      "post": {
+        "blob": "65f064377dda55a07b58c82f0872d6479b8a7e1b",
+        "bytes": 11965,
+        "sha256": "8fbaf374ec7696bd4f19197653610c4cdaa0bc90ea942482a308e350c4172955"
+      },
+      "ops": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "24824eb6f12e09de91f9e771611a97a961c0ed05",
+        "bytes": 7707,
+        "sha256": "845e92f2f701a8fd26be1872cb66b6663cb802ec7340860f0a678d86a77101e8"
+      },
+      "ops": 1,
+      "forward_reverse": true
+    }
+  ],
+  "gate_read": {
+    "blob": "9fbe60227a2ca0254a2ca965c8a4d47b872cf115",
+    "bytes": 17792,
+    "sha256": "8d30d0d841c48168b1212a65a69e8280d4755c7713881405dc38706a3eedcc39"
+  },
+  "verified_local_facts": [
+    "The four existing preimages and six postimages were GET independently. All bytes, Git blob hashes and SHA256 match the packet; all 11 exact operations reconstruct forwards and reverse uniquely.",
+    "Only the actual same-actor Bootstrap factory constructs Some custody. The getter requires the actual SameActor route, original full AgentdIdentity and Arc-identical Gate. Existing direct and ordinary successor factories explicitly initialize None.",
+    "The original run identity/store-owner checks and child cancellation drop guard still precede spawning. Its complete old None spawn/await/JoinError-mapping suffix is retained by the exact overlay.",
+    "The Some path reserves under the real start mutex, spawns the same original owner closure once, and consumes admission to retain its actual JoinHandle before the first await. There is no await or authority callback under the start mutex.",
+    "request_stop first closes the same Gate and then marks start stopped/cancels its actual job. Gate.close releases its own state lock before returning; no Gate state guard is retained while request_stop subsequently locks start. Stop racing with reserve therefore sees either no allowed start or the retained actual job.",
+    "NotStarted is returned only after request_stop has made future admission terminal. Joined is written only after awaiting the real stored handle; no receipt, source result or zero counter substitutes for that join.",
+    "join_locked awaits a mutable borrow of the real handle held in asynchronous mutex state. Cancelling a join wait drops the mutex guard but leaves that same handle stored for a later terminal cleanup wait. There is no abort or detached replacement.",
+    "Actual Result is saved before joined is marked, with no intervening await. Runtime moves that owned Result once and marks RuntimeDelivered. The original AgentdError is not cloned; the original JoinError-to-Protocol message remains the prior mapping.",
+    "A runtime receiver guard is created before its async body is returned. Dropping even an unpolled receiver marks WAITING as ABANDONED, cancels and closes. Cleanup may recover the actual Result only after true join and only when abandoned; it cannot steal from a Waiting or RuntimeDelivered receiver.",
+    "No successful business completion is produced. ReturnedOk, ReturnedErr, JoinFailed and delivery state are explicitly distinct observations. Drop of the custody object requests stop and does not claim asynchronous join.",
+    "The three added tests use actual blocking tasks, UnixStream FDs, cancellation and an owned I/O error carrying an Arc identity. Their assertions distinguish WouldBlock before release from EOF after actual join, preserve the same error identity, forbid a second start, and preserve real panic/JoinError classification. These tests were read, not run."
+  ],
+  "required_actual_caller_obligations": [
+    "Retrieve and retain the actual Bootstrap custody before Config consumes it; require the same original identity and Gate. The external concrete owner must keep it across Launch.run and cancellation.",
+    "After failure or cancellation, close the common Gate and drop the actual inner run/receive futures before awaiting cleanup that depends on their releases. Keep a live original multithread Tokio runtime while the actual blocking closure performs its own asynchronous cleanup.",
+    "A cancelled wait is not completion. The outer owner must drive stop_and_join_original_owner to an observed actual terminal state and handle any abandoned owned Result explicitly; do not infer success from an empty registry or merely stored Arc.",
+    "Do not turn original Runtime delivered error, JoinFailed, NotStarted or the observation ReturnedOk into normal phase success. Existing Startup missing-final-completion Err remains.",
+    "This custody alone covers the actual outer Circuit blocking closure. It does not prove Session ConsumerSyncJob, bootstrap consumer-open jobs, Root worker joins, watcher result consumption, C slot release, process exit or final Root ACK."
+  ],
+  "bounded_limitations": [
+    "No full repository macro expansion or compiler/typecheck was performed. The local parent/child reexports, direct initializers and real calls in these four existing source files were read.",
+    "No changes to these owned source files were made by this reviewer; no implementation was approved by executing native components.",
+    "This report is for a future isolated slice and is not part of the current 13-file Clippy metadata candidate."
+  ],
+  "execution": {
+    "h_pty_native": 0,
+    "cargo_rustfmt_checker": 0,
+    "refs_changed": 0,
+    "product_edits_by_reviewer": 0,
+    "business_passes": 0
+  }
+}

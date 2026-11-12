@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "classification": "FUTURE_ASSEMBLY_CHECKPOINT_NOT_PRODUCT_INTEGRATION_OR_QUALIFICATION",
+  "current_fixed_source": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "current_tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c",
+  "current_native": "Actual V40 failed qa-b4-no-bypass after clean fmt/fix/bins; none of these checkpoint drafts was in that run.",
+  "components": {
+    "evaluation": {
+      "packet": "7ea371a900fde205da32ec5a7c6d2e89da63048b",
+      "source_review": "Root exact source replay and static semantic review complete.",
+      "caller_annex": "bfc8c51e436767fdcde970194f58fa769e2deef3",
+      "caller_review": "Root exact two-op replay, seven-ID/five-protection append-only preservation, 21 function and two file-order finite projections complete. Old-base postimage is not a current metadata replacement.",
+      "tests_written_not_run": 8
+    },
+    "root_entry": {
+      "packet": "c43a53a8c41002c6f7cc3687f03cf1209e7dfcd2",
+      "rebase": "da0c2dfb21cfa5cfe3d6adfa450751bc415a644f",
+      "source_review": "Root original/rebase exact reconstruction and source review retained. Snapshot uses seven additions once and the seven rebased existing postimages.",
+      "normal_retirement": "Not provided by this finite three-stage entry; later retirement source remains separate.",
+      "tests_written_not_run": 8
+    },
+    "circuit": {
+      "packet": "173ee1feff9ff9bf2de0d81704a511574b9e0a94",
+      "review": "Root exact 11-operation replay plus independent static source review; actual caller custody still must be wired.",
+      "tests_written_not_run": 3
+    },
+    "session": {
+      "packet": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+      "review": "Root full blob verification and exact 27-operation replay complete. Independent source/ownership review 5c47f0be6fe8512b7f03ac60a8e403f7e24dc6a6 is retained; Root semantic source review remains pending.",
+      "tests_written_not_run": 5,
+      "independent_review": {
+        "blob": "5c47f0be6fe8512b7f03ac60a8e403f7e24dc6a6",
+        "bytes": 18924,
+        "sha256": "2573dd2eab045bb2d780bbc3c8bd8fbbc80a93baddc83c2f9fc7a79878cba56a"
+      }
+    },
+    "daemon_drafts": {
+      "status": "Three previously read isolated drafts, not final complete coordinator/main or source union."
+    }
+  },
+  "integration_constraints": [
+    "Do not mechanically stack overlapping source replacements. Resolve actual fixed preimages and actual caller paths before a product union.",
+    "Actual current CALLERS is e36da4a9a874ac5cdea0cae954de180128674dc6. Later schema repair, QA fixtures and actual future callers must all be preserved; never overwrite using the B old-base full metadata postimage.",
+    "All protected rows require explicit required and forbidden arrays under original checker 7a670969; empty arrays are valid, missing keys are invalid.",
+    "Fault stop-and-join closes the same Gate and is not a normal completion capability. Actual C terminal/slot/route, task joins, original Root purpose/ACK and retained final-peer fault custody remain necessary.",
+    "Runtime must hold actual Session/Circuit custody outside cancellable receive/run futures and retain true bootstrap consumer-open tasks. A saved handle, Drop, cancellation or zero count is not a join.",
+    "Actual original material, independently admitted B roles/holdout/trust, real task Outcomes, original locked files and retained recovery minima remain deployment inputs. No fixtures are promoted into ordinary production data."
+  ],
+  "qualification": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "current_source_pass": false,
+    "main_merged": false
+  }
+}

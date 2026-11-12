@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.exact-source-ops.v1",
+  "status": "future-source-draft-component-not-integrated-not-qualified",
+  "source": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pre": {
+        "blob": "642d83a914e9e6007b5d7d13c00f2ecc4c7afe6b",
+        "bytes": 13110,
+        "sha256": "a31b6026136342209e46e9ff9cedf402bd638cbc636bc8b7efef3495da24a70d"
+      },
+      "post": {
+        "blob": "2b1e7650ceee05aeda579cb9752e7b1a96fef3d3",
+        "bytes": 14296,
+        "sha256": "718fb2aa9efc23ec13373c0bcc347c8befa0247c076c7a798feb6d21745f91df"
+      },
+      "ops": [
+        {
+          "old_text": "mod same_actor_phase;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::SameActorTaskAdmission;",
+          "new_text": "mod same_actor_phase;\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_runtime_lifecycle.rs\"]\nmod lifecycle;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitJoinObservation;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitJoinStatus;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitOwnerCustody;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitOwnerOutcome;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitResultDelivery;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::SameActorTaskAdmission;",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "    handle: CircuitTaskHandleV1,\n    owner: OwnerLoop,\n}",
+          "new_text": "    handle: CircuitTaskHandleV1,\n    owner: OwnerLoop,\n    #[cfg(target_os = \"linux\")]\n    original_phase_custody: Option<Arc<OriginalCircuitOwnerCustody>>,\n}",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "        identity: identity.clone(),\n        handle: handle.clone(),\n        owner:",
+          "new_text": "        identity: identity.clone(),\n        handle: handle.clone(),\n        #[cfg(target_os = \"linux\")]\n        original_phase_custody: None,\n        owner:",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "        let _cancel_on_drop = worker_cancellation.clone().drop_guard();\n        tokio::task::spawn_blocking",
+          "new_text": "        let _cancel_on_drop = worker_cancellation.clone().drop_guard();\n        #[cfg(target_os = \"linux\")]\n        if let Some(custody) = self.original_phase_custody.as_ref().map(Arc::clone) {\n            let admission = custody.reserve_original_start(worker_cancellation.clone())?;\n            let worker = tokio::task::spawn_blocking(move || {\n                runtime.block_on((self.owner)(store, state, worker_cancellation))\n            });\n            let job = admission.retain_original_handle(worker);\n            return job.receive_original_result().await;\n        }\n        tokio::task::spawn_blocking",
+          "expected_matches": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "pre": {
+        "blob": "542cc950afcd4269b693ac00177446e968a23ab4",
+        "bytes": 18242,
+        "sha256": "5eb417060b172c8ca82654141cf29d7bb4fa504c5d642e1c42fb3fd86d27a121"
+      },
+      "post": {
+        "blob": "10301009f2a48e9f29de82cd22eee75f0a1cf622",
+        "bytes": 19166,
+        "sha256": "1f2aed4df7beb612121e58e41b479d3f4ccf3f8b9f568800d920cc5d6bffc51b"
+      },
+      "ops": [
+        {
+          "old_text": "impl CircuitTaskRuntimeBootstrapV1 {\n    pub(crate) fn from_original_same_actor_worker(",
+          "new_text": "impl CircuitTaskRuntimeBootstrapV1 {\n    pub(crate) fn original_same_actor_owner_custody(\n        &self,\n    ) -> Result<Arc<OriginalCircuitOwnerCustody>, AgentdError> {\n        let TaskHandleRoute::SameActor { original } = &self.handle.route else {\n            return Err(AgentdError::GenerationFenced(\n                \"outer Circuit custody requires the actual same-actor Bootstrap\".into(),\n            ));\n        };\n        let custody = self.original_phase_custody.as_ref().ok_or_else(|| {\n            AgentdError::GenerationFenced(\"original outer Circuit custody is missing\".into())\n        })?;\n        original.require_identity(&self.identity)?;\n        custody.require_original_origin(&self.identity, &original.gate)?;\n        Ok(Arc::clone(custody))\n    }\n\n    pub(crate) fn from_original_same_actor_worker(",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "        route.require_identity(identity)?;\n        Ok(Self {",
+          "new_text": "        route.require_identity(identity)?;\n        let custody = OriginalCircuitOwnerCustody::from_original_phase(\n            identity,\n            Arc::clone(&route.gate),\n        )?;\n        Ok(Self {",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "                Box::pin(worker.run(store, state, cancellation))\n            }),\n        })",
+          "new_text": "                Box::pin(worker.run(store, state, cancellation))\n            }),\n            original_phase_custody: Some(custody),\n        })",
+          "expected_matches": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "pre": {
+        "blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+        "bytes": 1822,
+        "sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78"
+      },
+      "post": {
+        "blob": "438aceea54b2654354dbe10abaaf4b2ef1f85c1b",
+        "bytes": 1864,
+        "sha256": "3c90193d4f3f33543321fbc223ae9f725b6dfcc274c47973216c5ec037b9f67b"
+      },
+      "ops": [
+        {
+          "old_text": "            handle: CircuitTaskHandleV1::original_pending_successor_handle(slot),\n            owner:",
+          "new_text": "            handle: CircuitTaskHandleV1::original_pending_successor_handle(slot),\n            original_phase_custody: None,\n            owner:",
+          "expected_matches": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": {
+        "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "bytes": 5069,
+        "sha256": "fa0fdbc36f92230cf5bd20a59fb94e8f124289efe503dbffb94b26be95101419"
+      },
+      "post": {
+        "blob": "76fb854d6420436cfef09bb16381f00cd37cc786",
+        "bytes": 5477,
+        "sha256": "e78b96283b4a7dc6c2e8849a6e0efc6036b8556c65beb62132897515fc2d52b1"
+      },
+      "ops": [
+        {
+          "old_text": "pub use runtime::CircuitTaskRuntimeBootstrapV1;\n",
+          "new_text": "pub use runtime::CircuitTaskRuntimeBootstrapV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinObservation;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinStatus;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitOwnerCustody;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitOwnerOutcome;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitResultDelivery;\n",
+          "expected_matches": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": null,
+      "post": {
+        "blob": "65f064377dda55a07b58c82f0872d6479b8a7e1b",
+        "bytes": 11965,
+        "sha256": "8fbaf374ec7696bd4f19197653610c4cdaa0bc90ea942482a308e350c4172955"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Custody of the actual outer Circuit blocking task in the explicit phase.\n//! The original Runtime receives its exact result once. Cancelling that\n//! receiver requests stop but leaves the real handle and undelivered error\n//! in this separately retained capability. Joining is not a phase ACK.\n\nuse std::future::Future;\nuse std::sync::Arc;\nuse std::sync::Mutex;\nuse std::sync::MutexGuard;\nuse std::sync::atomic::AtomicU8;\nuse std::sync::atomic::Ordering;\n\nuse tokio::task::JoinHandle;\nuse tokio_util::sync::CancellationToken;\n\nuse crate::AgentdError;\nuse crate::AgentdIdentity;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\n\nconst WAITING: u8 = 0;\nconst ABANDONED: u8 = 1;\nconst RUNTIME_DELIVERED: u8 = 2;\nconst CLEANUP_RECOVERED: u8 = 3;\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalCircuitOwnerOutcome {\n    ReturnedOk,\n    ReturnedErr,\n    JoinFailed,\n}\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalCircuitResultDelivery {\n    Waiting,\n    Abandoned,\n    RuntimeDelivered,\n    CleanupRecovered,\n    Unavailable,\n}\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalCircuitJoinStatus {\n    NotStarted,\n    Joined {\n        outcome: OriginalCircuitOwnerOutcome,\n        delivery: OriginalCircuitResultDelivery,\n    },\n}\n\n/// An observation of this one actual task, never a successful task, normal\n/// phase shutdown, Root ACK, released C slot or process-termination receipt.\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) struct OriginalCircuitJoinObservation {\n    pub(crate) status: OriginalCircuitJoinStatus,\n    pub(crate) admission_poisoned: bool,\n}\n\nstruct OriginalCircuitStart {\n    stopped: bool,\n    job: Option<Arc<OriginalCircuitOwnerJob>>,\n}\n\n/// Only the original phase Bootstrap constructs this object. A trusted\n/// Startup must retain it before consuming the Bootstrap into Config.\npub(crate) struct OriginalCircuitOwnerCustody {\n    identity: AgentdIdentity,\n    gate: Arc<SameActorPhaseGate>,\n    start: Mutex<OriginalCircuitStart>,\n}\n\nstruct OriginalCircuitJobState {\n    handle: Option<JoinHandle<Result<(), AgentdError>>>,\n    joined: Option<OriginalCircuitOwnerOutcome>,\n    result: Option<Result<(), AgentdError>>,\n}\n\npub(super) struct OriginalCircuitOwnerJob {\n    state: tokio::sync::Mutex<OriginalCircuitJobState>,\n    delivery: AtomicU8,\n    cancellation: CancellationToken,\n    gate: Arc<SameActorPhaseGate>,\n}\n\n/// Held only between the unchanged actual spawn and immediate retention.\n/// No await or owner callback runs under this admission mutex.\npub(super) struct OriginalCircuitStartAdmission<'a> {\n    state: MutexGuard<'a, OriginalCircuitStart>,\n    cancellation: CancellationToken,\n    gate: Arc<SameActorPhaseGate>,\n    armed: bool,\n}\n\nstruct OriginalCircuitRuntimeReceiver {\n    job: Arc<OriginalCircuitOwnerJob>,\n    complete: bool,\n}\n\nimpl OriginalCircuitOwnerCustody {\n    pub(super) fn from_original_phase(\n        identity: &AgentdIdentity,\n        gate: Arc<SameActorPhaseGate>,\n    ) -> Result<Arc<Self>, AgentdError> {\n        gate.require_open().map_err(custody_error)?;\n        Ok(Arc::new(Self {\n            identity: identity.clone(),\n            gate,\n            start: Mutex::new(OriginalCircuitStart {\n                stopped: false,\n                job: None,\n            }),\n        }))\n    }\n\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {\n            self.request_stop();\n            return Err(custody_error(\"outer Circuit custody differs from its original phase\"));\n        }\n        self.gate.require_open().map_err(custody_error)?;\n        Ok(())\n    }\n\n    pub(super) fn reserve_original_start(\n        &self,\n        cancellation: CancellationToken,\n    ) -> Result<OriginalCircuitStartAdmission<'_>, AgentdError> {\n        let state = self.start.lock().map_err(|_| {\n            self.gate.close();\n            cancellation.cancel();\n            custody_error(\"outer Circuit admission is poisoned\")\n        })?;\n        self.gate.require_open().map_err(custody_error)?;\n        if state.stopped || state.job.is_some() || cancellation.is_cancelled() {\n            self.gate.close();\n            cancellation.cancel();\n            return Err(custody_error(\"outer Circuit owner cannot be started or restarted\"));\n        }\n        Ok(OriginalCircuitStartAdmission {\n            state,\n            cancellation,\n            gate: Arc::clone(&self.gate),\n            armed: true,\n        })\n    }\n\n    pub(crate) fn request_stop(&self) {\n        self.gate.close();\n        // Poison recovery is terminal custody only and cannot start any work.\n        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());\n        state.stopped = true;\n        if let Some(job) = &state.job {\n            job.cancellation.cancel();\n        }\n    }\n\n    pub(crate) async fn stop_and_join_original_owner(\n        &self,\n    ) -> Result<OriginalCircuitJoinObservation, AgentdError> {\n        self.request_stop();\n        let (job, admission_poisoned) = match self.start.lock() {\n            Ok(state) => (state.job.clone(), false),\n            Err(error) => (error.into_inner().job.clone(), true),\n        };\n        let Some(job) = job else {\n            return Ok(OriginalCircuitJoinObservation {\n                status: OriginalCircuitJoinStatus::NotStarted,\n                admission_poisoned,\n            });\n        };\n        let mut state = job.state.lock().await;\n        job.join_locked(&mut state).await?;\n        let outcome = state.joined.ok_or_else(|| custody_error(\"outer Circuit join is missing\"))?;\n        Ok(OriginalCircuitJoinObservation {\n            status: OriginalCircuitJoinStatus::Joined {\n                outcome,\n                delivery: job.delivery(),\n            },\n            admission_poisoned,\n        })\n    }\n\n    /// A cancelled Runtime receiver has relinquished this result. Cleanup may\n    /// retrieve that SAME owned error once, only after the actual handle join.\n    /// A live receiver or an already delivered Runtime result is never stolen.\n    pub(crate) async fn take_abandoned_original_result(\n        &self,\n    ) -> Result<Option<Result<(), AgentdError>>, AgentdError> {\n        let job = self\n            .start\n            .lock()\n            .unwrap_or_else(|error| error.into_inner())\n            .job\n            .clone()\n            .ok_or_else(|| custody_error(\"outer Circuit owner was not started\"))?;\n        let mut state = job.state.lock().await;\n        if state.joined.is_none() {\n            return Err(custody_error(\"outer Circuit owner has not been joined\"));\n        }\n        match job.delivery.load(Ordering::Acquire) {\n            ABANDONED => {\n                let result = state.result.take().ok_or_else(|| {\n                    custody_error(\"abandoned outer Circuit result is unavailable\")\n                })?;\n                job.delivery.store(CLEANUP_RECOVERED, Ordering::Release);\n                Ok(Some(result))\n            }\n            CLEANUP_RECOVERED => Ok(None),\n            _ => Err(custody_error(\"outer Circuit result still belongs to its Runtime receiver\")),\n        }\n    }\n}\n\nimpl Drop for OriginalCircuitOwnerCustody {\n    fn drop(&mut self) {\n        // Drop requests stop. It is deliberately not advertised as a join.\n        self.request_stop();\n    }\n}\n\nimpl OriginalCircuitStartAdmission<'_> {\n    pub(super) fn retain_original_handle(\n        mut self,\n        handle: JoinHandle<Result<(), AgentdError>>,\n    ) -> Arc<OriginalCircuitOwnerJob> {\n        let job = Arc::new(OriginalCircuitOwnerJob {\n            state: tokio::sync::Mutex::new(OriginalCircuitJobState {\n                handle: Some(handle),\n                joined: None,\n                result: None,\n            }),\n            delivery: AtomicU8::new(WAITING),\n            cancellation: self.cancellation.clone(),\n            gate: Arc::clone(&self.gate),\n        });\n        self.state.job = Some(Arc::clone(&job));\n        self.armed = false;\n        job\n    }\n}\n\nimpl Drop for OriginalCircuitStartAdmission<'_> {\n    fn drop(&mut self) {\n        if self.armed {\n            self.state.stopped = true;\n            self.cancellation.cancel();\n            self.gate.close();\n        }\n    }\n}\n\nimpl OriginalCircuitOwnerJob {\n    fn delivery(&self) -> OriginalCircuitResultDelivery {\n        match self.delivery.load(Ordering::Acquire) {\n            WAITING => OriginalCircuitResultDelivery::Waiting,\n            ABANDONED => OriginalCircuitResultDelivery::Abandoned,\n            RUNTIME_DELIVERED => OriginalCircuitResultDelivery::RuntimeDelivered,\n            CLEANUP_RECOVERED => OriginalCircuitResultDelivery::CleanupRecovered,\n            _ => OriginalCircuitResultDelivery::Unavailable,\n        }\n    }\n\n    async fn join_locked(\n        &self,\n        state: &mut OriginalCircuitJobState,\n    ) -> Result<(), AgentdError> {\n        if state.joined.is_some() {\n            return Ok(());\n        }\n        let handle = state.handle.as_mut().ok_or_else(|| {\n            self.gate.close();\n            custody_error(\"actual outer Circuit handle is unavailable\")\n        })?;\n        // Await only a mutable borrow. Dropping this waiting future preserves\n        // the one real handle in state, so another custodian can continue.\n        let result = handle.await;\n        state.handle = None;\n        let (outcome, result) = match result {\n            Ok(result) => (\n                if result.is_ok() {\n                    OriginalCircuitOwnerOutcome::ReturnedOk\n                } else {\n                    OriginalCircuitOwnerOutcome::ReturnedErr\n                },\n                result,\n            ),\n            Err(error) => (\n                OriginalCircuitOwnerOutcome::JoinFailed,\n                Err(AgentdError::Protocol(format!(\"Circuit task owner stopped: {error}\"))),\n            ),\n        };\n        // No await separates actual completion from saving the original\n        // result and terminal state. A second waiter never polls it again.\n        state.result = Some(result);\n        state.joined = Some(outcome);\n        Ok(())\n    }\n\n    pub(super) fn receive_original_result(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {\n        let job = Arc::clone(self);\n        // Capture outside the async body: even an unpolled wait relinquishes\n        // only its receiver role, not the actual task or original result.\n        let mut receiver = OriginalCircuitRuntimeReceiver {\n            job: Arc::clone(self),\n            complete: false,\n        };\n        async move {\n            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {\n                return Err(custody_error(\"outer Circuit Runtime result was already consumed\"));\n            }\n            let result = state.result.take().ok_or_else(|| {\n                custody_error(\"original outer Circuit result is unavailable\")\n            })?;\n            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            result\n        }\n    }\n}\n\nimpl Drop for OriginalCircuitRuntimeReceiver {\n    fn drop(&mut self) {\n        if !self.complete {\n            let _ = self.job.delivery.compare_exchange(\n                WAITING,\n                ABANDONED,\n                Ordering::AcqRel,\n                Ordering::Acquire,\n            );\n            self.job.cancellation.cancel();\n            self.job.gate.close();\n        }\n    }\n}\n\nfn custody_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original outer Circuit custody: {error}\"))\n}\n\n#[cfg(test)]\n#[path = \"circuit_task_runtime_lifecycle_tests.rs\"]\nmod tests;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "24824eb6f12e09de91f9e771611a97a961c0ed05",
+        "bytes": 7707,
+        "sha256": "845e92f2f701a8fd26be1872cb66b6663cb802ec7340860f0a678d86a77101e8"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Actual task/FD/cancellation custody components only. No authenticated\n//! task, A/C result, phase completion or Root shutdown is synthesized here.\n\nuse std::io::Read;\nuse std::io::ErrorKind;\nuse std::os::unix::net::UnixStream;\nuse std::sync::mpsc;\nuse std::time::Duration;\n\nuse codex_hepta_contracts::AgentId;\nuse codex_hepta_fleet::ResourceBudget;\nuse codex_hepta_paths::HeptaFleetRoot;\nuse pretty_assertions::assert_eq;\n\nuse super::*;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;\n\nconst WAIT: Duration = Duration::from_secs(5);\n\nfn custody() -> (tempfile::TempDir, Arc<OriginalCircuitOwnerCustody>) {\n    let directory = tempfile::tempdir().unwrap();\n    let agent_id = AgentId::parse(\"blocking-custody-component\").unwrap();\n    let fleet_root = directory.path().join(\"fleet\");\n    let layout = HeptaFleetRoot::parse(fleet_root.clone()).unwrap().layout().agent(&agent_id);\n    let identity = AgentdIdentity {\n        agent_id,\n        home_root: layout.home_root().to_path_buf(),\n        run_root: layout.run_root().to_path_buf(),\n        control_socket: layout.agentd_control_socket().to_path_buf(),\n        app_server_socket: layout.app_server_socket().to_path_buf(),\n        layout,\n        spawn_generation: 1,\n        fleet_root,\n        workspace: directory.path().to_path_buf(),\n        resources: ResourceBudget::local_default(),\n    };\n    let gate = SameActorPhaseGate::from_original_deadline(\n        SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(30)).unwrap(),\n    ).unwrap();\n    let original = OriginalCircuitOwnerCustody::from_original_phase(&identity, gate).unwrap();\n    (directory, original)\n}\n\n#[derive(Debug)]\nstruct OriginalFailure(Arc<()>);\n\nimpl std::fmt::Display for OriginalFailure {\n    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        formatter.write_str(\"actual blocking owner failure\")\n    }\n}\n\nimpl std::error::Error for OriginalFailure {}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_error() {\n    let (_directory, custody) = custody();\n    let cancellation = CancellationToken::new();\n    let (held, mut observed) = UnixStream::pair().unwrap();\n    observed.set_nonblocking(true).unwrap();\n    let (entered, ready) = tokio::sync::oneshot::channel();\n    let (release, wait) = mpsc::channel();\n    let marker = Arc::new(());\n    let original_marker = Arc::clone(&marker);\n    let admission = custody.reserve_original_start(cancellation.clone()).unwrap();\n    let handle = tokio::task::spawn_blocking(move || {\n        let _held = held;\n        entered.send(()).unwrap();\n        wait.recv_timeout(WAIT).unwrap();\n        Err(AgentdError::Io(std::io::Error::new(\n            ErrorKind::PermissionDenied,\n            OriginalFailure(original_marker),\n        )))\n    });\n    let job = admission.retain_original_handle(handle);\n    let receiver = tokio::spawn(job.receive_original_result());\n    tokio::time::timeout(WAIT, ready).await.unwrap().unwrap();\n    receiver.abort();\n    assert!(receiver.await.unwrap_err().is_cancelled());\n    assert!(cancellation.is_cancelled());\n    let mut byte = [0];\n    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);\n\n    // Poll the real join while its closure is still blocked, then cancel this\n    // cleanup wait too. The second wait must retain the same actual handle.\n    let mut first_join = Box::pin(custody.stop_and_join_original_owner());\n    std::future::poll_fn(|context| {\n        assert!(first_join.as_mut().poll(context).is_pending());\n        std::task::Poll::Ready(())\n    }).await;\n    drop(first_join);\n    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);\n    release.send(()).unwrap();\n    let joined = tokio::time::timeout(WAIT, custody.stop_and_join_original_owner())\n        .await.unwrap().unwrap();\n    assert_eq!(joined, OriginalCircuitJoinObservation {\n        status: OriginalCircuitJoinStatus::Joined {\n            outcome: OriginalCircuitOwnerOutcome::ReturnedErr,\n            delivery: OriginalCircuitResultDelivery::Abandoned,\n        },\n        admission_poisoned: false,\n    });\n    assert_eq!(observed.read(&mut byte).unwrap(), 0);\n    let result = custody.take_abandoned_original_result().await.unwrap().unwrap();\n    let Err(AgentdError::Io(error)) = result else {\n        panic!(\"the original I/O error was replaced\");\n    };\n    assert_eq!(error.kind(), ErrorKind::PermissionDenied);\n    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();\n    assert!(Arc::ptr_eq(&original.0, &marker));\n    assert!(custody.take_abandoned_original_result().await.unwrap().is_none());\n    assert!(custody.reserve_original_start(CancellationToken::new()).is_err());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn joined_runtime_error_is_delivered_once_and_never_relabelled_success() {\n    let (_directory, custody) = custody();\n    let marker = Arc::new(());\n    let original_marker = Arc::clone(&marker);\n    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();\n    let handle = tokio::task::spawn_blocking(move || {\n        Err(AgentdError::Io(std::io::Error::new(\n            ErrorKind::PermissionDenied,\n            OriginalFailure(original_marker),\n        )))\n    });\n    let job = admission.retain_original_handle(handle);\n    let result = tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap();\n    let Err(AgentdError::Io(error)) = result else {\n        panic!(\"Runtime did not receive its original error\");\n    };\n    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();\n    assert!(Arc::ptr_eq(&original.0, &marker));\n    let joined = custody.stop_and_join_original_owner().await.unwrap();\n    assert_eq!(joined.status, OriginalCircuitJoinStatus::Joined {\n        outcome: OriginalCircuitOwnerOutcome::ReturnedErr,\n        delivery: OriginalCircuitResultDelivery::RuntimeDelivered,\n    });\n    assert!(custody.take_abandoned_original_result().await.is_err());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn an_unpolled_receiver_and_real_worker_panic_remain_explicit_join_failure() {\n    let (_directory, custody) = custody();\n    let (held, mut observed) = UnixStream::pair().unwrap();\n    observed.set_nonblocking(true).unwrap();\n    let (entered, ready) = tokio::sync::oneshot::channel();\n    let (release, wait) = mpsc::channel();\n    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();\n    let handle = tokio::task::spawn_blocking(move || -> Result<(), AgentdError> {\n        let _held = held;\n        entered.send(()).unwrap();\n        wait.recv_timeout(WAIT).unwrap();\n        panic!(\"actual outer blocking component panic\");\n    });\n    let job = admission.retain_original_handle(handle);\n    drop(job.receive_original_result());\n    tokio::time::timeout(WAIT, ready).await.unwrap().unwrap();\n    release.send(()).unwrap();\n    let joined = tokio::time::timeout(WAIT, custody.stop_and_join_original_owner())\n        .await.unwrap().unwrap();\n    assert_eq!(joined.status, OriginalCircuitJoinStatus::Joined {\n        outcome: OriginalCircuitOwnerOutcome::JoinFailed,\n        delivery: OriginalCircuitResultDelivery::Abandoned,\n    });\n    let mut byte = [0];\n    assert_eq!(observed.read(&mut byte).unwrap(), 0);\n    let Err(AgentdError::Protocol(error)) =\n        custody.take_abandoned_original_result().await.unwrap().unwrap()\n    else {\n        panic!(\"the original JoinError mapping was lost\");\n    };\n    assert!(error.starts_with(\"Circuit task owner stopped: \"));\n}\n"
+        }
+      ]
+    }
+  ],
+  "operation_count": 11,
+  "new_test_methods": 3,
+  "default_preservation": [
+    "Original direct and ordinary successor Bootstrap factories explicitly set None.",
+    "Original default run spawn_blocking/await/JoinError mapping remains a byte-identical suffix.",
+    "Same-actor actual Bootstrap constructor alone constructs Some with its actual full identity and SAME route Gate.",
+    "Both original Direct and installed successor in-lane owner loops remain unchanged.",
+    "Original startup identity/store checks and child cancellation drop guard remain before either actual spawn."
+  ],
+  "ownership": [
+    "Original spawn_blocking actual JoinHandle is retained synchronously under one start admission before awaiting.",
+    "A cancelled Runtime receiver drops its receiver guard, closes/cancels, and marks only receiver abandonment; the separately held cap retains the actual JoinHandle and exact undelivered Result.",
+    "Join borrows the real handle from async mutex state. Cancelling one join wait does not take or drop that handle.",
+    "The original Runtime result is moved once and tracked as RuntimeDelivered. Cleanup cannot take it while Waiting or after delivery.",
+    "Only an abandoned receiver's already-joined Result may be taken once by cleanup; AgentdError is never cloned or stringified except the pre-existing JoinError -> Protocol mapping.",
+    "The cap's Drop requests stop but cannot perform asynchronous join. A caller must retain it across Launch.run and explicitly join; dropping all holders is not completion.",
+    "Job/result metadata supplies no authority, Source/Outcome/Ready/B success, slot release or Root ACK."
+  ],
+  "integration_pending": [
+    "runtime_access owns actual same_actor_q24_phase_initial.rs/Startup/coordinator cap retrieval before Config consumes the Bootstrap.",
+    "Those actual caller posts and strict CALLERS additions are not in this six-source packet. Existing candidate source/metadata stay untouched.",
+    "Startup final Err must remain. NotStarted, ReturnedOk, already delivered errors, or a joined blocking task do not qualify normal phase termination.",
+    "No C route/slot is cleared by this packet."
+  ],
+  "verification": {
+    "git_create_get_all_6": true,
+    "old_current_preimages_direct_get": 4,
+    "new_paths_absent_at_source": 2,
+    "unique_forward_reverse_replay": true,
+    "private_literal_scope": "Current runtime + original successor child + same-actor child/admission/learning/test descendants; exact Bootstrap initializers are original direct, ordinary successor, and same-actor factory. No macro/typecheck claim.",
+    "original_checker_executed": false,
+    "rustfmt_executed": false,
+    "rust_compiler_executed": false,
+    "native_tests_executed": false,
+    "h_used": false,
+    "ref_changed": false,
+    "ordinary_chains": 0,
+    "independent_controller_consumers": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "instructions": {
+    "root_agents_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "ancestor_checks": [
+      "codex-rs/AGENTS.md",
+      "codex-rs/hepta-agentd/AGENTS.md",
+      "codex-rs/hepta-agentd/src/AGENTS.md"
+    ],
+    "ancestor_checks_result": "All three are NOT_FOUND at exact source; root AGENTS read in full. Parent explicitly reserves all formatting/native execution for Root."
+  }
+}

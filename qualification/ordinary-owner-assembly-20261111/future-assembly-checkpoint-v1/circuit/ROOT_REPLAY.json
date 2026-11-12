@@ -1,0 +1,94 @@
+{
+  "packet": "173ee1feff9ff9bf2de0d81704a511574b9e0a94",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pre": {
+        "blob": "642d83a914e9e6007b5d7d13c00f2ecc4c7afe6b",
+        "bytes": 13110,
+        "sha256": "a31b6026136342209e46e9ff9cedf402bd638cbc636bc8b7efef3495da24a70d"
+      },
+      "post": {
+        "blob": "2b1e7650ceee05aeda579cb9752e7b1a96fef3d3",
+        "bytes": 14296,
+        "sha256": "718fb2aa9efc23ec13373c0bcc347c8befa0247c076c7a798feb6d21745f91df"
+      },
+      "operations": 4,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "pre": {
+        "blob": "542cc950afcd4269b693ac00177446e968a23ab4",
+        "bytes": 18242,
+        "sha256": "5eb417060b172c8ca82654141cf29d7bb4fa504c5d642e1c42fb3fd86d27a121"
+      },
+      "post": {
+        "blob": "10301009f2a48e9f29de82cd22eee75f0a1cf622",
+        "bytes": 19166,
+        "sha256": "1f2aed4df7beb612121e58e41b479d3f4ccf3f8b9f568800d920cc5d6bffc51b"
+      },
+      "operations": 3,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "pre": {
+        "blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+        "bytes": 1822,
+        "sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78"
+      },
+      "post": {
+        "blob": "438aceea54b2654354dbe10abaaf4b2ef1f85c1b",
+        "bytes": 1864,
+        "sha256": "3c90193d4f3f33543321fbc223ae9f725b6dfcc274c47973216c5ec037b9f67b"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": {
+        "blob": "9217e44433d9f7ee5c91ddbbc4b28ef2242f6e00",
+        "bytes": 5069,
+        "sha256": "fa0fdbc36f92230cf5bd20a59fb94e8f124289efe503dbffb94b26be95101419"
+      },
+      "post": {
+        "blob": "76fb854d6420436cfef09bb16381f00cd37cc786",
+        "bytes": 5477,
+        "sha256": "e78b96283b4a7dc6c2e8849a6e0efc6036b8556c65beb62132897515fc2d52b1"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": null,
+      "post": {
+        "blob": "65f064377dda55a07b58c82f0872d6479b8a7e1b",
+        "bytes": 11965,
+        "sha256": "8fbaf374ec7696bd4f19197653610c4cdaa0bc90ea942482a308e350c4172955"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "24824eb6f12e09de91f9e771611a97a961c0ed05",
+        "bytes": 7707,
+        "sha256": "845e92f2f701a8fd26be1872cb66b6663cb802ec7340860f0a678d86a77101e8"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    }
+  ],
+  "operation_count": 11,
+  "full_blob_sha256_and_git_hash_verified": true,
+  "source_files_read": true,
+  "independent_review": "36660b673ebd39437e70f1d973d4b2a689e6a7ce",
+  "tests_read_not_run": 3,
+  "native_run": false,
+  "qualification_pass": false
+}

@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "kind": "future-root-deployment-material-provenance-and-progress-contract",
+  "status": "source-bound static draft; no native, checker, branch or deployment execution",
+  "source_base": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "future_source_packet": "c43a53a8c41002c6f7cc3687f03cf1209e7dfcd2",
+  "source_readings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "blob": "00ef67ff163336eb582c72d40750e32af03e470e",
+      "methods": [
+        "from_original",
+        "root_profile",
+        "require_profile"
+      ],
+      "fact": "The actual immutable Prepared derives its scoped profile from actual Dataset/batch/rule and the complete original request/owners. Expiry and original provenance are rechecked."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+      "methods": [
+        "new_scoped_v2",
+        "require_binding",
+        "decode_initial"
+      ],
+      "fact": "Data is a canonical empty initial/frozen Cell scope bound to full identity and retained writer proof; the data contains no Root owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "blob": "15379b5fd88dfef1e63fe4e317fc6bb2caf56d09",
+      "methods": [
+        "accept_original_phase_join"
+      ],
+      "fact": "Root's trusted typed profile is the authorization input. The actual daemon profile must equal it during both original joined messages."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "blob": "67df73589c32c8565bb893b1053c2477987b5cfe",
+      "methods": [
+        "with_learning_profile"
+      ],
+      "fact": "Revalidates Root config, original full identity, peer lifetime, retained writer proof and live lease, canonical profile and revocation cut before/after the actual action; does not independently approve arbitrary peer-selected owners/update_rule."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "blob": "793bc2510e97fe5ed07336e6d823561aa0e8c58f",
+      "methods": [
+        "claim_same_actor_phase_after_original_a"
+      ],
+      "fact": "Requires actual same original A selection/manifest, drained journal, full agent/cell/run/principal, published CURRENT, retained use and physical observation around durable once-claim."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "blob": "0977e3c79b83aff01688436af99b533bda8c5a46",
+      "methods": [
+        "OriginalSameActorPhaseEventV1",
+        "OriginalSameActorPhaseCommandV1"
+      ],
+      "fact": "InputsOpened is data; OriginalAPrepared carries the actual Prepared Arc and derived profile; OriginalSelectionObserved carries only a digest, insufficient to recreate target/selection owners."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "f4cf8a01bc778eb02d8bf9c2d3d1b96895cfc863",
+      "methods": [
+        "prepare_original_a"
+      ],
+      "fact": "Only actual completed Outcome, prepare_learning, retained source and task-local drain precede the Prepared event; original retirement begins immediately afterward.",
+      "path_evidence": {
+        "parent_blob": "0dd1deba7fcc402269c73c1ee7480f6c12320552",
+        "declaration": "#[path = \"same_actor_q24_phase_a.rs\"]\nmod original_a;"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "blob": "ddf7003fbf50bfad280c4b2b9bbb9c317f39b394",
+      "methods": [
+        "RootGenerationPublicationDeploymentV1::encode_original_material"
+      ],
+      "fact": "Serializes actual supplied CellGenerationObserverConfigV1 and independent SignedArtifactSelectionV1; creates neither signature nor owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+      "blob": "8e3db1b34ba37719e1b040b551eadac7c042923c",
+      "methods": [
+        "OriginalInputs::enrollment_inputs"
+      ],
+      "fact": "Root-fixed paths/trust and actual read-view locate original selected files; verifies actual retained current, withdrawal floor and independent selection. Peer JSON supplies no paths."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+      "methods": [
+        "AgentdGenerationUpdateTargetV1"
+      ],
+      "fact": "The actual host owns target File, witness, generation config and bound; a target configuration or digest alone is not this owner."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "blob": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "methods": [
+        "from_stream_until",
+        "exchange_inner"
+      ],
+      "fact": "Exact SO_PEERCRED UID/PID plus actual held pidfd. First-byte idle waits only to original phase end; the original per-frame deadline is then shared by remaining frame, handler and ACK. Storage is not forcibly cancelled and overdue ACK is denied."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "blob": "efa2a4163b9c685f217b264a966c6c2cd666b1bb",
+      "methods": [
+        "root_pair",
+        "require_root_pin",
+        "receive_root_production_handoff"
+      ],
+      "fact": "Inherited socketpair SO_PEERCRED represents creator Root, not the later non-Root daemon. No reverse use as current-daemon authentication; no SCM_CREDENTIALS mechanism was inferred."
+    }
+  ],
+  "materials": [
+    {
+      "field": "Initial readiness",
+      "actual_producer": "Actual Startup after original Root/five-lane receive and actual Starting Config returns InputsOpened.",
+      "root_authority": "Same prepared Initial capability, original Root deployment and original schema3 consumer checks.",
+      "carrier": "Sequence 1 on one real non-Root UnixStream connect; data-only original full phase/incarnation binding.",
+      "validators": "Actual SO_PEERCRED plus held consumer pidfd, original phase end, exact frozen binding/stage; original Initial input/pin reader and original capability register.",
+      "missing": "Ordinary daemon coordinator/client is a separate pending future implementation. Listener readiness/stdout correlation does not substitute for this event."
+    },
+    {
+      "field": "Scoped learning profile",
+      "actual_producer": "CellQ24PreparedLearningV1::root_profile from the actual Prepared; OriginalAPrepared event supplies that exact object-derived profile.",
+      "root_authority": "Independently Root-approved Root0600 learning_profile file and the same one-shot RootSameActorScopeEnrollmentCapabilityV1. The peer does not approve it.",
+      "carrier": "Sequence 2 carries complete profile data, compared canonically with the separately opened Root-approved file. The file remains pinned through actual ACK.",
+      "validators": "Exact profile equality, original file custody/pins, original two-ACK join, with_learning_profile, actual A claim and same-service namespaces.",
+      "missing": "A concrete trusted Root producer/approval writer for this dynamic file is not proved by existing ordinary CLI call sites. No automatic promotion of peer profile is implemented. Missing/mismatched file refuses and closes the attempt."
+    },
+    {
+      "field": "Current target observer data",
+      "actual_producer": "External real C deployment host owns actual target File/witness/config and supplies its matching CellGenerationObserverConfigV1 to the existing encoder.",
+      "root_authority": "Independent Root0600 Current deployment and approved late_material; fixed Root paths/previous owner/consumer/trust.",
+      "carrier": "Sequence 3 carries the exact existing encode_original_material bytes as UTF-8 data. Root compares all bytes to approved canonical late_material.",
+      "validators": "Canonical encoding, exact file digest/content, original target journal/witness File pins and all original enrollment checks.",
+      "missing": "The actual ordinary target-resource producer and trusted Root dynamic material approval/writer are still deployment dependencies; the target struct and encoder alone are not ordinary execution."
+    },
+    {
+      "field": "Independent signed Artifact Selection",
+      "actual_producer": "A real external authorized Selector supplies SignedArtifactSelectionV1; actual controller accepts it through OriginalCellQ24SelectionInputsV1 and validates it before OriginalSelectionObserved.",
+      "root_authority": "Original Root-frozen selector trust, Artifact owner trust/current/withdrawal floor and approved Current material.",
+      "carrier": "Existing encode_original_material serializes the actual signed selection without re-signing; sequence 3 carries that exact canonical data.",
+      "validators": "Original independent signature verifier/read-view locators, selected files and original Root publication enrollment; complete approved material comparison.",
+      "missing": "No ordinary signer/selector caller or credential was invented. A digest-only event cannot reconstruct this signature or owner."
+    },
+    {
+      "field": "Actual Root registration acknowledgement",
+      "actual_producer": "Original Root typed host only after Initial register, successful scoped original rights handoff, or Current register respectively.",
+      "root_authority": "The original retained live Root capability remains solely in Root host; no authority is transferred by the ACK itself.",
+      "carrier": "One response on the same pinned connection, exact request digest/full binding/sequence/stage and actual registration binding.",
+      "validators": "Original host ACK kind, all held file post-pins, same Gate/peer lifetime and original channel's request deadline before/after actual write.",
+      "missing": "Concrete daemon response consumer must retain original context/gate and run concurrently with actual A join/scoped receive. No reconnect/retry or final completion semantics are supplied."
+    }
+  ],
+  "ordering": [
+    "Root captures one original deadline before original service setup and retains original FDs/pins. New purpose listener shares the exact original runtime directory and Root end.",
+    "Daemon receives actual original rights and opens all original five lanes before sequence 1; Root sends Initial ACK only after original Initial registration.",
+    "Actual A task, independent Outcome, native Prepared/retained source and task-local drain produce OriginalAPrepared. Root authorization material must separately be ready; a missing file is not waited for inside the frame.",
+    "Sequence 2 and its eventual actual ACK run concurrently with actual A retirement/join and scoped offer receive. Waiting on the ACK must not block those owners.",
+    "Actual Training/B/Decision/Artifact/Selection and actual C target resources precede sequence 3. Only after actual Current ACK may ordinary C publication request proceed.",
+    "After the three ACKs both sides retain this original purpose lane until common closure. EOF, Gate.close, pending=0 and this protocol's return are not final completion or physical join."
+  ],
+  "boundaries": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer": "Existing C remains same agent/cell/principal with different task/run/input; no independent owner adoption is claimed.",
+    "os_restart_accepted": false,
+    "completion_protocol_changed": false,
+    "root_approval_source_missing": true,
+    "daemon_caller_pending": true,
+    "native_or_checker_executed": false,
+    "refs_or_host_modified": false,
+    "progress_frame_bound_bytes": 65536,
+    "progress_payload_bound_note": "The complete canonical frame, including JSON escaping/envelope, must fit the original 65536-byte peer channel bound. Oversized material refuses; no bound or timeout is widened."
+  }
+}

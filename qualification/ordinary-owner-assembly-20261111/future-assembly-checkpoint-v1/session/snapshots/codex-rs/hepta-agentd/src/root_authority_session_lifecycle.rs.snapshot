@@ -1,0 +1,349 @@
+//! Private cleanup of the exact phase Session worker and consumer tasks.
+//! No normal completion, Root retirement ACK, or independent owner release is
+//! inferred from this observation. Legacy sessions retain their old handle.
+
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::Weak;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+
+use tokio::task::AbortHandle;
+use tokio::task::JoinHandle;
+
+use super::AgentdRootAuthorityError;
+use super::LiveRoot;
+use super::WriterCustody;
+use crate::AgentdError;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+
+#[path = "root_authority_session_consumer_jobs.rs"]
+mod consumer_jobs;
+pub(super) use consumer_jobs::OriginalConsumerJobs;
+pub(crate) use consumer_jobs::OriginalConsumerFailure;
+pub(crate) use consumer_jobs::OriginalConsumerJoinSummary;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalRootWorkerTermination {
+    Returned,
+    Cancelled,
+    Panicked,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalRootSessionJoinObservation {
+    NotRegistered {
+        slot_poisoned: bool,
+    },
+    Joined {
+        slot_poisoned: bool,
+        worker: OriginalRootWorkerTermination,
+        recorded_worker_failure: Option<AgentdRootAuthorityError>,
+        consumers: OriginalConsumerJoinSummary,
+    },
+}
+
+struct PhaseWorkerState {
+    handle: Option<JoinHandle<()>>,
+    observed: Option<OriginalRootWorkerTermination>,
+}
+
+struct CustodySlotState {
+    stopped: bool,
+    original: Option<Arc<OriginalRootSessionCustody>>,
+    #[cfg(test)]
+    stop_after_original_spawn: bool,
+}
+
+/// An empty single-use destination owned outside the receive/Launch future.
+/// It creates no Session, authority, worker or file and is not a phase proof.
+pub(crate) struct OriginalRootSessionCustodySlot {
+    state: Mutex<CustodySlotState>,
+}
+
+pub(super) struct OriginalSessionAdmission<'a> {
+    state: MutexGuard<'a, CustodySlotState>,
+    phase: Arc<SameActorPhaseGate>,
+    armed: bool,
+}
+
+/// Not stored in LiveRoot: consumers hold that clock and must not form a
+/// registry -> job -> consumer -> clock -> registry strong-reference cycle.
+pub(crate) struct OriginalRootSessionCustody {
+    worker: tokio::sync::Mutex<PhaseWorkerState>,
+    consumers: Arc<OriginalConsumerJobs>,
+    live: Weak<LiveRoot>,
+    gate: Arc<SameActorPhaseGate>,
+    abort: AbortHandle,
+    session_retired: AtomicBool,
+    // Drop the retained task/consumer custody before this exact File share.
+    _writer_file: WriterCustody,
+}
+
+pub(super) enum OriginalSessionWorker {
+    Legacy(JoinHandle<()>),
+    Phase(Arc<OriginalRootSessionCustody>),
+}
+
+/// This MUST be the Session's last field, after its original writer_file.
+/// Only actual destruction of those fields marks the original Session retired.
+pub(super) struct OriginalSessionRetirement {
+    custody: Arc<OriginalRootSessionCustody>,
+}
+
+impl OriginalRootSessionCustodySlot {
+    pub(crate) fn new() -> Self {
+        Self {
+            state: Mutex::new(CustodySlotState {
+                stopped: false,
+                original: None,
+                #[cfg(test)]
+                stop_after_original_spawn: false,
+            }),
+        }
+    }
+
+    #[cfg(test)]
+    pub(super) fn component_stop_after_original_spawn(&self) {
+        self.state.lock().unwrap().stop_after_original_spawn = true;
+    }
+
+    pub(super) fn reserve_original_session(
+        &self,
+        phase: &Arc<SameActorPhaseGate>,
+    ) -> Result<OriginalSessionAdmission<'_>, AgentdRootAuthorityError> {
+        let state = self.state.lock().map_err(|_| {
+            phase.close();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        if state.stopped || state.original.is_some() {
+            phase.close();
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        Ok(OriginalSessionAdmission {
+            state,
+            phase: Arc::clone(phase),
+            armed: true,
+        })
+    }
+
+    fn require_original(
+        &self,
+        original: &Arc<OriginalRootSessionCustody>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        let state = self.state.lock().map_err(|_| {
+            original.request_stop();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        if state.stopped || !state.original.as_ref().is_some_and(|cap| Arc::ptr_eq(cap, original)) {
+            original.request_stop();
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn stop_and_join_retired_session_tasks(
+        &self,
+    ) -> Result<OriginalRootSessionJoinObservation, AgentdError> {
+        let (original, slot_poisoned) = {
+            // Poison permits only terminal cleanup of the already retained
+            // handle. Admission and origin checks remain fail-closed.
+            let (mut state, poisoned) = match self.state.lock() {
+                Ok(state) => (state, false),
+                Err(poisoned) => (poisoned.into_inner(), true),
+            };
+            state.stopped = true;
+            (state.original.clone(), poisoned)
+        };
+        let Some(original) = original else {
+            // The outer owner must already have dropped/stopped its receive
+            // future. This means no Session was registered in this slot, not
+            // successful bootstrap or normal phase termination.
+            return Ok(OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned });
+        };
+        original.stop_and_join_retired_session_tasks(slot_poisoned).await
+    }
+}
+
+impl Drop for OriginalRootSessionCustodySlot {
+    fn drop(&mut self) {
+        let state = self.state.get_mut().unwrap_or_else(std::sync::PoisonError::into_inner);
+        state.stopped = true;
+        if let Some(original) = &state.original {
+            original.request_stop();
+        }
+        // Dropping custody is not an observed join. The actual outer owner
+        // must drive stop_and_join_retired_session_tasks before releasing it.
+    }
+}
+
+impl OriginalSessionAdmission<'_> {
+    pub(super) fn retain_original(mut self, original: &Arc<OriginalRootSessionCustody>) {
+        // The actual spawn is between reserve and this synchronous ownership
+        // transfer. No await or fallible callback can lose its only handle.
+        self.state.original = Some(Arc::clone(original));
+        self.armed = false;
+        // Deterministic cancellation at the real post-spawn ownership cut.
+        // Normal builds contain neither this switch nor this extra stop.
+        #[cfg(test)]
+        if self.state.stop_after_original_spawn {
+            original.request_stop();
+        }
+    }
+}
+
+impl Drop for OriginalSessionAdmission<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.state.stopped = true;
+            self.phase.close();
+        }
+    }
+}
+
+impl OriginalRootSessionCustody {
+    pub(super) fn from_original_worker(
+        live: &Arc<LiveRoot>,
+        gate: &Arc<SameActorPhaseGate>,
+        consumers: Arc<OriginalConsumerJobs>,
+        worker: JoinHandle<()>,
+        writer_file: &WriterCustody,
+    ) -> Arc<Self> {
+        let abort = worker.abort_handle();
+        Arc::new(Self {
+            worker: tokio::sync::Mutex::new(PhaseWorkerState {
+                handle: Some(worker),
+                observed: None,
+            }),
+            consumers,
+            live: Arc::downgrade(live),
+            gate: Arc::clone(gate),
+            abort,
+            session_retired: AtomicBool::new(false),
+            _writer_file: Arc::clone(writer_file),
+        })
+    }
+
+    pub(super) fn consumers(&self) -> &Arc<OriginalConsumerJobs> {
+        &self.consumers
+    }
+
+    pub(super) fn retirement_notice(self: &Arc<Self>) -> OriginalSessionRetirement {
+        OriginalSessionRetirement { custody: Arc::clone(self) }
+    }
+
+    fn request_stop(&self) {
+        if let Some(live) = self.live.upgrade() {
+            live.cache.fence();
+        }
+        self.gate.close();
+        self.consumers.close();
+        self.abort.abort();
+    }
+
+    async fn stop_and_join_retired_session_tasks(
+        &self,
+        slot_poisoned: bool,
+    ) -> Result<OriginalRootSessionJoinObservation, AgentdError> {
+        self.request_stop();
+        if !self.session_retired.load(Ordering::Acquire) {
+            return Err(join_error("actual Session must be dropped before joining its retired tasks"));
+        }
+        let worker = {
+            let mut state = self.worker.lock().await;
+            if let Some(observed) = state.observed {
+                observed
+            } else {
+                let handle = state.handle.as_mut()
+                    .ok_or_else(|| join_error("actual Root observation handle is unavailable"))?;
+                let observed = match handle.await {
+                    Ok(()) => OriginalRootWorkerTermination::Returned,
+                    Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,
+                    Err(_) => OriginalRootWorkerTermination::Panicked,
+                };
+                state.handle = None;
+                state.observed = Some(observed);
+                observed
+            }
+        };
+        // The observation future and its WriterCustody have really dropped.
+        // Its earlier ConsumerSyncJob closures may still be running, so join
+        // every retained actual handle too. No serial/owner mutex is held.
+        let consumers = self.consumers.join_stopped_consumers().await.map_err(join_error)?;
+        Ok(OriginalRootSessionJoinObservation::Joined {
+            slot_poisoned,
+            worker,
+            recorded_worker_failure: self.consumers.worker_failure(),
+            consumers,
+        })
+    }
+}
+
+impl Drop for OriginalRootSessionCustody {
+    fn drop(&mut self) {
+        // This is fail-closed cancellation only. External custody must await
+        // the private join; destructor execution does not certify completion.
+        self.request_stop();
+    }
+}
+
+impl OriginalSessionWorker {
+    pub(super) fn abort(&self) {
+        match self {
+            Self::Legacy(worker) => worker.abort(),
+            Self::Phase(original) => original.request_stop(),
+        }
+    }
+
+    #[cfg(test)]
+    pub(super) fn abort_handle(&self) -> AbortHandle {
+        match self {
+            Self::Legacy(worker) => worker.abort_handle(),
+            Self::Phase(original) => original.abort.clone(),
+        }
+    }
+
+    #[cfg(test)]
+    pub(super) fn is_finished(&self) -> bool {
+        match self {
+            Self::Legacy(worker) => worker.is_finished(),
+            Self::Phase(original) => original.abort.is_finished(),
+        }
+    }
+
+    pub(super) fn phase_custody(&self) -> Option<&Arc<OriginalRootSessionCustody>> {
+        match self {
+            Self::Legacy(_) => None,
+            Self::Phase(original) => Some(original),
+        }
+    }
+}
+
+impl Drop for OriginalSessionRetirement {
+    fn drop(&mut self) {
+        self.custody.session_retired.store(true, Ordering::Release);
+    }
+}
+
+impl super::AgentdRootAuthoritySession {
+    /// The phase constructor already placed its actual worker in this slot
+    /// before any post-spawn refusal. This only checks the same retained cap;
+    /// it never creates or rebinds task custody.
+    pub(crate) fn require_original_phase_task_custody(
+        &self,
+        slot: &OriginalRootSessionCustodySlot,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        let original = self.worker.phase_custody().ok_or(AgentdRootAuthorityError::Refused)?;
+        if !self.live.phase.as_ref().is_some_and(|phase| Arc::ptr_eq(phase, &original.gate)) {
+            original.request_stop();
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        slot.require_original(original)
+    }
+
+}
+
+fn join_error(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::GenerationFenced(format!("original Root Session task custody: {error}"))
+}

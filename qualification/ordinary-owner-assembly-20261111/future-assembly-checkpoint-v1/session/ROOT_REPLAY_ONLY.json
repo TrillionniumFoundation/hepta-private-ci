@@ -1,0 +1,84 @@
+{
+  "packet": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+  "all_blob_git_sha256_and_bytes_verified": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": {
+        "blob": "0f10fdb6433c09968fc4146254adfc204baad411",
+        "bytes": 30409,
+        "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393"
+      },
+      "post": {
+        "blob": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+        "bytes": 33447,
+        "sha256": "f65bc28c00bfc8772b94c5b799fe6923831d5bab59e21cdecbb2473e618af77b"
+      },
+      "operations": 22,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "pre": {
+        "blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "post": {
+        "blob": "81813409fd03a46a7be97b3b5b0d338b4e37d9a7",
+        "bytes": 27067,
+        "sha256": "01f97b181ee3c0a453292c8d1290c7e2941174092ab6be8c667e8f1f99f0a3c6"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": null,
+      "post": {
+        "blob": "7de463b4efb32cb2e49adfc5b4227720c1207448",
+        "bytes": 11946,
+        "sha256": "ee400b0ca19bac17bcb3192cf1f43f8fdf4af70926b8edccfb98fc076ad034b1"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": null,
+      "post": {
+        "blob": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+        "bytes": 7941,
+        "sha256": "fb2639f9ffde9ade8ec42ac8863d046fe3b2f5a67123e621d402a1e657b68d68"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "a86b92103f7463b75a2da854a4f78b30a59c661f",
+        "bytes": 11324,
+        "sha256": "3f18522015ff576587a0b8a6bdc9105c817ff16eeb7e765fcd84fe130fd6e38b"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "1e65bb5fa6e3eaead87683d6fa1c671f8b9c7c10",
+        "bytes": 8855,
+        "sha256": "5cb7c119f706e90522e33c61665503056d6e22b96d6d275e3fedd5ca27750feb"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    }
+  ],
+  "operation_count": 27,
+  "classification": "HASH_AND_EXACT_REPLAY_ONLY_SEMANTIC_REVIEW_PENDING",
+  "native_run": false,
+  "qualification_pass": false
+}

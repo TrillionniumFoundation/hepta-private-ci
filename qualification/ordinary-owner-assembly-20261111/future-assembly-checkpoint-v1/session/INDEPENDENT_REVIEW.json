@@ -1,0 +1,413 @@
+{
+  "schema": "hepta.original-root-session-custody.independent-review.v1",
+  "reviewer": "runtime_access",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_packet": {
+    "blob": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+    "bytes": 73762,
+    "sha256": "5631636bba9fab047fc6ee97bb4679411da0a938f9465d0b0d67b117ec1b1b8e"
+  },
+  "base": {
+    "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+  },
+  "verdict": "No confirmed local source/ownership blocker in the bounded six-file packet. This is an unexecuted future component, not a complete compilable candidate: the real phase receiver must supply the newly required externally owned custody slot before spawn, and the actual outer Startup owner must drive cleanup.",
+  "no_source_edit": true,
+  "exact_replay": {
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "pre": "0f10fdb6433c09968fc4146254adfc204baad411",
+        "post": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+        "bytes": 33447,
+        "sha256": "f65bc28c00bfc8772b94c5b799fe6923831d5bab59e21cdecbb2473e618af77b",
+        "ops": 22,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "pre": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "post": "81813409fd03a46a7be97b3b5b0d338b4e37d9a7",
+        "bytes": 27067,
+        "sha256": "01f97b181ee3c0a453292c8d1290c7e2941174092ab6be8c667e8f1f99f0a3c6",
+        "ops": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "pre": null,
+        "post": "7de463b4efb32cb2e49adfc5b4227720c1207448",
+        "bytes": 11946,
+        "sha256": "ee400b0ca19bac17bcb3192cf1f43f8fdf4af70926b8edccfb98fc076ad034b1",
+        "ops": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "pre": null,
+        "post": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+        "bytes": 7941,
+        "sha256": "fb2639f9ffde9ade8ec42ac8863d046fe3b2f5a67123e621d402a1e657b68d68",
+        "ops": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "pre": null,
+        "post": "a86b92103f7463b75a2da854a4f78b30a59c661f",
+        "bytes": 11324,
+        "sha256": "3f18522015ff576587a0b8a6bdc9105c817ff16eeb7e765fcd84fe130fd6e38b",
+        "ops": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "pre": null,
+        "post": "1e65bb5fa6e3eaead87683d6fa1c671f8b9c7c10",
+        "bytes": 8855,
+        "sha256": "5cb7c119f706e90522e33c61665503056d6e22b96d6d275e3fedd5ca27750feb",
+        "ops": 1,
+        "forward": true,
+        "reverse": true
+      }
+    ],
+    "operations": 27,
+    "all_replacements_unique_at_their_ordered_application": true,
+    "all_additions_exact": true,
+    "hashes": [
+      {
+        "pin": "0f10fdb6433c09968fc4146254adfc204baad411",
+        "bytes": 30409,
+        "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393",
+        "git": "0f10fdb6433c09968fc4146254adfc204baad411",
+        "meta_match": true
+      },
+      {
+        "pin": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+        "bytes": 33447,
+        "sha256": "f65bc28c00bfc8772b94c5b799fe6923831d5bab59e21cdecbb2473e618af77b",
+        "git": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+        "meta_match": true
+      },
+      {
+        "pin": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2",
+        "git": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "meta_match": true
+      },
+      {
+        "pin": "81813409fd03a46a7be97b3b5b0d338b4e37d9a7",
+        "bytes": 27067,
+        "sha256": "01f97b181ee3c0a453292c8d1290c7e2941174092ab6be8c667e8f1f99f0a3c6",
+        "git": "81813409fd03a46a7be97b3b5b0d338b4e37d9a7",
+        "meta_match": true
+      },
+      {
+        "pin": "7de463b4efb32cb2e49adfc5b4227720c1207448",
+        "bytes": 11946,
+        "sha256": "ee400b0ca19bac17bcb3192cf1f43f8fdf4af70926b8edccfb98fc076ad034b1",
+        "git": "7de463b4efb32cb2e49adfc5b4227720c1207448",
+        "meta_match": true
+      },
+      {
+        "pin": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+        "bytes": 7941,
+        "sha256": "fb2639f9ffde9ade8ec42ac8863d046fe3b2f5a67123e621d402a1e657b68d68",
+        "git": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+        "meta_match": true
+      },
+      {
+        "pin": "a86b92103f7463b75a2da854a4f78b30a59c661f",
+        "bytes": 11324,
+        "sha256": "3f18522015ff576587a0b8a6bdc9105c817ff16eeb7e765fcd84fe130fd6e38b",
+        "git": "a86b92103f7463b75a2da854a4f78b30a59c661f",
+        "meta_match": true
+      },
+      {
+        "pin": "1e65bb5fa6e3eaead87683d6fa1c671f8b9c7c10",
+        "bytes": 8855,
+        "sha256": "5cb7c119f706e90522e33c61665503056d6e22b96d6d275e3fedd5ca27750feb",
+        "git": "1e65bb5fa6e3eaead87683d6fa1c671f8b9c7c10",
+        "meta_match": true
+      }
+    ]
+  },
+  "independent_byte_projections": {
+    "critical_extents": [
+      {
+        "marker": "struct RootWorker",
+        "preRange": [
+          2718,
+          2800
+        ],
+        "postRange": [
+          3103,
+          3185
+        ],
+        "exact": true,
+        "bytes": 82,
+        "sha256": "1fdcfd2c13f958575b68223f359bb4a23885dd2edf9e5a1dd30dcb3df4e2091b"
+      },
+      {
+        "marker": "impl<F: Future<Output = ()>> Future for RootWorker",
+        "preRange": [
+          2801,
+          3015
+        ],
+        "postRange": [
+          3186,
+          3400
+        ],
+        "exact": true,
+        "bytes": 214,
+        "sha256": "9eacc1532253e33620b252516bcf9923d7bc32f2939b2dd3a7e160b2f2ba8ceb"
+      },
+      {
+        "marker": "struct ConsumerSyncJob",
+        "preRange": [
+          3172,
+          3300
+        ],
+        "postRange": [
+          3557,
+          3685
+        ],
+        "exact": true,
+        "bytes": 128,
+        "sha256": "504fa24d4c3e02fb1576319aef64cac2bda11c0d714313c280bafef37ae31a08"
+      },
+      {
+        "marker": "impl ConsumerSyncJob",
+        "preRange": [
+          3301,
+          4134
+        ],
+        "postRange": [
+          3686,
+          4519
+        ],
+        "exact": true,
+        "bytes": 833,
+        "sha256": "1d30b051ce6860172b7605f78702e205ef095c844580c40ade1748dc71a172fd"
+      },
+      {
+        "marker": "impl AuthorityClock for LiveRoot",
+        "preRange": [
+          7978,
+          8199
+        ],
+        "postRange": [
+          8363,
+          8584
+        ],
+        "exact": true,
+        "bytes": 221,
+        "sha256": "6dd6166ee564f27fcf18f5206183ae1bd11c18fd0edfedb66c1a6283cb217b32"
+      },
+      {
+        "marker": "impl ProductionAuthorityVerifier for LiveRoot",
+        "preRange": [
+          8200,
+          9668
+        ],
+        "postRange": [
+          8585,
+          10053
+        ],
+        "exact": true,
+        "bytes": 1468,
+        "sha256": "d82af672d4d825f6ee7e2c42641c979f154d194ac8abca8db47f4c6f50e2af20"
+      },
+      {
+        "marker": "fn current_original(",
+        "preRange": [
+          4834,
+          7975
+        ],
+        "postRange": [
+          5219,
+          8360
+        ],
+        "exact": true,
+        "bytes": 3141,
+        "sha256": "5de83882656ead997b1cee5c87deb4596e51c2547454cdd82634652b60839cdc"
+      },
+      {
+        "marker": "fn retain_registered_writer(",
+        "preRange": [
+          19764,
+          20329
+        ],
+        "postRange": [
+          21460,
+          22025
+        ],
+        "exact": true,
+        "bytes": 565,
+        "sha256": "c74669633f191cb27bc45ab15da04481f44e941efaef1235025397d78b0091aa"
+      },
+      {
+        "marker": "impl Drop for AgentdRootAuthoritySession",
+        "preRange": [
+          23851,
+          24584
+        ],
+        "postRange": [
+          25625,
+          26358
+        ],
+        "exact": true,
+        "bytes": 733,
+        "sha256": "75658533bf615e9b7355dd6fce8a7f6ea87993a3b82eeba63e9a33731cc0c724"
+      },
+      {
+        "marker": "impl Drop for FenceOnDrop",
+        "preRange": [
+          24620,
+          24877
+        ],
+        "postRange": [
+          26394,
+          26651
+        ],
+        "exact": true,
+        "bytes": 257,
+        "sha256": "940196618ecec1958a6fac498b67b1090d09233726b4b11be7b668cc14ba8cc6"
+      },
+      {
+        "marker": "impl Drop for ActivationAttempt",
+        "preRange": [
+          24955,
+          25197
+        ],
+        "postRange": [
+          26729,
+          26971
+        ],
+        "exact": true,
+        "bytes": 242,
+        "sha256": "fb01c4e4b68735954763d90d97c23e05b25a00d413874eb6a7ec0649c1e743a0"
+      }
+    ],
+    "details": {
+      "default_constructor_projection": true,
+      "refresh_parameter_projection": true,
+      "legacy_synchronize_body_same": true,
+      "legacyPrefixAll": true,
+      "finalAgeSuffixSame": true,
+      "gate_checks": [
+        8,
+        8
+      ],
+      "boottime_calls": [
+        9,
+        10
+      ]
+    },
+    "old_test_file_complete_prefix_preserved": true
+  },
+  "observed_ownership": [
+    {
+      "topic": "External custody is established at the actual spawn",
+      "evidence": "The actual connect_original_phase_stream calls reserve_original_session after the original initial feed and before its sole tokio::spawn. It builds OriginalRootSessionCustody from that exact JoinHandle, constructs the actual Session including its final retirement field, then synchronously retain_original and drops its temporary cap. No await or fallible callback occurs between successful spawn and retention.",
+      "limit": "The empty slot must really be retained outside the cancellable receive/Launch future. The packet intentionally changes the private constructor signature and does not supply its concrete caller."
+    },
+    {
+      "topic": "Failure immediately after spawn cannot discard the only handle",
+      "evidence": "The original single Gate postcheck is moved after actual Session construction and external retention. Failure returns the same Unavailable through the original outer CloseOnDrop. The local Session drops while the external slot still owns the exact worker. The test-only stop switch is absent from the normal static code mask.",
+      "limit": "This does not eliminate other external references or certify that the registered writer File has unlocked."
+    },
+    {
+      "topic": "Real Session retirement is required",
+      "evidence": "The private _retirement field is last, after live, the worker enum and writer_file. Its release-store is therefore reached only after those Session field shares are destroyed. Cleanup requests stop and rejects while session_retired is false, then borrows and awaits the retained actual worker handle.",
+      "limit": "The flag certifies destruction of this Session value. Background tasks, external clocks, consumers and original File shares can remain until their own real owners terminate; cleanup reports those distinct facts."
+    },
+    {
+      "topic": "ConsumerSyncJob cancellation retains the actual task",
+      "evidence": "The explicit phase path reserves the registry, creates the unchanged ConsumerSyncJob once, calls the original spawn_blocking once and synchronously transfers that actual JoinHandle into an Arc job before the bounded wait. The timeout awaits receive_original_consumer, not ownership of the handle. Both regular delivery and terminal cleanup borrow the same handle under a Tokio mutex.",
+      "limit": "This registry covers the real synchronization jobs only. The two earlier open_original_phase_consumer bootstrap spawns are not registered here."
+    },
+    {
+      "topic": "Cancellation of join is resumable cleanup",
+      "evidence": "While handle.await is Pending the handle remains inside the original job/worker state. After Ready, observed is stored and handle cleared without an intervening await. Repeated cleanup returns the recorded observation instead of polling an already-completed JoinHandle again. Consumer removal is guarded by actual Arc identity, so concurrent successful observation counts a job only once.",
+      "limit": "This resumes a cleanup borrow, never an owner/effect request. It provides no authority retry, no new handle and no replacement consumer."
+    },
+    {
+      "topic": "No new strong cycle through the original clock",
+      "evidence": "Registry and worker custody are outside LiveRoot. The custody holds Weak<LiveRoot>; LiveRoot has no registry field. The original Session Drop still fences and clears its consumer vector. Original RootWorker future-before-File and ConsumerSyncJob consumers-before-File code is byte-identical.",
+      "limit": "Dropping the outer custody without driving its async join remains only stop/requested cancellation. The code and packet state that limitation explicitly."
+    },
+    {
+      "topic": "Failure detail is not silently promoted to success",
+      "evidence": "Original owner errors are Copy and return unchanged to the waiting owner. Join cancellation/panic still map to original caller Unavailable while retained observations distinguish Cancelled/Panicked. The worker records its actual refresh error before the unchanged return. NotRegistered and Joined are component observations with poison flags, not business success.",
+      "limit": "The review did not execute panic/cancellation schedules or prove compiler trait bounds."
+    },
+    {
+      "topic": "Lock scope and termination ordering",
+      "evidence": "The std slot/registry mutex guards cover only admission/bookkeeping and are consumed before async awaits. Per-job Tokio mutexes serialize real handle observation. Cleanup stops the shared Gate/consumer admission and aborts the original async refresh, requires Session retirement, joins that actual worker, then joins all recorded blocking consumers without the Session serial permit or an owner mutex.",
+      "limit": "There is no hard-real-time guarantee on OS scheduling or on a synchronous owner callback already entered. Cleanup awaits the actual task rather than dropping it on a new deadline."
+    }
+  ],
+  "deadline_analysis": {
+    "unchanged": [
+      "The original request started value is unchanged.",
+      "MAX_AGE_NS remains 500000000; no new lifetime or retry is constructed.",
+      "The default None timeout/spawn/error fragment and the original final age check are exact.",
+      "The parent Gate checks remain eight; original current/proof/peer/end/Drop functions remain exact."
+    ],
+    "explicit_new_behavior": "For Some phase jobs, a new real BOOTTIME sample after registry admission subtracts the SAME started. It rejects underflow, regression relative to the earlier elapsed sample, and zero/exhausted remaining budget before launching the job. This charges the new mutex acquisition to the original request budget.",
+    "sampling_change": {
+      "parent_boottime_calls_before": 9,
+      "parent_boottime_calls_after": 10
+    },
+    "authority": "The registry/custody is bookkeeping. Original ConsumerSyncJob owner calls and guards are unchanged. The packet does not convert the bookkeeping state or joined counts into authorization."
+  },
+  "tests": {
+    "methods": [
+      "cancelled_cleanup_retains_actual_blocking_cas_and_original_file",
+      "cancelled_activation_keeps_its_real_consumer_job_until_join",
+      "original_consumer_panic_is_joined_and_retained_as_failure",
+      "stopped_empty_slot_rejects_phase_spawn_after_real_initial_read",
+      "post_spawn_gate_refusal_keeps_actual_worker_in_external_slot"
+    ],
+    "count": 5,
+    "executed": 0,
+    "provenance": "Read full actual tests and support. Same-UID synthetic proof fixture is explicit. They use real pidfds/sockets, original FinalUse owners, blocked store callbacks and actual task/FD observations; they are not a Root deployment, ordinary A/B/C or final-completion test.",
+    "scope": "Cancellation of cleanup; cancellation of actual activation; actual callback panic; stopped empty slot before actual spawn; real post-spawn refusal with externally retained handle.",
+    "old_assertions": "The original 26989-byte test file remains the complete prefix; only the private child module is appended.",
+    "static_injection_absent": true,
+    "timing": "Components use five-second bounded waits; callbacks already entered are released or time out through the original test support. Native execution remains required."
+  },
+  "mandatory_integration": [
+    "Construct and retain the actual empty OriginalRootSessionCustodySlot in the real outer owner before polling receive. Pass that same slot into the actual phase connect and require_original_phase_task_custody before activation. A slot created only inside the disposable receiver does not satisfy custody.",
+    "Stop and release the actual receive/Launch future and actual Session/Context/borrowed activation owners, then drive slot.stop_and_join_retired_session_tasks while the real Tokio runtime remains alive. The current API refuses a still-live Session.",
+    "Separately retain/drive both earlier open_original_phase_consumer bootstrap tasks; this six-file packet does not contain them.",
+    "Keep all originally observed errors and explicit NotRegistered/unknown outcomes. Retain the Startup final Err until a separately implemented normal retirement/completion protocol provides actual proof.",
+    "Current stop-and-join closes the same Gate including the final progress peer. It must not be used as a normal retirement prelude to Root seq1/seq2 ACKs.",
+    "Final concrete wiring must add actual caller/receiver and protected metadata, with explicit required and forbidden fields even when empty. Do not infer schema completeness from this source review.",
+    "The packet alone has a deliberately unresolved actual call-site parameter and pending metadata. Assemble those exact caller changes before compilation; do not stage only this packet as a standalone compiling change."
+  ],
+  "scope_limits": {
+    "original_checker": false,
+    "typed_helper": false,
+    "rustfmt": false,
+    "clippy": false,
+    "rust_compiler": false,
+    "native": false,
+    "h": false,
+    "pty": false,
+    "refs": false,
+    "no_claims": [
+      "No ordinary business completion or independent C contract.",
+      "No physical process/generation restart qualification.",
+      "No Root worker join/final ACK proof.",
+      "No guarantee of writer lock release while the external File custody or other real owners remain."
+    ]
+  }
+}

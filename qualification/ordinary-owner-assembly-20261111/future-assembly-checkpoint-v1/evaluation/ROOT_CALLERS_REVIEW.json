@@ -1,0 +1,463 @@
+{
+  "packet": "bfc8c51e436767fdcde970194f58fa769e2deef3",
+  "preimage": {
+    "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "bytes": 890345,
+    "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+  },
+  "postimage": {
+    "blob": "e0ad0a283c171ed01d8bfa8d5a22e2eeee301d34",
+    "bytes": 907220,
+    "sha256": "4c1659cbeafa4fa2cff88c9282bbd24b276b9316cefc09cf3a2eeb2ba14f4a7f"
+  },
+  "unique_forward_reverse": true,
+  "old_required_ids_unchanged": 638,
+  "old_boundary_rows_unchanged": 638,
+  "old_protected_rows_unchanged": 440,
+  "new_boundaries": 7,
+  "new_protected": 5,
+  "only_new_product_callers": [
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+  ],
+  "no_planned_daemon_caller_predeclared": true,
+  "projection": {
+    "classification": "FINITE_SOURCE_INSPECTION_NOT_ORIGINAL_CHECKER",
+    "original_checker_forbidden_rule": "Use original checker 7a670969 word lookarounds for markers beginning/ending in alphanumeric or underscore; reviewed code view is ASCII.",
+    "details": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "functions": [
+          {
+            "name": "fn release_original_consumption(",
+            "start": 8085,
+            "end": 8323,
+            "positions": [
+              60,
+              187
+            ]
+          },
+          {
+            "name": "fn qualify_and_persist(",
+            "start": 20351,
+            "end": 23253,
+            "positions": [
+              440,
+              1227,
+              1660,
+              1968,
+              2054,
+              2100,
+              2165,
+              2187,
+              2778,
+              2847,
+              2886
+            ]
+          }
+        ],
+        "orders": [
+          [
+            14303,
+            14649,
+            14696,
+            14785,
+            15310,
+            15387,
+            15549,
+            15777,
+            15817,
+            15869,
+            15932,
+            16046,
+            16082,
+            16150,
+            16204,
+            16240,
+            16274,
+            16294,
+            16365,
+            16506,
+            16563,
+            16626,
+            16853,
+            17077,
+            17118,
+            17159
+          ]
+        ],
+        "required": 4,
+        "forbidden": 2
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "functions": [
+          {
+            "name": "fn drop(",
+            "start": 1764,
+            "end": 1822,
+            "positions": [
+              0,
+              29
+            ]
+          },
+          {
+            "name": "fn open(",
+            "start": 2229,
+            "end": 3298,
+            "positions": [
+              120,
+              154,
+              212,
+              262,
+              299,
+              352,
+              423,
+              548,
+              692,
+              767,
+              960,
+              1005,
+              1052
+            ]
+          },
+          {
+            "name": "fn require_original_material(",
+            "start": 3305,
+            "end": 3968,
+            "positions": [
+              75,
+              135,
+              219,
+              269,
+              347,
+              430,
+              515,
+              602,
+              652
+            ]
+          },
+          {
+            "name": "fn read_original_material(",
+            "start": 3975,
+            "end": 4890,
+            "positions": [
+              96,
+              156,
+              240,
+              290,
+              391,
+              450,
+              487,
+              519,
+              577,
+              662,
+              705,
+              785,
+              835
+            ]
+          },
+          {
+            "name": "fn manifest_digest(",
+            "start": 4966,
+            "end": 5284,
+            "positions": [
+              84,
+              124,
+              188,
+              255
+            ]
+          },
+          {
+            "name": "fn release_after_consumption(",
+            "start": 5291,
+            "end": 5587,
+            "positions": [
+              57,
+              254
+            ]
+          },
+          {
+            "name": "fn release_original_consumption(",
+            "start": 5594,
+            "end": 6759,
+            "positions": [
+              187,
+              257,
+              321,
+              381,
+              434,
+              513,
+              604,
+              648,
+              702,
+              754,
+              807,
+              872,
+              948,
+              1043,
+              1107
+            ]
+          }
+        ],
+        "orders": [],
+        "required": 5,
+        "forbidden": 8
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+        "functions": [
+          {
+            "name": "fn decode_original_material(",
+            "start": 3792,
+            "end": 5989,
+            "positions": [
+              144,
+              194,
+              237,
+              276,
+              312,
+              367,
+              420,
+              481,
+              535,
+              1448,
+              1505,
+              1573,
+              1819,
+              1864,
+              1914,
+              1948,
+              1990
+            ]
+          },
+          {
+            "name": "fn bytes(",
+            "start": 6035,
+            "end": 6378,
+            "positions": [
+              123,
+              161,
+              240,
+              291
+            ]
+          },
+          {
+            "name": "fn take(",
+            "start": 7164,
+            "end": 7357,
+            "positions": [
+              90,
+              157,
+              180
+            ]
+          },
+          {
+            "name": "fn probability(",
+            "start": 7731,
+            "end": 7878,
+            "positions": [
+              0,
+              73
+            ]
+          },
+          {
+            "name": "fn observations(",
+            "start": 9093,
+            "end": 10598,
+            "positions": [
+              83,
+              282,
+              349,
+              377,
+              404,
+              487,
+              720,
+              783,
+              928,
+              993,
+              1020,
+              1062,
+              1318,
+              1368,
+              1418,
+              1492
+            ]
+          }
+        ],
+        "orders": [
+          [
+            7142,
+            8066,
+            8138,
+            8269,
+            8324,
+            8396,
+            8585,
+            8630,
+            8691,
+            8772
+          ]
+        ],
+        "required": 4,
+        "forbidden": 6
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "functions": [
+          {
+            "name": "fn create(",
+            "start": 1839,
+            "end": 2218,
+            "positions": [
+              84,
+              178,
+              277,
+              308,
+              335
+            ]
+          },
+          {
+            "name": "fn recover(",
+            "start": 2229,
+            "end": 2695,
+            "positions": [
+              161,
+              255,
+              364,
+              395,
+              422
+            ]
+          },
+          {
+            "name": "fn readback(",
+            "start": 2991,
+            "end": 4019,
+            "positions": [
+              162,
+              205,
+              261,
+              349,
+              435,
+              492,
+              533,
+              557,
+              589,
+              615,
+              708,
+              767,
+              856,
+              920,
+              970
+            ]
+          },
+          {
+            "name": "fn persist(",
+            "start": 4119,
+            "end": 6285,
+            "positions": [
+              161,
+              204,
+              260,
+              348,
+              434,
+              488,
+              529,
+              553,
+              585,
+              672,
+              760,
+              802,
+              940,
+              1019,
+              1069,
+              1133,
+              1200,
+              1265,
+              1314,
+              1340,
+              1384,
+              1432,
+              1486,
+              1732,
+              1795,
+              1836,
+              1866,
+              1963,
+              2022,
+              2058,
+              2108
+            ]
+          },
+          {
+            "name": "fn evidence_namespace(",
+            "start": 6290,
+            "end": 6582,
+            "positions": [
+              84,
+              121,
+              163,
+              258
+            ]
+          },
+          {
+            "name": "fn publication_key(",
+            "start": 6585,
+            "end": 7244,
+            "positions": [
+              304,
+              401,
+              446,
+              463,
+              573,
+              611
+            ]
+          },
+          {
+            "name": "fn encode_decision(",
+            "start": 7247,
+            "end": 8846,
+            "positions": [
+              200,
+              235,
+              273,
+              319,
+              360,
+              410,
+              453,
+              503,
+              588,
+              643,
+              721,
+              754,
+              786,
+              825,
+              860,
+              1152,
+              1210,
+              1255,
+              1314,
+              1348,
+              1377,
+              1480,
+              1546,
+              1589
+            ]
+          }
+        ],
+        "orders": [],
+        "required": 6,
+        "forbidden": 8
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "functions": [],
+        "orders": [],
+        "required": 6,
+        "forbidden": 0
+      }
+    ]
+  },
+  "integration_requirement": "Rebase append-only seven-ID and five-protection additions onto actual then-current CALLERS; retain all intervening format/Clippy changes. Update only the existing exact CALLERS allowlist hash after final union. This old-base complete postimage must not overwrite current metadata.",
+  "qualification_pass": false,
+  "native_run": false
+}

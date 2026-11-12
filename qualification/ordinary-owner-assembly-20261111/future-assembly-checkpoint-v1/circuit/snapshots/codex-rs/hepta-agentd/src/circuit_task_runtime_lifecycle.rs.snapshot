@@ -1,0 +1,349 @@
+//! Custody of the actual outer Circuit blocking task in the explicit phase.
+//! The original Runtime receives its exact result once. Cancelling that
+//! receiver requests stop but leaves the real handle and undelivered error
+//! in this separately retained capability. Joining is not a phase ACK.
+
+use std::future::Future;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::Ordering;
+
+use tokio::task::JoinHandle;
+use tokio_util::sync::CancellationToken;
+
+use crate::AgentdError;
+use crate::AgentdIdentity;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+
+const WAITING: u8 = 0;
+const ABANDONED: u8 = 1;
+const RUNTIME_DELIVERED: u8 = 2;
+const CLEANUP_RECOVERED: u8 = 3;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitOwnerOutcome {
+    ReturnedOk,
+    ReturnedErr,
+    JoinFailed,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitResultDelivery {
+    Waiting,
+    Abandoned,
+    RuntimeDelivered,
+    CleanupRecovered,
+    Unavailable,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitJoinStatus {
+    NotStarted,
+    Joined {
+        outcome: OriginalCircuitOwnerOutcome,
+        delivery: OriginalCircuitResultDelivery,
+    },
+}
+
+/// An observation of this one actual task, never a successful task, normal
+/// phase shutdown, Root ACK, released C slot or process-termination receipt.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct OriginalCircuitJoinObservation {
+    pub(crate) status: OriginalCircuitJoinStatus,
+    pub(crate) admission_poisoned: bool,
+}
+
+struct OriginalCircuitStart {
+    stopped: bool,
+    job: Option<Arc<OriginalCircuitOwnerJob>>,
+}
+
+/// Only the original phase Bootstrap constructs this object. A trusted
+/// Startup must retain it before consuming the Bootstrap into Config.
+pub(crate) struct OriginalCircuitOwnerCustody {
+    identity: AgentdIdentity,
+    gate: Arc<SameActorPhaseGate>,
+    start: Mutex<OriginalCircuitStart>,
+}
+
+struct OriginalCircuitJobState {
+    handle: Option<JoinHandle<Result<(), AgentdError>>>,
+    joined: Option<OriginalCircuitOwnerOutcome>,
+    result: Option<Result<(), AgentdError>>,
+}
+
+pub(super) struct OriginalCircuitOwnerJob {
+    state: tokio::sync::Mutex<OriginalCircuitJobState>,
+    delivery: AtomicU8,
+    cancellation: CancellationToken,
+    gate: Arc<SameActorPhaseGate>,
+}
+
+/// Held only between the unchanged actual spawn and immediate retention.
+/// No await or owner callback runs under this admission mutex.
+pub(super) struct OriginalCircuitStartAdmission<'a> {
+    state: MutexGuard<'a, OriginalCircuitStart>,
+    cancellation: CancellationToken,
+    gate: Arc<SameActorPhaseGate>,
+    armed: bool,
+}
+
+struct OriginalCircuitRuntimeReceiver {
+    job: Arc<OriginalCircuitOwnerJob>,
+    complete: bool,
+}
+
+impl OriginalCircuitOwnerCustody {
+    pub(super) fn from_original_phase(
+        identity: &AgentdIdentity,
+        gate: Arc<SameActorPhaseGate>,
+    ) -> Result<Arc<Self>, AgentdError> {
+        gate.require_open().map_err(custody_error)?;
+        Ok(Arc::new(Self {
+            identity: identity.clone(),
+            gate,
+            start: Mutex::new(OriginalCircuitStart {
+                stopped: false,
+                job: None,
+            }),
+        }))
+    }
+
+    pub(crate) fn require_original_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {
+            self.request_stop();
+            return Err(custody_error("outer Circuit custody differs from its original phase"));
+        }
+        self.gate.require_open().map_err(custody_error)?;
+        Ok(())
+    }
+
+    pub(super) fn reserve_original_start(
+        &self,
+        cancellation: CancellationToken,
+    ) -> Result<OriginalCircuitStartAdmission<'_>, AgentdError> {
+        let state = self.start.lock().map_err(|_| {
+            self.gate.close();
+            cancellation.cancel();
+            custody_error("outer Circuit admission is poisoned")
+        })?;
+        self.gate.require_open().map_err(custody_error)?;
+        if state.stopped || state.job.is_some() || cancellation.is_cancelled() {
+            self.gate.close();
+            cancellation.cancel();
+            return Err(custody_error("outer Circuit owner cannot be started or restarted"));
+        }
+        Ok(OriginalCircuitStartAdmission {
+            state,
+            cancellation,
+            gate: Arc::clone(&self.gate),
+            armed: true,
+        })
+    }
+
+    pub(crate) fn request_stop(&self) {
+        self.gate.close();
+        // Poison recovery is terminal custody only and cannot start any work.
+        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());
+        state.stopped = true;
+        if let Some(job) = &state.job {
+            job.cancellation.cancel();
+        }
+    }
+
+    pub(crate) async fn stop_and_join_original_owner(
+        &self,
+    ) -> Result<OriginalCircuitJoinObservation, AgentdError> {
+        self.request_stop();
+        let (job, admission_poisoned) = match self.start.lock() {
+            Ok(state) => (state.job.clone(), false),
+            Err(error) => (error.into_inner().job.clone(), true),
+        };
+        let Some(job) = job else {
+            return Ok(OriginalCircuitJoinObservation {
+                status: OriginalCircuitJoinStatus::NotStarted,
+                admission_poisoned,
+            });
+        };
+        let mut state = job.state.lock().await;
+        job.join_locked(&mut state).await?;
+        let outcome = state.joined.ok_or_else(|| custody_error("outer Circuit join is missing"))?;
+        Ok(OriginalCircuitJoinObservation {
+            status: OriginalCircuitJoinStatus::Joined {
+                outcome,
+                delivery: job.delivery(),
+            },
+            admission_poisoned,
+        })
+    }
+
+    /// A cancelled Runtime receiver has relinquished this result. Cleanup may
+    /// retrieve that SAME owned error once, only after the actual handle join.
+    /// A live receiver or an already delivered Runtime result is never stolen.
+    pub(crate) async fn take_abandoned_original_result(
+        &self,
+    ) -> Result<Option<Result<(), AgentdError>>, AgentdError> {
+        let job = self
+            .start
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .job
+            .clone()
+            .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
+        let mut state = job.state.lock().await;
+        if state.joined.is_none() {
+            return Err(custody_error("outer Circuit owner has not been joined"));
+        }
+        match job.delivery.load(Ordering::Acquire) {
+            ABANDONED => {
+                let result = state.result.take().ok_or_else(|| {
+                    custody_error("abandoned outer Circuit result is unavailable")
+                })?;
+                job.delivery.store(CLEANUP_RECOVERED, Ordering::Release);
+                Ok(Some(result))
+            }
+            CLEANUP_RECOVERED => Ok(None),
+            _ => Err(custody_error("outer Circuit result still belongs to its Runtime receiver")),
+        }
+    }
+}
+
+impl Drop for OriginalCircuitOwnerCustody {
+    fn drop(&mut self) {
+        // Drop requests stop. It is deliberately not advertised as a join.
+        self.request_stop();
+    }
+}
+
+impl OriginalCircuitStartAdmission<'_> {
+    pub(super) fn retain_original_handle(
+        mut self,
+        handle: JoinHandle<Result<(), AgentdError>>,
+    ) -> Arc<OriginalCircuitOwnerJob> {
+        let job = Arc::new(OriginalCircuitOwnerJob {
+            state: tokio::sync::Mutex::new(OriginalCircuitJobState {
+                handle: Some(handle),
+                joined: None,
+                result: None,
+            }),
+            delivery: AtomicU8::new(WAITING),
+            cancellation: self.cancellation.clone(),
+            gate: Arc::clone(&self.gate),
+        });
+        self.state.job = Some(Arc::clone(&job));
+        self.armed = false;
+        job
+    }
+}
+
+impl Drop for OriginalCircuitStartAdmission<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.state.stopped = true;
+            self.cancellation.cancel();
+            self.gate.close();
+        }
+    }
+}
+
+impl OriginalCircuitOwnerJob {
+    fn delivery(&self) -> OriginalCircuitResultDelivery {
+        match self.delivery.load(Ordering::Acquire) {
+            WAITING => OriginalCircuitResultDelivery::Waiting,
+            ABANDONED => OriginalCircuitResultDelivery::Abandoned,
+            RUNTIME_DELIVERED => OriginalCircuitResultDelivery::RuntimeDelivered,
+            CLEANUP_RECOVERED => OriginalCircuitResultDelivery::CleanupRecovered,
+            _ => OriginalCircuitResultDelivery::Unavailable,
+        }
+    }
+
+    async fn join_locked(
+        &self,
+        state: &mut OriginalCircuitJobState,
+    ) -> Result<(), AgentdError> {
+        if state.joined.is_some() {
+            return Ok(());
+        }
+        let handle = state.handle.as_mut().ok_or_else(|| {
+            self.gate.close();
+            custody_error("actual outer Circuit handle is unavailable")
+        })?;
+        // Await only a mutable borrow. Dropping this waiting future preserves
+        // the one real handle in state, so another custodian can continue.
+        let result = handle.await;
+        state.handle = None;
+        let (outcome, result) = match result {
+            Ok(result) => (
+                if result.is_ok() {
+                    OriginalCircuitOwnerOutcome::ReturnedOk
+                } else {
+                    OriginalCircuitOwnerOutcome::ReturnedErr
+                },
+                result,
+            ),
+            Err(error) => (
+                OriginalCircuitOwnerOutcome::JoinFailed,
+                Err(AgentdError::Protocol(format!("Circuit task owner stopped: {error}"))),
+            ),
+        };
+        // No await separates actual completion from saving the original
+        // result and terminal state. A second waiter never polls it again.
+        state.result = Some(result);
+        state.joined = Some(outcome);
+        Ok(())
+    }
+
+    pub(super) fn receive_original_result(
+        self: &Arc<Self>,
+    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {
+        let job = Arc::clone(self);
+        // Capture outside the async body: even an unpolled wait relinquishes
+        // only its receiver role, not the actual task or original result.
+        let mut receiver = OriginalCircuitRuntimeReceiver {
+            job: Arc::clone(self),
+            complete: false,
+        };
+        async move {
+            let mut state = job.state.lock().await;
+            job.join_locked(&mut state).await?;
+            if job.delivery.load(Ordering::Acquire) != WAITING {
+                return Err(custody_error("outer Circuit Runtime result was already consumed"));
+            }
+            let result = state.result.take().ok_or_else(|| {
+                custody_error("original outer Circuit result is unavailable")
+            })?;
+            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);
+            receiver.complete = true;
+            result
+        }
+    }
+}
+
+impl Drop for OriginalCircuitRuntimeReceiver {
+    fn drop(&mut self) {
+        if !self.complete {
+            let _ = self.job.delivery.compare_exchange(
+                WAITING,
+                ABANDONED,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            );
+            self.job.cancellation.cancel();
+            self.job.gate.close();
+        }
+    }
+}
+
+fn custody_error(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::GenerationFenced(format!("original outer Circuit custody: {error}"))
+}
+
+#[cfg(test)]
+#[path = "circuit_task_runtime_lifecycle_tests.rs"]
+mod tests;

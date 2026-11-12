@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.original-file-final-holdout-and-qualification-publication.future.v1",
+  "status": "isolated-future-source-and-component-tests-static-only",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "no_refs_changed": true,
+  "no_native_or_process_executed": true,
+  "no_checker_executed": true,
+  "scope": {
+    "source_paths": 9,
+    "rust_paths": 8,
+    "new_rust_paths": 5,
+    "contract_document_paths": 1,
+    "exact_source_operations": 16,
+    "new_component_tests": 8,
+    "dependency_changes": 0,
+    "original_store_changes": 0,
+    "actual_ordinary_B_executions": 0
+  },
+  "inventory_report": {
+    "blob": "c4b04db759a2f318a76e16eb5f96254b01544c58",
+    "bytes": 17773,
+    "sha256": "6ba0fa63794333f1859609b56ca217d092c22b79d0d30dc8bc2a0f67cfec140c"
+  },
+  "proposal": {
+    "blob": "528ee3c1e1be60a07ecc7483ab0a236f98fe1de6",
+    "bytes": 10485,
+    "sha256": "67f2c6393d4bb48920e836eddcc6c7981e68e3481e49c3289ec85e3cf2cd2697"
+  },
+  "source_exactops": {
+    "blob": "7ea371a900fde205da32ec5a7c6d2e89da63048b",
+    "bytes": 59544,
+    "sha256": "d560ff538df6c1d2c8f48a887e89a18e56a3cd5d6a13da365e513c7c4b90948c"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "preimage": {
+        "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9",
+        "bytes": 38107,
+        "sha256": "a8ee15a1f0d4a70042c294e3939be80adefcdd2920177cb27d14087b14aa7921"
+      },
+      "postimage": {
+        "blob": "95a320cc46e3374e8b3a48cd8c92b4def7ccf4a6",
+        "bytes": 39399,
+        "sha256": "88bd9153f7df15fecccdd6c41d46486fb36968a851b35d023f8906d0de3cb908"
+      },
+      "operation_count": 3,
+      "verification": "unique forward and reverse replay exact"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "preimage": {
+        "blob": "daf58a153bba73186cd01bbc904a00e5c40ba4c5",
+        "bytes": 15662,
+        "sha256": "8b614d5ce1fc189d44320bab04d6cc7899468d6da47c200bca2e8369d388b831"
+      },
+      "postimage": {
+        "blob": "fc41ebe6849ef99eb2c2729fd3ef255a9cbd8f00",
+        "bytes": 16007,
+        "sha256": "9fbc38644214dfb07236483132ef20d5a342ca37bac4fc03f1be14cb0a48b8b6"
+      },
+      "operation_count": 4,
+      "verification": "unique forward and reverse replay exact"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "preimage": {
+        "blob": "8d7abd0e20c18382cc14ddc3546fc94fd9993dc1",
+        "bytes": 28778,
+        "sha256": "d080b99743e2fc034bdf9edc3e092a7a61a710a68e767dda319373242fc89c9e"
+      },
+      "postimage": {
+        "blob": "9adaec10e1fa0cb92326a2427c8f9f584fabd1fe",
+        "bytes": 28843,
+        "sha256": "5f995f3303b2edffc848ca529b029fbbc30535bc59231f2888e53fe4803b8d99"
+      },
+      "operation_count": 1,
+      "verification": "unique forward and reverse replay exact"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+      "preimage": {
+        "blob": "61dc8e12c11f8010144f0dc13f8fe12ba45edf9e",
+        "bytes": 8100,
+        "sha256": "e64fa031e58f8cf7bd8ae82a2544bb57a2577db202d34e913996e40027b6984c"
+      },
+      "postimage": {
+        "blob": "3787b6100130259c960d4354ca6eb6ffd165d2f9",
+        "bytes": 9984,
+        "sha256": "a797b842a84f383b987e4947f3bb434ccc26cff5ca912f100704d04b2b3b9fba"
+      },
+      "operation_count": 3,
+      "verification": "unique forward and reverse replay exact"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "4ca06cad35a5bcff1e3536b7c76dd15d8569cc29",
+        "bytes": 7171,
+        "sha256": "ca396732aee32788fc6b64b5f0dae2dd29092c71bf888dc5df5c6264d9dd352f"
+      },
+      "operation_count": 1,
+      "verification": "absent in fixed directory; exact addition"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "401dd79fa92ee4d48f0921bc395935ac3f7d5265",
+        "bytes": 10602,
+        "sha256": "7fec333e4dbfe2b8b3f8f9f6935de9c03e18798231c42d96637055622b717937"
+      },
+      "operation_count": 1,
+      "verification": "absent in fixed directory; exact addition"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "aca6df9dafc55af5ece5d39b22f8d1f30dca285f",
+        "bytes": 9730,
+        "sha256": "7bb245f36d77e088a4f06026fb174228ad949bbb5905567fa2baff8e003befca"
+      },
+      "operation_count": 1,
+      "verification": "absent in fixed directory; exact addition"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "f05245349f29b80832260a9cfbde8e08e8e8882f",
+        "bytes": 11778,
+        "sha256": "c3092edea55205a9b1ec8a345088f785df01ea136715e81b504831855ade4aba"
+      },
+      "operation_count": 1,
+      "verification": "absent in fixed directory; exact addition"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "0db853c1f7a46b415b4bb2eed1a7198b583a5187",
+        "bytes": 7187,
+        "sha256": "a0bd9c6418fcb66795131da73ba0a70b269b23923cdd48e8dd5e925e49543f37"
+      },
+      "operation_count": 1,
+      "verification": "absent in fixed directory; exact addition"
+    }
+  ],
+  "caller_metadata": {
+    "annex": {
+      "blob": "bfc8c51e436767fdcde970194f58fa769e2deef3",
+      "bytes": 117116,
+      "sha256": "0ac018c85dff14c6db91d87b358995dd480474d9ffb7bace9c1ffdbfae7a048b"
+    },
+    "postimage": {
+      "blob": "e0ad0a283c171ed01d8bfa8d5a22e2eeee301d34",
+      "bytes": 907220,
+      "sha256": "4c1659cbeafa4fa2cff88c9282bbd24b276b9316cefc09cf3a2eeb2ba14f4a7f"
+    },
+    "base": {
+      "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    },
+    "counts": {
+      "before": {
+        "required_ids": 638,
+        "declared_boundaries": 638,
+        "protected_files": 440
+      },
+      "after": {
+        "required_ids": 645,
+        "declared_boundaries": 645,
+        "protected_files": 445
+      }
+    },
+    "append_only_semantic_ids": [
+      "product_original_holdout_release_permit",
+      "product_file_holdout_original_open",
+      "product_file_holdout_original_release",
+      "product_file_qualification_create",
+      "product_file_qualification_recover",
+      "product_file_qualification_persist",
+      "product_file_qualification_readback"
+    ],
+    "integration": "This isolated 3db successor is a reviewable exact CALLERS postimage. The later full future union must preserve all actual intervening marker changes and add these seven IDs plus rows together. No planned daemon path is pre-registered. Final large-file allowlist must bind the actual resulting CALLERS SHA256 under the existing precise exception mechanism; no checker/global limit change is included.",
+    "static_projection": "Five known files: 21 exact unique non-generic function sequences plus two file-local sequences, all code-view marker positions found. This finite V8 inspection is not execution of verify_hepta_callers.py or hepta_typed_callers.py."
+  },
+  "original_checker_pins": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+  },
+  "original_reused_sources": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "blob": "65e92803ba68f2a8073ace91d4586da4f142bf65"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "blob": "b6a08ab16dfd972d293733fd34d798b024bf9403"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/holdout_journal.rs",
+      "blob": "b3e31e5bdc0dbf88b3bc3f1321fbe54b0e136bc2"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "blob": "ab8912206bc97219f7d6a2bb5f7513ccd4250fce"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+      "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "blob": "4ee15b98a77b0d81fed91e5a8380c0bae2963cce"
+    }
+  ],
+  "interfaces": {
+    "release_permit": "OriginalFinalHoldoutReleasePermitV1<'a> has private plan and receipt fields, no Clone/Copy/Default/serde/public constructor. Only original ProductEvaluationRunnerV1::evaluate_temporal_comparison constructs it in product code, after successful original holdout.consume and the unchanged Recorded/replay branch.",
+    "trait_compatibility": "FinalHoldoutProviderV1 gains synchronous release_original_consumption(permit) defaulting to the existing release_after_consumption(permit.receipt). Existing provider implementations receive the same receipt at the same call location. Protected file provider overrides it and its receipt-only method always rejects.",
+    "file_provider_constructor": "LockedFileFinalHoldoutProviderV1::open(file: File, expected: &ProductFrozenEvaluationPlanV1) -> Result<Self, FileFinalHoldoutErrorV1>",
+    "actual_material_encoder": "encode_file_final_holdout_material_v1(objective_digest: Digest32, dataset_digest: Digest32, final_holdout_window_id: &StableId, inputs: &TemporalComparisonInputsV1) -> Result<Vec<u8>, FileFinalHoldoutErrorV1>",
+    "sink_create": "LockedFileProductQualificationEvidenceSinkV1::create(file: File, owner_binding: Digest32) -> Result<Self, LockedFileProductEvaluationExecutionErrorV1>",
+    "sink_recover": "LockedFileProductQualificationEvidenceSinkV1::recover(file: File, owner_binding: Digest32, minimum: ProductEvaluationExecutionAnchorV1) -> Result<Self, LockedFileProductEvaluationExecutionErrorV1>",
+    "sink_anchor": "anchor(&self) -> ProductEvaluationExecutionAnchorV1",
+    "sink_readback": "readback(&mut self, execution_digest: Digest32, decision: &SignedEvaluationDecisionV1) -> Result<Digest32, ProductEvidenceSinkErrorV1>",
+    "actual_qualification": "The unchanged original qualify_and_persist performs signed decision verification and passes its actual temporal.execution_digest and decision through ProductQualificationEvidenceSinkV1::persist. Sink bytes/readback do not reconstruct ProductQualificationReceiptV1."
+  },
+  "root_review_fix": {
+    "issue": "The first sink draft keyed plan_id by decision.evaluation_id. A changed evaluation_id for the same actual execution could select a new key.",
+    "resolution": "Final publication_key uses StableId::new(execution_digest.to_string()) and domain binding(owner_binding,execution_digest); evaluation_id remains in the committed payload. The same execution with any changed decision bytes hits the same immutable key and rejects. No original durable-store change.",
+    "current_source_blob": "aca6df9dafc55af5ece5d39b22f8d1f30dca285f",
+    "regression_test": "committed_publication_is_exact_and_conflict_never_changes_the_journal",
+    "additional_original_store_observation": "An Indeterminate claim/readback retains original concrete store.poisoned sticky state. The sink preserves this mechanism rather than replacing original failure semantics."
+  },
+  "semantics": [
+    "The exact file bytes are hashed into the actual frozen final_holdout_digest before evaluation. The codec does not embed the complete sealed plan digest, avoiding a circular hash dependency.",
+    "File open validates original plan integrity, regular file, shared OS lock, bounded length and exact digest. manifest_digest never releases decoded rows.",
+    "A valid release permit is consumed once even on binding/decoding failure. It binds the complete expected sealed plan and original Recorded receipt. The original durable holdout journal refuses replay before any later provider release.",
+    "The permit attests only the original runner control-flow point. The original generic CAS backend remains a host-authenticated capability; the actual production adapter must use the existing concrete LockedFileFinalHoldoutCasStoreV1.",
+    "The sink owns a separate real locked file store with a domain-separated namespace. The original store supplies one claim, append/fsync, immutable completion, recovery minimum and poison semantics.",
+    "Successful publication requires exact completed readback. Existing exact bytes are idempotent; changed bytes reject. Pending or uncertain post-claim state never becomes a new claim or repaired completion.",
+    "No credentials, role signatures, observed outcomes, frozen trust, generation, budget, cost or selection validators are fabricated or relaxed."
+  ],
+  "component_tests": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+      "name": "original_file_runner_qualifies_into_a_durable_sink_and_exact_readback",
+      "covers": "Actual original runner plus real file holdout CAS/provider and sink. Component fixture keys/data only."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+      "name": "a_copied_receipt_and_consumption_replay_never_release_a_fresh_file_owner",
+      "covers": "Legacy receipt-only refusal and original durable replay refusal across actual fresh file owners."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+      "name": "a_real_permit_for_another_complete_frozen_plan_consumes_no_rows",
+      "covers": "Original runner permit for mismatched complete sealed plan cannot release protected rows and cannot rearm."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+      "name": "changed_material_refuses_before_consumption_and_bad_encoding_cannot_rearm",
+      "covers": "Actual changed file digest and once-consumed malformed exact bytes remain errors."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+      "name": "committed_publication_is_exact_and_conflict_never_changes_the_journal",
+      "covers": "Actual durable persist/reopen/readback and changed authentication/evaluation-id conflicts leave bytes and anchor unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+      "name": "durable_pending_is_not_completed_by_recovery_or_repeat_publication",
+      "covers": "Actual original claim/fsync leaves Pending; recovery and repeat cannot manufacture completion."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+      "name": "original_lock_and_recovery_anchor_refuse_busy_rollback_and_torn_history",
+      "covers": "Actual OS file lock and original independent anchor/torn-history checks."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+      "name": "changed_file_length_fences_publication_and_never_turns_into_success",
+      "covers": "Real original metadata corruption/poison behavior remains terminal."
+    }
+  ],
+  "validation": {
+    "executed": [
+      "Pure V8 byte/Git SHA1/SHA256 verification of created/retrieved artifacts",
+      "Unique forward/reverse source operation reconstruction",
+      "Seven-ID/old-prefix-preserving exact metadata construction and finite marker projection"
+    ],
+    "not_executed": [
+      "rustfmt",
+      "Clippy",
+      "Cargo/build",
+      "the eight Rust component tests",
+      "original full CALLERS checker",
+      "original typed helper",
+      "ordinary A/B/C execution",
+      "CI",
+      "h/PTY/native work"
+    ],
+    "old_tests_preserved": true,
+    "manual_layout_only": true,
+    "required_later_gate": "Include changed hepta-intelligence-eval crate's original maintenance/build/tests, unchanged complete caller gate, and the actual integrated source's ordinary/root qualification. No result from 3db or an older seven-package run qualifies these new sources."
+  },
+  "deployment_inputs_still_required": [
+    "Authorized actual final-holdout row material and provenance collected independently; correct original pre-frozen plan binding. This encoder is data-only.",
+    "Actual authenticated generator/evaluator/observer/selector roles and original signed evaluation evidence; independent training/holdout roles remain enforced by original runner/Stage.",
+    "Real existing concrete holdout CAS, original execution store, distinct new evidence file, lawful namespace/path/permissions, original open File custody and inode de-duplication; no retained writable duplicates.",
+    "Independently retained minimum anchors for original durable owners, including this separate evidence publication namespace and parent-directory durability.",
+    "Concrete daemon adapter consuming actual OriginalTraining material/readback and running CellEvaluationRunner evaluate_or_readback plus qualify_and_persist; no such new ordinary constructor caller is frozen in this packet."
+  ],
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "ordinary_a": 0,
+    "independent_b": 0,
+    "independent_c": 0,
+    "real_daemon_and_root_os_restart": false,
+    "no_business_success_claim": true
+  }
+}

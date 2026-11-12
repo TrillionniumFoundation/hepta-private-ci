@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.file-backed-evaluation-provider-and-sink-proposal.v1",
+  "source": {
+    "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+  },
+  "inventory": "c4b04db759a2f318a76e16eb5f96254b01544c58",
+  "status": "concrete static proposal before source implementation; no execution or deployment claim",
+  "original_contracts": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "blob": "65e92803ba68f2a8073ace91d4586da4f142bf65"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "blob": "b6a08ab16dfd972d293733fd34d798b024bf9403"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/holdout_journal.rs",
+      "blob": "b3e31e5bdc0dbf88b3bc3f1321fbe54b0e136bc2"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "blob": "4ee15b98a77b0d81fed91e5a8380c0bae2963cce"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+      "blob": "207f400f73577860f8fabdc8af7b4f28a042c9d1"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+      "blob": "61dc8e12c11f8010144f0dc13f8fe12ba45edf9e"
+    }
+  ],
+  "release_permit": {
+    "type": "pub struct OriginalFinalHoldoutReleasePermitV1<'a> { plan: &'a ProductFrozenEvaluationPlanV1, receipt: &'a FinalHoldoutJournalReceiptV1 }",
+    "construction": "Both fields private inside original product_runner; no public constructor, Clone, Copy, Default, Deserialize or data-to-permit API. Only one production struct literal immediately after actual self.holdout.consume and original Recorded/replay check.",
+    "added_trait_method": "fn release_original_consumption(&mut self, permit: OriginalFinalHoldoutReleasePermitV1<'_>) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> { self.release_after_consumption(permit.receipt) }",
+    "changed_original_call": "provider.release_after_consumption(&holdout)? becomes provider.release_original_consumption(OriginalFinalHoldoutReleasePermitV1 { plan: product_plan, receipt: &holdout })? at the same position.",
+    "preserved": "All prior frozen-plan checks, manifest check, actual CAS call, Recorded-vs-replay rejection, subsequent row/temporal/statistical checks and Result propagation remain ordered exactly. Existing providers inherit a synchronous default which calls their original method with the same receipt; original public method remains.",
+    "concrete_file_provider": "Its receipt-only release_after_consumption always returns Rejected without reading rows; its override consumes the unforgeable permit by value, checks exact complete expected ProductFrozenEvaluationPlanV1 and actual receipt posture, and marks its once-only attempt consumed before fallible row release.",
+    "authority_limit": "The permit proves original in-process control flow after accepted original CAS; it is neither a role credential, signed result, general store authority, recovered receipt capability nor cross-process authorization.",
+    "recovery": "Completed original execution recovery has no fresh permit and never releases the file again. A reconstructed public receipt cannot invoke the protected release path."
+  },
+  "file_provider": {
+    "name": "LockedFileFinalHoldoutProviderV1",
+    "constructor": "pub fn open(file: std::fs::File, expected: &ProductFrozenEvaluationPlanV1) -> Result<Self, FileFinalHoldoutErrorV1>",
+    "data_encoder": "pub fn encode_file_final_holdout_material_v1(objective_digest: Digest32, dataset_digest: Digest32, final_holdout_window_id: &StableId, inputs: &TemporalComparisonInputsV1) -> Result<Vec<u8>, FileFinalHoldoutErrorV1>",
+    "file_format": "Versioned bounded binary data only: objective/dataset/window, complete training samples, held-out targets, candidate/baseline OPE observations, cluster assignments, snapshot/future-window IDs. Exact canonical bytes hash equals frozen final_holdout_digest. Header excludes the whole frozen plan digest to avoid circular hashing.",
+    "held_custody": "Takes an already authorized regular File and keeps its OS lock/owned open description; exposes no File clone/getter. Caller must not retain writable duplicates and remains responsible for trusted pathname/owner/permissions/containing-directory custody. No chmod, key creation, path reopening or authority inferred from digests.",
+    "validation": "Validate actual sealed product plan, bounded file size, exact digest and stable read; no decoded row release at open or manifest lookup. Re-read bounded exact content under the held file immediately during the one-shot permitted release; decode all fields without ignoring trailing bytes; require objective/dataset/window match exact frozen plan. Original runner still checks outcomes/cohorts/support/leakage/statistics.",
+    "once_only": "A release attempt consumes local release state before I/O. The original durable CAS prevents a new permit after consumption across original runner recovery. Wrong permit, file mutation, decode error or uncertain response never rearms the instance.",
+    "external_inputs": "Real independently collected data and provenance, actual immutable file, intended whole-content digest chosen in the original frozen plan, actual host namespace/permissions. The encoder does not manufacture these data or authenticate observer independence."
+  },
+  "evidence_sink": {
+    "name": "LockedFileProductQualificationEvidenceSinkV1",
+    "constructors": [
+      "pub fn create(file: std::fs::File, owner_binding: Digest32) -> Result<Self, LockedFileProductEvaluationExecutionErrorV1>",
+      "pub fn recover(file: std::fs::File, owner_binding: Digest32, minimum: ProductEvaluationExecutionAnchorV1) -> Result<Self, LockedFileProductEvaluationExecutionErrorV1>"
+    ],
+    "readback": "pub fn readback(&mut self, execution_digest: Digest32, decision: &SignedEvaluationDecisionV1) -> Result<Digest32, ProductEvidenceSinkErrorV1>",
+    "anchor": "pub fn anchor(&self) -> ProductEvaluationExecutionAnchorV1",
+    "durable_primitive": "Wrap the existing concrete LockedFileProductEvaluationExecutionStoreV1 in a distinct qualification-evidence domain-bound namespace. Do not accept arbitrary store callbacks or pre-populated qualification structs. A physically distinct authorized File is supplied; derive internal binding with a fixed evidence-domain prefix from owner_binding.",
+    "data_commitment": "Encode complete actual execution digest + decision evaluation/candidate/baseline IDs + disposition + ordered failed_metrics + evidence_digest + trust_digest + authentication_digest, require DENY_ALL/nonzero commitments, and commit those exact bytes. The content digest is returned only after original durable claim/complete and exact committed readback.",
+    "replay": "Existing Completed with identical bytes yields the same publication digest without another write; changed binding or decision refuses. Pending/uncertain/torn/corrupt/rollback never becomes a fresh claim, a default result or successful publication. Errors after a possibly effective claim/write remain terminal/indeterminate.",
+    "actual_recovery": "Use original locked-file full history replay and independently retained minimum anchor. The sink readback returns only an exact data-publication digest, not ProductQualificationReceiptV1 or new evaluator authority.",
+    "qualification": "Only the unchanged original runner verifies signed V2/V3 evidence and builds its private-seal qualification after sink success. This adapter never signs, selects, activates, changes cost gates or accepts a precomputed Evaluation as execution.",
+    "external_inputs": "Declared authorized evidence namespace/File and durable parent directory, real independent minimum anchor/retention policy, current signatures supplied to the original runner. Storage checksums do not authenticate a role."
+  },
+  "planned_source_footprint": {
+    "existing_changes": [
+      "codex-rs/hepta-intelligence-eval/src/product_runner.rs (one sealed permit type/default hook and original real call)",
+      "codex-rs/hepta-intelligence-eval/src/lib.rs (module/public exports)"
+    ],
+    "new_modules": [
+      "product_holdout_file.rs (held File provider and material data codec child of original product_runner)",
+      "product_qualification_file.rs (concrete sink with exact data codec)",
+      "bounded component test modules"
+    ],
+    "no_changes": [
+      "fenced_holdout.rs",
+      "fenced_holdout_file.rs",
+      "product_execution_file.rs",
+      "product_execution_store.rs",
+      "original matching-budget/capacity/cost validators",
+      "old provider implementations",
+      "original signed verification algorithms"
+    ],
+    "caller_integration": "runtime_access owns actual daemon coordinator: keep CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>, supply new concrete provider to original evaluate_or_readback, original authenticated evidence to qualify_and_persist with new concrete sink, then original EvaluationInputs. No generic success callback."
+  },
+  "planned_necessary_checks": [
+    "A public receipt-only invocation on protected provider refuses and releases nothing.",
+    "A genuine original runner fresh consume can release actual temporary-file rows once; idempotent consume cannot release again.",
+    "Wrong frozen plan, missing/changed/truncated rows file, invalid codec and reuse after failure refuse.",
+    "Sink success corresponds to actual fsynced bytes and exact readback; reopen with retained anchor is exact, conflicting decision refuses.",
+    "Original lock contention/rollback/torn-file/indeterminate store behavior remains; no retry silently completes Pending.",
+    "Tests use explicitly synthetic component data/keys only and do not count as real independent B or ordinary-chain execution."
+  ],
+  "limits": [
+    "No new credential, signer, owner-role issuance or user policy is introduced.",
+    "Real holdout data, independent role signatures, original B task executions and costs, and trusted Root approval are still deployment inputs.",
+    "No native/compiler/checker execution is authorized in this work; root will qualify a later fixed source.",
+    "ordinary_complete_chain / positive_adoption_chain / no_update_or_rollback_chain remain 0/0/0."
+  ]
+}

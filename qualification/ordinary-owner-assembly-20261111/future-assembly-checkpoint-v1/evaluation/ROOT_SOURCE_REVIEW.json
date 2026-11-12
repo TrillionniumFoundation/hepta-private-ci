@@ -1,0 +1,178 @@
+{
+  "schema": "hepta.root-bounded-source-review.v1",
+  "classification": "FUTURE_ISOLATED_COMPONENT_SOURCE_NOT_NATIVE_OR_ORDINARY_ACCEPTANCE",
+  "packet": {
+    "blob": "7ea371a900fde205da32ec5a7c6d2e89da63048b",
+    "bytes": 59544,
+    "sha256": "d560ff538df6c1d2c8f48a887e89a18e56a3cd5d6a13da365e513c7c4b90948c"
+  },
+  "source_commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "proof": {
+    "source": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "files": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "pre": {
+          "blob": "ec9df84f3d75e7c20df33688f35da8f2b80356f9",
+          "bytes": 38107,
+          "sha256": "a8ee15a1f0d4a70042c294e3939be80adefcdd2920177cb27d14087b14aa7921"
+        },
+        "post": {
+          "blob": "95a320cc46e3374e8b3a48cd8c92b4def7ccf4a6",
+          "bytes": 39399,
+          "sha256": "88bd9153f7df15fecccdd6c41d46486fb36968a851b35d023f8906d0de3cb908"
+        },
+        "operations": 3,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "pre": {
+          "blob": "daf58a153bba73186cd01bbc904a00e5c40ba4c5",
+          "bytes": 15662,
+          "sha256": "8b614d5ce1fc189d44320bab04d6cc7899468d6da47c200bca2e8369d388b831"
+        },
+        "post": {
+          "blob": "fc41ebe6849ef99eb2c2729fd3ef255a9cbd8f00",
+          "bytes": 16007,
+          "sha256": "9fbc38644214dfb07236483132ef20d5a342ca37bac4fc03f1be14cb0a48b8b6"
+        },
+        "operations": 4,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "pre": {
+          "blob": "8d7abd0e20c18382cc14ddc3546fc94fd9993dc1",
+          "bytes": 28778,
+          "sha256": "d080b99743e2fc034bdf9edc3e092a7a61a710a68e767dda319373242fc89c9e"
+        },
+        "post": {
+          "blob": "9adaec10e1fa0cb92326a2427c8f9f584fabd1fe",
+          "bytes": 28843,
+          "sha256": "5f995f3303b2edffc848ca529b029fbbc30535bc59231f2888e53fe4803b8d99"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+        "pre": {
+          "blob": "61dc8e12c11f8010144f0dc13f8fe12ba45edf9e",
+          "bytes": 8100,
+          "sha256": "e64fa031e58f8cf7bd8ae82a2544bb57a2577db202d34e913996e40027b6984c"
+        },
+        "post": {
+          "blob": "3787b6100130259c960d4354ca6eb6ffd165d2f9",
+          "bytes": 9984,
+          "sha256": "a797b842a84f383b987e4947f3bb434ccc26cff5ca912f100704d04b2b3b9fba"
+        },
+        "operations": 3,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": false
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "pre": null,
+        "post": {
+          "blob": "4ca06cad35a5bcff1e3536b7c76dd15d8569cc29",
+          "bytes": 7171,
+          "sha256": "ca396732aee32788fc6b64b5f0dae2dd29092c71bf888dc5df5c6264d9dd352f"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+        "pre": null,
+        "post": {
+          "blob": "401dd79fa92ee4d48f0921bc395935ac3f7d5265",
+          "bytes": 10602,
+          "sha256": "7fec333e4dbfe2b8b3f8f9f6935de9c03e18798231c42d96637055622b717937"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "pre": null,
+        "post": {
+          "blob": "aca6df9dafc55af5ece5d39b22f8d1f30dca285f",
+          "bytes": 9730,
+          "sha256": "7bb245f36d77e088a4f06026fb174228ad949bbb5905567fa2baff8e003befca"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs",
+        "pre": null,
+        "post": {
+          "blob": "f05245349f29b80832260a9cfbde8e08e8e8882f",
+          "bytes": 11778,
+          "sha256": "c3092edea55205a9b1ec8a345088f785df01ea136715e81b504831855ade4aba"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs",
+        "pre": null,
+        "post": {
+          "blob": "0db853c1f7a46b415b4bb2eed1a7198b583a5187",
+          "bytes": 7187,
+          "sha256": "a0bd9c6418fcb66795131da73ba0a70b269b23923cdd48e8dd5e925e49543f37"
+        },
+        "operations": 1,
+        "unique_forward_reverse": true,
+        "actual_fixed_directory_verified": true
+      }
+    ],
+    "all_blobs_independently_get_verified": true,
+    "native_run": false
+  },
+  "verdict": "no_confirmed_static_blocker_in_reviewed_provider_codec_and_durable_sink_delta",
+  "findings": [
+    "The original product runner still validates the sealed complete plan, requires a matching manifest, invokes the authoritative fenced consume, rejects replay, then releases rows. The sole new production permit literal is at the original release position after successful Recorded consumption.",
+    "The non-Clone permit has private plan and receipt fields. The file provider compares the entire sealed product plan and actual receipt fields, marks its one release attempt before fallible row I/O, and refuses the public receipt-only API. Existing provider implementations keep their synchronous legacy receipt default.",
+    "The held regular file is OS-locked, length bounded, and bound to the full actual canonical material digest before and during release. The codec carries actual training rows, targets, both OPE observation sets, assignments and snapshot/future-window IDs with bounded counts, typed values and exact trailing-byte rejection. The original runner retains its complete statistical/comparability validation.",
+    "The original execution-storage contract accepts immutable bounded opaque completion bytes. Its concrete file implementation retains held lock, append+fsync, independently witnessed recovery minimum, exact binding conflicts, immutable completed payloads and sticky live-metadata/write uncertainty. Reusing it under a separate evidence-domain namespace preserves those source semantics.",
+    "Root identified that the first sink draft keyed by evaluation_id could publish a different decision for the same execution under a new ID. The final reviewed source keys only by actual execution_digest inside the independent owner namespace; the entire decision including evaluation_id stays in the immutable payload. The added real-file regression requires changed ID to refuse without journal/anchor changes.",
+    "The sink serializes the exact runner execution and full public decision, trust and authentication digests, checks DENY_ALL, and returns a publication digest only after durable claim/complete and exact readback. Pending or uncertain completion stays closed; no sealed qualification receipt is reconstructed.",
+    "The original qualify_and_persist still performs its signed V2/V3 admission and scope/role checks before sink.persist and seals a DENY_ALL receipt only after a nonzero durable publication result. It does not select or activate a candidate.",
+    "Eight newly declared component tests exercise the original runner and actual file/CAS/sink composition, copied-receipt refusal, consume replay, full-plan mismatch, corrupt/malformed material, immutable publication, durable pending, lock/recovery rollback/torn history and sticky uncertainty. Their rows/keys are explicit fixtures and tests were read, not executed."
+  ],
+  "host_obligations": [
+    "Actual concrete LockedFileFinalHoldoutCasStoreV1 in the production coordinator, rather than an unauthenticated arbitrary host CAS implementation.",
+    "Authorized independently held files, exclusive open-description custody and required file/path permissions; namespace separation, directory durability and externally retained recovery anchors.",
+    "Genuine independently collected holdout inputs, authenticated Generator/Evaluator/Observer roles and complete signed cost evidence and budgets.",
+    "Actual production constructor callers in the future daemon adapter, original caller metadata updates and complete fixed-source qualification."
+  ],
+  "scope_limits": {
+    "runtime_caller_not_yet_frozen": true,
+    "original_checker_run": false,
+    "rust_formatter_or_compiler_run": false,
+    "native_tests_run": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "no_update_rollback_chains": 0,
+    "independent_C_accepted": false,
+    "daemon_root_OS_restart_accepted": false,
+    "merged_main": false
+  },
+  "all_existing_test_bodies_preserved": true,
+  "unchanged_original_stores": [
+    "fenced_holdout.rs",
+    "fenced_holdout_file.rs",
+    "holdout_journal.rs",
+    "product_execution_file.rs",
+    "product_execution_store.rs"
+  ]
+}

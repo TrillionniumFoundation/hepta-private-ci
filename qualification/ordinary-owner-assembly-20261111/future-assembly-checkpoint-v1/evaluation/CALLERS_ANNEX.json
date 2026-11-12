@@ -1,0 +1,1747 @@
+{
+  "schema": "hepta.original-b-file-components.caller-annex.v1",
+  "source_commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "registry_path": "CALLERS.toml",
+  "preimage": {
+    "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "bytes": 890345,
+    "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+  },
+  "postimage": {
+    "blob": "e0ad0a283c171ed01d8bfa8d5a22e2eeee301d34",
+    "bytes": 907220,
+    "sha256": "4c1659cbeafa4fa2cff88c9282bbd24b276b9316cefc09cf3a2eeb2ba14f4a7f"
+  },
+  "counts": {
+    "before": {
+      "required_ids": 638,
+      "declared_boundaries": 638,
+      "protected_files": 440
+    },
+    "after": {
+      "required_ids": 645,
+      "declared_boundaries": 645,
+      "protected_files": 445
+    }
+  },
+  "add_required_boundary_ids": [
+    "product_original_holdout_release_permit",
+    "product_file_holdout_original_open",
+    "product_file_holdout_original_release",
+    "product_file_qualification_create",
+    "product_file_qualification_recover",
+    "product_file_qualification_persist",
+    "product_file_qualification_readback"
+  ],
+  "add_boundaries": [
+    {
+      "id": "product_original_holdout_release_permit",
+      "symbol": "OriginalFinalHoldoutReleasePermitV1",
+      "call_pattern": "\\bOriginalFinalHoldoutReleasePermitV1\\s*\\{",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "definition_markers": [
+        "pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\n    plan: &'a ProductFrozenEvaluationPlanV1,\n    receipt: &'a FinalHoldoutJournalReceiptV1,\n}"
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_holdout_original_open",
+      "symbol": "LockedFileFinalHoldoutProviderV1::open",
+      "receiver_type": "LockedFileFinalHoldoutProviderV1",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "definition_markers": [
+        "pub fn open(file: File, expected: &ProductFrozenEvaluationPlanV1)"
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_holdout_original_release",
+      "symbol": "LockedFileFinalHoldoutProviderV1::release_original_consumption",
+      "call_pattern": "(?:\\b(?:FinalHoldoutProviderV1|LockedFileFinalHoldoutProviderV1)\\s*::\\s*release_original_consumption|\\.\\s*release_original_consumption)\\s*\\(",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "definition_markers": [
+        "impl FinalHoldoutProviderV1 for LockedFileFinalHoldoutProviderV1 {",
+        "fn release_original_consumption("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_qualification_create",
+      "symbol": "LockedFileProductQualificationEvidenceSinkV1::create",
+      "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": [
+        "pub fn create(file: File, owner_binding: Digest32)"
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_qualification_recover",
+      "symbol": "LockedFileProductQualificationEvidenceSinkV1::recover",
+      "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": [
+        "pub fn recover("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_qualification_persist",
+      "symbol": "ProductQualificationEvidenceSinkV1::persist",
+      "receiver_type": "ProductQualificationEvidenceSinkV1",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": [
+        "impl ProductQualificationEvidenceSinkV1 for LockedFileProductQualificationEvidenceSinkV1 {",
+        "fn persist("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "product_file_qualification_readback",
+      "symbol": "LockedFileProductQualificationEvidenceSinkV1::readback",
+      "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": [
+        "pub fn readback("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    }
+  ],
+  "add_protected_files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "required": [
+        "pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\n    plan: &'a ProductFrozenEvaluationPlanV1,\n    receipt: &'a FinalHoldoutJournalReceiptV1,\n}",
+        "#[path = \"product_holdout_file.rs\"]\nmod product_holdout_file;",
+        "pub use product_holdout_file::LockedFileFinalHoldoutProviderV1;",
+        "pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>("
+      ],
+      "forbidden": [
+        "pub plan: &'a ProductFrozenEvaluationPlanV1",
+        "pub receipt: &'a FinalHoldoutJournalReceiptV1"
+      ],
+      "required_order": [
+        [
+          "pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(",
+          "product_plan.validate_integrity()?;",
+          "candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest",
+          "baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest",
+          "let manifest = provider.manifest_digest()?;",
+          "manifest != product_plan.frozen_plan.final_holdout_digest",
+          "let holdout = self.holdout.consume(&product_plan.frozen_plan)?;",
+          "match holdout.disposition {",
+          "HoldoutUseDispositionV1::Recorded => {}",
+          "HoldoutUseDispositionV1::IdempotentReplay => {",
+          "return Err(ProductEvaluationError::Binding(",
+          "));",
+          "let mut inputs = provider.release_original_consumption(",
+          "OriginalFinalHoldoutReleasePermitV1 {",
+          "plan: product_plan,",
+          "receipt: &holdout,",
+          "        )?;",
+          "validate_released_inputs(&product_plan.frozen_plan, &inputs)?;",
+          "validate_comparable_observations(",
+          "normalize_unique_ids(&mut inputs.snapshot_ids)?;",
+          "normalize_unique_ids(&mut inputs.future_window_ids)?;",
+          "let candidate = evaluate_temporal_holdout(",
+          "let baseline = evaluate_temporal_holdout(",
+          "candidate.validate_integrity()?;",
+          "baseline.validate_integrity()?;",
+          "let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;"
+        ]
+      ],
+      "required_function_order": [
+        {
+          "function": "fn release_original_consumption(",
+          "sequence": [
+            "permit: OriginalFinalHoldoutReleasePermitV1<'_>",
+            "self.release_after_consumption(permit.receipt)"
+          ]
+        },
+        {
+          "function": "fn qualify_and_persist(",
+          "sequence": [
+            "let bundle = self.qualification_bundle(temporal, context)?;",
+            "decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?",
+            "decide_with_signed_longitudinal_evidence_v3(",
+            "let publication_digest = sink.persist(temporal.execution_digest, &decision)?;",
+            "if publication_digest.is_zero()",
+            "return Err(ProductEvaluationError::Integrity(",
+            "));",
+            "let mut receipt = ProductQualificationReceiptV1 {",
+            "receipt.receipt_seal = product_qualification_seal(&receipt);",
+            "receipt.validate_integrity()?;",
+            "Ok(receipt)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "required": [
+        "#[path = \"product_holdout_file_codec.rs\"]\nmod codec;",
+        "const MAX_MATERIAL_BYTES: u64 = 32 * 1024 * 1024;",
+        "material_file: HeldMaterialFile,",
+        "expected_product: ProductFrozenEvaluationPlanV1,",
+        "release_attempted: bool,"
+      ],
+      "forbidden": [
+        "pub material_file",
+        "pub release_attempted",
+        "unsafe",
+        "transmute",
+        "File::try_clone",
+        "OpenOptions",
+        "set_permissions",
+        "set_len"
+      ],
+      "required_order": [],
+      "required_function_order": [
+        {
+          "function": "fn drop(",
+          "sequence": [
+            "fn drop(",
+            "let _ = self.0.unlock();"
+          ]
+        },
+        {
+          "function": "fn open(",
+          "sequence": [
+            ".validate_integrity()",
+            ".map_err(|_| FileError::Binding)?;",
+            "File::metadata(&file).map_err(io_error)?;",
+            "if !metadata.is_file()",
+            "return Err(FileError::NotRegular);",
+            "File::try_lock_shared(&file)",
+            "TryLockError::WouldBlock => FileError::Busy",
+            "let material_file = HeldMaterialFile(file);",
+            "material_length == 0 || material_length > MAX_MATERIAL_BYTES",
+            "return Err(FileError::Capacity);",
+            "release_attempted: false",
+            "provider.require_original_material()?;",
+            "Ok(provider)"
+          ]
+        },
+        {
+          "function": "fn require_original_material(",
+          "sequence": [
+            "let file: &mut File = &mut self.material_file.0;",
+            "File::metadata(file).map_err(io_error)?.len() != self.material_length",
+            "return Err(FileError::Corrupt);",
+            "Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;",
+            "Digest32::of_reader(&mut *file, MAX_MATERIAL_BYTES).map_err(io_error)?;",
+            "File::metadata(file).map_err(io_error)?.len() != self.material_length",
+            "digest != self.expected_product.frozen_plan.final_holdout_digest",
+            "return Err(FileError::Corrupt);",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn read_original_material(",
+          "sequence": [
+            "let file: &mut File = &mut self.material_file.0;",
+            "File::metadata(file).map_err(io_error)?.len() != self.material_length",
+            "return Err(FileError::Corrupt);",
+            "Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;",
+            "Read::take(&mut *file, MAX_MATERIAL_BYTES + 1)",
+            ".read_to_end(&mut bytes)",
+            ".map_err(io_error)?;",
+            "bytes.len() as u64 != self.material_length",
+            "File::metadata(file).map_err(io_error)?.len() != self.material_length",
+            "Digest32::of_bytes(&bytes)",
+            "!= self.expected_product.frozen_plan.final_holdout_digest",
+            "return Err(FileError::Corrupt);",
+            "codec::decode_original_material(&bytes, &self.expected_product.frozen_plan)"
+          ]
+        },
+        {
+          "function": "fn manifest_digest(",
+          "sequence": [
+            "if self.release_attempted",
+            "return Err(ProductProviderErrorV1::Rejected);",
+            "self.require_original_material().map_err(provider_error)?;",
+            "Ok(self.expected_product.frozen_plan.final_holdout_digest)"
+          ]
+        },
+        {
+          "function": "fn release_after_consumption(",
+          "sequence": [
+            "_receipt: &FinalHoldoutJournalReceiptV1",
+            "Err(ProductProviderErrorV1::Rejected)"
+          ]
+        },
+        {
+          "function": "fn release_original_consumption(",
+          "sequence": [
+            "if std::mem::replace(&mut self.release_attempted, true)",
+            "return Err(ProductProviderErrorV1::Rejected);",
+            "let frozen = &self.expected_product.frozen_plan;",
+            "permit.plan != &self.expected_product",
+            "permit.receipt.disposition != HoldoutUseDispositionV1::Recorded",
+            "permit.receipt.use_receipt.disposition != HoldoutUseDispositionV1::Recorded",
+            "permit.receipt.sequence == 0",
+            "permit.receipt.record_digest.is_zero()",
+            "permit.receipt.head_digest.is_zero()",
+            "permit.receipt.authority.grants_any()",
+            "permit.receipt.use_receipt.authority.grants_any()",
+            "permit.receipt.use_receipt.plan_digest != frozen.plan_digest",
+            "permit.receipt.use_receipt.holdout_digest != frozen.final_holdout_digest",
+            "return Err(ProductProviderErrorV1::Rejected);",
+            "self.read_original_material().map_err(provider_error)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+      "required": [
+        "const MAGIC: &[u8; 8] = b\"HPFHMT01\";",
+        "const MAX_ROWS: usize = 100_000;",
+        "const MAX_ACTIONS: usize = 128;",
+        "const MAX_IDS: usize = 1_000_000;"
+      ],
+      "forbidden": [
+        "unsafe",
+        "transmute",
+        "File",
+        "OpenOptions",
+        "Signer",
+        "sign("
+      ],
+      "required_order": [
+        [
+          "impl Reader<'_> {",
+          "fn count(",
+          "let count = u32::from_be_bytes(",
+          "if count > limit || count > self.0.len()",
+          "return Err(FileError::Capacity);",
+          "fn id(",
+          "if !(1..=128).contains(&count)",
+          "return Err(FileError::Corrupt);",
+          "std::str::from_utf8(self.take(count)?)",
+          "StableId::new(name).map_err(|_| FileError::Corrupt)"
+        ]
+      ],
+      "required_function_order": [
+        {
+          "function": "fn decode_original_material(",
+          "sequence": [
+            "bytes.len() as u64 > MAX_MATERIAL_BYTES",
+            "return Err(FileError::Capacity);",
+            "let mut reader = Reader(bytes);",
+            "reader.take(8)? != MAGIC",
+            "reader.digest()? != frozen.objective_digest",
+            "reader.digest()? != frozen.dataset_digest",
+            "reader.id()? != frozen.final_holdout_window_id",
+            "return Err(FileError::Binding);",
+            "reader.count(MAX_ROWS)?;",
+            "let candidate_observations = reader.observations()?;",
+            "let baseline_observations = reader.observations()?;",
+            "reader.count(MAX_ROWS)?;",
+            "let snapshot_ids = reader.ids(MAX_IDS)?;",
+            "let future_window_ids = reader.ids(MAX_IDS)?;",
+            "if !reader.0.is_empty()",
+            "return Err(FileError::Corrupt);",
+            "Ok(TemporalComparisonInputsV1 {"
+          ]
+        },
+        {
+          "function": "fn bytes(",
+          "sequence": [
+            ".checked_add(bytes.len())",
+            ".is_none_or(|length| length as u64 > MAX_MATERIAL_BYTES)",
+            "return Err(FileError::Capacity);",
+            "self.0.extend_from_slice(bytes);"
+          ]
+        },
+        {
+          "function": "fn take(",
+          "sequence": [
+            "self.0.split_at_checked(count).ok_or(FileError::Corrupt)?;",
+            "self.0 = tail;",
+            "Ok(head)"
+          ]
+        },
+        {
+          "function": "fn probability(",
+          "sequence": [
+            "fn probability(",
+            "ProbabilityQ32::from_raw(self.u64()?).map_err(|_| FileError::Corrupt)"
+          ]
+        },
+        {
+          "function": "fn observations(",
+          "sequence": [
+            "self.count(MAX_ROWS)?;",
+            "let complete_candidates = match self.take(1)?[0]",
+            "0 => false,",
+            "1 => true,",
+            "_ => return Err(FileError::Corrupt),",
+            "self.count(MAX_ACTIONS)?;",
+            "behavior_probability: self.probability()?",
+            "evaluation_probability: self.probability()?",
+            "let finalized_outcome = match self.take(1)?[0]",
+            "0 => None,",
+            "1 => Some(self.fixed()?),",
+            "_ => return Err(FileError::Corrupt),",
+            "outcome_observed_at: self.u64()?",
+            "outcome_evidence: self.digest()?",
+            "outcome_model_evidence: self.digest()?",
+            "Ok(rows)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "required": [
+        "publication_store: LockedFileProductEvaluationExecutionStoreV1,",
+        "terminal_uncertainty: bool,",
+        "b\"hepta.product-qualification.evidence-namespace.v1\"",
+        "b\"hepta.product-qualification.evidence-key.v1\"",
+        "b\"HPQLEV01\"",
+        "b\"hepta.product-qualification.durable-publication.v1\""
+      ],
+      "forbidden": [
+        "unsafe",
+        "transmute",
+        "Signer",
+        "sign(",
+        "ProductQualificationReceiptV1 {",
+        "OpenOptions",
+        "set_len",
+        "set_permissions"
+      ],
+      "required_order": [],
+      "required_function_order": [
+        {
+          "function": "fn create(",
+          "sequence": [
+            "let binding = evidence_namespace(owner_binding)?;",
+            "LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;",
+            "publication_store,",
+            "owner_binding,",
+            "terminal_uncertainty: false"
+          ]
+        },
+        {
+          "function": "fn recover(",
+          "sequence": [
+            "let binding = evidence_namespace(owner_binding)?;",
+            "LockedFileProductEvaluationExecutionStoreV1::recover(file, binding, minimum)?;",
+            "publication_store,",
+            "owner_binding,",
+            "terminal_uncertainty: false"
+          ]
+        },
+        {
+          "function": "fn readback(",
+          "sequence": [
+            "if self.terminal_uncertainty",
+            "return Err(SinkError::Indeterminate);",
+            "let payload = encode_decision(self.owner_binding, execution_digest, decision)?;",
+            "let key = publication_key(self.owner_binding, execution_digest)?;",
+            "ProductEvaluationExecutionStoreV1::readback(",
+            "&mut self.publication_store,",
+            "&key,",
+            ".map_err(store_error)?;",
+            "match state {",
+            "ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == payload",
+            "Ok(publication_digest(&payload))",
+            "ProductEvaluationExecutionStateV1::Completed(_) => Err(SinkError::Rejected)",
+            "ProductEvaluationExecutionStateV1::Pending",
+            "self.terminal_uncertainty = true;",
+            "Err(SinkError::Indeterminate)"
+          ]
+        },
+        {
+          "function": "fn persist(",
+          "sequence": [
+            "if self.terminal_uncertainty",
+            "return Err(SinkError::Indeterminate);",
+            "let payload = encode_decision(self.owner_binding, execution_digest, decision)?;",
+            "let key = publication_key(self.owner_binding, execution_digest)?;",
+            "ProductEvaluationExecutionStoreV1::claim(",
+            "&mut self.publication_store,",
+            "&key,",
+            ".map_err(store_error)?;",
+            "match claim {",
+            "ProductEvaluationExecutionStateV1::Completed(bytes)",
+            "if bytes != payload",
+            "return Err(SinkError::Rejected);",
+            "ProductEvaluationExecutionStateV1::Pending",
+            "self.terminal_uncertainty = true;",
+            "return Err(SinkError::Indeterminate);",
+            "ProductEvaluationExecutionClaimV1::Claimed",
+            "ProductEvaluationExecutionStoreV1::complete(",
+            "&mut self.publication_store,",
+            "&key,",
+            "&payload,",
+            ".is_err()",
+            "self.terminal_uncertainty = true;",
+            "return Err(SinkError::Indeterminate);",
+            "match ProductEvaluationExecutionStoreV1::readback(",
+            "&mut self.publication_store,",
+            "&key,",
+            "Ok(ProductEvaluationExecutionStateV1::Completed(bytes)) if bytes == payload",
+            "Ok(publication_digest(&payload))",
+            "Ok(_) | Err(_)",
+            "self.terminal_uncertainty = true;",
+            "Err(SinkError::Indeterminate)"
+          ]
+        },
+        {
+          "function": "fn evidence_namespace(",
+          "sequence": [
+            "if owner_binding.is_zero()",
+            "return Err(FileError::Binding);",
+            "Ok(Digest32::of_parts(&[",
+            "owner_binding.as_array(),"
+          ]
+        },
+        {
+          "function": "fn publication_key(",
+          "sequence": [
+            "let plan_id = StableId::new(execution_digest.to_string()).map_err(|_| SinkError::Rejected)?;",
+            "Ok(ProductEvaluationExecutionKeyV1 {",
+            "plan_id,",
+            "binding_digest: Digest32::of_parts(&[",
+            "owner_binding.as_array(),",
+            "execution_digest.as_array(),"
+          ]
+        },
+        {
+          "function": "fn encode_decision(",
+          "sequence": [
+            "owner_binding.is_zero()",
+            "execution_digest.is_zero()",
+            "decision.evidence_digest.is_zero()",
+            "signed.trust_digest.is_zero()",
+            "signed.authentication_digest.is_zero()",
+            "decision.authority.grants_any()",
+            "decision.failed_metrics.len() > 128",
+            "return Err(SinkError::Rejected);",
+            "bytes.extend_from_slice(owner_binding.as_array());",
+            "bytes.extend_from_slice(execution_digest.as_array());",
+            "&decision.evaluation_id,",
+            "&decision.candidate_id,",
+            "&decision.baseline_id,",
+            "put_id(&mut bytes, id)?;",
+            "bytes.push(match decision.disposition",
+            "decision.failed_metrics.len() as u32",
+            "for id in &decision.failed_metrics",
+            "put_id(&mut bytes, id)?;",
+            "decision.evidence_digest,",
+            "signed.trust_digest,",
+            "signed.authentication_digest,",
+            "bytes.len() > MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1",
+            "return Err(SinkError::Rejected);",
+            "Ok(bytes)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "required": [
+        "mod product_qualification_file;",
+        "pub use product_qualification_file::LockedFileProductQualificationEvidenceSinkV1;",
+        "pub use product_runner::FileFinalHoldoutErrorV1;",
+        "pub use product_runner::LockedFileFinalHoldoutProviderV1;",
+        "pub use product_runner::OriginalFinalHoldoutReleasePermitV1;",
+        "pub use product_runner::encode_file_final_holdout_material_v1;"
+      ],
+      "forbidden": [],
+      "required_order": [],
+      "required_function_order": []
+    }
+  ],
+  "operations": [
+    {
+      "kind": "replace",
+      "before": "required_boundary_ids = [\"root_registered_learning_checkpoint_writer\",\"root_original_learning_checkpoint_exchange\",\"supervisor_authorized_boot\",\"memory_production_writer_open\",\"cognitive_store_recovery_open\",\"cognitive_production_mutation_capability\",\"agentd_production_writer_host\",\"agentd_production_operation_runtime\",\"learning_artifact_owner_bootstrap\",\"learning_artifact_owner_restart\",\"learning_artifact_verified_current_view\",\"provider_effect_coordinator\",\"http_provider_effect_adapter\",\"final_use_open_state\",\"final_use_claim\",\"final_use_claim_raw\",\"final_use_delivery\",\"final_use_delivery_witness\",\"final_use_delivery_raw\",\"final_use_dispatch\",\"final_use_dispatch_witness\",\"final_use_dispatch_raw\",\"final_use_revocation_update\",\"final_use_approval_trust\",\"final_use_approval_verify\",\"final_use_revocation_feed_trust\",\"final_use_revocation_feed_apply\",\"final_use_revocation_convergence_trust\",\"final_use_revocation_convergence_verify\",\"bao_final_use_consumer\",\"bao_registered_consumer_new\",\"bao_final_use_host_new\",\"bao_registered_revocation_update\",\"bao_registered_final_use_host\",\"authority_lease_open_state\",\"authority_lease_put\",\"authority_lease_revoke\",\"authority_lease_prune\",\"authority_lease_epoch_advance\",\"authority_lease_verify_use\",\"authority_lease_delivery\",\"authority_lease_delivery_witness\",\"authority_lease_dispatch_raw\",\"authority_lease_dispatch_witness\",\"final_use_async_dispatch_fence\",\"automation_taskflow_provider_effect_bridge\",\"final_use_guarded_effect\",\"notes_original_pending_call_proof\",\"notes_original_operation_observation_proof\",\"notes_original_thread_prepare\",\"notes_original_writer_terminal_receipt\",\"memory_original_owner_current_publication\",\"memory_original_protected_current_readback\",\"original_authbus_human_delivery_read\",\"notes_original_human_turn_proof\",\"root_registered_human_text_writer\",\"root_registered_human_text_admission\",\"root_human_text_same_issuer_cas\",\"root_retained_human_text_lookup\",\"root_live_human_session_install\",\"root_original_human_text_verification\",\"notes_original_turn_unprepared_admission\",\"root_host_original_human_text_verification\",\"notes_original_human_text_verification\",\"root_prepared_fresh_session\",\"root_retained_native_ui_launch\",\"root_prepared_native_ui_execution\",\"root_material_capture_original_image\",\"root_material_verify_retained_image\",\"root_material_install_original_generation\",\"root_material_reopen_original_installation\",\"root_material_release_registered_custody\",\"root_material_fresh_registered_session\",\"root_material_recover_registered_session\",\"root_material_existing_session_open\",\"root_material_resume_registered_handoff\",\"root_material_current_observation_chain\",\"root_original_writer_descriptor_chain\",\"root_same_retained_service_serve\",\"root_registered_material_recovery\",\"root_registered_material_handoff_resume\",\"root_original_writer_purpose_send\",\"root_original_writer_purpose_receive\",\"agentd_original_root_writer_consume\",\"root_registered_writer_rotation\",\"native_original_operation_host_attach\",\"native_original_owner_current_ack\",\"native_original_terminal_history_observation\",\"root_original_authority_initialize\",\"root_original_writer_authorize\",\"root_same_registered_bootstrap_seal\",\"root_same_registered_bootstrap_capture\",\"root_original_physical_login_install\",\"root_original_writer_successor_shape\",\"root_original_issuer_writer_rotation\",\"root_physical_current_retired_adoption\",\"root_physical_recovery_retirement_admission\",\"root_physical_fresh_service_genesis\",\"root_physical_registered_checkpoint_genesis\",\"root_physical_current_backend_genesis\",\"root_registered_physical_current_observation\",\"root_original_two_descriptor_send\",\"root_original_two_descriptor_receive\",\"native_original_writer_terminal_observation\",\"native_original_writer_next_delivery_observation\",\"root_notes_original_startup_before\",\"root_notes_recovered_successor_startup_before\",\"root_notes_original_reserved_session_binding\",\"root_notes_registered_successor_policy_replace\",\"root_notes_original_issuer_policy_cas\",\"root_desktop_original_issuer_pair_policy_cas\",\"root_retained_native_ready_launch\",\"root_prepared_native_ready_execution\",\"root_prepared_native_ready_text_session\",\"root_original_bound_native_lanes\",\"root_original_bound_native_lane_acceptance\",\"root_original_ready_lane_bridge\",\"notes_original_retained_reference_projection\",\"desktop_original_retained_reference_projection\",\"memory_original_sender_read_only_cut\",\"notes_recorded_original_observation_proof\",\"notes_previous_recovery_typed_resolution\",\"root_live_admin_enable\",\"root_live_admin_mint\",\"root_live_admin_exchange\",\"root_live_admin_checked_dispatch\",\"root_live_admin_signed_artifact_verify\",\"root_live_admin_exact_issuer_head_revoke\",\"root_live_admin_fixed_notes_revoke_prepare\",\"root_live_admin_existing_effect_revoke\",\"root_live_admin_existing_signed_grant_revoke\",\"root_live_admin_same_service_signed_revoke\",\"root_live_admin_original_issue_observer_enable\",\"root_live_admin_original_issue_observation\",\"root_live_admin_original_bounded_lease_revoke\",\"root_live_admin_retained_artifact_observe\",\"root_live_admin_original_effect_state_observe\",\"root_live_admin_same_service_effect_state_observe\",\"agentd_original_registered_writer_custody\",\"agentd_original_recovered_writer_custody_factory\",\"agentd_original_root_handoff_unique_file\",\"calculator_previous_recovery_owner_target\",\"calculator_previous_recovery_host_attach\",\"calculator_previous_recovery_process_attach\",\"calculator_previous_recovery_runtime_selection\",\"calculator_previous_recovery_config_selection\",\"root_original_issuer_renewal_prepare\",\"root_original_issuer_renewal_commit\",\"root_desktop_original_startup_before\",\"root_desktop_recovered_successor_startup_before\",\"root_desktop_registered_successor_policy_replace\",\"desktop_previous_original_cut_selection\",\"desktop_previous_joint_config_selection\",\"memory_original_validated_target_retirement_ack\",\"memory_original_owner_current_readonly_receipt\",\"memory_original_notes_retirement_ack\",\"memory_original_calculator_retirement_ack\",\"memory_original_retirement_ack_commit\",\"authority_lease_exact_bounded_revoke\",\"root_live_admin_exact_issuer_revoke\",\"root_live_admin_committed_issuer_reply\",\"root_live_admin_exact_issuer_reply_record\",\"root_learning_explicit_registration\",\"root_learning_original_store_registration\",\"root_learning_original_store_reopen\",\"root_learning_original_owner_install\",\"root_learning_original_scope_seal\",\"root_learning_original_scope_capture\",\"root_learning_same_service_serve\",\"root_learning_registered_checkpoint_constructor\",\"root_learning_original_client_constructor\",\"root_learning_original_purpose_send\",\"root_learning_original_purpose_receive\",\"root_learning_original_handoff_consume\",\"root_learning_original_config_hold\",\"root_learning_original_stage_assembly\",\"root_learning_original_runtime_consume\",\"root_original_registered_ready_serve\",\"root_original_private_sealed_bytes\",\"root_learning_scoped_checkpoint_constructor\",\"root_learning_scoped_client_constructor\",\"root_learning_scoped_runtime_constructor\",\"learning_frozen_update_scope_constructor\",\"root_learning_scoped_profile_constructor\",\"root_learning_scoped_checkpoint_record\",\"learning_evidence_original_owner_constructor\",\"learning_evidence_original_owner_readback\",\"original_pinned_stream_explicit_uid\",\"cell_learning_evaluation_profile_freeze\",\"cell_learning_evaluation_receipt_prepare\",\"cell_learning_evaluation_original_readback\",\"generation_learning_original_stage_readback\",\"cell_original_evaluation_execution\",\"product_original_evaluation_execution\",\"root_learning_original_delivery_source\",\"root_learning_completed_circuit_source\",\"circuit_learning_exact_ack_retirement\",\"cell_completed_evaluation_readback\",\"product_completed_evaluation_readback\",\"cell_q24_single_head_training_plan\",\"cell_q24_single_head_candidate_validation\",\"cell_q24_native_training_fit\",\"cell_q24_original_training_observation\",\"learning_original_evaluator_attestation\",\"learning_original_evaluation_key\",\"circuit_feature_original_initial_publication\",\"circuit_feature_original_update_publication\",\"circuit_feature_guarded_private_cell\",\"circuit_feature_private_cell_writer\",\"circuit_feature_original_task_control\",\"circuit_q24_ordinary_profile_assembly\",\"circuit_feature_original_predecessor_recovery\",\"circuit_feature_acknowledged_readonly_history\",\"learning_original_training_receipt_create\",\"learning_original_training_receipt_recover\",\"learning_original_training_receipt_attest\",\"learning_original_training_receipt_readback\",\"cell_q24_original_training_execute\",\"cell_q24_original_training_pair_binding\",\"learning_original_training_stage_constructor\",\"learning_original_training_stage_execute\",\"learning_original_training_stage_readback\",\"learning_original_training_stage_attestation\",\"learning_original_training_snapshot_readback\",\"cell_q24_model_material_owner_create\",\"cell_q24_model_material_owner_recover\",\"cell_q24_model_material_owner_commit\",\"cell_q24_model_material_owner_readback\",\"learning_original_evaluation_receipt_create\",\"learning_original_evaluation_receipt_recover\",\"learning_original_evaluation_receipt_attest\",\"learning_original_evaluation_receipt_readback\",\"cell_q24_original_dataset_batch\",\"cell_q24_original_dataset_task\",\"circuit_feature_original_committed_decision\",\"cell_q24_original_dataset_revalidation\",\"cell_q24_original_dataset_capability\",\"cell_q24_original_trainer_dataset_capability\",\"cell_q24_original_dataset_freeze_create\",\"cell_q24_original_dataset_freeze_recover\",\"cell_q24_original_dataset_freeze_authorize\",\"cell_q24_original_dataset_freeze_readback\",\"root_q24_factory_explicit_reserve\",\"root_q24_factory_open_original\",\"root_q24_factory_install_original\",\"root_q24_factory_capture_original\",\"root_q24_factory_take_offer\",\"root_q24_factory_serve_original\",\"root_q24_factory_purpose_send\",\"root_q24_factory_purpose_receive\",\"root_q24_factory_original_handoff_connect\",\"root_q24_factory_original_constructor\",\"root_q24_factory_live_observation\",\"root_q24_factory_original_commit\",\"root_q24_factory_original_readback\",\"root_q24_factory_learning_scope\",\"root_q24_factory_local_policy\",\"root_q24_factory_original_material\",\"root_learning_live_profile_action\",\"learning_original_source_create\",\"learning_original_source_recover\",\"learning_original_source_attest_experience\",\"learning_original_source_read_experience\",\"learning_original_source_attest_dataset\",\"learning_original_source_read_dataset\",\"learning_original_source_files_create\",\"learning_original_source_files_recover\",\"learning_original_source_prepared_handoff\",\"cell_q24_original_native_create\",\"cell_q24_original_native_recover\",\"learning_original_training_require_original_pair\",\"learning_original_training_with_original_trainer\",\"learning_original_evaluation_require_original_training\",\"learning_original_evaluation_read_original_execution\",\"learning_original_generation_receipt_create\",\"learning_original_generation_receipt_recover\",\"learning_original_generation_receipt_attest_original_completion\",\"learning_original_generation_receipt_readback\",\"learning_original_generation_receipt_require_context\",\"learning_original_generation_receipt_observe_original_selection\",\"learning_original_local_policy_create\",\"learning_original_local_policy_recover\",\"learning_original_local_policy_attest_original_decision\",\"learning_original_local_policy_readback\",\"learning_original_local_policy_require_context\",\"learning_original_local_policy_policy_digest\",\"learning_original_q24_stage_from_original_owners\",\"learning_original_q24_stage_require_current\",\"learning_original_q24_stage_prepared\",\"learning_original_q24_model_dispatch\",\"learning_original_q24_evaluation_inputs\",\"learning_original_q24_generation_inputs\",\"learning_original_q24_source_inputs\",\"learning_original_q24_training_inputs\",\"learning_original_q24_policy_inputs\",\"root_original_q24_require_prepared_q24\",\"root_original_q24_into_q24_learning_runtime\",\"learning_original_q24_with_original_q24_stage_owners\",\"learning_original_q24_require_proposal_owner\",\"root_original_q24_stage_assembly\",\"production_original_q24_receive\",\"production_original_q24_assemble\",\"learning_original_feature_receipt_create\",\"learning_original_feature_receipt_recover\",\"learning_original_feature_source_capture\",\"learning_original_feature_source_binding\",\"learning_original_feature_source_observe\",\"learning_original_q24_stage_install_generation\",\"learning_original_feature_dataset_feedback\",\"q24_publication_original_b_manifest\",\"q24_publication_original_lane\",\"q24_publication_original_predecessor\",\"q24_publication_embedded_admission\",\"q24_publication_actual_artifact\",\"q24_publication_actual_preparation\",\"q24_publication_actual_final_use\",\"q24_publication_original_recovery\",\"learning_original_q24_evaluation_stage_require_training\",\"learning_original_q24_evaluation_stage_require_original_training_evidence\",\"learning_original_q24_evaluation_stage_read_execution\",\"learning_original_q24_evaluation_stage_qualification_request\",\"learning_original_q24_evaluation_stage_complete\",\"learning_original_q24_install_evaluation\",\"learning_original_q24_install_independent_evaluation\",\"learning_original_q24_install_published_generation\",\"learning_original_q24_training_files\",\"learning_original_q24_training_material_export\",\"learning_original_q24_training_material_assembly\",\"q24_publication_executable_feature_preflight\",\"learning_original_feature_objective_reply\",\"root_generation_publication_enable\",\"root_generation_publication_late_enroll\",\"root_generation_publication_original_registration\",\"root_generation_publication_original_serve\",\"root_generation_publication_profile_fence\",\"root_generation_current_original_broker_head\",\"root_generation_current_original_broker_prepare\",\"root_generation_current_original_broker_publish\",\"root_generation_current_from_original_root_publication\",\"root_generation_current_bound_selection\",\"root_generation_current_store_bridge\",\"root_generation_publication_original_stream\",\"root_generation_publication_purpose_send\",\"root_generation_publication_purpose_receive\",\"root_generation_publication_purpose_connect\",\"root_generation_journal_original_observer\",\"root_generation_journal_original_target\",\"root_artifact_original_reader_open\",\"root_artifact_original_withdrawal_bind\",\"root_artifact_original_current_read\",\"root_artifact_original_withdrawal_read\",\"artifact_writer_recover_original_withdrawal_frontier\",\"artifact_writer_install_original_withdrawal_frontier\",\"artifact_writer_require_original_withdrawal_frontier\",\"artifact_original_acknowledged_readback\",\"root_generation_original_artifact_selection\",\"root_generation_original_selection_recheck\",\"q24_root_artifact_qualified_phase\",\"q24_root_artifact_publication\",\"q24_root_artifact_publication_recovery\",\"q24_root_retained_phase\",\"q24_root_selection_adopted\",\"q24_root_selection_retained\",\"q24_root_current_connect\",\"q24_root_current_prepare\",\"q24_root_current_recover\",\"q24_root_shared_prepare_selected\",\"q24_root_shared_recover_selected\",\"root_original_final_use_observer_enrollment\",\"root_original_final_use_observer_retained_readback\",\"q24_task_original_ledger_open\",\"q24_task_original_ledger_resume\",\"q24_task_original_ledger_readback\",\"q24_task_original_outcome_submit\",\"q24_task_original_dataset_prepare\",\"q24_task_original_learning_prepare\",\"q24_task_original_ready_observe\",\"q24_task_original_ready_binding\",\"q24_task_original_runtime_install\",\"q24_task_original_profile_install\",\"q24_task_explicit_source_attach\",\"q24_task_original_readiness_observe\",\"q24_task_original_ready_enqueue\",\"q24_task_explicit_delivery_sources\",\"q24_task_original_outcome_preflight\",\"q24_task_original_learning_recover\",\"root_generation_connection_original_capture\",\"root_generation_connection_slot_take\",\"root_generation_connection_inputs_take\",\"root_generation_connection_launch_take\",\"root_generation_connection_live_session\",\"root_generation_connection_original_binding\",\"q24_training_original_dataset_readback\",\"q24_training_original_readback_export\",\"q24_training_original_readback_construct\",\"q24_training_original_readback\",\"q24_training_original_readback_owner\",\"q24_training_original_readback_cut\",\"evaluation_original_trainer_owner\",\"evaluation_original_trainer_cut\",\"evaluation_original_trainer_borrow\",\"evaluation_original_trainer_readback\",\"evaluation_original_sources_attest\",\"evaluation_original_sources_readback\",\"root_generation_publication_launch_handoff_take\",\"q24_retained_source_capture\",\"q24_retained_source_scope\",\"q24_retained_source_read\",\"q24_retained_source_ready\",\"q24_retained_source_outbox\",\"q24_retained_source_root_install\",\"q24_retained_source_state_install\",\"q24_retained_source_state_lookup\",\"q24_retained_source_reconcile\",\"q24_retained_source_admission\",\"q24_retained_original_ledger_capability\",\"q24_retained_prepared_original_ledger\",\"production_retained_q24_receive\",\"production_retained_q24_assemble\",\"production_retained_q24_capability_receive\",\"production_retained_q24_capability_assemble\",\"root_generation_deployment_capture\",\"root_generation_deployment_wait\",\"root_generation_deployment_original_inputs\",\"root_artifact_original_selection_files\",\"root_initial_original_writer_context\",\"root_initial_separate_purpose_enable\",\"root_initial_one_shot_enrollment\",\"root_initial_original_registration\",\"root_initial_original_serve\",\"root_initial_original_sticky_fence\",\"root_initial_purpose_send\",\"root_initial_purpose_receive\",\"root_initial_original_connection\",\"root_initial_original_stream\",\"root_initial_client_prepare\",\"root_initial_client_observe\",\"root_initial_client_publish\",\"root_initial_current_store_bridge\",\"root_initial_current_from_original_route\",\"root_initial_current_original_publish\",\"root_initial_complete_description\",\"root_initial_exact_retained_record\",\"root_initial_exact_published_record\",\"root_initial_entire_contract\",\"root_initial_actual_consumer_prepare\",\"root_initial_actual_consumer_recover\",\"root_initial_executable_feature_prepare\",\"root_initial_executable_feature_recover\",\"root_initial_actual_feature_publish\",\"root_initial_original_unwritten_target\",\"root_initial_complete_configuration\",\"root_initial_launch_handoff_take\",\"root_initial_deployment_original_files\",\"root_initial_deployment_capture\",\"root_initial_deployment_wait\",\"root_initial_deployment_original_inputs\",\"q24_successor_original_session_capture\",\"q24_successor_original_session_current\",\"q24_successor_same_root_connection\",\"q24_successor_model_factory_context\",\"q24_successor_root_current_context\",\"q24_successor_current_owner_context\",\"q24_successor_context_from_registered_root\",\"q24_successor_context_live\",\"q24_successor_aggregate_registration\",\"q24_successor_generation_notification\",\"q24_successor_original_generation_installed\",\"q24_successor_wait_original_generation\",\"q24_successor_wait_after_checkpoint\",\"q24_successor_actual_owner_install\",\"q24_successor_effect_cancellation\",\"q24_successor_actual_task_handle\",\"q24_successor_pending_runtime\",\"q24_successor_worker_bootstrap\",\"q24_successor_pending_handle\",\"q24_successor_actual_runtime\",\"q24_successor_root_prepare_request\",\"q24_successor_root_prepare_worker\",\"q24_successor_proof_current\",\"q24_successor_actual_prepare\",\"q24_successor_actual_publish\",\"q24_successor_running_admission\",\"q24_successor_execution_preflight\",\"q24_successor_original_channel\",\"q24_successor_launch_prepare\",\"q24_successor_config_install\",\"q24_successor_original_c_ingress\",\"q24_successor_handoff_request\",\"q24_successor_original_signed_finish\",\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\",\"q24_successor_original_feedback_ledger\",\"agentd_original_late_writer_inputs_prepare\",\"agentd_original_late_writer_inputs_consume\",\"agentd_original_late_writer_cli_prepare\",\"agentd_original_late_writer_cli_consume\",\"fleet_original_readonly_snapshot\",\"authority_original_lease_metadata_observation\",\"authority_original_lease_metadata_revision\",\"authority_original_lease_metadata_finish\",\"root_original_issuer_metadata_observation\",\"root_original_issuer_metadata_proof\",\"root_original_issuer_metadata_revocations\",\"root_original_owner_channel_until\",\"root_original_peer_channel_until\",\"root_q24_factory_same_service_reserve\",\"root_original_final_use_frontier_until\",\"root_original_root_issuer_until\",\"root_original_observation_stream_until\",\"q24_same_actor_original_a_parts\",\"q24_same_actor_original_a_parts_consume\",\"q24_same_actor_original_route_pending\",\"q24_same_actor_original_a_install\",\"q24_same_actor_original_a_close\",\"q24_same_actor_original_a_quiescent\",\"q24_same_actor_original_a_release\",\"q24_same_actor_original_c_install\",\"q24_same_actor_original_ingress_admission\",\"q24_same_actor_original_admitted_task\",\"q24_same_actor_original_queue_admission\",\"q24_same_actor_original_worker_bootstrap\",\"root_learning_same_actor_client_until\",\"root_q24_same_actor_factory_constructor\",\"q24_same_actor_learning_builder\",\"q24_same_actor_learning_assemble\",\"q24_same_actor_learning_activation\",\"q24_same_actor_learning_work_construct\",\"q24_same_actor_learning_work_binding\",\"q24_same_actor_learning_prepared_binding\",\"q24_same_actor_learning_training_binding\",\"q24_same_actor_learning_effect_entry\",\"q24_same_actor_learning_blocking_reserve\",\"q24_same_actor_learning_blocking_handle\",\"q24_same_actor_learning_blocking_receive\",\"q24_same_actor_learning_terminal_join\",\"q24_same_actor_learning_stage_constructor\",\"q24_same_actor_learning_stage_work\",\"q24_same_actor_learning_generation_custody\",\"q24_same_actor_learning_aggregate_lane\",\"q24_same_actor_learning_training_constructor\",\"q24_same_actor_learning_training_execute\",\"q24_same_actor_learning_training_lane\",\"q24_same_actor_learning_local_decision\",\"q24_same_actor_learning_process_run\",\"q24_same_actor_learning_required_worker\",\"q24_same_actor_learning_required_run\",\"q24_same_actor_learning_route_custody\",\"q24_same_actor_training_checkpoint_notice\",\"q24_same_actor_evaluation_original_wait\",\"q24_same_actor_evaluation_install_begin\",\"q24_same_actor_evaluation_effect_entry\",\"q24_same_actor_evaluation_install_complete\",\"q24_same_actor_evaluation_aggregate_wait\",\"q24_same_actor_evaluation_aggregate_install\",\"q24_same_actor_evaluation_process_wait\",\"root_same_actor_phase_open\",\"root_same_actor_phase_fresh\",\"root_same_actor_phase_start\",\"root_same_actor_phase_seal\",\"root_same_actor_phase_serve\",\"root_same_actor_phase_host\",\"root_same_actor_deadline_start\",\"root_same_actor_deadline_receive\",\"root_same_actor_gate_construct\",\"root_same_actor_durable_reserve\",\"root_same_actor_durable_claim\",\"root_same_actor_durable_scope\",\"root_same_actor_actual_a_claim\",\"root_same_actor_initial_retire\",\"root_same_actor_initial_cap\",\"root_same_actor_initial_register\",\"root_same_actor_publication_cap\",\"root_same_actor_publication_register\",\"root_same_actor_scope_register\",\"root_same_actor_join_accept\",\"root_same_actor_worker_serve\",\"root_same_actor_lane_serve\",\"root_same_actor_issuer_bind\",\"root_same_actor_issuer_attachment\",\"root_same_actor_learning_reserve\",\"root_same_actor_learning_open\",\"root_same_actor_model_reserve\",\"root_same_actor_model_open\",\"root_same_actor_initial_until\",\"root_same_actor_learning_until\",\"root_same_actor_model_until\",\"root_same_actor_publication_until\",\"root_same_actor_initial_service\",\"root_same_actor_learning_service\",\"root_same_actor_model_service\",\"root_same_actor_receive_start\",\"root_same_actor_receive_inputs\",\"root_same_actor_context_current\",\"root_same_actor_scoped_descriptor\",\"root_same_actor_session_connect\",\"root_same_actor_session_activate\",\"root_same_actor_session_origin\",\"root_same_actor_grant_gate\",\"root_same_actor_send_start\",\"root_same_actor_send_scope\",\"root_same_actor_take_start_rights\",\"root_same_actor_take_scope_rights\",\"root_same_actor_retire_ack\",\"root_same_actor_join_after_a_drop\",\"root_same_actor_joined_parts\",\"root_same_actor_scope_receive\",\"root_same_actor_scope_parts\",\"root_same_actor_ticket_session\",\"root_same_actor_ticket_connect\",\"root_same_actor_initial_connect\",\"root_same_actor_publication_connect\",\"root_same_actor_initial_stream\",\"root_same_actor_scoped_stream\",\"root_same_actor_successor_capture\",\"root_same_actor_successor_origin\",\"root_same_actor_successor_scope_take\",\"q24_same_actor_successor_factory\",\"q24_same_actor_successor_task_parts\",\"q24_same_actor_artifact_publish\",\"q24_same_actor_current_connect\",\"q24_same_actor_startup\",\"q24_same_actor_run\",\"q24_same_actor_initial_install\",\"q24_same_actor_task_worker\",\"q24_same_actor_task_worker_run\",\"q24_same_actor_a_controller\",\"q24_same_actor_scoped_controller\",\"q24_same_actor_c_controller\",\"root_same_actor_initial_enroll\",\"root_same_actor_publication_enroll\",\"root_same_actor_publication_service\",\"root_same_actor_bound_five_lanes\",\"root_same_actor_issuer_effect_entry\",\"root_same_actor_checkpoint_effect\",\"root_same_actor_consumer_effect\",\"root_same_actor_learning_effect\",\"root_same_actor_checkpoint_until\"]",
+      "after": "required_boundary_ids = [\"root_registered_learning_checkpoint_writer\",\"root_original_learning_checkpoint_exchange\",\"supervisor_authorized_boot\",\"memory_production_writer_open\",\"cognitive_store_recovery_open\",\"cognitive_production_mutation_capability\",\"agentd_production_writer_host\",\"agentd_production_operation_runtime\",\"learning_artifact_owner_bootstrap\",\"learning_artifact_owner_restart\",\"learning_artifact_verified_current_view\",\"provider_effect_coordinator\",\"http_provider_effect_adapter\",\"final_use_open_state\",\"final_use_claim\",\"final_use_claim_raw\",\"final_use_delivery\",\"final_use_delivery_witness\",\"final_use_delivery_raw\",\"final_use_dispatch\",\"final_use_dispatch_witness\",\"final_use_dispatch_raw\",\"final_use_revocation_update\",\"final_use_approval_trust\",\"final_use_approval_verify\",\"final_use_revocation_feed_trust\",\"final_use_revocation_feed_apply\",\"final_use_revocation_convergence_trust\",\"final_use_revocation_convergence_verify\",\"bao_final_use_consumer\",\"bao_registered_consumer_new\",\"bao_final_use_host_new\",\"bao_registered_revocation_update\",\"bao_registered_final_use_host\",\"authority_lease_open_state\",\"authority_lease_put\",\"authority_lease_revoke\",\"authority_lease_prune\",\"authority_lease_epoch_advance\",\"authority_lease_verify_use\",\"authority_lease_delivery\",\"authority_lease_delivery_witness\",\"authority_lease_dispatch_raw\",\"authority_lease_dispatch_witness\",\"final_use_async_dispatch_fence\",\"automation_taskflow_provider_effect_bridge\",\"final_use_guarded_effect\",\"notes_original_pending_call_proof\",\"notes_original_operation_observation_proof\",\"notes_original_thread_prepare\",\"notes_original_writer_terminal_receipt\",\"memory_original_owner_current_publication\",\"memory_original_protected_current_readback\",\"original_authbus_human_delivery_read\",\"notes_original_human_turn_proof\",\"root_registered_human_text_writer\",\"root_registered_human_text_admission\",\"root_human_text_same_issuer_cas\",\"root_retained_human_text_lookup\",\"root_live_human_session_install\",\"root_original_human_text_verification\",\"notes_original_turn_unprepared_admission\",\"root_host_original_human_text_verification\",\"notes_original_human_text_verification\",\"root_prepared_fresh_session\",\"root_retained_native_ui_launch\",\"root_prepared_native_ui_execution\",\"root_material_capture_original_image\",\"root_material_verify_retained_image\",\"root_material_install_original_generation\",\"root_material_reopen_original_installation\",\"root_material_release_registered_custody\",\"root_material_fresh_registered_session\",\"root_material_recover_registered_session\",\"root_material_existing_session_open\",\"root_material_resume_registered_handoff\",\"root_material_current_observation_chain\",\"root_original_writer_descriptor_chain\",\"root_same_retained_service_serve\",\"root_registered_material_recovery\",\"root_registered_material_handoff_resume\",\"root_original_writer_purpose_send\",\"root_original_writer_purpose_receive\",\"agentd_original_root_writer_consume\",\"root_registered_writer_rotation\",\"native_original_operation_host_attach\",\"native_original_owner_current_ack\",\"native_original_terminal_history_observation\",\"root_original_authority_initialize\",\"root_original_writer_authorize\",\"root_same_registered_bootstrap_seal\",\"root_same_registered_bootstrap_capture\",\"root_original_physical_login_install\",\"root_original_writer_successor_shape\",\"root_original_issuer_writer_rotation\",\"root_physical_current_retired_adoption\",\"root_physical_recovery_retirement_admission\",\"root_physical_fresh_service_genesis\",\"root_physical_registered_checkpoint_genesis\",\"root_physical_current_backend_genesis\",\"root_registered_physical_current_observation\",\"root_original_two_descriptor_send\",\"root_original_two_descriptor_receive\",\"native_original_writer_terminal_observation\",\"native_original_writer_next_delivery_observation\",\"root_notes_original_startup_before\",\"root_notes_recovered_successor_startup_before\",\"root_notes_original_reserved_session_binding\",\"root_notes_registered_successor_policy_replace\",\"root_notes_original_issuer_policy_cas\",\"root_desktop_original_issuer_pair_policy_cas\",\"root_retained_native_ready_launch\",\"root_prepared_native_ready_execution\",\"root_prepared_native_ready_text_session\",\"root_original_bound_native_lanes\",\"root_original_bound_native_lane_acceptance\",\"root_original_ready_lane_bridge\",\"notes_original_retained_reference_projection\",\"desktop_original_retained_reference_projection\",\"memory_original_sender_read_only_cut\",\"notes_recorded_original_observation_proof\",\"notes_previous_recovery_typed_resolution\",\"root_live_admin_enable\",\"root_live_admin_mint\",\"root_live_admin_exchange\",\"root_live_admin_checked_dispatch\",\"root_live_admin_signed_artifact_verify\",\"root_live_admin_exact_issuer_head_revoke\",\"root_live_admin_fixed_notes_revoke_prepare\",\"root_live_admin_existing_effect_revoke\",\"root_live_admin_existing_signed_grant_revoke\",\"root_live_admin_same_service_signed_revoke\",\"root_live_admin_original_issue_observer_enable\",\"root_live_admin_original_issue_observation\",\"root_live_admin_original_bounded_lease_revoke\",\"root_live_admin_retained_artifact_observe\",\"root_live_admin_original_effect_state_observe\",\"root_live_admin_same_service_effect_state_observe\",\"agentd_original_registered_writer_custody\",\"agentd_original_recovered_writer_custody_factory\",\"agentd_original_root_handoff_unique_file\",\"calculator_previous_recovery_owner_target\",\"calculator_previous_recovery_host_attach\",\"calculator_previous_recovery_process_attach\",\"calculator_previous_recovery_runtime_selection\",\"calculator_previous_recovery_config_selection\",\"root_original_issuer_renewal_prepare\",\"root_original_issuer_renewal_commit\",\"root_desktop_original_startup_before\",\"root_desktop_recovered_successor_startup_before\",\"root_desktop_registered_successor_policy_replace\",\"desktop_previous_original_cut_selection\",\"desktop_previous_joint_config_selection\",\"memory_original_validated_target_retirement_ack\",\"memory_original_owner_current_readonly_receipt\",\"memory_original_notes_retirement_ack\",\"memory_original_calculator_retirement_ack\",\"memory_original_retirement_ack_commit\",\"authority_lease_exact_bounded_revoke\",\"root_live_admin_exact_issuer_revoke\",\"root_live_admin_committed_issuer_reply\",\"root_live_admin_exact_issuer_reply_record\",\"root_learning_explicit_registration\",\"root_learning_original_store_registration\",\"root_learning_original_store_reopen\",\"root_learning_original_owner_install\",\"root_learning_original_scope_seal\",\"root_learning_original_scope_capture\",\"root_learning_same_service_serve\",\"root_learning_registered_checkpoint_constructor\",\"root_learning_original_client_constructor\",\"root_learning_original_purpose_send\",\"root_learning_original_purpose_receive\",\"root_learning_original_handoff_consume\",\"root_learning_original_config_hold\",\"root_learning_original_stage_assembly\",\"root_learning_original_runtime_consume\",\"root_original_registered_ready_serve\",\"root_original_private_sealed_bytes\",\"root_learning_scoped_checkpoint_constructor\",\"root_learning_scoped_client_constructor\",\"root_learning_scoped_runtime_constructor\",\"learning_frozen_update_scope_constructor\",\"root_learning_scoped_profile_constructor\",\"root_learning_scoped_checkpoint_record\",\"learning_evidence_original_owner_constructor\",\"learning_evidence_original_owner_readback\",\"original_pinned_stream_explicit_uid\",\"cell_learning_evaluation_profile_freeze\",\"cell_learning_evaluation_receipt_prepare\",\"cell_learning_evaluation_original_readback\",\"generation_learning_original_stage_readback\",\"cell_original_evaluation_execution\",\"product_original_evaluation_execution\",\"root_learning_original_delivery_source\",\"root_learning_completed_circuit_source\",\"circuit_learning_exact_ack_retirement\",\"cell_completed_evaluation_readback\",\"product_completed_evaluation_readback\",\"cell_q24_single_head_training_plan\",\"cell_q24_single_head_candidate_validation\",\"cell_q24_native_training_fit\",\"cell_q24_original_training_observation\",\"learning_original_evaluator_attestation\",\"learning_original_evaluation_key\",\"circuit_feature_original_initial_publication\",\"circuit_feature_original_update_publication\",\"circuit_feature_guarded_private_cell\",\"circuit_feature_private_cell_writer\",\"circuit_feature_original_task_control\",\"circuit_q24_ordinary_profile_assembly\",\"circuit_feature_original_predecessor_recovery\",\"circuit_feature_acknowledged_readonly_history\",\"learning_original_training_receipt_create\",\"learning_original_training_receipt_recover\",\"learning_original_training_receipt_attest\",\"learning_original_training_receipt_readback\",\"cell_q24_original_training_execute\",\"cell_q24_original_training_pair_binding\",\"learning_original_training_stage_constructor\",\"learning_original_training_stage_execute\",\"learning_original_training_stage_readback\",\"learning_original_training_stage_attestation\",\"learning_original_training_snapshot_readback\",\"cell_q24_model_material_owner_create\",\"cell_q24_model_material_owner_recover\",\"cell_q24_model_material_owner_commit\",\"cell_q24_model_material_owner_readback\",\"learning_original_evaluation_receipt_create\",\"learning_original_evaluation_receipt_recover\",\"learning_original_evaluation_receipt_attest\",\"learning_original_evaluation_receipt_readback\",\"cell_q24_original_dataset_batch\",\"cell_q24_original_dataset_task\",\"circuit_feature_original_committed_decision\",\"cell_q24_original_dataset_revalidation\",\"cell_q24_original_dataset_capability\",\"cell_q24_original_trainer_dataset_capability\",\"cell_q24_original_dataset_freeze_create\",\"cell_q24_original_dataset_freeze_recover\",\"cell_q24_original_dataset_freeze_authorize\",\"cell_q24_original_dataset_freeze_readback\",\"root_q24_factory_explicit_reserve\",\"root_q24_factory_open_original\",\"root_q24_factory_install_original\",\"root_q24_factory_capture_original\",\"root_q24_factory_take_offer\",\"root_q24_factory_serve_original\",\"root_q24_factory_purpose_send\",\"root_q24_factory_purpose_receive\",\"root_q24_factory_original_handoff_connect\",\"root_q24_factory_original_constructor\",\"root_q24_factory_live_observation\",\"root_q24_factory_original_commit\",\"root_q24_factory_original_readback\",\"root_q24_factory_learning_scope\",\"root_q24_factory_local_policy\",\"root_q24_factory_original_material\",\"root_learning_live_profile_action\",\"learning_original_source_create\",\"learning_original_source_recover\",\"learning_original_source_attest_experience\",\"learning_original_source_read_experience\",\"learning_original_source_attest_dataset\",\"learning_original_source_read_dataset\",\"learning_original_source_files_create\",\"learning_original_source_files_recover\",\"learning_original_source_prepared_handoff\",\"cell_q24_original_native_create\",\"cell_q24_original_native_recover\",\"learning_original_training_require_original_pair\",\"learning_original_training_with_original_trainer\",\"learning_original_evaluation_require_original_training\",\"learning_original_evaluation_read_original_execution\",\"learning_original_generation_receipt_create\",\"learning_original_generation_receipt_recover\",\"learning_original_generation_receipt_attest_original_completion\",\"learning_original_generation_receipt_readback\",\"learning_original_generation_receipt_require_context\",\"learning_original_generation_receipt_observe_original_selection\",\"learning_original_local_policy_create\",\"learning_original_local_policy_recover\",\"learning_original_local_policy_attest_original_decision\",\"learning_original_local_policy_readback\",\"learning_original_local_policy_require_context\",\"learning_original_local_policy_policy_digest\",\"learning_original_q24_stage_from_original_owners\",\"learning_original_q24_stage_require_current\",\"learning_original_q24_stage_prepared\",\"learning_original_q24_model_dispatch\",\"learning_original_q24_evaluation_inputs\",\"learning_original_q24_generation_inputs\",\"learning_original_q24_source_inputs\",\"learning_original_q24_training_inputs\",\"learning_original_q24_policy_inputs\",\"root_original_q24_require_prepared_q24\",\"root_original_q24_into_q24_learning_runtime\",\"learning_original_q24_with_original_q24_stage_owners\",\"learning_original_q24_require_proposal_owner\",\"root_original_q24_stage_assembly\",\"production_original_q24_receive\",\"production_original_q24_assemble\",\"learning_original_feature_receipt_create\",\"learning_original_feature_receipt_recover\",\"learning_original_feature_source_capture\",\"learning_original_feature_source_binding\",\"learning_original_feature_source_observe\",\"learning_original_q24_stage_install_generation\",\"learning_original_feature_dataset_feedback\",\"q24_publication_original_b_manifest\",\"q24_publication_original_lane\",\"q24_publication_original_predecessor\",\"q24_publication_embedded_admission\",\"q24_publication_actual_artifact\",\"q24_publication_actual_preparation\",\"q24_publication_actual_final_use\",\"q24_publication_original_recovery\",\"learning_original_q24_evaluation_stage_require_training\",\"learning_original_q24_evaluation_stage_require_original_training_evidence\",\"learning_original_q24_evaluation_stage_read_execution\",\"learning_original_q24_evaluation_stage_qualification_request\",\"learning_original_q24_evaluation_stage_complete\",\"learning_original_q24_install_evaluation\",\"learning_original_q24_install_independent_evaluation\",\"learning_original_q24_install_published_generation\",\"learning_original_q24_training_files\",\"learning_original_q24_training_material_export\",\"learning_original_q24_training_material_assembly\",\"q24_publication_executable_feature_preflight\",\"learning_original_feature_objective_reply\",\"root_generation_publication_enable\",\"root_generation_publication_late_enroll\",\"root_generation_publication_original_registration\",\"root_generation_publication_original_serve\",\"root_generation_publication_profile_fence\",\"root_generation_current_original_broker_head\",\"root_generation_current_original_broker_prepare\",\"root_generation_current_original_broker_publish\",\"root_generation_current_from_original_root_publication\",\"root_generation_current_bound_selection\",\"root_generation_current_store_bridge\",\"root_generation_publication_original_stream\",\"root_generation_publication_purpose_send\",\"root_generation_publication_purpose_receive\",\"root_generation_publication_purpose_connect\",\"root_generation_journal_original_observer\",\"root_generation_journal_original_target\",\"root_artifact_original_reader_open\",\"root_artifact_original_withdrawal_bind\",\"root_artifact_original_current_read\",\"root_artifact_original_withdrawal_read\",\"artifact_writer_recover_original_withdrawal_frontier\",\"artifact_writer_install_original_withdrawal_frontier\",\"artifact_writer_require_original_withdrawal_frontier\",\"artifact_original_acknowledged_readback\",\"root_generation_original_artifact_selection\",\"root_generation_original_selection_recheck\",\"q24_root_artifact_qualified_phase\",\"q24_root_artifact_publication\",\"q24_root_artifact_publication_recovery\",\"q24_root_retained_phase\",\"q24_root_selection_adopted\",\"q24_root_selection_retained\",\"q24_root_current_connect\",\"q24_root_current_prepare\",\"q24_root_current_recover\",\"q24_root_shared_prepare_selected\",\"q24_root_shared_recover_selected\",\"root_original_final_use_observer_enrollment\",\"root_original_final_use_observer_retained_readback\",\"q24_task_original_ledger_open\",\"q24_task_original_ledger_resume\",\"q24_task_original_ledger_readback\",\"q24_task_original_outcome_submit\",\"q24_task_original_dataset_prepare\",\"q24_task_original_learning_prepare\",\"q24_task_original_ready_observe\",\"q24_task_original_ready_binding\",\"q24_task_original_runtime_install\",\"q24_task_original_profile_install\",\"q24_task_explicit_source_attach\",\"q24_task_original_readiness_observe\",\"q24_task_original_ready_enqueue\",\"q24_task_explicit_delivery_sources\",\"q24_task_original_outcome_preflight\",\"q24_task_original_learning_recover\",\"root_generation_connection_original_capture\",\"root_generation_connection_slot_take\",\"root_generation_connection_inputs_take\",\"root_generation_connection_launch_take\",\"root_generation_connection_live_session\",\"root_generation_connection_original_binding\",\"q24_training_original_dataset_readback\",\"q24_training_original_readback_export\",\"q24_training_original_readback_construct\",\"q24_training_original_readback\",\"q24_training_original_readback_owner\",\"q24_training_original_readback_cut\",\"evaluation_original_trainer_owner\",\"evaluation_original_trainer_cut\",\"evaluation_original_trainer_borrow\",\"evaluation_original_trainer_readback\",\"evaluation_original_sources_attest\",\"evaluation_original_sources_readback\",\"root_generation_publication_launch_handoff_take\",\"q24_retained_source_capture\",\"q24_retained_source_scope\",\"q24_retained_source_read\",\"q24_retained_source_ready\",\"q24_retained_source_outbox\",\"q24_retained_source_root_install\",\"q24_retained_source_state_install\",\"q24_retained_source_state_lookup\",\"q24_retained_source_reconcile\",\"q24_retained_source_admission\",\"q24_retained_original_ledger_capability\",\"q24_retained_prepared_original_ledger\",\"production_retained_q24_receive\",\"production_retained_q24_assemble\",\"production_retained_q24_capability_receive\",\"production_retained_q24_capability_assemble\",\"root_generation_deployment_capture\",\"root_generation_deployment_wait\",\"root_generation_deployment_original_inputs\",\"root_artifact_original_selection_files\",\"root_initial_original_writer_context\",\"root_initial_separate_purpose_enable\",\"root_initial_one_shot_enrollment\",\"root_initial_original_registration\",\"root_initial_original_serve\",\"root_initial_original_sticky_fence\",\"root_initial_purpose_send\",\"root_initial_purpose_receive\",\"root_initial_original_connection\",\"root_initial_original_stream\",\"root_initial_client_prepare\",\"root_initial_client_observe\",\"root_initial_client_publish\",\"root_initial_current_store_bridge\",\"root_initial_current_from_original_route\",\"root_initial_current_original_publish\",\"root_initial_complete_description\",\"root_initial_exact_retained_record\",\"root_initial_exact_published_record\",\"root_initial_entire_contract\",\"root_initial_actual_consumer_prepare\",\"root_initial_actual_consumer_recover\",\"root_initial_executable_feature_prepare\",\"root_initial_executable_feature_recover\",\"root_initial_actual_feature_publish\",\"root_initial_original_unwritten_target\",\"root_initial_complete_configuration\",\"root_initial_launch_handoff_take\",\"root_initial_deployment_original_files\",\"root_initial_deployment_capture\",\"root_initial_deployment_wait\",\"root_initial_deployment_original_inputs\",\"q24_successor_original_session_capture\",\"q24_successor_original_session_current\",\"q24_successor_same_root_connection\",\"q24_successor_model_factory_context\",\"q24_successor_root_current_context\",\"q24_successor_current_owner_context\",\"q24_successor_context_from_registered_root\",\"q24_successor_context_live\",\"q24_successor_aggregate_registration\",\"q24_successor_generation_notification\",\"q24_successor_original_generation_installed\",\"q24_successor_wait_original_generation\",\"q24_successor_wait_after_checkpoint\",\"q24_successor_actual_owner_install\",\"q24_successor_effect_cancellation\",\"q24_successor_actual_task_handle\",\"q24_successor_pending_runtime\",\"q24_successor_worker_bootstrap\",\"q24_successor_pending_handle\",\"q24_successor_actual_runtime\",\"q24_successor_root_prepare_request\",\"q24_successor_root_prepare_worker\",\"q24_successor_proof_current\",\"q24_successor_actual_prepare\",\"q24_successor_actual_publish\",\"q24_successor_running_admission\",\"q24_successor_execution_preflight\",\"q24_successor_original_channel\",\"q24_successor_launch_prepare\",\"q24_successor_config_install\",\"q24_successor_original_c_ingress\",\"q24_successor_handoff_request\",\"q24_successor_original_signed_finish\",\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\",\"q24_successor_original_feedback_ledger\",\"agentd_original_late_writer_inputs_prepare\",\"agentd_original_late_writer_inputs_consume\",\"agentd_original_late_writer_cli_prepare\",\"agentd_original_late_writer_cli_consume\",\"fleet_original_readonly_snapshot\",\"authority_original_lease_metadata_observation\",\"authority_original_lease_metadata_revision\",\"authority_original_lease_metadata_finish\",\"root_original_issuer_metadata_observation\",\"root_original_issuer_metadata_proof\",\"root_original_issuer_metadata_revocations\",\"root_original_owner_channel_until\",\"root_original_peer_channel_until\",\"root_q24_factory_same_service_reserve\",\"root_original_final_use_frontier_until\",\"root_original_root_issuer_until\",\"root_original_observation_stream_until\",\"q24_same_actor_original_a_parts\",\"q24_same_actor_original_a_parts_consume\",\"q24_same_actor_original_route_pending\",\"q24_same_actor_original_a_install\",\"q24_same_actor_original_a_close\",\"q24_same_actor_original_a_quiescent\",\"q24_same_actor_original_a_release\",\"q24_same_actor_original_c_install\",\"q24_same_actor_original_ingress_admission\",\"q24_same_actor_original_admitted_task\",\"q24_same_actor_original_queue_admission\",\"q24_same_actor_original_worker_bootstrap\",\"root_learning_same_actor_client_until\",\"root_q24_same_actor_factory_constructor\",\"q24_same_actor_learning_builder\",\"q24_same_actor_learning_assemble\",\"q24_same_actor_learning_activation\",\"q24_same_actor_learning_work_construct\",\"q24_same_actor_learning_work_binding\",\"q24_same_actor_learning_prepared_binding\",\"q24_same_actor_learning_training_binding\",\"q24_same_actor_learning_effect_entry\",\"q24_same_actor_learning_blocking_reserve\",\"q24_same_actor_learning_blocking_handle\",\"q24_same_actor_learning_blocking_receive\",\"q24_same_actor_learning_terminal_join\",\"q24_same_actor_learning_stage_constructor\",\"q24_same_actor_learning_stage_work\",\"q24_same_actor_learning_generation_custody\",\"q24_same_actor_learning_aggregate_lane\",\"q24_same_actor_learning_training_constructor\",\"q24_same_actor_learning_training_execute\",\"q24_same_actor_learning_training_lane\",\"q24_same_actor_learning_local_decision\",\"q24_same_actor_learning_process_run\",\"q24_same_actor_learning_required_worker\",\"q24_same_actor_learning_required_run\",\"q24_same_actor_learning_route_custody\",\"q24_same_actor_training_checkpoint_notice\",\"q24_same_actor_evaluation_original_wait\",\"q24_same_actor_evaluation_install_begin\",\"q24_same_actor_evaluation_effect_entry\",\"q24_same_actor_evaluation_install_complete\",\"q24_same_actor_evaluation_aggregate_wait\",\"q24_same_actor_evaluation_aggregate_install\",\"q24_same_actor_evaluation_process_wait\",\"root_same_actor_phase_open\",\"root_same_actor_phase_fresh\",\"root_same_actor_phase_start\",\"root_same_actor_phase_seal\",\"root_same_actor_phase_serve\",\"root_same_actor_phase_host\",\"root_same_actor_deadline_start\",\"root_same_actor_deadline_receive\",\"root_same_actor_gate_construct\",\"root_same_actor_durable_reserve\",\"root_same_actor_durable_claim\",\"root_same_actor_durable_scope\",\"root_same_actor_actual_a_claim\",\"root_same_actor_initial_retire\",\"root_same_actor_initial_cap\",\"root_same_actor_initial_register\",\"root_same_actor_publication_cap\",\"root_same_actor_publication_register\",\"root_same_actor_scope_register\",\"root_same_actor_join_accept\",\"root_same_actor_worker_serve\",\"root_same_actor_lane_serve\",\"root_same_actor_issuer_bind\",\"root_same_actor_issuer_attachment\",\"root_same_actor_learning_reserve\",\"root_same_actor_learning_open\",\"root_same_actor_model_reserve\",\"root_same_actor_model_open\",\"root_same_actor_initial_until\",\"root_same_actor_learning_until\",\"root_same_actor_model_until\",\"root_same_actor_publication_until\",\"root_same_actor_initial_service\",\"root_same_actor_learning_service\",\"root_same_actor_model_service\",\"root_same_actor_receive_start\",\"root_same_actor_receive_inputs\",\"root_same_actor_context_current\",\"root_same_actor_scoped_descriptor\",\"root_same_actor_session_connect\",\"root_same_actor_session_activate\",\"root_same_actor_session_origin\",\"root_same_actor_grant_gate\",\"root_same_actor_send_start\",\"root_same_actor_send_scope\",\"root_same_actor_take_start_rights\",\"root_same_actor_take_scope_rights\",\"root_same_actor_retire_ack\",\"root_same_actor_join_after_a_drop\",\"root_same_actor_joined_parts\",\"root_same_actor_scope_receive\",\"root_same_actor_scope_parts\",\"root_same_actor_ticket_session\",\"root_same_actor_ticket_connect\",\"root_same_actor_initial_connect\",\"root_same_actor_publication_connect\",\"root_same_actor_initial_stream\",\"root_same_actor_scoped_stream\",\"root_same_actor_successor_capture\",\"root_same_actor_successor_origin\",\"root_same_actor_successor_scope_take\",\"q24_same_actor_successor_factory\",\"q24_same_actor_successor_task_parts\",\"q24_same_actor_artifact_publish\",\"q24_same_actor_current_connect\",\"q24_same_actor_startup\",\"q24_same_actor_run\",\"q24_same_actor_initial_install\",\"q24_same_actor_task_worker\",\"q24_same_actor_task_worker_run\",\"q24_same_actor_a_controller\",\"q24_same_actor_scoped_controller\",\"q24_same_actor_c_controller\",\"root_same_actor_initial_enroll\",\"root_same_actor_publication_enroll\",\"root_same_actor_publication_service\",\"root_same_actor_bound_five_lanes\",\"root_same_actor_issuer_effect_entry\",\"root_same_actor_checkpoint_effect\",\"root_same_actor_consumer_effect\",\"root_same_actor_learning_effect\",\"root_same_actor_checkpoint_until\",\"product_original_holdout_release_permit\",\"product_file_holdout_original_open\",\"product_file_holdout_original_release\",\"product_file_qualification_create\",\"product_file_qualification_recover\",\"product_file_qualification_persist\",\"product_file_qualification_readback\"]",
+      "expected_occurrences": 1
+    },
+    {
+      "kind": "append",
+      "content": "\n[[boundary]]\nid = \"product_original_holdout_release_permit\"\nsymbol = \"OriginalFinalHoldoutReleasePermitV1\"\ncall_pattern = \"\\\\bOriginalFinalHoldoutReleasePermitV1\\\\s*\\\\{\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"\ndefinition_markers = [\"pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\\n    plan: &'a ProductFrozenEvaluationPlanV1,\\n    receipt: &'a FinalHoldoutJournalReceiptV1,\\n}\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_holdout_original_open\"\nsymbol = \"LockedFileFinalHoldoutProviderV1::open\"\nreceiver_type = \"LockedFileFinalHoldoutProviderV1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs\"\ndefinition_markers = [\"pub fn open(file: File, expected: &ProductFrozenEvaluationPlanV1)\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_holdout_original_release\"\nsymbol = \"LockedFileFinalHoldoutProviderV1::release_original_consumption\"\ncall_pattern = \"(?:\\\\b(?:FinalHoldoutProviderV1|LockedFileFinalHoldoutProviderV1)\\\\s*::\\\\s*release_original_consumption|\\\\.\\\\s*release_original_consumption)\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs\"\ndefinition_markers = [\"impl FinalHoldoutProviderV1 for LockedFileFinalHoldoutProviderV1 {\", \"fn release_original_consumption(\"]\nproduct_callers = [\"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_qualification_create\"\nsymbol = \"LockedFileProductQualificationEvidenceSinkV1::create\"\nreceiver_type = \"LockedFileProductQualificationEvidenceSinkV1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\ndefinition_markers = [\"pub fn create(file: File, owner_binding: Digest32)\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_qualification_recover\"\nsymbol = \"LockedFileProductQualificationEvidenceSinkV1::recover\"\nreceiver_type = \"LockedFileProductQualificationEvidenceSinkV1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\ndefinition_markers = [\"pub fn recover(\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_qualification_persist\"\nsymbol = \"ProductQualificationEvidenceSinkV1::persist\"\nreceiver_type = \"ProductQualificationEvidenceSinkV1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\ndefinition_markers = [\"impl ProductQualificationEvidenceSinkV1 for LockedFileProductQualificationEvidenceSinkV1 {\", \"fn persist(\"]\nproduct_callers = [\"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"product_file_qualification_readback\"\nsymbol = \"LockedFileProductQualificationEvidenceSinkV1::readback\"\nreceiver_type = \"LockedFileProductQualificationEvidenceSinkV1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\ndefinition_markers = [\"pub fn readback(\"]\nproduct_callers = []\ncaller_markers = []\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"\nrequired = [\"pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\\n    plan: &'a ProductFrozenEvaluationPlanV1,\\n    receipt: &'a FinalHoldoutJournalReceiptV1,\\n}\", \"#[path = \\\"product_holdout_file.rs\\\"]\\nmod product_holdout_file;\", \"pub use product_holdout_file::LockedFileFinalHoldoutProviderV1;\", \"pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(\"]\nforbidden = [\"pub plan: &'a ProductFrozenEvaluationPlanV1\", \"pub receipt: &'a FinalHoldoutJournalReceiptV1\"]\nrequired_order = [[\"pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(\", \"product_plan.validate_integrity()?;\", \"candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest\", \"baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest\", \"let manifest = provider.manifest_digest()?;\", \"manifest != product_plan.frozen_plan.final_holdout_digest\", \"let holdout = self.holdout.consume(&product_plan.frozen_plan)?;\", \"match holdout.disposition {\", \"HoldoutUseDispositionV1::Recorded => {}\", \"HoldoutUseDispositionV1::IdempotentReplay => {\", \"return Err(ProductEvaluationError::Binding(\", \"));\", \"let mut inputs = provider.release_original_consumption(\", \"OriginalFinalHoldoutReleasePermitV1 {\", \"plan: product_plan,\", \"receipt: &holdout,\", \"        )?;\", \"validate_released_inputs(&product_plan.frozen_plan, &inputs)?;\", \"validate_comparable_observations(\", \"normalize_unique_ids(&mut inputs.snapshot_ids)?;\", \"normalize_unique_ids(&mut inputs.future_window_ids)?;\", \"let candidate = evaluate_temporal_holdout(\", \"let baseline = evaluate_temporal_holdout(\", \"candidate.validate_integrity()?;\", \"baseline.validate_integrity()?;\", \"let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;\"]]\nrequired_function_order = [\n  { function = \"fn release_original_consumption(\", sequence = [\"permit: OriginalFinalHoldoutReleasePermitV1<'_>\", \"self.release_after_consumption(permit.receipt)\"] },\n  { function = \"fn qualify_and_persist(\", sequence = [\"let bundle = self.qualification_bundle(temporal, context)?;\", \"decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?\", \"decide_with_signed_longitudinal_evidence_v3(\", \"let publication_digest = sink.persist(temporal.execution_digest, &decision)?;\", \"if publication_digest.is_zero()\", \"return Err(ProductEvaluationError::Integrity(\", \"));\", \"let mut receipt = ProductQualificationReceiptV1 {\", \"receipt.receipt_seal = product_qualification_seal(&receipt);\", \"receipt.validate_integrity()?;\", \"Ok(receipt)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs\"\nrequired = [\"#[path = \\\"product_holdout_file_codec.rs\\\"]\\nmod codec;\", \"const MAX_MATERIAL_BYTES: u64 = 32 * 1024 * 1024;\", \"material_file: HeldMaterialFile,\", \"expected_product: ProductFrozenEvaluationPlanV1,\", \"release_attempted: bool,\"]\nforbidden = [\"pub material_file\", \"pub release_attempted\", \"unsafe\", \"transmute\", \"File::try_clone\", \"OpenOptions\", \"set_permissions\", \"set_len\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn drop(\", sequence = [\"fn drop(\", \"let _ = self.0.unlock();\"] },\n  { function = \"fn open(\", sequence = [\".validate_integrity()\", \".map_err(|_| FileError::Binding)?;\", \"File::metadata(&file).map_err(io_error)?;\", \"if !metadata.is_file()\", \"return Err(FileError::NotRegular);\", \"File::try_lock_shared(&file)\", \"TryLockError::WouldBlock => FileError::Busy\", \"let material_file = HeldMaterialFile(file);\", \"material_length == 0 || material_length > MAX_MATERIAL_BYTES\", \"return Err(FileError::Capacity);\", \"release_attempted: false\", \"provider.require_original_material()?;\", \"Ok(provider)\"] },\n  { function = \"fn require_original_material(\", sequence = [\"let file: &mut File = &mut self.material_file.0;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"return Err(FileError::Corrupt);\", \"Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;\", \"Digest32::of_reader(&mut *file, MAX_MATERIAL_BYTES).map_err(io_error)?;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"digest != self.expected_product.frozen_plan.final_holdout_digest\", \"return Err(FileError::Corrupt);\", \"Ok(())\"] },\n  { function = \"fn read_original_material(\", sequence = [\"let file: &mut File = &mut self.material_file.0;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"return Err(FileError::Corrupt);\", \"Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;\", \"Read::take(&mut *file, MAX_MATERIAL_BYTES + 1)\", \".read_to_end(&mut bytes)\", \".map_err(io_error)?;\", \"bytes.len() as u64 != self.material_length\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"Digest32::of_bytes(&bytes)\", \"!= self.expected_product.frozen_plan.final_holdout_digest\", \"return Err(FileError::Corrupt);\", \"codec::decode_original_material(&bytes, &self.expected_product.frozen_plan)\"] },\n  { function = \"fn manifest_digest(\", sequence = [\"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Rejected);\", \"self.require_original_material().map_err(provider_error)?;\", \"Ok(self.expected_product.frozen_plan.final_holdout_digest)\"] },\n  { function = \"fn release_after_consumption(\", sequence = [\"_receipt: &FinalHoldoutJournalReceiptV1\", \"Err(ProductProviderErrorV1::Rejected)\"] },\n  { function = \"fn release_original_consumption(\", sequence = [\"if std::mem::replace(&mut self.release_attempted, true)\", \"return Err(ProductProviderErrorV1::Rejected);\", \"let frozen = &self.expected_product.frozen_plan;\", \"permit.plan != &self.expected_product\", \"permit.receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"permit.receipt.use_receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"permit.receipt.sequence == 0\", \"permit.receipt.record_digest.is_zero()\", \"permit.receipt.head_digest.is_zero()\", \"permit.receipt.authority.grants_any()\", \"permit.receipt.use_receipt.authority.grants_any()\", \"permit.receipt.use_receipt.plan_digest != frozen.plan_digest\", \"permit.receipt.use_receipt.holdout_digest != frozen.final_holdout_digest\", \"return Err(ProductProviderErrorV1::Rejected);\", \"self.read_original_material().map_err(provider_error)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs\"\nrequired = [\"const MAGIC: &[u8; 8] = b\\\"HPFHMT01\\\";\", \"const MAX_ROWS: usize = 100_000;\", \"const MAX_ACTIONS: usize = 128;\", \"const MAX_IDS: usize = 1_000_000;\"]\nforbidden = [\"unsafe\", \"transmute\", \"File\", \"OpenOptions\", \"Signer\", \"sign(\"]\nrequired_order = [[\"impl Reader<'_> {\", \"fn count(\", \"let count = u32::from_be_bytes(\", \"if count > limit || count > self.0.len()\", \"return Err(FileError::Capacity);\", \"fn id(\", \"if !(1..=128).contains(&count)\", \"return Err(FileError::Corrupt);\", \"std::str::from_utf8(self.take(count)?)\", \"StableId::new(name).map_err(|_| FileError::Corrupt)\"]]\nrequired_function_order = [\n  { function = \"fn decode_original_material(\", sequence = [\"bytes.len() as u64 > MAX_MATERIAL_BYTES\", \"return Err(FileError::Capacity);\", \"let mut reader = Reader(bytes);\", \"reader.take(8)? != MAGIC\", \"reader.digest()? != frozen.objective_digest\", \"reader.digest()? != frozen.dataset_digest\", \"reader.id()? != frozen.final_holdout_window_id\", \"return Err(FileError::Binding);\", \"reader.count(MAX_ROWS)?;\", \"let candidate_observations = reader.observations()?;\", \"let baseline_observations = reader.observations()?;\", \"reader.count(MAX_ROWS)?;\", \"let snapshot_ids = reader.ids(MAX_IDS)?;\", \"let future_window_ids = reader.ids(MAX_IDS)?;\", \"if !reader.0.is_empty()\", \"return Err(FileError::Corrupt);\", \"Ok(TemporalComparisonInputsV1 {\"] },\n  { function = \"fn bytes(\", sequence = [\".checked_add(bytes.len())\", \".is_none_or(|length| length as u64 > MAX_MATERIAL_BYTES)\", \"return Err(FileError::Capacity);\", \"self.0.extend_from_slice(bytes);\"] },\n  { function = \"fn take(\", sequence = [\"self.0.split_at_checked(count).ok_or(FileError::Corrupt)?;\", \"self.0 = tail;\", \"Ok(head)\"] },\n  { function = \"fn probability(\", sequence = [\"fn probability(\", \"ProbabilityQ32::from_raw(self.u64()?).map_err(|_| FileError::Corrupt)\"] },\n  { function = \"fn observations(\", sequence = [\"self.count(MAX_ROWS)?;\", \"let complete_candidates = match self.take(1)?[0]\", \"0 => false,\", \"1 => true,\", \"_ => return Err(FileError::Corrupt),\", \"self.count(MAX_ACTIONS)?;\", \"behavior_probability: self.probability()?\", \"evaluation_probability: self.probability()?\", \"let finalized_outcome = match self.take(1)?[0]\", \"0 => None,\", \"1 => Some(self.fixed()?),\", \"_ => return Err(FileError::Corrupt),\", \"outcome_observed_at: self.u64()?\", \"outcome_evidence: self.digest()?\", \"outcome_model_evidence: self.digest()?\", \"Ok(rows)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\nrequired = [\"publication_store: LockedFileProductEvaluationExecutionStoreV1,\", \"terminal_uncertainty: bool,\", \"b\\\"hepta.product-qualification.evidence-namespace.v1\\\"\", \"b\\\"hepta.product-qualification.evidence-key.v1\\\"\", \"b\\\"HPQLEV01\\\"\", \"b\\\"hepta.product-qualification.durable-publication.v1\\\"\"]\nforbidden = [\"unsafe\", \"transmute\", \"Signer\", \"sign(\", \"ProductQualificationReceiptV1 {\", \"OpenOptions\", \"set_len\", \"set_permissions\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn create(\", sequence = [\"let binding = evidence_namespace(owner_binding)?;\", \"LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;\", \"publication_store,\", \"owner_binding,\", \"terminal_uncertainty: false\"] },\n  { function = \"fn recover(\", sequence = [\"let binding = evidence_namespace(owner_binding)?;\", \"LockedFileProductEvaluationExecutionStoreV1::recover(file, binding, minimum)?;\", \"publication_store,\", \"owner_binding,\", \"terminal_uncertainty: false\"] },\n  { function = \"fn readback(\", sequence = [\"if self.terminal_uncertainty\", \"return Err(SinkError::Indeterminate);\", \"let payload = encode_decision(self.owner_binding, execution_digest, decision)?;\", \"let key = publication_key(self.owner_binding, execution_digest)?;\", \"ProductEvaluationExecutionStoreV1::readback(\", \"&mut self.publication_store,\", \"&key,\", \".map_err(store_error)?;\", \"match state {\", \"ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == payload\", \"Ok(publication_digest(&payload))\", \"ProductEvaluationExecutionStateV1::Completed(_) => Err(SinkError::Rejected)\", \"ProductEvaluationExecutionStateV1::Pending\", \"self.terminal_uncertainty = true;\", \"Err(SinkError::Indeterminate)\"] },\n  { function = \"fn persist(\", sequence = [\"if self.terminal_uncertainty\", \"return Err(SinkError::Indeterminate);\", \"let payload = encode_decision(self.owner_binding, execution_digest, decision)?;\", \"let key = publication_key(self.owner_binding, execution_digest)?;\", \"ProductEvaluationExecutionStoreV1::claim(\", \"&mut self.publication_store,\", \"&key,\", \".map_err(store_error)?;\", \"match claim {\", \"ProductEvaluationExecutionStateV1::Completed(bytes)\", \"if bytes != payload\", \"return Err(SinkError::Rejected);\", \"ProductEvaluationExecutionStateV1::Pending\", \"self.terminal_uncertainty = true;\", \"return Err(SinkError::Indeterminate);\", \"ProductEvaluationExecutionClaimV1::Claimed\", \"ProductEvaluationExecutionStoreV1::complete(\", \"&mut self.publication_store,\", \"&key,\", \"&payload,\", \".is_err()\", \"self.terminal_uncertainty = true;\", \"return Err(SinkError::Indeterminate);\", \"match ProductEvaluationExecutionStoreV1::readback(\", \"&mut self.publication_store,\", \"&key,\", \"Ok(ProductEvaluationExecutionStateV1::Completed(bytes)) if bytes == payload\", \"Ok(publication_digest(&payload))\", \"Ok(_) | Err(_)\", \"self.terminal_uncertainty = true;\", \"Err(SinkError::Indeterminate)\"] },\n  { function = \"fn evidence_namespace(\", sequence = [\"if owner_binding.is_zero()\", \"return Err(FileError::Binding);\", \"Ok(Digest32::of_parts(&[\", \"owner_binding.as_array(),\"] },\n  { function = \"fn publication_key(\", sequence = [\"let plan_id = StableId::new(execution_digest.to_string()).map_err(|_| SinkError::Rejected)?;\", \"Ok(ProductEvaluationExecutionKeyV1 {\", \"plan_id,\", \"binding_digest: Digest32::of_parts(&[\", \"owner_binding.as_array(),\", \"execution_digest.as_array(),\"] },\n  { function = \"fn encode_decision(\", sequence = [\"owner_binding.is_zero()\", \"execution_digest.is_zero()\", \"decision.evidence_digest.is_zero()\", \"signed.trust_digest.is_zero()\", \"signed.authentication_digest.is_zero()\", \"decision.authority.grants_any()\", \"decision.failed_metrics.len() > 128\", \"return Err(SinkError::Rejected);\", \"bytes.extend_from_slice(owner_binding.as_array());\", \"bytes.extend_from_slice(execution_digest.as_array());\", \"&decision.evaluation_id,\", \"&decision.candidate_id,\", \"&decision.baseline_id,\", \"put_id(&mut bytes, id)?;\", \"bytes.push(match decision.disposition\", \"decision.failed_metrics.len() as u32\", \"for id in &decision.failed_metrics\", \"put_id(&mut bytes, id)?;\", \"decision.evidence_digest,\", \"signed.trust_digest,\", \"signed.authentication_digest,\", \"bytes.len() > MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1\", \"return Err(SinkError::Rejected);\", \"Ok(bytes)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/lib.rs\"\nrequired = [\"mod product_qualification_file;\", \"pub use product_qualification_file::LockedFileProductQualificationEvidenceSinkV1;\", \"pub use product_runner::FileFinalHoldoutErrorV1;\", \"pub use product_runner::LockedFileFinalHoldoutProviderV1;\", \"pub use product_runner::OriginalFinalHoldoutReleasePermitV1;\", \"pub use product_runner::encode_file_final_holdout_material_v1;\"]\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n\n]\n\n"
+    }
+  ],
+  "preserve": "All prior boundary/protected rows and authority/source_roots/ignored policy remain byte-identical. Only required IDs are appended and new rows added.",
+  "scope": [
+    "Actual permit mint and generic runner call remain within original product_runner; definition self-caller is not registered as an external file.",
+    "The release hook lexical pattern counts all qualified or dot calls to this exact new hook, because the real generic P receiver is not a concrete file provider. Its actual product caller is product_runner.rs; this does not prove every P is file-backed.",
+    "Persist dispatch is explicitly &mut dyn ProductQualificationEvidenceSinkV1 in original qualify_and_persist. The concrete sink constructors/readback have no current repository product caller. Runtime's planned adapter is not registered.",
+    "Tests remain under original ignored_path_fragments and do not satisfy any product caller.",
+    "No original checker or typed helper was executed. Five-file code-view projection only; full source/caller inventory execution remains Root's gate.",
+    "Private permit is non-Clone and has no public constructor by actual Rust source review. Raw declaration/lexical constructor and ordered original runner guards do not substitute for Rust privacy checking or a full nonforgeability proof.",
+    "Generic evaluate_temporal_comparison<P> cannot be a required_function_order entry under the unchanged checker; its exact generic header and complete sensitive sequence use required_order within this one original file.",
+    "Domain-string spellings are raw required markers; code guards and digest inputs are separately checked in masked function order. Raw literals do not claim anti-comment masking of diagnostic strings."
+  ],
+  "static_projection": {
+    "source": "pure V8 finite source-view check derived from original 7a670 masks for these known snippets",
+    "checker_executed": false,
+    "helper_executed": false,
+    "rows": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": null,
+            "marker_count": 26,
+            "matched": 26,
+            "spans": [
+              [
+                14303,
+                63
+              ],
+              [
+                14649,
+                35
+              ],
+              [
+                14696,
+                73
+              ],
+              [
+                14785,
+                71
+              ],
+              [
+                15310,
+                43
+              ],
+              [
+                15387,
+                57
+              ],
+              [
+                15549,
+                63
+              ],
+              [
+                15777,
+                27
+              ],
+              [
+                15817,
+                39
+              ],
+              [
+                15869,
+                46
+              ],
+              [
+                15932,
+                43
+              ],
+              [
+                16046,
+                3
+              ],
+              [
+                16082,
+                55
+              ],
+              [
+                16150,
+                37
+              ],
+              [
+                16204,
+                19
+              ],
+              [
+                16240,
+                18
+              ],
+              [
+                16274,
+                11
+              ],
+              [
+                16294,
+                62
+              ],
+              [
+                16365,
+                33
+              ],
+              [
+                16506,
+                48
+              ],
+              [
+                16563,
+                53
+              ],
+              [
+                16626,
+                42
+              ],
+              [
+                16853,
+                41
+              ],
+              [
+                17077,
+                32
+              ],
+              [
+                17118,
+                31
+              ],
+              [
+                17159,
+                90
+              ]
+            ]
+          },
+          {
+            "function": "fn release_original_consumption(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                8145,
+                47
+              ],
+              [
+                8272,
+                46
+              ]
+            ]
+          },
+          {
+            "function": "fn qualify_and_persist(",
+            "marker_count": 11,
+            "matched": 11,
+            "spans": [
+              [
+                20791,
+                59
+              ],
+              [
+                21578,
+                71
+              ],
+              [
+                22011,
+                44
+              ],
+              [
+                22319,
+                77
+              ],
+              [
+                22405,
+                31
+              ],
+              [
+                22451,
+                45
+              ],
+              [
+                22516,
+                3
+              ],
+              [
+                22538,
+                49
+              ],
+              [
+                23129,
+                60
+              ],
+              [
+                23198,
+                30
+              ],
+              [
+                23237,
+                11
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": "fn drop(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                1764,
+                8
+              ],
+              [
+                1793,
+                24
+              ]
+            ]
+          },
+          {
+            "function": "fn open(",
+            "marker_count": 13,
+            "matched": 13,
+            "spans": [
+              [
+                2349,
+                21
+              ],
+              [
+                2383,
+                34
+              ],
+              [
+                2441,
+                41
+              ],
+              [
+                2491,
+                22
+              ],
+              [
+                2528,
+                34
+              ],
+              [
+                2581,
+                28
+              ],
+              [
+                2652,
+                43
+              ],
+              [
+                2777,
+                43
+              ],
+              [
+                2921,
+                60
+              ],
+              [
+                2996,
+                32
+              ],
+              [
+                3189,
+                24
+              ],
+              [
+                3234,
+                38
+              ],
+              [
+                3281,
+                12
+              ]
+            ]
+          },
+          {
+            "function": "fn require_original_material(",
+            "marker_count": 9,
+            "matched": 9,
+            "spans": [
+              [
+                3380,
+                48
+              ],
+              [
+                3440,
+                69
+              ],
+              [
+                3524,
+                31
+              ],
+              [
+                3574,
+                56
+              ],
+              [
+                3652,
+                71
+              ],
+              [
+                3735,
+                69
+              ],
+              [
+                3820,
+                64
+              ],
+              [
+                3907,
+                31
+              ],
+              [
+                3957,
+                6
+              ]
+            ]
+          },
+          {
+            "function": "fn read_original_material(",
+            "marker_count": 13,
+            "matched": 13,
+            "spans": [
+              [
+                4071,
+                48
+              ],
+              [
+                4131,
+                69
+              ],
+              [
+                4215,
+                31
+              ],
+              [
+                4265,
+                56
+              ],
+              [
+                4366,
+                46
+              ],
+              [
+                4425,
+                24
+              ],
+              [
+                4462,
+                20
+              ],
+              [
+                4494,
+                42
+              ],
+              [
+                4552,
+                69
+              ],
+              [
+                4637,
+                26
+              ],
+              [
+                4680,
+                57
+              ],
+              [
+                4760,
+                31
+              ],
+              [
+                4810,
+                75
+              ]
+            ]
+          },
+          {
+            "function": "fn manifest_digest(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                5050,
+                25
+              ],
+              [
+                5090,
+                45
+              ],
+              [
+                5154,
+                58
+              ],
+              [
+                5221,
+                58
+              ]
+            ]
+          },
+          {
+            "function": "fn release_after_consumption(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                5348,
+                39
+              ],
+              [
+                5545,
+                37
+              ]
+            ]
+          },
+          {
+            "function": "fn release_original_consumption(",
+            "marker_count": 15,
+            "matched": 15,
+            "spans": [
+              [
+                5781,
+                55
+              ],
+              [
+                5851,
+                45
+              ],
+              [
+                5915,
+                48
+              ],
+              [
+                5975,
+                37
+              ],
+              [
+                6028,
+                63
+              ],
+              [
+                6107,
+                75
+              ],
+              [
+                6198,
+                28
+              ],
+              [
+                6242,
+                38
+              ],
+              [
+                6296,
+                36
+              ],
+              [
+                6348,
+                37
+              ],
+              [
+                6401,
+                49
+              ],
+              [
+                6466,
+                60
+              ],
+              [
+                6542,
+                72
+              ],
+              [
+                6637,
+                45
+              ],
+              [
+                6701,
+                53
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": null,
+            "marker_count": 10,
+            "matched": 10,
+            "spans": [
+              [
+                7142,
+                17
+              ],
+              [
+                8066,
+                9
+              ],
+              [
+                8138,
+                31
+              ],
+              [
+                8269,
+                40
+              ],
+              [
+                8324,
+                32
+              ],
+              [
+                8396,
+                6
+              ],
+              [
+                8585,
+                30
+              ],
+              [
+                8630,
+                31
+              ],
+              [
+                8691,
+                38
+              ],
+              [
+                8772,
+                51
+              ]
+            ]
+          },
+          {
+            "function": "fn decode_original_material(",
+            "marker_count": 17,
+            "matched": 17,
+            "spans": [
+              [
+                3936,
+                39
+              ],
+              [
+                3986,
+                32
+              ],
+              [
+                4029,
+                31
+              ],
+              [
+                4068,
+                24
+              ],
+              [
+                4104,
+                43
+              ],
+              [
+                4159,
+                41
+              ],
+              [
+                4212,
+                46
+              ],
+              [
+                4273,
+                31
+              ],
+              [
+                4327,
+                24
+              ],
+              [
+                5240,
+                52
+              ],
+              [
+                5297,
+                51
+              ],
+              [
+                5365,
+                24
+              ],
+              [
+                5611,
+                40
+              ],
+              [
+                5656,
+                45
+              ],
+              [
+                5706,
+                23
+              ],
+              [
+                5740,
+                31
+              ],
+              [
+                5782,
+                31
+              ]
+            ]
+          },
+          {
+            "function": "fn bytes(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                6158,
+                25
+              ],
+              [
+                6196,
+                56
+              ],
+              [
+                6275,
+                32
+              ],
+              [
+                6326,
+                32
+              ]
+            ]
+          },
+          {
+            "function": "fn take(",
+            "marker_count": 3,
+            "matched": 3,
+            "spans": [
+              [
+                7254,
+                58
+              ],
+              [
+                7321,
+                14
+              ],
+              [
+                7344,
+                8
+              ]
+            ]
+          },
+          {
+            "function": "fn probability(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                7731,
+                15
+              ],
+              [
+                7804,
+                69
+              ]
+            ]
+          },
+          {
+            "function": "fn observations(",
+            "marker_count": 16,
+            "matched": 16,
+            "spans": [
+              [
+                9176,
+                22
+              ],
+              [
+                9375,
+                48
+              ],
+              [
+                9442,
+                11
+              ],
+              [
+                9470,
+                10
+              ],
+              [
+                9497,
+                36
+              ],
+              [
+                9580,
+                25
+              ],
+              [
+                9813,
+                41
+              ],
+              [
+                9876,
+                43
+              ],
+              [
+                10021,
+                46
+              ],
+              [
+                10086,
+                10
+              ],
+              [
+                10113,
+                25
+              ],
+              [
+                10155,
+                36
+              ],
+              [
+                10411,
+                32
+              ],
+              [
+                10461,
+                32
+              ],
+              [
+                10511,
+                38
+              ],
+              [
+                10585,
+                8
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": "fn create(",
+            "marker_count": 5,
+            "matched": 5,
+            "spans": [
+              [
+                1923,
+                49
+              ],
+              [
+                2017,
+                68
+              ],
+              [
+                2116,
+                18
+              ],
+              [
+                2147,
+                14
+              ],
+              [
+                2174,
+                27
+              ]
+            ]
+          },
+          {
+            "function": "fn recover(",
+            "marker_count": 5,
+            "matched": 5,
+            "spans": [
+              [
+                2390,
+                49
+              ],
+              [
+                2484,
+                78
+              ],
+              [
+                2593,
+                18
+              ],
+              [
+                2624,
+                14
+              ],
+              [
+                2651,
+                27
+              ]
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "marker_count": 15,
+            "matched": 15,
+            "spans": [
+              [
+                3153,
+                28
+              ],
+              [
+                3196,
+                37
+              ],
+              [
+                3252,
+                79
+              ],
+              [
+                3340,
+                65
+              ],
+              [
+                3426,
+                44
+              ],
+              [
+                3483,
+                28
+              ],
+              [
+                3524,
+                5
+              ],
+              [
+                3548,
+                23
+              ],
+              [
+                3580,
+                13
+              ],
+              [
+                3606,
+                71
+              ],
+              [
+                3699,
+                32
+              ],
+              [
+                3758,
+                75
+              ],
+              [
+                3847,
+                42
+              ],
+              [
+                3911,
+                33
+              ],
+              [
+                3961,
+                29
+              ]
+            ]
+          },
+          {
+            "function": "fn persist(",
+            "marker_count": 31,
+            "matched": 31,
+            "spans": [
+              [
+                4280,
+                28
+              ],
+              [
+                4323,
+                37
+              ],
+              [
+                4379,
+                79
+              ],
+              [
+                4467,
+                65
+              ],
+              [
+                4553,
+                41
+              ],
+              [
+                4607,
+                28
+              ],
+              [
+                4648,
+                5
+              ],
+              [
+                4672,
+                23
+              ],
+              [
+                4704,
+                13
+              ],
+              [
+                4791,
+                51
+              ],
+              [
+                4879,
+                19
+              ],
+              [
+                4921,
+                32
+              ],
+              [
+                5059,
+                42
+              ],
+              [
+                5138,
+                33
+              ],
+              [
+                5188,
+                37
+              ],
+              [
+                5252,
+                42
+              ],
+              [
+                5319,
+                44
+              ],
+              [
+                5384,
+                28
+              ],
+              [
+                5433,
+                5
+              ],
+              [
+                5459,
+                9
+              ],
+              [
+                5503,
+                9
+              ],
+              [
+                5551,
+                33
+              ],
+              [
+                5605,
+                37
+              ],
+              [
+                5851,
+                50
+              ],
+              [
+                5914,
+                28
+              ],
+              [
+                5955,
+                5
+              ],
+              [
+                5985,
+                75
+              ],
+              [
+                6082,
+                32
+              ],
+              [
+                6141,
+                14
+              ],
+              [
+                6177,
+                33
+              ],
+              [
+                6227,
+                29
+              ]
+            ]
+          },
+          {
+            "function": "fn evidence_namespace(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                6374,
+                26
+              ],
+              [
+                6411,
+                31
+              ],
+              [
+                6453,
+                24
+              ],
+              [
+                6548,
+                25
+              ]
+            ]
+          },
+          {
+            "function": "fn publication_key(",
+            "marker_count": 6,
+            "matched": 6,
+            "spans": [
+              [
+                6889,
+                92
+              ],
+              [
+                6986,
+                36
+              ],
+              [
+                7031,
+                8
+              ],
+              [
+                7048,
+                37
+              ],
+              [
+                7158,
+                25
+              ],
+              [
+                7196,
+                28
+              ]
+            ]
+          },
+          {
+            "function": "fn encode_decision(",
+            "marker_count": 24,
+            "matched": 24,
+            "spans": [
+              [
+                7447,
+                23
+              ],
+              [
+                7482,
+                26
+              ],
+              [
+                7520,
+                34
+              ],
+              [
+                7566,
+                29
+              ],
+              [
+                7607,
+                38
+              ],
+              [
+                7657,
+                31
+              ],
+              [
+                7700,
+                35
+              ],
+              [
+                7750,
+                32
+              ],
+              [
+                7835,
+                50
+              ],
+              [
+                7890,
+                53
+              ],
+              [
+                7968,
+                24
+              ],
+              [
+                8001,
+                23
+              ],
+              [
+                8033,
+                22
+              ],
+              [
+                8072,
+                24
+              ],
+              [
+                8107,
+                37
+              ],
+              [
+                8399,
+                36
+              ],
+              [
+                8457,
+                34
+              ],
+              [
+                8502,
+                24
+              ],
+              [
+                8561,
+                25
+              ],
+              [
+                8595,
+                20
+              ],
+              [
+                8624,
+                29
+              ],
+              [
+                8727,
+                55
+              ],
+              [
+                8793,
+                32
+              ],
+              [
+                8836,
+                9
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "problems": [],
+        "sequences": []
+      }
+    ]
+  }
+}

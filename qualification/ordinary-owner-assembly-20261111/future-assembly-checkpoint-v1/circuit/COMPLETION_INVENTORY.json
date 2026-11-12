@@ -1,0 +1,634 @@
+{
+  "schema_version": 1,
+  "kind": "Completion follow-up: actual owner handles and minimal phase-only implementation boundary",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "current_source": {
+    "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+    "basis": "Root fixed source after actual V36 formatting. Formatted files below are independently reconstructed from the original full-index native patch; unchanged leaves were retrieved by immutable Git blob or this exact commit. No current qualification result is asserted."
+  },
+  "prior_reports": {
+    "completion_design": "68312097dd32f0aae6b81c4ac04d35dd08cfa5a2",
+    "a_wording": "2b180dcd3554cebbdaa72068bebb7b11d58d61ee",
+    "all76_format_source": "d6f39ebde567629bebb1dce3a08221c320501eba",
+    "final_metadata": "f125c9126d6e4111f216612471c3ab9b4fd8e46a"
+  },
+  "status": "Static source inventory and design only. No source, metadata, ref, h, PTY, native, Cargo, tests, original checker or parser execution. Existing Startup terminal Err remains required. This report is outside the frozen candidate.",
+  "main_conclusions": [
+    "当前实际 A/C 通道是同步 Feature 路线：circuit_q24_task_channel_v1 构造 CellQ24FeatureWorkerV1，再由 PublishedTask.control 包成 ControlledNeuronFeaturePortV1。模型矩阵计算和 durable control 的 admission/dispatch/settle 同步在 Circuit owner 调用中完成；这个具体 factory 没有创建独立 GenV2 子进程或第二个控制循环。因此当前 C 完成协议不应虚构一个不存在的 GenV2 线程 join。",
+    "实际 C CURRENT preparation/publication 的阻塞动作经 with_original_publication → Stage.in_lane → phase-only in_original_same_actor_lane，真实 spawn_blocking handle 登记到同一个 Work。PendingSuccessorOwner 的取消分支继续 await 原 work；安装后的 Direct loop 由 run_in_original_successor_lane 在既有 outer blocking worker 内直接运行。",
+    "Current Work 已有真实、可取消后继续等待的 join 保管；正常 completion 缺口不在于再造一个 Work 计数器，而在于外层 Circuit JoinHandle、Session refresh/ConsumerSyncJob 的实际退出结果、正常 purpose retirement 和外部 Root join receipt 尚未组合。",
+    "Session synchronize_consumers 的实际 JoinHandle 只在 timeout(spawn_blocking(job.run())) future 中持有；超时或 refresh/activation future 被取消时，已经开始的 blocking job 仍保管实际 consumers/File，但本代码失去可用于最终 completion 的 await handle。这是完成证明缺口，不是据此认定旧任务发生数据错误。",
+    "Session worker 的 Output 是 ()，原 refresh 错误经 is_err() 后 return；即使 await 当前 worker 得到 Ok(())，也无法区分正常许可的退休与 refresh 失败。正常 completion 必须保留原实际错误终态，不能依靠 cfg(test) refresh_failed 或 task.is_finished。",
+    "Root 的业务服务已有实际 scoped thread handles 及 join；daemon deadline watcher 也持有真实 std JoinHandle 并在 Drop 内 join。不过现有 Root mandatory EOF 均为错误，daemon watcher Drop 丢弃 join 的 Result，尚无可供成功完成的 typed normal-exit 证明。",
+    "Both actual C close methods deliberately retain installed/handle/invocation to preserve drain visibility. A future normal terminal path must consume that exact retained C custody only after actual quiescence/joins; closed/count==0 is not an owner-release proof."
+  ],
+  "actual_c_route": [
+    {
+      "step": 1,
+      "path": "circuit_q24_successor_execution.rs",
+      "function": "OriginalQ24SuccessorExecutionInputsV1::open_original_successor_channel",
+      "fact": "Actual published task, original files, model, source mode and fixed full identity enter the unchanged ordinary circuit_q24_task_channel_v1; no host-supplied substitute worker loop is accepted."
+    },
+    {
+      "step": 2,
+      "path": "circuit_q24_task_profile.rs",
+      "function": "circuit_q24_task_channel_v1",
+      "fact": "CellQ24FeatureWorkerV1::new(profile.model, bundle, definition) → published.control(original inference_control, generation, worker, clock) → actual Circuit channel. Loaded model and the original durable inference owner are moved into that concrete control."
+    },
+    {
+      "step": 3,
+      "path": "circuit_feature_current_control.rs",
+      "function": "PublishedCircuitFeatureTaskV1::control / PublishedCircuitFeatureControlV1::execute_feature",
+      "fact": "Wraps the same worker and owner in ControlledNeuronFeaturePortV1; actual execute is synchronous with original pre/post current checks."
+    },
+    {
+      "step": 4,
+      "path": "hepta-neuron/src/feature_control.rs",
+      "function": "ControlledNeuronFeaturePortV1::execute_feature",
+      "fact": "Original durable admit/dispatch, last native-entry clock check, synchronous self.worker.execute, final clock/receipt/settle. No task or thread spawn in this adapter."
+    },
+    {
+      "step": 5,
+      "path": "cell_composed_q24_feature.rs / cell_composed_q24.rs / cell_composed_q24_codec.rs",
+      "function": "CellQ24FeatureWorkerV1::execute / LoadedCellQ24ModelV1::hidden_with_allocations / Matrix::apply",
+      "fact": "Concrete local matrix/vector operations. The inspected leaves use direct iterator/loop computation, not a hidden child process or detached worker."
+    },
+    {
+      "step": 6,
+      "path": "circuit_task_runtime.rs / circuit_task_successor_runtime.rs",
+      "function": "circuit_task_channel_v1 owner loop / run_in_original_successor_lane",
+      "fact": "The command holds PendingWork and phase ticket through actual driver.execute and response send. The installed C owner loop is directly awaited inside the already-running Circuit blocking worker; it does not spawn another owner."
+    }
+  ],
+  "ownership_table": [
+    {
+      "owner": "Outer Circuit phase controller",
+      "actual_handle": "tokio::task::JoinHandle<Result<(), AgentdError>> returned by CircuitTaskRuntimeBootstrapV1::run's spawn_blocking",
+      "held_by_now": "Only the asynchronous Bootstrap::run wrapper awaiting that handle; RuntimeTasks owns the wrapper in JoinSet.",
+      "actual_completion_today": "Normal awaited handle completion proves that concrete blocking closure returned. Dropping/aborting the wrapper only fires the worker child-token Drop guard; started blocking work may continue.",
+      "missing_for_success": "Private phase-only custody for the very same actual handle, created before any await; cancellation-safe one-time join and preserved terminal result available to Launch finalization.",
+      "source_paths": [
+        "circuit_task_runtime.rs",
+        "runtime.rs",
+        "runtime_tasks.rs"
+      ]
+    },
+    {
+      "owner": "A and installed C Direct execution",
+      "actual_handle": "No separate handle. Direct owner futures execute inside the outer Circuit blocking closure.",
+      "held_by_now": "Private controller owns A future; PendingSuccessorOwner owns installed C future. Each real Command holds its pending/ticket resources.",
+      "actual_completion_today": "Actual loop return plus owner future/resource drop proves those local owners stopped; it does not join the enclosing Circuit thread. SuccessorSlot::close keeps State.installed, and SameActorTaskRoute::close keeps C slot/invocation so actual work stays visible to drain; these methods deliberately do not release all retained owners.",
+      "missing_for_success": "C Closing/admission cut and actual source/Cell/task drain followed by existing real loop await, then outer handle join. Do not label journal drain as thread termination. After actual quiescence and joins, a separate private one-time terminal consume/release of the SAME C slot/route is required before claiming its FD/Arc owners released. Clearing it earlier would hide active work and is prohibited.",
+      "source_paths": [
+        "circuit_task_runtime.rs",
+        "circuit_task_successor_runtime.rs",
+        "circuit_q24_successor_worker.rs",
+        "circuit_q24_task_profile.rs",
+        "circuit_q24_successor_state.rs",
+        "circuit_task_same_actor_phase.rs"
+      ]
+    },
+    {
+      "owner": "CURRENT publication, Stage and Training blocking jobs",
+      "actual_handle": "OriginalLearningJob stores Option<JoinHandle<Result<T,E>>> in an async mutex inside the Work registry.",
+      "held_by_now": "Shared actual cleanup capability, independent of any one canceled receive future.",
+      "actual_completion_today": "join_locked awaits the same retained handle; no await separates terminal result recording from handle removal. Registry cleanup waits for actual pending==0 and the last job/unconsumed-output custody; a dropped unjoined job does not decrement pending. An already delivered T is outside that registry and remains the controller's explicit custody obligation.",
+      "missing_for_success": "Use this existing mechanism after dropping progress/output-holding futures. Do not count registry emptiness alone, replace the actual handle, or turn an inner error/closed gate into normal completion.",
+      "source_paths": [
+        "cell_q24_publication_successor_current.rs",
+        "cell_q24_publication_material.rs",
+        "cell_q24_learning_stage_owners.rs",
+        "cell_q24_learning_same_actor.rs",
+        "same_actor_q24_phase_learning_work.rs"
+      ]
+    },
+    {
+      "owner": "Learning, retained Delivery and Pending C",
+      "actual_handle": "Three actual futures, not three separately spawned tasks in this composition.",
+      "held_by_now": "OriginalSameActorLearningWorker::run_original_lanes polls them together; after first exit it tokio::join!s every remaining original future.",
+      "actual_completion_today": "Concrete required worker joins the remaining futures and then Work. Every current terminal path still returns Err, including three Ok lane results; cancellation is not a successful phase outcome.",
+      "missing_for_success": "A typed, non-rearmable, pre-authorized retirement branch at the actual worker, preserving all actual errors and original in-flight cleanup. It cannot simply change all-stopped to Ok.",
+      "source_paths": [
+        "same_actor_q24_phase_learning_worker.rs",
+        "same_actor_q24_phase_c.rs"
+      ]
+    },
+    {
+      "owner": "Session refresh worker",
+      "actual_handle": "AgentdRootAuthoritySession.worker: tokio::task::JoinHandle<()> wrapping RootWorker<future>.",
+      "held_by_now": "Session field; Drop fences, closes phase, aborts the worker and clears consumers without awaiting the handle.",
+      "actual_completion_today": "RootWorker field order preserves future/stream/consumer custody before writer File release. Abort or current Output=() does not identify a permitted normal end.",
+      "missing_for_success": "Phase-only explicit stop-and-join with a typed actual worker exit/error result and the same original end. Expected stop must be distinguishable before it occurs; original refresh failures stay fatal even if a stop races afterward.",
+      "source_paths": [
+        "root_authority_session.rs"
+      ]
+    },
+    {
+      "owner": "Session ConsumerSyncJob",
+      "actual_handle": "spawn_blocking(move || job.run()) handle passed directly into tokio::time::timeout.",
+      "held_by_now": "Only the local timeout future, in both initial activation and later changed-head refresh.",
+      "actual_completion_today": "Job owns real consumers and WriterCustody through actual work/unwind; its struct/local drop order protects file lifetime. Timeout can leave work running, so no physical join receipt exists.",
+      "missing_for_success": "Phase-only registry must retain every actual queued/running handle before waiting. Keep original request-start age budget/500ms and original Err unchanged; timing out the authority read is distinct from later terminal cleanup join.",
+      "source_paths": [
+        "root_authority_session.rs"
+      ]
+    },
+    {
+      "owner": "Daemon phase deadline watcher",
+      "actual_handle": "OriginalSameActorPhaseWatch.worker: Option<std::thread::JoinHandle<()>>.",
+      "held_by_now": "The actual Root context's private watch owner; thread captures Gate only, avoiding a Context self-cycle.",
+      "actual_completion_today": "Drop closes/notifies/shuts endpoints before real join, with no Gate/owner lock held. It discards join's Result; merely letting it Drop supplies no explicit successful completion receipt.",
+      "missing_for_success": "Consume the existing handle in a private explicit terminal method, report actual panic/error rather than ignoring it, and preserve close-before-join. Do not create a replacement watcher or resample an end.",
+      "source_paths": [
+        "same_actor_q24_phase_gate.rs"
+      ]
+    },
+    {
+      "owner": "Root five lanes and Initial/scoped/nested Model/Publication/deadline/registration workers",
+      "actual_handle": "std::thread::ScopedJoinHandle values owned by the actual nested thread::scope closures.",
+      "held_by_now": "serve_original_phase, serve_bound_phase_lanes_until, BoundLearning::serve_same_actor_phase_learning, and serve_original_same_actor_host.",
+      "actual_completion_today": "Each actual scope joins its named children. Early returns/unwind also use std scope auto-join after close guards. Result cannot certify normal completion because required lane EOF/closed is still Err.",
+      "missing_for_success": "Exact one-time purpose retirement accepted only after actual completion intent. An external finalizer must issue RootJoined only after the synchronous serving call has returned and all named children/registration handles were joined. The finalizer itself is not one of the workers certified as joined.",
+      "source_paths": [
+        "authority_host_same_actor_q24_phase_worker.rs",
+        "authority_host_listeners.rs",
+        "authority_host_learning_session.rs",
+        "authority_host_generation_publication_runtime.rs",
+        "authority_host_q24_model_session.rs",
+        "authority_host_same_actor_q24_host.rs"
+      ]
+    },
+    {
+      "owner": "Other configured original Runtime tasks",
+      "actual_handle": "Original RuntimeTasks JoinSet entries; mandatory Plasticity owner is an ordinary async owner with direct synchronous proposal calls.",
+      "held_by_now": "Unchanged RuntimeTasks, which cooperatively cancels and then aborts/joins async wrappers if needed.",
+      "actual_completion_today": "Actual JoinSet completion destroys those async futures; it is not proof of any nested detached blocking task. PlasticityRuntimeOwner::run itself does not spawn such a task in the inspected file.",
+      "missing_for_success": "Continue requiring the original Runtime result, plus independently tracked physical joins for named nested phase jobs. Do not infer full OS/MCP/Android process termination from this report or silently broaden the success claim to unaudited external callback implementations.",
+      "source_paths": [
+        "runtime_tasks.rs",
+        "runtime.rs",
+        "plasticity_runtime.rs",
+        "production_launcher.rs"
+      ]
+    }
+  ],
+  "generic_genv2_boundary": {
+    "actual_file": "codex-rs/hepta-neuron/src/cell_generation_control.rs",
+    "git": "5b379680e503dfdd0772282fa2869b3bfc8a1344",
+    "observed": [
+      "ControlledCellGenerationPortV2::spawn creates a real cell-generation-control std thread but immediately drops its JoinHandle.",
+      "Actor::execute stores the independently executing computation thread in Running.worker. Actor::collect calls that real handle.join before settling or retaining the worker error.",
+      "Normal Actor::run stop waits until active.worker is None; after run/catch_unwind the closure drops the actual Actor/file owner, sets closed, then sends completion. shutdown receives this observation under the original rpc_timeout; timeout is CommitUncertain.",
+      "The observation is stronger than journal drain but it is not an actual actor-thread join. Drop calls shutdown and discards its error. A caught actor panic remains an error; it is not a normal shutdown.",
+      "neuron_generation_service erases the control port behind GenerationRuntimeOwner/CellGenerationControlPortV2. Its owner drain/retirement projection does not add a concrete threaded port join method.",
+      "shutdown Ok is only the control actor/file-owner exit observation. A worker error can remain as original unresolved work; neither that observation nor a future real actor join would manufacture a successful generation receipt."
+    ],
+    "scope_limit": "This is a different explicit generation-control path. The inspected same-session A/C factory installs CellQ24FeatureWorkerV1/ControlledNeuronFeaturePortV1 and no ControlledCellGenerationPortV2. The new phase Config loader initializes neuron_generation_bootstrap=None and its direct assembly does not install that separate bootstrap; this report does not assert no other programmatic configuration or future profile can use it.",
+    "conditional_interface": "Only if a later concrete profile actually uses the threaded port, retain the actual actor JoinHandle in that original owner and expose a private/typed physical shutdown result after real join, preserving its original unresolved/timeout semantics. Type-erased generation retirement must receive that actual capability or remain unqualified. Do not add a default success implementation to CellGenerationControlPortV2 or extend the present C scope with a fictitious GenV2 worker."
+  },
+  "minimal_implementation_cuts": [
+    {
+      "name": "Real outer-handle custody, no success-policy change",
+      "proposed_new_names_are_not_existing_apis": [
+        "OriginalPhaseCircuitJoin",
+        "OriginalPhaseCircuitExit"
+      ],
+      "actual_edit_sites": [
+        "circuit_task_runtime.rs::CircuitTaskRuntimeBootstrapV1::run",
+        "same_actor_q24_phase_initial.rs::install_original_initial_task",
+        "production_launcher_same_actor_phase.rs::run_original_phase"
+      ],
+      "minimum": "The phase factory must create a private join-custody cell before the actual outer spawn/await. Move the actual JoinHandle into it exactly once; wrapper and terminal waiter borrow the same retained handle through cancellation-safe synchronization. Return or retain this cap alongside actual Config composition, not an unused installer.",
+      "result_contract": "Only the actual await path writes terminal status. Full original AgentdError/JoinError has one owned delivery path; secondary completion observations may inspect immutable terminal provenance but cannot turn consumed/error/unknown into Ok. A private success receipt additionally needs the controller's exact authorized-retirement result, not just a returned unit.",
+      "default_contract": "Original non-phase run behavior and RuntimeTasks generic shutdown classifications stay unchanged. Current phase Startup still ends Err until later cuts are implemented and qualified."
+    },
+    {
+      "name": "Session actual worker/consumer custody",
+      "proposed_new_names_are_not_existing_apis": [
+        "OriginalPhaseSessionJoin",
+        "OriginalPhaseSessionExit"
+      ],
+      "actual_edit_sites": [
+        "root_authority_session.rs::connect_original_phase_stream",
+        "root_authority_session.rs::synchronize_consumers",
+        "root_authority_session.rs::refresh",
+        "root_authority_session.rs::activate_final_use_owners",
+        "root_authority_session.rs::AgentdRootAuthoritySession::drop"
+      ],
+      "minimum": "Introduce phase-only custody for the original refresh handle and every exact ConsumerSyncJob handle at the spawn site. Preserve the original timeout/Err behavior at the authority call; retain a canceled waiter's handle for cleanup. The actual worker must retain its first original error as a typed outcome rather than erase it through is_err()->return ().",
+      "stop_order": "After private normal retirement admission, serialize the stop request with the original serial barrier, then release that permit before awaiting the worker or any consumer job. A refresh that already failed must still return its original fatal outcome. Do not hold serial/consumer/issuer locks while awaiting code that may need them. All actual jobs and unconsumed owner outputs must end/drop before the last operational WriterCustody is released.",
+      "lifetime": "Preserve RootWorker future-before-writer and ConsumerSyncJob consumers-before-writer ordering, including queued-never-started futures. Place terminal custody outside LiveRoot's existing consumer/clock graph; do not introduce an uncollectable jobs→consumers→LiveRoot→jobs cycle. Exact Arc release graph remains an implementation review obligation.",
+      "no_revival": "No cache.fence clearing, new refresh, new now+TTL, proof substitution, extended MAX_AGE or expired-session acceptance. Cleanup may run after a deadline, but cannot produce late success."
+    },
+    {
+      "name": "Authorized finite retirement, real C custody",
+      "proposed_new_names_are_not_existing_apis": [
+        "OriginalCCompletionFacts",
+        "ClosingC",
+        "OriginalPurposeRetirePermit"
+      ],
+      "actual_edit_sites": [
+        "same_actor_q24_phase_publish.rs::publish_and_observe_original_c",
+        "same_actor_q24_phase_c.rs::run_original_activated",
+        "circuit_task_same_actor_phase.rs",
+        "circuit_task_same_actor_admission.rs",
+        "same_actor_q24_phase_learning_worker.rs::run_original_lanes",
+        "same_actor_q24_phase_protocol.rs",
+        "same_actor_q24_phase_gate.rs",
+        "circuit_q24_successor_state.rs::SuccessorSlot"
+      ],
+      "minimum": "Hand the private actual installed C owners and authenticated terminal facts to the controller instead of discarding them at progress return. Cut C admission before build/queue entry, await true quiescence and original checkpoint/delivery, then call same-task/source/cell durable drain. A one-time Root intent authorizes only named retirement purposes; it grants no further task/model/namespace effect. SameActorTaskRoute and SuccessorSlot currently retain C installations on close; add a private post-join terminal consumption path without weakening the existing close/drain behavior or erasing in-flight work.",
+      "required_change": "Existing close/cancel/EOF are all fatal or unknown. Add an explicit, prior authorized terminal path with sticky fault precedence, not a reinterpretation of current flags. Existing three-lane join and Work cleanup remain actual. Legitimate NoUpdate must be the original recorded decision; timeout/cancel/missing inputs remain errors.",
+      "output_custody": "Drop the original progress future before joining lanes/Work, as current C code already does; preserve actual errors from every lane. Historical drain receipts must not retain active Task/control/session resources merely to keep a completion proof alive."
+    },
+    {
+      "name": "Physical terminal assembly at the real Launch/Root boundaries",
+      "proposed_new_names_are_not_existing_apis": [
+        "OriginalPhaseFinalizer",
+        "OriginalRootJoinedReceipt"
+      ],
+      "actual_edit_sites": [
+        "production_launcher.rs::AgentdProductionLaunch::run",
+        "production_launcher_same_actor_phase.rs::run_original_phase",
+        "same_actor_q24_phase_gate.rs::OriginalSameActorPhaseWatch",
+        "authority_host_same_actor_q24_host.rs::serve_original_same_actor_host",
+        "authority_host_same_actor_q24_phase_worker.rs::serve_original_phase"
+      ],
+      "minimum": "A phase-only private Launch path uses the existing real run_with_shutdown hook, keeps original attachments until all applicable owner joins are observed, and then performs explicit Session/watcher terminal joins and resource release. Old Launch remains unchanged. Root's external caller/finalizer holds the originally bound finalization-only transport and emits the final receipt only after serving and registration joins have returned.",
+      "root_order": "BoundLearning joins Model/Publication; five-lane scope joins the real lane workers; serve_original_phase joins Initial/scoped/watcher; outer host joins registration. Expected retirement requires an exact per-purpose permit; any unrelated EOF, panic, owner failure or lost ACK remains failure. No worker may certify its own thread exit by a message sent before it returns.",
+      "success_conjunction": "Original runtime result acceptable + actual Circuit/Work/Session/watcher joins successful + exact C terminal/drain and Learning/Delivery facts + actual Root join receipt + original peer/phase/absolute-end checks + no earlier fault. Only then can the current Startup final Err be replaced.",
+      "final_channel": "The finalization purpose must be prebound at original startup, same actual peer/phase/end, finite and non-rearmable. It must remain available after business aliases close without becoming a business-capability exception to a closed Gate. The sender/finalizer and terminal channel are explicitly excluded from the already-joined business-worker list; no daemon/Root OS exit or cold restart claim."
+    }
+  ],
+  "concrete_new_obligations": [
+    "A public generic Runtime Ok is still insufficient: RuntimeTasks can accept a host-aborted non-retiring async wrapper. The retained actual Circuit handle independently prevents that wrapper status from proving physical completion.",
+    "If success is broadened to every runtime task being cooperatively retired, obtain actual shutdown-mode/outcome evidence for those entries; the unchanged RuntimeTasks result does not currently report all abort classifications. Do not claim that stronger scope from the four proposed phase caps alone.",
+    "ConsumerSyncJob completion must include original Err as well as JoinError/panic. An output=() refresh task and cfg(test) failure latch are not production completion evidence.",
+    "Session normal-stop admission must not wait for a worker while holding the same serial permit. Expected stop cannot mask the refresh-error-return/FenceOnDrop interval.",
+    "Actual GenV2 threaded-control actor must retain/join its real handle if ever included. Its owner-release notification or Drop is not enough for the requested actor-thread join guarantee.",
+    "Daemon watcher already has a true handle; explicit completion must stop/notify and observe join Result, not discard it like current Drop.",
+    "Existing Root scopes genuinely join their children, but current required EOF/close cannot be accepted as normal merely because C Outcome was observed.",
+    "External B/Observer evidence remains external authorized input. This report does not claim custody or physical joining of an independent evaluator's host process.",
+    "All original deadline/500ms/freshness/revocation checks remain; cleanup after expiry is allowed only as cleanup with failure/unknown, not successful phase completion.",
+    "No plan here supplies absent real deployment materials, signed ObjectiveStart, independent Outcome, Root-approved scoped inputs or distinct-controller C authorization.",
+    "SuccessorSlot::close and SameActorTaskRoute::close intentionally retain installed owner references. The terminal implementation must follow those actual Arc owners through post-join consumption; neither a zero pending count nor Work join alone proves all previously delivered owner values have dropped."
+  ],
+  "necessary_deterministic_cases": [
+    "Hold the actual outer blocking closure with a real barrier and FD; abort/drop only its async Runtime wrapper. No PhysicalJoined until the same actual handle returns and owned FD releases.",
+    "Cancel a join waiter, then rejoin through the same custody cell; prove one actual handle consumed once, full failure remains and pending/owner-output custody does not fall early.",
+    "Block an actual ConsumerSyncJob, let the original authority timeout fail, then drop Session. Job must retain consumers/File; no successful completion until real join, and original timeout remains failure.",
+    "Race normal Session stop with a refresh already failing after serial release. Actual error result must win over later expected-stop flag.",
+    "Normal refresh stop while worker waits for serial must not deadlock; no serial held across joining worker or consumer job.",
+    "Trigger actual watcher/Root child panic and ensure explicit join result rejects success even if all sockets close.",
+    "C durable journal drain succeeds while outer blocking owner or another retained Work output still exists; completion must remain unavailable.",
+    "Actual expected Root purpose retirement permits only that matching purpose; unexpected EOF, wrong-phase/duplicate intent, lost first/final ACK and deadline overrun stay failure/unknown without rearm.",
+    "If the threaded GenV2 profile is later composed, block its real computation thread: actor shutdown notification/journal drain alone cannot certify both real joins."
+  ],
+  "qualification": {
+    "code_changes": 0,
+    "metadata_changes": 0,
+    "refs_changed": 0,
+    "native_executions": 0,
+    "checker_executions": 0,
+    "new_tests_implemented": 0,
+    "ordinary_business_acceptances": 0,
+    "independent_C_acceptances": 0,
+    "cold_restart_acceptances": 0,
+    "new_source_current_native_status": "Not read or predicted by this reviewer. Root alone owns current qualification.",
+    "root_v34_or_other_failure_attribution": "No new runtime cause is inferred from this design inventory.",
+    "recommendation": "Keep this as a follow-up design supplement. The exact missing actual handles and normal-exit semantics are now concrete; do not mix their new behavior into the frozen formatting source or remove Startup's terminal refusal."
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git": "642d83a914e9e6007b5d7d13c00f2ecc4c7afe6b",
+      "bytes": 13110,
+      "sha256": "a31b6026136342209e46e9ff9cedf402bd638cbc636bc8b7efef3495da24a70d",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "git": "2bde009187e2f4e82e7e8c85d4e1f21dec502332",
+      "bytes": 7947,
+      "sha256": "b4ba6c496d2cba51bc7327a7ad48112e65187f717db05f78c1e5704f8514cfb4",
+      "basis": "previous immutable GET of unchanged source blob; bound in final source inventory",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "git": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+      "bytes": 30586,
+      "sha256": "01d29a5327e8a559d7b3e0c2a8ebd8f71f14f5175fa226ddfebab5c4d0fa066e",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "git": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+      "bytes": 11355,
+      "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007",
+      "basis": "previous immutable GET of unchanged source blob; bound in final source inventory",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "git": "2eeb13155a079d991f03bbe6e742ccb2a7cdc444",
+      "bytes": 14045,
+      "sha256": "34ea1635c67eba07e00491003c8b88ea2834e0691f3bde92c8838d202968671b",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "git": "a02f9640720b49c8041072780d01c9a86ecc42a6",
+      "bytes": 6100,
+      "sha256": "5c5e72c75b3fbf3427563930f9a30e757bd7a2129dbfdfe9b11a3c3bd71e7445",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "git": "f4c2b22bbf862d2b278a05860a1d49cd29526044",
+      "bytes": 9611,
+      "sha256": "893979f675734c55e5391571b396cfe83a10ea18e95661ff70ade40f9002dd37",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "git": "011b7b97ed9133d951d6bd4937a673a93ad49ae5",
+      "bytes": 14285,
+      "sha256": "6dd57edc87f618c155cbf31d44823bffb6ba15d5f3615d7dd0d28b2a0ee63e5a",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "bytes": 30409,
+      "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/root_authority_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "git": "9fbe60227a2ca0254a2ca965c8a4d47b872cf115",
+      "bytes": 17792,
+      "sha256": "8d30d0d841c48168b1212a65a69e8280d4755c7713881405dc38706a3eedcc39",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "git": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+      "bytes": 15084,
+      "sha256": "84ed9016cac40efe92522aa60ada4d39b34ba12105db787d4e015689e6d8cdba",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "git": "fb95d13214318a255f868aea9f016911bc69990c",
+      "bytes": 9444,
+      "sha256": "2bc47c81923dcb90dc2aee6cd2d2ea83d28c22861d2dc60b1818b5aeb0c75726",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "git": "d645c2dd76d8c3b6aab143d4bfa455434846b939",
+      "bytes": 9933,
+      "sha256": "3ca6197808f9d49a461a4a34c357108040943e88296fd5c94e3175ef262c82f1",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git": "22e66c0d6aa0e31f52c047cb09165c92350c3bde",
+      "bytes": 11764,
+      "sha256": "bd4109cd7f59d73a1a33e3a202118b91dd79cd7bd8d8d943f31cf5e985207a53",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "git": "d8c247d245b3b21167009726f072083ea0a7f774",
+      "bytes": 8282,
+      "sha256": "8dd2d525deac365aa8e1f039eb172da7249cd3093fdf815e713724e5f533561f",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "git": "5e2df6b31679dd74f849b8486f537ce5ac113719",
+      "bytes": 11192,
+      "sha256": "b35195c41d8716b2c209397cae088fa002be00c88f62a781a7cc0e0957b511bc",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+      "bytes": 27445,
+      "sha256": "6b09e46a1e8e97616d25e03671852cd87976ce557dc52aecc2dcb80bf70229ad",
+      "basis": "previous immutable GET of unchanged source blob; bound in final source inventory",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/production_launcher.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "git": "25d54d70c9c69ead8dfc70ce6436e49791d05fb0",
+      "bytes": 12174,
+      "sha256": "98bab920ea591bca249d1ed306817e3ec7a179297131dc0c00d9ad3995eccadd",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "git": "f32df2e032199e4c5ece33b4f0df8ed1b32d5470",
+      "bytes": 4473,
+      "sha256": "46cf27a091de5ff4e4f72afe6da946961011192345b4dfc782935260d7b2f30b",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "bytes": 31648,
+      "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "git": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "bytes": 17929,
+      "sha256": "456a21ce0b186dc664b2af3877a9c6fa0a376b1dceb445d50e0d721f9de1b655",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/runtime_tasks.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "git": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+      "bytes": 8346,
+      "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "git": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "bytes": 8420,
+      "sha256": "a4b394bc140cd1cb2020b03bafec387375823964bb0de8ab14e5c478ccb00d68",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "git": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+      "bytes": 1822,
+      "sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "git": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "git": "781485715249d11c05609239a346ede033ccbdf3",
+      "bytes": 4962,
+      "sha256": "204bc31e9162b6b52214a569d6fa926f3ece078d0fdc876087eeaf2f7c1142f8",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24.rs",
+      "git": "e57eff1fbfd80da0250d04b14be2c659869e0f02",
+      "bytes": 18787,
+      "sha256": "26e5d4fea0a5c79a6c32ceae56b80e9e36861c4bf1f4f4ea8d0d05efce175836",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_composed_q24.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+      "git": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+      "bytes": 7802,
+      "sha256": "3eb1e6779b9e1d052c13f0538b0991de05117a6e70a36a721373819f8d622e0b",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_codec.rs",
+      "git": "5c0b624e739a1b1a7ecb50d3a266dc44d84e27ed",
+      "bytes": 4927,
+      "sha256": "55fd3398c0fb018f68edabda4857196a5ba9aec0a2b563a7e2ff9465c4cc00f2",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_composed_q24_codec.rs"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "git": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+      "bytes": 13098,
+      "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-neuron/src/feature_control.rs"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_control.rs",
+      "git": "5b379680e503dfdd0772282fa2869b3bfc8a1344",
+      "bytes": 17899,
+      "sha256": "59641d61dce6fd6bbfdda053ca762f6bfabab7f4728eef3ea74a7d14dc4b4825",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-neuron/src/cell_generation_control.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "git": "c2147c915c9c8c3f7de76fa9796d01d08e4354aa",
+      "bytes": 4514,
+      "sha256": "4bfbd8e95fb383c8f0d313c612917f895a99c95bd47a9e64ff6f0c8413baa34d",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "git": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65",
+      "bytes": 5190,
+      "sha256": "8a860ab3149a755abf7f7501fef666b42bae140fba9f7605d1ccc1469c2c7fd9",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs",
+      "git": "ab903e7761d6c313ca123194bc0ea18a797eb4cf",
+      "bytes": 5469,
+      "sha256": "db5f27f664433ae59271705445b4cbcc4226e14f4b4715edf51338728ec83359",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/cell_q24_publication_material.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "git": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "bytes": 14671,
+      "sha256": "f41b8d52fa819d3e47191f9167f5536bd74fcbdeac1f438c6e4ca61061d0ca59",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/neuron_generation_service.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "bytes": 39198,
+      "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/config.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "git": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+      "bytes": 5089,
+      "sha256": "53868d4fd06628467a384e21f10445f804b98f90f1db0f9f70f5a82dc0ce4eb8",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/config_root_late_writer.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "git": "2c2869dcfa739364ce50ab22c13cd079cedfc0e1",
+      "bytes": 3366,
+      "sha256": "a50914c8572bfbabbf652505b8dc586b30054e9d0e8690c2e9d3e77098209895",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/config_circuit_task.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "git": "bb1a0f28dccac847c900212e72108f820bdfe9de",
+      "bytes": 12900,
+      "sha256": "6fbcdd215834aaf0d21e91dfe9546befa5615b8e9bd76f598aa4df3baa171444",
+      "basis": "immutable Git blob/file GET; decoded UTF-8 full size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/plasticity_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "ref": "3dbffb487de65a7c598a92510d081855d8b052dc",
+      "git": "58232d6e10de477c7a66da516a1607a2aab788fe",
+      "bytes": 10615,
+      "sha256": "14f72f35eda108d7e28be2f6a8cc76d2951fcb43d54e9c384954dbd06b01e7e2",
+      "basis": "immutable current-commit Git file GET; full UTF-8 size/SHA/Git independently recalculated",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "git": "542cc950afcd4269b693ac00177446e968a23ab4",
+      "bytes": 18242,
+      "sha256": "5eb417060b172c8ca82654141cf29d7bb4fa504c5d642e1c42fb3fd86d27a121",
+      "basis": "independent positioned reconstruction from original native full-index patch; matches original full Git post hash",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3dbffb487de65a7c598a92510d081855d8b052dc/codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs"
+    }
+  ]
+}
