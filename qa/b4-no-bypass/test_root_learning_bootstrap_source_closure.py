@@ -67,6 +67,8 @@ CALLERS = {
     "root_original_private_sealed_bytes": (
         REGISTRATION, MODEL_REGISTRATION, PUBLICATION_ROUTE, INITIAL_SESSION,
         AGENT + "authority_host_historical_read_session.rs",
+        AGENT + "authority_host_q24_evaluation_route.rs",
+        AGENT + "authority_host_q24_evaluation_source_route.rs",
     ),
 }
 
