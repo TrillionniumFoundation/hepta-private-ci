@@ -147,6 +147,31 @@ impl OriginalChild {
         Ok(())
     }
 
+    pub(crate) fn request_original_shutdown(&self) -> anyhow::Result<()> {
+        self.require_live()?;
+        let pin = self
+            .pidfd
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("original child pidfd consumed"))?;
+        // SAFETY: the signal is sent to the retained actual kernel lifetime,
+        // never to a numeric PID that could have been reused. Production owns
+        // the SIGTERM handler and must perform its normal supervised drain.
+        anyhow::ensure!(
+            unsafe {
+                libc::syscall(
+                    libc::SYS_pidfd_send_signal,
+                    pin.as_raw_fd(),
+                    libc::SIGTERM,
+                    std::ptr::null::<libc::siginfo_t>(),
+                    0,
+                )
+            } == 0,
+            "{}",
+            io::Error::last_os_error()
+        );
+        Ok(())
+    }
+
     pub(crate) fn wait_success_until(
         mut self,
         end: Instant,

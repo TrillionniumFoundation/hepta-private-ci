@@ -135,9 +135,10 @@ impl OriginalRootInputs {
         let service = protected.join("service.json");
         write_json(&service, &config)?;
         crate::register_host_writer_authorization(&service)?;
-        let current = protected.join("current");
-        std::fs::create_dir(&current)?;
-        super::super::owned_mode(&current, 0, 0, 0o700)?;
+        // The actual historical endpoint reads its independent retained cuts
+        // from this registered Root state directory. Initial capture must use
+        // this same declared directory; no test moves records after A exits.
+        let current = state.clone();
         Ok(Self {
             service,
             registration: protected.join("original-spawn.json"),
