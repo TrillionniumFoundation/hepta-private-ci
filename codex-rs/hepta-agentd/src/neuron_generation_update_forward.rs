@@ -42,6 +42,7 @@ where
     Old: AnchorWitnessStore,
     New: AnchorWitnessStore,
 {
+    authorities.artifacts.writer()?;
     StableId::new(&request.new_operation_id).map_err(invalid)?;
     if request.new_operation_id == request.original_operation_id {
         return Err(invalid(
@@ -84,7 +85,7 @@ where
     )
     .map_err(invalid)?;
     new.prepared_checkpoint().map_err(invalid)?;
-    let artifacts = authorities.artifacts.lock().map_err(invalid)?;
+    let artifacts = authorities.artifacts.writer()?.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
     let prepared =
         current.prepare_forward_recovery(&original, &old, &new, request.new_operation_id)?;

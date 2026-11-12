@@ -19,6 +19,10 @@ use std::sync::atomic::Ordering;
 #[path = "root_generation_initial_source_capture.rs"]
 mod source_capture;
 
+#[path = "root_generation_initial_artifacts.rs"]
+mod artifacts;
+pub(crate) use artifacts::OriginalInitialArtifactReadbackV1;
+
 struct Lane {
     stream: OriginalPublicationStream,
     sequence: u64,

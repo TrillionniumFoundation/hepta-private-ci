@@ -118,6 +118,7 @@ impl OriginalDecision {
         validation::signed_selection(&self.decision, &input.signed, publication)?;
         let artifacts = authorities
             .artifacts
+            .writer()?
             .lock()
             .map_err(|_| Error::CommitUncertain)?;
         let selected = AgentdSelectedGenerationV1::load(
@@ -262,7 +263,7 @@ impl OriginalCellQ24PublicationDriverV1 {
             self.original.decision.require_new_work()?;
             request.now = self.authorities.now()?;
             let receipt = {
-                let mut locked = self.authorities.artifacts.lock().map_err(|_| Error::CommitUncertain)?;
+                let mut locked = self.authorities.artifacts.writer()?.lock().map_err(|_| Error::CommitUncertain)?;
                 let artifacts: &mut codex_hepta_learning_artifacts::LearningArtifactOwnerService = &mut locked;
                 artifacts.publish(request)?
             };

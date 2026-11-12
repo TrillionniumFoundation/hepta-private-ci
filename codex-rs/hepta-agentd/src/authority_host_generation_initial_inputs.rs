@@ -100,6 +100,26 @@ pub(super) fn open_artifacts(
     Ok((artifacts, selected))
 }
 
+impl InitialProfile {
+    /// Public metadata cannot create a reader capability. The original client
+    /// must first authenticate this complete profile on its retained stream.
+    pub(crate) fn open_matching_artifact_readback(
+        &self,
+        inputs: crate::RootArtifactPublicationInputsV1,
+        consumer_uid: u32,
+        now: u64,
+    ) -> io::Result<(LearningArtifactReadViewV1, AgentdSelectedGenerationV1)> {
+        if artifact_pin(&inputs)? != self.artifacts {
+            return Err(io::Error::other("original Initial Artifact pin differs"));
+        }
+        let (reader, selected) = open_artifacts(inputs, consumer_uid, now)?;
+        if selected.observation().digest().to_string() != self.selection {
+            return Err(io::Error::other("original Initial selection differs"));
+        }
+        Ok((reader, selected))
+    }
+}
+
 pub(super) fn open_target(
     inputs: crate::RootGenerationJournalInputsV1,
     consumer_uid: u32,
