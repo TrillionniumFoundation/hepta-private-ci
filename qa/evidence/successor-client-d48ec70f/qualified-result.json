@@ -1,0 +1,605 @@
+{
+  "before": {
+    "head": "d48ec70ff143164d19659a3af6c4c3ff14732940",
+    "tree": "06f137fbef2a53ae4c85fb7d1160a428692ae9d2",
+    "status": "",
+    "source_files": 8038,
+    "source_digest": "e5621519c2276f86c5166217c24fbc0f032182eadcb54e436d5c05c2733cceba"
+  },
+  "after": {
+    "head": "d48ec70ff143164d19659a3af6c4c3ff14732940",
+    "tree": "06f137fbef2a53ae4c85fb7d1160a428692ae9d2",
+    "status": "",
+    "source_files": 8038,
+    "source_digest": "e5621519c2276f86c5166217c24fbc0f032182eadcb54e436d5c05c2733cceba"
+  },
+  "started_utc": "2026-11-12T14:18:12.758069+00:00",
+  "duration_seconds": 234.19650173187256,
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_successor_historical_client_source_closure",
+        "test_current_historical_a_recovery_source_closure",
+        "test_publication_v2_source_closure",
+        "test_successor_root_custody_source_closure"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "markers": {
+    "status": "PASS",
+    "inventory": 895,
+    "selected_protected": 51,
+    "rust_files_scanned": 6730,
+    "boundaries": [
+      {
+        "id": "learning_original_q24_stage_install_generation",
+        "status": "PASS",
+        "receipt": {
+          "id": "learning_original_q24_stage_install_generation",
+          "symbol": "OriginalCellQ24LearningStageOwnersV1::install_generation",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs",
+            "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_generation_current_bound_selection",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_generation_current_bound_selection",
+          "symbol": "NeuronGenerationCurrentOwnerV1::require_original_root_selection",
+          "callPattern": null,
+          "receiverType": "NeuronGenerationCurrentOwnerV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_historical_feature_completion",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_historical_feature_completion",
+          "symbol": "PublishedCircuitFeatureCompletionV1::read_original_historical_completion",
+          "callPattern": null,
+          "receiverType": "PublishedCircuitFeatureCompletionV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_identity",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_identity",
+          "symbol": "RootGenerationPublicationConnectionV1::require_original_reader_identity",
+          "callPattern": null,
+          "receiverType": "RootGenerationPublicationConnectionV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/root_historical_task_connection.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_connection",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_connection",
+          "symbol": "RootHistoricalTaskReadConnectionV1::require_same_original_publication",
+          "callPattern": null,
+          "receiverType": "RootHistoricalTaskReadConnectionV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_receipt_connection",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_receipt_connection",
+          "symbol": "OriginalHistoricalTaskReadReceiptV1::require_original_publication_connection",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/root_generation_current_history.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_client_match",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_client_match",
+          "symbol": "RootGenerationCurrentClient::require_original_historical_receipt",
+          "callPattern": null,
+          "receiverType": "RootGenerationCurrentClient",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+            "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_backend",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_backend",
+          "symbol": "CurrentStore::require_original_root_historical_receipt",
+          "callPattern": null,
+          "receiverType": "CurrentStore",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_historical_owner",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_historical_owner",
+          "symbol": "NeuronGenerationCurrentOwnerV1::require_original_root_historical_receipt",
+          "callPattern": null,
+          "receiverType": "NeuronGenerationCurrentOwnerV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs",
+            "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"
+          ]
+        }
+      },
+      {
+        "id": "q24_current_historical_recover",
+        "status": "PASS",
+        "receipt": {
+          "id": "q24_current_historical_recover",
+          "symbol": "OriginalCellQ24RootPublicationDriverV1::recover_feature_from_historical_a",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24RootPublicationDriverV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_fixed_custody",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_fixed_custody",
+          "symbol": "RootOriginalSuccessorFilesV1::open_original",
+          "callPattern": null,
+          "receiverType": "RootOriginalSuccessorFilesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_fixed_data",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_fixed_data",
+          "symbol": "RootOriginalSuccessorFilesV1::original_data",
+          "callPattern": null,
+          "receiverType": "RootOriginalSuccessorFilesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_baseline",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_baseline",
+          "symbol": "RootOriginalSuccessorFilesV1::require_registered_baseline",
+          "callPattern": null,
+          "receiverType": "RootOriginalSuccessorFilesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_physical",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_physical",
+          "symbol": "RootOriginalSuccessorFilesV1::observe_original_successor",
+          "callPattern": null,
+          "receiverType": "RootOriginalSuccessorFilesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_inputs",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_inputs",
+          "symbol": "RootOriginalSuccessorFilesV1::with_inputs",
+          "callPattern": null,
+          "receiverType": "RootOriginalSuccessorFilesV1",
+          "receiverMethods": [],
+          "productCallers": []
+        }
+      },
+      {
+        "id": "root_successor_register",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_register",
+          "symbol": "RegisteredSuccessorData::enroll",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_exact",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_exact",
+          "symbol": "RegisteredSuccessorData::require_exact",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_baseline_post",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_baseline_post",
+          "symbol": "RegisteredSuccessorData::require_baseline",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_capture_read",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_capture_read",
+          "symbol": "RegisteredSuccessorData::observe_retired",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_finish",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_finish",
+          "symbol": "RegisteredSuccessorData::finish_observed",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_reply_data",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_reply_data",
+          "symbol": "RegisteredSuccessorData::read_data",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_physical_retirement",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_physical_retirement",
+          "symbol": "RegisteredSuccessorData::read_physical",
+          "callPattern": null,
+          "receiverType": "RegisteredSuccessorData",
+          "receiverMethods": [],
+          "productCallers": []
+        }
+      },
+      {
+        "id": "root_successor_cell_physical",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_cell_physical",
+          "symbol": "OriginalCellFiles::read_original_successor_cell",
+          "callPattern": null,
+          "receiverType": "OriginalCellFiles",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_successor_files_read.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_readonly_description",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_readonly_description",
+          "symbol": "RetainedMaterial::original_readonly_description",
+          "callPattern": null,
+          "receiverType": "RetainedMaterial",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_successor_files_read.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_client_read",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_client_read",
+          "symbol": "RootGenerationCurrentClient::read_original_completed_successor",
+          "callPattern": null,
+          "receiverType": "RootGenerationCurrentClient",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_client_backend",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_client_backend",
+          "symbol": "CurrentStore::read_original_completed_successor",
+          "callPattern": null,
+          "receiverType": "CurrentStore",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_client_owner",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_client_owner",
+          "symbol": "NeuronGenerationCurrentOwnerV1::read_original_completed_successor",
+          "callPattern": null,
+          "receiverType": "NeuronGenerationCurrentOwnerV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_live_current",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_live_current",
+          "symbol": "LiveGenerationCurrent::original_historical_successor_current",
+          "callPattern": null,
+          "receiverType": "LiveGenerationCurrent",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_canonical_data",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_canonical_data",
+          "symbol": "RootHistoricalTaskPublicationDataV1::decode_original_successor_data",
+          "callPattern": null,
+          "receiverType": "RootHistoricalTaskPublicationDataV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_cap_recover",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_cap_recover",
+          "symbol": "PublishedCircuitFeatureTaskV1::recover_original_completed_successor",
+          "callPattern": null,
+          "receiverType": "PublishedCircuitFeatureTaskV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_cap_read",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_cap_read",
+          "symbol": "OriginalHistoricalCircuitFeatureSourcesV1::read_original",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalCircuitFeatureSourcesV1",
+          "receiverMethods": [],
+          "productCallers": []
+        }
+      },
+      {
+        "id": "root_successor_feature_binding",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_feature_binding",
+          "symbol": "OriginalHistoricalCircuitFeatureSourcesV1::require_original_feature_binding",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalCircuitFeatureSourcesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_feature_observation",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_feature_observation",
+          "symbol": "OriginalHistoricalCircuitFeatureSourcesV1::read_original_feature_observation",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalCircuitFeatureSourcesV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_generation_owner_recover",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_generation_owner_recover",
+          "symbol": "OriginalGenerationLearningReceiptOwnerV1::recover_historical_feature",
+          "callPattern": null,
+          "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_generation_install",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_generation_install",
+          "symbol": "OriginalCellQ24LearningStageOwnersV1::install_historical_circuit_feature_generation",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_successor_generation_handoff_open",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_successor_generation_handoff_open",
+          "symbol": "OriginalHistoricalCircuitFeatureLearningHandoffV1::open",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalCircuitFeatureLearningHandoffV1",
+          "receiverMethods": [],
+          "productCallers": []
+        }
+      },
+      {
+        "id": "root_current_recovery_intent_client",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_recovery_intent_client",
+          "symbol": "RootGenerationCurrentClient::read_original_recovery_intent",
+          "callPattern": null,
+          "receiverType": "RootGenerationCurrentClient",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_recovery_intent_backend",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_recovery_intent_backend",
+          "symbol": "CurrentStore::read_original_root_recovery_intent",
+          "callPattern": null,
+          "receiverType": "CurrentStore",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_current_recovery_intent_owner",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_current_recovery_intent_owner",
+          "symbol": "NeuronGenerationCurrentOwnerV1::read_original_root_recovery_intent",
+          "callPattern": null,
+          "receiverType": "NeuronGenerationCurrentOwnerV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs"
+          ]
+        }
+      },
+      {
+        "id": "q24_current_recovery_intent",
+        "status": "PASS",
+        "receipt": {
+          "id": "q24_current_recovery_intent",
+          "symbol": "OriginalCellQ24RootPublicationDriverV1::read_original_recovery_intent",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24RootPublicationDriverV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      }
+    ]
+  },
+  "exact_source": true,
+  "native": "NOT_RUN",
+  "full_caller": "NOT_RUN",
+  "whole_protected": "NOT_RUN; only affected paths checked"
+}
