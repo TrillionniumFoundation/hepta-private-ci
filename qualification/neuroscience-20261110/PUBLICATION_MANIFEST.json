@@ -3946,9 +3946,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
-      "bytes": 21244,
-      "sha256": "6bb45bf0225e2ad3b33864583e5703df9dd4366c30de1c639ece39d5038852c9",
-      "git_blob": "f6e1cb20cf5fd2a358f001f01a3c8f821e3b4949"
+      "bytes": 21534,
+      "sha256": "276653a5051de922e74ab20f9c64d54694dfca8863dd06a96825478a7e7b02c3",
+      "git_blob": "fd253957a7f9cef24f366aea2d7d57e6d601dab2"
     },
     {
       "path": "qualification/neuroscience-20261110/R_V_EXECUTION.md",
@@ -3958,9 +3958,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 124182,
-      "sha256": "8f80dfd2ba5c9fb19146d0b7cdd9487cba42659111251b35cef33bc55c36e868",
-      "git_blob": "1354eb0f7a616557b17420e4e540b90e29eeec76"
+      "bytes": 124489,
+      "sha256": "0558c1d1442c5ce5d66288376575aaf487631339fd9c7624898b321a14330f5c",
+      "git_blob": "a9e971484ea6f878c4d72ad37882056a459fd370"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/act2-upstream-20261112/BLOCKERS.ba7.original.json",
@@ -4941,6 +4941,12 @@
       "git_blob": "eb9df7d5695e3d005422c33c2fe65e974dd84897"
     },
     {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_READBACK_SOURCE53_TERMINAL.json",
+      "bytes": 93570,
+      "sha256": "f0a5bfd7ade72beedfba3101f65622b6f9e74a97f692b1d2c8eb4b27d5ea6f40",
+      "git_blob": "6191ae4cf70b6f8a540e99079251ae816c9fa200"
+    },
+    {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GZIP_DECODER_REFERENCE.js.txt",
       "bytes": 3833,
       "sha256": "47e17f029edb8d0722a05a06a453347fd255a36b748b6b839751d682c6dcb707",
@@ -4960,9 +4966,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
-      "bytes": 2308,
-      "sha256": "48002131c35dff1facc8b05cd72982272121912d12ec0dd378c9525b45e9ef67",
-      "git_blob": "2460e7b722412c497eba98f81caac06b93d818b9"
+      "bytes": 2571,
+      "sha256": "57b9ef42219af34f5217d99647a26679cd204db26a13350665f9a32055c702f6",
+      "git_blob": "68aba07f37ddc083d6ebc2e8f14bd393ecb66262"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
@@ -9142,16 +9148,23 @@
     }
   },
   "new_original_blob_mapping": "evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json",
-  "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
+  "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_SOURCE53_TERMINAL.json",
   "latest_text_readback": {
-    "status": "IMPORTED_ORIGINAL_BYTES_VERIFIED_PENDING_FINAL_TREE_READBACK",
+    "status": "IMPORTED_ORIGINAL_BYTES_AND_COMPLETE_STAGED_TREE_VERIFIED",
     "imported_paths": 343,
     "imported_distinct_git_blobs": 340,
     "imported_referenced_bytes": 35249483,
-    "record": "evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json",
+    "record": "evidence/terminal-20261112/GIT_READBACK_SOURCE53_TERMINAL.json",
     "full_original_log_verification": "evidence/terminal-20261112/ROOT_LOG_REASSEMBLY_SOURCE53.json",
     "all_imported_bytes_verified": true,
-    "all_blockers_closed": false
+    "all_blockers_closed": false,
+    "staged_commit": "5c3852f53cf09ae32e2381d745539348e485614d",
+    "staged_tree": "52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7",
+    "staged_changed_paths": 350,
+    "staged_tree_nodes": 45,
+    "staged_text_full_readbacks": 7,
+    "all_verified": true,
+    "readback_at_utc": "2026-11-12 20:55:37 UTC"
   },
   "new_readback_notes": "Every new imported object has a root full-byte Git/SHA256 record. Source-only candidate postimages are excluded. Final publication tree verification follows staging.",
   "historical_metadata_scope": "Existing gzip/binary31-object and seven-log fields describe their original earlier checkpoint; new_readback_notes, latest_text_readback and ROOT_LOG_REASSEMBLY_SOURCE53 describe this source53 checkpoint. Historical records are not recounted as new execution."

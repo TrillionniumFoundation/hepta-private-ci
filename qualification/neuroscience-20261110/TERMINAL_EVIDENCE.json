@@ -2621,14 +2621,21 @@
     "original_actor_state": "Frozen B/C four macros STOP; MEM registry UNKNOWN; no new research actor redispatch."
   },
   "latest_text_readback": {
-    "status": "IMPORTED_ORIGINAL_BYTES_VERIFIED_PENDING_FINAL_TREE_READBACK",
+    "status": "IMPORTED_ORIGINAL_BYTES_AND_COMPLETE_STAGED_TREE_VERIFIED",
     "imported_paths": 343,
     "imported_distinct_git_blobs": 340,
     "imported_referenced_bytes": 35249483,
-    "record": "evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json",
+    "record": "evidence/terminal-20261112/GIT_READBACK_SOURCE53_TERMINAL.json",
     "full_original_log_verification": "evidence/terminal-20261112/ROOT_LOG_REASSEMBLY_SOURCE53.json",
     "all_imported_bytes_verified": true,
-    "all_blockers_closed": false
+    "all_blockers_closed": false,
+    "staged_commit": "5c3852f53cf09ae32e2381d745539348e485614d",
+    "staged_tree": "52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7",
+    "staged_changed_paths": 350,
+    "staged_tree_nodes": 45,
+    "staged_text_full_readbacks": 7,
+    "all_verified": true,
+    "readback_at_utc": "2026-11-12 20:55:37 UTC"
   },
   "current_source": {
     "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",

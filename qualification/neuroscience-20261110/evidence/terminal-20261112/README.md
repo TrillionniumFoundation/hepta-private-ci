@@ -11,3 +11,5 @@ source53 GNU／musl目标仍实际失败并出现300.1s汇总；Windows shard1�
 [blocker清单](../../BLOCKER_CLOSURE_NEXT.md) · [机器索引](../../TERMINAL_EVIDENCE.json) · [导入映射](IMPORT_MAPPING_SOURCE53.json) · [日志重组](ROOT_LOG_REASSEMBLY_SOURCE53.json) · [准确主job状态](SOURCE53_JOB_OBSERVATION.json) · [9cbd原README](../history-20261112/TERMINAL_README-9cbd.md)。
 
 **12完整门OPEN；HOLD；owner_decision=null；all_blockers_closed=false。** 冻结B/C四宏均STOP，MEM registry UNKNOWN，原研究NoUpdate不改写。没有actor重派、手动Bazel、PR合并、部署或默认采用。
+
+[本次暂存树独立读回](GIT_READBACK_SOURCE53_TERMINAL.json)：350个变更路径均限qualification，45个实际Git树节点与7份完整新文本逐字核验。最终提交另加入此核验文件并更新索引；不改变源码PR或完整资格门。

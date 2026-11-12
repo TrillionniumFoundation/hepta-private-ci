@@ -122,3 +122,5 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 冻结B/C四宏已完成且均STOP；不重派actor。MEM原registry UNKNOWN不猜job、不换key。三次原Git准备失败保留，没有第四次fetch或本地repo重建。手工Rust验证只允许just test；本轮未手动派发Bazel。没有合并PR、部署、默认采用或代原owner签发决定。
 
 [机器可读索引](TERMINAL_EVIDENCE.json) · [原件入口](evidence/terminal-20261112/README.md) · [本次不可变字节核验](evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json)。
+
+[本次暂存树独立读回](evidence/terminal-20261112/GIT_READBACK_SOURCE53_TERMINAL.json)：350个变更路径均限qualification，45个实际Git树节点与7份完整新文本逐字核验。最终提交另加入此核验文件并更新索引；不改变源码PR或完整资格门。
