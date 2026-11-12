@@ -90,144 +90,140 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
     /// consumes this startup once and calls the original Launch.run itself.
     /// The host must still submit A and C through signed ObjectiveStart and
     /// provide independent signed Outcomes through the bounded typed channel.
-    pub fn run_original_phase(
+    pub async fn run_original_phase(
         self,
         mut business: OriginalSameActorBusinessInputsV1,
         arg0_paths: Arg0DispatchPaths,
-    ) -> impl std::future::Future<Output = Result<(), AgentdError>> {
-        // Before first poll this future owns every inherited descriptor and
-        // business owner. No Session or authority object has been created.
-        async move {
-            let runtime = tokio::runtime::Handle::try_current()
-                .map_err(|_| refused("original phase requires its actual Tokio runtime"))?;
-            if runtime.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread {
-                return Err(refused(
-                    "original phase requires the original multi-thread runtime",
-                ));
-            }
-            let Self {
-                identity,
-                cognitive_mode,
-                inputs,
-                mut receiver,
-                phase_handoff,
-                scoped_handoff,
-            } = self;
-            let LaunchInputs {
-                handoff,
-                learning_handoff: _,
-                q24_model_handoff: _,
-                publication_handoff: _,
-                initial_handoff: _,
-                uid,
-                gid,
-                control,
-                app_server,
-                primary,
-                bootstrap_deadline: _,
-                notes,
-                notes_ui,
-                lifetime: _,
-            } = inputs;
-            late_writer::require_late_owner(uid, gid)?;
-            let (bootstrap, root_pidfd, writer) = tokio::task::block_in_place(|| {
-                let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-                let original = crate::receive_root_production_writer_handoff(handoff, timeout)?;
-                receiver.remaining()?;
-                Ok::<_, AgentdError>(original)
-            })?;
-            let phase = tokio::task::block_in_place(|| {
-                let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-                let phase =
-                    receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
-                receiver.remaining()?;
-                Ok::<_, AgentdError>(phase)
-            })?;
+    ) -> Result<(), AgentdError> {
+        let runtime = tokio::runtime::Handle::try_current()
+            .map_err(|_| refused("original phase requires its actual Tokio runtime"))?;
+        if runtime.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread {
+            return Err(refused(
+                "original phase requires the original multi-thread runtime",
+            ));
+        }
+        let Self {
+            identity,
+            cognitive_mode,
+            inputs,
+            mut receiver,
+            phase_handoff,
+            scoped_handoff,
+        } = self;
+        let LaunchInputs {
+            handoff,
+            learning_handoff: _,
+            q24_model_handoff: _,
+            publication_handoff: _,
+            initial_handoff: _,
+            uid,
+            gid,
+            control,
+            app_server,
+            primary,
+            bootstrap_deadline: _,
+            notes,
+            notes_ui,
+            lifetime: _,
+        } = inputs;
+        late_writer::require_late_owner(uid, gid)?;
+        let (bootstrap, root_pidfd, writer) = tokio::task::block_in_place(|| {
             let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-            let OriginalSameActorProductionInputs {
-                mut root,
-                context,
-                initial,
-            } = receive_original_same_actor_inputs(
-                bootstrap, root_pidfd, phase, &identity, timeout, receiver,
+            let original = crate::receive_root_production_writer_handoff(handoff, timeout)?;
+            receiver.remaining()?;
+            Ok::<_, AgentdError>(original)
+        })?;
+        let phase = tokio::task::block_in_place(|| {
+            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+            let phase =
+                receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
+            receiver.remaining()?;
+            Ok::<_, AgentdError>(phase)
+        })?;
+        let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+        let OriginalSameActorProductionInputs {
+            mut root,
+            context,
+            initial,
+        } = receive_original_same_actor_inputs(
+            bootstrap, root_pidfd, phase, &identity, timeout, receiver,
+        )
+        .await?;
+        // From this point onward the actual same-Gate close guard already
+        // exists outside every later future, including never-polled work.
+        let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        let config =
+            AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
+                .with_root_bound_sockets(control, app_server)?
+                .with_cognitive_retrieval_mode(cognitive_mode);
+        if config.identity() != &identity || context.identity() != &identity {
+            return Err(refused(
+                "original Starting Config differs from the received phase",
+            ));
+        }
+        OriginalSameActorRootContext::require_current(&context)?;
+        business.host.notify_original(
+            &context,
+            OriginalSameActorPhaseEventV1::InputsOpened {
+                identity: Box::new(identity.clone()),
+                phase: context.descriptor().phase.clone(),
+            },
+        )?;
+        if !matches!(
+            business.host.receive_original(&context).await?,
+            OriginalSameActorPhaseCommandV1::InitialRootEnrolled
+        ) {
+            return Err(refused(
+                "actual Initial Root enrollment must precede connection",
+            ));
+        }
+        let connection =
+            crate::AgentdRootProductionInputs::take_generation_publication_connection(
+                &mut root,
+            )?;
+        let initial = initial
+            .connect_original_same_actor_initial(
+                connection,
+                Arc::clone(&context),
+                Duration::from_millis(500),
             )
             .await?;
-            // From this point onward the actual same-Gate close guard already
-            // exists outside every later future, including never-polled work.
-            let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
-            let config =
-                AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
-                    .with_root_bound_sockets(control, app_server)?
-                    .with_cognitive_retrieval_mode(cognitive_mode);
-            if config.identity() != &identity || context.identity() != &identity {
-                return Err(refused(
-                    "original Starting Config differs from the received phase",
-                ));
-            }
-            OriginalSameActorRootContext::require_current(&context)?;
-            business.host.notify_original(
-                &context,
-                OriginalSameActorPhaseEventV1::InputsOpened {
-                    identity: Box::new(identity.clone()),
-                    phase: context.descriptor().phase.clone(),
-                },
-            )?;
-            if !matches!(
-                business.host.receive_original(&context).await?,
-                OriginalSameActorPhaseCommandV1::InitialRootEnrolled
-            ) {
-                return Err(refused(
-                    "actual Initial Root enrollment must precede connection",
-                ));
-            }
-            let connection =
-                crate::AgentdRootProductionInputs::take_generation_publication_connection(
-                    &mut root,
-                )?;
-            let initial = initial
-                .connect_original_same_actor_initial(
-                    connection,
-                    Arc::clone(&context),
-                    Duration::from_millis(500),
-                )
-                .await?;
-            OriginalSameActorRootContext::require_current(&context)?;
-            // Original synchronous owners complete before this poll returns.
-            // block_in_place lets the original refresh worker continue; it
-            // creates no detached owner task or discardable JoinHandle.
-            let config = tokio::task::block_in_place(|| {
-                install_original_initial_task(
-                    config,
-                    Arc::clone(&context),
-                    initial,
-                    business,
-                    scoped_handoff,
-                )
-            })?;
-            late_writer::require_late_owner(uid, gid)?;
-            OriginalSameActorRootContext::require_current(&context)?;
-            let launch = AgentdProductionLaunch {
-                root,
-                inputs: RuntimeInputs {
-                    primary,
-                    notes,
-                    notes_ui,
-                },
-                q24_model: None,
-                publication: None,
-                initial_publication: None,
-            };
-            // Actual Primary/session/writer/appserver composition and its
-            // original signed ingress/readiness checks are still mandatory.
-            // Generic bounded host shutdown can abort its async wrapper while
-            // the original blocking owner is still joining real work. This
-            // phase has no final completion/owner-join acknowledgement, so
-            // generic Ok cannot certify a completed phase or physical join.
-            launch.run(config, arg0_paths).await?;
-            Err(refused(
-                "original phase completion and physical owner join are not acknowledged",
-            ))
-        }
+        OriginalSameActorRootContext::require_current(&context)?;
+        // Original synchronous owners complete before this poll returns.
+        // block_in_place lets the original refresh worker continue; it
+        // creates no detached owner task or discardable JoinHandle.
+        let config = tokio::task::block_in_place(|| {
+            install_original_initial_task(
+                config,
+                Arc::clone(&context),
+                initial,
+                business,
+                scoped_handoff,
+            )
+        })?;
+        late_writer::require_late_owner(uid, gid)?;
+        OriginalSameActorRootContext::require_current(&context)?;
+        let launch = AgentdProductionLaunch {
+            root,
+            inputs: RuntimeInputs {
+                primary,
+                notes,
+                notes_ui,
+            },
+            q24_model: None,
+            publication: None,
+            initial_publication: None,
+        };
+        // Actual Primary/session/writer/appserver composition and its
+        // original signed ingress/readiness checks are still mandatory.
+        // Generic bounded host shutdown can abort its async wrapper while
+        // the original blocking owner is still joining real work. This
+        // phase has no final completion/owner-join acknowledgement, so
+        // generic Ok cannot certify a completed phase or physical join.
+        launch.run(config, arg0_paths).await?;
+        Err(refused(
+            "original phase completion and physical owner join are not acknowledged",
+        ))
     }
 }
 

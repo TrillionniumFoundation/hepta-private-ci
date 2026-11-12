@@ -70,31 +70,28 @@ impl OriginalScopedPublicationTicket {
         self.context.gate()
     }
 
-    pub(crate) fn connect_original_current(
+    pub(crate) async fn connect_original_current(
         mut self,
         timeout: Duration,
-    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>>
+    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>
     {
-        // The ticket already owns its close guard before this future is polled.
-        async move {
-            OriginalSameActorRootContext::require_current(&self.context)?;
-            let connection = self
-                .context
-                .successor_session()
-                .take_original_scoped_publication_connection(&self)?;
-            let current = self
-                .handoff
-                .connect_original_same_actor_publication(
-                    connection,
-                    Arc::clone(&self.context),
-                    self.scoped,
-                    timeout,
-                )
-                .await?;
-            OriginalSameActorRootContext::require_current(&self.context)?;
-            self.closing.disarm();
-            Ok(current)
-        }
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        let connection = self
+            .context
+            .successor_session()
+            .take_original_scoped_publication_connection(&self)?;
+        let current = self
+            .handoff
+            .connect_original_same_actor_publication(
+                connection,
+                Arc::clone(&self.context),
+                self.scoped,
+                timeout,
+            )
+            .await?;
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        self.closing.disarm();
+        Ok(current)
     }
 }
 
@@ -309,7 +306,7 @@ async fn connect_original_same_actor_model(
     if timeout.is_zero() || timeout > Duration::from_millis(500) {
         return Err(refused("bounded original phase Model timeout required"));
     }
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     let bundle: Q24ModelFactoryBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;
     let original = context.bootstrap();
     let identity = context.identity();
@@ -326,7 +323,7 @@ async fn connect_original_same_actor_model(
         || bundle.identity.identity()? != *identity
         || original.registered_identity.identity()? != *identity
         || bundle.socket_path != socket
-        || bundle.profile.binding().to_string() != scoped.factory
+        || bundle.profile.binding() != scoped.factory
     {
         return Err(refused(
             "Model handoff differs from the original scoped Root purpose",
@@ -355,14 +352,14 @@ async fn connect_original_same_actor_model(
         ],
         unsafe { libc::getegid() },
     )?;
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     let stream = tokio::time::timeout(
         timeout.min(context.gate().require_open()?),
         tokio::net::UnixStream::connect(&socket),
     )
     .await
     .map_err(|_| refused("original phase Model connection expired"))??;
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     let stream = stream.into_std()?;
     // Both owners are derived here from THIS original stream and THIS gate.
     // The factory is never passed an externally chosen transport/guard pair.
@@ -389,7 +386,7 @@ async fn connect_original_same_actor_model(
         required,
     )
     .await?;
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     closing.disarm();
     Ok(model)
 }

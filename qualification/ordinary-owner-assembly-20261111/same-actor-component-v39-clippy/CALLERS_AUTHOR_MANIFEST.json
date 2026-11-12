@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "kind": "v38-actual-clippy-callers-adaptation-manifest",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "FROZEN_UNREFERENCED_STATIC_CANDIDATE; independent metadata review pending; original formatter/checker/native qualification not asserted",
+  "source_base": {
+    "commit": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+    "tree": "10aec6aba732211dd3adb471488c3541d880d9b5",
+    "agentd_same_as": "3dbffb487de65a7c598a92510d081855d8b052dc"
+  },
+  "actual_native_clippy": {
+    "patch": {
+      "blob": "ece94a44eb56d792e63a276dd992220dcf304e4c",
+      "bytes": 30377,
+      "sha256": "2d1b3166f3bfc1ba9c8da646ee17a0f42f58e589ffe1737115d1316c8de19917"
+    },
+    "inventory_blob": "e49dd9823ff1846073cd54a2f555d4140243dea1",
+    "files": 13,
+    "hunks": 25,
+    "all_actual_pre_post_git_sha_bytes_verified": true,
+    "all_actual_posts_get_verified": true,
+    "all_positioned_full_context_forward_reverse": true,
+    "source_semantic_review": "b671cdbd8ae708525f62b586872a05ea0cce861d"
+  },
+  "deliverable": {
+    "path": "CALLERS.toml",
+    "pre": {
+      "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    },
+    "post": {
+      "blob": "129fcc5fc3d10b3a6ee0758c6ab41f111ac227c7",
+      "bytes": 891249,
+      "sha256": "67f0d0f1e0cfad34d6bf6f38b264882477174e8d008f5e1d23ec737f98046eba"
+    },
+    "exact_ops": {
+      "blob": "1fe7fbd3a1cfb5e7f86a543f021625a09af041b3",
+      "bytes": 54948,
+      "sha256": "ba90d2788f780baf250764ca393ec0c2f3cb2fa1d81788254aac848a8b67865b"
+    },
+    "full_field_mapping_and_projection": {
+      "blob": "bfe9adde1d269f4391a6b0436103414a5d18e2bd",
+      "bytes": 432987,
+      "sha256": "fd41ed3efc1b380d1e85c9b7c948b5d80a5a7befb4dbc540bcf0833d44d12ffd"
+    },
+    "all_deliverables_create_get_verified": true
+  },
+  "changes": {
+    "row_operations": 13,
+    "boundary_rows": 2,
+    "protected_rows": 11,
+    "existing_string_changes": 21,
+    "source_paths_with_metadata_changes": 11,
+    "added_masked_async_sequences": 2,
+    "added_async_strings": 4,
+    "classification_counts": {
+      "actual_clippy_typed_method_reference_same_receiver": 8,
+      "actual_clippy_poison_error_method_reference_cleanup_only": 1,
+      "actual_clippy_removes_extra_reference_from_existing_borrow": 6,
+      "actual_clippy_if_let_chain_preserves_previous_result_is_ok_condition": 1,
+      "actual_clippy_async_fn_declaration": 2,
+      "actual_clippy_async_body_to_async_fn_return_signature_with_separate_masked_declaration": 2,
+      "actual_clippy_async_body_dedent_only": 1
+    },
+    "explanation": "The 21 exact strings follow only actual Clippy output. Two additional masked orders retain the asynchronous declaration obligation after native conversion from fn returning async move to async fn. They include every actual parameter and the exact Result signature; body checks, awaits and final errors remain ordered inside each unique function."
+  },
+  "invariants": {
+    "sections_unchanged": true,
+    "boundaries": 638,
+    "protected": 440,
+    "unique_boundary_ids": true,
+    "unique_required_ids": true,
+    "required_ids_exact_equal_declared": true,
+    "required_inventory_raw_unchanged": true,
+    "unchanged_rows": 1117,
+    "unchanged_boundary_fields_except_two_definition_markers": true,
+    "protected_required_forbidden_literal_top_level_unchanged": true,
+    "schema_roots_ignored_rules_raw_unchanged": true,
+    "source_mutations_by_this_packet": 0,
+    "original_checker_or_typed_helper_executed": false
+  },
+  "static_verification": {
+    "method": "Independent pure V8 static projection using the original comment/literal/test-only cfg masks, unique function extent, nested-function masks, literal-call positions, ordered markers and forbidden-word semantics. It is bounded to the 13 actual Clippy source files and is not execution of the original checker or typed helper and does not rebuild the global receiver index.",
+    "summary": {
+      "pre": {
+        "protected_rows": 19,
+        "functions": 63,
+        "ordered_markers": 759,
+        "raw_required": 48,
+        "forbidden": 43,
+        "top_level": 0,
+        "literal_calls": 1
+      },
+      "post": {
+        "protected_rows": 19,
+        "functions": 63,
+        "ordered_markers": 763,
+        "raw_required": 48,
+        "forbidden": 43,
+        "top_level": 0,
+        "literal_calls": 1
+      },
+      "boundary_raw_per_side": {
+        "pre": 139,
+        "post": 139
+      }
+    },
+    "failures": 0,
+    "async_declaration_proofs": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "code_declaration_count": 1,
+        "declaration_start": 4375,
+        "function_start": 4385,
+        "function_end": 9825,
+        "return_start": 4523,
+        "return_immediately_follows_complete_parameters": true,
+        "function_unique": true,
+        "original_function_guards_retained": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "code_declaration_count": 1,
+        "declaration_start": 3099,
+        "function_start": 3116,
+        "function_end": 3878,
+        "return_start": 3195,
+        "return_immediately_follows_complete_parameters": true,
+        "function_unique": true,
+        "original_function_guards_retained": true
+      }
+    ],
+    "source_before_and_after_span_for_each_changed_string": true,
+    "all_13_operations_unique_forward_reverse": true,
+    "all_other_rows_byte_identical": true,
+    "original_checker_executed": false,
+    "original_typed_helper_executed": false,
+    "global_receiver_index_rebuilt": false
+  },
+  "integration_boundaries": {
+    "source_writes_in_this_packet": 0,
+    "checker_helper_writes": 0,
+    "ref_updates": 0,
+    "h_pty_native_runs": 0,
+    "native_result": "Root reports V38 just-fix child exit 0, 13 files changed, and original clean-identity rejection. No later test result is inherited.",
+    "raw_clippy_postimages_not_formatted_again": true,
+    "next_original_formatter_required": true,
+    "actual_fmt_may_change_these_exact_markers_again": true,
+    "fresh_deadlines_retries_authority_or_effect_order_changes": 0,
+    "future_b_provider_annex_not_merged": true,
+    "future_root_daemon_entry_and_lifecycle_not_merged": true,
+    "ordinary_business_or_physical_join_success": "No claim; this is metadata for the actual native maintenance postimages only."
+  },
+  "independent_metadata_review": {
+    "status": "pending",
+    "reviewer": "/root/hepta_audit",
+    "no_future_result_prefilled": true
+  }
+}

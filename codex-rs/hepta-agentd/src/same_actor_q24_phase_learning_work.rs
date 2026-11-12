@@ -256,7 +256,7 @@ impl OriginalLearningJobs {
             let jobs = self
                 .retained
                 .lock()
-                .unwrap_or_else(|error| error.into_inner())
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
                 .clone();
             if jobs.is_empty() {
                 let notified = self.changed.notified();
@@ -281,7 +281,7 @@ impl OriginalLearningJobs {
                 }
                 self.retained
                     .lock()
-                    .unwrap_or_else(|error| error.into_inner())
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .retain(|entry| !Arc::ptr_eq(entry, &job));
             }
         }

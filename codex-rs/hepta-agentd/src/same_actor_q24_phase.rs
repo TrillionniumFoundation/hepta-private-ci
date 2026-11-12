@@ -213,11 +213,11 @@ impl OriginalSameActorPhaseHostV1 {
         event: OriginalSameActorPhaseEventV1,
     ) -> Result<(), AgentdError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
-        OriginalSameActorRootContext::require_current(&context)?;
+        OriginalSameActorRootContext::require_current(context)?;
         self.events
             .try_send(event)
             .map_err(|_| phase_refused("original phase host notification lost"))?;
-        OriginalSameActorRootContext::require_current(&context)?;
+        OriginalSameActorRootContext::require_current(context)?;
         closing.disarm();
         Ok(())
     }
@@ -227,13 +227,13 @@ impl OriginalSameActorPhaseHostV1 {
         context: &OriginalSameActorRootContext,
     ) -> Result<OriginalSameActorPhaseCommandV1, AgentdError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
-        OriginalSameActorRootContext::require_current(&context)?;
+        OriginalSameActorRootContext::require_current(context)?;
         let received = tokio::select! {
             _ = context.gate().cancelled() => return Err(phase_refused("original phase is closed")),
             received = self.commands.recv() => received,
         }
         .ok_or_else(|| phase_refused("original phase host command stream closed"))?;
-        OriginalSameActorRootContext::require_current(&context)?;
+        OriginalSameActorRootContext::require_current(context)?;
         closing.disarm();
         Ok(received)
     }

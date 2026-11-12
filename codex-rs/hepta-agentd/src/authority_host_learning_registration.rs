@@ -104,7 +104,7 @@ impl HostAuthorityService {
             owner_pidfd,
             profile,
             |initial, proof| {
-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
+                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
                 let scope = profile.frozen_scope(&initial)?;
                 let binding = scope.as_ref().map(|scope| scope.binding().to_string());
                 if let Some(phase) = phase {
@@ -176,7 +176,7 @@ impl HostAuthorityService {
             owner_pidfd,
             &profile,
             |initial, _| {
-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
+                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
                 let store = learning_store(
                     &config.state_dir,
                     &initial,

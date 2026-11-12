@@ -129,7 +129,7 @@ impl HostAuthorityService {
         while channel
             .exchange(|bytes| {
                 let _admission = phase
-                    .map(|gate| gate.enter_original_lane())
+                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
                     .transpose()
                     .map_err(|_| HostIssuerTransportError::Unavailable)?;
                 let response = self

@@ -1,0 +1,115 @@
+{
+  "source": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+  "operations": 13,
+  "unique_forward_reverse": true,
+  "rowCounts": {
+    "privileged_inventory": {
+      "total": 1,
+      "changed": 0,
+      "byte_equal": 1
+    },
+    "boundary": {
+      "total": 638,
+      "changed": 2,
+      "byte_equal": 636
+    },
+    "protected_file": {
+      "total": 440,
+      "changed": 11,
+      "byte_equal": 429
+    }
+  },
+  "changed_rows": [
+    {
+      "index": 5,
+      "key": "protected_file:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "changes": 1
+    },
+    {
+      "index": 924,
+      "key": "protected_file:codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "changes": 1
+    },
+    {
+      "index": 1005,
+      "key": "boundary:root_same_actor_ticket_connect",
+      "changes": 1
+    },
+    {
+      "index": 1018,
+      "key": "boundary:q24_same_actor_run",
+      "changes": 1
+    },
+    {
+      "index": 1047,
+      "key": "protected_file:codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "changes": 4
+    },
+    {
+      "index": 1049,
+      "key": "protected_file:codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "changes": 4
+    },
+    {
+      "index": 1053,
+      "key": "protected_file:codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "changes": 1
+    },
+    {
+      "index": 1058,
+      "key": "protected_file:codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "changes": 3
+    },
+    {
+      "index": 1064,
+      "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "changes": 2
+    },
+    {
+      "index": 1065,
+      "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "changes": 2
+    },
+    {
+      "index": 1066,
+      "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "changes": 1
+    },
+    {
+      "index": 1068,
+      "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "changes": 1
+    },
+    {
+      "index": 1071,
+      "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "changes": 1
+    }
+  ],
+  "existing_string_changes": 21,
+  "added_masked_async_orders": 2,
+  "other_parsed_fields_and_array_orders_identical": true,
+  "all_declared_source_spans_checked": true,
+  "actual_full_async_declarations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "source": {
+        "blob": "95f849829f59292003b06cf12c9bf297c6b11a52",
+        "bytes": 11445,
+        "sha256": "8cdb57c97a89895825867502fd1284255cc241d99bfe2392e38bc805845a82ef"
+      },
+      "exact_unique_full_declaration_and_return_adjacent": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "source": {
+        "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+        "bytes": 15763,
+        "sha256": "e2dd8a301533efc7e5ffc87a3c891269bc52f955f322474954adc4257de15f7f"
+      },
+      "exact_unique_full_declaration_and_return_adjacent": true
+    }
+  ],
+  "local_validation_correction": "Initial Root lookup treated a protected file path as unique across all rows and stopped before publication. The final comparison binds each changed raw row, actual function and before/after value, enforces one use per declared mapping, and rejects every undeclared field change. Some source paths legitimately have multiple protected rows.",
+  "original_checker_or_native_run": false
+}

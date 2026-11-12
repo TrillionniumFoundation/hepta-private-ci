@@ -1,0 +1,607 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs b/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
+index 55dd2a18609a6794be7009516d6a82a72658c466..56e2d21b216df32a38b569099aa6f3e10626e3f9 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs
+@@ -35,7 +35,7 @@ impl HostAuthorityService {
+         original_root()?;
+         let mut enrolled_result = None;
+         self.with_initial_publication_context(config, registration, owner, |proof| {
+-            let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()?;
++            let _admission = phase.map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane).transpose()?;
+             let profile_owner = format!(
+                 "generation-initial/{}",
+                 crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs b/codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs
+index bdd3bc5b41eb536c99576f0e35186951908ee389..cc2a731346ee5d7bee3b3bbc7644738f302d01c9 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs
+@@ -118,7 +118,7 @@ impl HostAuthorityService {
+         while channel
+             .exchange(|bytes| {
+                 let _phase_admission = phase
+-                    .map(|gate| gate.enter_original_lane())
++                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
+                     .transpose()
+                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                 let mut encoded_response = None;
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs b/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs
+index 706bb67f3471b0c4681f16343878c7cf7310415f..78e2fc63c61fd8650fe20fc1ca61215613cf2833 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs
+@@ -104,7 +104,7 @@ impl HostAuthorityService {
+             owner_pidfd,
+             profile,
+             |initial, proof| {
+-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
++                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
+                 let scope = profile.frozen_scope(&initial)?;
+                 let binding = scope.as_ref().map(|scope| scope.binding().to_string());
+                 if let Some(phase) = phase {
+@@ -176,7 +176,7 @@ impl HostAuthorityService {
+             owner_pidfd,
+             &profile,
+             |initial, _| {
+-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
++                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
+                 let store = learning_store(
+                     &config.state_dir,
+                     &initial,
+diff --git a/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs b/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs
+index 8a7be647552b83d0f7044984b231f375686fdc43..3ea3d4a71b6a26f617e6c4b251a30de04d526a6a 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs
+@@ -84,7 +84,7 @@ impl HostAuthorityService {
+             owner_pidfd,
+             learning,
+             |initial, proof| {
+-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
++                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
+                 let scope = learning.require_cell_scope(&initial)?;
+                 let now = self
+                     .clock
+@@ -219,7 +219,7 @@ impl HostAuthorityService {
+             owner_pidfd,
+             learning,
+             |initial, proof| {
+-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
++                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
+                 let scope = learning.require_cell_scope(&initial)?;
+                 let domain = witness_domain(config, &reservation)?;
+                 let directory = config.state_dir.join(DIRECTORY);
+diff --git a/codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs b/codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs
+index 542b980f64619a517246cdbe9167044f3ae12813..be12430d78451c75c29b7d295bba4ea0459155de 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs
+@@ -129,7 +129,7 @@ impl HostAuthorityService {
+         while channel
+             .exchange(|bytes| {
+                 let _admission = phase
+-                    .map(|gate| gate.enter_original_lane())
++                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
+                     .transpose()
+                     .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                 let response = self
+diff --git a/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs b/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
+index be3db7b78b8122b7390c1ce4de3971cb1cdcb88f..40fcc184c79929df6d149c6b86d02460da225dd9 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs
+@@ -199,7 +199,7 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
+         &self,
+         request_json: &[u8],
+     ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+-        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
++        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+diff --git a/codex-rs/hepta-agentd/src/final_use_issuer.rs b/codex-rs/hepta-agentd/src/final_use_issuer.rs
+index 423c69f01f26e38478f3170826f72fdb318dd662..51a5b676de866752fe10ba2e3dc8ad338997d71f 100644
+--- a/codex-rs/hepta-agentd/src/final_use_issuer.rs
++++ b/codex-rs/hepta-agentd/src/final_use_issuer.rs
+@@ -135,7 +135,7 @@ impl AgentdUnixFinalUseGrantProvider {
+         &self,
+         binding: &FinalUseBinding,
+     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
+-        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
++        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+@@ -167,7 +167,7 @@ impl AgentdUnixFinalUseGrantProvider {
+         &self,
+         exchange: impl FnOnce(&mut UnixStream, Instant) -> Result<T, AgentdFinalUseIssuerError>,
+     ) -> Result<T, AgentdFinalUseIssuerError> {
+-        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
++        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
+         if let Some(phase) = &self.phase {
+             phase
+                 .require_open()
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs b/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
+index 0c2d02fdc39d34e1c4230890577bdc0fd9eb443c..730aab00499c1c84c337926e97b3d9695696f3cc 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs
+@@ -299,11 +299,10 @@ impl AgentdLearningCheckpointClientV1 {
+             self.require_original_phase(mutation)?;
+             // A Conflict keeps its original error value. Only the old None
+             // profile may reuse that lane; this phase closes on every error.
+-            if result.is_ok() {
+-                if let Some(closing) = &mut phase_closing {
++            if result.is_ok()
++                && let Some(closing) = &mut phase_closing {
+                     closing.disarm();
+                 }
+-            }
+             result
+         } else {
+             Err(unavailable())
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
+index 25d54d70c9c69ead8dfc70ce6436e49791d05fb0..95f849829f59292003b06cf12c9bf297c6b11a52 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs
+@@ -90,144 +90,140 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
+     /// consumes this startup once and calls the original Launch.run itself.
+     /// The host must still submit A and C through signed ObjectiveStart and
+     /// provide independent signed Outcomes through the bounded typed channel.
+-    pub fn run_original_phase(
++    pub async fn run_original_phase(
+         self,
+         mut business: OriginalSameActorBusinessInputsV1,
+         arg0_paths: Arg0DispatchPaths,
+-    ) -> impl std::future::Future<Output = Result<(), AgentdError>> {
+-        // Before first poll this future owns every inherited descriptor and
+-        // business owner. No Session or authority object has been created.
+-        async move {
+-            let runtime = tokio::runtime::Handle::try_current()
+-                .map_err(|_| refused("original phase requires its actual Tokio runtime"))?;
+-            if runtime.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread {
+-                return Err(refused(
+-                    "original phase requires the original multi-thread runtime",
+-                ));
+-            }
+-            let Self {
+-                identity,
+-                cognitive_mode,
+-                inputs,
+-                mut receiver,
+-                phase_handoff,
++    ) -> Result<(), AgentdError> {
++        let runtime = tokio::runtime::Handle::try_current()
++            .map_err(|_| refused("original phase requires its actual Tokio runtime"))?;
++        if runtime.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread {
++            return Err(refused(
++                "original phase requires the original multi-thread runtime",
++            ));
++        }
++        let Self {
++            identity,
++            cognitive_mode,
++            inputs,
++            mut receiver,
++            phase_handoff,
++            scoped_handoff,
++        } = self;
++        let LaunchInputs {
++            handoff,
++            learning_handoff: _,
++            q24_model_handoff: _,
++            publication_handoff: _,
++            initial_handoff: _,
++            uid,
++            gid,
++            control,
++            app_server,
++            primary,
++            bootstrap_deadline: _,
++            notes,
++            notes_ui,
++            lifetime: _,
++        } = inputs;
++        late_writer::require_late_owner(uid, gid)?;
++        let (bootstrap, root_pidfd, writer) = tokio::task::block_in_place(|| {
++            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
++            let original = crate::receive_root_production_writer_handoff(handoff, timeout)?;
++            receiver.remaining()?;
++            Ok::<_, AgentdError>(original)
++        })?;
++        let phase = tokio::task::block_in_place(|| {
++            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
++            let phase =
++                receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
++            receiver.remaining()?;
++            Ok::<_, AgentdError>(phase)
++        })?;
++        let timeout = receiver.remaining()?.min(Duration::from_millis(500));
++        let OriginalSameActorProductionInputs {
++            mut root,
++            context,
++            initial,
++        } = receive_original_same_actor_inputs(
++            bootstrap, root_pidfd, phase, &identity, timeout, receiver,
++        )
++        .await?;
++        // From this point onward the actual same-Gate close guard already
++        // exists outside every later future, including never-polled work.
++        let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
++        let config =
++            AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
++                .with_root_bound_sockets(control, app_server)?
++                .with_cognitive_retrieval_mode(cognitive_mode);
++        if config.identity() != &identity || context.identity() != &identity {
++            return Err(refused(
++                "original Starting Config differs from the received phase",
++            ));
++        }
++        OriginalSameActorRootContext::require_current(&context)?;
++        business.host.notify_original(
++            &context,
++            OriginalSameActorPhaseEventV1::InputsOpened {
++                identity: Box::new(identity.clone()),
++                phase: context.descriptor().phase.clone(),
++            },
++        )?;
++        if !matches!(
++            business.host.receive_original(&context).await?,
++            OriginalSameActorPhaseCommandV1::InitialRootEnrolled
++        ) {
++            return Err(refused(
++                "actual Initial Root enrollment must precede connection",
++            ));
++        }
++        let connection =
++            crate::AgentdRootProductionInputs::take_generation_publication_connection(
++                &mut root,
++            )?;
++        let initial = initial
++            .connect_original_same_actor_initial(
++                connection,
++                Arc::clone(&context),
++                Duration::from_millis(500),
++            )
++            .await?;
++        OriginalSameActorRootContext::require_current(&context)?;
++        // Original synchronous owners complete before this poll returns.
++        // block_in_place lets the original refresh worker continue; it
++        // creates no detached owner task or discardable JoinHandle.
++        let config = tokio::task::block_in_place(|| {
++            install_original_initial_task(
++                config,
++                Arc::clone(&context),
++                initial,
++                business,
+                 scoped_handoff,
+-            } = self;
+-            let LaunchInputs {
+-                handoff,
+-                learning_handoff: _,
+-                q24_model_handoff: _,
+-                publication_handoff: _,
+-                initial_handoff: _,
+-                uid,
+-                gid,
+-                control,
+-                app_server,
++            )
++        })?;
++        late_writer::require_late_owner(uid, gid)?;
++        OriginalSameActorRootContext::require_current(&context)?;
++        let launch = AgentdProductionLaunch {
++            root,
++            inputs: RuntimeInputs {
+                 primary,
+-                bootstrap_deadline: _,
+                 notes,
+                 notes_ui,
+-                lifetime: _,
+-            } = inputs;
+-            late_writer::require_late_owner(uid, gid)?;
+-            let (bootstrap, root_pidfd, writer) = tokio::task::block_in_place(|| {
+-                let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+-                let original = crate::receive_root_production_writer_handoff(handoff, timeout)?;
+-                receiver.remaining()?;
+-                Ok::<_, AgentdError>(original)
+-            })?;
+-            let phase = tokio::task::block_in_place(|| {
+-                let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+-                let phase =
+-                    receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
+-                receiver.remaining()?;
+-                Ok::<_, AgentdError>(phase)
+-            })?;
+-            let timeout = receiver.remaining()?.min(Duration::from_millis(500));
+-            let OriginalSameActorProductionInputs {
+-                mut root,
+-                context,
+-                initial,
+-            } = receive_original_same_actor_inputs(
+-                bootstrap, root_pidfd, phase, &identity, timeout, receiver,
+-            )
+-            .await?;
+-            // From this point onward the actual same-Gate close guard already
+-            // exists outside every later future, including never-polled work.
+-            let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
+-            let config =
+-                AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
+-                    .with_root_bound_sockets(control, app_server)?
+-                    .with_cognitive_retrieval_mode(cognitive_mode);
+-            if config.identity() != &identity || context.identity() != &identity {
+-                return Err(refused(
+-                    "original Starting Config differs from the received phase",
+-                ));
+-            }
+-            OriginalSameActorRootContext::require_current(&context)?;
+-            business.host.notify_original(
+-                &context,
+-                OriginalSameActorPhaseEventV1::InputsOpened {
+-                    identity: Box::new(identity.clone()),
+-                    phase: context.descriptor().phase.clone(),
+-                },
+-            )?;
+-            if !matches!(
+-                business.host.receive_original(&context).await?,
+-                OriginalSameActorPhaseCommandV1::InitialRootEnrolled
+-            ) {
+-                return Err(refused(
+-                    "actual Initial Root enrollment must precede connection",
+-                ));
+-            }
+-            let connection =
+-                crate::AgentdRootProductionInputs::take_generation_publication_connection(
+-                    &mut root,
+-                )?;
+-            let initial = initial
+-                .connect_original_same_actor_initial(
+-                    connection,
+-                    Arc::clone(&context),
+-                    Duration::from_millis(500),
+-                )
+-                .await?;
+-            OriginalSameActorRootContext::require_current(&context)?;
+-            // Original synchronous owners complete before this poll returns.
+-            // block_in_place lets the original refresh worker continue; it
+-            // creates no detached owner task or discardable JoinHandle.
+-            let config = tokio::task::block_in_place(|| {
+-                install_original_initial_task(
+-                    config,
+-                    Arc::clone(&context),
+-                    initial,
+-                    business,
+-                    scoped_handoff,
+-                )
+-            })?;
+-            late_writer::require_late_owner(uid, gid)?;
+-            OriginalSameActorRootContext::require_current(&context)?;
+-            let launch = AgentdProductionLaunch {
+-                root,
+-                inputs: RuntimeInputs {
+-                    primary,
+-                    notes,
+-                    notes_ui,
+-                },
+-                q24_model: None,
+-                publication: None,
+-                initial_publication: None,
+-            };
+-            // Actual Primary/session/writer/appserver composition and its
+-            // original signed ingress/readiness checks are still mandatory.
+-            // Generic bounded host shutdown can abort its async wrapper while
+-            // the original blocking owner is still joining real work. This
+-            // phase has no final completion/owner-join acknowledgement, so
+-            // generic Ok cannot certify a completed phase or physical join.
+-            launch.run(config, arg0_paths).await?;
+-            Err(refused(
+-                "original phase completion and physical owner join are not acknowledged",
+-            ))
+-        }
++            },
++            q24_model: None,
++            publication: None,
++            initial_publication: None,
++        };
++        // Actual Primary/session/writer/appserver composition and its
++        // original signed ingress/readiness checks are still mandatory.
++        // Generic bounded host shutdown can abort its async wrapper while
++        // the original blocking owner is still joining real work. This
++        // phase has no final completion/owner-join acknowledgement, so
++        // generic Ok cannot certify a completed phase or physical join.
++        launch.run(config, arg0_paths).await?;
++        Err(refused(
++            "original phase completion and physical owner join are not acknowledged",
++        ))
+     }
+ }
+ 
+diff --git a/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs b/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
+index c94266e2ce52c82bc3e129abc5fecd2ed71e18d6..bea124de062c301c6b39d20c79ba288a87480751 100644
+--- a/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
++++ b/codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs
+@@ -70,31 +70,28 @@ impl OriginalScopedPublicationTicket {
+         self.context.gate()
+     }
+ 
+-    pub(crate) fn connect_original_current(
++    pub(crate) async fn connect_original_current(
+         mut self,
+         timeout: Duration,
+-    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>>
++    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>
+     {
+-        // The ticket already owns its close guard before this future is polled.
+-        async move {
+-            OriginalSameActorRootContext::require_current(&self.context)?;
+-            let connection = self
+-                .context
+-                .successor_session()
+-                .take_original_scoped_publication_connection(&self)?;
+-            let current = self
+-                .handoff
+-                .connect_original_same_actor_publication(
+-                    connection,
+-                    Arc::clone(&self.context),
+-                    self.scoped,
+-                    timeout,
+-                )
+-                .await?;
+-            OriginalSameActorRootContext::require_current(&self.context)?;
+-            self.closing.disarm();
+-            Ok(current)
+-        }
++        OriginalSameActorRootContext::require_current(&self.context)?;
++        let connection = self
++            .context
++            .successor_session()
++            .take_original_scoped_publication_connection(&self)?;
++        let current = self
++            .handoff
++            .connect_original_same_actor_publication(
++                connection,
++                Arc::clone(&self.context),
++                self.scoped,
++                timeout,
++            )
++            .await?;
++        OriginalSameActorRootContext::require_current(&self.context)?;
++        self.closing.disarm();
++        Ok(current)
+     }
+ }
+ 
+@@ -309,7 +306,7 @@ async fn connect_original_same_actor_model(
+     if timeout.is_zero() || timeout > Duration::from_millis(500) {
+         return Err(refused("bounded original phase Model timeout required"));
+     }
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     let bundle: Q24ModelFactoryBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;
+     let original = context.bootstrap();
+     let identity = context.identity();
+@@ -326,7 +323,7 @@ async fn connect_original_same_actor_model(
+         || bundle.identity.identity()? != *identity
+         || original.registered_identity.identity()? != *identity
+         || bundle.socket_path != socket
+-        || bundle.profile.binding().to_string() != scoped.factory
++        || bundle.profile.binding() != scoped.factory
+     {
+         return Err(refused(
+             "Model handoff differs from the original scoped Root purpose",
+@@ -355,14 +352,14 @@ async fn connect_original_same_actor_model(
+         ],
+         unsafe { libc::getegid() },
+     )?;
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     let stream = tokio::time::timeout(
+         timeout.min(context.gate().require_open()?),
+         tokio::net::UnixStream::connect(&socket),
+     )
+     .await
+     .map_err(|_| refused("original phase Model connection expired"))??;
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     let stream = stream.into_std()?;
+     // Both owners are derived here from THIS original stream and THIS gate.
+     // The factory is never passed an externally chosen transport/guard pair.
+@@ -389,7 +386,7 @@ async fn connect_original_same_actor_model(
+         required,
+     )
+     .await?;
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     closing.disarm();
+     Ok(model)
+ }
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
+index 4f17d4f2692842fb4d175f9ba38b656995358bd5..c41a4301ed8d9c2121882065f5d5d201a5a59d24 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
+@@ -213,11 +213,11 @@ impl OriginalSameActorPhaseHostV1 {
+         event: OriginalSameActorPhaseEventV1,
+     ) -> Result<(), AgentdError> {
+         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+-        OriginalSameActorRootContext::require_current(&context)?;
++        OriginalSameActorRootContext::require_current(context)?;
+         self.events
+             .try_send(event)
+             .map_err(|_| phase_refused("original phase host notification lost"))?;
+-        OriginalSameActorRootContext::require_current(&context)?;
++        OriginalSameActorRootContext::require_current(context)?;
+         closing.disarm();
+         Ok(())
+     }
+@@ -227,13 +227,13 @@ impl OriginalSameActorPhaseHostV1 {
+         context: &OriginalSameActorRootContext,
+     ) -> Result<OriginalSameActorPhaseCommandV1, AgentdError> {
+         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+-        OriginalSameActorRootContext::require_current(&context)?;
++        OriginalSameActorRootContext::require_current(context)?;
+         let received = tokio::select! {
+             _ = context.gate().cancelled() => return Err(phase_refused("original phase is closed")),
+             received = self.commands.recv() => received,
+         }
+         .ok_or_else(|| phase_refused("original phase host command stream closed"))?;
+-        OriginalSameActorRootContext::require_current(&context)?;
++        OriginalSameActorRootContext::require_current(context)?;
+         closing.disarm();
+         Ok(received)
+     }
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs
+index db867032cbc55f4579f8ba1e3b8c3975c0433766..0b64648d28f928dcba6b5dc249b955701d3e6e10 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs
+@@ -59,7 +59,7 @@ impl OriginalInitialPhaseLifetime {
+         context: &OriginalSameActorRootContext,
+     ) -> Result<(), AgentdError> {
+         self.require_original_gate(context.gate())?;
+-        OriginalSameActorRootContext::require_current(&context)?;
++        OriginalSameActorRootContext::require_current(context)?;
+         if self.phase != context.descriptor().phase
+             || self
+                 .accepted
+@@ -70,7 +70,7 @@ impl OriginalInitialPhaseLifetime {
+                 "original retirement acknowledgement was already consumed",
+             ));
+         }
+-        OriginalSameActorRootContext::require_current(&context)
++        OriginalSameActorRootContext::require_current(context)
+     }
+ }
+ 
+@@ -250,7 +250,7 @@ async fn original_join_exchange(
+     sequence: u8,
+ ) -> Result<(), AgentdError> {
+     let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     let profile = serde_json::to_string(profile)?;
+     let request = PhaseJoinRequest {
+         schema: 1,
+@@ -273,7 +273,7 @@ async fn original_join_exchange(
+     {
+         return Err(refused("original phase acknowledgement differs"));
+     }
+-    OriginalSameActorRootContext::require_current(&context)?;
++    OriginalSameActorRootContext::require_current(context)?;
+     closing.disarm();
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs
+index 2eeb13155a079d991f03bbe6e742ccb2a7cdc444..6745890150970ca9ac83cfcda9f223411ab399d3 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs
+@@ -256,7 +256,7 @@ impl OriginalLearningJobs {
+             let jobs = self
+                 .retained
+                 .lock()
+-                .unwrap_or_else(|error| error.into_inner())
++                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                 .clone();
+             if jobs.is_empty() {
+                 let notified = self.changed.notified();
+@@ -281,7 +281,7 @@ impl OriginalLearningJobs {
+                 }
+                 self.retained
+                     .lock()
+-                    .unwrap_or_else(|error| error.into_inner())
++                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                     .retain(|entry| !Arc::ptr_eq(entry, &job));
+             }
+         }

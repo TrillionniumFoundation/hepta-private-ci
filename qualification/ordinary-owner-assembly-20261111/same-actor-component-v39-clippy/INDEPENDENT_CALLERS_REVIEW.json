@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "kind": "independent-v38-native-clippy-metadata-review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "No confirmed static blocker in the exact 13 metadata operations. Preserve original V38 failed clean-source gate; this review is not formatter, compiler, checker or native qualification.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+    "tree": "10aec6aba732211dd3adb471488c3541d880d9b5"
+  },
+  "pins": {
+    "pre_callers": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "post_callers": {
+      "blob": "129fcc5fc3d10b3a6ee0758c6ab41f111ac227c7",
+      "bytes": 891249,
+      "sha256": "67f0d0f1e0cfad34d6bf6f38b264882477174e8d008f5e1d23ec737f98046eba"
+    },
+    "exact_ops": {
+      "blob": "1fe7fbd3a1cfb5e7f86a543f021625a09af041b3",
+      "bytes": 54948,
+      "sha256": "ba90d2788f780baf250764ca393ec0c2f3cb2fa1d81788254aac848a8b67865b"
+    },
+    "author_manifest": "f9926ddac357772ea6bcfa09e9956f33cc268998",
+    "native_patch": "ece94a44eb56d792e63a276dd992220dcf304e4c",
+    "independent_source_review": "b671cdbd8ae708525f62b586872a05ea0cce861d",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "independent_projection": {
+      "blob": "df3be1e30329267cbe9c615974e4f7ff12374da5",
+      "bytes": 79760,
+      "sha256": "b475ab042b04c462ca7c7230c3d16ca47b4c98119ed73a5bea7ae07c88c31b06"
+    },
+    "projection_implementation": {
+      "blob": "afaa06987d7e554d4caecd2e883c7744eb2bec30",
+      "bytes": 6942,
+      "sha256": "4db14866ef8dca9312d7883b686b0536036d3b7cac335fed7b4b07a54a30ce3b"
+    }
+  },
+  "evidence_observed": [
+    "Direct Git GET of both complete CALLERS blobs, exact operation packet and author short manifest; independently recomputed full Git/byte count/SHA256.",
+    "Independent unique forward application of all 13 old_text blocks and reverse application of all 13 new_text blocks reconstructed both complete pinned CALLERS files exactly.",
+    "Independent TOML value parsing of both complete files: 638 unique declared IDs, 638 unique required IDs, equal sets, unchanged order/inventory; 440 protected rows. Exactly two boundary definition-marker strings and 11 protected rows differ.",
+    "All unchanged data stays byte-identical outside the exact 13 replacement blocks. Within boundary changes, caller/receiver/pattern/definition path and all non-marker fields remain identical. Protected required/forbidden/literal-call/top-level constraints unchanged.",
+    "Read original checker comment/literal/cfg(test)/nested-function masks, real function extent, ordered marker and forbidden matching semantics. Reprojected both metadata versions against the 13 actual Clippy source pre/post pairs already independently reconstructed from the original full-index patch."
+  ],
+  "projection_summary": {
+    "scope": "All protected rows whose path belongs to the actual 13 Clippy sources; no full-repository receiver/index scan.",
+    "pre": {
+      "rows": 19,
+      "functions": 63,
+      "ordered_markers": 759,
+      "raw_required": 48,
+      "forbidden": 43
+    },
+    "post": {
+      "rows": 19,
+      "functions": 63,
+      "ordered_markers": 763,
+      "raw_required": 48,
+      "forbidden": 43
+    },
+    "missing": 0,
+    "original_checker_executed": false
+  },
+  "actual_adaptations": [
+    "Eight existing marker replacements follow exact Clippy qualified method references for the same actual Gate/Namespace/RequiredChannel receiver; transpose/error propagation and original witness/effect order remain required.",
+    "One marker follows the actual PoisonError::into_inner cleanup method reference. Six remove the same redundant extra reference to already borrowed original Context. One records the actual short-circuit && let while preserving the preceding result.is_ok condition. One only follows Startup body dedent.",
+    "Two definition markers now require actual async fn declarations. Two unique-function sequences replace the removed async move marker with the exact Result-return signature. Every subsequent original guard, await, one-shot take, closing/disarm and Startup final Err marker remains in the same ordered function sequence.",
+    "Two new masked file-level sequences require the complete actual async declaration including all actual parameters, immediately followed by its exact Result signature. Independently verified each declaration is unique and its return marker begins at the end of the complete-parameter marker; function-order scope independently identifies the same unique function. This does not pretend that the original function-range extractor includes the leading async token.",
+    "No helper/checker modification, ignored-path exception, caller deletion, receiver relaxation, new authority, budget/deadline/retry change, or invented comment marker is present."
+  ],
+  "async_scope_qualification": "The source review separately analyzed actual first-poll, never-polled capture and aggregate field ownership. This metadata review preserves those concrete syntax obligations; it does not assert compiler-generated future layout or general destructor equivalence from matching text.",
+  "integration_limits": [
+    "Actual raw Clippy output has not been formatted again. The unchanged original formatter may produce another exact layout delta; any later CALLERS change must bind those real bytes.",
+    "Root alone updates the existing CALLERS SHA allowlist entry and runs the fixed original qualification harness. This packet modifies only CALLERS.",
+    "Original V38 fix child exit 0 plus dirty-source rejection remains a failed attempt; no test or business success inherited.",
+    "Future Circuit/Session lifecycle, deployment/Root completion and B provider packages are not part of these metadata changes. Ordinary chain / independent-controller consumer / cold-restart evidence remains 0/0/0."
+  ],
+  "authors_projection_not_assumed": "The large author mapping bfe9adde... was not used as an execution result. This review's independent projection and exact operations are separately frozen in the referenced detail and JS blobs."
+}

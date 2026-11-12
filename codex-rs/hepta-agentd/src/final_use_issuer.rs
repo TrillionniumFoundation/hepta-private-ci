@@ -135,7 +135,7 @@ impl AgentdUnixFinalUseGrantProvider {
         &self,
         binding: &FinalUseBinding,
     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
-        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
+        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
         if let Some(phase) = &self.phase {
             phase
                 .require_open()
@@ -167,7 +167,7 @@ impl AgentdUnixFinalUseGrantProvider {
         &self,
         exchange: impl FnOnce(&mut UnixStream, Instant) -> Result<T, AgentdFinalUseIssuerError>,
     ) -> Result<T, AgentdFinalUseIssuerError> {
-        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
+        let mut phase_close = self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope);
         if let Some(phase) = &self.phase {
             phase
                 .require_open()

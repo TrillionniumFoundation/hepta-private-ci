@@ -118,7 +118,7 @@ impl HostAuthorityService {
         while channel
             .exchange(|bytes| {
                 let _phase_admission = phase
-                    .map(|gate| gate.enter_original_lane())
+                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)
                     .transpose()
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 let mut encoded_response = None;

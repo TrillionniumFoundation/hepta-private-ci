@@ -1,0 +1,3408 @@
+{
+  "schema_version": 1,
+  "kind": "independent-v38-clippy-metadata-bounded-projection",
+  "reviewer": "/root/hepta_audit",
+  "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "mode": "Pure JavaScript lexical transcription for fixed changed sources; not original checker execution",
+  "exact_operations": [
+    {
+      "i": 0,
+      "old": 5286,
+      "new": 5286,
+      "path": "\"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 1,
+      "old": 5054,
+      "new": 5062,
+      "path": "\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 2,
+      "old": 506,
+      "new": 512,
+      "type": "[[boundary]]"
+    },
+    {
+      "i": 3,
+      "old": 468,
+      "new": 474,
+      "type": "[[boundary]]"
+    },
+    {
+      "i": 4,
+      "old": 1970,
+      "new": 1966,
+      "path": "\"codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 5,
+      "old": 2777,
+      "new": 3020,
+      "path": "\"codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 6,
+      "old": 1089,
+      "new": 1138,
+      "path": "\"codex-rs/hepta-agentd/src/final_use_issuer.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 7,
+      "old": 1705,
+      "new": 1905,
+      "path": "\"codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 8,
+      "old": 861,
+      "new": 999,
+      "path": "\"codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 9,
+      "old": 1172,
+      "new": 1310,
+      "path": "\"codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 10,
+      "old": 553,
+      "new": 593,
+      "path": "\"codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 11,
+      "old": 988,
+      "new": 1028,
+      "path": "\"codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs\"",
+      "type": "[[protected_file]]"
+    },
+    {
+      "i": 12,
+      "old": 1085,
+      "new": 1125,
+      "path": "\"codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs\"",
+      "type": "[[protected_file]]"
+    }
+  ],
+  "field_changes": [
+    {
+      "field": ".boundary.609.definition_markers.0",
+      "old": "pub(crate) fn connect_original_current(",
+      "new": "pub(crate) async fn connect_original_current("
+    },
+    {
+      "field": ".boundary.622.definition_markers.0",
+      "old": "pub fn run_original_phase(",
+      "new": "pub async fn run_original_phase("
+    },
+    {
+      "field": ".protected_file.2.required_order.1.17",
+      "old": "if let Some(closing) = &mut phase_closing",
+      "new": "&& let Some(closing) = &mut phase_closing"
+    },
+    {
+      "field": ".protected_file.375.required_function_order.6.sequence.5",
+      "old": ".unwrap_or_else(|error| error.into_inner())",
+      "new": ".unwrap_or_else(std::sync::PoisonError::into_inner)"
+    },
+    {
+      "field": ".protected_file.408.required_function_order.0.sequence.1",
+      "old": "OriginalSameActorRootContext::require_current(&context)?",
+      "new": "OriginalSameActorRootContext::require_current(context)?"
+    },
+    {
+      "field": ".protected_file.408.required_function_order.0.sequence.4",
+      "old": "OriginalSameActorRootContext::require_current(&context)",
+      "new": "OriginalSameActorRootContext::require_current(context)"
+    },
+    {
+      "field": ".protected_file.408.required_function_order.3.sequence.0",
+      "old": "OriginalSameActorRootContext::require_current(&context)?",
+      "new": "OriginalSameActorRootContext::require_current(context)?"
+    },
+    {
+      "field": ".protected_file.408.required_function_order.3.sequence.7",
+      "old": "OriginalSameActorRootContext::require_current(&context)?",
+      "new": "OriginalSameActorRootContext::require_current(context)?"
+    },
+    {
+      "field": ".protected_file.410.required_order.0",
+      "new": [
+        "pub(crate) async fn connect_original_current(\n        mut self,\n        timeout: Duration,\n    )",
+        " -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>\n    {"
+      ]
+    },
+    {
+      "field": ".protected_file.410.required_function_order.1.sequence.0",
+      "old": "async move",
+      "new": ") -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>\n    {"
+    },
+    {
+      "field": ".protected_file.410.required_function_order.4.sequence.0",
+      "old": "OriginalSameActorRootContext::require_current(&context)?",
+      "new": "OriginalSameActorRootContext::require_current(context)?"
+    },
+    {
+      "field": ".protected_file.410.required_function_order.4.sequence.11",
+      "old": "OriginalSameActorRootContext::require_current(&context)?",
+      "new": "OriginalSameActorRootContext::require_current(context)?"
+    },
+    {
+      "field": ".protected_file.414.required_order.0.1",
+      "old": "self.phase.as_ref().map(|phase| phase.failure_scope())",
+      "new": "self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope)"
+    },
+    {
+      "field": ".protected_file.419.required_order.0",
+      "new": [
+        "pub async fn run_original_phase(\n        self,\n        mut business: OriginalSameActorBusinessInputsV1,\n        arg0_paths: Arg0DispatchPaths,\n    )",
+        " -> Result<(), AgentdError> {"
+      ]
+    },
+    {
+      "field": ".protected_file.419.required_function_order.1.sequence.0",
+      "old": "async move",
+      "new": ") -> Result<(), AgentdError> {"
+    },
+    {
+      "field": ".protected_file.419.required_function_order.1.sequence.14",
+      "old": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                    &mut root,\n                )?",
+      "new": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                &mut root,\n            )?"
+    },
+    {
+      "field": ".protected_file.425.required_function_order.0.sequence.1",
+      "old": "phase.map(|phase| phase.enter_claimed()).transpose()?",
+      "new": "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?"
+    },
+    {
+      "field": ".protected_file.425.required_function_order.1.sequence.1",
+      "old": "phase.map(|phase| phase.enter_claimed()).transpose()?",
+      "new": "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?"
+    },
+    {
+      "field": ".protected_file.426.required_function_order.0.sequence.1",
+      "old": "phase.map(|phase| phase.enter_claimed()).transpose()?",
+      "new": "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?"
+    },
+    {
+      "field": ".protected_file.426.required_function_order.1.sequence.1",
+      "old": "phase.map(|phase| phase.enter_claimed()).transpose()?",
+      "new": "phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?"
+    },
+    {
+      "field": ".protected_file.427.required_function_order.0.sequence.2",
+      "old": "phase.map(|gate| gate.enter_original_lane()).transpose()?",
+      "new": "phase.map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane).transpose()?"
+    },
+    {
+      "field": ".protected_file.429.required_function_order.1.sequence.0",
+      "old": ".map(|gate| gate.enter_original_lane())",
+      "new": ".map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)"
+    },
+    {
+      "field": ".protected_file.432.required_function_order.1.sequence.0",
+      "old": "phase\n                    .map(|gate| gate.enter_original_lane())\n                    .transpose()",
+      "new": "phase\n                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)\n                    .transpose()"
+    }
+  ],
+  "async_declaration_proofs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "declarationStart": 4375,
+      "returnStart": 4523,
+      "completeParametersImmediatelyFollowedByReturn": true,
+      "fnUnique": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "declarationStart": 3099,
+      "returnStart": 3195,
+      "completeParametersImmediatelyFollowedByReturn": true,
+      "fnUnique": true
+    }
+  ],
+  "projection": {
+    "receipts": [
+      {
+        "side": "pre",
+        "index": 2,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "raw": 8,
+        "forbidden": 5,
+        "fileOrders": [
+          {
+            "length": 22,
+            "positions": [
+              8477,
+              9217,
+              9273,
+              9338,
+              9358,
+              9394,
+              9444,
+              9480,
+              9531,
+              9588,
+              9652,
+              9693,
+              9901,
+              9969,
+              9997,
+              10057,
+              10106,
+              10155,
+              10258,
+              10309,
+              10673,
+              10728
+            ]
+          },
+          {
+            "length": 20,
+            "positions": [
+              8477,
+              8944,
+              9013,
+              9217,
+              9338,
+              9358,
+              9901,
+              9969,
+              9997,
+              10258,
+              10309,
+              10519,
+              10580,
+              10621,
+              10673,
+              10755,
+              10961,
+              10997,
+              11061,
+              11123
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_root_stream(",
+            "length": 2,
+            "start": 2417,
+            "end": 2797,
+            "positions": [
+              257,
+              360
+            ]
+          },
+          {
+            "function": "fn from_root_stream_scoped_v2(",
+            "length": 3,
+            "start": 3046,
+            "end": 3612,
+            "positions": [
+              305,
+              374,
+              539
+            ]
+          },
+          {
+            "function": "fn from_stream_profile(",
+            "length": 4,
+            "start": 3619,
+            "end": 4599,
+            "positions": [
+              333,
+              473,
+              596,
+              785
+            ]
+          },
+          {
+            "function": "fn restore(",
+            "length": 6,
+            "start": 4976,
+            "end": 6647,
+            "positions": [
+              273,
+              382,
+              582,
+              697,
+              1009,
+              1081
+            ]
+          },
+          {
+            "function": "fn checkpoint(",
+            "length": 7,
+            "start": 6664,
+            "end": 8470,
+            "positions": [
+              283,
+              327,
+              429,
+              575,
+              901,
+              1185,
+              1288
+            ]
+          },
+          {
+            "function": "fn exchange_learning_checkpoint(",
+            "length": 19,
+            "start": 11409,
+            "end": 14532,
+            "positions": [
+              169,
+              336,
+              454,
+              487,
+              551,
+              592,
+              633,
+              673,
+              719,
+              812,
+              933,
+              980,
+              1133,
+              1643,
+              1936,
+              2084,
+              2614,
+              2780,
+              3000
+            ]
+          },
+          {
+            "function": "fn profile_identity(",
+            "length": 3,
+            "start": 4738,
+            "end": 4959,
+            "positions": [
+              59,
+              101,
+              156
+            ]
+          },
+          {
+            "function": "fn frozen_scope_binding(",
+            "length": 2,
+            "start": 4610,
+            "end": 4731,
+            "positions": [
+              0,
+              61
+            ]
+          },
+          {
+            "function": "fn from_stream_profile(",
+            "length": 4,
+            "start": 3619,
+            "end": 4599,
+            "positions": [
+              596,
+              785,
+              933,
+              952
+            ]
+          },
+          {
+            "function": "fn restore(",
+            "length": 14,
+            "start": 4976,
+            "end": 6647,
+            "positions": [
+              143,
+              212,
+              253,
+              273,
+              369,
+              582,
+              1009,
+              1081,
+              1440,
+              1456,
+              1488,
+              1529,
+              1610,
+              1660
+            ]
+          },
+          {
+            "function": "fn checkpoint(",
+            "length": 16,
+            "start": 6664,
+            "end": 8470,
+            "positions": [
+              154,
+              223,
+              264,
+              283,
+              327,
+              429,
+              575,
+              901,
+              1172,
+              1413,
+              1576,
+              1592,
+              1624,
+              1665,
+              1745,
+              1795
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 152,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "raw": 6,
+        "forbidden": 4,
+        "fileOrders": [
+          {
+            "length": 25,
+            "positions": [
+              10779,
+              11115,
+              11155,
+              11242,
+              11284,
+              11332,
+              11404,
+              11459,
+              11519,
+              11632,
+              11928,
+              12097,
+              12284,
+              12502,
+              12596,
+              13002,
+              13064,
+              13117,
+              13408,
+              13461,
+              13571,
+              13856,
+              14147,
+              14190,
+              14387
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn register_learning_checkpoint(",
+            "length": 3,
+            "start": 1733,
+            "end": 2238,
+            "positions": [
+              284,
+              323,
+              392
+            ]
+          },
+          {
+            "function": "fn open_registered_learning_checkpoint(",
+            "length": 3,
+            "start": 4507,
+            "end": 5014,
+            "positions": [
+              290,
+              329,
+              395
+            ]
+          },
+          {
+            "function": "fn seal_learning_checkpoint(",
+            "length": 16,
+            "start": 7408,
+            "end": 10761,
+            "positions": [
+              261,
+              450,
+              511,
+              574,
+              824,
+              1425,
+              1609,
+              1686,
+              2491,
+              2557,
+              2638,
+              2787,
+              2910,
+              2950,
+              3103,
+              3313
+            ]
+          },
+          {
+            "function": "fn learning_store(",
+            "length": 15,
+            "start": 14418,
+            "end": 16436,
+            "positions": [
+              243,
+              314,
+              386,
+              440,
+              473,
+              549,
+              577,
+              638,
+              684,
+              898,
+              1118,
+              1324,
+              1535,
+              1572,
+              1799
+            ]
+          },
+          {
+            "function": "fn reserve_original_learning_profile(",
+            "length": 2,
+            "start": 2459,
+            "end": 2928,
+            "positions": [
+              296,
+              357
+            ]
+          },
+          {
+            "function": "fn reserve_original_learning_profile_in_phase(",
+            "length": 5,
+            "start": 2946,
+            "end": 4489,
+            "positions": [
+              472,
+              739,
+              984,
+              1028,
+              1186
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile(",
+            "length": 2,
+            "start": 5032,
+            "end": 5493,
+            "positions": [
+              291,
+              349
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile_in_phase(",
+            "length": 8,
+            "start": 5511,
+            "end": 7390,
+            "positions": [
+              481,
+              745,
+              850,
+              889,
+              1399,
+              1523,
+              1588,
+              1731
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 191,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "raw": 1,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": []
+      },
+      {
+        "side": "pre",
+        "index": 235,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "raw": 5,
+        "forbidden": 4,
+        "fileOrders": [
+          {
+            "length": 4,
+            "positions": [
+              734,
+              1191,
+              1280,
+              1421
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              1734,
+              2848,
+              3120,
+              3384,
+              3633,
+              3901,
+              4012,
+              4551,
+              5277
+            ]
+          },
+          {
+            "length": 7,
+            "positions": [
+              6437,
+              8189,
+              8461,
+              8717,
+              8984,
+              9836,
+              10050
+            ]
+          },
+          {
+            "length": 8,
+            "positions": [
+              11046,
+              11503,
+              11651,
+              11836,
+              11894,
+              12126,
+              13616,
+              13656
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn register_host_q24_model_factory(",
+            "length": 13,
+            "start": 734,
+            "end": 1604,
+            "positions": [
+              254,
+              307,
+              365,
+              457,
+              538,
+              652,
+              687,
+              744,
+              762,
+              779,
+              802,
+              823,
+              850
+            ]
+          },
+          {
+            "function": "fn reserve_q24_model_factory(",
+            "length": 2,
+            "start": 1734,
+            "end": 2287,
+            "positions": [
+              356,
+              415
+            ]
+          },
+          {
+            "function": "fn reserve_original_phase_q24_model_factory(",
+            "length": 45,
+            "start": 2305,
+            "end": 6419,
+            "positions": [
+              538,
+              578,
+              598,
+              624,
+              649,
+              806,
+              925,
+              1079,
+              1153,
+              1328,
+              1398,
+              1557,
+              1633,
+              1693,
+              1726,
+              1751,
+              1785,
+              1854,
+              1918,
+              1954,
+              1982,
+              2012,
+              2040,
+              2089,
+              2138,
+              2166,
+              2246,
+              2364,
+              2456,
+              2560,
+              2656,
+              2755,
+              2833,
+              2940,
+              2972,
+              3032,
+              3195,
+              3245,
+              3279,
+              3397,
+              3445,
+              3555,
+              3709,
+              3795,
+              4073
+            ]
+          },
+          {
+            "function": "fn open_q24_model_factory(",
+            "length": 3,
+            "start": 6437,
+            "end": 7071,
+            "positions": [
+              382,
+              425,
+              496
+            ]
+          },
+          {
+            "function": "fn open_original_q24_model_reservation(",
+            "length": 2,
+            "start": 7089,
+            "end": 7640,
+            "positions": [
+              353,
+              413
+            ]
+          },
+          {
+            "function": "fn open_original_phase_q24_model_reservation(",
+            "length": 6,
+            "start": 7658,
+            "end": 11028,
+            "positions": [
+              526,
+              794,
+              1059,
+              1326,
+              2178,
+              2392
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 236,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "raw": 4,
+        "forbidden": 3,
+        "fileOrders": [
+          {
+            "length": 12,
+            "positions": [
+              1559,
+              1966,
+              3927,
+              4204,
+              4623,
+              5110,
+              5573,
+              5775,
+              5998,
+              6750,
+              7122,
+              7288
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              9047,
+              9197,
+              9441,
+              9866,
+              10117,
+              10403,
+              10632,
+              10830,
+              11084
+            ]
+          }
+        ],
+        "functions": []
+      },
+      {
+        "side": "pre",
+        "index": 319,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "raw": 5,
+        "forbidden": 8,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn enroll_generation_initial(",
+            "length": 2,
+            "start": 287,
+            "end": 800,
+            "positions": [
+              331,
+              384
+            ]
+          },
+          {
+            "function": "fn enroll_generation_initial_in_phase(",
+            "length": 15,
+            "start": 818,
+            "end": 10812,
+            "positions": [
+              423,
+              489,
+              1098,
+              1433,
+              1666,
+              2552,
+              2681,
+              3110,
+              3552,
+              4788,
+              6159,
+              7457,
+              7502,
+              9679,
+              9831
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 320,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "raw": 10,
+        "forbidden": 8,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_generation_initial(",
+            "length": 5,
+            "start": 1355,
+            "end": 2050,
+            "positions": [
+              310,
+              340,
+              392,
+              465,
+              502
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "length": 3,
+            "start": 16007,
+            "end": 16428,
+            "positions": [
+              232,
+              321,
+              349
+            ]
+          },
+          {
+            "function": "fn require_observation(",
+            "length": 4,
+            "start": 16431,
+            "end": 17547,
+            "positions": [
+              535,
+              680,
+              819,
+              1005
+            ]
+          },
+          {
+            "function": "fn serve_initial_original_channel(",
+            "length": 17,
+            "start": 3218,
+            "end": 16002,
+            "positions": [
+              408,
+              748,
+              1579,
+              2254,
+              2506,
+              2966,
+              3780,
+              4708,
+              4784,
+              5076,
+              5818,
+              8012,
+              8539,
+              9564,
+              10168,
+              11294,
+              12037
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 375,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "raw": 7,
+        "forbidden": 11,
+        "fileOrders": [
+          {
+            "length": 2,
+            "positions": [
+              6064,
+              6234
+            ]
+          },
+          {
+            "length": 4,
+            "positions": [
+              6879,
+              7051,
+              7093,
+              7122
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              10093,
+              10184,
+              10278,
+              10387,
+              10425,
+              10492,
+              10736,
+              10777,
+              10805
+            ]
+          },
+          {
+            "length": 7,
+            "positions": [
+              10818,
+              10868,
+              10897,
+              10925,
+              10956,
+              11013,
+              11056
+            ]
+          },
+          {
+            "length": 8,
+            "positions": [
+              12785,
+              12883,
+              13021,
+              13058,
+              13154,
+              13200,
+              13380,
+              13406
+            ]
+          },
+          {
+            "length": 10,
+            "positions": [
+              13436,
+              13488,
+              13529,
+              13559,
+              13735,
+              13766,
+              13792,
+              13827,
+              13880,
+              13919
+            ]
+          },
+          {
+            "length": 3,
+            "positions": [
+              6551,
+              6709,
+              6785
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_original_scope(",
+            "length": 6,
+            "start": 2751,
+            "end": 3668,
+            "positions": [
+              176,
+              242,
+              442,
+              488,
+              534,
+              797
+            ]
+          },
+          {
+            "function": "fn require_identity_and_gate(",
+            "length": 5,
+            "start": 4062,
+            "end": 4577,
+            "positions": [
+              166,
+              205,
+              251,
+              284,
+              450
+            ]
+          },
+          {
+            "function": "fn require_original_prepared(",
+            "length": 4,
+            "start": 4595,
+            "end": 4905,
+            "positions": [
+              136,
+              189,
+              222,
+              271
+            ]
+          },
+          {
+            "function": "fn require_training_context(",
+            "length": 8,
+            "start": 4923,
+            "end": 5561,
+            "positions": [
+              234,
+              300,
+              364,
+              417,
+              450,
+              517,
+              557,
+              599
+            ]
+          },
+          {
+            "function": "fn require_original_work_entry(",
+            "length": 4,
+            "start": 5579,
+            "end": 5766,
+            "positions": [
+              69,
+              93,
+              121,
+              146
+            ]
+          },
+          {
+            "function": "fn reserve(",
+            "length": 10,
+            "start": 7176,
+            "end": 8037,
+            "positions": [
+              91,
+              138,
+              213,
+              335,
+              412,
+              491,
+              574,
+              617,
+              681,
+              833
+            ]
+          },
+          {
+            "function": "fn close_and_join(",
+            "length": 23,
+            "start": 8497,
+            "end": 10036,
+            "positions": [
+              53,
+              80,
+              256,
+              288,
+              314,
+              338,
+              398,
+              420,
+              457,
+              513,
+              552,
+              599,
+              673,
+              740,
+              801,
+              1101,
+              1133,
+              1169,
+              1203,
+              1258,
+              1341,
+              1375,
+              1467
+            ]
+          },
+          {
+            "function": "fn join_locked(",
+            "length": 17,
+            "start": 11193,
+            "end": 12068,
+            "positions": [
+              68,
+              98,
+              124,
+              179,
+              221,
+              247,
+              289,
+              354,
+              391,
+              421,
+              588,
+              617,
+              646,
+              673,
+              728,
+              756,
+              798
+            ]
+          },
+          {
+            "function": "fn receive(",
+            "length": 18,
+            "start": 12081,
+            "end": 12780,
+            "positions": [
+              74,
+              142,
+              175,
+              219,
+              259,
+              301,
+              322,
+              346,
+              372,
+              406,
+              446,
+              479,
+              510,
+              550,
+              598,
+              624,
+              658,
+              684
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 391,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "raw": 2,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn from_original_scope(",
+            "length": 8,
+            "start": 2751,
+            "end": 3668,
+            "positions": [
+              176,
+              242,
+              728,
+              797,
+              828,
+              849,
+              871,
+              889
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 408,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn accept_original_retirement_ack(",
+            "length": 5,
+            "start": 2111,
+            "end": 2783,
+            "positions": [
+              141,
+              194,
+              263,
+              319,
+              612
+            ]
+          },
+          {
+            "function": "fn begin_original_retirement(",
+            "length": 9,
+            "start": 3858,
+            "end": 6660,
+            "positions": [
+              312,
+              368,
+              427,
+              663,
+              1803,
+              2163,
+              2258,
+              2362,
+              2525
+            ]
+          },
+          {
+            "function": "fn join_after_original_a_drop(",
+            "length": 7,
+            "start": 6921,
+            "end": 7844,
+            "positions": [
+              114,
+              212,
+              316,
+              432,
+              536,
+              682,
+              716
+            ]
+          },
+          {
+            "function": "fn original_join_exchange(",
+            "length": 9,
+            "start": 9448,
+            "end": 10769,
+            "positions": [
+              279,
+              355,
+              594,
+              749,
+              960,
+              992,
+              1031,
+              1230,
+              1292
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 410,
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn claim_original_session(",
+            "length": 6,
+            "start": 2131,
+            "end": 2963,
+            "positions": [
+              211,
+              286,
+              366,
+              432,
+              722,
+              795
+            ]
+          },
+          {
+            "function": "fn connect_original_current(",
+            "length": 6,
+            "start": 3110,
+            "end": 4087,
+            "positions": [
+              277,
+              302,
+              478,
+              604,
+              841,
+              916
+            ]
+          },
+          {
+            "function": "fn receive_original_same_actor_scoped_owners(",
+            "length": 12,
+            "start": 5307,
+            "end": 8225,
+            "positions": [
+              248,
+              309,
+              330,
+              490,
+              632,
+              936,
+              1247,
+              1391,
+              1668,
+              2007,
+              2128,
+              2875
+            ]
+          },
+          {
+            "function": "fn connect_original_same_actor_learning(",
+            "length": 13,
+            "start": 8272,
+            "end": 12373,
+            "positions": [
+              350,
+              406,
+              465,
+              609,
+              1184,
+              1371,
+              1442,
+              1489,
+              1900,
+              3008,
+              3619,
+              3801,
+              3871
+            ]
+          },
+          {
+            "function": "fn connect_original_same_actor_model(",
+            "length": 13,
+            "start": 12384,
+            "end": 15986,
+            "positions": [
+              520,
+              966,
+              1006,
+              1540,
+              1686,
+              2529,
+              2736,
+              2814,
+              3112,
+              3250,
+              3431,
+              3508,
+              3570
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 413,
+        "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn from_original_phase_stream_until(",
+            "length": 11,
+            "start": 5123,
+            "end": 8321,
+            "positions": [
+              327,
+              477,
+              528,
+              810,
+              892,
+              1989,
+              2238,
+              2684,
+              2845,
+              2886,
+              3164
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 414,
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [
+          {
+            "length": 20,
+            "positions": [
+              5807,
+              6021,
+              6132,
+              6274,
+              6526,
+              6561,
+              6639,
+              6849,
+              6880,
+              6912,
+              6961,
+              7007,
+              7039,
+              7124,
+              7302,
+              7363,
+              7456,
+              7677,
+              7808,
+              7903
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn into_same_actor_phase(",
+            "length": 8,
+            "start": 3361,
+            "end": 4473,
+            "positions": [
+              240,
+              289,
+              423,
+              576,
+              797,
+              930,
+              1039,
+              1073
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 419,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn from_process_environment(",
+            "length": 13,
+            "start": 1718,
+            "end": 3981,
+            "positions": [
+              290,
+              337,
+              449,
+              715,
+              865,
+              934,
+              983,
+              1033,
+              1085,
+              1518,
+              1775,
+              1831,
+              1945
+            ]
+          },
+          {
+            "function": "fn run_original_phase(",
+            "length": 22,
+            "start": 4379,
+            "end": 10554,
+            "positions": [
+              364,
+              403,
+              592,
+              1472,
+              1722,
+              1797,
+              2074,
+              2127,
+              2474,
+              2806,
+              2895,
+              3126,
+              3530,
+              3841,
+              4070,
+              4247,
+              4771,
+              4820,
+              5119,
+              5202,
+              5992,
+              6043
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 425,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn reserve_original_learning_profile_in_phase(",
+            "length": 7,
+            "start": 2946,
+            "end": 4489,
+            "positions": [
+              472,
+              656,
+              739,
+              924,
+              984,
+              1123,
+              1470
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile_in_phase(",
+            "length": 9,
+            "start": 5511,
+            "end": 7390,
+            "positions": [
+              481,
+              662,
+              745,
+              850,
+              889,
+              1007,
+              1588,
+              1684,
+              1847
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 426,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn reserve_original_phase_q24_model_factory(",
+            "length": 11,
+            "start": 2305,
+            "end": 6419,
+            "positions": [
+              538,
+              723,
+              806,
+              1079,
+              1497,
+              1557,
+              1854,
+              2972,
+              3397,
+              3445,
+              4013
+            ]
+          },
+          {
+            "function": "fn open_original_phase_q24_model_reservation(",
+            "length": 12,
+            "start": 7658,
+            "end": 11028,
+            "positions": [
+              526,
+              711,
+              794,
+              1326,
+              1388,
+              1609,
+              1683,
+              1740,
+              2178,
+              2392,
+              3178,
+              3269
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 427,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn enroll_generation_initial_in_phase(",
+            "length": 8,
+            "start": 818,
+            "end": 10812,
+            "positions": [
+              423,
+              489,
+              595,
+              1766,
+              5990,
+              6046,
+              6503,
+              6988
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 429,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_generation_initial_until(",
+            "length": 9,
+            "start": 2068,
+            "end": 3211,
+            "positions": [
+              443,
+              490,
+              540,
+              670,
+              786,
+              869,
+              1042,
+              1075,
+              1106
+            ]
+          },
+          {
+            "function": "fn serve_initial_original_channel(",
+            "length": 14,
+            "start": 3218,
+            "end": 16002,
+            "positions": [
+              513,
+              748,
+              896,
+              3285,
+              7876,
+              8012,
+              9041,
+              9227,
+              9564,
+              9909,
+              12037,
+              12408,
+              12586,
+              12719
+            ]
+          }
+        ]
+      },
+      {
+        "side": "pre",
+        "index": 432,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_q24_model_factory_until(",
+            "length": 8,
+            "start": 2305,
+            "end": 3491,
+            "positions": [
+              457,
+              504,
+              554,
+              693,
+              815,
+              898,
+              1083,
+              1116
+            ]
+          },
+          {
+            "function": "fn serve_original_q24_model_channel(",
+            "length": 14,
+            "start": 3498,
+            "end": 9042,
+            "positions": [
+              502,
+              706,
+              1029,
+              1109,
+              1756,
+              2277,
+              3252,
+              3331,
+              3448,
+              3624,
+              3790,
+              5213,
+              5345,
+              5479
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 2,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "raw": 8,
+        "forbidden": 5,
+        "fileOrders": [
+          {
+            "length": 22,
+            "positions": [
+              8477,
+              9217,
+              9273,
+              9338,
+              9358,
+              9394,
+              9444,
+              9480,
+              9531,
+              9588,
+              9652,
+              9693,
+              9901,
+              9969,
+              9997,
+              10057,
+              10106,
+              10155,
+              10258,
+              10309,
+              10673,
+              10728
+            ]
+          },
+          {
+            "length": 20,
+            "positions": [
+              8477,
+              8944,
+              9013,
+              9217,
+              9338,
+              9358,
+              9901,
+              9969,
+              9997,
+              10258,
+              10309,
+              10519,
+              10580,
+              10621,
+              10673,
+              10755,
+              10961,
+              10995,
+              11059,
+              11107
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_root_stream(",
+            "length": 2,
+            "start": 2417,
+            "end": 2797,
+            "positions": [
+              257,
+              360
+            ]
+          },
+          {
+            "function": "fn from_root_stream_scoped_v2(",
+            "length": 3,
+            "start": 3046,
+            "end": 3612,
+            "positions": [
+              305,
+              374,
+              539
+            ]
+          },
+          {
+            "function": "fn from_stream_profile(",
+            "length": 4,
+            "start": 3619,
+            "end": 4599,
+            "positions": [
+              333,
+              473,
+              596,
+              785
+            ]
+          },
+          {
+            "function": "fn restore(",
+            "length": 6,
+            "start": 4976,
+            "end": 6647,
+            "positions": [
+              273,
+              382,
+              582,
+              697,
+              1009,
+              1081
+            ]
+          },
+          {
+            "function": "fn checkpoint(",
+            "length": 7,
+            "start": 6664,
+            "end": 8470,
+            "positions": [
+              283,
+              327,
+              429,
+              575,
+              901,
+              1185,
+              1288
+            ]
+          },
+          {
+            "function": "fn exchange_learning_checkpoint(",
+            "length": 19,
+            "start": 11393,
+            "end": 14516,
+            "positions": [
+              169,
+              336,
+              454,
+              487,
+              551,
+              592,
+              633,
+              673,
+              719,
+              812,
+              933,
+              980,
+              1133,
+              1643,
+              1936,
+              2084,
+              2614,
+              2780,
+              3000
+            ]
+          },
+          {
+            "function": "fn profile_identity(",
+            "length": 3,
+            "start": 4738,
+            "end": 4959,
+            "positions": [
+              59,
+              101,
+              156
+            ]
+          },
+          {
+            "function": "fn frozen_scope_binding(",
+            "length": 2,
+            "start": 4610,
+            "end": 4731,
+            "positions": [
+              0,
+              61
+            ]
+          },
+          {
+            "function": "fn from_stream_profile(",
+            "length": 4,
+            "start": 3619,
+            "end": 4599,
+            "positions": [
+              596,
+              785,
+              933,
+              952
+            ]
+          },
+          {
+            "function": "fn restore(",
+            "length": 14,
+            "start": 4976,
+            "end": 6647,
+            "positions": [
+              143,
+              212,
+              253,
+              273,
+              369,
+              582,
+              1009,
+              1081,
+              1440,
+              1456,
+              1488,
+              1529,
+              1610,
+              1660
+            ]
+          },
+          {
+            "function": "fn checkpoint(",
+            "length": 16,
+            "start": 6664,
+            "end": 8470,
+            "positions": [
+              154,
+              223,
+              264,
+              283,
+              327,
+              429,
+              575,
+              901,
+              1172,
+              1413,
+              1576,
+              1592,
+              1624,
+              1665,
+              1745,
+              1795
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 152,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "raw": 6,
+        "forbidden": 4,
+        "fileOrders": [
+          {
+            "length": 25,
+            "positions": [
+              10917,
+              11253,
+              11293,
+              11380,
+              11422,
+              11470,
+              11542,
+              11597,
+              11657,
+              11770,
+              12066,
+              12235,
+              12422,
+              12640,
+              12734,
+              13140,
+              13202,
+              13255,
+              13546,
+              13599,
+              13709,
+              13994,
+              14285,
+              14328,
+              14525
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn register_learning_checkpoint(",
+            "length": 3,
+            "start": 1733,
+            "end": 2238,
+            "positions": [
+              284,
+              323,
+              392
+            ]
+          },
+          {
+            "function": "fn open_registered_learning_checkpoint(",
+            "length": 3,
+            "start": 4576,
+            "end": 5083,
+            "positions": [
+              290,
+              329,
+              395
+            ]
+          },
+          {
+            "function": "fn seal_learning_checkpoint(",
+            "length": 16,
+            "start": 7546,
+            "end": 10899,
+            "positions": [
+              261,
+              450,
+              511,
+              574,
+              824,
+              1425,
+              1609,
+              1686,
+              2491,
+              2557,
+              2638,
+              2787,
+              2910,
+              2950,
+              3103,
+              3313
+            ]
+          },
+          {
+            "function": "fn learning_store(",
+            "length": 15,
+            "start": 14556,
+            "end": 16574,
+            "positions": [
+              243,
+              314,
+              386,
+              440,
+              473,
+              549,
+              577,
+              638,
+              684,
+              898,
+              1118,
+              1324,
+              1535,
+              1572,
+              1799
+            ]
+          },
+          {
+            "function": "fn reserve_original_learning_profile(",
+            "length": 2,
+            "start": 2459,
+            "end": 2928,
+            "positions": [
+              296,
+              357
+            ]
+          },
+          {
+            "function": "fn reserve_original_learning_profile_in_phase(",
+            "length": 5,
+            "start": 2946,
+            "end": 4558,
+            "positions": [
+              472,
+              808,
+              1053,
+              1097,
+              1255
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile(",
+            "length": 2,
+            "start": 5101,
+            "end": 5562,
+            "positions": [
+              291,
+              349
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile_in_phase(",
+            "length": 8,
+            "start": 5580,
+            "end": 7528,
+            "positions": [
+              481,
+              814,
+              919,
+              958,
+              1468,
+              1592,
+              1657,
+              1800
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 191,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "raw": 1,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": []
+      },
+      {
+        "side": "post",
+        "index": 235,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "raw": 5,
+        "forbidden": 4,
+        "fileOrders": [
+          {
+            "length": 4,
+            "positions": [
+              734,
+              1191,
+              1280,
+              1421
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              1734,
+              2848,
+              3189,
+              3453,
+              3702,
+              3970,
+              4081,
+              4620,
+              5346
+            ]
+          },
+          {
+            "length": 7,
+            "positions": [
+              6506,
+              8258,
+              8599,
+              8855,
+              9122,
+              9974,
+              10188
+            ]
+          },
+          {
+            "length": 8,
+            "positions": [
+              11184,
+              11641,
+              11789,
+              11974,
+              12032,
+              12264,
+              13754,
+              13794
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn register_host_q24_model_factory(",
+            "length": 13,
+            "start": 734,
+            "end": 1604,
+            "positions": [
+              254,
+              307,
+              365,
+              457,
+              538,
+              652,
+              687,
+              744,
+              762,
+              779,
+              802,
+              823,
+              850
+            ]
+          },
+          {
+            "function": "fn reserve_q24_model_factory(",
+            "length": 2,
+            "start": 1734,
+            "end": 2287,
+            "positions": [
+              356,
+              415
+            ]
+          },
+          {
+            "function": "fn reserve_original_phase_q24_model_factory(",
+            "length": 45,
+            "start": 2305,
+            "end": 6488,
+            "positions": [
+              538,
+              578,
+              598,
+              624,
+              649,
+              875,
+              994,
+              1148,
+              1222,
+              1397,
+              1467,
+              1626,
+              1702,
+              1762,
+              1795,
+              1820,
+              1854,
+              1923,
+              1987,
+              2023,
+              2051,
+              2081,
+              2109,
+              2158,
+              2207,
+              2235,
+              2315,
+              2433,
+              2525,
+              2629,
+              2725,
+              2824,
+              2902,
+              3009,
+              3041,
+              3101,
+              3264,
+              3314,
+              3348,
+              3466,
+              3514,
+              3624,
+              3778,
+              3864,
+              4142
+            ]
+          },
+          {
+            "function": "fn open_q24_model_factory(",
+            "length": 3,
+            "start": 6506,
+            "end": 7140,
+            "positions": [
+              382,
+              425,
+              496
+            ]
+          },
+          {
+            "function": "fn open_original_q24_model_reservation(",
+            "length": 2,
+            "start": 7158,
+            "end": 7709,
+            "positions": [
+              353,
+              413
+            ]
+          },
+          {
+            "function": "fn open_original_phase_q24_model_reservation(",
+            "length": 6,
+            "start": 7727,
+            "end": 11166,
+            "positions": [
+              526,
+              863,
+              1128,
+              1395,
+              2247,
+              2461
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 236,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "raw": 4,
+        "forbidden": 3,
+        "fileOrders": [
+          {
+            "length": 12,
+            "positions": [
+              1559,
+              1966,
+              3927,
+              4244,
+              4663,
+              5150,
+              5613,
+              5815,
+              6038,
+              6790,
+              7162,
+              7328
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              9087,
+              9237,
+              9481,
+              9906,
+              10157,
+              10443,
+              10672,
+              10870,
+              11124
+            ]
+          }
+        ],
+        "functions": []
+      },
+      {
+        "side": "post",
+        "index": 319,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "raw": 5,
+        "forbidden": 8,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn enroll_generation_initial(",
+            "length": 2,
+            "start": 287,
+            "end": 800,
+            "positions": [
+              331,
+              384
+            ]
+          },
+          {
+            "function": "fn enroll_generation_initial_in_phase(",
+            "length": 15,
+            "start": 818,
+            "end": 10852,
+            "positions": [
+              423,
+              489,
+              1138,
+              1473,
+              1706,
+              2592,
+              2721,
+              3150,
+              3592,
+              4828,
+              6199,
+              7497,
+              7542,
+              9719,
+              9871
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 320,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "raw": 10,
+        "forbidden": 8,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_generation_initial(",
+            "length": 5,
+            "start": 1355,
+            "end": 2050,
+            "positions": [
+              310,
+              340,
+              392,
+              465,
+              502
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "length": 3,
+            "start": 16047,
+            "end": 16468,
+            "positions": [
+              232,
+              321,
+              349
+            ]
+          },
+          {
+            "function": "fn require_observation(",
+            "length": 4,
+            "start": 16471,
+            "end": 17587,
+            "positions": [
+              535,
+              680,
+              819,
+              1005
+            ]
+          },
+          {
+            "function": "fn serve_initial_original_channel(",
+            "length": 17,
+            "start": 3218,
+            "end": 16042,
+            "positions": [
+              408,
+              788,
+              1619,
+              2294,
+              2546,
+              3006,
+              3820,
+              4748,
+              4824,
+              5116,
+              5858,
+              8052,
+              8579,
+              9604,
+              10208,
+              11334,
+              12077
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 375,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "raw": 7,
+        "forbidden": 11,
+        "fileOrders": [
+          {
+            "length": 2,
+            "positions": [
+              6064,
+              6234
+            ]
+          },
+          {
+            "length": 4,
+            "positions": [
+              6879,
+              7051,
+              7093,
+              7122
+            ]
+          },
+          {
+            "length": 9,
+            "positions": [
+              10109,
+              10200,
+              10294,
+              10403,
+              10441,
+              10508,
+              10752,
+              10793,
+              10821
+            ]
+          },
+          {
+            "length": 7,
+            "positions": [
+              10834,
+              10884,
+              10913,
+              10941,
+              10972,
+              11029,
+              11072
+            ]
+          },
+          {
+            "length": 8,
+            "positions": [
+              12801,
+              12899,
+              13037,
+              13074,
+              13170,
+              13216,
+              13396,
+              13422
+            ]
+          },
+          {
+            "length": 10,
+            "positions": [
+              13452,
+              13504,
+              13545,
+              13575,
+              13751,
+              13782,
+              13808,
+              13843,
+              13896,
+              13935
+            ]
+          },
+          {
+            "length": 3,
+            "positions": [
+              6551,
+              6709,
+              6785
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_original_scope(",
+            "length": 6,
+            "start": 2751,
+            "end": 3668,
+            "positions": [
+              176,
+              242,
+              442,
+              488,
+              534,
+              797
+            ]
+          },
+          {
+            "function": "fn require_identity_and_gate(",
+            "length": 5,
+            "start": 4062,
+            "end": 4577,
+            "positions": [
+              166,
+              205,
+              251,
+              284,
+              450
+            ]
+          },
+          {
+            "function": "fn require_original_prepared(",
+            "length": 4,
+            "start": 4595,
+            "end": 4905,
+            "positions": [
+              136,
+              189,
+              222,
+              271
+            ]
+          },
+          {
+            "function": "fn require_training_context(",
+            "length": 8,
+            "start": 4923,
+            "end": 5561,
+            "positions": [
+              234,
+              300,
+              364,
+              417,
+              450,
+              517,
+              557,
+              599
+            ]
+          },
+          {
+            "function": "fn require_original_work_entry(",
+            "length": 4,
+            "start": 5579,
+            "end": 5766,
+            "positions": [
+              69,
+              93,
+              121,
+              146
+            ]
+          },
+          {
+            "function": "fn reserve(",
+            "length": 10,
+            "start": 7176,
+            "end": 8037,
+            "positions": [
+              91,
+              138,
+              213,
+              335,
+              412,
+              491,
+              574,
+              617,
+              681,
+              833
+            ]
+          },
+          {
+            "function": "fn close_and_join(",
+            "length": 23,
+            "start": 8497,
+            "end": 10052,
+            "positions": [
+              53,
+              80,
+              256,
+              288,
+              314,
+              338,
+              406,
+              428,
+              465,
+              521,
+              560,
+              607,
+              681,
+              748,
+              809,
+              1109,
+              1141,
+              1177,
+              1211,
+              1266,
+              1349,
+              1383,
+              1483
+            ]
+          },
+          {
+            "function": "fn join_locked(",
+            "length": 17,
+            "start": 11209,
+            "end": 12084,
+            "positions": [
+              68,
+              98,
+              124,
+              179,
+              221,
+              247,
+              289,
+              354,
+              391,
+              421,
+              588,
+              617,
+              646,
+              673,
+              728,
+              756,
+              798
+            ]
+          },
+          {
+            "function": "fn receive(",
+            "length": 18,
+            "start": 12097,
+            "end": 12796,
+            "positions": [
+              74,
+              142,
+              175,
+              219,
+              259,
+              301,
+              322,
+              346,
+              372,
+              406,
+              446,
+              479,
+              510,
+              550,
+              598,
+              624,
+              658,
+              684
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 391,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "raw": 2,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn from_original_scope(",
+            "length": 8,
+            "start": 2751,
+            "end": 3668,
+            "positions": [
+              176,
+              242,
+              728,
+              797,
+              828,
+              849,
+              871,
+              889
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 408,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn accept_original_retirement_ack(",
+            "length": 5,
+            "start": 2111,
+            "end": 2781,
+            "positions": [
+              141,
+              194,
+              262,
+              318,
+              611
+            ]
+          },
+          {
+            "function": "fn begin_original_retirement(",
+            "length": 9,
+            "start": 3856,
+            "end": 6658,
+            "positions": [
+              312,
+              368,
+              427,
+              663,
+              1803,
+              2163,
+              2258,
+              2362,
+              2525
+            ]
+          },
+          {
+            "function": "fn join_after_original_a_drop(",
+            "length": 7,
+            "start": 6919,
+            "end": 7842,
+            "positions": [
+              114,
+              212,
+              316,
+              432,
+              536,
+              682,
+              716
+            ]
+          },
+          {
+            "function": "fn original_join_exchange(",
+            "length": 9,
+            "start": 9446,
+            "end": 10765,
+            "positions": [
+              279,
+              354,
+              593,
+              748,
+              959,
+              991,
+              1030,
+              1229,
+              1290
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 410,
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [
+          {
+            "length": 2,
+            "positions": [
+              3099,
+              3195
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn claim_original_session(",
+            "length": 6,
+            "start": 2131,
+            "end": 2963,
+            "positions": [
+              211,
+              286,
+              366,
+              432,
+              722,
+              795
+            ]
+          },
+          {
+            "function": "fn connect_original_current(",
+            "length": 6,
+            "start": 3116,
+            "end": 3878,
+            "positions": [
+              78,
+              161,
+              321,
+              435,
+              644,
+              715
+            ]
+          },
+          {
+            "function": "fn receive_original_same_actor_scoped_owners(",
+            "length": 12,
+            "start": 5098,
+            "end": 8016,
+            "positions": [
+              248,
+              309,
+              330,
+              490,
+              632,
+              936,
+              1247,
+              1391,
+              1668,
+              2007,
+              2128,
+              2875
+            ]
+          },
+          {
+            "function": "fn connect_original_same_actor_learning(",
+            "length": 13,
+            "start": 8063,
+            "end": 12164,
+            "positions": [
+              350,
+              406,
+              465,
+              609,
+              1184,
+              1371,
+              1442,
+              1489,
+              1900,
+              3008,
+              3619,
+              3801,
+              3871
+            ]
+          },
+          {
+            "function": "fn connect_original_same_actor_model(",
+            "length": 13,
+            "start": 12175,
+            "end": 15761,
+            "positions": [
+              520,
+              965,
+              1005,
+              1527,
+              1673,
+              2514,
+              2721,
+              2799,
+              3097,
+              3235,
+              3416,
+              3493,
+              3554
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 413,
+        "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn from_original_phase_stream_until(",
+            "length": 11,
+            "start": 5123,
+            "end": 8321,
+            "positions": [
+              327,
+              477,
+              528,
+              810,
+              892,
+              1989,
+              2238,
+              2684,
+              2845,
+              2886,
+              3164
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 414,
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [
+          {
+            "length": 20,
+            "positions": [
+              5856,
+              6070,
+              6230,
+              6372,
+              6624,
+              6659,
+              6737,
+              6947,
+              6978,
+              7010,
+              7059,
+              7105,
+              7137,
+              7222,
+              7400,
+              7461,
+              7554,
+              7775,
+              7906,
+              8001
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn into_same_actor_phase(",
+            "length": 8,
+            "start": 3361,
+            "end": 4473,
+            "positions": [
+              240,
+              289,
+              423,
+              576,
+              797,
+              930,
+              1039,
+              1073
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 419,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [
+          {
+            "length": 2,
+            "positions": [
+              4375,
+              4523
+            ]
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_process_environment(",
+            "length": 13,
+            "start": 1718,
+            "end": 3981,
+            "positions": [
+              290,
+              337,
+              449,
+              715,
+              865,
+              934,
+              983,
+              1033,
+              1085,
+              1518,
+              1775,
+              1831,
+              1945
+            ]
+          },
+          {
+            "function": "fn run_original_phase(",
+            "length": 22,
+            "start": 4385,
+            "end": 9825,
+            "positions": [
+              137,
+              190,
+              371,
+              1135,
+              1373,
+              1444,
+              1697,
+              1750,
+              2061,
+              2369,
+              2450,
+              2669,
+              3041,
+              3324,
+              3525,
+              3686,
+              4170,
+              4215,
+              4478,
+              4557,
+              5279,
+              5326
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 425,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn reserve_original_learning_profile_in_phase(",
+            "length": 7,
+            "start": 2946,
+            "end": 4558,
+            "positions": [
+              472,
+              656,
+              808,
+              993,
+              1053,
+              1192,
+              1539
+            ]
+          },
+          {
+            "function": "fn open_original_learning_profile_in_phase(",
+            "length": 9,
+            "start": 5580,
+            "end": 7528,
+            "positions": [
+              481,
+              662,
+              814,
+              919,
+              958,
+              1076,
+              1657,
+              1753,
+              1916
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 426,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn reserve_original_phase_q24_model_factory(",
+            "length": 11,
+            "start": 2305,
+            "end": 6488,
+            "positions": [
+              538,
+              723,
+              875,
+              1148,
+              1566,
+              1626,
+              1923,
+              3041,
+              3466,
+              3514,
+              4082
+            ]
+          },
+          {
+            "function": "fn open_original_phase_q24_model_reservation(",
+            "length": 12,
+            "start": 7727,
+            "end": 11166,
+            "positions": [
+              526,
+              711,
+              863,
+              1395,
+              1457,
+              1678,
+              1752,
+              1809,
+              2247,
+              2461,
+              3247,
+              3338
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 427,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn enroll_generation_initial_in_phase(",
+            "length": 8,
+            "start": 818,
+            "end": 10852,
+            "positions": [
+              423,
+              489,
+              595,
+              1806,
+              6030,
+              6086,
+              6543,
+              7028
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 429,
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_generation_initial_until(",
+            "length": 9,
+            "start": 2068,
+            "end": 3211,
+            "positions": [
+              443,
+              490,
+              540,
+              670,
+              786,
+              869,
+              1042,
+              1075,
+              1106
+            ]
+          },
+          {
+            "function": "fn serve_initial_original_channel(",
+            "length": 14,
+            "start": 3218,
+            "end": 16042,
+            "positions": [
+              513,
+              788,
+              936,
+              3325,
+              7916,
+              8052,
+              9081,
+              9267,
+              9604,
+              9949,
+              12077,
+              12448,
+              12626,
+              12759
+            ]
+          }
+        ]
+      },
+      {
+        "side": "post",
+        "index": 432,
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "raw": 0,
+        "forbidden": 0,
+        "fileOrders": [],
+        "functions": [
+          {
+            "function": "fn serve_q24_model_factory_until(",
+            "length": 8,
+            "start": 2305,
+            "end": 3491,
+            "positions": [
+              457,
+              504,
+              554,
+              693,
+              815,
+              898,
+              1083,
+              1116
+            ]
+          },
+          {
+            "function": "fn serve_original_q24_model_channel(",
+            "length": 14,
+            "start": 3498,
+            "end": 9082,
+            "positions": [
+              502,
+              746,
+              1069,
+              1149,
+              1796,
+              2317,
+              3292,
+              3371,
+              3488,
+              3664,
+              3830,
+              5253,
+              5385,
+              5519
+            ]
+          }
+        ]
+      }
+    ],
+    "failures": []
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "pre": "55dd2a18609a6794be7009516d6a82a72658c466",
+      "post": "56e2d21b216df32a38b569099aa6f3e10626e3f9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "pre": "bdd3bc5b41eb536c99576f0e35186951908ee389",
+      "post": "cc2a731346ee5d7bee3b3bbc7644738f302d01c9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "pre": "706bb67f3471b0c4681f16343878c7cf7310415f",
+      "post": "78e2fc63c61fd8650fe20fc1ca61215613cf2833"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "pre": "8a7be647552b83d0f7044984b231f375686fdc43",
+      "post": "3ea3d4a71b6a26f617e6c4b251a30de04d526a6a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "pre": "542b980f64619a517246cdbe9167044f3ae12813",
+      "post": "be12430d78451c75c29b7d295bba4ea0459155de"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": "be3db7b78b8122b7390c1ce4de3971cb1cdcb88f",
+      "post": "40fcc184c79929df6d149c6b86d02460da225dd9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": "423c69f01f26e38478f3170826f72fdb318dd662",
+      "post": "51a5b676de866752fe10ba2e3dc8ad338997d71f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "pre": "0c2d02fdc39d34e1c4230890577bdc0fd9eb443c",
+      "post": "730aab00499c1c84c337926e97b3d9695696f3cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "pre": "25d54d70c9c69ead8dfc70ce6436e49791d05fb0",
+      "post": "95f849829f59292003b06cf12c9bf297c6b11a52"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "pre": "c94266e2ce52c82bc3e129abc5fecd2ed71e18d6",
+      "post": "bea124de062c301c6b39d20c79ba288a87480751"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "pre": "4f17d4f2692842fb4d175f9ba38b656995358bd5",
+      "post": "c41a4301ed8d9c2121882065f5d5d201a5a59d24"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "pre": "db867032cbc55f4579f8ba1e3b8c3975c0433766",
+      "post": "0b64648d28f928dcba6b5dc249b955701d3e6e10"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "pre": "2eeb13155a079d991f03bbe6e742ccb2a7cdc444",
+      "post": "6745890150970ca9ac83cfcda9f223411ab399d3"
+    }
+  ],
+  "scope": "No original Python checker/typed-helper/global receiver index/native. Offsets are JavaScript string indices in the fixed sources; only source substrings/order are asserted."
+}

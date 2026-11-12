@@ -59,7 +59,7 @@ impl OriginalInitialPhaseLifetime {
         context: &OriginalSameActorRootContext,
     ) -> Result<(), AgentdError> {
         self.require_original_gate(context.gate())?;
-        OriginalSameActorRootContext::require_current(&context)?;
+        OriginalSameActorRootContext::require_current(context)?;
         if self.phase != context.descriptor().phase
             || self
                 .accepted
@@ -70,7 +70,7 @@ impl OriginalInitialPhaseLifetime {
                 "original retirement acknowledgement was already consumed",
             ));
         }
-        OriginalSameActorRootContext::require_current(&context)
+        OriginalSameActorRootContext::require_current(context)
     }
 }
 
@@ -250,7 +250,7 @@ async fn original_join_exchange(
     sequence: u8,
 ) -> Result<(), AgentdError> {
     let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     let profile = serde_json::to_string(profile)?;
     let request = PhaseJoinRequest {
         schema: 1,
@@ -273,7 +273,7 @@ async fn original_join_exchange(
     {
         return Err(refused("original phase acknowledgement differs"));
     }
-    OriginalSameActorRootContext::require_current(&context)?;
+    OriginalSameActorRootContext::require_current(context)?;
     closing.disarm();
     Ok(())
 }

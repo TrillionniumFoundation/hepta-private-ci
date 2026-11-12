@@ -84,7 +84,7 @@ impl HostAuthorityService {
             owner_pidfd,
             learning,
             |initial, proof| {
-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
+                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
                 let scope = learning.require_cell_scope(&initial)?;
                 let now = self
                     .clock
@@ -219,7 +219,7 @@ impl HostAuthorityService {
             owner_pidfd,
             learning,
             |initial, proof| {
-                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
+                let _admission = phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?;
                 let scope = learning.require_cell_scope(&initial)?;
                 let domain = witness_domain(config, &reservation)?;
                 let directory = config.state_dir.join(DIRECTORY);

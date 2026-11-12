@@ -1,0 +1,194 @@
+{
+  "schema": "hepta.root-native-maintenance-integration-review.v1",
+  "parent": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+  "parent_tree": "10aec6aba732211dd3adb471488c3541d880d9b5",
+  "native_failed_attempt": {
+    "commit": "2b024e0008536adf6b1be9fee06c7158789ad6e8",
+    "tree": "233c5f4bff07fab1de91728602ac0104e82a1d4b",
+    "parent": "f29be5642ed31600b18eb3cea14167b47df9cd58",
+    "branch": "codex/ordinary-owner-evidence-v9-20261112-af52",
+    "prefix": "qualification/ordinary-owner-assembly-20261111/native-components-74660e9-seven/v13",
+    "files": 41,
+    "verified": true,
+    "source_changes": 0,
+    "main_merged": false
+  },
+  "root_source_reconstruction": {
+    "parent": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+    "patch": {
+      "blob": "ece94a44eb56d792e63a276dd992220dcf304e4c",
+      "bytes": 30377,
+      "sha256": "2d1b3166f3bfc1ba9c8da646ee17a0f42f58e589ffe1737115d1316c8de19917"
+    },
+    "files": 13,
+    "hunks": 25,
+    "exact_native_status_paths": true,
+    "all_full_native_old_new_hashes_and_reverse": true
+  },
+  "actual_postimages_all_create_get_verified": true,
+  "independent_source_review_blob": "b671cdbd8ae708525f62b586872a05ea0cce861d",
+  "root_metadata": {
+    "source": "74660e96711cdee0d04ff484e7c54d5ce8710116",
+    "operations": 13,
+    "unique_forward_reverse": true,
+    "rowCounts": {
+      "privileged_inventory": {
+        "total": 1,
+        "changed": 0,
+        "byte_equal": 1
+      },
+      "boundary": {
+        "total": 638,
+        "changed": 2,
+        "byte_equal": 636
+      },
+      "protected_file": {
+        "total": 440,
+        "changed": 11,
+        "byte_equal": 429
+      }
+    },
+    "changed_rows": [
+      {
+        "index": 5,
+        "key": "protected_file:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "changes": 1
+      },
+      {
+        "index": 924,
+        "key": "protected_file:codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "changes": 1
+      },
+      {
+        "index": 1005,
+        "key": "boundary:root_same_actor_ticket_connect",
+        "changes": 1
+      },
+      {
+        "index": 1018,
+        "key": "boundary:q24_same_actor_run",
+        "changes": 1
+      },
+      {
+        "index": 1047,
+        "key": "protected_file:codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+        "changes": 4
+      },
+      {
+        "index": 1049,
+        "key": "protected_file:codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "changes": 4
+      },
+      {
+        "index": 1053,
+        "key": "protected_file:codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "changes": 1
+      },
+      {
+        "index": 1058,
+        "key": "protected_file:codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "changes": 3
+      },
+      {
+        "index": 1064,
+        "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "changes": 2
+      },
+      {
+        "index": 1065,
+        "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "changes": 2
+      },
+      {
+        "index": 1066,
+        "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "changes": 1
+      },
+      {
+        "index": 1068,
+        "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "changes": 1
+      },
+      {
+        "index": 1071,
+        "key": "protected_file:codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "changes": 1
+      }
+    ],
+    "existing_string_changes": 21,
+    "added_masked_async_orders": 2,
+    "other_parsed_fields_and_array_orders_identical": true,
+    "all_declared_source_spans_checked": true,
+    "actual_full_async_declarations": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "source": {
+          "blob": "95f849829f59292003b06cf12c9bf297c6b11a52",
+          "bytes": 11445,
+          "sha256": "8cdb57c97a89895825867502fd1284255cc241d99bfe2392e38bc805845a82ef"
+        },
+        "exact_unique_full_declaration_and_return_adjacent": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "source": {
+          "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+          "bytes": 15763,
+          "sha256": "e2dd8a301533efc7e5ffc87a3c891269bc52f955f322474954adc4257de15f7f"
+        },
+        "exact_unique_full_declaration_and_return_adjacent": true
+      }
+    ],
+    "local_validation_correction": "Initial Root lookup treated a protected file path as unique across all rows and stopped before publication. The final comparison binds each changed raw row, actual function and before/after value, enforces one use per declared mapping, and rejects every undeclared field change. Some source paths legitimately have multiple protected rows.",
+    "original_checker_or_native_run": false
+  },
+  "independent_metadata_review_blob": "09084c44a55f52a55aa107871f95502512a73517",
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": {
+      "blob": "0ae46052c7efd945f6ce3a7e217997f8a89e316a",
+      "bytes": 12066,
+      "sha256": "b162baba28d8f20436bf08ff6d01a86ea4b1cb86aaa39217ef3805a6f5b51b0c"
+    },
+    "post": {
+      "blob": "e1bbdbcb8da88f6b63ec92ec6d42cdb13ed378a4",
+      "bytes": 12066,
+      "sha256": "2ece86201c3e8fd268197825ad17ea376186647347bde6f8daa0622d1e6a5e9e"
+    },
+    "changes": 1,
+    "existing_CALLERS_entry_only": true,
+    "other_bytes_identical": true,
+    "byte_threshold_unchanged": true
+  },
+  "delta": {
+    "actual_native_source_files": 13,
+    "CALLERS": 1,
+    "existing_allowlist_sha": 1,
+    "source_docs": 13
+  },
+  "scope": [
+    "Only actual native Clippy postimages, precise metadata adaptation and existing hash exception. No future daemon, B provider, Circuit/Session lifecycle or Root retirement source is integrated.",
+    "The original compiler child ended0 only after changing source. V38 remains failed, and no fixed-source native or business result transfers.",
+    "The two async conversions preserve by-value ownership and already-polled local/await/guard flow. Compiler-generated cross-argument drop layout is not asserted. Both removed comments are preserved in the independent review.",
+    "Two removed async-move body strings are represented by actual Result signatures plus complete actual masked async declarations; all original ordered guards, awaits and final refusal remain.",
+    "The exact raw Clippy postimages have not been formatted again. A later formatting delta is possible and must be retained and reviewed against its actual bytes."
+  ],
+  "fixed_invariants": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "freshness_ms": 500,
+    "request_clock_origin": "original request_started_ns",
+    "ordinary_packages": 7,
+    "root_parents": 17,
+    "retries": 0,
+    "caller_timeout_seconds": 3600,
+    "overall_timeout_seconds": 27000
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "main_merged": false
+}

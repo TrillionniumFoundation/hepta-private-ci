@@ -35,7 +35,7 @@ impl HostAuthorityService {
         original_root()?;
         let mut enrolled_result = None;
         self.with_initial_publication_context(config, registration, owner, |proof| {
-            let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()?;
+            let _admission = phase.map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane).transpose()?;
             let profile_owner = format!(
                 "generation-initial/{}",
                 crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)
