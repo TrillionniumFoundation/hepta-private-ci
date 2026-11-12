@@ -62,6 +62,11 @@ class MacroCheckpointTests(unittest.TestCase):
     def test_source_and_denominator_contradictions_rejected(self):
         for mutation in (
             lambda d: d.update(calibration_sources=d["fit_sources"]),
+            lambda d: d["source_bindings"].update(
+                {d["calibration_sources"][0]: d["source_bindings"][d["fit_sources"][0]]}
+            ),
+            lambda d: d["source_bindings"].pop(d["fit_sources"][0]),
+            lambda d: d["source_bindings"].update({"unregistered": "0" * 64}),
             lambda d: d["counts"].update(fit_known_value=d["counts"]["fit"] + 1),
             lambda d: d["counts"].update(calibration_known_value=0),
             lambda d: (

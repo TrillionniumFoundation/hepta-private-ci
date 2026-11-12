@@ -50,6 +50,7 @@ def read_checkpoint(
             "calibration",
             "fit_sources",
             "calibration_sources",
+            "source_bindings",
             "input_sha256",
             "counts",
             "full_cost_observed",
@@ -104,6 +105,14 @@ def read_checkpoint(
         for g in groups
     ) or set(groups[0]) & set(groups[1]):
         raise ValueError("Frozen fitting/calibration identities overlap")
+    bindings = data["source_bindings"]
+    if (
+        type(bindings) is not dict
+        or set(bindings) != set(groups[0]) | set(groups[1])
+        or any(not _sha(pin) for pin in bindings.values())
+        or len(set(bindings.values())) != len(bindings)
+    ):
+        raise ValueError("Source byte bindings are missing, aliased or unregistered")
     counts = data["counts"]
     if (
         type(counts) is not dict

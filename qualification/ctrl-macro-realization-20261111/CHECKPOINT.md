@@ -13,3 +13,5 @@ parser and its six-method suite; the fitter is delivered in the next stage.
 Full physical costs and actual execution remain separate measurements.
 
 Review follow-up: zero-label logistic weights, missing probability fields, mixed-label single-class heads and contradictory source counts are rejected. The parser checks the declared probability state against measured labels and the fixed source-smoothed base rate. Directed negative cases failed before this fix and passed afterward.
+
+Frozen source bindings retain the one-to-one mapping from every fitting/calibration source ID to its original byte SHA, so execution can reject evaluation aliases after cold loading.
