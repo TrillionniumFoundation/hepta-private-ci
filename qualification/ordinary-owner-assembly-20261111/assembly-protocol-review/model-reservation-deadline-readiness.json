@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.same-service-model-and-deadline-readiness.v1",
+  "status": "Design/readiness only; no product implementation or native qualification.",
+  "source": {
+    "commit": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+    "basis": "Previously fetched immutable Git sources only; no expanded scan. V31 marker-only changes do not alter these Rust bodies."
+  },
+  "design_reference": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+  "decision": "Same-service Model reservation and per-lane worker-body extractions are feasible independent preparation cuts with real existing wrapper callers. They do not implement live phase enrollment or complete absolute-deadline transport.",
+  "model_cut": {
+    "old_api": "register_host_q24_model_factory(config_file:&Path, registration_file:&Path, learning_profile_file:&Path, reservation_file:&Path, owner_pidfd:&OwnedFd) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1>",
+    "wrapper_unchanged": "Keep signature, bin caller, and order: read config/registration/reservation; open_registered_writer; open_registered_learning_checkpoint; delegate once on that same service.",
+    "proposed_private_api": "NEW HostAuthorityService::reserve_original_q24_model_factory(&self, config:&HostAuthorityServiceConfig, registration:&HostAuthorityRegistration, owner_pidfd:&OwnedFd, learning:&RegisteredHostLearningCheckpointV1, reservation:&HostAuthorityQ24ModelFactoryReservationV1) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1>.",
+    "extraction": "Move only the existing service.with_learning_profile call and reserve closure. Use the same receiver, learning.profile and original references; do not reopen a writer, construct a service or reread different config.",
+    "preserve": [
+      "Original live/witness boundary, require_cell_scope, actual clock/work-expiry precheck and witness_domain.",
+      "Original create-new Root0700 directory, parent sync, new journal/witness, actual FilePins and profile identity/proof/initial/scope/domain/policy.",
+      "Original FileAnchorWitnessStore scope/objective/spawn/record bound; reject existing history, then drop that owner.",
+      "Original HostAuthorityFrontierStore::initialize, required_bind and witness-domain postchecks, actual clock/work-expiry postcheck and return.",
+      "All refusals and partial-genesis behavior; no retry, repair, overwrite, new authority or compensation."
+    ],
+    "neighbors": "Keep open_q24_model_factory open-only, seal_q24_model_factory_offer's original take-before-capture, and Prepared.with_registered_q24_model_factory/take_q24_model_factory_offer unchanged.",
+    "actual_callers": "The existing public register wrapper is the first real private-method caller. Preserve its exact public bin caller set. Split current reserve metadata into wrapper read/open/delegate proof and the new helper's full original reserve order; add only the actual closed helper caller. No unused public API or invented late caller.",
+    "limit": "This removes a future same-service caller's need to reopen the original writer. It creates neither a live RegisteredHostLearningCheckpoint nor a late Root installation route."
+  },
+  "lane_cut": {
+    "old_apis": "Learning and Model serve_optional take Option<&BoundLearning/BoundFactory>, &HostAuthorityService, &HostAuthorityServiceConfig, &HostAuthorityRegistration, &OwnedFd, original:impl FnOnce()->io::Result<()>, and return io::Result<()>.",
+    "proposed_private_api": "NEW per-file uniquely named inner worker function with the actual bound lane, original borrowed service/peer inputs, Instant end and original continuation. Each old serve_optional must call its inner function. These are worker-body foundations, not complete until APIs.",
+    "legacy_equivalence": "None still calls original immediately. Some retains exact AtomicBool/active-stream setup and the existing Instant::now()+lifetime sample position. Move the scope as a unit or pass a private local context; add no clock sample and reorder no fallible work.",
+    "guards": "Preserve owner_alive, process/pidfd verification, accept/nonblocking loop, active stream custody, exact peer policy/bounds, owner.try_clone, actual handler, stopping result, shutdown, join, result.and and inode-limited listener cleanup.",
+    "nested_composition": "The old Learning continuation still invokes legacy Publication, legacy Model and original root serving at the current points. Those wrappers currently sample their own ends. Sharing one end here would change old-path behavior and is excluded from this preparation cut.",
+    "metadata": "Reattach existing function-scoped worker proof to the actual inner body; retain exact wrapper/continuation order. Use unique fn NAME( locators and real same-file callers. Do not drop guards or weaken receiver resolution."
+  },
+  "absolute_end_gap": {
+    "actual": "Learning, Model and Publication wrappers compute relative ends. The deeper contracts OwnerChannel::new first verifies the original pidfd/proc identity, then sets Instant::now()+lifetime.",
+    "implication": "HostAuthorityPeerPolicy.lifetime = end.checked_duration_since(now) is not exact absolute-end propagation: validation/call delay occurs before the channel's later sample. Outer-loop expiry or a shutdown timer cannot alone prove the same end for request, dispatch postcheck and reply.",
+    "required_separate_cut": "The future strict phase path must carry the original absolute end into the actual channel and registration ACK deadline, retaining original identity and per-request min(end, timeout) checks. A complete design must cover that downstream constructor rather than adding an unused top-level until helper.",
+    "compatibility": "Do not alter old constructor sampling or legacy nested budgets. Do not reset lifetime, claim now+remaining equals the original end, relax 500ms, manufacture refresh, move effects outside their original witness, or interpret timeout as no effect."
+  },
+  "closed_scope": {
+    "required": "Same actual HostAuthorityService, writer/registration/pidfd, actual registered learning, original Root config/reservation/files. Material data never replaces authority.",
+    "absent": "The current public Model register opens a new service, and Prepared.with_registered_learning/model installs before serve consumes Prepared. A live same-session phase needs a separate authorized installation route and phase-bound one-use custody.",
+    "excluded": "No new Learning protocol, runtime phase route, actor/Starting, historical-A rebind, Initial/learned-cap reuse, arbitrary CAS, issuer/key/grant, or test-only authority constructor. Lost ACK/cancel/revoke cannot rearm a capability.",
+    "acceptance": "These cuts alone are not an A→Learning→C path or physical restart proof."
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "git_blob": "275842b2fd966afa349697705ab90095a913d0ff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "git_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "git_blob": "77b578235471b9d99e2aeea832647ea52524c3d6"
+    }
+  ],
+  "validation": "Implementation must keep old wrappers as actual callers, preserve body/error sequence, update closed metadata at the real extraction points, and pass Root's original same-source gates. No tests were added or run for this readiness report.",
+  "activity": {
+    "product_changes": 0,
+    "refs_changed": 0,
+    "h_or_native": 0
+  }
+}

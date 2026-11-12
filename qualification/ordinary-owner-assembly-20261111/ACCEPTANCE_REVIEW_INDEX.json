@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.ordinary-owner-static-acceptance-reviews.v1",
+  "source": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "parent_evidence_commit": "d01348d27485006bdbf7f547826428003ba92348",
+  "boundary": "This evidence branch retains its own older code base. Reports explicitly name their reviewed source. No Rust, runtime, checker or native request changes; no component result or business acceptance is inferred from a report.",
+  "native": "The exact V31 native qualification is still active at report integration and is recorded separately; no prior pass is inherited.",
+  "reports": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/assembly-protocol-review/model-reservation-deadline-readiness.json",
+      "git_blob": "11e7f8c493816b37cf26f2826320f56ce4986e38"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cold-restart-boundary-80871.md",
+      "git_blob": "064b720d17925bc46593ede4f3b4cb509d664c47"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/acceptance-matrix-894138.md",
+      "git_blob": "b0bb380e49a24ce4f3719496e637f0788943334d"
+    }
+  ],
+  "accepted_disposition": "b2cac2aa60cee64fe4db34c522e65a6c6b6e1909",
+  "phase_proposal": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+  "phase_independent_review": "d1e7ccc2db295e1c5d9a828f818991fa183ff2d2",
+  "phase_implementation": "unimplemented; proposed private cuts alone do not close the ordinary lifecycle",
+  "corrections": [
+    "The late-writer CLI has a real main/Startup entry.",
+    "Successor OriginalLedger is implemented; it does not automatically register the next Root source.",
+    "RootCURRENT fixture phases retain the same Root and same fixture child.",
+    "Current NextUse still binds same agent/cell/principal with a new run; it does not prove independent C."
+  ],
+  "ordinary": {
+    "complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "no_update_rollback_chains": 0,
+    "independent_c_accepted": false,
+    "physical_daemon_root_restart_accepted": false
+  },
+  "draft_only": true
+}
