@@ -1,0 +1,74 @@
+{
+  "pty_receipt": {
+    "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-181cbce475b23fd6abc16e7c53e3b82fec8a3209d9bd25d34b841b49cf50da3b/output.log",
+    "available_end": 4248,
+    "chunk_sha256": "3714724a81550f95aa3e939869284103eb5e692646cb7e0270384f69aac6ce28",
+    "host": "desktop",
+    "next_offset": 4248,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-181cbce475b23fd6abc16e7c53e3b82fec8a3209d9bd25d34b841b49cf50da3b",
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 4248,
+      "bytes_stored": 4248,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794465095931,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 3969606,
+      "pid": 3969617,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"schema\": \"cascade-native-stage-and-run-v1\", \"source_commit\": \"19b7a99f6d63596dd77c34a1ed8e529e1c744750\", \"pid\": 3969617, \"source_sha256\": {\"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"qualification/hcsn_joint_dde/run_cascade_checks.py\": \"8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6\", \"qualification/hcsn_joint_dde/test_torch_cascade.py\": \"fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb\", \"qualification/hcsn_joint_dde/torch_cascade.py\": \"0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773\"}, \"start_epoch\": 1794465095.9865665}\r\n{\"child_cpu_seconds\": 7.711197, \"child_peak_rss_kib\": 658184, \"command\": [\"/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python\", \"-B\", \"-m\", \"unittest\", \"qualification.hcsn_joint_dde.test_torch_cascade\", \"-v\"], \"complete_no_skip_pass\": true, \"failure\": null, \"full_hcsn_qualification\": false, \"graded_mesh_gradients\": false, \"independent_future\": 0, \"network_training\": false, \"production_qualified\": false, \"returncode\": 0, \"runtime\": {\"numpy\": \"2.3.5\", \"python\": \"3.12.3\", \"scipy\": \"1.17.0\", \"torch\": \"2.8.0+cu128\"}, \"schema\": \"hcsn-torch-cascade-checks-v1\", \"scope\": \"finite uniform-mesh CPU FP64 autograd research oracle\", \"source_after\": {\"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"qualification/hcsn_joint_dde/run_cascade_checks.py\": \"8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6\", \"qualification/hcsn_joint_dde/test_torch_cascade.py\": \"fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb\", \"qualification/hcsn_joint_dde/torch_cascade.py\": \"0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773\"}, \"source_before\": {\"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"qualification/hcsn_joint_dde/run_cascade_checks.py\": \"8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6\", \"qualification/hcsn_joint_dde/test_torch_cascade.py\": \"fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb\", \"qualification/hcsn_joint_dde/torch_cascade.py\": \"0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773\"}, \"source_unchanged\": true, \"stderr_sha256\": \"f2da49076cebab4edda5c963871885c4f699112707f48cbdc3d58d8055cc9e02\", \"stdout_sha256\": \"60f10d0c3468f10e14639d6c1b4d411c8c55b9bed8a16720d04bfd5a2e76be6d\", \"tests\": 6, \"wall_seconds\": 10.61667998903431}\r\n{\"schema\": \"cascade-native-stage-and-run-v1\", \"source_commit\": \"19b7a99f6d63596dd77c34a1ed8e529e1c744750\", \"pid\": 3969617, \"source_sha256\": {\"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"qualification/hcsn_joint_dde/run_cascade_checks.py\": \"8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6\", \"qualification/hcsn_joint_dde/test_torch_cascade.py\": \"fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb\", \"qualification/hcsn_joint_dde/torch_cascade.py\": \"0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773\"}, \"start_epoch\": 1794465095.9865665, \"returncode\": 0, \"end_epoch\": 1794465106.779176}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "readback": {
+    "atomic_snapshot": false,
+    "files": [
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/LAUNCH.json",
+        "sha256": "4dc4f68e640ec2c3775ab6368d37383ef7b5c288eab8d9f523010e05649dc3ab",
+        "size": 942,
+        "version": "2050:50137740:942:1794465095986787749:1794465095986787749"
+      },
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/OUTCOME.json",
+        "sha256": "9f4c4f9d0a90a68eaa896a84f03bc66aab3aee4e43379ef4726049aa1a27e8b5",
+        "size": 995,
+        "version": "2050:50137746:995:1794465106779431459:1794465106779431459"
+      },
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/evidence/PREEXECUTION.json",
+        "sha256": "c9053363e7341332735d445c26d3a18e8231392d7b24b50557b769a840a7a9cf",
+        "size": 1133,
+        "version": "2050:50137742:1133:1794465096118165819:1794465096118165819"
+      },
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/evidence/RESULT.json",
+        "sha256": "9ed89ae37f1f5dd0e110ace3e3d6f1a552b09be5cd6d0af4043a967152d5e41f",
+        "size": 2540,
+        "version": "2050:50137745:2540:1794465106735888500:1794465106735888500"
+      },
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/evidence/stdout.log",
+        "sha256": "60f10d0c3468f10e14639d6c1b4d411c8c55b9bed8a16720d04bfd5a2e76be6d",
+        "size": 1770,
+        "version": "2050:50137743:1770:1794465106733326158:1794465106733326158"
+      },
+      {
+        "path": "/home/qian-qi/hcsn-cascade-d706-20261112-attempt002/evidence/stderr.log",
+        "sha256": "f2da49076cebab4edda5c963871885c4f699112707f48cbdc3d58d8055cc9e02",
+        "size": 1156,
+        "version": "2050:50137744:1156:1794465106733607885:1794465106733607885"
+      }
+    ]
+  },
+  "source_commit": "19b7a99f6d63596dd77c34a1ed8e529e1c744750",
+  "scope": "original native process and readback; no authentication of third-party hosts beyond configured h access"
+}

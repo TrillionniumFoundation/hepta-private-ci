@@ -1,0 +1,47 @@
+name: HCSN native Torch delay-cascade checks
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_joint_dde/**
+      - qualification/hcsn_boundary_audit/spatial_generator.py
+      - qualification/hcsn_boundary_audit/refractory_transport.py
+      - .github/workflows/hcsn-torch-cascade.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-cascade-autograd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      CUDA_VISIBLE_DEVICES: ""
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install pinned CPU runtime
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0
+          python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Check all outputs and gradients with retained raw receipts
+        run: python -B -m qualification.hcsn_joint_dde.run_cascade_checks --output /tmp/hcsn-cascade-checks
+      - name: Retain original results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-cascade-exact-source
+          path: /tmp/hcsn-cascade-checks
+          if-no-files-found: error
+      - name: Require clean source
+        run: git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=normal)"
