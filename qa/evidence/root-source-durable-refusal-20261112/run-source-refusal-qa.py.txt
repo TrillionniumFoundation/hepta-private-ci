@@ -1,0 +1,85 @@
+import argparse
+import hashlib
+import importlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import unittest
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--repo", required=True)
+parser.add_argument("--prefix", required=True)
+args = parser.parse_args()
+root = Path(args.repo)
+prefix = Path(args.prefix)
+prefix.parent.mkdir(parents=True, exist_ok=True)
+os.chdir(root)
+sys.path.insert(0, str(root / "qa/b4-no-bypass"))
+modules = [
+    "test_exact_generic_function_order",
+    "test_root_historical_capture_source_closure",
+    "test_root_historical_handoff_source_closure",
+    "test_root_data_refusal_source_closure",
+]
+def snapshot():
+    return {
+        "head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+        "status": subprocess.check_output(["git", "status", "--porcelain"], text=True),
+        "callers_sha256": hashlib.sha256((root / "CALLERS.toml").read_bytes()).hexdigest(),
+    }
+
+cases = []
+class Results(unittest.TextTestResult):
+    def addSuccess(self, test):
+        cases.append({"id": test.id(), "status": "passed"})
+        super().addSuccess(test)
+    def addError(self, test, err):
+        cases.append({"id": test.id(), "status": "error"})
+        super().addError(test, err)
+    def addFailure(self, test, err):
+        cases.append({"id": test.id(), "status": "failed"})
+        super().addFailure(test, err)
+
+before = snapshot()
+assert not before["status"], before["status"]
+started = time.time()
+with prefix.with_suffix(".log").open("x") as log:
+    suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
+    result = unittest.TextTestRunner(stream=log, verbosity=2, resultclass=Results).run(suite)
+    protected = []
+    inventory = []
+    protected_error = None
+    if result.wasSuccessful():
+        try:
+            module = importlib.import_module("test_root_historical_capture_source_closure")
+            manifest = module.tomllib.loads((root / "CALLERS.toml").read_text())
+            boundaries = module.PROOF._boundary_rows(manifest)
+            inventory = list(module.PROOF._verify_privileged_inventory(manifest, boundaries))
+            protected = module.PROOF._verify_protected_files(root, manifest)
+            print(f"Protected rows: {len(protected)}; inventory: {len(inventory)}", file=log)
+        except Exception:
+            import traceback
+            protected_error = traceback.format_exc()
+            print(protected_error, file=log)
+ended = time.time()
+after = snapshot()
+receipt = {
+    "schema": "hepta.root-source-refusal.source-check.v1",
+    "before": before, "after": after, "source_unchanged": before == after,
+    "modules": modules, "started_unix": started, "ended_unix": ended,
+    "tests_run": result.testsRun, "failures": len(result.failures),
+    "errors": len(result.errors), "cases": cases,
+    "protected_rows": len(protected), "inventory": len(inventory),
+    "protected_error": protected_error,
+    "full_caller_scan": False, "native_executed": False,
+}
+ok = result.wasSuccessful() and protected_error is None and before == after
+receipt["status"] = "PASS" if ok else "FAIL"
+prefix.with_suffix(".json").write_text(json.dumps(receipt, indent=2) + "\n")
+print(json.dumps({k: receipt[k] for k in ("status", "before", "after", "tests_run", "failures", "errors", "protected_rows", "inventory", "source_unchanged", "full_caller_scan", "native_executed")}, indent=2))
+sys.exit(0 if ok else 1)
+
