@@ -177,17 +177,28 @@ fn write_primary(path: &std::path::Path, bytes: &[u8]) -> anyhow::Result<()> {
 }
 
 fn child(directory: &std::path::Path, phase: &str) -> anyhow::Result<()> {
-    let status = std::process::Command::new(std::env::current_exe()?)
+    let (_, child_name) = concat!(module_path!(), "::root_data_refusal_crash_child")
+        .split_once("::")
+        .ok_or_else(|| io::Error::other("original child test path missing"))?;
+    let output = std::process::Command::new(std::env::current_exe()?)
         .args([
             "--exact",
-            concat!(module_path!(), "::root_data_refusal_crash_child"),
+            child_name,
             "--ignored",
             "--nocapture",
         ])
         .env("HEPTA_DATA_REFUSAL_TEST_ROOT", directory)
         .env("HEPTA_DATA_REFUSAL_TEST_PHASE", phase)
-        .status()?;
-    assert!(status.success(), "Root refusal child failed: {phase}");
+        .output()?;
+    let receipt = format!("hepta-root-refusal-child:{phase}");
+    assert!(
+        output.status.success()
+            && String::from_utf8_lossy(&output.stdout).contains(receipt.as_str()),
+        "Root refusal child failed: {phase}; status={:?}; stdout={}; stderr={}",
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
     Ok(())
 }
 
@@ -228,7 +239,8 @@ fn root_data_refusal_crash_child() -> anyhow::Result<()> {
     let directory = std::path::PathBuf::from(std::env::var("HEPTA_DATA_REFUSAL_TEST_ROOT")?);
     let root = RootAuthorityDirectory::open(&directory)?;
     let target = target()?;
-    match std::env::var("HEPTA_DATA_REFUSAL_TEST_PHASE")?.as_str() {
+    let phase = std::env::var("HEPTA_DATA_REFUSAL_TEST_PHASE")?;
+    match phase.as_str() {
         "exit_during_failed_read" => {
             let refusal = RootDataRefusalV1::open_existing(
                 Arc::clone(&root),
@@ -240,6 +252,9 @@ fn root_data_refusal_crash_child() -> anyhow::Result<()> {
                     HostAuthorityFrontierStore::<u64>::open(Arc::clone(&root), PRIMARY.into())
                         .is_err()
                 );
+                // Prove this child reached the actual failed primary read.
+                println!("hepta-root-refusal-child:exit_during_failed_read");
+                std::io::stdout().flush()?;
                 // Exit before returning through any failure/fence handler.
                 std::process::exit(0);
             })?;
@@ -255,5 +270,7 @@ fn root_data_refusal_crash_child() -> anyhow::Result<()> {
         }
         phase => anyhow::bail!("unexpected refusal child phase: {phase}"),
     }
+    println!("hepta-root-refusal-child:{phase}");
+    std::io::stdout().flush()?;
     Ok(())
 }

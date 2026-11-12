@@ -46,10 +46,13 @@ fn root_source_handoff_physical_corruption_then_restore_stays_refused_across_pro
         file.write_all(data)?;
         file.sync_all()?;
         drop(file);
-        let status = std::process::Command::new(std::env::current_exe()?)
+        let (_, child_name) = concat!(module_path!(), "::root_source_handoff_refusal_child")
+            .split_once("::")
+            .ok_or_else(|| io::Error::other("original child test path missing"))?;
+        let output = std::process::Command::new(std::env::current_exe()?)
             .args([
                 "--exact",
-                concat!(module_path!(), "::root_source_handoff_refusal_child"),
+                child_name,
                 "--ignored",
                 "--nocapture",
             ])
@@ -59,10 +62,15 @@ fn root_source_handoff_physical_corruption_then_restore_stays_refused_across_pro
                 serde_json::to_string(&original.target)?,
             )
             .env("HEPTA_SOURCE_HANDOFF_TEST_PHASE", phase)
-            .status()?;
+            .output()?;
+        let receipt = format!("hepta-root-source-handoff-child:{phase}");
         assert!(
-            status.success(),
-            "Root source handoff child failed: {phase}"
+            output.status.success()
+                && String::from_utf8_lossy(&output.stdout).contains(receipt.as_str()),
+            "Root source handoff child failed: {phase}; status={:?}; stdout={}; stderr={}",
+            output.status,
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr),
         );
     }
     Ok(())
@@ -88,5 +96,7 @@ fn root_source_handoff_refusal_child() -> anyhow::Result<()> {
         }
         _ => anyhow::bail!("unknown Source handoff child phase: {phase}"),
     }
+    println!("hepta-root-source-handoff-child:{phase}");
+    std::io::stdout().flush()?;
     Ok(())
 }
