@@ -277,7 +277,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "require_original_target(", "observe_original_task(",
             "RootHistoricalSourceInputsV1::open_original_source_deployment(",
             "RootInitialRunStartFilesV1::open_original_deployment(",
-            "ledger: RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?", "reply.is_empty() || reply.len() > WIRE_BOUND",
+            "RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?", "reply.is_empty() || reply.len() > WIRE_BOUND",
         ))
         for occurrence in (0, 1):
             self.reject(PROVIDER, "observe_complete_task", "self.metadata.require_metadata_unchanged()?", occurrence)
