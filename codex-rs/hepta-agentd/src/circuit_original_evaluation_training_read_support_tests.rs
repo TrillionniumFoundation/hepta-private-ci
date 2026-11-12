@@ -180,3 +180,6 @@ async fn original_dataset(
 
 #[path = "circuit_original_evaluation_training_read_tests.rs"]
 mod tests;
+
+#[path = "circuit_original_evaluation_bound_receipt_tests.rs"]
+mod bound_receipt_tests;

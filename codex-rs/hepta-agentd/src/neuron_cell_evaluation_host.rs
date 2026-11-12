@@ -13,6 +13,7 @@ use codex_hepta_types::Digest32;
 use tokio::runtime::Handle;
 use tokio::sync::Semaphore;
 
+use super::super::training_read_proof::OriginalPanelReceiptReadV1;
 use super::super::training_read_proof::OriginalPanelTrainingCallV1;
 use super::super::training_read_proof::OriginalPanelTrainingReadV1;
 use super::super::training_read_proof::OriginalPanelTrainingSourceV1;
@@ -208,8 +209,27 @@ impl Owners {
                     .await?
                 }
                 wire::Action::Readback => {
-                    OriginalCellEvaluationReceiptOwnerV1::readback(&mut self.evaluator, sources)
-                        .await?
+                    match OriginalPanelTrainingReadV1::receipt_read(
+                        &mut training,
+                        primary.trainer.as_ref(),
+                        config,
+                    )? {
+                        OriginalPanelReceiptReadV1::Physical => {
+                            OriginalCellEvaluationReceiptOwnerV1::readback(
+                                &mut self.evaluator,
+                                sources,
+                            )
+                            .await?
+                        }
+                        OriginalPanelReceiptReadV1::Bound(proof) => {
+                            OriginalCellEvaluationReceiptOwnerV1::readback_with_original_panel_training(
+                                &mut self.evaluator,
+                                sources,
+                                proof,
+                            )
+                            .await?
+                        }
+                    }
                 }
             }
         };
@@ -343,3 +363,7 @@ mod training_read_tests;
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_member_read_access_tests.rs"]
 mod member_read_tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_bound_receipt_access_tests.rs"]
+mod bound_receipt_tests;

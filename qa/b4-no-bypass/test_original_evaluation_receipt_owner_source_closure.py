@@ -203,7 +203,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "key.sign(&signed.signing_bytes()).to_bytes()",
             "config.verifier.verify(",
             "learning_owner_evidence::encode(&payload, &signed)",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(",
+            "CompletionTraining::Physical",
         ):
             with self.subTest(marker=marker):
                 self.rejects("fn attest_original_completion<", marker)
@@ -242,7 +243,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
         for marker in (
             "let prepared = self.prepare(&mut source)?",
             "let bytes = self.journal.read(&self.saved)?",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(",
+            "CompletionTraining::Physical",
         ):
             with self.subTest(marker=marker):
                 self.rejects("fn readback<", marker)
@@ -251,7 +253,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
             "readback(source.snapshot, self.training()?)",
             "if self.prepare(source)? != prepared",
-            "self.authenticate_roles(source, &prepared.1, &training)?",
+            "self.authenticate_roles(source, &prepared.1, training)?",
             ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?",
             "verified.principal() != &config.signer.principal",
             "verified.controller_id() != &config.signer.controller_id",

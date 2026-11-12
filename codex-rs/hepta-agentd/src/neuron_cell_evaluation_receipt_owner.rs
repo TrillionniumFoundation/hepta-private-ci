@@ -53,6 +53,7 @@ use crate::OriginalCellEvaluationSigningConfigV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
+use crate::neuron_cell_evaluation_qualification_owner::OriginalBoundPanelReceiptReadV1;
 use crate::prepare_cell_learning_evaluation_v1;
 
 #[derive(Debug, thiserror::Error)]
@@ -103,6 +104,16 @@ pub struct OriginalCellEvaluationReceiptSourcesV1<
     pub evidence: &'a SignedEvaluationEvidenceV1,
     pub timing: ProductTimingEvidenceV1<'a>,
     pub trainer: &'a LearningIterationEvidenceClientV1,
+}
+
+enum CompletionTraining<'read, 'call> {
+    Physical,
+    Panel(OriginalBoundPanelReceiptReadV1<'read, 'call>),
+}
+
+enum CompletedTraining<'read, 'call> {
+    Physical(SignedLearningEvidenceV1),
+    Panel(OriginalBoundPanelReceiptReadV1<'read, 'call>),
 }
 
 enum HostOrigin {
@@ -220,7 +231,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             )?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&mut source, prepared, &bytes)
+        self.authenticate_completed(&mut source, prepared, &bytes, CompletionTraining::Physical)
             .await
     }
 
@@ -238,8 +249,49 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let prepared = self.prepare(&mut source)?;
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&mut source, prepared, &bytes)
+        self.authenticate_completed(&mut source, prepared, &bytes, CompletionTraining::Physical)
             .await
+    }
+
+    /// Private middle read of one occupied Bound Host transaction. The caller
+    /// still owes its actual final Trainer, panel and receipt-journal reads.
+    pub(crate) async fn readback_with_original_panel_training(
+        &mut self,
+        mut source: OriginalCellEvaluationReceiptSourcesV1<
+            '_,
+            impl FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl ProductEvaluationExecutionStoreV1,
+        >,
+        training: OriginalBoundPanelReceiptReadV1<'_, '_>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let prepared = self.prepare(&mut source)?;
+        let bytes = self.journal.read(&self.saved)?;
+        self.authenticate_completed(
+            &mut source,
+            prepared,
+            &bytes,
+            CompletionTraining::Panel(training),
+        )
+        .await
+    }
+
+    /// Pure role verification for the one opaque borrowed panel slot. This
+    /// returns neither an attestation nor a CURRENT observation.
+    pub(crate) fn authenticate_original_panel_roles(
+        &self,
+        source: &OriginalCellEvaluationReceiptSourcesV1<
+            '_,
+            impl FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl ProductEvaluationExecutionStoreV1,
+        >,
+        execution: &CellEvaluationReceiptV1,
+        training: &SignedLearningEvidenceV1,
+    ) -> Result<(), Error> {
+        self.authenticate_roles(source, execution, training)
     }
 
     pub(crate) fn original_host_profile(&self) -> (&OriginalCellEvaluationReceiptConfigV1, bool) {
@@ -405,17 +457,39 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         source: &mut OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
         prepared: (LearningIterationReceiptV1, CellEvaluationReceiptV1),
         bytes: &[u8],
+        training: CompletionTraining<'_, '_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)? {
             return Err(OwnerError::Binding("changed original Evaluation payload").into());
         }
-        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-        let training = trainer.readback(source.snapshot, self.training()?).await?;
+        let mut original = match training {
+            CompletionTraining::Physical => {
+                let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
+                let training = trainer.readback(source.snapshot, self.training()?).await?;
+                CompletedTraining::Physical(training)
+            }
+            CompletionTraining::Panel(proof) => {
+                OriginalBoundPanelReceiptReadV1::require_receipt_source(&proof, self, source)?;
+                CompletedTraining::Panel(proof)
+            }
+        };
         if self.prepare(source)? != prepared {
             return Err(OwnerError::CommitUncertain.into());
         }
-        self.authenticate_roles(source, &prepared.1, &training)?;
+        match &mut original {
+            CompletedTraining::Physical(training) => {
+                self.authenticate_roles(source, &prepared.1, training)?;
+            }
+            CompletedTraining::Panel(proof) => {
+                OriginalBoundPanelReceiptReadV1::authenticate_roles(
+                    proof,
+                    self,
+                    source,
+                    &prepared.1,
+                )?;
+            }
+        }
         let config = &self.config.signing;
         let verified =
             config
@@ -429,6 +503,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         }
         if self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
+        }
+        if let CompletedTraining::Panel(proof) = original {
+            OriginalBoundPanelReceiptReadV1::finish(proof, now()?)?;
         }
         Ok((prepared.0, signed))
     }

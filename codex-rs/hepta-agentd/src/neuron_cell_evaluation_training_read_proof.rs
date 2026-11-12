@@ -19,6 +19,10 @@ use super::OriginalCellEvaluationQualificationSourcesV1;
 use super::binding;
 use crate::LearningIterationEvidenceClientV1;
 
+#[path = "neuron_cell_evaluation_panel_receipt_read.rs"]
+pub(super) mod receipt_read;
+pub(super) use receipt_read::OriginalPanelReceiptReadV1;
+
 type Member = OriginalCellEvaluationPanelMemberOwnersV1<
     FileAnchorWitnessStore,
     FileAnchorWitnessStore,
@@ -43,6 +47,7 @@ pub(super) struct OriginalPanelTrainingCallV1 {
     source: OriginalPanelTrainingSourceV1,
     identity: Arc<()>,
     slots: usize,
+    receipt: ReceiptMode,
     admitted: AtomicBool,
 }
 
@@ -54,6 +59,12 @@ pub(super) enum OriginalPanelTrainingReadV1<'call> {
 pub(super) struct OriginalPanelTrainingProofV1<'call> {
     call: &'call OriginalPanelTrainingCallV1,
     cursor: Cursor,
+    receipt_completed: bool,
+}
+
+enum ReceiptMode {
+    Physical,
+    BoundReadback,
 }
 
 enum Cursor {
@@ -83,7 +94,11 @@ impl OriginalPanelTrainingSourceV1 {
         retention: &[Member],
     ) -> Result<OriginalPanelTrainingCallV1, Error> {
         match self {
-            Self::Bound(_) => return Self::call(self, retention.len() + 1),
+            Self::Bound(_) => {
+                let mut call = Self::call(self, retention.len() + 1)?;
+                call.receipt = ReceiptMode::BoundReadback;
+                return Ok(call);
+            }
             Self::Individual => {}
             Self::ReadbackMembers(_) => return Err(Error::CommitUncertain),
         }
@@ -106,6 +121,7 @@ impl OriginalPanelTrainingSourceV1 {
             source: Self::ReadbackMembers(Arc::new(members)),
             identity: Arc::new(()),
             slots,
+            receipt: ReceiptMode::Physical,
             admitted: AtomicBool::new(false),
         })
     }
@@ -126,6 +142,7 @@ impl OriginalPanelTrainingSourceV1 {
             source,
             identity: Arc::new(()),
             slots,
+            receipt: ReceiptMode::Physical,
             admitted: AtomicBool::new(false),
         })
     }
@@ -145,6 +162,7 @@ impl OriginalPanelTrainingCallV1 {
                 OriginalPanelTrainingReadV1::Panel(OriginalPanelTrainingProofV1 {
                     call: self,
                     cursor: Cursor::Next(0),
+                    receipt_completed: false,
                 }),
             ),
         }
@@ -171,6 +189,12 @@ impl OriginalPanelTrainingReadV1<'_> {
                 else {
                     return Err(Error::CommitUncertain);
                 };
+                if matches!(proof.call.receipt, ReceiptMode::BoundReadback)
+                    && slot >= proof.call.slots / 2
+                    && !proof.receipt_completed
+                {
+                    return Err(Error::CommitUncertain);
+                }
                 // A failed or canceled await never leaves a reusable slot.
                 let (original, physical) = match &proof.call.source {
                     OriginalPanelTrainingSourceV1::Individual => {
@@ -235,7 +259,10 @@ impl OriginalPanelTrainingReadV1<'_> {
                         "same completed panel Training call and Source",
                     ));
                 }
-                if !matches!(proof.cursor, Cursor::Complete) {
+                if !matches!(proof.cursor, Cursor::Complete)
+                    || matches!(proof.call.receipt, ReceiptMode::BoundReadback)
+                        && !proof.receipt_completed
+                {
                     return Err(Error::CommitUncertain);
                 }
                 match &proof.call.source {
@@ -284,6 +311,10 @@ impl OriginalPanelTrainingCallV1 {
             source,
             identity: Arc::clone(&self.identity),
             slots: self.slots,
+            receipt: match &self.receipt {
+                ReceiptMode::Physical => ReceiptMode::Physical,
+                ReceiptMode::BoundReadback => ReceiptMode::BoundReadback,
+            },
             admitted: AtomicBool::new(true),
         }
     }
