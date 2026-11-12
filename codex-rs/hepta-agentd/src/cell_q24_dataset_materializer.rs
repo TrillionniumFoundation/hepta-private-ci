@@ -131,6 +131,11 @@ trait OriginalTask: Send + Sync {
 #[path = "cell_q24_dataset_historical_ledger.rs"]
 mod historical_ledger;
 #[cfg(target_os = "linux")]
+#[path = "cell_q24_dataset_operation.rs"]
+mod operation;
+#[cfg(target_os = "linux")]
+pub(crate) use operation::OriginalDatasetOperationV1;
+#[cfg(target_os = "linux")]
 #[path = "cell_q24_dataset_historical_task.rs"]
 mod historical_task;
 

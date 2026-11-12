@@ -57,11 +57,14 @@ mod freeze_owner;
 mod historical_freezer;
 #[path = "cell_q24_dataset_historical_preparation.rs"]
 mod historical_preparation;
+#[path = "cell_q24_prepared_operation.rs"]
+mod operation;
 #[path = "cell_q24_prepared_learning.rs"]
 mod prepared;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeErrorV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeOwnerV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeSigningConfigV1;
+pub(crate) use operation::OriginalPreparedReadV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24LearningPreparationErrorV1 {

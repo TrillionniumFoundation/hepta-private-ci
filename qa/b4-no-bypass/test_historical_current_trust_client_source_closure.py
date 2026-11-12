@@ -23,8 +23,8 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
     def test_current_capsule_has_no_unimplemented_product_caller(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [AGENT + "production_post_a_q24.rs"])
-        for key in ("root_historical_current_trust_read", "root_historical_current_trust_receipt"):
-            self.assertEqual(rows[key]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
+        self.assertEqual(rows["root_historical_current_trust_read"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
+        self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs", AGENT + "cell_q24_dataset_operation.rs"])
         self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs"])
         self.assertEqual(rows["root_historical_recipient_trust_reply"]["product_callers"], [CLIENT])
 

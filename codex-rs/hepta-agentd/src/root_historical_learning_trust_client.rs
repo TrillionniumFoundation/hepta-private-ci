@@ -121,17 +121,15 @@ impl OriginalHistoricalLearningTrustV1 {
             if self.receipt.client.fenced.load(Ordering::Acquire) {
                 return Err(refused());
             }
-            self.receipt
-                .client
-                .connection
-                .require_original_session()
-                .map_err(io::Error::other)?;
+            RootHistoricalTaskReadConnectionV1::require_original_session(
+                &self.receipt.client.connection,
+            )
+            .map_err(io::Error::other)?;
             let observed = self.clock.now_unix_ms().map_err(io::Error::other)? / 1_000;
-            self.receipt
-                .client
-                .connection
-                .require_original_session()
-                .map_err(io::Error::other)?;
+            RootHistoricalTaskReadConnectionV1::require_original_session(
+                &self.receipt.client.connection,
+            )
+            .map_err(io::Error::other)?;
             Ok(observed)
         })();
         if result.is_err() {
