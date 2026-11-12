@@ -63,6 +63,8 @@ pub(crate) use refusal::OriginalPublicationHistoryProofV1;
 use refusal::PublicationRefusal;
 #[path = "authority_host_publication_acceptance.rs"]
 mod acceptance;
+#[path = "authority_host_publication_completed_files.rs"]
+mod completed_files;
 #[path = "authority_host_publication_registration.rs"]
 mod registration;
 #[path = "authority_host_publication_successor.rs"]

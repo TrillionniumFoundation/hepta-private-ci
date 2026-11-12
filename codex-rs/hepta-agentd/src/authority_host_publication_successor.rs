@@ -8,6 +8,9 @@ use crate::authority_host_runtime::RootOriginalSuccessorFilesV1;
 use crate::authority_host_runtime::RootSuccessorTaskCutV1;
 use codex_hepta_contracts::RootAuthorityDirectory;
 
+#[path = "authority_host_publication_completed_successor.rs"]
+mod completed;
+
 const SUCCESSOR_PURPOSE: &str = "runtime.circuit.original-successor-data.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]

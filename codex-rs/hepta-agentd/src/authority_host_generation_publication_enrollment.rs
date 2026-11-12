@@ -26,7 +26,7 @@ pub struct RootGenerationJournalInputsV1 {
 }
 
 impl RootGenerationJournalInputsV1 {
-    fn observe(self, consumer_uid: u32) -> io::Result<CellGenerationJournalObserverV1> {
+    pub(super) fn observe(self, consumer_uid: u32) -> io::Result<CellGenerationJournalObserverV1> {
         for file in [&self.journal, &self.witness] {
             let metadata = file.metadata()?;
             if !metadata.is_file()
