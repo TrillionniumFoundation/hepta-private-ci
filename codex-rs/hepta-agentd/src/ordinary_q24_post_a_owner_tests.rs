@@ -176,6 +176,35 @@ impl OriginalPostAOwnerInputs {
         }))
     }
 
+    pub(super) fn root_completed_data(&self) -> anyhow::Result<Value> {
+        let mut files = serde_json::Map::new();
+        for (name, signed) in [
+            ("freeze", &self.freeze),
+            ("experience", &self.experience),
+            ("dataset", &self.dataset),
+            ("training_receipt", &self.training_receipt),
+            ("local_decision", &self.local),
+            ("selection", &self.selection),
+            ("next_use", &self.next_use),
+        ] {
+            let original = &signed.owner;
+            let journal = OriginalFileData::capture(&original.journal)?;
+            let witness = OriginalFileData::capture(&original.witness)?;
+            anyhow::ensure!(
+                journal.read_original(0)?.is_empty() && witness.read_original(0)?.is_empty(),
+                "first Root completion descriptors must still be empty"
+            );
+            files.insert(
+                name.into(),
+                json!({
+                    "journal":journal,"witness":witness,"scope":original.scope,
+                    "generation":original.generation,"maximum_records":original.max_records
+                }),
+            );
+        }
+        Ok(Value::Object(files))
+    }
+
     pub(super) fn delivery_data(&self) -> anyhow::Result<Value> {
         Ok(serde_json::to_value(&self.delivery)?)
     }

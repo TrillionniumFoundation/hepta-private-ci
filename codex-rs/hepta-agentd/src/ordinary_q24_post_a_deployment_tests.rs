@@ -22,6 +22,7 @@ pub(super) struct OriginalPostARootPlans {
     pub(super) learning: PathBuf,
     pub(super) publication: PathBuf,
     pub(super) independent_b: PathBuf,
+    pub(super) completed_learning: PathBuf,
     pub(super) publication_inputs: crate::authority_host_runtime::PublicationInputData,
 }
 
@@ -49,6 +50,7 @@ pub(super) fn write_original_root_plans(
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("actual A original Ledger deployment absent"))?;
     let historical = directory.join("post-a-historical.json");
+    let completed_learning = directory.join("post-a-completed-learning.json");
     write_json(
         &historical,
         &json!({
@@ -56,7 +58,8 @@ pub(super) fn write_original_root_plans(
             "initial":profile,"target":original.plan.deployment.target,
             "source_deployment":original.plan.root.source,
             "run_start_deployment":original.plan.root.run_start,
-            "ledger_deployment":ledger,"learning_trust_deployment":trust_mapping
+            "ledger_deployment":ledger,"learning_trust_deployment":trust_mapping,
+            "completed_learning_deployment":completed_learning
         }),
     )?;
     let baseline = original.plan.runtime.path().join("model");
@@ -117,13 +120,27 @@ pub(super) fn write_original_root_plans(
             "successor":resources.c.root_successor_data()
         }),
     )?;
+    let independent_b = directory.join("post-a-independent-b.json");
+    write_json(
+        &completed_learning,
+        &json!({
+            "schema":1,"purpose":"runtime.learning.completed-deployment.v1",
+            "initial":initial.head_digest.to_string(),
+            "target":Digest32::from_array(original.plan.deployment.target.digest()?).to_string(),
+            "mode":"accept",
+            "original_post_a_deployment":Digest32::of_bytes(&read_private(&learning, 65_536)?).to_string(),
+            "independent_b":independent_b,"publication":publication,
+            "files":resources.owners.root_completed_data()?
+        }),
+    )?;
     Ok(OriginalPostARootPlans {
         historical,
         learning,
         publication,
         // The actual source child identity is fixed before Root exec. Its B
         // producer writes this separate original deployment, never a new grant.
-        independent_b: directory.join("post-a-independent-b.json"),
+        independent_b,
+        completed_learning,
         publication_inputs,
     })
 }

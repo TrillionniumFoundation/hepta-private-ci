@@ -44,6 +44,7 @@ impl RetainedOrdinaryQ24Fixture {
         paths.extend(self.independent.business_files());
         paths.extend(resources.trust.keys.values().cloned());
         paths.push(resources.trust.payload_file.clone());
+        paths.push(self.plan.root.completed_learning.clone());
         let inputs = &self.plan.root.publication_inputs;
         paths.push(inputs.withdrawal_file.clone());
         paths.push(inputs.artifact_root.join("registries").join(format!(
