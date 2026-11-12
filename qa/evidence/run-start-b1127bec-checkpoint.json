@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.run-start.typed-cold-read-checkpoint.v1",
+  "head": "b1127bec24267da7c8a6d09c9ee1456b46000a66",
+  "tree": "0a386eb7147e707e015ed6090dfea5f848fa8498",
+  "bundle": {
+    "path": "qa/evidence/run-start-live-b1127bec.bundle",
+    "bytes": 72350,
+    "sha256": "0fa7bb8b20cb54546f2fb5bca7933964829cc42f87228f63f621524b46d70fa2",
+    "prerequisite": "82c895ceb49732ccd7097cde39d1c4da232e8507"
+  },
+  "change": "Only the cold physical read boundary switches from a global same-method-name regex to the concrete RootRetainedRunStartDataV1 receiver; its product callers remain empty. Preserve all other guards and all prior failure records. Add a negative test rejecting an unregistered actual Root receiver while accepting an unrelated same-named artifact method.",
+  "development_checks": {
+    "source_qa": 16,
+    "failures": 0,
+    "fmt_exit_code": 0,
+    "diff_check_exit_code": 0
+  },
+  "frozen_checks": "new run pending; prior 761 focused failure is retained separately",
+  "native_executed": false
+}
