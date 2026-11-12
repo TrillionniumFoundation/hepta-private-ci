@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-visit897-n128-stretch-field-static-source-v1",
+  "identity": "hcsn-visit897-n128-stretch-field-static-20261112-c06d",
+  "idempotency_key": "hcsn-visit897-n128-stretch-field-static-20261112-c06d-001",
+  "parent_pr": 6270,
+  "parent_head": "ec608133a275a97f6712561a08af218fee4ebe26",
+  "parent_large_adjoint_sha256": "adff7aa227287200eda6cb14fd62adaa9ed3a4b57891978baa83f35e4f26591a",
+  "repaired_large_adjoint_sha256": "930d2bf7f610cc61a0dcf8ef39d07aeb2ec2cb470c2acec8aa4a8df5b2ab284c",
+  "unchanged_spatial_sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+  "source_sha256": {
+    ".github/workflows/hcsn-visit897-n128-stretch-field-static.yml": "50ebc64d1c6e3dbdc16577c1d1d911cbdebf65a36d8fb36946ff1319c689cdc4",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_source_migration_vjp_n128/large_adjoint.py": "930d2bf7f610cc61a0dcf8ef39d07aeb2ec2cb470c2acec8aa4a8df5b2ab284c",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/PARENT-RED-LEDGER.json": "2e69bde295b429ec17cabdf72397726b295126775d1778abc6ee86d158170c1a",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/REQUEST.json": "fd73118b95747dff9515c0600dca5435f1492acf32686294fe76848321523518",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/SPEC.md": "199329ef60c274b768071116e1583a4a31015d8f5bc0b592fc4d72834db6826e",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/static_review.py": "1e1b35d65525016d869c558d0ed1577576a8f28167cd718ea4c8f1f3686e3319"
+  },
+  "expected_changed_paths": [
+    ".github/workflows/hcsn-visit897-n128-stretch-field-static.yml",
+    "qualification/hcsn_source_migration_vjp_n128/large_adjoint.py",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/PARENT-RED-LEDGER.json",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/REQUEST.json",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/SOURCE.json",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/SPEC.md",
+    "qualification/hcsn_source_migration_vjp_n128_stretch_static/static_review.py"
+  ],
+  "status": "FROZEN_STATIC_ONLY_NOT_EXECUTED",
+  "candidate_imports": 0,
+  "model_forwards": 0,
+  "adjoints": 0,
+  "backward_attempts": 0,
+  "optimizer_updates": 0,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "global_status": "HOLD",
+  "all_closed": false
+}

@@ -43,7 +43,7 @@ def freeze_n128_problem(model):
         or model.spatial.endpoint != 8.0
         or model.spatial.mu != -0.11999999999999998
         or model.spatial.sigma != 0.35
-        or model.spatial.grading != 6.0
+        or model.spatial.stretch != 6.0
         or Fraction(str(model.delay)) != DELAY
         or model.discount != DISCOUNT
     ):
