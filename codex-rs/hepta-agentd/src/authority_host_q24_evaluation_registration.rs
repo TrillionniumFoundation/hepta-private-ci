@@ -12,18 +12,24 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
         learning: &RegisteredHostLearningCheckpointV1,
-        end: Instant,
+        request_end: Instant,
+        session_end: Instant,
     ) -> io::Result<Arc<Self>> {
+        if request_end > session_end {
+            return Err(io::Error::other(
+                "original B registration exceeds its session",
+            ));
+        }
         let root =
             Arc::new(RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?);
-        let (record, files) = OriginalBRecord::register(root, initial, end, || {
+        let (record, files) = OriginalBRecord::register(root, initial, request_end, || {
             let result = service.with_learning_profile(
                 config,
                 registration,
                 owner,
                 &learning.profile,
                 |actual, proof| {
-                    owner_alive(owner, end)?;
+                    owner_alive(owner, request_end)?;
                     require_learning(initial, &actual, learning)?;
                     let before = learning
                         .backend
@@ -88,7 +94,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     Ok((enrollment, files))
                 },
             )?;
-            owner_alive(owner, end)?;
+            owner_alive(owner, request_end)?;
             require_files(
                 &result.1,
                 &result.0,
@@ -107,7 +113,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 files,
                 execution: None,
             }),
-            end,
+            end: session_end,
         }))
     }
 
@@ -119,19 +125,23 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
         learning: &RegisteredHostLearningCheckpointV1,
-        end: Instant,
+        request_end: Instant,
+        session_end: Instant,
     ) -> io::Result<Arc<Self>> {
+        if request_end > session_end {
+            return Err(io::Error::other("original B reopen exceeds its session"));
+        }
         let root =
             Arc::new(RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?);
         let record = OriginalBRecord::open(root, initial)?;
-        let files = record.inspect(end, |enrollment| {
+        let files = record.inspect(request_end, |enrollment| {
             let files = service.with_learning_profile(
                 config,
                 registration,
                 owner,
                 &learning.profile,
                 |actual, _| {
-                    owner_alive(owner, end)?;
+                    owner_alive(owner, request_end)?;
                     require_learning(initial, &actual, learning)?;
                     let files = OriginalBInputs::open(path)?;
                     let now = service.original_learning_unix_seconds()?;
@@ -140,7 +150,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     Ok(files)
                 },
             )?;
-            owner_alive(owner, end)?;
+            owner_alive(owner, request_end)?;
             require_files(
                 &files,
                 enrollment,
@@ -157,7 +167,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 files,
                 execution: None,
             }),
-            end,
+            end: session_end,
         }))
     }
 }

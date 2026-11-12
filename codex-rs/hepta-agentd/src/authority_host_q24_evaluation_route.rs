@@ -48,9 +48,12 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
         learning: &RegisteredHostLearningCheckpointV1,
-        original_end: Instant,
+        request_end: Instant,
     ) -> io::Result<PreparedRootIndependentBEvaluationV1> {
-        let end = self.end.min(original_end);
+        if request_end > self.end {
+            return Err(io::Error::other("original B route exceeds its session"));
+        }
+        let end = request_end;
         self.require_original_learning(learning)?;
         let (bootstrap, sealed) = self.record.inspect(end, |enrollment| {
             let state = self
@@ -136,7 +139,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 host: Arc::clone(self),
                 bootstrap,
                 phase: AtomicU8::new(0),
-                end,
+                end: self.end,
             },
             offer: RootIndependentBEvaluationOfferV1 { bootstrap: sealed },
         })
