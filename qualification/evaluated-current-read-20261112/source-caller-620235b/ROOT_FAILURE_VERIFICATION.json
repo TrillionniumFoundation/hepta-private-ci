@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.owner620.caller-failure-root-verification.v1",
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "job_id": "1a1cf762917-2564-1a36",
+  "original_record_filename": "caller-verify.json",
+  "original_log_filename": "caller-verify.json.5972d1deb562477ba346d2a65eb0a4b1.log",
+  "published_filename_mapping": {
+    "620-caller-verify.json": "caller-verify.json",
+    "620-caller-verify.log": "caller-verify.json.5972d1deb562477ba346d2a65eb0a4b1.log",
+    "620-runner.log": "caller runner output"
+  },
+  "files": [
+    {
+      "name": "620-caller-verify.log",
+      "sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+      "bytes": 192,
+      "sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139"
+    },
+    {
+      "name": "620-caller-verify.json",
+      "sha": "0db09d054d1badb112bc74bb2ad5bcc5cfddaa3b",
+      "bytes": 1570,
+      "sha256": "7b3fad514ebd3d74f6984164f57520e07a0f0809e91653effd40ee396751853d"
+    },
+    {
+      "name": "620-runner.log",
+      "sha": "6d4a0cffe490fbe1241b1d9140973ba5923c587b",
+      "bytes": 1610,
+      "sha256": "83f5db1dcb7e1d975ca18bd40f123b036986ac275458705c39cab3c541742a0f"
+    }
+  ],
+  "exit_code": 1,
+  "timed_out": false,
+  "source_identity_before_after_equal": true,
+  "actual_source_blob": "fae852c8a1d5022347e632787172b99f9d119307",
+  "actual_guard_order": [
+    "readonly::require_request",
+    "SourceBoundCellQ24TrainingStageV1::readback",
+    "completed_response"
+  ],
+  "manifest_registration_missing": true,
+  "checker_unchanged": true,
+  "native_dispatched": false,
+  "owner_decision": null
+}

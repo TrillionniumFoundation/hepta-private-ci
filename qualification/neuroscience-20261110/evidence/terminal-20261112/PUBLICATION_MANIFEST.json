@@ -1,234 +1,60 @@
 {
   "schema": "hepta.terminal-evidence-publication.v1",
-  "created_at_utc": "2026-11-12 10:23:06 UTC",
-  "parent_commit": "cac146ca8a080cf3389576dc6808dc6f1b3f819c",
-  "base_tree": "576908db75021077299a508a28a30682208fa5ed",
-  "scope": "documentation and evidence only",
-  "implementation_changes": 0,
+  "created_at_utc": "2026-11-12T11:39:00Z",
+  "parent_commit": "59370d405c540872e428f92849615f1d188e78ce",
+  "base_tree": "775009956facf63a7e55145012ddcde86c7745aa",
+  "scope": "Evidence-only follow-up; complete full200 raw suite archive and independent verification, old088 source inventory, exact0e/620 failures, actual wrapper asset validation, and undispatched B/C feasibility. Original scientific qualification HOLD.",
+  "implementation_changes": [],
   "owner_decision": null,
   "status": "HOLD",
   "artifacts_text": [
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/COMPLETED.json",
-      "bytes": 3047,
-      "sha256": "9afc63e311a41ec1f4dbafbc756055419847b60e6b5bfeabf3d3ba6b6136dc4b",
-      "git_blob": "06552d262a045c8cf5401f1e9296bdb45f7557f1"
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/ROOT_READBACK_VERIFICATION.json",
+      "bytes": 6314,
+      "sha256": "925b85774541860ad69acfc50da16b07288b2b07e389e264f8c564e685948b70",
+      "git_blob": "ca17cc06746054bebabda11a999628886318d462"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial/EVALUATE_COMPLETED.json",
-      "bytes": 37,
-      "sha256": "375e6782c336e59cc9032717639785aae8e407aa67b13500354585ad149d08bd",
-      "git_blob": "d473911f0305d684e95e62756e7dc70e25e05db3"
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ROOT_COMPLETE_VALIDATION.json",
+      "bytes": 50293,
+      "sha256": "35ea86c45f8736fa9d7b598d63fb8d6627ec06be5fbcc2b0c7991e22eb77f852",
+      "git_blob": "c3a3d49ada619f355bb9d00d57a8eca3d1fa92da"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial_evaluate_TERMINAL.json",
-      "bytes": 212,
-      "sha256": "cdcb2a61e939c8ce716c4e959d954f4b8530a282408b5fa7caf517a983e4b19f",
-      "git_blob": "c2c91b8f3ab682e026ec9445b0405cfc0aa98287"
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ROOT_GZIP_DECODER.js.txt",
+      "bytes": 4097,
+      "sha256": "1fa56b4f28a23d5f70f510e1e706bcd667ebc5871eeaf1085e73906dc2e96d85",
+      "git_blob": "8cbc12a06a2a2e8d31e163fe1df4f48a1278b539"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial_evaluate.log",
-      "bytes": 668,
-      "sha256": "4e61f3d04b509751950f3711bf1680b9fa24fcd1b87deaba08181bbb1bfc4315",
-      "git_blob": "5a0b4434f79c2228323fc8067d8b02f490ee1a80"
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ROOT_TAR_PARSER.js.txt",
+      "bytes": 2431,
+      "sha256": "512bad35f15eb3c5740de8cbaa40733176c81e6b2d0a8f5d2efef6b8b27ae5e4",
+      "git_blob": "ba2f34fea5774f2e0890e5fd627d3c60a2c123a3"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/bootstrap-v2/FAILED.json",
-      "bytes": 1233,
-      "sha256": "10dc808cc9b525fc661a5d84d7f8029cabc99765c03bc13b3feba5b9866fcfce",
-      "git_blob": "bcd2da2c6739a2f92fa87d4436f8a7a8f399de6a"
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/ROOT_FAILURE_VERIFICATION.json",
+      "bytes": 1658,
+      "sha256": "dc18391aced17269b16a1e06c8a39d8bcb3c7370e6039c80edc4912afd38be01",
+      "git_blob": "c3f0f4a083b26e8839c849d2ac4a8972c6f9a8b9"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/adapted/CHECKPOINT.json",
-      "bytes": 11474,
-      "sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858",
-      "git_blob": "6c83e806e33ff0ea8b8d04145db65870b8d33f74"
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
+      "bytes": 1325,
+      "sha256": "3b949ecc83264f96156d7dddfe9c293e83e97329b5c194d05df2581c9d2adc93",
+      "git_blob": "447fa8d2f083812de3be92a7a3a8f3dbc8b50c3c"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/ORIGINAL_PTY_ARCHIVE.txt",
-      "bytes": 4603,
-      "sha256": "51e838f0afdd05ce3ef9e85db9fd3cff02380ab2a5bf873a447ff57da3e11192",
-      "git_blob": "f17190448ff155a8ec8c14d7221d22cb2766c582"
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ROOT_LOG_VERIFICATION.json",
+      "bytes": 3093,
+      "sha256": "4e4df4b80aaa7ce6e7a2f77405eeb281ea832a881410317bcdccf0e54f2d6899",
+      "git_blob": "0d33aa1ee410dc5ac1dae70457be5c8f07236298"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/TERMINAL_READ_ORIGINAL_TEXT.json",
-      "bytes": 8950,
-      "sha256": "2a34d919255514f67ab171f763b425617913ac666f6ff2baef5ac3bb1285c649",
-      "git_blob": "d2ca8c008bbcbaa6abb5ebfd2bfbfaae0d82096b"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/COMPLETION_READ_ORIGINAL_TEXT.json",
-      "bytes": 19263,
-      "sha256": "d947ed0d85b672f6a03a1f5d615ddecff57c9d3d172cd9c801e3a5cacd3d290e",
-      "git_blob": "ae2714447e3df1d880f4bdaebde903227242187b"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/HARDWARE_ORIGINAL_SDK.json",
-      "bytes": 7169,
-      "sha256": "760e01d56e18e37e3de693a11216bc2dda987a034974413a384120f0f4d79b2c",
-      "git_blob": "ff53d82e1d09c3bf5006a389a0654e1a06ed0e6e"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PROBE_SOURCE.py.txt",
-      "bytes": 5125,
-      "sha256": "b4170d9ba71a04313f05443b77731105b1ee8852787e8e7faf8938207c362b8f",
-      "git_blob": "af296efe3aa0556bb3e0095b25317ad7c8f92ff7"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PROBE_OUTPUT.jsonl",
-      "bytes": 4364,
-      "sha256": "c30ceb194a45a8b773a970c80ed406bba114d6b2b06db26025994a0d46382bb2",
-      "git_blob": "c69cddb200c551578cee04607b7cca195d41de10"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PTY_READ_ORIGINAL_TEXT.json",
-      "bytes": 14414,
-      "sha256": "cb350ab728dba3946c814776b21f2026f8c37f895428c083c09194f13bdfdb35",
-      "git_blob": "404114ac91cbaef8acef8eb4f4d536d9e78ec12b"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_SOURCE.py.txt",
-      "bytes": 9106,
-      "sha256": "ebef3879bb0916ce19f9135b12c8ead175c8a14510293b330b5a65e99b30b3ed",
-      "git_blob": "4bc1f3ada0cccceebefc5d3fc9a848db73482f29"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_REQUEST.json",
-      "bytes": 9809,
-      "sha256": "a3a54cc0be9dae6107fa529c8029e724f7a695f951aa6ada6c631ce1f0b6943a",
-      "git_blob": "18e7fac30ba2a0255d7b42c720c072f9caa59329"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_ADMISSION_READBACK.json",
-      "bytes": 802,
-      "sha256": "9e10d7c44521c600fdde939f7166bbde0227a554cb8b8e3211c36d918eb2f4d9",
-      "git_blob": "63269f9beb01c7895a9b9253d11c65297cdba4dd"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/MANIFEST_ORIGINAL.json",
-      "bytes": 5533,
-      "sha256": "87e9303369db5e88e5a5947651c8534fd853871384f2627abc69d68bf9ea6ed8",
-      "git_blob": "b153e1911f4e8df16a28254c33a4071ec10d20be"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ARCHIVE_MAPPING.json",
-      "bytes": 3378,
-      "sha256": "0449757a397f702ef71b7e0130276afc227eaa6f554a47866786946fafafd6c2",
-      "git_blob": "3876686909a79bb71a40fdde19b477cb492a2e67"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/RETRIEVAL_LIMITS.json",
-      "bytes": 996,
-      "sha256": "132fece177619603ae503a2939700d37083d9af4d9398dc25efe9b9824232624",
-      "git_blob": "0e5df8d02db9eecdac840b6b91ea0c371fe686da"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/MANIFEST.original.json",
-      "bytes": 1156,
-      "sha256": "9bc2e2b143d05dc076c3eb286441d5fb497750feb87d5c01a3ed1b38c93b04ad",
-      "git_blob": "e7d43c626d71791e18655db499560d1284a6202a"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/MANIFEST.original.json",
-      "bytes": 1187,
-      "sha256": "f788c7566a869adc84a192aeb9f03dc459c56f0865ca2d85ce9b1559ba2e1711",
-      "git_blob": "4116351a26b3d9e95e4d094668f52dac93dc3e95"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/tail-read-original-native-sdk.json",
-      "bytes": 60873,
-      "sha256": "d945c929a5d5b5b2b5c0cefd7ce0b4c6aa6dbf22f60d48ec041a7a3cd470e826",
-      "git_blob": "9278caaf88270b53108b00a79b69a211bd0a1ba6"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/read-original-native-sdk.json",
-      "bytes": 46315,
-      "sha256": "2a2c7edf031c0e81a5f984e22823da0c4df23fa9f531e3164429e6f90e4c928f",
-      "git_blob": "6dae096d3053ba82e7aeebc1236ec8fd8812ac18"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
-      "bytes": 1874,
-      "sha256": "6556ad455641a4f99f5b082ba87d85e9028015c7a9e0b5da82129082f9f3e7b7",
-      "git_blob": "6cc38de8bcb43dae434dfe549d6bedebe908e4e9"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/PARTITIONS_VERIFIED.json",
-      "bytes": 2863,
-      "sha256": "9d5023c9612a838f68e6013cc322c4e6542bf675038c5991c91393e736f520e2",
-      "git_blob": "38d294e15bbc52bec62c3673689773ca122fafd4"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/EVIDENCE_PATH_MAPPING.json",
-      "bytes": 37631,
-      "sha256": "1139ef6c3ec1314a354fcf59faf8e74290cee696c3017b1a636205b51b6f616a",
-      "git_blob": "835f6c8c779034f0e66ef74029f265a7c4771caa"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GZIP_DECODER_REFERENCE.js.txt",
-      "bytes": 3833,
-      "sha256": "47e17f029edb8d0722a05a06a453347fd255a36b748b6b839751d682c6dcb707",
-      "git_blob": "3a42efacae76ecb8522ed90e9204cccfe72d8255"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/RUNTIME_LOG_ROOT_VERIFICATION.json",
-      "bytes": 467,
-      "sha256": "62d79364265fc080473994434f8e12e82cb92ba509454d7ab2c18eb4c65b09c5",
-      "git_blob": "549885df37399f427f2f80466ecac27be64c970c"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/EVIDENCE.original.json",
-      "bytes": 6787,
-      "sha256": "ed24ed5613bf77b7314c8a70615dd8c04c52a746629466338f85bc06dfacce09",
-      "git_blob": "d22c7b21f7682e09de6e8c906ca0fd96475e6fe6"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/ADMISSION.json",
-      "bytes": 2155,
-      "sha256": "8858b2192ba42d03905eff489ba94a79d300a9d8f603d475cd77ea1e4f9ea95c",
-      "git_blob": "a274ea32a4fa3f871c4abe5d0913f31494470314"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/GENERATION_RESULT.json",
-      "bytes": 4065,
-      "sha256": "9bd98fa187f0ccba9fdb143aad70e4be4aef3c5f669c01e044a44dd8509ee160",
-      "git_blob": "cf4e7174d57697b1d148b4c713ec72dc13e4ccf6"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/PREEXECUTION.json",
-      "bytes": 3465,
-      "sha256": "2a0d5e17dbb4424b175ffd393cf5035c7458180283489f0ce734e256585128a7",
-      "git_blob": "9b7c09ba54e57491d7281823432e2dfaedff41ef"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/RECEIPT.json",
-      "bytes": 3826,
-      "sha256": "54bd1a94a998baa2f1a5ea00b799ce7b71b1a3c57593a7aa0bc96406706f1b30",
-      "git_blob": "7e7e51d58fd74fb43e956055f7f67412b025b568"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/combined.log",
-      "bytes": 463,
-      "sha256": "9d91fca392fc01b0e244c401b067264fb9afedc42dbd48546204c020d438511a",
-      "git_blob": "1d09e7015a239ef6d3f6597fcfb2b84ac375f4bf"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/generation-request.bin",
-      "bytes": 169,
-      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
-      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/request.bin",
-      "bytes": 169,
-      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
-      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/ROOT_RAW_VERIFICATION.json",
-      "bytes": 3088,
-      "sha256": "24a851a2cec8a578f426e01b00ac553aca7985286b4aa69470b82818926ee5c9",
-      "git_blob": "d13bd433a75639d849e65adb7ba3c97ffc01384a"
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "bytes": 15289,
+      "sha256": "0cdc3ae89ce9a73099e7a49314ce1bbc4d36ef0fd5bf91df119bf0df98484cc4",
+      "git_blob": "7a308c72ccb347c91893a1d0f68f2dafc63abb4e"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/act2-upstream-20261112/BLOCKERS.ba7.original.json",
@@ -249,52 +75,22 @@
       "git_blob": "538ec51aff0d2c4af5d6b487f9f4ae702e5a2fa2"
     },
     {
+      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/MANIFEST.original.json",
+      "bytes": 1187,
+      "sha256": "f788c7566a869adc84a192aeb9f03dc459c56f0865ca2d85ce9b1559ba2e1711",
+      "git_blob": "4116351a26b3d9e95e4d094668f52dac93dc3e95"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/read-original-native-sdk.json",
+      "bytes": 46315,
+      "sha256": "2a2c7edf031c0e81a5f984e22823da0c4df23fa9f531e3164429e6f90e4c928f",
+      "git_blob": "6dae096d3053ba82e7aeebc1236ec8fd8812ac18"
+    },
+    {
       "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-0837.md",
       "bytes": 29065,
       "sha256": "43863c96f591c1e15cb4fd657734504b968373c458312092fa75b6aa6f0666e6",
       "git_blob": "c3c175e887b9845e75f998f75d1f2e7fd986b637"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/history-20261112/R_V_EXECUTION-0837.md",
-      "bytes": 15849,
-      "sha256": "1be5db80872f65e00f37079bb191ad5ec222e7ac77d936e0f8f1430f5865402e",
-      "git_blob": "1dd342fab151a19c125be226e14cb38c639fe9cc"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 16926,
-      "sha256": "e87083df754fcb9697e97aee82349aa4cf4168bc4d3096dd25daa42f52685c41",
-      "git_blob": "957ee5f2a8197b263805f9ed2de04c43ac9191a1"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
-      "bytes": 1939,
-      "sha256": "6c0804171c035984176703286df40bfd9f880a3c05f7b7589bf6e184ec61b085",
-      "git_blob": "e1f3954d8ec899d4faa891a78c423e1c2668ba5e"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
-      "bytes": 13096,
-      "sha256": "651b0eff935186305c141a902f25da9b22b942e197cc7777c260a1c218d629b8",
-      "git_blob": "5197e87b2f27629b517bfe2179d659127d79fd75"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/R_V_EXECUTION.md",
-      "bytes": 15850,
-      "sha256": "2285a7d0bb5537195cbf8f878f4c67cc97b098f65a7a1ffa3a08c95e367f4568",
-      "git_blob": "94f4b0a57675f6a04795cc423878f3620ac04c07"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/ROOT_RECOMPUTATION.json",
-      "bytes": 10859,
-      "sha256": "f73ab71d475228b3456bb15d68da53b8240fc82cc3733626ed743be6dcd1044e",
-      "git_blob": "b1a41ccc83a62efb317d0ffedf029bfbd55526aa"
-    },
-    {
-      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
-      "bytes": 1301,
-      "sha256": "e4fa125fc0b9a2a278490cd0734815884e993605871fcbdbd55cbcf6b4223489",
-      "git_blob": "8cf592996137fe6a97703fce6306cce3c6361c04"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-4b6feb0.json",
@@ -303,17 +99,277 @@
       "git_blob": "a44b14482f78f412c8d45e6699f78742cf7ff854"
     },
     {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ROOT_LOG_VERIFICATION.json",
-      "bytes": 3093,
-      "sha256": "4e4df4b80aaa7ce6e7a2f77405eeb281ea832a881410317bcdccf0e54f2d6899",
-      "git_blob": "0d33aa1ee410dc5ac1dae70457be5c8f07236298"
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/R_V_EXECUTION-0837.md",
+      "bytes": 15849,
+      "sha256": "1be5db80872f65e00f37079bb191ad5ec222e7ac77d936e0f8f1430f5865402e",
+      "git_blob": "1dd342fab151a19c125be226e14cb38c639fe9cc"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/EVIDENCE.original.json",
+      "bytes": 6787,
+      "sha256": "ed24ed5613bf77b7314c8a70615dd8c04c52a746629466338f85bc06dfacce09",
+      "git_blob": "d22c7b21f7682e09de6e8c906ca0fd96475e6fe6"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/ADMISSION.json",
+      "bytes": 2155,
+      "sha256": "8858b2192ba42d03905eff489ba94a79d300a9d8f603d475cd77ea1e4f9ea95c",
+      "git_blob": "a274ea32a4fa3f871c4abe5d0913f31494470314"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/combined.log",
+      "bytes": 463,
+      "sha256": "9d91fca392fc01b0e244c401b067264fb9afedc42dbd48546204c020d438511a",
+      "git_blob": "1d09e7015a239ef6d3f6597fcfb2b84ac375f4bf"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/GENERATION_RESULT.json",
+      "bytes": 4065,
+      "sha256": "9bd98fa187f0ccba9fdb143aad70e4be4aef3c5f669c01e044a44dd8509ee160",
+      "git_blob": "cf4e7174d57697b1d148b4c713ec72dc13e4ccf6"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/generation-request.bin",
+      "bytes": 169,
+      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/PREEXECUTION.json",
+      "bytes": 3465,
+      "sha256": "2a0d5e17dbb4424b175ffd393cf5035c7458180283489f0ce734e256585128a7",
+      "git_blob": "9b7c09ba54e57491d7281823432e2dfaedff41ef"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/RECEIPT.json",
+      "bytes": 3826,
+      "sha256": "54bd1a94a998baa2f1a5ea00b799ce7b71b1a3c57593a7aa0bc96406706f1b30",
+      "git_blob": "7e7e51d58fd74fb43e956055f7f67412b025b568"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/request.bin",
+      "bytes": 169,
+      "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+      "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/ROOT_RAW_VERIFICATION.json",
+      "bytes": 3088,
+      "sha256": "24a851a2cec8a578f426e01b00ac553aca7985286b4aa69470b82818926ee5c9",
+      "git_blob": "d13bd433a75639d849e65adb7ba3c97ffc01384a"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/MANIFEST.original.json",
+      "bytes": 1156,
+      "sha256": "9bc2e2b143d05dc076c3eb286441d5fb497750feb87d5c01a3ed1b38c93b04ad",
+      "git_blob": "e7d43c626d71791e18655db499560d1284a6202a"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/tail-read-original-native-sdk.json",
+      "bytes": 60873,
+      "sha256": "d945c929a5d5b5b2b5c0cefd7ce0b4c6aa6dbf22f60d48ec041a7a3cd470e826",
+      "git_blob": "9278caaf88270b53108b00a79b69a211bd0a1ba6"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/ROOT_READBACK_VERIFICATION.json",
+      "bytes": 1110,
+      "sha256": "b6a263965d24083896f5d280b7be5087cce47a7902898e3ca4d1ec6f7a11a348",
+      "git_blob": "3545e68230e7f2f36cd1d7e40deb281b02126e47"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/ARCHIVE_PATH_MAPPING.json",
+      "bytes": 366,
+      "sha256": "5de17e5b40a963e6c6c071b1d098ac63e961329e92a6a45f3e09bbd793bd9afd",
+      "git_blob": "75bd3676f95ba9c3bf3678a45e7341d64a7a30b0"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/ROOT_READBACK_VERIFICATION.json",
+      "bytes": 4367,
+      "sha256": "55ff5e1a6945e87d62e0e7ca68a262ee4173b75e04a34468349fe0cc0196242b",
+      "git_blob": "2cf6828ebc0833a54aa43803501ff22de6bad076"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/bootstrap-v2/FAILED.json",
+      "bytes": 1233,
+      "sha256": "10dc808cc9b525fc661a5d84d7f8029cabc99765c03bc13b3feba5b9866fcfce",
+      "git_blob": "bcd2da2c6739a2f92fa87d4436f8a7a8f399de6a"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/COMPLETION_READ_ORIGINAL_TEXT.json",
+      "bytes": 19263,
+      "sha256": "d947ed0d85b672f6a03a1f5d615ddecff57c9d3d172cd9c801e3a5cacd3d290e",
+      "git_blob": "ae2714447e3df1d880f4bdaebde903227242187b"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/ORIGINAL_PTY_ARCHIVE.txt",
+      "bytes": 4603,
+      "sha256": "51e838f0afdd05ce3ef9e85db9fd3cff02380ab2a5bf873a447ff57da3e11192",
+      "git_blob": "f17190448ff155a8ec8c14d7221d22cb2766c582"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/RETRIEVAL_LIMITS.json",
+      "bytes": 996,
+      "sha256": "132fece177619603ae503a2939700d37083d9af4d9398dc25efe9b9824232624",
+      "git_blob": "0e5df8d02db9eecdac840b6b91ea0c371fe686da"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/adapted/CHECKPOINT.json",
+      "bytes": 11474,
+      "sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858",
+      "git_blob": "6c83e806e33ff0ea8b8d04145db65870b8d33f74"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/COMPLETED.json",
+      "bytes": 3047,
+      "sha256": "9afc63e311a41ec1f4dbafbc756055419847b60e6b5bfeabf3d3ba6b6136dc4b",
+      "git_blob": "06552d262a045c8cf5401f1e9296bdb45f7557f1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial_evaluate_TERMINAL.json",
+      "bytes": 212,
+      "sha256": "cdcb2a61e939c8ce716c4e959d954f4b8530a282408b5fa7caf517a983e4b19f",
+      "git_blob": "c2c91b8f3ab682e026ec9445b0405cfc0aa98287"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial_evaluate.log",
+      "bytes": 668,
+      "sha256": "4e61f3d04b509751950f3711bf1680b9fa24fcd1b87deaba08181bbb1bfc4315",
+      "git_blob": "5a0b4434f79c2228323fc8067d8b02f490ee1a80"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/run-v2/factorial/EVALUATE_COMPLETED.json",
+      "bytes": 37,
+      "sha256": "375e6782c336e59cc9032717639785aae8e407aa67b13500354585ad149d08bd",
+      "git_blob": "d473911f0305d684e95e62756e7dc70e25e05db3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/campaign-v2/TERMINAL_READ_ORIGINAL_TEXT.json",
+      "bytes": 8950,
+      "sha256": "2a34d919255514f67ab171f763b425617913ac666f6ff2baef5ac3bb1285c649",
+      "git_blob": "d2ca8c008bbcbaa6abb5ebfd2bfbfaae0d82096b"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ARCHIVE_MAPPING.json",
+      "bytes": 3378,
+      "sha256": "0449757a397f702ef71b7e0130276afc227eaa6f554a47866786946fafafd6c2",
+      "git_blob": "3876686909a79bb71a40fdde19b477cb492a2e67"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_ADMISSION_READBACK.json",
+      "bytes": 802,
+      "sha256": "9e10d7c44521c600fdde939f7166bbde0227a554cb8b8e3211c36d918eb2f4d9",
+      "git_blob": "63269f9beb01c7895a9b9253d11c65297cdba4dd"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_REQUEST.json",
+      "bytes": 9809,
+      "sha256": "a3a54cc0be9dae6107fa529c8029e724f7a695f951aa6ada6c631ce1f0b6943a",
+      "git_blob": "18e7fac30ba2a0255d7b42c720c072f9caa59329"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/ASSET_PROBE_SOURCE.py.txt",
+      "bytes": 9106,
+      "sha256": "ebef3879bb0916ce19f9135b12c8ead175c8a14510293b330b5a65e99b30b3ed",
+      "git_blob": "4bc1f3ada0cccceebefc5d3fc9a848db73482f29"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/HARDWARE_ORIGINAL_SDK.json",
+      "bytes": 7169,
+      "sha256": "760e01d56e18e37e3de693a11216bc2dda987a034974413a384120f0f4d79b2c",
+      "git_blob": "ff53d82e1d09c3bf5006a389a0654e1a06ed0e6e"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/MANIFEST_ORIGINAL.json",
+      "bytes": 5533,
+      "sha256": "87e9303369db5e88e5a5947651c8534fd853871384f2627abc69d68bf9ea6ed8",
+      "git_blob": "b153e1911f4e8df16a28254c33a4071ec10d20be"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PROBE_OUTPUT.jsonl",
+      "bytes": 4364,
+      "sha256": "c30ceb194a45a8b773a970c80ed406bba114d6b2b06db26025994a0d46382bb2",
+      "git_blob": "c69cddb200c551578cee04607b7cca195d41de10"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PROBE_SOURCE.py.txt",
+      "bytes": 5125,
+      "sha256": "b4170d9ba71a04313f05443b77731105b1ee8852787e8e7faf8938207c362b8f",
+      "git_blob": "af296efe3aa0556bb3e0095b25317ad7c8f92ff7"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/desktop-host/TOOLCHAIN_PTY_READ_ORIGINAL_TEXT.json",
+      "bytes": 14414,
+      "sha256": "cb350ab728dba3946c814776b21f2026f8c37f895428c083c09194f13bdfdb35",
+      "git_blob": "404114ac91cbaef8acef8eb4f4d536d9e78ec12b"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/EVIDENCE_PATH_MAPPING.json",
+      "bytes": 37631,
+      "sha256": "1139ef6c3ec1314a354fcf59faf8e74290cee696c3017b1a636205b51b6f616a",
+      "git_blob": "835f6c8c779034f0e66ef74029f265a7c4771caa"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
+      "bytes": 1301,
+      "sha256": "e4fa125fc0b9a2a278490cd0734815884e993605871fcbdbd55cbcf6b4223489",
+      "git_blob": "8cf592996137fe6a97703fce6306cce3c6361c04"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GZIP_DECODER_REFERENCE.js.txt",
+      "bytes": 3833,
+      "sha256": "47e17f029edb8d0722a05a06a453347fd255a36b748b6b839751d682c6dcb707",
+      "git_blob": "3a42efacae76ecb8522ed90e9204cccfe72d8255"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/PARTITIONS_VERIFIED.json",
+      "bytes": 2863,
+      "sha256": "9d5023c9612a838f68e6013cc322c4e6542bf675038c5991c91393e736f520e2",
+      "git_blob": "38d294e15bbc52bec62c3673689773ca122fafd4"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
+      "bytes": 4042,
+      "sha256": "67379de029d21d60e03f4f90fac9eff511a6df04ed22103c68c9a74921e0716f",
+      "git_blob": "eaecedde0caf48fdaf5001f5a5dd626e66404f41"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
+      "bytes": 1874,
+      "sha256": "6556ad455641a4f99f5b082ba87d85e9028015c7a9e0b5da82129082f9f3e7b7",
+      "git_blob": "6cc38de8bcb43dae434dfe549d6bedebe908e4e9"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/RUNTIME_LOG_ROOT_VERIFICATION.json",
+      "bytes": 467,
+      "sha256": "62d79364265fc080473994434f8e12e82cb92ba509454d7ab2c18eb4c65b09c5",
+      "git_blob": "549885df37399f427f2f80466ecac27be64c970c"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/ROOT_RECOMPUTATION.json",
+      "bytes": 10859,
+      "sha256": "f73ab71d475228b3456bb15d68da53b8240fc82cc3733626ed743be6dcd1044e",
+      "git_blob": "b1a41ccc83a62efb317d0ffedf029bfbd55526aa"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/R_V_EXECUTION.md",
+      "bytes": 17450,
+      "sha256": "a2270ce4aef99694efcfcaa88d80f2231c7ca70207599aa691a17b31c63300e0",
+      "git_blob": "c5ddfda76b415c9e822df340c1272aca2d6f6994"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "bytes": 23444,
+      "sha256": "75fca83857990048785cfa24a130e545a0dcedc5b8cb2bdb98839ceb52585daa",
+      "git_blob": "e6a0f3c61f218bd3b928358ca0566a0f00784db1"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/ci-observations/7e6-cancelled-architecture/ROOT_READBACK_VERIFICATION.json",
+      "bytes": 1236,
+      "sha256": "8eb296b23d32ef677111d03c2ae7007d6d042dc0eb86a6d06d049e25c0effe44",
+      "git_blob": "2f1c56872d4f73f8dea70b90e06f248d806fd89e"
     }
   ],
   "artifacts_existing_git_blobs": [
-    {
-      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/RESULT.json",
-      "git_blob": "b7020a8585116bf80b4b9eb0c4040a2a292aedbf"
-    },
     {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/h-request.json",
       "git_blob": "13fa2f75f75156bc3501cf2105b97a034410c480"
@@ -325,18 +381,6 @@
     {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/h-stdout.jsonl",
       "git_blob": "ae94c01c9239728b6aee7bbc79a75b528e8f00e6"
-    },
-    {
-      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json",
-      "git_blob": "edaafd22b7373dd6836bcc84a6d61a03cd22701f"
-    },
-    {
-      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json.0ba652e4852e4251bdf2e70c95dc7208.log",
-      "git_blob": "beb0c9275a3ad2588d317c38e2d71c3738570d2d"
-    },
-    {
-      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.runner.log",
-      "git_blob": "8f604e8e537b65873553134449eac2d3019d877c"
     },
     {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy_checkpoint.json",
@@ -351,12 +395,28 @@
       "git_blob": "d10f3ad1826af6a00d304334a02eda877e042122"
     },
     {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json",
+      "git_blob": "edaafd22b7373dd6836bcc84a6d61a03cd22701f"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.json.0ba652e4852e4251bdf2e70c95dc7208.log",
+      "git_blob": "beb0c9275a3ad2588d317c38e2d71c3738570d2d"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/ndu_real_runtime_test_macro_policy.runner.log",
+      "git_blob": "8f604e8e537b65873553134449eac2d3019d877c"
+    },
+    {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/preparation.log",
       "git_blob": "91ce3ace3c96f96129237c5969a64291a2d8a478"
     },
     {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/request.json",
       "git_blob": "274bb987a68609d9b7433a61e3fbee92c42e7abe"
+    },
+    {
+      "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/RESULT.json",
+      "git_blob": "b7020a8585116bf80b4b9eb0c4040a2a292aedbf"
     },
     {
       "path": "qualification/ctrl-normalization-input-20261112/ai395-runtime-validation/runner-source.py.txt",
@@ -375,8 +435,156 @@
       "git_blob": "3dcf4cb957a4ea6ac3d0e79de00fa24aa14ba881"
     },
     {
-      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/RESULT.json",
-      "git_blob": "e01e057a445823fdb57918b499f5e45527a9ec81"
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/diagnosis.json",
+      "git_blob": "fc1ccfbbf525b6c263f1925c924862eef1b063b7"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/driver.py.txt",
+      "git_blob": "c58dd54c201da4c3a340c3437a6bcafd7e2ce431"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/failed-candidate-coverage.json",
+      "git_blob": "719a9b397da7ff6a594bf495ebe5b48bac33c4f7"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/failed-candidate-coverage.log",
+      "git_blob": "795ebc1d68ee46d8164e422a696d270ef06389b4"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/manifest.json",
+      "git_blob": "fb2b0f2207103b20205c4ca0fba83dd01f1794ae"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/original-process-status.json",
+      "git_blob": "d90efb7a0b0359d02f32066ed5203475b322e16e"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/original-process-stdout.jsonl",
+      "git_blob": "f3946ce9ebb4418f6636ae334a8aea5195603770"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/prepare-exact-runtime.log",
+      "git_blob": "d3433cc863425cc585d61fb33a0ad82db18b078d"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/request.json",
+      "git_blob": "9d19a0bca3a103cb74589343a790ff8e42084e96"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/runtime-ordinary.json",
+      "git_blob": "7ae6aeed2b6a9b8828d5a3d877b892fb9a96cb5a"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/summary.json",
+      "git_blob": "dd65bfd0db2eb270a88a31850281381de0286d1d"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/artifact-audit.json",
+      "git_blob": "c5d093dd5fe2dabeda2257f12a22053fd56779ae"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ctrl6240-full-contract-v4.tar.gz",
+      "git_blob": "dc7357551e19979c3554b7dd7375e2eb17451a2f"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/driver.py.txt",
+      "git_blob": "109a1b584c0f71417e968b48de0dd2ff5b16e175"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/GZIP_DECODER_FNAME.js.txt",
+      "git_blob": "2ad1d643b3cdee64c8695158352a0af856bab243"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/h-archive-file-info-native-payload.json",
+      "git_blob": "413e53e843d386ecb0c97c3ddf9eaf062e8cee45"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/h-original-start.json",
+      "git_blob": "33611f781a5c7cc0855bd4e0c0e1a49c60eec76c"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/h-original-terminal-native-payload.json",
+      "git_blob": "9e0e458fddb56cbc4f6f7a9814f88ecc3666b227"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/manifest.json",
+      "git_blob": "63ba999930adf204867bd817eb12226e19b66385"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/original-file-manifest.json",
+      "git_blob": "c91eb043e91d45832c2de8de6cf5df5ae0c4a4ea"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-bootstrap-python-help.log",
+      "git_blob": "3250e1192c50b1bfd125811b66dc134d1a3a23a8"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-driver-error.log",
+      "git_blob": "0b811c648227450e7f54fb69eb1bb3e2b3433eab"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-driver.py.txt",
+      "git_blob": "2a05ef4bcc4712da444944afedaa4d346bbba6c9"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-h-status-native-payload.json",
+      "git_blob": "906b0c705e743eaa424a0e2dea5540271e990b22"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-h-stdout.jsonl",
+      "git_blob": "cbea13889a03775c9e77fbf910cb6b54e4c4402f"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-request.json",
+      "git_blob": "81d932e90de0e61bd57b34b85e27065736fef8e8"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v2-summary.json",
+      "git_blob": "6ec2f42abab728fc15c7a966eac4c9ffd94d216d"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v3-driver.py.txt",
+      "git_blob": "c1c5e2ab858b73d8c8b7352dfed5b4c254913256"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v3-h-status-native-payload.json",
+      "git_blob": "2e9fc80623db6fe08c5a9cde7e6e557955fef303"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v3-request.json",
+      "git_blob": "4f3b6f4e80ff52aa0ff417e6c847b0277b562f80"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/prior/v3-summary.json",
+      "git_blob": "48c38377c2086d104885aa588c8e79c21298cf3c"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/README.md",
+      "git_blob": "df0802324de3ae10f21989f8c6b920beea73e2c9"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/request.json",
+      "git_blob": "851f587874423e136e56dbd3bca338623ee3b664"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/runtime-exact.json",
+      "git_blob": "f5594ea3c2f228631f72b2df96ecaea1465e2e6f"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/source-after.json",
+      "git_blob": "95467fc94254793f2dac2687a230e7eaf2ae402e"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/source-before.json",
+      "git_blob": "95467fc94254793f2dac2687a230e7eaf2ae402e"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/summary.json",
+      "git_blob": "059e08a7c8b2060a751b693223a51adfa84694e6"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/TAR_PARSER.js.txt",
+      "git_blob": "de4bf0d16377e3f98c403a83d145141a8d3730a9"
     },
     {
       "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/h-request.json",
@@ -397,6 +605,10 @@
     {
       "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/request.json",
       "git_blob": "f55902510ba9805514cb912a2546858489d35d21"
+    },
+    {
+      "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/RESULT.json",
+      "git_blob": "e01e057a445823fdb57918b499f5e45527a9ec81"
     },
     {
       "path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-runtime-validation/runner-source.py.txt",
@@ -451,8 +663,212 @@
       "git_blob": "d952124ab222a1ba76c6867321ace06081873c96"
     },
     {
-      "path": "qualification/runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json",
-      "git_blob": "9a885d7a51619dadd5ee044e0e50f1f94b320dba"
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ARCHIVE_PATH_MAPPING.json",
+      "git_blob": "610e12362f2b80a5ce84155e5d59432415561532"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/REVIEW.md",
+      "git_blob": "86cc5b8798c25b5f3fd50be0df6520bcb05c2a91"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_FAILURE_ARTIFACT_VERIFICATION.json",
+      "git_blob": "df2bd5ed5037c329e19dbe721161471c1d796987"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_MERGE_REVIEW.json",
+      "git_blob": "232acd56250f3ad31d589f15f7e78ee151d4bb59"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-process-status.json",
+      "git_blob": "2e005918c5e5e17bc27798788b4e69e28ee6814d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stdout.log",
+      "git_blob": "8b592dcc2387e6de10b66d249bf9fe8749646cb1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/request.json",
+      "git_blob": "c5ff4ab3636fdfeb1ffa269b200afd823656965a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/RESULT.json",
+      "git_blob": "3d58b69cde15b68323338308a35bb12b6deb6c60"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/runner-source.py.txt",
+      "git_blob": "6edce2921a94f368a693f0b59be35986d0a6c9c1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/620-caller-verify.json",
+      "git_blob": "0db09d054d1badb112bc74bb2ad5bcc5cfddaa3b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/620-caller-verify.log",
+      "git_blob": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/620-runner.log",
+      "git_blob": "6d4a0cffe490fbe1241b1d9140973ba5923c587b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "git_blob": "4c2f273e746e04b2b04f6bac40e5f12e7de63e22"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/checkout.log",
+      "git_blob": "4739d1a12504350f28839940edf2889ee0dc485c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/clone.log",
+      "git_blob": "6bb9aea32ca0633342ea0f9b39e3eb12b705fdb5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/fetch.log",
+      "git_blob": "1325e4bf36f45576904fbffc30da96bcef596539"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-request.json",
+      "git_blob": "d37fe3f1a667b7843deb029524a8d9d704ccb7be"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-status.json",
+      "git_blob": "924fc6eeea8d6d9baa579892cd6b780e51a7f6e3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-stdout.jsonl",
+      "git_blob": "e893f324c85ae56dc1c8d8887863a36e9462077a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/INVENTORY_PARTS.json",
+      "git_blob": "9c550100a59a9ccaa45ce869948560880259a805"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json",
+      "git_blob": "b5c1197574536b2f5e2ff49642b3623851c8ffa1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log",
+      "git_blob": "7fbacd68a2b0d8544b164ea313c4738f5779a88d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.runner.log",
+      "git_blob": "4fa2db6d035891fb063456df3a7e610a656924e6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/RESULT.json",
+      "git_blob": "1f289227e9896a3c6efd470b91933f1901478313"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/runner-source.py.txt",
+      "git_blob": "c4537f6431d2c8383f2db6943d78c9bb7d04690f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-after.json",
+      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part000",
+      "git_blob": "214962b4de7a638e48ca2539e355e5fe90436cdc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part001",
+      "git_blob": "62000e656e1d98bafd955f90bd5e42699ecbc09f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.files.json.gz.part002",
+      "git_blob": "9eaf60d19ebaf27cdb2ca106bc4a25b6dd2d5430"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.json",
+      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json",
+      "git_blob": "045da97d146a87cd6d045ed4529bda330a34bf46"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json.e19b718df8b74e7592127ee9f1900ff9.log",
+      "git_blob": "df2e06f650647e5d59ac5060c47fb4a7b1b12b7f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.runner.log",
+      "git_blob": "8c179246accb645c5ddd4204dea029c5b74bf4b5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/checkout.log",
+      "git_blob": "8cd3238636feaa959d451a39c02a55c6aaedef7f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/clone.log",
+      "git_blob": "428c747c1ea7dce76557f490f16cc02724a37f89"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/fetch.log",
+      "git_blob": "c2a242ce5f0759c8c6665c919de832c2688fadb9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-process-status.json",
+      "git_blob": "d8ab60d2ab4ee7f69a8654899c5e08bfaa04f153"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stdout.log",
+      "git_blob": "cbe1c239856b619e32391efeedcd271e795c43e6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/MANIFEST.json",
+      "git_blob": "5b012219aa8500cd51938d5d2ca4913acd02a372"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json",
+      "git_blob": "fdf49c589f04e150918907cccdea83ea04a72c5e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json.17980b1ecead46888a444bdefe7461de.log",
+      "git_blob": "0fccacdbd2607ee95827fde5a265c7b14ad75a99"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.runner.log",
+      "git_blob": "f690904e880369d2723f7768eccea3e4c18cc960"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/QA_CALLER_TUPLE_PATCH.json",
+      "git_blob": "2ddf878ad9847b0caa503219422ecf2af09e5051"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/request.json",
+      "git_blob": "0657236a7b85596dbe98c6053c4fa1bd1d4e5ea1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/RESULT.json",
+      "git_blob": "70e4ef5969d6976ef25d9ea9c6891064338376af"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/runner-source.py.txt",
+      "git_blob": "03ccc0db8e8876380195b632ca6fb2f089932981"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-after.json",
+      "git_blob": "84233191d6a9a4399f29c7363b7ac40ba749ef8f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-before.json",
+      "git_blob": "84233191d6a9a4399f29c7363b7ac40ba749ef8f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json",
+      "git_blob": "2c55c638584e35d30bf717e668b6bb76ee0b52e9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json.56308c689d864f00bdf925b09746249b.log",
+      "git_blob": "eb56c3f7fa7d9d51cf6b757c3d9ff3d59bf3a228"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/ARCHIVE_REQUEST.json",
@@ -475,12 +891,36 @@
       "git_blob": "5804ab213731ef6eacf2fdf6f6eb9d68240d5e84"
     },
     {
+      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/receipt.json.gz",
+      "git_blob": "636011ea915e22f3915819224677ff80a31c0a03"
+    },
+    {
       "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/START_RETURNED_TEXT.json",
       "git_blob": "c8ec8b7c7145be3e27aa36eb148c925b31b4478f"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/STATUS_RETURNED_TEXT.json",
       "git_blob": "74b6335360038410ee2ccf7648ace709aa184dc8"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-39ff19a.md",
+      "git_blob": "5197e87b2f27629b517bfe2179d659127d79fd75"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-39ff19a.json",
+      "git_blob": "b1a7cc5103f1427af1d1f89e883ede61d81cccc3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/R_V_EXECUTION-39ff19a.md",
+      "git_blob": "94f4b0a57675f6a04795cc423878f3620ac04c07"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_EVIDENCE-39ff19a.json",
+      "git_blob": "957ee5f2a8197b263805f9ed2de04c43ac9191a1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_README-39ff19a.md",
+      "git_blob": "e1f3954d8ec899d4faa891a78c423e1c2668ba5e"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/ARCHIVE_REQUEST.json",
@@ -501,6 +941,10 @@
     {
       "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/READ_RETURNED_TEXT.json",
       "git_blob": "15a88b9be3d4747b2c42dabff21bb58c3fd3a14a"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/REPORT.json.gz",
+      "git_blob": "6bb5a4f5a0d195ebc0699035f5167f6f3b220bf0"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/SOURCE_INFO_RETURNED_TEXT.json",
@@ -571,20 +1015,80 @@
       "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/report-lossless-archive-20261112/REPORT.json.gz",
-      "git_blob": "6bb5a4f5a0d195ebc0699035f5167f6f3b220bf0"
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/MANIFEST.json",
+      "git_blob": "950fc7f7819e400dda37c2781532168050715494"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/content-receipt-lossless-archive-20261112/receipt.json.gz",
-      "git_blob": "636011ea915e22f3915819224677ff80a31c0a03"
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/PREFLIGHT_AND_ONCE_ONLY.json",
+      "git_blob": "70357781d715f3d787f3e9fb21b851ccf326ad3d"
     },
     {
-      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/V_CALIBRATION_DOMAIN_AUDIT.md",
-      "git_blob": "6fce18bc10ef47601702fda159d2d7caf49bd0b0"
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/README.md",
+      "git_blob": "f5b26fc7aa6b620043f6e34a706a54ffbbab8d28"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/REGISTRATION_CANDIDATE.json",
+      "git_blob": "d9af2e485396472b4039ed51188504ec4959bd0d"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-bc-feasibility-20261112/SOURCE_AND_OLD_EFFECT_AUDIT.json",
+      "git_blob": "e351ba495c0b5db2bab77ab37357fd3dd16eacda"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/DIRECT_READ_TIMEOUT_TOOL_RESULT.json",
+      "git_blob": "4d4ad28a9f1e2c0ebcbc9474349fdfb72d8786d1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/MANIFEST.json",
+      "git_blob": "85a86e1956d1134dcef62539c480081558d7b390"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROBE_INPUT.json",
+      "git_blob": "8f05229bf12b54d34dc19e12df21d5df1a5eca6d"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROBE_SOURCE.py.txt",
+      "git_blob": "a9f5e3fbe55e3123ede6b8a76abdee6236934204"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROCESS_REQUEST.json",
+      "git_blob": "e4c2280f082e541c5de6c7db74ac073ec09f5f6e"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/PROCESS_START_TOOL_RESULT.json",
+      "git_blob": "ee3e432e918f90d57e42d4be551985ced579c9af"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/READ_TAIL_ORIGINAL_SDK.json",
+      "git_blob": "afdadf9c84d68ab493619d028399ded59952fbd1"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/READ0_ORIGINAL_SDK.json",
+      "git_blob": "538d9db474cf284cc8bf14b84e1c725c78fc856e"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/README.md",
+      "git_blob": "97e279d2f21cc3694bdacadb9c241db72e9464a3"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STATUS_ORIGINAL_SDK.json",
+      "git_blob": "67e21af1b6205d25cd25358a5b3de484b0e6bf47"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STDERR.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/rv-v2-entry-assets-20261112/STDOUT.json",
+      "git_blob": "f9a02869b98fdcde2c6b102b8bf39155bce6fa86"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/manifest.json",
       "git_blob": "ed8c8670576eafe4d7f76db7a8502c80354ca26f"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/V_CALIBRATION_DOMAIN_AUDIT.md",
+      "git_blob": "6fce18bc10ef47601702fda159d2d7caf49bd0b0"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/v_calibration_observations.json",
@@ -595,68 +1099,20 @@
       "git_blob": "ae275a984fe0892f4cd59aace05eb35d76a9e78a"
     },
     {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
-      "git_blob": "4c2f273e746e04b2b04f6bac40e5f12e7de63e22"
+      "path": "qualification/notes-seed-profile-20261112/ci-observations/7e6-cancelled-architecture/JOB-131114867114.log",
+      "git_blob": "8d7396d8490e5aadb10c15601a59978ab13dd4c1"
     },
     {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/RESULT.json",
-      "git_blob": "1f289227e9896a3c6efd470b91933f1901478313"
+      "path": "qualification/notes-seed-profile-20261112/ci-observations/7e6-cancelled-architecture/JOBS.json",
+      "git_blob": "0f0601e9239f789af9b59b457beeebfe3efc2f9b"
     },
     {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/checkout.log",
-      "git_blob": "4739d1a12504350f28839940edf2889ee0dc485c"
+      "path": "qualification/notes-seed-profile-20261112/ci-observations/7e6-cancelled-architecture/MANIFEST.json",
+      "git_blob": "109c086ae4f6d041172a9df573b86dcfd4caff86"
     },
     {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/clone.log",
-      "git_blob": "6bb9aea32ca0633342ea0f9b39e3eb12b705fdb5"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/fetch.log",
-      "git_blob": "1325e4bf36f45576904fbffc30da96bcef596539"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-request.json",
-      "git_blob": "d37fe3f1a667b7843deb029524a8d9d704ccb7be"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-status.json",
-      "git_blob": "924fc6eeea8d6d9baa579892cd6b780e51a7f6e3"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-stdout.jsonl",
-      "git_blob": "e893f324c85ae56dc1c8d8887863a36e9462077a"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json",
-      "git_blob": "b5c1197574536b2f5e2ff49642b3623851c8ffa1"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log",
-      "git_blob": "7fbacd68a2b0d8544b164ea313c4738f5779a88d"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.runner.log",
-      "git_blob": "4fa2db6d035891fb063456df3a7e610a656924e6"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/runner-source.py.txt",
-      "git_blob": "c4537f6431d2c8383f2db6943d78c9bb7d04690f"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-after.json",
-      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.json",
-      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json",
-      "git_blob": "045da97d146a87cd6d045ed4529bda330a34bf46"
-    },
-    {
-      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json.e19b718df8b74e7592127ee9f1900ff9.log",
-      "git_blob": "df2e06f650647e5d59ac5060c47fb4a7b1b12b7f"
+      "path": "qualification/runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json",
+      "git_blob": "9a885d7a51619dadd5ee044e0e50f1f94b320dba"
     }
   ],
   "original_mapping": "EVIDENCE_PATH_MAPPING.json",
@@ -664,7 +1120,15 @@
   "github_binary_readback_status": "VERIFIED",
   "manifest_excludes_itself": true,
   "github_binary_readback_record": "GIT_PERSISTENCE_VERIFIED.json",
-  "followup_parent": "4b6feb02c5969b147a9ee4980b36564aa40cfa33",
-  "followup_observed_at_utc": "2026-11-12 10:35:07 UTC",
-  "previous_manifest_snapshot": "evidence/history-20261112/PUBLICATION_MANIFEST-4b6feb0.json"
+  "followup_parent": "39ff19a9776bdb00e7999f04324b7d19c6b5d12c",
+  "followup_observed_at_utc": "2026-11-12T11:40:06Z",
+  "previous_manifest_snapshot": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-39ff19a.json",
+  "additional_binary_readback_records": [
+    "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ROOT_COMPLETE_VALIDATION.json",
+    "qualification/evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json"
+  ],
+  "unexported_original_payloads_not_claimed": [
+    "0e full tracked-source gzip inventory remains on ai395",
+    "CTRL full-contract v1/v2/v3 complete tar archives remain on ai395; explicitly listed raw subsets are retained here"
+  ]
 }

@@ -1,0 +1,30 @@
+function gunzipVerified(input,expectedSize){
+ const a=input, end=a.length-8;
+ if(a.length<18||a[0]!==31||a[1]!==139||a[2]!==8||(a[3]!==0&&a[3]!==8))throw Error("unsupported gzip header");
+ let payloadStart=10;
+ if(a[3]===8){let nameBytes=0;while(payloadStart<end&&a[payloadStart]!==0){payloadStart++;if(++nameBytes>4096)throw Error("gzip FNAME bound");}if(payloadStart>=end)throw Error("unterminated gzip FNAME");payloadStart++;}
+ const u32=i=>(a[i]|a[i+1]<<8|a[i+2]<<16|a[i+3]<<24)>>>0;
+ if(u32(a.length-4)!==expectedSize)throw Error("gzip ISIZE mismatch");
+ const out=new Uint8Array(expectedSize);let p=payloadStart,buf=0,bits=0,n=0;
+ function read(k){while(bits<k){if(p>=end)throw Error("truncated deflate");buf|=a[p++]<<bits;bits+=8}const v=buf&((1<<k)-1);buf>>>=k;bits-=k;return v}
+ function tree(lengths){const counts=Array(16).fill(0),next=Array(16).fill(0),maps=Array.from({length:16},()=>new Map());let max=0;for(const l of lengths){if(l<0||l>15)throw Error("bad code length");if(l){counts[l]++;max=Math.max(max,l)}}let code=0,left=1;for(let l=1;l<=15;l++){left=(left<<1)-counts[l];if(left<0)throw Error("oversubscribed Huffman tree");code=(code+counts[l-1])<<1;next[l]=code}lengths.forEach((l,s)=>{if(l)maps[l].set(next[l]++,s)});return{maps,max}}
+ function symbol(t){let code=0;for(let l=1;l<=t.max;l++){code=(code<<1)|read(1);if(t.maps[l].has(code))return t.maps[l].get(code)}throw Error("invalid Huffman symbol")}
+ const lb=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+ const le=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+ const db=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+ const de=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+ const order=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+ let final=false,blocks=0;
+ while(!final){if(++blocks>100000)throw Error("block limit");final=read(1)!==0;const type=read(2);
+  if(type===0){buf=0;bits=0;const len=read(16),neg=read(16);if((len^65535)!==neg||n+len>expectedSize)throw Error("stored block length");for(let i=0;i<len;i++)out[n++]=read(8);continue}
+  let lt,dt;
+  if(type===1){lt=tree(Array.from({length:288},(_,i)=>i<144?8:i<256?9:i<280?7:8));dt=tree(Array(32).fill(5))}
+  else if(type===2){const nl=read(5)+257,nd=read(5)+1,nc=read(4)+4;if(nl>286)throw Error("reserved literal count");const cl=Array(19).fill(0);for(let i=0;i<nc;i++)cl[order[i]]=read(3);const ct=tree(cl),ls=[];while(ls.length<nl+nd){const v=symbol(ct);if(v<=15){ls.push(v);continue}let count,value;if(v===16){if(!ls.length)throw Error("no repeated code");count=read(2)+3;value=ls[ls.length-1]}else if(v===17){count=read(3)+3;value=0}else if(v===18){count=read(7)+11;value=0}else throw Error("bad repeat");if(ls.length+count>nl+nd)throw Error("repeat overflow");for(let i=0;i<count;i++)ls.push(value)}if(ls[256]===0)throw Error("missing end code");lt=tree(ls.slice(0,nl));dt=tree(ls.slice(nl))}
+  else throw Error("reserved deflate type");
+  for(;;){const s=symbol(lt);if(s<256){if(n>=expectedSize)throw Error("output overflow");out[n++]=s;continue}if(s===256)break;if(s<257||s>285)throw Error("reserved length code");const idx=s-257,len=lb[idx]+read(le[idx]),ds=symbol(dt);if(ds>29)throw Error("reserved distance code");const distance=db[ds]+read(de[ds]);if(distance>n||n+len>expectedSize)throw Error("invalid backreference");for(let i=0;i<len;i++){out[n]=out[n-distance];n++}}
+ }
+ if(n!==expectedSize||p!==end)throw Error("gzip length/trailing data mismatch");
+ const table=Array.from({length:256},(_,v)=>{let c=v;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;return c>>>0});let crc=0xffffffff;for(const b of out)crc=(crc>>>8)^table[(crc^b)&255];crc=(crc^0xffffffff)>>>0;if(crc!==u32(end))throw Error("gzip CRC32 mismatch");
+ return{bytes:out,crc32:crc,blocks};
+}
+function utf8DecodeBytes(bytes){const parts=[];for(let i=0;i<bytes.length;i+=32768)parts.push(String.fromCharCode.apply(null,bytes.subarray(i,Math.min(i+32768,bytes.length))));return decodeURIComponent(escape(parts.join("")))}

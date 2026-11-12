@@ -1,8 +1,8 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 10:35:07 UTC",
+  "observed_at_utc": "2026-11-12T11:33:57Z",
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "publication_parent": "cac146ca8a080cf3389576dc6808dc6f1b3f819c",
+  "publication_parent": "59370d405c540872e428f92849615f1d188e78ce",
   "scope": "Evidence and documentation only. Exact original campaign reconciled without redispatch; raw research labels retained.",
   "status": "HOLD",
   "owner_decision": null,
@@ -312,14 +312,59 @@
       "pr": 6240,
       "source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
       "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80",
-      "job": "1a1cf222fed-2564-19a1",
-      "tests": 19,
-      "passed": 19,
+      "job": "1a1cf734db5-2564-1a2c",
+      "tests": 200,
+      "passed": 200,
       "failed": 0,
       "source_unchanged": true,
-      "source_inventory_sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c",
+      "source_inventory_sha256": "3598451bd2e7338dbc086a7233251e9524aa7d74b6004ef22f24dae34eba8735",
       "full_original_logs_archived": true,
-      "full_hosted_suite_proven": false
+      "full_hosted_suite_proven": false,
+      "affected_suite_history": {
+        "job": "1a1cf222fed-2564-19a1",
+        "tests": 19,
+        "passed": 19,
+        "failed": 0,
+        "source_inventory_sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+      },
+      "suites": 28,
+      "skipped": 0,
+      "source_inventory_scope_files": 384,
+      "source_inventory_scope": "All tracked scripts Python, qualification CTRL analysis Python, plus five pinned workflow/configuration inputs selected by the original driver. This is not a full repository payload inventory.",
+      "full_original_tar_members": 149,
+      "root_independent_archive_verification": true,
+      "ordinary_exact_version_contract_suite_proven": true,
+      "runtime": {
+        "python": "3.12.14",
+        "numpy": "2.3.5",
+        "pillow": "11.3.0",
+        "ruff": "0.15.13",
+        "uid": 1000,
+        "hosted": false
+      },
+      "evidence": "../ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/",
+      "prior_attempts": [
+        {
+          "job": "1a1cf50d48a-2564-19ea",
+          "attempt": "v1",
+          "suites": 28,
+          "passed": 199,
+          "failed": 1,
+          "cause": "External PYTHONVERBOSE propagated stderr into an otherwise exit0 CLI test."
+        },
+        {
+          "job": "1a1cf5d9c1b-2564-1a03",
+          "attempt": "v2",
+          "suites": 0,
+          "cause": "External help-string guard failed before managed Python installation."
+        },
+        {
+          "job": "1a1cf6ba6ec-2564-1a1c",
+          "attempt": "v3",
+          "suites": 0,
+          "cause": "Exact runtime installed, but external driver reused an expired ephemeral uv executable."
+        }
+      ]
     },
     {
       "pr": 6213,
@@ -344,13 +389,44 @@
       "full_raw_test_logs_archived": true,
       "original_source_log_bytes": 85110,
       "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
-      "full_inventory_payload_archive": "pending multipart transfer; the original compressed inventory is retained and separately SHA verified on ai395",
+      "full_inventory_payload_archive": "COMPLETE: three original gzip parts reassembled from GitHub, CRC32/ISIZE and full SHA256 independently verified by root; 14,753 original tracked-file records parsed.",
       "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
-      "current_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
-      "current_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
-      "current_native_status": "NOT_RUN_AT_SNAPSHOT",
-      "current_source_gate_status": "NEW_SOURCE_REVALIDATION_PENDING",
-      "previous_source_results_transferred": false
+      "current_head": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+      "current_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+      "current_native_status": "NOT_DISPATCHED: original full caller gate failed",
+      "current_source_gate_status": "SOURCE_398_AND_PARSER_16_PASSED; CALLER_SELF_TEST_EXIT0; FULL_CALLER_VERIFY_EXIT1",
+      "previous_source_results_transferred": false,
+      "full_inventory_original_gzip_bytes": 762747,
+      "full_inventory_original_gzip_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
+      "full_inventory_root_verification": "../evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
+      "current_validation": {
+        "job": "1a1cf762917-2564-1a36",
+        "source_contract_tests_passed": 398,
+        "parser_tests_passed": 16,
+        "caller_self_test_exit": 0,
+        "full_caller_verify_exit": 1,
+        "full_caller_verify_elapsed_seconds": 346.2550980078522,
+        "full_caller_failure": "learning_source_bound_training_stage_readback unexpected actual cell_q24_training_command_readback_service.rs caller",
+        "full_caller_log_bytes": 192,
+        "full_caller_log_sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139",
+        "source_before_after_unchanged": true,
+        "native_build_started": false
+      },
+      "previous_0e_validation": {
+        "source": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+        "source_methods": 398,
+        "explicit_ok_methods": 385,
+        "distinct_affected_methods": 13,
+        "raw_failure_records": 16,
+        "raw_error_records": 5,
+        "original_wrapper_count_retained": "377 passed / 21 failed counts subTest records, not distinct failed methods",
+        "parser_passed": 16,
+        "native_job": "1a1cf610a94-2564-1a0a",
+        "native_exit": 1,
+        "source_prerequisite_failed": true,
+        "helper_build_started": false,
+        "ordinary_native_started": false
+      }
     }
   ],
   "runtime_environment": {
@@ -364,7 +440,8 @@
     "hosted_numpy": "2.3.5",
     "hosted_pillow": "11.3.0",
     "junit": "not_emitted_by_original_unittest_commands",
-    "module_origin_probe_scope": "The archived19/26 runtime.log origins came from a separate pre-execution probe with the same cwd/env, not an in-test-PID import trace. Original commands and clean source inventories bind the actual tests separately."
+    "module_origin_probe_scope": "The archived19/26 runtime.log origins came from a separate pre-execution probe with the same cwd/env, not an in-test-PID import trace. Original commands and clean source inventories bind the actual tests separately.",
+    "scope": "Historical 19/26 affected-suite executions. The full200 v4 exact-version ordinary runtime is separately recorded under PR6240."
   },
   "upstream_replay": {
     "mem11_v3": {
@@ -395,23 +472,53 @@
       },
       "fix": {
         "pr": 6243,
-        "head": "8514d4754790e642f5f083d56696921b0628a313",
-        "tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
+        "head": "7d31bf9677748330ae17efe964de48d98ba5e542",
+        "tree": "cedbad6b47e4ff8db4f87efc9169a4b5c13412be",
         "static_review": true,
-        "execution": "QUEUED_AT_LAST_OBSERVATION",
-        "dedicated_push_run": 43200801767,
-        "required_methods": 6
+        "required_methods": 6,
+        "dedicated_runs": [
+          {
+            "run": 43200801767,
+            "head": "8514d4754790e642f5f083d56696921b0628a313",
+            "status": "queued",
+            "observed_at_utc": "2026-11-12T11:39:59Z"
+          },
+          {
+            "run": 43201926673,
+            "head": "7d31bf9677748330ae17efe964de48d98ba5e542",
+            "status": "pending",
+            "observed_at_utc": "2026-11-12T11:39:59Z"
+          }
+        ],
+        "ordinary_native": "ADMITTED_NOT_YET_VALIDATED",
+        "cancelled_earlier_architecture": {
+          "run": 43198310744,
+          "job": 131114867114,
+          "status": "cancelled",
+          "log_bytes": 394524,
+          "preserved": true
+        },
+        "ordinary_job": "1a1cf8ed400-2564-1a56",
+        "ordinary_idempotency_key": "neuro4-act6243-native-7d31-862531d-v1",
+        "ordinary_request_digest": "277786eb756bbfca0ff43a512ade59e88708d97c150489e7833c07fdba8460df",
+        "ordinary_request_blob": "3bc1ac6fc5fec2d6635ed0692a832ca3e9673d27",
+        "ordinary_driver_blob": "51d579c6d54bcb6d267356814ba58c39136dba0b",
+        "ordinary_cpu_quota_percent": 200,
+        "ordinary_memory_max_bytes": 34359738368,
+        "ordinary_test_retries": 0,
+        "ordinary_readiness_probe_status": "UNKNOWN_READBACK_TIMEOUT; actual driver must recheck all resource/tool/source gates",
+        "ordinary_tests_proven": 0
       }
     }
   },
   "moving_bases": {
-    "observed_at_utc": "2026-11-12T10:08:00Z",
-    "owner_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "observed_at_utc": "2026-11-12T11:09:00Z",
+    "owner_upstream": "cc22a69972d029d3ef28d49096f396eb5214c616",
     "ctrl_upstream": "928a2603a7911cb5e8db439b7b814b9e033b6007",
     "affected_prs": [
       6213
     ],
-    "merge_integration": "COMPLETED_FOR_EXACT_b298",
+    "merge_integration": "COMPLETED_FOR_EXACT_cc22",
     "prior_test_results_do_not_qualify_new_code": true,
     "raw_github_merge_states": {
       "6213": {
@@ -431,10 +538,13 @@
         "mergeable_state": "unstable"
       }
     },
-    "note": "Normalized PR snapshots initially reported false; subsequent original raw /pulls API confirms only #6213 is dirty. Do not create a new integration or inherit test results from that transient normalized field.",
-    "owner_merged_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
-    "owner_merged_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
-    "owner_ref_update_leased_against": "088aadac3c88a5be6299ece1561d1ed54dd7d494"
+    "note": "Actual branch ref cc22 was read independently of the stale PR base.sha. Both merge parents/tree and all 41 changed paths were checked before the leased update. Full caller proof later found a real missing manifest registration; no source/native result is inherited.",
+    "owner_merged_head": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+    "owner_merged_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+    "owner_ref_update_leased_against": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+    "latest_observed_upstream": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+    "latest_observed_at_utc": "2026-11-12T11:36:26Z",
+    "latest_upstream_integration": "PREPARING: incoming exact readback caller registration/one QA plus original evidence; no result transferred"
   },
   "remaining_gates": [
     "Original source/exposure custody",
@@ -463,5 +573,35 @@
     "record": "evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
     "same_original_bytes": true,
     "readback_commit": "e99ef9cca7e2185426dd91a136ad17ad0e765ea3"
-  }
+  },
+  "wrapper_real_asset_validation": {
+    "job": "1a1cf673fde-2564-1a15",
+    "key": "neuro4-rv-v2-entry-assets-read-862531d-v1",
+    "status": "succeeded",
+    "exit_code": 0,
+    "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "wrapper_blob": "94e819d579232597de08a5c239a78e9d40768416",
+    "original_source_pins": 83,
+    "source_plus_driver_analysis_records": 85,
+    "observed_input_assets": 16,
+    "actual_checks": 6,
+    "checks": "Pinned original wrapper load_native/validate_partitions over real completed run-v2 assets, original native thaw/load/cold-record/collection/retained-plan validators",
+    "frozen_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+    "stdout_bytes": 19447,
+    "stdout_sha256": "6d766ffeda9c1f48be08422f8fb3427ec5430a30a30fb63ccc2f7bf3b3e75d37",
+    "root_verified_original_files": 11,
+    "process_writes": 0,
+    "subprocesses": 0,
+    "network": 0,
+    "new_fresh_process_cold_load": 0,
+    "new_collection_fit_export": 0,
+    "formal_wrapper_freeze": 0,
+    "B_C_START": 0,
+    "actor_calls": 0,
+    "calibration_complete": false,
+    "full_cost_observed": false,
+    "evidence": "evidence/rv-v2-entry-assets-20261112/",
+    "source_confirmation": false
+  },
+  "latest_act_admission_observed_at_utc": "2026-11-12T11:40:06Z"
 }

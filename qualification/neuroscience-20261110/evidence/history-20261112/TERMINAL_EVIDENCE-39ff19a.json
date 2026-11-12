@@ -1,0 +1,467 @@
+{
+  "schema": "hepta.neuroscience-terminal-evidence.v1",
+  "observed_at_utc": "2026-11-12 10:35:07 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_parent": "cac146ca8a080cf3389576dc6808dc6f1b3f819c",
+  "scope": "Evidence and documentation only. Exact original campaign reconciled without redispatch; raw research labels retained.",
+  "status": "HOLD",
+  "owner_decision": null,
+  "owner_evaluation": "not_authenticated",
+  "adoption": "NOT_REQUESTED",
+  "all_blockers_closed": false,
+  "historical_snapshot": "NEXT_STEP_EVIDENCE.json",
+  "original_campaign": {
+    "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "host": "ai395",
+    "original_key": "ctrl-1333-real-campaign-pty-v2",
+    "session": "dpty-40ff97e76f70d0a5e1c37280afeab264b349cee40962d4e6b77d543fdb391c65",
+    "new_campaign_dispatches": 0,
+    "campaign_directory": "/home/qq/ctrl-real-study-20261112-1333/run-v2",
+    "campaign_stages": 12,
+    "successful_stages": 12,
+    "campaign_elapsed_seconds": 2038.5219799471088,
+    "factorial_elapsed_seconds": 937.0059730908833,
+    "launcher_exit": 1,
+    "launcher_failure": "Final bookkeeping reads run-v1/COMPLETED.json while original execution output is run-v2. Preserve FAILED; do not redispatch.",
+    "report": {
+      "gzip_bytes": 373009,
+      "gzip_sha256": "8293d2106a9d40961d6d65f9612ee941dddd96ca06ab455a7690ebf34f5236eb",
+      "raw_bytes": 3108442,
+      "raw_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+      "gzip_crc32": 2828415264,
+      "deflate_blocks": 19,
+      "independent_root_decompression": true,
+      "full_original_json_parsed": true,
+      "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"
+    },
+    "content_receipt": {
+      "gzip_bytes": 34404,
+      "gzip_sha256": "9bd751047430e146ae9bfcd3ef80d3bdbf0a695aa47e9427cb38b4eef5f96b2b",
+      "raw_bytes": 295081,
+      "raw_sha256": "9349296f8b051963e2363cb212b44cecb4ce354844dc3853fa839a9278617e85",
+      "gzip_crc32": 346387844,
+      "independent_root_decompression": true
+    },
+    "denominator": {
+      "sources": 16,
+      "contexts": 48,
+      "arms": 12,
+      "planned_executions": 576,
+      "unique_executions": 576,
+      "completed": 576,
+      "failed": 0,
+      "unknown": 0,
+      "not_started": 0,
+      "cancelled": 0,
+      "running": 0,
+      "missing": 0,
+      "complete_source_arms": true
+    },
+    "actions": {
+      "READ": 62,
+      "STOP": 514,
+      "conditional_READ": 0,
+      "conditional_STOP": 96,
+      "conditional_rejection_reasons": {
+        "insufficient_calibration": 94,
+        "outside_observed_feature_envelope": 2
+      }
+    },
+    "derived_arm_results": [
+      {
+        "arm": "frozen/STOP",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18257923477644605,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/light",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18267976063114474,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/tuned-fixed",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18277954284412168,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/point",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.28125,
+        "observed_task_cost_net": 0.26310400722820004,
+        "READ": 19,
+        "STOP": 29
+      },
+      {
+        "arm": "frozen/unconditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18272289228295752,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/conditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.1827178000029138,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/STOP",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17230390806900686,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/light",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.21875,
+        "observed_task_cost_net": 0.20016114381971423,
+        "READ": 24,
+        "STOP": 24
+      },
+      {
+        "arm": "adapted/tuned-fixed",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17200546531908908,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/point",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.2708333333333333,
+        "observed_task_cost_net": 0.25363112211663974,
+        "READ": 19,
+        "STOP": 29
+      },
+      {
+        "arm": "adapted/unconditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17227284798214293,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/conditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17216143684553875,
+        "READ": 0,
+        "STOP": 48
+      }
+    ],
+    "conditional_minus_stop": {
+      "frozen_quality": 0,
+      "adapted_quality": 0,
+      "quality_difference_in_differences": 0,
+      "observed_task_cost_net_difference_in_differences": -0.00028103644993582983,
+      "full_cost_difference_in_differences": null,
+      "full_cost_paired_sources": 0
+    },
+    "calibration": {
+      "both_complete": false,
+      "alpha": 0.1,
+      "conditional_cells_sources_each": 9,
+      "unconditional_sources": 18,
+      "finite_quantile_rank": 1,
+      "minimum_sources_for_finite_quantile": 9,
+      "finite_quantile_count_requirement_met": true,
+      "reason_scope": "Complete original run-v2 EXPORT audit: frozen 45/54 rows in train-only envelope, 9 excluded across7 sources; adapted47/54,7excluded across7sources. All54 paired gains known in each model. All18 calibration sources still have an included row and cells remain9 each. Two evaluation envelope exclusions are distinct.",
+      "frozen_fit": 72,
+      "frozen_calibration": 54,
+      "adapted_fit": 72,
+      "adapted_calibration": 54,
+      "known_gains_each": 54,
+      "frozen_in_envelope": 45,
+      "frozen_excluded": 9,
+      "adapted_in_envelope": 47,
+      "adapted_excluded": 7,
+      "excluded_sources_each": 7,
+      "original_export_audit": "evidence/v-calibration-domain-20261112/v_calibration_observations.json",
+      "root_independent_recomputation": "evidence/v-calibration-domain-20261112/ROOT_RECOMPUTATION.json",
+      "mechanical_cause_located": true,
+      "admission_passed": false,
+      "frozen_budget": {
+        "read_seconds_bound": 30,
+        "finalizer_seconds_reserve": 5,
+        "action_budget_seconds": 40,
+        "episode_wall_seconds": 60,
+        "time_budget_is_blocker": false
+      }
+    },
+    "content_training": {
+      "optimizer_steps": 60,
+      "rows_per_epoch": 142,
+      "sequence_count": 142,
+      "fit_sources": 24,
+      "epochs": 12,
+      "learning_rate": 0.0003,
+      "estimator": "observed_auxiliary_losses",
+      "recursive_objective_applied": false,
+      "environment_unbiased_policy_gradient": false,
+      "control_gradient_into_content": null,
+      "prior_checkpoint_exposure_cleared": false,
+      "full_cost_observed": false,
+      "parameter_equals_cold_load": true,
+      "content_and_weights_changed": true
+    },
+    "full_cost_observed": false,
+    "full_cost_observed_rows": 0,
+    "new_source_confirmation": false,
+    "source_custody_authenticated": false,
+    "ordinary_owner_decision_observed": false,
+    "native_artifacts_readmitted": false,
+    "original_report_decision": "NoUpdate",
+    "original_decision_is_hardcoded_research_label": true,
+    "root_verification": "evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
+    "full_original_archives": {
+      "report": "evidence/report-lossless-archive-20261112/REPORT.json.gz",
+      "receipt": "evidence/content-receipt-lossless-archive-20261112/receipt.json.gz"
+    },
+    "readonly_arithmetic_analysis": {
+      "source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+      "job": "1a1cf1c9b7e-2564-1997",
+      "comparisons": 276,
+      "mismatches": 0,
+      "stdout_sha256": "c563f6d1559d7db10ce7514ca4d10d29bda0a24c5bef541d0844fd4677886161",
+      "analysis_path": "evidence/report-readonly-analysis-20261112/report-projection.stdout.json"
+    }
+  },
+  "validated_implementations": [
+    {
+      "pr": 6192,
+      "head": "1ac802f4b1196fe15c5d3ae730207ff585d41250",
+      "tree": "f004cd0cf481be6a47a3f1698d6a4820b7bca30d",
+      "hosted_run": 43173410889,
+      "rust": {
+        "job": 131031841067,
+        "passed": 106,
+        "failed": 0,
+        "ignored": 0,
+        "filtered_out": 0
+      },
+      "python": {
+        "job": 131031840903,
+        "tests": 119,
+        "status": "OK"
+      },
+      "native_boundary_vectors": 11,
+      "max_q24_delta": 0,
+      "allowed_q24_delta": 1
+    },
+    {
+      "pr": 6198,
+      "head": "52f936df6e7d3f55e65c133dd7d9c9d16ca699a2",
+      "tree": "a04bf46d1fd4aaeeeaa353a47c850a11c7088509",
+      "hosted_run": 43174070320,
+      "rust": {
+        "job": 131033956660,
+        "passed": 106,
+        "failed": 0,
+        "ignored": 0,
+        "filtered_out": 0
+      },
+      "python": {
+        "job": 131033956955,
+        "tests": 129,
+        "status": "OK"
+      },
+      "wrapper_actor_calls": 0
+    },
+    {
+      "pr": 6221,
+      "source": "2d1f610f0f2abf6dc5d7d903243621376697b407",
+      "tree": "93ada9e27db2eb991e21e97f4554d3963de1ccc6",
+      "job": "1a1cf230cd2-2564-19a4",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "source_unchanged": true,
+      "source_inventory_sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f",
+      "full_original_logs_archived": true,
+      "hosted_equivalence": false
+    },
+    {
+      "pr": 6240,
+      "source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+      "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80",
+      "job": "1a1cf222fed-2564-19a1",
+      "tests": 19,
+      "passed": 19,
+      "failed": 0,
+      "source_unchanged": true,
+      "source_inventory_sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c",
+      "full_original_logs_archived": true,
+      "full_hosted_suite_proven": false
+    },
+    {
+      "pr": 6213,
+      "source": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+      "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9",
+      "job": "1a1cf3462ea-2564-19c4",
+      "source_contract_tests_passed": 376,
+      "owner_evidence_parser_tests_passed": 16,
+      "result_provenance": "Root retrieved complete original source and parser logs plus execution records; exact bytes, SHA256 and Git blobs verified.",
+      "native_compile": "NOT_PROVEN",
+      "ordinary_adopt": 0,
+      "ordinary_evaluated_no_update": 0,
+      "ordinary_complete_cold_recovery": 0,
+      "previous_failure_retained": {
+        "source": "7efec4fff19ce49b3dceb9d704ac9559a8d92c54",
+        "source_tests": 376,
+        "passed": 375,
+        "failed": 1,
+        "parser_passed": 16,
+        "fix": "One stale five-caller expected tuple corrected to the six actual original callers."
+      },
+      "full_raw_test_logs_archived": true,
+      "original_source_log_bytes": 85110,
+      "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
+      "full_inventory_payload_archive": "pending multipart transfer; the original compressed inventory is retained and separately SHA verified on ai395",
+      "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "current_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+      "current_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
+      "current_native_status": "NOT_RUN_AT_SNAPSHOT",
+      "current_source_gate_status": "NEW_SOURCE_REVALIDATION_PENDING",
+      "previous_source_results_transferred": false
+    }
+  ],
+  "runtime_environment": {
+    "host": "ai395",
+    "operator_uid": 1000,
+    "python": "3.12.16",
+    "numpy": "1.26.4",
+    "pillow": "12.0.0",
+    "hosted_environment_same": false,
+    "hosted_python": "3.12.14",
+    "hosted_numpy": "2.3.5",
+    "hosted_pillow": "11.3.0",
+    "junit": "not_emitted_by_original_unittest_commands",
+    "module_origin_probe_scope": "The archived19/26 runtime.log origins came from a separate pre-execution probe with the same cwd/env, not an in-test-PID import trace. Original commands and clean source inventories bind the actual tests separately."
+  },
+  "upstream_replay": {
+    "mem11_v3": {
+      "publication_commit": "a21bea479bc51726da4a6e5ee15e4b1911f84716",
+      "execution_source": "fa3b62440f3dbe21e904dfbd390d346d03322b7e",
+      "original_key": "mem11-first-local-generation-20261112-21bb-v3",
+      "generation_status": "RETURNED",
+      "model_calls": 1,
+      "exit_code": 0,
+      "raw_files_hash_verified": 7,
+      "source_unchanged": true,
+      "original_registry_status": "UNKNOWN",
+      "original_job_id": null,
+      "earlier_unknown_identities_preserved": true,
+      "scored_memory_benefit_episodes": 0
+    },
+    "act2": {
+      "controlled_published_head": "ba7d4a55bce09be44bf03fd86504f129220c513a",
+      "controlled_scope": "Same UID/boot, controlled original-invocation and GRU state recovery; not general task efficacy.",
+      "native_seed_failure": {
+        "pr": 6127,
+        "source": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+        "run": 43163424939,
+        "job": 130999664797,
+        "distinct_tests": 1,
+        "failed": 1,
+        "attempts": 2
+      },
+      "fix": {
+        "pr": 6243,
+        "head": "8514d4754790e642f5f083d56696921b0628a313",
+        "tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
+        "static_review": true,
+        "execution": "QUEUED_AT_LAST_OBSERVATION",
+        "dedicated_push_run": 43200801767,
+        "required_methods": 6
+      }
+    }
+  },
+  "moving_bases": {
+    "observed_at_utc": "2026-11-12T10:08:00Z",
+    "owner_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "ctrl_upstream": "928a2603a7911cb5e8db439b7b814b9e033b6007",
+    "affected_prs": [
+      6213
+    ],
+    "merge_integration": "COMPLETED_FOR_EXACT_b298",
+    "prior_test_results_do_not_qualify_new_code": true,
+    "raw_github_merge_states": {
+      "6213": {
+        "mergeable": true,
+        "observation": "post-update PR metadata; exact two-parent integration checked"
+      },
+      "6221": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      },
+      "6240": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      },
+      "6243": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      }
+    },
+    "note": "Normalized PR snapshots initially reported false; subsequent original raw /pulls API confirms only #6213 is dirty. Do not create a new integration or inherit test results from that transient normalized field.",
+    "owner_merged_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+    "owner_merged_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
+    "owner_ref_update_leased_against": "088aadac3c88a5be6299ece1561d1ed54dd7d494"
+  },
+  "remaining_gates": [
+    "Original source/exposure custody",
+    "Original clock/domain/boot attestation",
+    "Persistent cadence and CURRENT CAS consumption",
+    "Complete ordinary owner bridge and native execution",
+    "T efficacy",
+    "R independent episodic/skill replay efficacy",
+    "V matched information/checker efficacy",
+    "L plasticity and retention",
+    "Independent source B and different ordinary C",
+    "Power and complete denominators",
+    "Complete life-cycle costs",
+    "Ordinary different-worker/boot cold recovery"
+  ],
+  "wrapper_actor_calls": 0,
+  "representation_notes": [
+    "Original JSON text with nanosecond integers is byte-preserved, never parse/reserialized as original evidence.",
+    "Gzip originals are independently decoded, CRC32/ISIZE and full raw SHA256 verified by root.",
+    "Source snapshots renamed .py.txt preserve bytes; mapping records original path.",
+    "The earlier RETRIEVAL_LIMITS records a historical failed direct read. Full reconstruction later succeeded and is recorded separately.",
+    "Original raw NoUpdate/adoption labels are preserved without promoting them to an authenticated owner decision."
+  ],
+  "git_binary_persistence": {
+    "status": "VERIFIED",
+    "record": "evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
+    "same_original_bytes": true,
+    "readback_commit": "e99ef9cca7e2185426dd91a136ad17ad0e765ea3"
+  }
+}

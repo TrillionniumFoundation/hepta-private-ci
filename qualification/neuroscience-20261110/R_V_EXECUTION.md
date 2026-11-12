@@ -1,6 +1,14 @@
-# R/V 实际执行入口与资产缺口（2026-11-12）
+# R/V 实际执行入口与资产缺口（2026-11-12 11:34 UTC）
 
 `replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文记录 wrapper 入口与当前上游实际结果；wrapper 自身的 B/C actor 尚未执行。最新状态以 [TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md) 为准。
+
+## 真实 run-v2 入口已验证，B/C 尚未派发
+
+新原job `1a1cf673fde-2564-1a15` 使用固定wrapper字节实际执行 `load_native` 与 `validate_partitions`：6项检查成功，原83项source pins（82源码＋1receipt）、driver/analysis合计85项记录，以及16个真实输入资产均匹配并保持不变。原run-v2 frozen SHA256为 `7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497`。原retained collection plan通过原validator；没有重执行其中288项计划。
+
+root独立核对11个原文件的字节数、Git blob、SHA256和原job终态。探针禁止文件写入、子进程与网络，审计没有阻断事件；本轮核验的是原cold-load记录，没有新产生独立cold-load。尚未创建正式wrapper freeze、B/C_PLAN、START或actor。候选B/C来自旧576 campaign已暴露development来源，不能改称独立confirmation；来源与执行身份的只读登记审查仍在进行。原calibration.complete=false、full_cost_observed=false保持。
+
+见[完整原件](evidence/rv-v2-entry-assets-20261112/README.md)及[root独立核验](evidence/rv-v2-entry-assets-20261112/ROOT_READBACK_VERIFICATION.json)。本次更新前的[39ff全文](evidence/history-20261112/R_V_EXECUTION-39ff19a.md)保留原观察。
 
 ## 已核实可复用资产
 
@@ -55,7 +63,7 @@ python3 replay_perception_native.py reconcile-B --expected-sha256 "$RV_FREEZE_SH
 
 ## 未闭合项与本地机械验证
 
-- **wrapper 真实调用仍待运行（actor=0）：** 原 run-v2 frozen fit 与强制独立子进程 cold-load 已完成，CHECKPOINT_PIN、COLD_LOAD 与实际文件 hash 一致。其 fit72／cal54，但 `calibration.complete=false`、`full_cost_observed=false`；还须在 wrapper 原入口实际验证新 freeze／source pins／plan 及 B/C 配对登记，不能把上游 fit 成功计作 wrapper 的 4 次 actor 已执行。
+- **wrapper 真实调用仍待运行（actor=0）：** 原 run-v2 frozen fit 与强制独立子进程 cold-load 已完成，CHECKPOINT_PIN、COLD_LOAD 与实际文件 hash 一致。其 fit72／cal54，但 `calibration.complete=false`、`full_cost_observed=false`；真实wrapper load_native/validate_partitions与原pins现已通过只读验证；还须正式freeze两阶段计划后按独立执行身份逐项调用，不能把资产验证或上游fit成功计作wrapper的4次actor已执行。
 - **R 2×2 仍 OPEN：** 尚无同一真实任务上的 episodic／skill replay 可用执行适配器，不能把 ACT controlled probe 与 MEM 单次未评分生成拼成配对效果；MEM registry/其他旧请求的UNKNOWN分别保留。
 - **同信息循环与 VERIFY 付费检查仍 OPEN：** 当前 native 宏只有 STOP／真实 READ，不提供任意同输入循环或独立 checker 的等预算接口；没有伪造“同信息”对照。
 - **新来源 B/C 与原 owner 仍 OPEN：** 需要原来源登记／暴露证据和原有授权链，不接受自签名替代；现有 development 不重标 confirmation。
@@ -81,10 +89,10 @@ python3 replay_perception_native.py reconcile-B --expected-sha256 "$RV_FREEZE_SH
 
 conditional的96次均STOP：94校准不完整、2 evaluation特征域越界；与STOP的质量差及内容×conditional质量交互均0。仅任务计时成本净值交互约−0.00028103645，完整成本交互null。60步实际内容训练使用observed_auxiliary_losses，不证明完整recursive NDU，也未清除历史暴露。当前结果是development描述，来源/成本/power/独立确认门仍OPEN。
 
-原REPORT的decision="NoUpdate"来自3c94源码硬编码，保留原文字节；当前投影owner_decision=null。未来语义修正[#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact241126已实际19项通过；[#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact2d1f的原公开输入回归已实际26项通过。它们不更改已经执行campaign的source pin或原输出。
+原REPORT的decision="NoUpdate"来自3c94源码硬编码，保留原文字节；当前投影owner_decision=null。未来语义修正[#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact241126已实际28套件200/200通过，0失败/跳过（普通UID1000的Python3.12.14/NumPy2.3.5/Pillow11.3.0；完整149个原文件与28组日志已由root独立解压核验）；[#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact2d1f的原公开输入回归已实际26项通过。它们不更改已经执行campaign的source pin或原输出。
 
 原bootstrap结尾错误读取run-v1/COMPLETED.json，导致外层exit1；实际run-v2 COMPLETED和12个成功stage原件已核验。保留FAILED原件，不据该收尾错误重跑actor。未来启动器才可在新明确版本统一campaign_output与completion路径。
 
 MEM v3的生成终态已按#6201原7文件hash闭合，执行源fa3b624不能归给后来的#6136组合源码。ACT #6113的受控GRU恢复不是回放效益；#6127原native seed case实际因effective Core profile不符失败。新增[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243)给出显式finite-v2 seed启动修复，当前静态审查完成，原native positive和5回归仍待实际验证。没有改写其旧失败或授予Root身份。
 
-要执行wrapper B/C，仍须按新run-v2自身清单完成原freeze/thaw、source/analysis/weights/control/material pin和配对计划校验，独立核验实际可用性；旧fixture成功和原模型cold-load不代替此步骤。新的B/C仍是development，不得复用已暴露来源冒充confirmation。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。
+真实run-v2自身的原freeze/thaw、source/analysis/weights/control/material pin与partition现已由原wrapper只读验证。要执行wrapper B/C，仍须冻结具体两阶段计划、绑定原case/seed、区分旧576执行身份并确认START-before-dispatch；资产验证、旧fixture和原cold-load不计为新actor完成。新的B/C仍是development，不得复用已暴露来源冒充confirmation。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。

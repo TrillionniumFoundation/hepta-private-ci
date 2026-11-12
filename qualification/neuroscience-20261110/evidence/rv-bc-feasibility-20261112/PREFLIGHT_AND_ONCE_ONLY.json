@@ -1,0 +1,177 @@
+{
+  "schema": "hepta.rv.development-bc-review.v1",
+  "state": "PROPOSED_NOT_FROZEN_NOT_AUTHORIZED_FOR_DISPATCH",
+  "audit_actions": {
+    "remote_jobs": 0,
+    "actor_calls": 0,
+    "freeze_calls": 0,
+    "collection_calls": 0,
+    "fit_calls": 0,
+    "export_calls": 0
+  },
+  "purpose": "new four-row wrapper connectivity check using two already-exposed development sources; not a new efficacy campaign",
+  "registration": {
+    "artifact": "REGISTRATION_CANDIDATE.json",
+    "sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4",
+    "bytes": 2414,
+    "minimum_observed_gain": 0,
+    "margin_scope": "descriptive B reference label only; C still executes both fixed arms; no significance, confidence, adoption or calibration gate"
+  },
+  "native_source_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "wrapper": {
+    "git_blob": "94e819d579232597de08a5c239a78e9d40768416",
+    "sha256": "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a",
+    "proposed_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/replay_perception_native.py"
+  },
+  "proposed_output": "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+  "proposed_request_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/REGISTRATION.json",
+  "paths_checked_on_host": false,
+  "actual_freeze_sha256": null,
+  "actual_plan_sha256s": null,
+  "actual_operation_ids": null,
+  "planned": {
+    "B": {
+      "contexts": 1,
+      "source_clusters": 1,
+      "macro_rows": 2
+    },
+    "C": {
+      "contexts": 1,
+      "source_clusters": 1,
+      "macro_rows": 2
+    },
+    "total_macro_rows": 4,
+    "independent_new_sources": 0,
+    "maximum_actor_invocations": 4
+  },
+  "budgets": {
+    "read_seconds": 30,
+    "finalizer_reserve_seconds": 5,
+    "action_seconds": 40,
+    "actor_timeout_seconds": 60,
+    "post_actor_scorer_timeout_seconds": 30,
+    "actor_timeout_sum_seconds": 240,
+    "scorer_timeout_sum_seconds": 120,
+    "initialization_and_admission_outside_actor_timeout": true,
+    "proposed_outer_timeout_seconds_per_phase": 600,
+    "full_cost_observed": false,
+    "energy_joules": null,
+    "provider_cost": null
+  },
+  "retained_runtime": {
+    "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "observed_python_version": "3.12.16",
+    "python_binary_expected_sha256": null,
+    "pillow_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+    "runtime_roots": [
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc/ld.so.cache",
+      "/proc/cpuinfo",
+      "/dev/urandom",
+      "/dev/null",
+      "/home/qq/hepta-smollm2-weight-research-20261103/ci-env",
+      "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+      "/home/qq/ctrl-real-policy-20261112-1333-v3",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root"
+    ]
+  },
+  "command_template": {
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "args_prefix": [
+      "-c",
+      "import runpy,sys; deps,script=sys.argv[1:3]; sys.path.insert(0,deps); sys.argv=sys.argv[2:]; runpy.run_path(script,run_name='__main__')",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+      "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/replay_perception_native.py"
+    ],
+    "freeze_args": [
+      "freeze",
+      "--output",
+      "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+      "--request",
+      "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/REGISTRATION.json",
+      "--expected-sha256",
+      "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4"
+    ],
+    "B_args": [
+      "B",
+      "--output",
+      "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+      "--expected-sha256",
+      "REPLACE_ONLY_WITH_ACTUAL_FROZEN_RAW_SHA256"
+    ],
+    "C_args": [
+      "C",
+      "--output",
+      "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+      "--expected-sha256",
+      "REPLACE_ONLY_WITH_ACTUAL_FROZEN_RAW_SHA256"
+    ],
+    "reconcile_args": [
+      "reconcile-B_OR_reconcile-C",
+      "--output",
+      "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+      "--expected-sha256",
+      "REPLACE_ONLY_WITH_ACTUAL_FROZEN_RAW_SHA256"
+    ],
+    "scope": "command proposals only; no process requests issued"
+  },
+  "proposed_stable_keys": {
+    "freeze": "neuro4-rv-bc-freeze-862531d-v1",
+    "B": "neuro4-rv-bc-phase-b-862531d-v1",
+    "C": "neuro4-rv-bc-phase-c-862531d-v1"
+  },
+  "pre_actor_checks": [
+    "Root approves the exact reviewed purpose, raw registration bytes, wrapper bytes, output and command; materialize only those inputs with create-only writes in fresh non-runtime paths.",
+    "Resolve and reject output or input aliases to all old campaign/training paths; output must be absent and outside every runtime/profile read root. Paths have not been inspected for this candidate.",
+    "Use original wrapper freeze once, preserve partial failure as a failed preparation; require completed FROZEN plus B_PLAN/C_PLAN and four deployment files. Verify actual raw request/wrapper/FROZEN SHA256 and actual plan canonical digests.",
+    "Before either actor phase, run original validate_plan and check_inputs on both actual plans. Do not replace these checks by this audit.",
+    "Derive exactly four distinct operation IDs using original digest([plan_pin,context,arm_id]); require no overlap with all 576 original REPORT execution IDs and no existing output/START for these new phases.",
+    "Keep both registered case records, source images, packet/reference pins, source closure, control, weights, alpha, envelope, checkpoint, roles and budgets unchanged.",
+    "The original host must verify public packet and development reference bytes when constructing each episode; original post-actor evaluator must verify separately pinned role-index/rubric and deny confirmation/retention_test.",
+    "Ordinary unprivileged Linux launch must enforce original Landlock/seccomp/closed descriptors/clean actor environment; any rejection remains a failed or unknown new row, with no fallback."
+  ],
+  "once_only": [
+    "B and C are distinct new process requests, with immutable arguments and stable separate keys. Timeout/ambiguous acknowledgement may only reconcile the same key/request; never replace it with a new effect request.",
+    "Wrapper phase START is exclusive and fsynced before dispatch; native operation START also precedes EpisodeHost.run. Original output is create-only, not a resume point.",
+    "Run C only after original B reconciliation proves RECORDED, exact unchanged native report digest and both B rows COMPLETED. B descriptive_reference_policy does not select or remove either C arm.",
+    "On any incomplete B, retain the original four-row planned denominator: preserve actual B statuses and mark two C rows NOT_STARTED. Do not retry B or synthesize C.",
+    "START without terminal is UNKNOWN. If the native PLAN/RUN were never durably created and original reconcile cannot parse a roster, preserve the original error and wrapper MAY_HAVE_DISPATCHED/UNKNOWN boundary; do not infer zero effects.",
+    "Reconcile uses original read-only stages only. No terminal rewriting, rerunning, seed replacement, fresh keys, output deletion, or automatic repair.",
+    "No claim of durable owner CAS, host-reboot exactly-once, fresh-source qualification, or power-loss recovery is inferred from Python exclusive files/fsync."
+  ],
+  "mechanical_acceptance": [
+    "Actual new FROZEN precedes all four START records; every operation matches the externally frozen plan and is outside the old 576 operation set.",
+    "Both phases expose exactly two original native_macro rows with retained quality/task-cost or explicit incomplete status, no fixture injection, and original readiness/public callbacks/realization/terminal hashes admitted.",
+    "B and C both finish RECORDED with two COMPLETED rows; independent read-only reconciliation reproduces the stored report digests and wrapper summaries without mutation.",
+    "Archive exact requests, source pins, wrapper/FROZEN/deployments/plan hashes, per-operation START/TERMINAL/REALIZATION and native launch/evaluator/content evidence, original stdout/stderr, and all failure metadata.",
+    "These acceptance items establish only the new development wrapper call path; they do not certify policy efficacy or native owner authorization."
+  ],
+  "scientific_and_owner_state": {
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "owner_decision": null,
+    "native_owner_authenticated": false,
+    "calibration_complete": false,
+    "tuned_fixed": "STOP",
+    "conditional_read_reachable_under_unchanged_checkpoint": false,
+    "fresh_source_confirmation": false,
+    "full_cost_observed": false,
+    "production_admission": false,
+    "independent_B_C_confirmation": false
+  },
+  "legacy_profile_identity": {
+    "retained_lineage_fields": [
+      "study_id",
+      "fit_run_id",
+      "fit_id",
+      "training_seed",
+      "model_sha256",
+      "training_receipt_sha256"
+    ],
+    "original_plan_profile_operation_id": "ctrl-real-policy-20261112-1333",
+    "actual_actor_operation_id": "macro_execution.execute_steps overrides profile.original_operation_id with new roster operation; actor CLI receives that ID",
+    "scope": "Content/training lineage intentionally remains old; request/output/effect identities must be newly frozen, not all metadata identifiers renamed."
+  }
+}
