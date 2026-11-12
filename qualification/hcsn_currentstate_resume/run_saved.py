@@ -93,7 +93,8 @@ def run(args):
         fine = trajectory(name, out/name/"warm", (F(7, 25), F(9, 25)))
         coarse = trajectory(name, out/name/"coarse", (F(9, 25),))
         target = out/name/"cold"
-        cmd = [sys.executable, "-m", "qualification.hcsn_currentstate_resume.run_saved", "--cold", "--fixture", name,
+        cmd = ["/usr/bin/prlimit", "--cpu=5:6", "--as=536870912:536870912", "--",
+               sys.executable, "-m", "qualification.hcsn_currentstate_resume.run_saved", "--cold", "--fixture", name,
                "--freeze", str(Path(args.freeze).resolve()), "--output", str(target)]
         p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=12,
                            env=dict(os.environ, OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1"))

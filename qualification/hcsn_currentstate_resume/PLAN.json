@@ -26,6 +26,8 @@
   "parent_CPU_soft_hard_seconds": [20, 21],
   "each_child_CPU_soft_hard_seconds": [5, 6],
   "fixed_roster_CPU_hard_upper_bound": 33,
+  "parent_limits_before_python_exec": "/usr/bin/prlimit --cpu=20:21 --as=536870912:536870912 -- python",
+  "child_limits_before_python_exec": "/usr/bin/prlimit --cpu=5:6 --as=536870912:536870912 -- python",
   "wall_hard_limit_seconds": 45,
   "per_process_RLIMIT_AS_bytes": 536870912,
   "children": 2,
