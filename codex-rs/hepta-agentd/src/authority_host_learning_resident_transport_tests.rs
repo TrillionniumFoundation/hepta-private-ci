@@ -134,6 +134,7 @@ pub(in crate::authority_host_service::resident) fn uncertain_then_readback(
                 wire::Reply::Uncertain
             } else {
                 wire::encode_current(super::super::runtime::ResidentRuntimeObservationV3 {
+                    model: None,
                     snapshot: Some(completed.clone()),
                     attestations: signatures.clone(),
                     dispatch_pending: false,

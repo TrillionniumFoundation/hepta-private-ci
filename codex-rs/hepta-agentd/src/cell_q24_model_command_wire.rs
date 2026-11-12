@@ -116,5 +116,15 @@ pub(in super::super) fn decode_completed(
     coordinator.record(receipt, at)?;
     context.material.scope.validate_snapshot(coordinator.snapshot())?;
     if coordinator.snapshot().receipts.len() != 5 { return Err(Error::Binding("one original Proposal extension")); }
-    Ok(OriginalCellQ24ModelCommandReceiptV1 { snapshot: coordinator.snapshot().clone(), material })
+    Ok(OriginalCellQ24ModelCommandReceiptV1 {
+        snapshot: coordinator.snapshot().clone(), material,
+        record: bytes.try_into().map_err(|_| Error::Binding("complete original Model record"))?,
+        context: context.binding()?,
+        predecessors: [
+            context.dataset.attestations()[0].clone(),
+            context.dataset.attestations()[1].clone(),
+            context.training.attestation().clone(),
+            context.evaluation.attestation().clone(),
+        ],
+    })
 }

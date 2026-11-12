@@ -9,6 +9,7 @@ use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -78,6 +79,9 @@ type Error = OriginalCellQ24ModelCommandErrorV1;
 pub struct OriginalCellQ24ModelCommandReceiptV1 {
     snapshot: LearningIterationSnapshotV1,
     material: Digest32,
+    record: [u8; 80],
+    context: Digest32,
+    predecessors: [SignedLearningEvidenceV1; 4],
 }
 impl OriginalCellQ24ModelCommandReceiptV1 {
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
@@ -86,6 +90,18 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
     }
     pub fn material_digest(&self) -> Digest32 { self.material }
     pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+
+    /// Root may project only the record obtained by this original command
+    /// decoder, with the exact four original signatures used by that command.
+    /// This is data, not a reconstructed Model owner or signing capability.
+    pub(crate) fn original_record_for_root(
+        &self, predecessors: &[SignedLearningEvidenceV1],
+    ) -> Result<(&[u8; 80], Digest32), Error> {
+        if predecessors != self.predecessors.as_slice() {
+            return Err(Error::Binding("same original Model full predecessor attestations"));
+        }
+        Ok((&self.record, self.context))
+    }
 }
 pub(super) fn now() -> Result<u64, Error> {
     SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())

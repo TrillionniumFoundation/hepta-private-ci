@@ -22,6 +22,7 @@ use super::profile::RootResidentLearningProfileV3;
 use super::profile::RootResidentLearningReadbackAuthorizationV3;
 use super::runtime::ResidentRequestModeV3;
 use super::runtime::RootResidentLearningHandleV3;
+use super::model::ResidentOriginalModelProofV3;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationRuntimeErrorV1 as Error;
@@ -33,6 +34,7 @@ pub struct RootResidentLearningObservationV3 {
     pub(super) snapshot: Option<LearningIterationSnapshotV1>,
     pub(super) attestations: Vec<SignedLearningEvidenceV1>,
     pub(super) dispatch_pending: bool,
+    pub(super) model: Option<ResidentOriginalModelProofV3>,
 }
 
 impl RootResidentLearningObservationV3 {
@@ -45,13 +47,24 @@ impl RootResidentLearningObservationV3 {
     pub fn dispatch_pending(&self) -> bool {
         self.dispatch_pending
     }
+    /// Original proof bytes for an explicit readonly recovery comparison pin.
+    /// They cannot be supplied to fresh admission or any stage command.
+    pub fn original_model_record(&self) -> Option<Vec<u8>> {
+        self.model.as_ref().map(ResidentOriginalModelProofV3::encode)
+    }
+}
+
+pub(super) struct ResidentReadbackPinV3 {
+    pub(super) snapshot: LearningIterationSnapshotV1,
+    pub(super) attestations: Vec<SignedLearningEvidenceV1>,
+    pub(super) model: Option<Vec<u8>>,
 }
 
 struct ResidentChannelV3 {
     peer: HostAuthorityPeerChannel,
     next: u64,
     execution_requested: bool,
-    retained: Option<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)>,
+    retained: Option<ResidentReadbackPinV3>,
 }
 
 enum ClientOriginV3 {
@@ -131,7 +144,7 @@ impl AgentdRootResidentLearningClientV3 {
             profile,
             verifier,
             ClientOriginV3::Readback(authorization),
-            expected,
+            expected.map(|(snapshot, attestations)| ResidentReadbackPinV3 { snapshot, attestations, model: None }),
             timeout,
             lifetime,
         )
@@ -144,7 +157,7 @@ impl AgentdRootResidentLearningClientV3 {
         profile: RootResidentLearningProfileV3,
         verifier: LearningEvidenceVerifierV1,
         origin: ClientOriginV3,
-        expected: Option<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)>,
+        expected: Option<ResidentReadbackPinV3>,
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
@@ -152,6 +165,7 @@ impl AgentdRootResidentLearningClientV3 {
             .require_verifier(&verifier)
             .map_err(|_| Error::WrongScope)?;
         let readonly = matches!(&origin, ClientOriginV3::Readback(_));
+        if !readonly && expected.is_some() { return Err(Error::WrongScope); }
         let (intent, lease) = artifacts(&profile, &origin);
         let authorization = profile::authorization_binding(&profile, intent, lease)
             .map_err(|_| Error::WrongScope)?;
@@ -163,14 +177,15 @@ impl AgentdRootResidentLearningClientV3 {
             .map_err(|_| Error::Unavailable)?;
         let now = now()?;
         require_window(&profile, &origin, now)?;
-        if let Some((snapshot, evidence)) = &expected {
-            authentication::verify_attestations(
-                &profile,
-                &verifier,
-                snapshot,
-                evidence,
-                now / 1_000,
-            )?;
+        if let Some(pin) = &expected {
+            match &pin.model {
+                None => authentication::verify_attestations(
+                    &profile, &verifier, &pin.snapshot, &pin.attestations, now / 1_000,
+                )?,
+                Some(model) => authentication::verify_model_comparison_pin(
+                    &profile, &verifier, &pin.snapshot, &pin.attestations, model, now / 1_000,
+                )?,
+            }
         }
         Ok(Self {
             channel: Arc::new(Mutex::new(Some(ResidentChannelV3 {
@@ -226,11 +241,12 @@ impl AgentdRootResidentLearningClientV3 {
         let current = now()?;
         require_window(&self.profile, &self.origin, current)?;
         let snapshot = observed.snapshot.as_ref().ok_or(Error::CommitUncertain)?;
-        authentication::verify_attestations(
+        authentication::verify_original_evidence(
             &self.profile,
             &self.verifier,
             snapshot,
             &observed.attestations,
+            observed.model.as_ref(),
             current / 1_000,
         )
     }
@@ -332,7 +348,10 @@ impl AgentdRootResidentLearningClientV3 {
                     wire::require_original_prefix(&channel.retained, &observed)?;
                     if let Some(snapshot) = &observed.snapshot {
                         channel.execution_requested = true;
-                        channel.retained = Some((snapshot.clone(), observed.attestations.clone()));
+                        channel.retained = Some(ResidentReadbackPinV3 {
+                            snapshot: snapshot.clone(), attestations: observed.attestations.clone(),
+                            model: observed.model.as_ref().map(ResidentOriginalModelProofV3::encode),
+                        });
                     }
                     ResidentExchangeV3::Observed(observed)
                 }
@@ -351,11 +370,12 @@ impl AgentdRootResidentLearningClientV3 {
         if let ResidentExchangeV3::Observed(observed) = &outcome
             && let Some(snapshot) = &observed.snapshot
         {
-            authentication::verify_attestations(
+            authentication::verify_original_evidence(
                 &self.profile,
                 &self.verifier,
                 snapshot,
                 &observed.attestations,
+                observed.model.as_ref(),
                 fresh / 1_000,
             )?;
         }
@@ -369,6 +389,9 @@ impl AgentdRootResidentLearningClientV3 {
         }
     }
 }
+
+#[path = "authority_host_learning_resident_model_recovery.rs"]
+mod model_recovery;
 
 impl RootResidentLearningHandleV3 {
     /// Run on the original host's bounded blocking lane. The consumer peer is

@@ -270,7 +270,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(original)
     }
 
-    fn verify_original_evaluation(
+    pub(super) fn verify_original_evaluation(
         &self,
         supplied: &LearningIterationSnapshotV1,
         training_cut: &LearningIterationSnapshotV1,
