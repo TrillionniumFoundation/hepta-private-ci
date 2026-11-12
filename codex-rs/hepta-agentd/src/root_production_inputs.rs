@@ -38,6 +38,7 @@ use crate::authority_host_config::HostAuthorityRegistration;
 #[path = "root_generation_publication_connection.rs"]
 mod publication_connection;
 pub(crate) use publication_connection::OriginalQ24SuccessorSession;
+pub(crate) use publication_connection::OriginalRootBEvaluationConnectionV1;
 pub use publication_connection::RootGenerationPublicationConnectionV1;
 pub(crate) use publication_connection::RootGenerationPublicationSlot;
 #[path = "root_historical_task_connection.rs"]
