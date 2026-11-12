@@ -27,6 +27,7 @@ pub(super) enum RootDataKind {
     SourcePin,
     SourceHandoff,
     CellSnapshot,
+    HistoricalLedger,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -241,6 +242,7 @@ fn binding(
         RootDataKind::SourcePin => "source-pin",
         RootDataKind::SourceHandoff => "source-handoff",
         RootDataKind::CellSnapshot => "cell-snapshot",
+        RootDataKind::HistoricalLedger => "historical-ledger",
     };
     // Match the primary slot's scope namespace. The complete target remains
     // inside the record, so a different target cannot create another gate.
