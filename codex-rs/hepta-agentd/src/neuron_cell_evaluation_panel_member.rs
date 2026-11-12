@@ -23,7 +23,7 @@ use crate::CellEvaluationJournalsV1;
 use crate::CellEvaluationRunnerV1;
 use crate::LearningIterationEvidenceClientV1;
 use crate::OriginalCellEvaluationExecutionStoreV1;
-use crate::OriginalCircuitEvaluationCohortReadbackV1;
+use crate::OriginalCellEvaluationCohortCustodyV1;
 
 /// These are existing original capabilities, moved once into the panel. The
 /// panel exposes no callback, signature producer, file path or member getter.
@@ -42,7 +42,7 @@ pub struct OriginalCellEvaluationPanelMemberOwnersV1<
     pub baseline_plan: TemporalEvaluationPlan,
     pub executions: OriginalCellEvaluationExecutionStoreV1<X>,
     pub trainer: Arc<LearningIterationEvidenceClientV1>,
-    pub cohort: OriginalCircuitEvaluationCohortReadbackV1,
+    pub cohort: OriginalCellEvaluationCohortCustodyV1,
 }
 
 impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: AnchorWitnessStore>
@@ -61,7 +61,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         // The panel's final common clock reauthenticates every window later.
         let started_at = original::now()?;
         let cohort_before =
-            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
+            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?;
         let before = self.read_cells()?;
         let mut sources = OriginalCellEvaluationQualificationSourcesV1 {
             runner: &mut self.runner,
@@ -92,7 +92,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         drop(sources);
         let after = self.read_cells()?;
         let cohort_after =
-            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
+            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?;
         if before != after || cohort_before != cohort_after {
             return Err(Error::CommitUncertain);
         }
@@ -144,7 +144,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         observed: &OriginalCellEvaluationPanelMemberReadbackV1,
         current: u64,
     ) -> Result<(), Error> {
-        OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(
+        OriginalCellEvaluationCohortCustodyV1::authenticate_current(
             &mut self.cohort,
             &observed.cohort,
             current,

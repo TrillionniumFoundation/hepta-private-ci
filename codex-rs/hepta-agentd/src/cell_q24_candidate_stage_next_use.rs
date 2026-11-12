@@ -153,8 +153,10 @@ impl Owners {
         self.require_adoption_cut(snapshot, Stage::NextUse, action)?;
         let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
         self.begin_adoption()?;
-        let completed = self.read_model_for_adoption(&operation).await?;
-        let context = publication_context(self, &operation, &completed)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 =
+            self.read_model_for_adoption(&operation).await?;
+        let context: OriginalCircuitModelPublicationContextV1 =
+            publication_context(self, &operation, &completed)?;
         let (observer, readiness, selection, publication) = self.bind_adoption_next_use(
             &operation, &completed, action,
         ).await?;

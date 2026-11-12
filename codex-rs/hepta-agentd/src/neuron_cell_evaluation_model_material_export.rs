@@ -20,7 +20,7 @@ use crate::CellEvaluationQualificationRequestV1;
 use crate::CellEvaluationRunnerV1;
 use crate::OriginalCellEvaluationPanelMemberOwnersV1;
 use crate::OriginalCellEvaluationPanelMemberReadbackV1;
-use crate::OriginalCircuitEvaluationCohortReadbackV1;
+use crate::OriginalCellEvaluationCohortCustodyV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_evidence;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
@@ -192,7 +192,7 @@ fn member(
     )
     .map_err(crate::OriginalCellEvaluationQualificationErrorV1::from)?;
     let (cohort, freeze_payload, freeze_evidence) =
-        OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(
+        OriginalCellEvaluationCohortCustodyV1::original_model_commitment(
             &owner.cohort,
             &observed.cohort,
         )

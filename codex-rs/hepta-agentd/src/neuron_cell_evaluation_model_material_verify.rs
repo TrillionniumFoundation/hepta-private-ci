@@ -223,6 +223,10 @@ pub(super) fn material(
             "original E binds the entire actual signed retention panel",
         ));
     }
+    // The original Evaluation signature records the primary Product verdict.
+    // Admission additionally requires every authenticated retention verdict;
+    // a known Ineligible result remains observable and is never a retention pass.
+    let qualified = checked_members.iter().all(|member| member.qualified);
     let disposition = if primary.qualified {
         LearningEvaluationDispositionV1::Qualified
     } else {
@@ -245,7 +249,7 @@ pub(super) fn material(
     Ok(Checked {
         candidate,
         material: model_material.ok_or(Error::CommitUncertain)?,
-        qualified: primary.qualified,
+        qualified,
     })
 }
 

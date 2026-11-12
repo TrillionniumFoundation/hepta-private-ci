@@ -229,7 +229,7 @@ impl PanelMemberFixture {
             baseline_plan: fixture.baseline_temporal,
             executions,
             trainer: Arc::new(trainer),
-            cohort,
+            cohort: cohort.into(),
         };
         Ok(Self {
             member: Some(member),

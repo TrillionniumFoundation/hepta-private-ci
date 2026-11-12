@@ -48,16 +48,16 @@ impl OriginalCellQ24ModelCommandHostV1 {
         // the next peer request can run.
         state.fenced = true;
         let inputs = self.original_inputs(&mut state)?;
-        let evaluation = self.runtime.block_on(
+        let evaluation: OriginalCellEvaluationModelReadV1<'static> = self.runtime.block_on(
             OriginalCellEvaluationModelMaterialClientV1::begin_owned_model_read(
                 Arc::clone(&inputs.material),
             ),
         )?;
-        let before = OriginalCellEvaluationModelReadV1::material(&evaluation);
+        let before: &OriginalCellEvaluationModelMaterialV1 = OriginalCellEvaluationModelReadV1::material(&evaluation);
         let context = self.original_context(&mut state, &inputs, before)?;
         context.require_qualified()?;
         request.require_context(&context, request.nonce)?;
-        let body = before.original_model_transfer_body().to_vec();
+        let body = OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(before).to_vec();
         let pages = body.len().div_ceil(wire::MATERIAL_PAGE_BYTES);
         if body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES
             || request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)
@@ -69,7 +69,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
             // Use the same existing Execute brand and original custody. A
             // failed or cancelled attempt never receives another Execute.
             state.execution_requested = true;
-            let fresh = context.authenticate(inputs.started)?;
+            let fresh = Context::authenticate(&context, inputs.started)?;
             if fresh >= context.material.initial.request.envelope.expiry_unix_seconds {
                 return Err(Error::DeadlineExceeded);
             }
@@ -87,7 +87,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
                 )?,
             );
             // create_original_model has released its original Training lane.
-            let fresh = context.authenticate(fresh)?;
+            let fresh = Context::authenticate(&context, fresh)?;
             if fresh >= context.material.initial.request.envelope.expiry_unix_seconds {
                 return Err(Error::DeadlineExceeded);
             }
@@ -117,8 +117,8 @@ impl OriginalCellQ24ModelCommandHostV1 {
                 _ => Error::Pending,
             });
         };
-        let fresh = context.authenticate(
-            evaluation.require_original_operation_current(inputs.started)?,
+        let fresh = Context::authenticate(&context, 
+            OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?,
         )?;
         before.authenticate_current(fresh)?;
         let input = before.require_original_model_input(
@@ -142,10 +142,10 @@ impl OriginalCellQ24ModelCommandHostV1 {
 
 impl OriginalModelReadHostOperation<'_> {
     fn require_current(&self) -> Result<u64, Error> {
-        let evaluation = self.evaluation.as_ref().ok_or(Error::CommitUncertain)?;
-        let current = evaluation.require_original_operation_current(self.started)?;
-        let fresh = self.context.authenticate(current)?;
-        evaluation.material().authenticate_current(fresh)?;
+        let evaluation: &OriginalCellEvaluationModelReadV1<'static> = self.evaluation.as_ref().ok_or(Error::CommitUncertain)?;
+        let current = OriginalCellEvaluationModelReadV1::require_original_operation_current(evaluation, self.started)?;
+        let fresh = Context::authenticate(&self.context, current)?;
+        OriginalCellEvaluationModelReadV1::material(evaluation).authenticate_current(fresh)?;
         Ok(fresh)
     }
 
@@ -196,12 +196,12 @@ impl OriginalModelReadHostOperation<'_> {
         }
         // The native Version/Selector work happened between these exact E
         // Begin/Finish reads. No owner is recreated and no channel is replaced.
-        let after = self.host.runtime.block_on(
+        let after: OriginalCellEvaluationModelMaterialV1 = self.host.runtime.block_on(
             OriginalCellEvaluationModelReadV1::finish(
                 self.evaluation.take().ok_or(Error::CommitUncertain)?,
             ),
         )?;
-        if after.original_model_transfer_body() != self.body.as_slice()
+        if OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()
             || after.original_evaluation() != &self.context.evaluation
         {
             return Err(Error::CommitUncertain);
@@ -217,7 +217,7 @@ impl OriginalModelReadHostOperation<'_> {
         let effect::Observed::Completed(native) = native else {
             return Err(Error::CommitUncertain);
         };
-        let fresh = self.context.authenticate(self.started)?;
+        let fresh = Context::authenticate(&self.context, self.started)?;
         after.authenticate_current(fresh)?;
         let input = after.require_original_model_input(
             &self.context.training_cut, self.context.training.attestation(), fresh,
@@ -233,7 +233,7 @@ impl OriginalModelReadHostOperation<'_> {
         }
         // A last pure check covers all E/retention windows after native I/O
         // and decoding. Only this successful end clears the once-held fence.
-        let final_at = self.context.authenticate(fresh)?;
+        let final_at = Context::authenticate(&self.context, fresh)?;
         after.authenticate_current(final_at)?;
         self.state.retained = Some(current);
         self.state.fenced = false;

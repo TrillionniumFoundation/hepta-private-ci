@@ -257,6 +257,7 @@ class OriginalSourceOperationClosureTests(unittest.TestCase):
         for path, function, marker in (
             (OPERATION, "fn drop(", ".store(FENCED, Ordering::Release)"),
             (NATIVE, "fn require_current(", "OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)"),
+            (NATIVE, "fn require_current(", "self.fenced = true"),
             (OWNER, "fn require_original_source_operation(", "self.fenced = true"),
             (LANE, "fn drop(", "self.state.fetch_or(CANCELLED, Ordering::AcqRel)"),
             (LANE, "fn drop(", "self.stage_fenced.store(true, Ordering::Release)"),

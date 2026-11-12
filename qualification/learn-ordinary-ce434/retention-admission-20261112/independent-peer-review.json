@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.retention-admission-static-peer-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "7f45714c361c149c86cec39925fa91723be3fd8d",
+  "review_scope": "两处 retention 聚合/Selector gate 改动及四个同 ref 支持模块。不是全源、合成paired路径或执行验收。",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "blob": "e0694553c68cfbb27c5dd263caf92a1f5c60ba55",
+      "bytes": 10554,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "blob": "8a70c3b256a4f7e47d348d62417e45c1266f26eb",
+      "bytes": 10301,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "blob": "b0ea87b5282a7fa61274ac03bbdcfe671c95d8b7",
+      "bytes": 11081,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "blob": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "bytes": 8235,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "blob": "c0c67017117f71982a9d294b5b6d61e37844da6d",
+      "bytes": 5940,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "blob": "9992b28138dd4e3f57debd9852f7d2ac4a255b51",
+      "bytes": 15316,
+      "full_read_and_hash_verified": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7f45714c361c149c86cec39925fa91723be3fd8d/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs"
+    }
+  ],
+  "conclusion": "窄范围静态审查未发现上述改动的阻断问题；不构成编译、Python source-suite、native 或普通任务通过。",
+  "checks": [
+    {
+      "id": "nonempty_bounded_registered_panel",
+      "evidence": [
+        "Body::decode rejects count<2 and count>MAX_MEMBERS(17)",
+        "Registration::new requires retention 1..16, unique plan/task identities",
+        "verify::material requires members.len()==retention.len()+1 before member iteration"
+      ],
+      "result": "Empty all() cannot admit a panel; primary indexing follows nonempty complete membership."
+    },
+    {
+      "id": "authenticate_every_member_before_aggregation",
+      "evidence": [
+        "verify::material loops over exact registered primary+retention sequence",
+        "member::verify checks original T/candidate/parent/task roles, Generator/Evaluator/Execution signatures and current windows, actor separation, exact qualification/execution/publication bindings",
+        "proofs::cohort verifies each freeze signature/current principal, actor separation, full T/freeze signature preimages and registered rule/profile/training/scope",
+        "full Cell snapshot/manifest/task/run/namespace checks complete before checked_members.push"
+      ],
+      "result": "Aggregation uses private Checked results, not unverified body flags."
+    },
+    {
+      "id": "complete_retention_set_before_all",
+      "evidence": [
+        "sorted retention qualifications are nonempty and have no duplicate",
+        "primary.retention equals that exact complete sorted set",
+        "panel digest and primary qualification/E observed timestamp match the original receipt",
+        "only then checked_members.iter().all(|member| member.qualified)"
+      ],
+      "result": "No omitted member or mismatching signed retention set is accepted by this aggregation."
+    },
+    {
+      "id": "preserve_primary_E_verdict_and_ineligible",
+      "evidence": [
+        "member::verify qualified is disposition==0 after known disposition 0/1 and full qualification/execution/publication validation",
+        "verify::material derives E disposition from primary.qualified and matches original Evaluation observation",
+        "aggregate qualified includes primary and every retention member",
+        "require_original_model_input rejects !checked.qualified"
+      ],
+      "result": "A signed primary Ineligible stays ineligible; an ineligible retention member blocks Model/S admission without rewriting the original primary Evaluation verdict. Readonly verification remains able to represent these known results."
+    },
+    {
+      "id": "selector_uses_complete_model_gate",
+      "evidence": [
+        "require_original_selector_material first calls require_original_model_input on original context Training/signature",
+        "require_original_model_input verifies full Training equality, full signature equality, current>=observed_at, Digest32(bytes)==binding, and fresh complete verify::material",
+        "Selector then matches original enrolled primary record/product/execution/full signed evidence"
+      ],
+      "result": "Selector cannot accept a retention failure merely because primary evidence matches; no new I/O was added."
+    },
+    {
+      "id": "no_new_public_authority",
+      "evidence": [
+        "Material fields remain private; no Clone/Deserialize/public constructor",
+        "authority() remains DENY_ALL",
+        "Model input remains crate-private pure data",
+        "new aggregate Checked.qualified is pub(super) only",
+        "no key/grant/owner seal reconstructed by reviewed methods"
+      ],
+      "result": "The reviewed change does not create public execution/adoption authority."
+    }
+  ],
+  "limitations": [
+    "No original Python verifier or typed caller scan executed by this review.",
+    "No Rust compilation or native test executed by this review.",
+    "No H action, daemon/Root restart or ordinary A/B/C execution performed.",
+    "The final combined paired source still requires its own fixed-source guards and original runtime qualification.",
+    "This review does not establish deployed original owners, B pre-adoption execution capability, reachable frozen evaluation profiles or independent principals."
+  ],
+  "changes": {
+    "production": 0,
+    "permissions": 0,
+    "H_actions": 0
+  },
+  "ordinary_acceptance": 0
+}

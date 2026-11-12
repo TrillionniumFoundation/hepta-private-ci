@@ -1,0 +1,590 @@
+{
+  "schema": "learn-paired-source-field-reachability-review-v1",
+  "review_date_utc": "2026-11-12",
+  "production_commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "paired_commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+  "verdict": "No confirmed mandatory run/session coupling bug for the shared NDU digest, Cell monotonic/deadline fields, or lease duration in this inspected production path.",
+  "limitations": [
+    "Read-only source review, not a native execution witness.",
+    "No original independently authorized candidate B execution/custody established.",
+    "No assertion about unseen external producer conventions for constructing NDU digest.",
+    "Core RunStart model_tuple_digest and Q24 weight/bundle digest remain distinct semantic domains.",
+    "No source/rules/keys/grants/UID/policy/H changes; ordinary acceptance remains zero."
+  ],
+  "equations": [
+    {
+      "field": "run/operation",
+      "equation": "scope_hash = H(agent, cell, run, principal); circuit_scope_hash = H(agent, run, principal); operation_id = circuit-cell:<actual dispatch invocation_digest>; semantic_request = H(definition, operation_id, scope_hash, frontier, objective, NDU, observation, M, D, candidate masks)",
+      "effect": "Changing run creates separately bound operations; shared NDU is not identity reuse."
+    },
+    {
+      "field": "Cell clock",
+      "equation": "For every fresh arm i: 0 < M <= now_cell_i < D. Subsequent sampled clocks cannot regress; original admission/dispatch/commit constraints still apply.",
+      "effect": "Same M/D is satisfiable when both actual executions fit the common original clock interval. It is not guaranteed to fit."
+    },
+    {
+      "field": "Source interval",
+      "equation": "D - M <= 1000 * L and D - M <= 1000 * (wall_deadline_i - wall_created_i), with 1 <= L <= 3_600_000 ms",
+      "effect": "Each arm must independently fit its actual original RunStart admission."
+    },
+    {
+      "field": "Circuit lease",
+      "equation": "wall_created_i = RunStart_i.admission.observed_at_unix_micros / 1000; wall_deadline_i = min(RunStart_i.admission.deadline_unix_micros / 1000, RunStart_i.authentication.expires_at_ms); lease_expires_i = wall_created_i + L",
+      "effect": "Shared duration L does not freeze or reuse the first arm's absolute lease expiry."
+    },
+    {
+      "field": "Decision",
+      "equation": "Signed payload_i = H(record_id_i, episode_id_i, run_snapshot_digest_i, objective, policy, completeness, candidates, selected, propensity, support); observed run_snapshot_digest_i == original Source_i.ndu_snapshot_digest",
+      "effect": "Distinct independently signed records can attest the same actual frozen NDU snapshot. No inspected code requires run_snapshot_digest_i = canonical RunStart_i digest."
+    }
+  ],
+  "minimal_recommendation": {
+    "required_source_change": "None established by this hypothesis; do not weaken or rewrite current exact frozen source equality.",
+    "must_be_real": [
+      "Each arm's already-authorized original RunStart/authentication, Circuit admission, distinct original Cell scope/partition and actual Candidate/parent model binding.",
+      "Both actual Cell-clock executions within the predeclared M/D interval and each original per-run wall-clock admission/lease; no replay-clock or deadline renewal.",
+      "Original Generator attests actual NDU snapshot for each distinct Decision; actual Source/Cell/Outcome readbacks join unchanged."
+    ],
+    "conditional_future": "Only if an actual original NDU producer is shown to hash run/session into the snapshot does the paired contract need distinct preregistered per-arm original NDU bindings plus an original-owner semantic-equivalence proof. Such a producer/equation was not established in this review; arbitrary replacement digests or dropping the equality would be unjustified."
+  },
+  "evidence": [
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "blob": "68cf423686f24d192d015b0c06e86eea530dfc81",
+      "bytes": 16039,
+      "functions": [
+        "CircuitTaskSourceInputV1::input",
+        "CircuitTaskInputProviderV1::resolve"
+      ],
+      "ranges": [
+        [
+          53,
+          87
+        ],
+        [
+          383,
+          415
+        ]
+      ],
+      "reason": "Frozen original source input carries independent ndu and Cell-clock fields. Resolve derives operation from actual dispatch; it does not edit frozen input fields.",
+      "excerpts": [
+        {
+          "from": 53,
+          "to": 87,
+          "text": "#[path = \"circuit_task_source_readback.rs\"]\nmod readback;\npub use readback::CircuitTaskSourceReadbackV1;\n\n/// Explicit source bytes and original Cell-clock values, fixed before task\n/// ingress. Only the operation ID is derived later from the original Circuit\n/// dispatch. No ambient input lookup or clock is consulted on retry/recovery.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct CircuitTaskSourceInputV1 {\n    pub scope: CellScopeV1,\n    pub source_frontier: Digest32,\n    pub objective_digest: Digest32,\n    pub ndu_snapshot_digest: Digest32,\n    pub monotonic_micros: u64,\n    pub deadline_micros: u64,\n    pub observation: Vec<u8>,\n    pub candidates: Vec<CellCandidateMaskV1>,\n    pub lease_duration_ms: u64,\n}\n\nimpl CircuitTaskSourceInputV1 {\n    fn input(&self, operation_id: StableId) -> CellStepInputV1 {\n        CellStepInputV1 {\n            operation_id,\n            scope: self.scope.clone(),\n            source_frontier: self.source_frontier,\n            objective_digest: self.objective_digest,\n            ndu_snapshot_digest: self.ndu_snapshot_digest,\n            monotonic_micros: self.monotonic_micros,\n            deadline_micros: self.deadline_micros,\n            observation: self.observation.clone(),\n            candidates: self.candidates.clone(),\n        }\n    }\n}"
+        },
+        {
+          "from": 383,
+          "to": 415,
+          "text": "impl<W: AnchorWitnessStore + Send> CircuitTaskInputProviderV1 for DurableCircuitTaskSourceV1<W> {\n    fn resolve(\n        &mut self,\n        request: &CircuitTaskRequestV1,\n        dispatch: &CircuitDispatchV2,\n        completed: &BTreeMap<u64, CircuitCellExecutionV1>,\n        mode: CircuitTaskInputModeV1,\n    ) -> Result<CellStepInputV1, Error> {\n        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;\n        owner.require_active(&request.start.run_id)?;\n        let retained = owner.read(\"request\", &request.start.run_id)?;\n        codec::require_request(&retained, request)?;\n        let source = owner\n            .sources\n            .get(&request.start.run_id)\n            .ok_or(Error::InvalidBinding)?;\n        let program = &owner.definition.programs[0];\n        if !completed.is_empty()\n            || dispatch.run_id != request.start.run_id\n            || dispatch.program_id != program.program_id\n            || dispatch.node_id != program.entry_node\n            || dispatch.round != 0\n            || dispatch.scope_digest != request.start.scope_digest\n            || dispatch.input_digest != request.start.input_digest\n        {\n            return Err(Error::InvalidBinding);\n        }\n        let input = source.input(circuit_cell_operation_id_v1(dispatch)?);\n        let payload = codec::dispatch_input(dispatch, &input)?;\n        owner.retain(\"input\", &request.start.run_id, &payload, mode)?;\n        Ok(input)\n    }\n}"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "bytes": 6682,
+      "functions": [
+        "SourceOwner::request"
+      ],
+      "ranges": [
+        [
+          7,
+          46
+        ]
+      ],
+      "reason": "Each actual RunStart independently derives wall-clock created_at/deadline; common lease duration remains a duration, and frozen Cell interval width must fit the original admitted wall interval.",
+      "excerpts": [
+        {
+          "from": 7,
+          "to": 46,
+          "text": "    pub(super) fn request(\n        &mut self,\n        identity: &AgentdIdentity,\n        record: &RunStartRecordV1,\n    ) -> Result<CircuitTaskRequestV1, Error> {\n        self.require_current()?;\n        if identity != &self.identity {\n            return Err(Error::InvalidBinding);\n        }\n        self.require_active(record.snapshot.run_id.as_str())?;\n        let source = self\n            .sources\n            .get(record.snapshot.run_id.as_str())\n            .ok_or(Error::InvalidBinding)?;\n        let created_at_ms = record.admission.observed_at_unix_micros / 1_000;\n        let deadline_ms = (record.admission.deadline_unix_micros / 1_000)\n            .min(record.authentication.expires_at_ms);\n        let request = CircuitTaskRequestV1 {\n            start: CircuitStartV2 {\n                run_id: record.snapshot.run_id.to_string(),\n                scope_digest: circuit_cell_scope_digest_v1(&source.scope)?,\n                input_digest: Sha256Digest::for_bytes(&source.observation),\n                created_at_ms,\n                lease_duration_ms: source.lease_duration_ms,\n            },\n            objective_digest: source.objective_digest,\n            deadline_ms,\n        };\n        request.validate_record(record, self.fence.generation)?;\n        if source.deadline_micros - source.monotonic_micros\n            > deadline_ms\n                .saturating_sub(created_at_ms)\n                .saturating_mul(1_000)\n        {\n            return Err(Error::InvalidBinding);\n        }\n        Ok(request)\n    }\n\n    fn key(&self, stage: &str, run: &str) -> Result<ProductEvaluationExecutionKeyV1, Error> {"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "blob": "adb6faefaead13bee99f4a5186114484fea09083",
+      "bytes": 5159,
+      "functions": [
+        "CircuitTaskRequestV1::validate_record"
+      ],
+      "ranges": [
+        [
+          69,
+          92
+        ]
+      ],
+      "reason": "Binds run/objective/generation and original wall admission; does not equate NDU or Cell monotonic values with a RunStart hash or creation instant.",
+      "excerpts": [
+        {
+          "from": 69,
+          "to": 92,
+          "text": "impl CircuitTaskRequestV1 {\n    pub(crate) fn validate_record(\n        &self,\n        record: &RunStartRecordV1,\n        generation: u64,\n    ) -> Result<(), CircuitTaskErrorV1> {\n        if self.start.run_id != record.snapshot.run_id.as_str()\n            || self.start.run_id.len() > 128\n            || self.objective_digest != record.snapshot.objective_digest\n            || self.objective_digest.is_zero()\n            || record.snapshot.generation != generation\n            || record.disposition != RunStartObjectiveDispositionV1::Compiled\n            || self.start.created_at_ms != record.admission.observed_at_unix_micros / 1_000\n            || self.deadline_ms <= self.start.created_at_ms\n            || self.deadline_ms > record.admission.deadline_unix_micros / 1_000\n            || self.deadline_ms > record.authentication.expires_at_ms\n            || !(1..=3_600_000).contains(&self.start.lease_duration_ms)\n            || record.objective_semantic_bytes.len() > 256 * 1_024\n            || record.objective_function_v1_bytes.len() > 256 * 1_024\n        {\n            return Err(CircuitTaskErrorV1::InvalidBinding);\n        }\n        Ok(())\n    }"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_binding.rs",
+      "blob": "d67f5a628c1729105205564df359ec154240747a",
+      "bytes": 11831,
+      "functions": [
+        "CircuitCellRegistryV1::bind_input",
+        "circuit_cell_scope_digest_v1",
+        "circuit_cell_operation_id_v1"
+      ],
+      "ranges": [
+        [
+          194,
+          204
+        ],
+        [
+          261,
+          284
+        ]
+      ],
+      "reason": "Run is explicitly in scope; actual dispatch operation is derived, not a frozen source field.",
+      "excerpts": [
+        {
+          "from": 194,
+          "to": 204,
+          "text": "        if dispatch.run_id != input.scope.run_id.as_str()\n            || input.scope.cell_id != binding.cell.cell_id\n            || dispatch.scope_digest != circuit_cell_scope_digest_v1(&input.scope)?\n            || input.operation_id != circuit_cell_operation_id_v1(dispatch)?\n        {\n            return Err(CircuitCellErrorV1::ScopeMismatch);\n        }\n        if dispatch.input_digest != Sha256Digest::for_bytes(&input.observation) {\n            return Err(CircuitCellErrorV1::InputMismatch);\n        }\n        Ok(binding)"
+        },
+        {
+          "from": 261,
+          "to": 284,
+          "text": "/// A circuit may visit many cells. The run pin binds agent/run/principal; each\n/// node's frozen registry entry separately binds its exact Cell definition.\npub fn circuit_cell_scope_digest_v1(\n    scope: &CellScopeV1,\n) -> Result<Sha256Digest, CircuitCellErrorV1> {\n    if scope.principal_digest.is_zero() {\n        return Err(CircuitCellErrorV1::ScopeMismatch);\n    }\n    let mut bytes = b\"hepta.circuit.cell-run-scope.v1\\0\".to_vec();\n    push_text(&mut bytes, scope.agent_id.as_str());\n    push_text(&mut bytes, scope.run_id.as_str());\n    bytes.extend_from_slice(scope.principal_digest.as_array());\n    Ok(Sha256Digest::for_bytes(&bytes))\n}\n\npub fn circuit_cell_operation_id_v1(\n    dispatch: &CircuitDispatchV2,\n) -> Result<StableId, CircuitCellErrorV1> {\n    StableId::new(format!(\n        \"circuit-cell:{}\",\n        dispatch.invocation_digest.as_str()\n    ))\n    .map_err(|_| CircuitCellErrorV1::InvalidBinding)\n}"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-neuron/src/cell_binding.rs",
+      "blob": "669e52b01affd89b954d8ed099f8b097cf8ea488",
+      "bytes": 8124,
+      "functions": [
+        "CellScopeV1::digest",
+        "operation_digest",
+        "semantic_request_digest",
+        "inference_request_id"
+      ],
+      "ranges": [
+        [
+          11,
+          22
+        ],
+        [
+          127,
+          164
+        ],
+        [
+          179,
+          218
+        ]
+      ],
+      "reason": "Scope includes run. Cell request identities already differ across arms even when NDU and clock fields are shared.",
+      "excerpts": [
+        {
+          "from": 11,
+          "to": 22,
+          "text": "\nimpl CellScopeV1 {\n    pub fn digest(&self) -> Digest32 {\n        let mut bytes = b\"hepta.cell.scope.v1\".to_vec();\n        for id in [&self.agent_id, &self.cell_id, &self.run_id] {\n            push_id(&mut bytes, id);\n        }\n        bytes.extend_from_slice(self.principal_digest.as_array());\n        Digest32::of_bytes(&bytes)\n    }\n}\n"
+        },
+        {
+          "from": 127,
+          "to": 164,
+          "text": "pub(crate) fn operation_digest(\n    definition_digest: Digest32,\n    snapshot: &CellOwnerSnapshotV1,\n    input: &CellStepInputV1,\n    encoded: &CellEncodedInputV1,\n) -> Digest32 {\n    let mut bytes = b\"hepta.cell.operation.v1\".to_vec();\n    push_id(&mut bytes, &input.operation_id);\n    for digest in [\n        definition_digest,\n        input.scope.digest(),\n        input.source_frontier,\n        input.objective_digest,\n        input.ndu_snapshot_digest,\n        snapshot\n            .checkpoint\n            .as_ref()\n            .map_or(Digest32::ZERO, SparseCheckpoint::digest),\n        Digest32::of_bytes(&input.observation),\n        canonical_feature_vector_digest_v1(&encoded.feature_vector_q24),\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    for number in [\n        snapshot.writer_epoch,\n        snapshot.revision,\n        input.monotonic_micros,\n        input.deadline_micros,\n        encoded.consumed_bytes as u64,\n        encoded.truncated_bytes as u64,\n    ] {\n        bytes.extend_from_slice(&number.to_be_bytes());\n    }\n    for candidate in &input.candidates {\n        push_id(&mut bytes, &candidate.candidate_id);\n        bytes.push(u8::from(candidate.allowed));\n    }\n    Digest32::of_bytes(&bytes)"
+        },
+        {
+          "from": 179,
+          "to": 218,
+          "text": "/// Independent of the owner revision: retries cannot acquire new execution\n/// semantics just because a prior commit advanced temporal state.\npub(crate) fn semantic_request_digest(\n    definition_digest: Digest32,\n    input: &CellStepInputV1,\n) -> Digest32 {\n    let mut bytes = b\"hepta.cell.semantic-request.v1\".to_vec();\n    push_id(&mut bytes, &input.operation_id);\n    for digest in [\n        definition_digest,\n        input.scope.digest(),\n        input.source_frontier,\n        input.objective_digest,\n        input.ndu_snapshot_digest,\n        Digest32::of_bytes(&input.observation),\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    bytes.extend_from_slice(&input.monotonic_micros.to_be_bytes());\n    bytes.extend_from_slice(&input.deadline_micros.to_be_bytes());\n    bytes.extend_from_slice(&(input.candidates.len() as u64).to_be_bytes());\n    for candidate in &input.candidates {\n        push_id(&mut bytes, &candidate.candidate_id);\n        bytes.push(u8::from(candidate.allowed));\n    }\n    Digest32::of_bytes(&bytes)\n}\n\n/// Inference.control owns a shared request ledger. The same operation label in\n/// different Cell partitions must not collide; a changed snapshot within one\n/// operation must not mint a second request ID to bypass that ledger.\npub(crate) fn inference_request_id(\n    scope: &CellScopeV1,\n    operation_id: &StableId,\n) -> Result<StableId, CellExecutionError> {\n    let mut bytes = b\"hepta.cell.inference-request-id.v1\".to_vec();\n    bytes.extend_from_slice(scope.digest().as_array());\n    push_id(&mut bytes, operation_id);\n    let digest = Digest32::of_bytes(&bytes);\n    StableId::new(format!(\"cell-infer:{digest}\")).map_err(|_| CellExecutionError::InvalidInput)"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-neuron/src/cell.rs",
+      "blob": "7f99ec906d3102582e4a9ba4ea6353b56a69d82b",
+      "bytes": 11087,
+      "functions": [
+        "prepare_from_snapshot"
+      ],
+      "ranges": [
+        [
+          50,
+          83
+        ]
+      ],
+      "reason": "Fresh operation requires 0 < M <= actual now < D, nonzero NDU/objective, and exact original owner scope/source/definition. No NDU=run hash equality.",
+      "excerpts": [
+        {
+          "from": 50,
+          "to": 83,
+          "text": "pub(crate) fn prepare_from_snapshot(\n    definition: &CellDefinitionV1,\n    snapshot: CellOwnerSnapshotV1,\n    encoder: &impl CellInputEncoderV1,\n    input: CellStepInputV1,\n    now_micros: u64,\n    mode: CellPreparationModeV1,\n) -> Result<PreparedCellStepV1, CellExecutionError> {\n    let definition_digest = definition.semantic_digest()?;\n    if input.scope.cell_id != definition.cell_id || input.scope.principal_digest.is_zero() {\n        return Err(CellExecutionError::ScopeMismatch);\n    }\n    if input.monotonic_micros == 0\n        || input.monotonic_micros > now_micros\n        || input.deadline_micros <= input.monotonic_micros\n        || (matches!(mode, CellPreparationModeV1::Fresh) && input.deadline_micros <= now_micros)\n    {\n        return Err(CellExecutionError::DeadlineExceeded);\n    }\n    if input.observation.len() > definition.max_input_bytes {\n        return Err(CellExecutionError::CapacityExceeded);\n    }\n    if input.objective_digest.is_zero() || input.ndu_snapshot_digest.is_zero() {\n        return Err(CellExecutionError::InvalidInput);\n    }\n    if snapshot.scope != input.scope || snapshot.writer_epoch == 0 {\n        return Err(CellExecutionError::ScopeMismatch);\n    }\n    if snapshot.definition_digest != definition_digest {\n        return Err(CellExecutionError::IncompatibleBundle);\n    }\n    if input.source_frontier.is_zero() || snapshot.source_frontier != input.source_frontier {\n        return Err(CellExecutionError::StaleSource);\n    }"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-neuron/src/cell_owner.rs",
+      "blob": "71b69648a67b768e62dd9321e9ec14a43c4651a2",
+      "bytes": 14980,
+      "functions": [
+        "CellPartitionOwnerV1::admit"
+      ],
+      "ranges": [
+        [
+          41,
+          74
+        ]
+      ],
+      "reason": "The shared state implementation uses distinct run scopes for independent partitions. This is not evidence of actual original custody; durable CellOwnerJournal initialization delegates to this same admission logic.",
+      "excerpts": [
+        {
+          "from": 41,
+          "to": 74,
+          "text": "    pub fn admit(\n        &mut self,\n        scope: CellScopeV1,\n        definition: &CellDefinitionV1,\n        source_frontier: Digest32,\n        writer_epoch: u64,\n    ) -> Result<(), CellExecutionError> {\n        let definition_digest = definition.semantic_digest()?;\n        if scope.cell_id != definition.cell_id\n            || scope.principal_digest.is_zero()\n            || source_frontier.is_zero()\n            || writer_epoch == 0\n        {\n            return Err(CellExecutionError::ScopeMismatch);\n        }\n        if self.partitions.iter().any(|p| p.snapshot.scope == scope) {\n            return Err(CellExecutionError::CommitConflict);\n        }\n        if self.partitions.len() == self.max_partitions {\n            return Err(CellExecutionError::CapacityExceeded);\n        }\n        self.partitions.push(Partition {\n            snapshot: CellOwnerSnapshotV1 {\n                scope,\n                definition_digest,\n                source_frontier,\n                writer_epoch,\n                revision: 0,\n                checkpoint: None,\n            },\n            receipts: Vec::new(),\n            pending: None,\n        });\n        Ok(())"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "blob": "3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114",
+      "bytes": 13379,
+      "functions": [
+        "AgentdCircuitCellOwnerV1::execute"
+      ],
+      "ranges": [
+        [
+          124,
+          150
+        ],
+        [
+          174,
+          215
+        ]
+      ],
+      "reason": "Consumes actual sealed computation admission, samples actual Circuit/Cell clocks, and refuses fresh work after original lease or deadline.",
+      "excerpts": [
+        {
+          "from": 124,
+          "to": 150,
+          "text": "    pub fn execute(\n        &mut self,\n        admission: CircuitComputationAdmissionV2,\n        input: CellStepInputV1,\n        mut clock: impl FnMut() -> CircuitCellTimeV1,\n    ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {\n        let dispatch = admission.dispatch();\n        let binding = self.registry.bind_input(dispatch, &input)?;\n        let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, &input)?;\n        if admission.owner_agent_id().as_str() != input.scope.agent_id.as_str()\n            || admission.definition_digest() != self.registry.definition_digest()\n            || admission\n                .execution_request_digest()\n                .is_none_or(|digest| digest.as_str() != request_digest.to_string())\n        {\n            return Err(CircuitCellErrorV1::ScopeMismatch);\n        }\n        let time = clock();\n        if time.circuit_millis < admission.observed_at_ms() {\n            return Err(CircuitCellErrorV1::ReconciliationRequired);\n        }\n        let admission_deadline = admission\n            .lease_expires_at_ms()\n            .min(admission.run_deadline_ms());\n        let read_only =\n            admission.reconciliation_only() || time.circuit_millis >= admission_deadline;\n        let committed ="
+        },
+        {
+          "from": 174,
+          "to": 215,
+          "text": "                if read_only {\n                    return Err(CircuitCellErrorV1::ReconciliationRequired);\n                }\n                match enter_cell_step(\n                    &binding.cell,\n                    &self.state_owner,\n                    &self.encoder,\n                    input.clone(),\n                    time.cell_micros,\n                )? {\n                    CellStepEntryV1::Ready(prepared) => {\n                        let sampled = Cell::new(time);\n                        // The inference entry samples immediately after durable\n                        // admission. Use that same live sample for the Circuit\n                        // guard so its queue measurement ends at this boundary.\n                        let mut dispatch_clock = || sampled.get();\n                        let mut guarded = GuardedCellDispatchV1::new(\n                            &mut self.inference_control,\n                            &mut dispatch_clock,\n                            time,\n                            admission_deadline,\n                            input.deadline_micros,\n                        );\n                        let mut invalid_clock = false;\n                        let inferred = infer_cell_with_clock(\n                            *prepared,\n                            &mut self.state_owner,\n                            &mut guarded,\n                            || {\n                                let before = sampled.get();\n                                let now = clock();\n                                if now.circuit_millis < before.circuit_millis\n                                    || now.cell_micros < before.cell_micros\n                                    || now.circuit_millis >= admission_deadline\n                                {\n                                    invalid_clock = true;\n                                    return u64::MAX;\n                                }\n                                sampled.set(now);\n                                now.cell_micros\n                            },\n                        );"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-automation/src/circuit_runtime.rs",
+      "blob": "16df38f08d3986c6e2450a244a99c8566059a377",
+      "bytes": 8155,
+      "functions": [
+        "CircuitRunV2::prepare"
+      ],
+      "ranges": [
+        [
+          27,
+          55
+        ]
+      ],
+      "reason": "Actual per-run lease expiry = per-run created_at_ms + common lease_duration_ms.",
+      "excerpts": [
+        {
+          "from": 27,
+          "to": 55,
+          "text": "    pub fn prepare(\n        definition: &BoundedCircuitDefinitionV2,\n        start: &CircuitStartV2,\n        fence: &TaskFlowFence,\n    ) -> Result<Self, TaskFlowError> {\n        definition.validate()?;\n        text(&start.run_id)?;\n        digest(&start.scope_digest)?;\n        digest(&start.input_digest)?;\n        if start.lease_duration_ms == 0 || start.lease_duration_ms > 3_600_000 {\n            return Err(invalid(\"invalid circuit lease duration\"));\n        }\n        let expires = start\n            .created_at_ms\n            .checked_add(start.lease_duration_ms)\n            .ok_or_else(|| invalid(\"lease overflow\"))?;\n        start\n            .created_at_ms\n            .checked_add(definition.limits.max_elapsed_ms)\n            .ok_or_else(|| invalid(\"deadline overflow\"))?;\n        let mut run = Self {\n            owner_agent_id: fence.owner_agent_id.as_str().to_string(),\n            run_id: start.run_id.clone(),\n            definition_digest: definition.definition_digest()?,\n            scope_digest: start.scope_digest.clone(),\n            created_at_ms: start.created_at_ms,\n            last_observed_ms: start.created_at_ms,\n            revision: 0,\n            writer: CircuitWriterV2::new(fence, expires)?,"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-automation/src/circuit_admission.rs",
+      "blob": "7705f3ae3e51502cb33964faf961ba12d04e2992",
+      "bytes": 9314,
+      "functions": [
+        "admission"
+      ],
+      "ranges": [
+        [
+          244,
+          267
+        ]
+      ],
+      "reason": "Admission carries actual writer expiry and per-run created_at + max_elapsed deadline.",
+      "excerpts": [
+        {
+          "from": 244,
+          "to": 267,
+          "text": "fn admission(\n    history: &CircuitHistoryV2,\n    owner: &AgentId,\n    activation_id: u64,\n    observed_at_ms: u64,\n    mode: AdmissionMode,\n) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {\n    Ok(CircuitComputationAdmissionV2 {\n        dispatch: history.run.dispatch(&history.definition, activation_id)?,\n        owner_agent_id: owner.clone(),\n        definition_digest: history.run.definition_digest.clone(),\n        execution_request_digest: history.run.activations[&activation_id]\n            .execution_request_digest\n            .clone(),\n        observed_revision: history.run.revision,\n        observed_at_ms,\n        lease_expires_at_ms: history.run.writer.expires_at_ms,\n        run_deadline_ms: history\n            .run\n            .created_at_ms\n            .checked_add(history.definition.limits.max_elapsed_ms)\n            .ok_or_else(|| invalid(\"circuit deadline overflow\"))?,\n        mode,\n    })"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "blob": "cb387137df02044221c2b2caa0bc8db0ccde3fd7",
+      "bytes": 40856,
+      "functions": [
+        "RunStartSnapshotV1",
+        "RunStartAuthenticationV1",
+        "RunStartAdmissionBindingV1",
+        "encode_record"
+      ],
+      "ranges": [
+        [
+          42,
+          84
+        ],
+        [
+          674,
+          707
+        ]
+      ],
+      "reason": "Actual canonical RunStart includes run/auth/message/sequence/time and changes for different runs; there is no source NDU field or equation equating these digests.",
+      "excerpts": [
+        {
+          "from": 42,
+          "to": 84,
+          "text": "#[derive(Clone, Debug, Eq, PartialEq)]\npub struct RunStartSnapshotV1 {\n    pub run_id: StableId,\n    pub objective_digest: Digest32,\n    pub hard_constraint_digest: Digest32,\n    pub preference_state_digest: Digest32,\n    pub model_tuple_digest: Digest32,\n    pub prompt_registry_digest: Digest32,\n    pub artifact_set_digest: Digest32,\n    pub authority_epoch: u64,\n    pub generation: u64,\n    pub fence_digest: Digest32,\n}\n\n/// Authenticated ingress identity consumed by the durable run-start owner.\n/// Authentication itself is performed by the product host; persisting these\n/// fields atomically with the objective makes replay state recoverable.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct RunStartAuthenticationV1 {\n    pub issuer_id: StableId,\n    pub key_epoch: u64,\n    pub message_id: StableId,\n    pub sequence: u64,\n    pub expires_at_ms: u64,\n    pub scope_digest: Digest32,\n    pub signed_body_digest: Digest32,\n    pub signature: [u8; 64],\n}\n\n/// Admission facts required to recover the exact source/profile/deadline\n/// identity without reconstructing or trusting ambient caller state.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct RunStartAdmissionBindingV1 {\n    pub profile_id: StableId,\n    pub profile_revision: u64,\n    pub profile_digest: Digest32,\n    pub supplied_source_digest: Digest32,\n    pub intent_digest: Digest32,\n    pub admitted_source_digest: Digest32,\n    pub observed_at_unix_micros: u64,\n    pub deadline_unix_micros: u64,\n    pub authority: AuthorityPosture,\n}"
+        },
+        {
+          "from": 674,
+          "to": 707,
+          "text": "    push_id(&mut bytes, &record.authentication.issuer_id);\n    push_u64(&mut bytes, record.authentication.key_epoch);\n    push_id(&mut bytes, &record.authentication.message_id);\n    push_u64(&mut bytes, record.authentication.sequence);\n    push_u64(&mut bytes, record.authentication.expires_at_ms);\n    push_digest(&mut bytes, record.authentication.scope_digest);\n    push_digest(&mut bytes, record.authentication.signed_body_digest);\n    bytes.extend_from_slice(&record.authentication.signature);\n    push_id(&mut bytes, &record.admission.profile_id);\n    push_u64(&mut bytes, record.admission.profile_revision);\n    push_digest(&mut bytes, record.admission.profile_digest);\n    push_digest(&mut bytes, record.admission.supplied_source_digest);\n    push_digest(&mut bytes, record.admission.intent_digest);\n    push_digest(&mut bytes, record.admission.admitted_source_digest);\n    push_u64(&mut bytes, record.admission.observed_at_unix_micros);\n    push_u64(&mut bytes, record.admission.deadline_unix_micros);\n    push_authority(&mut bytes, record.admission.authority);\n    push_u64(\n        &mut bytes,\n        match record.disposition {\n            RunStartObjectiveDispositionV1::Compiled => 0,\n            RunStartObjectiveDispositionV1::ExplicitAbstain => 1,\n        },\n    );\n    push_id(&mut bytes, &snapshot.run_id);\n    push_digest(&mut bytes, snapshot.objective_digest);\n    push_digest(&mut bytes, snapshot.hard_constraint_digest);\n    push_digest(&mut bytes, snapshot.preference_state_digest);\n    push_digest(&mut bytes, snapshot.model_tuple_digest);\n    push_digest(&mut bytes, snapshot.prompt_registry_digest);\n    push_digest(&mut bytes, snapshot.artifact_set_digest);\n    push_u64(&mut bytes, snapshot.authority_epoch);\n    push_u64(&mut bytes, snapshot.generation);\n    push_digest(&mut bytes, snapshot.fence_digest);"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "blob": "af3990dfed96acafa7ea8a874c3d416c80a730c4",
+      "bytes": 50534,
+      "functions": [
+        "LedgerWriter::append_decision",
+        "decision_signing_payload_v2",
+        "validate_production_completeness"
+      ],
+      "ranges": [
+        [
+          344,
+          387
+        ],
+        [
+          793,
+          813
+        ],
+        [
+          921,
+          941
+        ]
+      ],
+      "reason": "Original Generator signs record/episode/NDU snapshot data independently; ledger validates nonzero plus signature/role/completeness without recomputing RunStart digest.",
+      "excerpts": [
+        {
+          "from": 344,
+          "to": 387,
+          "text": "    pub fn append_decision(\n        &mut self,\n        expected_predecessor: Digest32,\n        request: ProductionDecisionV2,\n        evidence: &SignedLearningEvidenceV1,\n        now: u64,\n    ) -> Result<AppendReceipt, ProductionLedgerError> {\n        let payload = decision_signing_payload_v2(&request)?;\n        let verified = self.trust.verifier().verify(\n            LearningEvidenceRoleV1::Generator,\n            evidence,\n            &payload,\n            now,\n        )?;\n        require_role(&verified, LearningEvidenceRoleV1::Generator)?;\n        if request.objective_digest != self.trust.verifier().objective_digest()\n            || request.completeness.generator_id != verified.principal().principal_id\n        {\n            return Err(ProductionLedgerError::Binding(\n                \"decision objective or generator\",\n            ));\n        }\n        let completeness_digest = validate_production_completeness(&request)?;\n        let principal = verified.principal();\n        let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {\n            record_id: request.record_id,\n            episode_id: request.episode_id,\n            run_snapshot_digest: request.run_snapshot_digest,\n            objective_digest: request.objective_digest,\n            policy_digest: request.policy_digest,\n            generator_id: principal.principal_id.clone(),\n            generator_controller_id: verified.controller_id().clone(),\n            generator_credential_chain_digest: principal.credential_chain_digest,\n            generator_signing_key_digest: principal.signing_key_digest,\n            generator_scope_digest: principal.scope_digest,\n            generator_authority_epoch: principal.authority_epoch,\n            candidate_ids: request.candidate_ids,\n            selected_candidate_id: request.selected_candidate_id,\n            selected_propensity: request.selected_propensity,\n            candidate_completeness_digest: completeness_digest,\n            support_digest: request.support_digest,\n            authentication_digest: signed_evidence_digest(evidence),\n        });\n        self.commit(expected_predecessor, event)"
+        },
+        {
+          "from": 793,
+          "to": 813,
+          "text": "pub fn decision_signing_payload_v2(\n    request: &ProductionDecisionV2,\n) -> Result<Vec<u8>, ProductionLedgerError> {\n    let completeness_digest = validate_production_completeness(request)?;\n    let mut ids = request.candidate_ids.clone();\n    ids.sort();\n    let mut bytes = b\"hepta.learning-ledger.production-decision.v2\".to_vec();\n    push_id(&mut bytes, &request.record_id);\n    push_id(&mut bytes, &request.episode_id);\n    bytes.extend_from_slice(request.run_snapshot_digest.as_array());\n    bytes.extend_from_slice(request.objective_digest.as_array());\n    bytes.extend_from_slice(request.policy_digest.as_array());\n    bytes.extend_from_slice(completeness_digest.as_array());\n    bytes.extend_from_slice(&(ids.len() as u64).to_be_bytes());\n    for id in ids {\n        push_id(&mut bytes, &id);\n    }\n    push_id(&mut bytes, &request.selected_candidate_id);\n    bytes.extend_from_slice(&request.selected_propensity.raw().to_be_bytes());\n    bytes.extend_from_slice(request.support_digest.as_array());\n    Ok(bytes)"
+        },
+        {
+          "from": 921,
+          "to": 941,
+          "text": "fn validate_production_completeness(\n    request: &ProductionDecisionV2,\n) -> Result<Digest32, ProductionLedgerError> {\n    if request.run_snapshot_digest.is_zero()\n        || request.policy_digest.is_zero()\n        || request.candidate_ids.is_empty()\n        || request.candidate_ids.len() > MAX_PRODUCTION_CANDIDATES\n        || request.completeness.candidate_count as usize != request.candidate_ids.len()\n        || request.completeness.omitted_count_bound != 0\n        || request.completeness.candidates_digest != candidate_ids_digest_v2(&request.candidate_ids)\n        || request.completeness.canonical_order_digest\n            != candidate_order_digest_v2(&request.candidate_ids)\n    {\n        return Err(ProductionLedgerError::Binding(\"candidate completeness\"));\n    }\n    let mut unique = request.candidate_ids.clone();\n    unique.sort();\n    if unique.windows(2).any(|pair| pair[0] == pair[1]) {\n        return Err(ProductionLedgerError::Binding(\"duplicate candidate\"));\n    }\n    validate_candidate_set_completeness(&request.completeness).map_err(Into::into)"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_credit.rs",
+      "blob": "aabc717ddc87d13930c0a371f96d8d4f99a44e3c",
+      "bytes": 10184,
+      "functions": [
+        "circuit_learning_run_id_v1"
+      ],
+      "ranges": [
+        [
+          47,
+          68
+        ]
+      ],
+      "reason": "Both runs must use exact ledger/owner/episode-derived identities before execution; cannot relabel traces.",
+      "excerpts": [
+        {
+          "from": 47,
+          "to": 68,
+          "text": "/// Execution-before-credit profile: one Circuit run per logical ledger,\n/// owner agent and learning episode. Use this identity for CircuitStart.run_id,\n/// CellScope.run_id and the signed Decision.record_id BEFORE execution.\n/// Existing traces must never be renamed or relabeled to join this profile.\npub fn circuit_learning_run_id_v1(\n    ledger: &LedgerWriter,\n    owner: &AgentId,\n    episode_id: &StableId,\n) -> Result<StableId, CircuitCreditErrorV1> {\n    let mut bytes = b\"hepta.agentd.circuit-learning-run.v1\\0\".to_vec();\n    for digest in [\n        ledger.binding_digest(),\n        ledger.verifier().scope_digest(),\n        ledger.verifier().objective_digest(),\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    push_text(&mut bytes, owner.as_str());\n    push_text(&mut bytes, episode_id.as_str());\n    StableId::new(format!(\"circuit-learning:{}\", Digest32::of_bytes(&bytes)))\n        .map_err(|_| CircuitCreditErrorV1::Binding(\"learning run identity\"))\n}"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+      "bytes": 9595,
+      "functions": [
+        "circuit_task_channel_v1"
+      ],
+      "ranges": [
+        [
+          193,
+          210
+        ]
+      ],
+      "reason": "Actual task runtime rechecks current RunStart on each clock call; equality of frozen common input is not execution authorization.",
+      "excerpts": [
+        {
+          "from": 193,
+          "to": 210,
+          "text": "                    let result = match request.validate_record(&record, driver.fence.generation) {\n                        Err(error) => Err(error),\n                        Ok(()) => {\n                            driver\n                                .execute(&request, mode, || {\n                                    if cancellation.is_cancelled() {\n                                        return Err(Error::Unavailable);\n                                    }\n                                    let now_ms = state\n                                        .require_current_run_start(&record)\n                                        .map_err(|_| Error::Unavailable)?;\n                                    let sampled = clock();\n                                    Ok(CircuitCellTimeV1 {\n                                        circuit_millis: sampled.circuit_millis.max(now_ms),\n                                        cell_micros: sampled.cell_micros,\n                                    })\n                                })\n                                .await"
+        }
+      ]
+    },
+    {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-neuron/src/cell_journal.rs",
+      "blob": "3fcefa51a70ab2c56ad5182c569d884fa5c43f57",
+      "bytes": 21620,
+      "functions": [
+        "CellOwnerJournalV1::open_guarded_inner",
+        "initial_owner"
+      ],
+      "ranges": [
+        [
+          112,
+          137
+        ],
+        [
+          556,
+          573
+        ]
+      ],
+      "reason": "The guarded durable host path validates its sole original partition against the actual publication binding including run. Both guarded and generic original journal initialization delegate to CellPartitionOwner admission. This does not prove possession of either mode's original custody; changing run in a DTO cannot repurpose an old guarded run's capability.",
+      "excerpts": [
+        {
+          "from": 112,
+          "to": 137,
+          "text": "    fn open_guarded_inner(\n        file: File,\n        witness: W,\n        specs: Vec<CellJournalPartitionV1>,\n        max_records: usize,\n        binding: CellGenerationOwnerBindingV1,\n        current: Arc<dyn CellGenerationCurrentV1>,\n        mode: OpenMode,\n    ) -> Result<Self, CellExecutionError> {\n        let scope = binding.scope();\n        if specs.len() != 1\n            || specs.iter().any(|spec| {\n                spec.scope.agent_id.as_str() != scope.agent_id\n                    || spec.scope.cell_id.as_str() != scope.cell_id\n                    || spec.scope.run_id.as_str() != scope.run_id\n                    || spec.scope.principal_digest.into_array() != scope.principal_digest\n                    || spec.source_frontier.into_array() != binding.source_frontier()\n                    || spec.writer_epoch != binding.writer_epoch()\n            })\n        {\n            return Err(CellExecutionError::ScopeMismatch);\n        }\n        current\n            .check_current(&binding)\n            .map_err(|_| CellExecutionError::OwnerUnavailable)?;\n        Self::open_inner("
+        },
+        {
+          "from": 556,
+          "to": 573,
+          "text": "\nfn initial_owner(\n    specs: &[CellJournalPartitionV1],\n) -> Result<CellPartitionOwnerV1, CellExecutionError> {\n    let mut owner =\n        CellPartitionOwnerV1::new(specs.len(), /*max_receipts_per_partition*/ 4096)?;\n    for spec in specs {\n        owner.admit(\n            spec.scope.clone(),\n            &spec.definition,\n            spec.source_frontier,\n            spec.writer_epoch,\n        )?;\n    }\n    Ok(owner)\n}\n\nfn header(specs: &[CellJournalPartitionV1]) -> Result<Vec<u8>, CellExecutionError> {"
+        }
+      ]
+    }
+  ],
+  "paired_evidence": [
+    {
+      "commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+      "blob": "6cd43b7e4b6f41f1f4609adb836ccea3282747ab",
+      "bytes": 11920,
+      "functions": [
+        "OriginalCircuitOnPolicyCohortRuleV1::source_input",
+        "push_input_fields"
+      ],
+      "ranges": [
+        [
+          180,
+          189
+        ],
+        [
+          233,
+          261
+        ]
+      ],
+      "reason": "Only scope.run_id is changed; source fields otherwise fixed and bounded.",
+      "excerpts": [
+        {
+          "from": 180,
+          "to": 189,
+          "text": "    pub(super) fn source_input(&self, run: &StableId) -> Result<CircuitTaskSourceInputV1, Error> {\n        if let Some(row) = self.history.iter().find(|row| &row.episode.behavior_run_id == run) {\n            return Ok(row.input.clone());\n        }\n        let row = self.pairs.iter().find(|row|\n            &row.candidate.behavior_run_id == run || &row.baseline.behavior_run_id == run)\n            .ok_or(Error::Binding(\"registered original paired run\"))?;\n        let mut input = row.input.clone();\n        input.scope.run_id = run.clone();\n        Ok(input)"
+        },
+        {
+          "from": 233,
+          "to": 261,
+          "text": "fn push_input_fields(bytes: &mut Vec<u8>, input: &CircuitTaskSourceInputV1) -> Result<(), Error> {\n    if input.scope.principal_digest.is_zero() || input.source_frontier.is_zero()\n        || input.objective_digest.is_zero() || input.ndu_snapshot_digest.is_zero()\n        || input.monotonic_micros == 0 || input.deadline_micros <= input.monotonic_micros\n        || input.observation.is_empty() || input.observation.len() > 32 * 1024\n        || !(1..=64).contains(&input.candidates.len())\n        || !(1..=3_600_000).contains(&input.lease_duration_ms)\n        || input.deadline_micros - input.monotonic_micros > input.lease_duration_ms * 1_000\n        || input.candidates.iter().enumerate().any(|(index, value)|\n            input.candidates[..index].iter().any(|other| other.candidate_id == value.candidate_id))\n    {\n        return Err(Error::Binding(\"bounded complete original input\"));\n    }\n    for id in [&input.scope.agent_id, &input.scope.cell_id] { push_id(bytes, id); }\n    for digest in [\n        input.scope.principal_digest, input.source_frontier,\n        input.objective_digest, input.ndu_snapshot_digest,\n    ] { bytes.extend_from_slice(digest.as_array()); }\n    for value in [input.monotonic_micros, input.deadline_micros, input.lease_duration_ms] {\n        bytes.extend_from_slice(&value.to_be_bytes());\n    }\n    push_bytes(bytes, &input.observation);\n    bytes.extend_from_slice(&(input.candidates.len() as u64).to_be_bytes());\n    for mask in &input.candidates {\n        push_id(bytes, &mask.candidate_id);\n        bytes.push(u8::from(mask.allowed));\n    }\n    Ok(())\n}"
+        }
+      ]
+    },
+    {
+      "commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "blob": "112f330ada77a72524a19ebfc7bfa16d6b676668",
+      "bytes": 8961,
+      "functions": [
+        "Episode::read_episode"
+      ],
+      "ranges": [
+        [
+          82,
+          102
+        ],
+        [
+          130,
+          142
+        ]
+      ],
+      "reason": "Actual Decision.run_snapshot_digest must equal source NDU and exact input fields must equal registered arm.",
+      "excerpts": [
+        {
+          "from": 82,
+          "to": 102,
+          "text": "        if original_run != requested.behavior_run_id\n            || decision.record_id != requested.behavior_run_id\n            || input.scope.run_id != requested.behavior_run_id\n            || source.original_record().snapshot.run_id != requested.behavior_run_id\n            || source.original_record().snapshot.objective_digest != config.rule.objective_digest\n            || input.objective_digest != config.rule.objective_digest\n            || decision.objective_digest != config.rule.objective_digest\n            || decision.run_snapshot_digest != input.ndu_snapshot_digest\n            || !policy.checkpoint_before().is_zero()\n            || decision.selected_candidate_id != *policy.selected()\n            || decision.selected_propensity != ProbabilityQ32::ONE\n            || decision.candidate_ids\n                != policy\n                    .entries()\n                    .iter()\n                    .map(|entry| entry.candidate_id.clone())\n                    .collect::<Vec<_>>()\n            || decision.candidate_completeness_digest.is_zero()\n            || decision.authentication_digest.is_zero()\n            || decision.support_digest.is_zero()\n            || outcome.authentication_digest.is_zero()"
+        },
+        {
+          "from": 130,
+          "to": 142,
+          "text": "        let expected = config.rule.source_input(&requested.behavior_run_id)?;\n        if input.scope != expected.scope\n            || input.source_frontier != expected.source_frontier\n            || input.objective_digest != expected.objective_digest\n            || input.ndu_snapshot_digest != expected.ndu_snapshot_digest\n            || input.monotonic_micros != expected.monotonic_micros\n            || input.deadline_micros != expected.deadline_micros\n            || input.observation != expected.observation\n            || input.candidates != expected.candidates\n        {\n            return Err(Error::Binding(\"every original arm input field equals its preregistration\"));\n        }\n        config.rule.protocol.require_publication(source)?;"
+        }
+      ]
+    },
+    {
+      "commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+      "blob": "c4152c599aa2fa1fe572738b402750956ec0cc37",
+      "bytes": 8679,
+      "functions": [
+        "OriginalCircuitOnPolicyAdmissionV1::require_original"
+      ],
+      "ranges": [
+        [
+          125,
+          179
+        ]
+      ],
+      "reason": "Freezes outer task semantics but leaves real per-arm auth/nonces/admission times distinct; Core model tuple remains its original domain.",
+      "excerpts": [
+        {
+          "from": 125,
+          "to": 179,
+          "text": "\n/// Frozen original outer RunStart semantics. Its model tuple is the original\n/// authenticated task snapshot, not a value rewritten from a candidate model.\n/// Each arm still needs its own actual admission and existing execution grant.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OriginalCircuitOnPolicyAdmissionV1 {\n    pub profile_id: StableId,\n    pub profile_revision: u64,\n    pub profile_digest: Digest32,\n    pub hard_constraint_digest: Digest32,\n    pub preference_state_digest: Digest32,\n    pub model_tuple_digest: Digest32,\n    pub prompt_registry_digest: Digest32,\n    pub artifact_set_digest: Digest32,\n    pub authority_epoch: u64,\n    pub generation: u64,\n    pub fence_digest: Digest32,\n}\n\nimpl OriginalCircuitOnPolicyAdmissionV1 {\n    fn commit(&self, bytes: &mut Vec<u8>) -> Result<(), Error> {\n        if self.profile_revision == 0 || self.generation == 0 || self.profile_digest.is_zero() {\n            return Err(Error::Binding(\"complete original admission protocol\"));\n        }\n        push_id(bytes, &self.profile_id);\n        for value in [self.profile_revision, self.authority_epoch, self.generation] {\n            bytes.extend_from_slice(&value.to_be_bytes());\n        }\n        for digest in [\n            self.profile_digest, self.hard_constraint_digest, self.preference_state_digest,\n            self.model_tuple_digest, self.prompt_registry_digest, self.artifact_set_digest,\n            self.fence_digest,\n        ] {\n            bytes.extend_from_slice(digest.as_array());\n        }\n        Ok(())\n    }\n\n    fn require_original(&self, record: &RunStartRecordV1) -> Result<(), Error> {\n        let snapshot = &record.snapshot;\n        if record.admission.profile_id != self.profile_id\n            || record.admission.profile_revision != self.profile_revision\n            || record.admission.profile_digest != self.profile_digest\n            || snapshot.hard_constraint_digest != self.hard_constraint_digest\n            || snapshot.preference_state_digest != self.preference_state_digest\n            || snapshot.model_tuple_digest != self.model_tuple_digest\n            || snapshot.prompt_registry_digest != self.prompt_registry_digest\n            || snapshot.artifact_set_digest != self.artifact_set_digest\n            || snapshot.authority_epoch != self.authority_epoch\n            || snapshot.generation != self.generation\n            || snapshot.fence_digest != self.fence_digest\n        {\n            return Err(Error::Binding(\"all original RunStart protocol fields equal the preregistration\"));\n        }\n        Ok(())"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "all_cited_blob_bytes_recomputed": true,
+    "agentd_complete_488_catalog_files": 926,
+    "expanded_current_review_only": true,
+    "python": false,
+    "rust": false,
+    "native": false,
+    "H": false,
+    "ordinary": false
+  }
+}

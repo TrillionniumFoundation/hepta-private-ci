@@ -163,7 +163,15 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
             "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
         ):
             self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
-        self.rejects(AUTH, "fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()")
+        for marker in (
+            "snapshot.training_no_update_v2().is_some()",
+            "proposal_count != 1 || snapshot.receipts.len() < 6",
+            "proposal_count != 1 || snapshot.receipts.len() != 7",
+        ):
+            self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+        # The suffix verifier remains independently typed; ordinary dispatch
+        # still requires the original closed gate until actual custody exists.
+        self.rejects(STAGES, "fn require_stage(", "snapshot.training_no_update_v2().is_none()")
 
 
 if __name__ == "__main__":

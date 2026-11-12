@@ -12,7 +12,7 @@ use super::OriginalCellEvaluationPanelOwnerV1;
 use super::OriginalCellEvaluationPanelReadbackV1;
 use super::OriginalCellEvaluationPanelRegistrationV1;
 use super::original;
-use crate::OriginalCircuitEvaluationCohortReadbackV1;
+use crate::OriginalCellEvaluationCohortCustodyV1;
 
 impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: AnchorWitnessStore>
     OriginalCellEvaluationPanelOwnerV1<C, F, X, Q>
@@ -45,7 +45,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         let tasks = std::iter::once(registration.primary()).chain(registration.retention());
         for (index, (member, task)) in members.zip(tasks).enumerate() {
             let config = &member.qualification.config;
-            OriginalCircuitEvaluationCohortReadbackV1::require_original_member(
+            OriginalCellEvaluationCohortCustodyV1::require_original_member(
                 &member.cohort,
                 registration,
                 task,

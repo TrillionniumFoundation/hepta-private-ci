@@ -46,12 +46,23 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             for path in (OWNER, ADMISSION, LANE, TRAINER, BOUND)
         }
 
-    def rejects(self, path, function, marker):
+    def rejects(self, path, function, marker, *, within=None):
         source = (ROOT / path).read_text()
-        start = source.index(function)
-        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+        code = PROOF._strip_rust_non_code(source)
+        self.assertEqual(code.count(function), 1, function)
+        start = code.index(function)
+        end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
+        if within is not None:
+            function_code = code[start : end + 1]
+            self.assertEqual(function_code.count(within), 1, within)
+            start += function_code.index(within)
+            branch_end = PROOF._rust_item_end(code, start)
+            self.assertIsNotNone(branch_end)
+            assert branch_end is not None
+            self.assertLessEqual(branch_end, end)
+            end = branch_end
         body = source[start : end + 1]
         self.assertEqual(body.count(marker), 1, marker)
         offset = start + body.index(marker)
@@ -173,7 +184,10 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                 "self.fenced = true",
             ):
                 with self.subTest(path=path, marker=marker):
-                    self.rejects(path, "fn require_current(", marker)
+                    self.rejects(
+                        path, "fn require_current(", marker,
+                        within="if result.is_err()" if marker == "self.fenced = true" else None,
+                    )
 
 
 if __name__ == "__main__":

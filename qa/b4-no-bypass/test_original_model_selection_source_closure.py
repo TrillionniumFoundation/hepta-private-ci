@@ -8,6 +8,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_model_selection_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -44,12 +46,17 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 
-    def rejects(self, path, function, marker):
+    def rejects(self, path, function, marker, *, preceding=None):
         source = (ROOT / path).read_text()
-        start = source.index(function)
-        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+        code = PROOF._strip_rust_non_code(source)
+        start = code.index(function)
+        end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        cursor = start
+        for previous in preceding or ():
+            _, cursor = source_marker_span(code, previous, cursor, end + 1)
+        searchable = source if preceding is None else code
+        offset, limit = source_marker_span(searchable, marker, cursor, end + 1)
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
         self.assertEqual(len(rows), 1)
         with tempfile.TemporaryDirectory() as directory:
@@ -58,7 +65,7 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + source[offset + len(marker):])
+            target.write_text(source[:offset] + source[limit:])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
@@ -69,9 +76,10 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
             functions = rows[0]["required_function_order"]
             self.assertEqual({row["function"] for row in functions}, expected)
             for function in functions:
-                for marker in function["sequence"]:
+                for index, marker in enumerate(function["sequence"]):
                     with self.subTest(path=path, function=function["function"], marker=marker):
-                        self.rejects(path, function["function"], marker)
+                        self.rejects(path, function["function"], marker,
+                                     preceding=function["sequence"][:index])
 
     def test_selection_binds_original_completed_task_before_version_readback(self):
         path = AGENT + "circuit_feature_current_learning.rs"

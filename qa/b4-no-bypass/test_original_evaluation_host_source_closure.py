@@ -194,8 +194,18 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             self.rejects(WIRE, "fn authenticate_completed(", marker)
 
     def test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch(self):
-        self.rejects(CORE, "fn validate_recovery<'a>", "self.read_original_evaluation(snapshot).await?")
-        self.rejects(CORE, "fn validate_recovery<'a>", "snapshot.receipts.len() != 4")
+        for marker in (
+            "coordinator.candidate().is_some() && (4..=7).contains(&snapshot.receipts.len())",
+            "self.read_original_evidence(snapshot).await?",
+            "OriginalCandidateOperationEvidence::into_original_parts(",
+            "original, self, snapshot, super::auth::now()?",
+            "self.common.origin == Origin::Recovered",
+            "snapshot.receipts.len() == 3 && coordinator.candidate().is_some()",
+            "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(",
+            "CandidateRead::Readback",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await",
+        ):
+            self.rejects(CORE, "fn validate_recovery<'a>", marker)
         self.rejects(EVALUATION, "fn read_original_evaluation(", "Action::Readback")
         for marker in (
             "self.common.origin != Origin::Fresh", "snapshot.receipts.len() != 3",

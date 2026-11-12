@@ -11,11 +11,14 @@ use super::OriginalCircuitModelVersionHostV1 as Host;
 use super::artifact;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::NeuronGenerationUpdateReadbackV1;
-use crate::OriginalCircuitModelPublicationContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as OriginalModelPublicationContext;
+use crate::OriginalCellQ24ModelReadV1;
+use crate::OriginalCellQ24ModelCommandClientV1;
+use crate::OriginalCellQ24ModelReadCompletionV1;
 
 impl Host {
     pub(super) fn require_prepared_control(
-        &self, context: &Context, intent: Digest32, expected: Option<&FinalUseBinding>,
+        &self, context: &OriginalModelPublicationContext, intent: Digest32, expected: Option<&FinalUseBinding>,
     ) -> Result<(), Error> {
         let coordinator = context.authenticate(super::super::now()?, /*new_work*/ false)?;
         let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
@@ -43,12 +46,13 @@ impl Host {
             (Arc::clone(state.context.as_ref().ok_or(Error::ReadbackRequired)?),
                 state.intent.ok_or(Error::CommitUncertain)?, state.installed.clone())
         };
+        let expected: Arc<OriginalModelPublicationContext> = expected;
         let started = super::super::now()?;
-        let operation = self.model.begin_original_model_read().await?;
-        let actual = self.original_predecessors().with_original_model(operation.model().clone())?;
+        let operation: OriginalCellQ24ModelReadV1<'_> = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?;
+        let actual: OriginalModelPublicationContext = self.original_predecessors().with_original_model(operation.model().clone())?;
         if let Some(request) = request { request.require_context(&actual)?; }
         if actual.model() != expected.model()
-            || actual.original_version_binding(started)? != expected.original_version_binding(started)?
+            || OriginalModelPublicationContext::original_version_binding(&actual, started)? != OriginalModelPublicationContext::original_version_binding(expected.as_ref(), started)?
         {
             return Err(Error::CommitUncertain);
         }
@@ -65,7 +69,7 @@ impl Host {
             }
         };
         let before = observe()?;
-        let completed = operation.finish().await?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await?;
         if completed.model() != actual.model() { return Err(Error::CommitUncertain); }
         let after = observe()?;
         artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?;

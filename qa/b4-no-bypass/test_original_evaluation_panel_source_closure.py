@@ -7,6 +7,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_evaluation_panel_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -21,15 +23,16 @@ CONTRACT = AGENT + "neuron_cell_evaluation_panel_contract.rs"
 MEMBER = AGENT + "neuron_cell_evaluation_panel_member.rs"
 BINDING = AGENT + "neuron_cell_evaluation_panel_binding.rs"
 PROVIDER = AGENT + "circuit_original_evaluation_provider.rs"
+CUSTODY = AGENT + "circuit_evaluation_cohort_custody.rs"
 EXPECTED = {
     "cell_generation_original_physical_current": (MEMBER,),
     "learning_original_evaluation_panel_registration": (),
     "learning_original_evaluation_panel_owner": (),
     "learning_original_evaluation_panel_current": (),
     "learning_original_evaluation_panel_member_current": (CORE,),
-    "learning_original_evaluation_cohort_readback_current": (PROVIDER, MEMBER),
-    "learning_original_evaluation_cohort_member_binding": (BINDING,),
-    "learning_original_evaluation_cohort_final_authentication": (MEMBER,),
+    "learning_original_evaluation_cohort_readback_current": (PROVIDER, CUSTODY),
+    "learning_original_evaluation_cohort_member_binding": (CUSTODY,),
+    "learning_original_evaluation_cohort_final_authentication": (CUSTODY,),
 }
 
 
@@ -58,9 +61,9 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, marker_end = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[marker_end:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -207,13 +210,13 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
             self.verifies(
                 MEMBER,
                 (ROOT / MEMBER).read_text().replace(
-                    "pub cohort: OriginalCircuitEvaluationCohortReadbackV1",
-                    "pub cohort: Option<OriginalCircuitEvaluationCohortReadbackV1>",
+                    "pub cohort: OriginalCellEvaluationCohortCustodyV1",
+                    "pub cohort: Option<OriginalCellEvaluationCohortCustodyV1>",
                     1,
                 ),
             )
         for marker in (
-            "OriginalCircuitEvaluationCohortReadbackV1::require_original_member(",
+            "OriginalCellEvaluationCohortCustodyV1::require_original_member(",
             "&member.cohort,",
             "registration,",
             "task,",
@@ -236,8 +239,8 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
     def test_original_cohort_current_brackets_all_members_before_final_clock(self):
         self.rejects(MEMBER, "fn read_original(", "let started_at = original::now()?")
         for marker in (
-            "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
-            "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+            "let cohort_before =\n            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?",
+            "let cohort_after =\n            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?",
             "cohort_before != cohort_after",
             "cohort: cohort_after",
             "let current = clock()?",
@@ -245,7 +248,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         ):
             self.rejects(MEMBER, "fn read_original(", marker)
         for marker in (
-            "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+            "OriginalCellEvaluationCohortCustodyV1::authenticate_current(",
             "&mut self.cohort,",
             "&observed.cohort,",
         ):

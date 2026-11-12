@@ -157,11 +157,18 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
             "completed.material().authenticate_current(fresh)",
             "completed.material().require_original_model_input(",
             "input.material_digest() != model.material_digest()",
-            "self.model_completion.is_some() || self.evaluation.snapshot() != snapshot",
-            "model.snapshot() != snapshot", "model.snapshot().receipts.len() != 5",
+            "self.model_completion.is_some()",
+            "self.selection.is_some()", "self.next_use.is_some()",
+            "self.publication.is_some()", "self.completion_read.is_some()",
+            "self.evaluation.snapshot() != snapshot",
+            "model.snapshot().request != snapshot.request",
+            "model.snapshot().owners != snapshot.owners",
+            "snapshot.receipts.get(..5) != Some(model.snapshot().receipts.as_slice())",
+            "model.snapshot().receipts.len() != 5",
             "!model.snapshot().receipts.starts_with(&self.evaluation.snapshot().receipts)",
             "operation.supplied.receipts.get(4).is_some_and(|expected| expected != model.receipt())",
             "OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures)",
+            "self.authenticate_original_suffix(model, &mut signatures, fresh)?",
         ):
             self.rejects(OP, "fn authenticate_result(", marker)
 

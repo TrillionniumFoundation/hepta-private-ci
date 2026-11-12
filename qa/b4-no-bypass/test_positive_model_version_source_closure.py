@@ -415,6 +415,39 @@ class PositiveModelVersionSourceClosureTests(unittest.TestCase):
                             with self.assertRaises(PROOF.VerificationFailure):
                                 PROOF._verify_protected_files(root, {"protected_file": [row]})
 
+    def test_generic_publication_orders_remain_inside_the_actual_function(self):
+        for row in self.rows:
+            source = (ROOT / row["path"]).read_text()
+            for sequence in row.get("required_order", []):
+                if not sequence[0].startswith("fn "):
+                    continue
+                function = sequence[0]
+                markers = [marker for marker in sequence[1:] if not marker.startswith("fn ")]
+                def check(text):
+                    _, _, body = function_body(text, function)
+                    cursor = 0
+                    for marker in markers:
+                        found = body.find(marker, cursor)
+                        self.assertNotEqual(
+                            found, -1,
+                            (row["path"], "guard remains in its actual generic function", marker),
+                        )
+                        cursor = found + len(marker)
+                with self.subTest(path=row["path"], function=function):
+                    check(source)
+                    start, end, body = function_body(source, function)
+                    for marker in markers:
+                        if body.count(marker) != 1:
+                            continue
+                        offset = start + body.index(marker)
+                        moved = (
+                            source[:offset] + source[offset + len(marker):end + 1]
+                            + "\n" + marker + "\n" + source[end + 1:]
+                        )
+                        with self.subTest(moved_guard=marker):
+                            with self.assertRaises(AssertionError):
+                                check(moved)
+
     def test_version_releases_mutex_before_original_model_root_and_native_io(self):
         path = "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs"
         source = (ROOT / path).read_text()

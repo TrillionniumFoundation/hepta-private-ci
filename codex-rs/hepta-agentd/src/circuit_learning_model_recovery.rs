@@ -9,6 +9,7 @@ use codex_hepta_neuron::CellDefinitionV1;
 use codex_hepta_types::Digest32;
 
 use super::Error;
+use super::OriginalCircuitModelPublicationContextV1;
 use super::OriginalCircuitModelPublicationPredecessorsV1;
 use super::OriginalCircuitModelPublicationSelectionV1;
 use super::OriginalCircuitModelPublicationV1;
@@ -25,6 +26,8 @@ use crate::CircuitTaskSourceInputV1;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
+use crate::OriginalCellQ24ModelReadV1;
+use crate::OriginalCellQ24ModelReadCompletionV1;
 
 pub struct OriginalCircuitModelPublicationRecoveryV1<New, Cell, Source>
 where
@@ -58,8 +61,9 @@ where
         return Err(Error::Binding("original Model publication intent"));
     }
     let started = now()?;
-    let observation = model.begin_original_model_read().await?;
-    let context = predecessors.with_original_model(observation.model().clone())?;
+    let observation: OriginalCellQ24ModelReadV1<'_> = model.begin_original_model_read().await?;
+    let context: OriginalCircuitModelPublicationContextV1 =
+        predecessors.with_original_model(observation.model().clone())?;
     observation.require_current(started)?;
     context.authenticate_material(observation.material(), started, /*new_work*/ false)?;
     let (context, task) = tokio::task::spawn_blocking(move || {
@@ -86,7 +90,7 @@ where
         binding::require_published(&context, &task, /*new_work*/ false)?;
         Ok::<_, Error>((context, task))
     }).await.map_err(uncertain)??;
-    let completed = observation.finish().await?;
+    let completed: OriginalCellQ24ModelReadCompletionV1 = observation.finish().await?;
     if completed.model() != context.model() {
         return Err(Error::Binding("same complete original Model during recovery"));
     }

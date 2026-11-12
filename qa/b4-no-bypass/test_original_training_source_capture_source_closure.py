@@ -6,6 +6,7 @@ The native tests separately exercise actual source withdrawal and job bytes.
 
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import tempfile
 import tomllib
@@ -54,6 +55,50 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 
+    def require_actual_source_capture_errors(self, path, source):
+        if path != OWNER:
+            return
+        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+        actual_call = re.compile(
+            r'let\s+result\s*=\s*self\s*\.source\s*\.as_ref\(\)\s*\.ok_or\('
+            r'\s*Error::Binding\(\s*"ordinary Training requires original source capture"'
+            r'\s*,?\s*\)\s*\)'
+        )
+        for function in (
+            "fn require_original_source_capture(",
+            "fn require_original_source_operation(",
+        ):
+            if code.count(function) != 1:
+                raise PROOF.VerificationFailure(f"{path}: unique capture function required")
+            start = code.index(function)
+            end = PROOF._rust_item_end(code, start)
+            if end is None or code[end] != "}":
+                raise PROOF.VerificationFailure(f"{path}: capture function body required")
+            body = code[start:end + 1]
+            # Match only live syntax in this function. Nested helpers, comments,
+            # and string literals cannot supply the missing-source refusal.
+            cursor = len(function)
+            while nested := re.search(r"\bfn\s+(?:r#)?\w+", body[cursor:]):
+                nested_start = cursor + nested.start()
+                nested_end = PROOF._rust_item_end(body, nested_start)
+                if nested_end is None:
+                    raise PROOF.VerificationFailure(f"{path}: nested capture function unresolved")
+                body = (
+                    body[:nested_start]
+                    + "".join("\n" if char == "\n" else " "
+                              for char in body[nested_start:nested_end + 1])
+                    + body[nested_end + 1:]
+                )
+                cursor = nested_end + 1
+            matches = [
+                match for match in actual_call.finditer(source[start:end + 1])
+                if body[match.start():match.end()] == PROOF._strip_rust_non_code(match.group())
+            ]
+            if len(matches) != 1:
+                raise PROOF.VerificationFailure(
+                    f"{path}:{function}: actual missing-source Binding call required"
+                )
+
     def rejects(self, path, function, marker):
         source = (ROOT / path).read_text()
         start = source.index(function)
@@ -66,9 +111,12 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             target = root / path
             target.parent.mkdir(parents=True)
             target.write_text(source)
+            self.require_actual_source_capture_errors(path, source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + source[offset + len(marker):])
+            changed = source[:offset] + source[offset + len(marker):]
+            target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
+                self.require_actual_source_capture_errors(path, changed)
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_only_actual_original_read_edges_open_and_new_authority_stays_closed(self):
@@ -120,6 +168,8 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             ("fn captured_job_key(", "source.source_capture_binding().as_array()"),
             ("fn require_original_source_capture(", "ordinary Training requires original source capture"),
             ("fn require_original_source_capture(", "self.fenced = true"),
+            ("fn require_original_source_operation(", "ordinary Training requires original source capture"),
+            ("fn require_original_source_operation(", "self.fenced = true"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(OWNER, function, marker)

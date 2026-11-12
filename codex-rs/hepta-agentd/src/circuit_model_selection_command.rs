@@ -283,7 +283,7 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
             }
             channel
         };
-        self.context.authenticate(started_at)?;
+        OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, started_at)?;
         let request_id = channel.next_request_id;
         if !(1..=128).contains(&request_id) {
             return Err(Error::Unavailable);
@@ -317,7 +317,7 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         channel.peer.check_peer_lifetime()?;
         let current = now()?;
         require_clock(started_at, current)?;
-        self.context.authenticate(current)?;
+        OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, current)?;
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;

@@ -12,6 +12,9 @@ use codex_hepta_types::StableId;
 
 use super::*;
 
+#[path = "neuron_cell_evaluation_on_policy_proofs.rs"]
+mod paired;
+
 pub(super) fn execution(
     member: &Member,
     bundle: &Bundle,
@@ -44,6 +47,9 @@ pub(super) fn execution(
             "exact original execution record and signature",
         ));
     }
+    if paired::is_paired(member) && body.len() < 232 {
+        return Err(Error::Binding("complete original paired execution body"));
+    }
     let mut key = b"hepta.intelligence-eval.execution-key.v1".to_vec();
     key.extend_from_slice(member.execution_namespace.as_array());
     key.extend_from_slice(Digest32::of_bytes(&member.plan).as_array());
@@ -59,9 +65,16 @@ pub(super) fn execution(
         ));
     }
     let mut head = Reader::new(body);
-    head.literal(b"HPEXR001")?;
+    if paired::is_paired(member) {
+        head.literal(b"HPEXRP01")?;
+    } else {
+        head.literal(b"HPEXR001")?;
+    }
     if head.digest()? != Digest32::of_bytes(&member.plan) {
         return Err(Error::Binding("same original Product plan in execution"));
+    }
+    if paired::is_paired(member) && head.digest()?.is_zero() {
+        return Err(Error::Binding("original paired input execution commitment"));
     }
     let mut tail = Reader::new(&body[body.len() - 160..]);
     if tail.digest()? != bundle.estimate
@@ -103,6 +116,10 @@ pub(super) fn holdout(member: &Member, bundle: &Bundle) -> Result<Digest32, Erro
         return Err(Error::Binding("original holdout registry"));
     }
     holdout.finish()?;
+    if paired::is_paired(member) {
+        paired::holdout(member, bundle)?;
+        return Ok(manifest);
+    }
     let mut plan = Reader::new(&member.plan);
     plan.literal(b"hepta.intelligence-eval.product-frozen-plan.v1")?;
     let comparison = Digest32::of_parts(&[
@@ -197,7 +214,11 @@ pub(in super::super) fn cohort(
     }
     verify_signed_actor_separation(generator, &evaluator, current)?;
     let mut proof = Reader::new(&member.cohort);
-    proof.literal(b"hepta.circuit.original-evaluation-cohort-current.v1\0")?;
+    if paired::is_paired(member) {
+        proof.literal(b"hepta.circuit.original-on-policy-cohort-current.v1\0")?;
+    } else {
+        proof.literal(b"hepta.circuit.original-evaluation-cohort-current.v1\0")?;
+    }
     if proof.digest()? != checked.plan
         || proof.digest()? != checked.manifest
         || proof.digest()? != checked.dataset
@@ -222,6 +243,9 @@ pub(in super::super) fn cohort(
         return Err(Error::Binding(
             "original independent B ledger and trust distribution",
         ));
+    }
+    if paired::is_paired(member) {
+        paired::require_pairing(member, context, proof.digest()?)?;
     }
     for evidence in [&context.training_evidence, &signed] {
         let mut full = evidence.signing_bytes();
@@ -251,6 +275,9 @@ pub(in super::super) fn cohort(
     .map_err(|_| Error::Binding("B snapshot identifier"))?;
     let objective = freeze.digest()?;
     let inclusion = freeze.digest()?;
+    if paired::is_paired(member) && inclusion != task.cohort_rule_digest {
+        return Err(Error::Binding("original paired freeze includes exactly the preregistered rule"));
+    }
     if objective != context.verifier.objective_digest() || freeze.digest()? != head {
         return Err(Error::Binding(
             "original B freeze objective and ledger head",

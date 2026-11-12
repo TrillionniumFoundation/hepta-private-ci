@@ -2,6 +2,7 @@
 //! the original fenced holdout, execution signature and Qualification owners.
 //! Their synthetic identities and outcomes are not actual B-task evidence.
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::ProductComparisonModeV1;
 use crate::freeze_paired_on_policy_product_evaluation_plan_v1;
 

@@ -212,7 +212,8 @@ impl OriginalCandidateOperationEvidence<'_> {
         let mut signatures: Vec<_> = operation.records.iter().map(|(_, signature)| signature.clone()).collect();
         signatures.push(self.evaluation.attestation().clone());
         if let Some(model) = &self.model {
-            let completed = self.model_completion.as_ref().ok_or(Error::CommitUncertain)?;
+            let completed: &OriginalCellQ24ModelReadCompletionV1 =
+                self.model_completion.as_ref().ok_or(Error::CommitUncertain)?;
             if completed.model() != model
                 || completed.material().original_evaluation() != &self.evaluation
             {

@@ -286,35 +286,51 @@ impl OriginalCellEvaluationModelMaterialV1 {
         );
         // Alter a byte in each authenticated preimage independently; keeping
         // claimed digests and the original signatures cannot make it valid.
-        for field in 0..16 {
-            let mut body = Body::decode(&self.bytes)?;
-            let member = &mut body.members[0];
-            let value = match field {
-                0 => &mut member.record,
-                1 => &mut member.holdout,
-                2 => &mut member.plan,
-                3 => &mut member.request,
-                4 => &mut member.decision,
-                5 => &mut member.qualification,
-                6 => &mut member.estimand,
-                7 => &mut member.roles,
-                8 => &mut member.generator,
-                9 => &mut member.evaluator,
-                10 => &mut member.execution,
-                11 => &mut member.execution_record,
-                12 => &mut member.cohort,
-                13 => &mut member.freeze,
-                14 => &mut member.snapshots,
-                _ => &mut body.evaluation,
-            };
-            let last = value.last_mut().expect("nonempty original preimage");
-            *last ^= 1;
-            assert!(
-                verify::material(&self.context, &self.evaluation, &body.encode()?, current)
-                    .is_err(),
-                "changed original preimage {field}"
-            );
+        for member_index in 0..body.members.len() {
+            for field in 0..15 {
+                let mut body = Body::decode(&self.bytes)?;
+                let member = &mut body.members[member_index];
+                let value = match field {
+                    0 => &mut member.record,
+                    1 => &mut member.holdout,
+                    2 => &mut member.plan,
+                    3 => &mut member.request,
+                    4 => &mut member.decision,
+                    5 => &mut member.qualification,
+                    6 => &mut member.estimand,
+                    7 => &mut member.roles,
+                    8 => &mut member.generator,
+                    9 => &mut member.evaluator,
+                    10 => &mut member.execution,
+                    11 => &mut member.execution_record,
+                    12 => &mut member.cohort,
+                    13 => &mut member.freeze,
+                    _ => &mut member.snapshots,
+                };
+                let last = value.last_mut().expect("nonempty original preimage");
+                *last ^= 1;
+                assert!(
+                    verify::material(&self.context, &self.evaluation, &body.encode()?, current)
+                        .is_err(),
+                    "changed original member {member_index} preimage {field}"
+                );
+            }
         }
+        let mut corrupted_evaluation = Body::decode(&self.bytes)?;
+        *corrupted_evaluation
+            .evaluation
+            .last_mut()
+            .expect("nonempty original Evaluation") ^= 1;
+        assert!(
+            verify::material(
+                &self.context,
+                &self.evaluation,
+                &corrupted_evaluation.encode()?,
+                current,
+            )
+            .is_err(),
+            "changed original Evaluation envelope"
+        );
         // Merely well-formed scopes are not evidence. Each complete snapshot
         // must hash to the original signed arm using the pre-existing domain.
         for arm in 0..2 {

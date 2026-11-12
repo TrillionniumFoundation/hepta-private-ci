@@ -54,6 +54,27 @@ impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
         owner.require_current()
     }
 
+    /// Read-only exact protocol check for the separately frozen on-policy
+    /// evaluator. The original journal/witness is read on both sides; matching
+    /// declarations never replace the actual Source capability or admit work.
+    pub(crate) fn require_original_evaluation_protocol(
+        &self,
+        identity: &AgentdIdentity,
+        input: &super::CircuitTaskSourceInputV1,
+        definition: &codex_hepta_automation::BoundedCircuitDefinitionV2,
+    ) -> Result<(), Error> {
+        let mut owner = self.original.0.try_lock().map_err(|_| Error::Unavailable)?;
+        owner.require_current()?;
+        if identity != &owner.identity
+            || owner.sources.get(input.scope.run_id.as_str()) != Some(input)
+            || &owner.definition != definition
+        {
+            return Err(Error::InvalidBinding);
+        }
+        owner.require_active(input.scope.run_id.as_str())?;
+        owner.require_current()
+    }
+
     pub fn read_publication(
         &self,
         identity: &AgentdIdentity,

@@ -43,6 +43,13 @@ async fn original_evaluation_model_material_reads_actual_panel_and_identical_loc
     assert_eq!(material.authority(), AuthorityPosture::DENY_ALL);
     assert_eq!(material.original_evaluation(), &evaluation);
     material.fixture_original_material_preimages(fixture.at)?;
+    // The actual complete Ineligible panel remains readable. Selector
+    // admission stops at the same verified panel gate before interpreting
+    // any comparison pin; this test does not create a Qualified Model.
+    assert!(matches!(
+        material.require_original_selector_material(&fixture.original.config, fixture.at),
+        Err(CommandError::Binding("NoUpdate has no model proposal"))
+    ));
     let frames = material.fixture_original_material_pages() as u64 + 1;
     assert_eq!(close(client, peer)?, frames);
     assert_eq!(fixture.original_files()?, original_files);
@@ -61,6 +68,11 @@ async fn original_evaluation_model_material_reads_actual_panel_and_identical_loc
     let recovered = client.fixture_read_current_at(fixture.at).await?;
     assert_eq!(recovered.binding(), material.binding());
     assert_eq!(recovered.original_evaluation(), &evaluation);
+    recovered.fixture_original_material_preimages(fixture.at)?;
+    assert!(matches!(
+        recovered.require_original_selector_material(&fixture.original.config, fixture.at),
+        Err(CommandError::Binding("NoUpdate has no model proposal"))
+    ));
     assert_eq!(close(client, peer)?, frames);
     assert_eq!(fixture.original_files()?, original_files);
     assert_eq!(fixture.upstream_files()?, upstream);

@@ -1,0 +1,1321 @@
+{
+  "schema": "hepta.learn.readonly-source-actual-488-failure-repair.v1",
+  "source_commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "source_tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+  "original_manifest_blob": "7df13b4c965af0a6e1c93989075b173fd1ff8db5",
+  "after_manifest_blob": "46a2b62730fe0dfb6f9385dee7db3574703a3b50",
+  "original_failure_evidence": [
+    {
+      "name": "source-verification-failures.view.txt",
+      "blob": "01bcd21c2b99bb5e901c9555e9c7e0219170a88e",
+      "bytes": 19357,
+      "full_git_blob_readback_verified": true,
+      "format": "original H h_view line-number/hash rendering; not a claim of raw full log bytes"
+    },
+    {
+      "name": "source-failures-final.view.txt",
+      "blob": "91f12b2842b0226ff50ff339860ee9a4fffe4193",
+      "bytes": 17297,
+      "full_git_blob_readback_verified": true,
+      "format": "original H h_view line-number/hash rendering; not a claim of raw full log bytes"
+    }
+  ],
+  "root_cause": [
+    {
+      "scope": "readonly evidence dispatch six subtests",
+      "actual_failure": "baseline assertion 2 != 1",
+      "fix": "Verify all same-path complete records; retain original readback guard and independent private Model export record."
+    },
+    {
+      "scope": "training capture error message",
+      "actual_failure": "VerificationFailure not raised; identical literal in second function satisfied a file-wide required marker",
+      "fix": "Check the actual self.source.as_ref().ok_or(Error::Binding(...)) expression inside each original function, using original comment/literal/cfg masks and masking nested functions. Keep original production bytes and existing manifest guards."
+    },
+    {
+      "scope": "Trainer physical current fence",
+      "actual_failure": "baseline marker uniqueness 2 != 1",
+      "fix": "Mutate only the actual if result.is_err() branch for physical-fence test; separately remove the Source cancellation fence in the existing Source operation test."
+    },
+    {
+      "scope": "Source operation function sequences",
+      "actual_failure": "required_order must contain marker sequences in source_operation_fenced and joined; stage_is_fenced was also length one and masked by earlier failures",
+      "fix": "Keep each original complete expression, precede it with actual receiver parameter and require original expression at top-level. No verifier schema relaxation."
+    },
+    {
+      "scope": "training create/recover boundaries",
+      "actual_failure": "missing definition marker source: Some(source)",
+      "fix": "Replace only stale representation marker with actual source: Some(Arc::new(source)); preserve exact original caller set and all other fields."
+    }
+  ],
+  "complete_record_replacements": [
+    {
+      "kind": "boundary",
+      "id": "learning_source_bound_training_owner_create",
+      "exact_before": {
+        "id": "learning_source_bound_training_owner_create",
+        "symbol": "CellQ24TrainingOwnerV1::create_from_original_source",
+        "receiver_type": "CellQ24TrainingOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "definition_markers": [
+          "pub fn create_from_original_source(",
+          "source.native_inputs()?",
+          "source: Some(source)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+        ],
+        "caller_markers": []
+      },
+      "exact_after": {
+        "id": "learning_source_bound_training_owner_create",
+        "symbol": "CellQ24TrainingOwnerV1::create_from_original_source",
+        "receiver_type": "CellQ24TrainingOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "definition_markers": [
+          "pub fn create_from_original_source(",
+          "source.native_inputs()?",
+          "source: Some(Arc::new(source))"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+        ],
+        "caller_markers": []
+      },
+      "raw_before": "[[boundary]]\nid = \"learning_source_bound_training_owner_create\"\nsymbol = \"CellQ24TrainingOwnerV1::create_from_original_source\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub fn create_from_original_source(\",\"source.native_inputs()?\",\"source: Some(source)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"]\ncaller_markers = []\n\n",
+      "raw_after": "[[boundary]]\nid = \"learning_source_bound_training_owner_create\"\nsymbol = \"CellQ24TrainingOwnerV1::create_from_original_source\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub fn create_from_original_source(\",\"source.native_inputs()?\",\"source: Some(Arc::new(source))\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "kind": "boundary",
+      "id": "learning_source_bound_training_owner_recover",
+      "exact_before": {
+        "id": "learning_source_bound_training_owner_recover",
+        "symbol": "CellQ24TrainingOwnerV1::recover_from_original_source",
+        "receiver_type": "CellQ24TrainingOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "definition_markers": [
+          "pub fn recover_from_original_source(",
+          "source.native_inputs()?",
+          "source: Some(source)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+        ],
+        "caller_markers": []
+      },
+      "exact_after": {
+        "id": "learning_source_bound_training_owner_recover",
+        "symbol": "CellQ24TrainingOwnerV1::recover_from_original_source",
+        "receiver_type": "CellQ24TrainingOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "definition_markers": [
+          "pub fn recover_from_original_source(",
+          "source.native_inputs()?",
+          "source: Some(Arc::new(source))"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+        ],
+        "caller_markers": []
+      },
+      "raw_before": "[[boundary]]\nid = \"learning_source_bound_training_owner_recover\"\nsymbol = \"CellQ24TrainingOwnerV1::recover_from_original_source\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub fn recover_from_original_source(\",\"source.native_inputs()?\",\"source: Some(source)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"]\ncaller_markers = []\n\n",
+      "raw_after": "[[boundary]]\nid = \"learning_source_bound_training_owner_recover\"\nsymbol = \"CellQ24TrainingOwnerV1::recover_from_original_source\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub fn recover_from_original_source(\",\"source.native_inputs()?\",\"source: Some(Arc::new(source))\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "functions": [
+        "fn source_operation_fenced("
+      ],
+      "exact_before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "required": [
+          "struct OriginalCellQ24TrainingSourceOperationV1<'a>",
+          "source: &'a Arc<OriginalCellQ24TrainingSourceV1>",
+          "config: Arc<OriginalCellQ24TrainingSourceConfigV1>",
+          "baseline: Arc<LoadedCellQ24ModelV1>",
+          "const IDLE: u8 = 0",
+          "const ACTIVE: u8 = 1",
+          "const FENCED: u8 = 2",
+          "impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "UnixStream::connect",
+          "File::open",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false",
+          "impl Clone",
+          "#[derive(Clone",
+          "#[derive(Copy",
+          "Deserialize",
+          "pub fn begin_source_operation",
+          "pub fn read_after_native",
+          "pub fn finish",
+          "fit_or_readback(",
+          "current_material(&self.config)"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn begin_source_operation(",
+            "sequence": [
+              "source",
+              ".operation_state",
+              ".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)",
+              "if state == FENCED",
+              "Error::CaptureUncertain",
+              "let mut operation = OriginalCellQ24TrainingSourceOperationV1",
+              "source,",
+              "config: Arc::clone(&source.config)",
+              "baseline: Arc::clone(&source.live.baseline)",
+              "before: None",
+              "phase: Phase::BeforeRead",
+              "operation.started_at = now()?",
+              "source.live.material_once_for_operation(&operation.config)",
+              "require_same_material(&source.material, &before)?",
+              "capture_binding(&operation.config, &before) != source.binding",
+              "operation.before = Some(before)",
+              "operation.phase = Phase::NativeWork",
+              "operation.require_original_source(source)?",
+              "Ok(operation)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn source_operation_fenced(",
+            "sequence": [
+              "self.operation_state.load(Ordering::Acquire) == FENCED"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_source(",
+            "sequence": [
+              "if !matches!(self.phase, Phase::NativeWork)",
+              "return Err(Error::Binding(",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::NativeWork)",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ]
+          },
+          {
+            "function": "fn require_same_identity(",
+            "sequence": [
+              "!Arc::ptr_eq(self.source, source)",
+              "!Arc::ptr_eq(&self.config, &source.config)",
+              "!Arc::ptr_eq(&self.baseline, &source.live.baseline)",
+              "source.operation_state.load(Ordering::Acquire) != ACTIVE",
+              "return Err(Error::Binding(",
+              "let before = self",
+              ".before",
+              ".as_ref()",
+              "require_same_material(&source.material, before)?",
+              "capture_binding(&self.config, before) != source.binding",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_after_native(",
+            "sequence": [
+              "self.require_original_source(source)?",
+              "self.phase = Phase::ReadingAfter",
+              "source.live.material_once_for_operation(&self.config)",
+              "let before = self",
+              ".before",
+              ".as_ref()",
+              "require_same_material(before, &after)?",
+              "require_same_material(&source.material, &after)?",
+              "capture_binding(&self.config, &after) != source.binding",
+              "self.phase = Phase::AfterRead",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ],
+            "top_level": [
+              "self.require_original_source(source)?",
+              "self.phase = Phase::ReadingAfter",
+              "require_same_material(before, &after)?",
+              "require_same_material(&source.material, &after)?",
+              "self.phase = Phase::AfterRead",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ]
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "mut self",
+              "if !matches!(self.phase, Phase::AfterRead)",
+              "return Err(Error::Binding(",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()?",
+              "source.operation_state.store(IDLE, Ordering::Release)",
+              "self.phase = Phase::Finished",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::AfterRead)",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()?",
+              "source.operation_state.store(IDLE, Ordering::Release)",
+              "self.phase = Phase::Finished"
+            ]
+          },
+          {
+            "function": "fn require_fresh(",
+            "sequence": [
+              "let fresh_now = now()?",
+              "if fresh_now < self.started_at",
+              "return Err(Error::Binding(",
+              "verify_original_evidence(&self.config, fresh_now)?",
+              "OriginalCellQ24DatasetV1::require_original_freeze_current(",
+              "&self.source.material",
+              "&self.config",
+              "fresh_now",
+              "Ok(())"
+            ],
+            "top_level": [
+              "let fresh_now = now()?",
+              "if fresh_now < self.started_at",
+              "verify_original_evidence(&self.config, fresh_now)?"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if !matches!(self.phase, Phase::Finished)",
+              "self.source",
+              ".operation_state",
+              ".store(FENCED, Ordering::Release)"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::Finished)"
+            ]
+          },
+          {
+            "function": "fn material_once_for_operation(",
+            "sequence": [
+              "let started_at = now()?",
+              "verify_original_evidence(config, started_at)?",
+              "self.read_original_evidence(config).await?",
+              "let material = self",
+              ".original",
+              ".read_current_material(config, &self.baseline)",
+              ".await?",
+              "require_observations(config, &material)?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "verify_original_evidence(config, fresh_now)?",
+              "OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)",
+              "Ok(material)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "verify_original_evidence(config, started_at)?",
+              "self.read_original_evidence(config).await?",
+              "require_observations(config, &material)?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "verify_original_evidence(config, fresh_now)?"
+            ]
+          }
+        ]
+      },
+      "exact_after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "required": [
+          "struct OriginalCellQ24TrainingSourceOperationV1<'a>",
+          "source: &'a Arc<OriginalCellQ24TrainingSourceV1>",
+          "config: Arc<OriginalCellQ24TrainingSourceConfigV1>",
+          "baseline: Arc<LoadedCellQ24ModelV1>",
+          "const IDLE: u8 = 0",
+          "const ACTIVE: u8 = 1",
+          "const FENCED: u8 = 2",
+          "impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "UnixStream::connect",
+          "File::open",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false",
+          "impl Clone",
+          "#[derive(Clone",
+          "#[derive(Copy",
+          "Deserialize",
+          "pub fn begin_source_operation",
+          "pub fn read_after_native",
+          "pub fn finish",
+          "fit_or_readback(",
+          "current_material(&self.config)"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn begin_source_operation(",
+            "sequence": [
+              "source",
+              ".operation_state",
+              ".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)",
+              "if state == FENCED",
+              "Error::CaptureUncertain",
+              "let mut operation = OriginalCellQ24TrainingSourceOperationV1",
+              "source,",
+              "config: Arc::clone(&source.config)",
+              "baseline: Arc::clone(&source.live.baseline)",
+              "before: None",
+              "phase: Phase::BeforeRead",
+              "operation.started_at = now()?",
+              "source.live.material_once_for_operation(&operation.config)",
+              "require_same_material(&source.material, &before)?",
+              "capture_binding(&operation.config, &before) != source.binding",
+              "operation.before = Some(before)",
+              "operation.phase = Phase::NativeWork",
+              "operation.require_original_source(source)?",
+              "Ok(operation)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn source_operation_fenced(",
+            "sequence": [
+              "&self",
+              "self.operation_state.load(Ordering::Acquire) == FENCED"
+            ],
+            "top_level": [
+              "self.operation_state.load(Ordering::Acquire) == FENCED"
+            ]
+          },
+          {
+            "function": "fn require_original_source(",
+            "sequence": [
+              "if !matches!(self.phase, Phase::NativeWork)",
+              "return Err(Error::Binding(",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::NativeWork)",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ]
+          },
+          {
+            "function": "fn require_same_identity(",
+            "sequence": [
+              "!Arc::ptr_eq(self.source, source)",
+              "!Arc::ptr_eq(&self.config, &source.config)",
+              "!Arc::ptr_eq(&self.baseline, &source.live.baseline)",
+              "source.operation_state.load(Ordering::Acquire) != ACTIVE",
+              "return Err(Error::Binding(",
+              "let before = self",
+              ".before",
+              ".as_ref()",
+              "require_same_material(&source.material, before)?",
+              "capture_binding(&self.config, before) != source.binding",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_after_native(",
+            "sequence": [
+              "self.require_original_source(source)?",
+              "self.phase = Phase::ReadingAfter",
+              "source.live.material_once_for_operation(&self.config)",
+              "let before = self",
+              ".before",
+              ".as_ref()",
+              "require_same_material(before, &after)?",
+              "require_same_material(&source.material, &after)?",
+              "capture_binding(&self.config, &after) != source.binding",
+              "self.phase = Phase::AfterRead",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ],
+            "top_level": [
+              "self.require_original_source(source)?",
+              "self.phase = Phase::ReadingAfter",
+              "require_same_material(before, &after)?",
+              "require_same_material(&source.material, &after)?",
+              "self.phase = Phase::AfterRead",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()"
+            ]
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "mut self",
+              "if !matches!(self.phase, Phase::AfterRead)",
+              "return Err(Error::Binding(",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()?",
+              "source.operation_state.store(IDLE, Ordering::Release)",
+              "self.phase = Phase::Finished",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::AfterRead)",
+              "self.require_same_identity(source)?",
+              "self.require_fresh()?",
+              "source.operation_state.store(IDLE, Ordering::Release)",
+              "self.phase = Phase::Finished"
+            ]
+          },
+          {
+            "function": "fn require_fresh(",
+            "sequence": [
+              "let fresh_now = now()?",
+              "if fresh_now < self.started_at",
+              "return Err(Error::Binding(",
+              "verify_original_evidence(&self.config, fresh_now)?",
+              "OriginalCellQ24DatasetV1::require_original_freeze_current(",
+              "&self.source.material",
+              "&self.config",
+              "fresh_now",
+              "Ok(())"
+            ],
+            "top_level": [
+              "let fresh_now = now()?",
+              "if fresh_now < self.started_at",
+              "verify_original_evidence(&self.config, fresh_now)?"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if !matches!(self.phase, Phase::Finished)",
+              "self.source",
+              ".operation_state",
+              ".store(FENCED, Ordering::Release)"
+            ],
+            "top_level": [
+              "if !matches!(self.phase, Phase::Finished)"
+            ]
+          },
+          {
+            "function": "fn material_once_for_operation(",
+            "sequence": [
+              "let started_at = now()?",
+              "verify_original_evidence(config, started_at)?",
+              "self.read_original_evidence(config).await?",
+              "let material = self",
+              ".original",
+              ".read_current_material(config, &self.baseline)",
+              ".await?",
+              "require_observations(config, &material)?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "verify_original_evidence(config, fresh_now)?",
+              "OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)",
+              "Ok(material)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "verify_original_evidence(config, started_at)?",
+              "self.read_original_evidence(config).await?",
+              "require_observations(config, &material)?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "verify_original_evidence(config, fresh_now)?"
+            ]
+          }
+        ]
+      },
+      "raw_before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\nrequired = [\"struct OriginalCellQ24TrainingSourceOperationV1<'a>\",\"source: &'a Arc<OriginalCellQ24TrainingSourceV1>\",\"config: Arc<OriginalCellQ24TrainingSourceConfigV1>\",\"baseline: Arc<LoadedCellQ24ModelV1>\",\"const IDLE: u8 = 0\",\"const ACTIVE: u8 = 1\",\"const FENCED: u8 = 2\",\"impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn begin_source_operation\",\"pub fn read_after_native\",\"pub fn finish\",\"fit_or_readback(\",\"current_material(&self.config)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn begin_source_operation(\"\nsequence = [\"source\",\".operation_state\",\".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)\",\"if state == FENCED\",\"Error::CaptureUncertain\",\"let mut operation = OriginalCellQ24TrainingSourceOperationV1\",\"source,\",\"config: Arc::clone(&source.config)\",\"baseline: Arc::clone(&source.live.baseline)\",\"before: None\",\"phase: Phase::BeforeRead\",\"operation.started_at = now()?\",\"source.live.material_once_for_operation(&operation.config)\",\"require_same_material(&source.material, &before)?\",\"capture_binding(&operation.config, &before) != source.binding\",\"operation.before = Some(before)\",\"operation.phase = Phase::NativeWork\",\"operation.require_original_source(source)?\",\"Ok(operation)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn source_operation_fenced(\"\nsequence = [\"self.operation_state.load(Ordering::Acquire) == FENCED\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source(\"\nsequence = [\"if !matches!(self.phase, Phase::NativeWork)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"if !matches!(self.phase, Phase::NativeWork)\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_identity(\"\nsequence = [\"!Arc::ptr_eq(self.source, source)\",\"!Arc::ptr_eq(&self.config, &source.config)\",\"!Arc::ptr_eq(&self.baseline, &source.live.baseline)\",\"source.operation_state.load(Ordering::Acquire) != ACTIVE\",\"return Err(Error::Binding(\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(&source.material, before)?\",\"capture_binding(&self.config, before) != source.binding\",\"return Err(Error::Binding(\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_after_native(\"\nsequence = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"source.live.material_once_for_operation(&self.config)\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"capture_binding(&self.config, &after) != source.binding\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn finish(\"\nsequence = [\"mut self\",\"if !matches!(self.phase, Phase::AfterRead)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\",\"Ok(())\"]\ntop_level = [\"if !matches!(self.phase, Phase::AfterRead)\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh(\"\nsequence = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"return Err(Error::Binding(\",\"verify_original_evidence(&self.config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(\",\"&self.source.material\",\"&self.config\",\"fresh_now\",\"Ok(())\"]\ntop_level = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"verify_original_evidence(&self.config, fresh_now)?\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if !matches!(self.phase, Phase::Finished)\",\"self.source\",\".operation_state\",\".store(FENCED, Ordering::Release)\"]\ntop_level = [\"if !matches!(self.phase, Phase::Finished)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn material_once_for_operation(\"\nsequence = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"let material = self\",\".original\",\".read_current_material(config, &self.baseline)\",\".await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)\",\"Ok(material)\"]\ntop_level = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\"]\n\n",
+      "raw_after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\nrequired = [\"struct OriginalCellQ24TrainingSourceOperationV1<'a>\",\"source: &'a Arc<OriginalCellQ24TrainingSourceV1>\",\"config: Arc<OriginalCellQ24TrainingSourceConfigV1>\",\"baseline: Arc<LoadedCellQ24ModelV1>\",\"const IDLE: u8 = 0\",\"const ACTIVE: u8 = 1\",\"const FENCED: u8 = 2\",\"impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn begin_source_operation\",\"pub fn read_after_native\",\"pub fn finish\",\"fit_or_readback(\",\"current_material(&self.config)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn begin_source_operation(\"\nsequence = [\"source\",\".operation_state\",\".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)\",\"if state == FENCED\",\"Error::CaptureUncertain\",\"let mut operation = OriginalCellQ24TrainingSourceOperationV1\",\"source,\",\"config: Arc::clone(&source.config)\",\"baseline: Arc::clone(&source.live.baseline)\",\"before: None\",\"phase: Phase::BeforeRead\",\"operation.started_at = now()?\",\"source.live.material_once_for_operation(&operation.config)\",\"require_same_material(&source.material, &before)?\",\"capture_binding(&operation.config, &before) != source.binding\",\"operation.before = Some(before)\",\"operation.phase = Phase::NativeWork\",\"operation.require_original_source(source)?\",\"Ok(operation)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn source_operation_fenced(\"\nsequence = [\"&self\",\"self.operation_state.load(Ordering::Acquire) == FENCED\"]\ntop_level = [\"self.operation_state.load(Ordering::Acquire) == FENCED\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source(\"\nsequence = [\"if !matches!(self.phase, Phase::NativeWork)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"if !matches!(self.phase, Phase::NativeWork)\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_identity(\"\nsequence = [\"!Arc::ptr_eq(self.source, source)\",\"!Arc::ptr_eq(&self.config, &source.config)\",\"!Arc::ptr_eq(&self.baseline, &source.live.baseline)\",\"source.operation_state.load(Ordering::Acquire) != ACTIVE\",\"return Err(Error::Binding(\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(&source.material, before)?\",\"capture_binding(&self.config, before) != source.binding\",\"return Err(Error::Binding(\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_after_native(\"\nsequence = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"source.live.material_once_for_operation(&self.config)\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"capture_binding(&self.config, &after) != source.binding\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn finish(\"\nsequence = [\"mut self\",\"if !matches!(self.phase, Phase::AfterRead)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\",\"Ok(())\"]\ntop_level = [\"if !matches!(self.phase, Phase::AfterRead)\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh(\"\nsequence = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"return Err(Error::Binding(\",\"verify_original_evidence(&self.config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(\",\"&self.source.material\",\"&self.config\",\"fresh_now\",\"Ok(())\"]\ntop_level = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"verify_original_evidence(&self.config, fresh_now)?\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if !matches!(self.phase, Phase::Finished)\",\"self.source\",\".operation_state\",\".store(FENCED, Ordering::Release)\"]\ntop_level = [\"if !matches!(self.phase, Phase::Finished)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn material_once_for_operation(\"\nsequence = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"let material = self\",\".original\",\".read_current_material(config, &self.baseline)\",\".await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)\",\"Ok(material)\"]\ntop_level = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\"]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "functions": [
+        "fn joined(",
+        "fn stage_is_fenced("
+      ],
+      "exact_before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "required": [
+          "struct SourceLaneProof<'a>",
+          "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+          "struct SourceLaneCancellation",
+          "struct SourceLaneCancellationState",
+          "const SOURCE_BOUND: u8 = 1",
+          "const CANCELLED: u8 = 2",
+          "impl Drop for SourceLaneCancellation"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "UnixStream::connect",
+          "File::open",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false",
+          "impl Clone",
+          "#[derive(Clone",
+          "#[derive(Copy",
+          "Deserialize",
+          "pub fn from_operation",
+          "pub fn require_original",
+          "pub fn worker",
+          "source: Arc<OriginalCellQ24TrainingSourceV1>",
+          ".store(false"
+        ],
+        "required_order": [
+          [
+            "fn require_original<",
+            "let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(",
+            "CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?",
+            "Ok(())"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_operation(",
+            "sequence": [
+              "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+              "Self {",
+              "operation,",
+              "_lane: PhantomData"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "stage_fenced: Arc<AtomicBool>",
+              "state: Arc::new(AtomicU8::new(0))",
+              "stage_fenced,",
+              "armed: true"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn worker(",
+            "sequence": [
+              "SourceLaneCancellationState {",
+              "state: Arc::clone(&self.state)",
+              "stage_fenced: Arc::clone(&self.stage_fenced)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn joined(",
+            "sequence": [
+              "self.armed = false"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if self.armed",
+              "self.state.fetch_or(CANCELLED, Ordering::AcqRel)",
+              "if before & SOURCE_BOUND != 0",
+              "self.stage_fenced.store(true, Ordering::Release)"
+            ],
+            "top_level": [
+              "if self.armed"
+            ]
+          },
+          {
+            "function": "fn bind_source(",
+            "sequence": [
+              "self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)",
+              "if before & CANCELLED != 0",
+              "self.stage_fenced.store(true, Ordering::Release)",
+              "return Err(Error::CommitUncertain)",
+              "self.require_live()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_live(",
+            "sequence": [
+              "self.state.load(Ordering::Acquire) & CANCELLED != 0",
+              "self.stage_fenced.load(Ordering::Acquire)",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn stage_is_fenced(",
+            "sequence": [
+              "self.stage_fenced.load(Ordering::Acquire)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "exact_after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "required": [
+          "struct SourceLaneProof<'a>",
+          "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+          "struct SourceLaneCancellation",
+          "struct SourceLaneCancellationState",
+          "const SOURCE_BOUND: u8 = 1",
+          "const CANCELLED: u8 = 2",
+          "impl Drop for SourceLaneCancellation"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "UnixStream::connect",
+          "File::open",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false",
+          "impl Clone",
+          "#[derive(Clone",
+          "#[derive(Copy",
+          "Deserialize",
+          "pub fn from_operation",
+          "pub fn require_original",
+          "pub fn worker",
+          "source: Arc<OriginalCellQ24TrainingSourceV1>",
+          ".store(false"
+        ],
+        "required_order": [
+          [
+            "fn require_original<",
+            "let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(",
+            "CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?",
+            "Ok(())"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_operation(",
+            "sequence": [
+              "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+              "Self {",
+              "operation,",
+              "_lane: PhantomData"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "stage_fenced: Arc<AtomicBool>",
+              "state: Arc::new(AtomicU8::new(0))",
+              "stage_fenced,",
+              "armed: true"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn worker(",
+            "sequence": [
+              "SourceLaneCancellationState {",
+              "state: Arc::clone(&self.state)",
+              "stage_fenced: Arc::clone(&self.stage_fenced)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn joined(",
+            "sequence": [
+              "&mut self",
+              "self.armed = false"
+            ],
+            "top_level": [
+              "self.armed = false"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if self.armed",
+              "self.state.fetch_or(CANCELLED, Ordering::AcqRel)",
+              "if before & SOURCE_BOUND != 0",
+              "self.stage_fenced.store(true, Ordering::Release)"
+            ],
+            "top_level": [
+              "if self.armed"
+            ]
+          },
+          {
+            "function": "fn bind_source(",
+            "sequence": [
+              "self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)",
+              "if before & CANCELLED != 0",
+              "self.stage_fenced.store(true, Ordering::Release)",
+              "return Err(Error::CommitUncertain)",
+              "self.require_live()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_live(",
+            "sequence": [
+              "self.state.load(Ordering::Acquire) & CANCELLED != 0",
+              "self.stage_fenced.load(Ordering::Acquire)",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn stage_is_fenced(",
+            "sequence": [
+              "&self",
+              "self.stage_fenced.load(Ordering::Acquire)"
+            ],
+            "top_level": [
+              "self.stage_fenced.load(Ordering::Acquire)"
+            ]
+          }
+        ]
+      },
+      "raw_before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\nrequired = [\"struct SourceLaneProof<'a>\",\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"struct SourceLaneCancellation\",\"struct SourceLaneCancellationState\",\"const SOURCE_BOUND: u8 = 1\",\"const CANCELLED: u8 = 2\",\"impl Drop for SourceLaneCancellation\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn from_operation\",\"pub fn require_original\",\"pub fn worker\",\"source: Arc<OriginalCellQ24TrainingSourceV1>\",\".store(false\"]\nrequired_order = [[\"fn require_original<\",\"let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(\",\"CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?\",\"Ok(())\"]]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_operation(\"\nsequence = [\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"Self {\",\"operation,\",\"_lane: PhantomData\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn new(\"\nsequence = [\"stage_fenced: Arc<AtomicBool>\",\"state: Arc::new(AtomicU8::new(0))\",\"stage_fenced,\",\"armed: true\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn worker(\"\nsequence = [\"SourceLaneCancellationState {\",\"state: Arc::clone(&self.state)\",\"stage_fenced: Arc::clone(&self.stage_fenced)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn joined(\"\nsequence = [\"self.armed = false\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if self.armed\",\"self.state.fetch_or(CANCELLED, Ordering::AcqRel)\",\"if before & SOURCE_BOUND != 0\",\"self.stage_fenced.store(true, Ordering::Release)\"]\ntop_level = [\"if self.armed\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn bind_source(\"\nsequence = [\"self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)\",\"if before & CANCELLED != 0\",\"self.stage_fenced.store(true, Ordering::Release)\",\"return Err(Error::CommitUncertain)\",\"self.require_live()\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_live(\"\nsequence = [\"self.state.load(Ordering::Acquire) & CANCELLED != 0\",\"self.stage_fenced.load(Ordering::Acquire)\",\"return Err(Error::CommitUncertain)\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn stage_is_fenced(\"\nsequence = [\"self.stage_fenced.load(Ordering::Acquire)\"]\ntop_level = []\n\n",
+      "raw_after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\nrequired = [\"struct SourceLaneProof<'a>\",\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"struct SourceLaneCancellation\",\"struct SourceLaneCancellationState\",\"const SOURCE_BOUND: u8 = 1\",\"const CANCELLED: u8 = 2\",\"impl Drop for SourceLaneCancellation\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn from_operation\",\"pub fn require_original\",\"pub fn worker\",\"source: Arc<OriginalCellQ24TrainingSourceV1>\",\".store(false\"]\nrequired_order = [[\"fn require_original<\",\"let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(\",\"CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?\",\"Ok(())\"]]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_operation(\"\nsequence = [\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"Self {\",\"operation,\",\"_lane: PhantomData\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn new(\"\nsequence = [\"stage_fenced: Arc<AtomicBool>\",\"state: Arc::new(AtomicU8::new(0))\",\"stage_fenced,\",\"armed: true\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn worker(\"\nsequence = [\"SourceLaneCancellationState {\",\"state: Arc::clone(&self.state)\",\"stage_fenced: Arc::clone(&self.stage_fenced)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn joined(\"\nsequence = [\"&mut self\",\"self.armed = false\"]\ntop_level = [\"self.armed = false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if self.armed\",\"self.state.fetch_or(CANCELLED, Ordering::AcqRel)\",\"if before & SOURCE_BOUND != 0\",\"self.stage_fenced.store(true, Ordering::Release)\"]\ntop_level = [\"if self.armed\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn bind_source(\"\nsequence = [\"self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)\",\"if before & CANCELLED != 0\",\"self.stage_fenced.store(true, Ordering::Release)\",\"return Err(Error::CommitUncertain)\",\"self.require_live()\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_live(\"\nsequence = [\"self.state.load(Ordering::Acquire) & CANCELLED != 0\",\"self.stage_fenced.load(Ordering::Acquire)\",\"return Err(Error::CommitUncertain)\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn stage_is_fenced(\"\nsequence = [\"&self\",\"self.stage_fenced.load(Ordering::Acquire)\"]\ntop_level = [\"self.stage_fenced.load(Ordering::Acquire)\"]\n\n"
+    }
+  ],
+  "manifest_audit": {
+    "boundaries": 686,
+    "protected_records": 463,
+    "total_records": 1149,
+    "changed_complete_records": 4,
+    "unowned_original_raw_records": 1145,
+    "counter_difference_count": 0,
+    "boundary_id_order_equal": true,
+    "callers_unchanged": true
+  },
+  "qa_method_replacements": [
+    {
+      "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+      "before_blob": "b350395a6e8221626db9904fd4ed7ef52ec89059",
+      "after_blob": "d11dab3c405e88d0c34e5351003802ed5efa8796",
+      "all_original_test_method_names_preserved": [
+        "test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+        "test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order",
+        "test_first_actual_response_cannot_restart_sequence_or_initial_deadline",
+        "test_unknown_read_and_changed_complete_signature_permanently_consume_channel",
+        "test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose",
+        "test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend"
+      ],
+      "methods": [
+        {
+          "name": "rows",
+          "before": "    def rows(self, path):\n        rows = [row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path]\n        self.assertEqual(len(rows), 1)\n        return rows\n\n",
+          "after": "    def rows(self, path):\n        rows = [row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path]\n        # One path can carry independent complete records; verify every one.\n        self.assertTrue(rows, path)\n        return rows\n\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "before_blob": "3c4ea5b08767c985d6da5cfec450deaf76b84bb0",
+      "after_blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+      "all_original_test_method_names_preserved": [
+        "test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+        "test_original_training_header_and_receipt_bindings_cannot_be_removed",
+        "test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+        "test_original_manifests_and_qualified_evaluation_are_required",
+        "test_final_readback_cannot_skip_current_witness",
+        "test_commit_cannot_skip_durable_claim_completion_or_witness",
+        "test_owner_creation_cannot_skip_original_trainer",
+        "test_readback_preserves_original_bytes_and_timestamp",
+        "test_owner_clock_cannot_be_replaced_by_request_time",
+        "test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+        "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+      ],
+      "methods": [
+        {
+          "name": "rejects",
+          "before": "    def rejects(self, path, function, marker):\n        source = (ROOT / path).read_text()\n        start = source.index(function)\n        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)\n        self.assertIsNotNone(end)\n        assert end is not None\n        body = source[start : end + 1]\n        self.assertEqual(body.count(marker), 1, marker)\n        offset = start + body.index(marker)\n        changed = source[:offset] + source[offset + len(marker) :]\n        rows = [\n            row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path\n        ]\n        with tempfile.TemporaryDirectory() as temporary:\n            root = Path(temporary)\n            target = root / path\n            target.parent.mkdir(parents=True)\n            target.write_text(source)\n            PROOF._verify_protected_files(root, {\"protected_file\": rows})\n            target.write_text(changed)\n            with self.assertRaises(PROOF.VerificationFailure):\n                PROOF._verify_protected_files(root, {\"protected_file\": rows})\n\n",
+          "after": "    def rejects(self, path, function, marker, *, within=None):\n        source = (ROOT / path).read_text()\n        code = PROOF._strip_rust_non_code(source)\n        self.assertEqual(code.count(function), 1, function)\n        start = code.index(function)\n        end = PROOF._rust_item_end(code, start)\n        self.assertIsNotNone(end)\n        assert end is not None\n        if within is not None:\n            function_code = code[start : end + 1]\n            self.assertEqual(function_code.count(within), 1, within)\n            start += function_code.index(within)\n            branch_end = PROOF._rust_item_end(code, start)\n            self.assertIsNotNone(branch_end)\n            assert branch_end is not None\n            self.assertLessEqual(branch_end, end)\n            end = branch_end\n        body = source[start : end + 1]\n        self.assertEqual(body.count(marker), 1, marker)\n        offset = start + body.index(marker)\n        changed = source[:offset] + source[offset + len(marker) :]\n        rows = [\n            row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path\n        ]\n        with tempfile.TemporaryDirectory() as temporary:\n            root = Path(temporary)\n            target = root / path\n            target.parent.mkdir(parents=True)\n            target.write_text(source)\n            PROOF._verify_protected_files(root, {\"protected_file\": rows})\n            target.write_text(changed)\n            with self.assertRaises(PROOF.VerificationFailure):\n                PROOF._verify_protected_files(root, {\"protected_file\": rows})\n\n"
+        },
+        {
+          "name": "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence",
+          "before": "    def test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence(self):\n        for path in (OWNER, TRAINER):\n            for marker in (\n                \"let before = self.witness.current()?\",\n                \"self.journal.read_current_anchor()?\",\n                \"let after = self.witness.current()?\",\n                \"self.fenced = true\",\n            ):\n                with self.subTest(path=path, marker=marker):\n                    self.rejects(path, \"fn require_current(\", marker)\n\n\n",
+          "after": "    def test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence(self):\n        for path in (OWNER, TRAINER):\n            for marker in (\n                \"let before = self.witness.current()?\",\n                \"self.journal.read_current_anchor()?\",\n                \"let after = self.witness.current()?\",\n                \"self.fenced = true\",\n            ):\n                with self.subTest(path=path, marker=marker):\n                    self.rejects(\n                        path, \"fn require_current(\", marker,\n                        within=\"if result.is_err()\" if marker == \"self.fenced = true\" else None,\n                    )\n\n\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+      "before_blob": "452d943d270a3e077914efbc8f6e38b1f6bfb3e1",
+      "after_blob": "648601003eb46a404940fbf498d799263040a3b6",
+      "all_original_test_method_names_preserved": [
+        "test_exact_original_callers_and_private_operations_remain_closed",
+        "test_actual_before_after_full_material_and_same_custody_are_required",
+        "test_native_tail_and_fresh_original_windows_precede_once_only_finish",
+        "test_cancellation_drop_and_failed_proof_fence_original_custody",
+        "test_candidate_and_admission_use_this_borrowed_operation_proof",
+        "test_independent_capture_and_native_precommit_withdrawal_checks_remain",
+        "test_operation_cannot_gain_clone_deserialization_effects_or_reset",
+        "test_generic_lane_markers_cannot_be_transplanted_outside_function"
+      ],
+      "methods": [
+        {
+          "name": "test_cancellation_drop_and_failed_proof_fence_original_custody",
+          "before": "    def test_cancellation_drop_and_failed_proof_fence_original_custody(self):\n        for path, function, marker in (\n            (OPERATION, \"fn drop(\", \".store(FENCED, Ordering::Release)\"),\n            (NATIVE, \"fn require_current(\", \"OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)\"),\n            (OWNER, \"fn require_original_source_operation(\", \"self.fenced = true\"),\n            (LANE, \"fn drop(\", \"self.state.fetch_or(CANCELLED, Ordering::AcqRel)\"),\n            (LANE, \"fn drop(\", \"self.stage_fenced.store(true, Ordering::Release)\"),\n            (LANE, \"fn bind_source(\", \"self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)\"),\n            (LANE, \"fn bind_source(\", \"if before & CANCELLED != 0\"),\n            (LANE, \"fn require_live(\", \"self.stage_fenced.load(Ordering::Acquire)\"),\n            (STAGE, \"fn in_lane<\", \"let _permit = permit\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellationState::bind_source(&worker_cancellation)?\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellationState::require_live(&worker_cancellation)\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellation::joined(&mut cancellation)\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker)\n\n",
+          "after": "    def test_cancellation_drop_and_failed_proof_fence_original_custody(self):\n        for path, function, marker in (\n            (OPERATION, \"fn drop(\", \".store(FENCED, Ordering::Release)\"),\n            (NATIVE, \"fn require_current(\", \"OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)\"),\n            (NATIVE, \"fn require_current(\", \"self.fenced = true\"),\n            (OWNER, \"fn require_original_source_operation(\", \"self.fenced = true\"),\n            (LANE, \"fn drop(\", \"self.state.fetch_or(CANCELLED, Ordering::AcqRel)\"),\n            (LANE, \"fn drop(\", \"self.stage_fenced.store(true, Ordering::Release)\"),\n            (LANE, \"fn bind_source(\", \"self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)\"),\n            (LANE, \"fn bind_source(\", \"if before & CANCELLED != 0\"),\n            (LANE, \"fn require_live(\", \"self.stage_fenced.load(Ordering::Acquire)\"),\n            (STAGE, \"fn in_lane<\", \"let _permit = permit\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellationState::bind_source(&worker_cancellation)?\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellationState::require_live(&worker_cancellation)\"),\n            (STAGE, \"fn in_lane<\", \"SourceLaneCancellation::joined(&mut cancellation)\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker)\n\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "before_blob": "ef4d893645bca69d69c54b280aaccaf3b63690e2",
+      "after_blob": "835953d9e8b670d6713a6f2728e716182acc542d",
+      "all_original_test_method_names_preserved": [
+        "test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+        "test_live_material_and_full_original_signatures_cannot_be_detached",
+        "test_source_domain_does_not_replace_frozen_data_or_original_missing",
+        "test_existing_native_and_model_lanes_keep_live_checks_before_return"
+      ],
+      "methods": [
+        {
+          "name": "require_actual_source_capture_errors",
+          "before": null,
+          "after": "    def require_actual_source_capture_errors(self, path, source):\n        if path != OWNER:\n            return\n        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))\n        actual_call = re.compile(\n            r'let\\s+result\\s*=\\s*self\\s*\\.source\\s*\\.as_ref\\(\\)\\s*\\.ok_or\\('\n            r'\\s*Error::Binding\\(\\s*\"ordinary Training requires original source capture\"'\n            r'\\s*,?\\s*\\)\\s*\\)'\n        )\n        for function in (\n            \"fn require_original_source_capture(\",\n            \"fn require_original_source_operation(\",\n        ):\n            if code.count(function) != 1:\n                raise PROOF.VerificationFailure(f\"{path}: unique capture function required\")\n            start = code.index(function)\n            end = PROOF._rust_item_end(code, start)\n            if end is None or code[end] != \"}\":\n                raise PROOF.VerificationFailure(f\"{path}: capture function body required\")\n            body = code[start:end + 1]\n            # Match only live syntax in this function. Nested helpers, comments,\n            # and string literals cannot supply the missing-source refusal.\n            cursor = len(function)\n            while nested := re.search(r\"\\bfn\\s+(?:r#)?\\w+\", body[cursor:]):\n                nested_start = cursor + nested.start()\n                nested_end = PROOF._rust_item_end(body, nested_start)\n                if nested_end is None:\n                    raise PROOF.VerificationFailure(f\"{path}: nested capture function unresolved\")\n                body = (\n                    body[:nested_start]\n                    + \"\".join(\"\\n\" if char == \"\\n\" else \" \"\n                              for char in body[nested_start:nested_end + 1])\n                    + body[nested_end + 1:]\n                )\n                cursor = nested_end + 1\n            matches = [\n                match for match in actual_call.finditer(source[start:end + 1])\n                if body[match.start():match.end()] == PROOF._strip_rust_non_code(match.group())\n            ]\n            if len(matches) != 1:\n                raise PROOF.VerificationFailure(\n                    f\"{path}:{function}: actual missing-source Binding call required\"\n                )\n\n"
+        },
+        {
+          "name": "rejects",
+          "before": "    def rejects(self, path, function, marker):\n        source = (ROOT / path).read_text()\n        start = source.index(function)\n        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)\n        self.assertIsNotNone(end)\n        offset = source.index(marker, start, end + 1)\n        rows = [row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path]\n        with tempfile.TemporaryDirectory() as directory:\n            root = Path(directory)\n            target = root / path\n            target.parent.mkdir(parents=True)\n            target.write_text(source)\n            PROOF._verify_protected_files(root, {\"protected_file\": rows})\n            target.write_text(source[:offset] + source[offset + len(marker):])\n            with self.assertRaises(PROOF.VerificationFailure):\n                PROOF._verify_protected_files(root, {\"protected_file\": rows})\n\n",
+          "after": "    def rejects(self, path, function, marker):\n        source = (ROOT / path).read_text()\n        start = source.index(function)\n        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)\n        self.assertIsNotNone(end)\n        offset = source.index(marker, start, end + 1)\n        rows = [row for row in self.manifest[\"protected_file\"] if row[\"path\"] == path]\n        with tempfile.TemporaryDirectory() as directory:\n            root = Path(directory)\n            target = root / path\n            target.parent.mkdir(parents=True)\n            target.write_text(source)\n            self.require_actual_source_capture_errors(path, source)\n            PROOF._verify_protected_files(root, {\"protected_file\": rows})\n            changed = source[:offset] + source[offset + len(marker):]\n            target.write_text(changed)\n            with self.assertRaises(PROOF.VerificationFailure):\n                self.require_actual_source_capture_errors(path, changed)\n                PROOF._verify_protected_files(root, {\"protected_file\": rows})\n\n"
+        },
+        {
+          "name": "test_source_domain_does_not_replace_frozen_data_or_original_missing",
+          "before": "    def test_source_domain_does_not_replace_frozen_data_or_original_missing(self):\n        for function, marker in (\n            (\"fn create_from_original_source(\", \"source.native_inputs()?\"),\n            (\"fn recover_from_original_source(\", \"source.native_inputs()?\"),\n            (\"fn captured_job_key(\", \"let original = job_key(plan, batch, rule)?\"),\n            (\"fn captured_job_key(\", \"source.source_capture_binding().as_array()\"),\n            (\"fn require_original_source_capture(\", \"ordinary Training requires original source capture\"),\n            (\"fn require_original_source_capture(\", \"self.fenced = true\"),\n        ):\n            with self.subTest(function=function, marker=marker):\n                self.rejects(OWNER, function, marker)\n        self.rejects(BOUND, \"fn from_original_stage(\", \"SourceLaneProof::require_original(source, &mut owners.training)?\")\n        self.rejects(NATIVE, \"fn fit_or_readback(\", \"Ok(state) => return self.decode_state(state)\")\n        self.rejects(NATIVE, \"fn fit_or_readback(\", \"Err(ProductEvaluationExecutionStoreErrorV1::Missing)\")\n\n",
+          "after": "    def test_source_domain_does_not_replace_frozen_data_or_original_missing(self):\n        for function, marker in (\n            (\"fn create_from_original_source(\", \"source.native_inputs()?\"),\n            (\"fn recover_from_original_source(\", \"source.native_inputs()?\"),\n            (\"fn captured_job_key(\", \"let original = job_key(plan, batch, rule)?\"),\n            (\"fn captured_job_key(\", \"source.source_capture_binding().as_array()\"),\n            (\"fn require_original_source_capture(\", \"ordinary Training requires original source capture\"),\n            (\"fn require_original_source_capture(\", \"self.fenced = true\"),\n            (\"fn require_original_source_operation(\", \"ordinary Training requires original source capture\"),\n            (\"fn require_original_source_operation(\", \"self.fenced = true\"),\n        ):\n            with self.subTest(function=function, marker=marker):\n                self.rejects(OWNER, function, marker)\n        self.rejects(BOUND, \"fn from_original_stage(\", \"SourceLaneProof::require_original(source, &mut owners.training)?\")\n        self.rejects(NATIVE, \"fn fit_or_readback(\", \"Ok(state) => return self.decode_state(state)\")\n        self.rejects(NATIVE, \"fn fit_or_readback(\", \"Err(ProductEvaluationExecutionStoreErrorV1::Missing)\")\n\n"
+        }
+      ]
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "blob": "2d056831d85260c201a638e57ca1ed63731d3fb5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "blob": "435a7435429617bc9347d60a6b56f8072fee9aff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "blob": "a0c57dbad44e63bd996db40c72321a255e7758ac"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "blob": "8210360cffd16be52e62f91fb4a2313e23101c61"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "blob": "b63f8372f26a73a79aaaf0460cad78b1d3582991"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "blob": "7d549230eb748ad55a33d993003b7d3727227358"
+    }
+  ],
+  "verification": {
+    "v8_scoped_projection_only": true,
+    "checked": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "source_sha": "2d056831d85260c201a638e57ca1ed63731d3fb5",
+        "rows": 2,
+        "functions": 2,
+        "sequences": 32,
+        "top": 0,
+        "pass": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "source_sha": "435a7435429617bc9347d60a6b56f8072fee9aff",
+        "rows": 2,
+        "functions": 8,
+        "sequences": 54,
+        "top": 0,
+        "pass": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "source_sha": "a0c57dbad44e63bd996db40c72321a255e7758ac",
+        "rows": 1,
+        "functions": 9,
+        "sequences": 83,
+        "top": 27,
+        "pass": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "source_sha": "8210360cffd16be52e62f91fb4a2313e23101c61",
+        "rows": 1,
+        "functions": 8,
+        "sequences": 28,
+        "top": 3,
+        "pass": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "source_sha": "b63f8372f26a73a79aaaf0460cad78b1d3582991",
+        "rows": 6,
+        "functions": 8,
+        "sequences": 71,
+        "top": 11,
+        "pass": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "source_sha": "7d549230eb748ad55a33d993003b7d3727227358",
+        "rows": 2,
+        "functions": 5,
+        "sequences": 40,
+        "top": 13,
+        "pass": true
+      }
+    ],
+    "totals": {
+      "rows": 14,
+      "functions": 40,
+      "sequences": 308,
+      "top": 54
+    },
+    "mutation_projection": [
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": "snapshot.request != self.initial.request",
+        "within": null,
+        "offset": 10057,
+        "rejected": true,
+        "error": "Error: order snapshot.request != self.initial.request"
+      },
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": "receipt.actor_id != self.actor_id",
+        "within": null,
+        "offset": 10167,
+        "rejected": true,
+        "error": "Error: order receipt.actor_id != self.actor_id"
+      },
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+        "within": null,
+        "offset": 10359,
+        "rejected": true,
+        "error": "Error: order LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?"
+      },
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+        "within": null,
+        "offset": 10588,
+        "rejected": true,
+        "error": "Error: order learning_iteration_receipt_signing_bytes_v1(receipt)?"
+      },
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": "if let Some(command) = &self.command",
+        "within": null,
+        "offset": 10651,
+        "rejected": true,
+        "error": "Error: order if let Some(command) = &self.command"
+      },
+      {
+        "label": "original evidence scope/receipt/backend deletion",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "function": "fn readback(",
+        "marker": ".read_original_command(command, receipt, &payload, role)",
+        "within": null,
+        "offset": 10730,
+        "rejected": true,
+        "error": "Error: order .read_original_command(command, receipt, &payload, role)"
+      },
+      {
+        "label": "function-local capture literal deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "function": "fn require_original_source_capture(",
+        "marker": "ordinary Training requires original source capture",
+        "within": null,
+        "offset": 3880,
+        "rejected": true,
+        "error": "Error: actual capture literal fn require_original_source_capture("
+      },
+      {
+        "label": "capture owner permanent fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "function": "fn require_original_source_capture(",
+        "marker": "self.fenced = true",
+        "within": null,
+        "offset": 4161,
+        "rejected": true,
+        "error": "Error: order self.fenced = true"
+      },
+      {
+        "label": "function-local capture literal deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "function": "fn require_original_source_operation(",
+        "marker": "ordinary Training requires original source capture",
+        "within": null,
+        "offset": 5397,
+        "rejected": true,
+        "error": "Error: actual capture literal fn require_original_source_operation("
+      },
+      {
+        "label": "capture owner permanent fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "function": "fn require_original_source_operation(",
+        "marker": "self.fenced = true",
+        "within": null,
+        "offset": 5698,
+        "rejected": true,
+        "error": "Error: order self.fenced = true"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "function": "fn require_current(",
+        "marker": "let before = self.witness.current()?",
+        "within": null,
+        "offset": 12144,
+        "rejected": true,
+        "error": "Error: order let before = self.witness.current()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "function": "fn require_current(",
+        "marker": "self.journal.read_current_anchor()?",
+        "within": null,
+        "offset": 12216,
+        "rejected": true,
+        "error": "Error: required self.journal.read_current_anchor()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "function": "fn require_current(",
+        "marker": "let after = self.witness.current()?",
+        "within": null,
+        "offset": 12267,
+        "rejected": true,
+        "error": "Error: order let after = self.witness.current()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "function": "fn require_current(",
+        "marker": "self.fenced = true",
+        "within": "if result.is_err()",
+        "offset": 12513,
+        "rejected": true,
+        "error": "Error: order self.fenced = true"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "function": "fn require_current(",
+        "marker": "let before = self.witness.current()?",
+        "within": null,
+        "offset": 9208,
+        "rejected": true,
+        "error": "Error: order let before = self.witness.current()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "function": "fn require_current(",
+        "marker": "self.journal.read_current_anchor()?",
+        "within": null,
+        "offset": 9280,
+        "rejected": true,
+        "error": "Error: required self.journal.read_current_anchor()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "function": "fn require_current(",
+        "marker": "let after = self.witness.current()?",
+        "within": null,
+        "offset": 9330,
+        "rejected": true,
+        "error": "Error: order let after = self.witness.current()?"
+      },
+      {
+        "label": "physical CURRENT/fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "function": "fn require_current(",
+        "marker": "self.fenced = true",
+        "within": "if result.is_err()",
+        "offset": 9576,
+        "rejected": true,
+        "error": "Error: order self.fenced = true"
+      },
+      {
+        "label": "distinct Source cancellation fence deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "function": "fn require_current(",
+        "marker": "self.fenced = true",
+        "within": null,
+        "offset": 9056,
+        "rejected": true,
+        "error": "Error: order if self.fenced"
+      },
+      {
+        "label": "Source operation live expression deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "function": "fn source_operation_fenced(",
+        "marker": "self.operation_state.load(Ordering::Acquire) == FENCED",
+        "within": null,
+        "offset": 2501,
+        "rejected": true,
+        "error": "Error: unique top self.operation_state.load(Ordering::Acquire) == FENCED"
+      },
+      {
+        "label": "Source operation actual receiver deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "function": "fn source_operation_fenced(",
+        "marker": "&self",
+        "within": null,
+        "offset": 2476,
+        "rejected": true,
+        "error": "Error: order &self"
+      },
+      {
+        "label": "Source operation live expression deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "function": "fn joined(",
+        "marker": "self.armed = false",
+        "within": null,
+        "offset": 2885,
+        "rejected": true,
+        "error": "Error: unique top self.armed = false"
+      },
+      {
+        "label": "Source operation actual receiver deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "function": "fn joined(",
+        "marker": "&mut self",
+        "within": null,
+        "offset": 2860,
+        "rejected": true,
+        "error": "Error: order &mut self"
+      },
+      {
+        "label": "Source operation live expression deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "function": "fn stage_is_fenced(",
+        "marker": "self.stage_fenced.load(Ordering::Acquire)",
+        "within": null,
+        "offset": 4226,
+        "rejected": true,
+        "error": "Error: unique top self.stage_fenced.load(Ordering::Acquire)"
+      },
+      {
+        "label": "Source operation actual receiver deletion",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "function": "fn stage_is_fenced(",
+        "marker": "&self",
+        "within": null,
+        "offset": 4197,
+        "rejected": true,
+        "error": "Error: order &self"
+      }
+    ],
+    "shadow_literal_mutations": [
+      {
+        "function": "fn require_original_source_capture(",
+        "decoy": "comment",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_capture(",
+        "decoy": "string_literal",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_capture(",
+        "decoy": "nested_function",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_capture(",
+        "decoy": "outside_function",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_operation(",
+        "decoy": "comment",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_operation(",
+        "decoy": "string_literal",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_operation(",
+        "decoy": "nested_function",
+        "rejected": true
+      },
+      {
+        "function": "fn require_original_source_operation(",
+        "decoy": "outside_function",
+        "rejected": true
+      }
+    ],
+    "projection_helper": "\nfunction occurrenceCount(haystack, needle) { let n=0; for(let i=haystack.indexOf(needle);i>=0;i=haystack.indexOf(needle,i+needle.length))n++;return n; }\nfunction rustItemEnd(code,start){let p=0,b=0;for(let i=start;i<code.length;i++){const c=code[i];if(c===\"(\")p++;else if(c===\")\"&&p)p--;else if(c===\"[\")b++;else if(c===\"]\"&&b)b--;else if(!p&&!b&&c===\";\")return i;else if(!p&&!b&&c===\"{\"){let d=1;for(let j=i+1;j<code.length;j++){if(code[j]===\"{\")d++;else if(code[j]===\"}\"&&!--d)return j;}return null;}}return null;}\nfunction scopedBody(code,functionName){if(occurrenceCount(code,functionName)!==1)throw Error(\"unique function \"+functionName);const start=code.indexOf(functionName),end=rustItemEnd(code,start);if(end===null||code[end]!==\"}\")throw Error(\"function end \"+functionName);let body=code.slice(start,end+1),cursor=functionName.length;for(;;){const m=/\\bfn\\s+(?:r#)?\\w+/.exec(body.slice(cursor));if(!m)break;const n=cursor+m.index,e=rustItemEnd(body,n);if(e===null)throw Error(\"nested end\");body=body.slice(0,n)+body.slice(n,e+1).replace(/[^\\n]/g,\" \")+body.slice(e+1);cursor=e+1;}return{start,end,body};}\nfunction verifyOrder(sequences,code,literalPositions={}){if(!Array.isArray(sequences)||sequences.some(s=>!Array.isArray(s)||s.length<2||s.some(m=>typeof m!==\"string\"||!m)))throw Error(\"required_order shape\");for(const s of sequences){let pos=0;for(const m of s){const i=Object.hasOwn(literalPositions,m)?literalPositions[m]:code.indexOf(m,pos);if(i<pos)throw Error(\"order \"+m);pos=i+m.length;}}}\nfunction verifyProtected(rows,source,maskRust){const code=maskRust(source);const count={rows:0,functions:0,sequences:0,top:0};for(const r of rows){count.rows++;for(const m of r.required??[])if(!source.includes(m))throw Error(\"required \"+m);verifyOrder(r.required_order??[],code);for(const f of r.required_function_order??[]){if(!/^fn [A-Za-z_]\\w*\\($/.test(f.function))throw Error(\"function marker\");const {start,end,body}=scopedBody(code,f.function);for(const m of f.top_level??[]){if(occurrenceCount(body,m)!==1)throw Error(\"unique top \"+m);const pos=body.indexOf(m),prefix=body.slice(0,pos),depth=(prefix.match(/{/g)||[]).length-(prefix.match(/}/g)||[]).length;if(depth!==1)throw Error(\"top depth \"+m);count.top++;}const literals={};for(const m of f.literal_calls??[]){if(!/^(?:\\.[A-Za-z_]\\w*|[A-Za-z_]\\w*(?:::[A-Za-z_]\\w*)*)\\(\"(?:[^\"\\\\]|\\\\.)*\"\\)$/.test(m))throw Error(\"literal grammar\");const raw=source.slice(start,end+1),masked=maskRust(m);let found=[];for(let pos=raw.indexOf(m);pos>=0;pos=raw.indexOf(m,pos+m.length)){if(body.slice(pos,pos+m.length)===masked)found.push(pos);}if(found.length!==1)throw Error(\"literal live\");literals[m]=found[0];}verifyOrder([f.sequence],body,literals);count.functions++;count.sequences+=f.sequence.length;}\n for(const m of r.forbidden??[]){const esc=[...m].map(c=>\"\\\\^$.*+?()[]{}|\".includes(c)?\"\\\\\"+c:c).join(\"\");const a=/^[A-Za-z0-9_]/.test(m)?\"(?<!\\\\w)\":\"\",b=/[A-Za-z0-9_]$/.test(m)?\"(?!\\\\w)\":\"\";if(new RegExp(a+esc+b).test(code))throw Error(\"forbidden \"+m);}\n }return count;}\nfunction requireCaptureLiteral(source,maskRust){const code=maskRust(source);const re=/let\\s+result\\s*=\\s*self\\s*\\.source\\s*\\.as_ref\\(\\)\\s*\\.ok_or\\(\\s*Error::Binding\\(\\s*\"ordinary Training requires original source capture\"\\s*,?\\s*\\)\\s*\\)/g;for(const f of [\"fn require_original_source_capture(\",\"fn require_original_source_operation(\"]){const {start,end,body}=scopedBody(code,f),raw=source.slice(start,end+1);re.lastIndex=0;let matches=0,m;while((m=re.exec(raw)))if(body.slice(m.index,m.index+m[0].length)===maskRust(m[0]))matches++;if(matches!==1)throw Error(\"actual capture literal \"+f);}return true;}\n",
+    "authoritative_python_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "python_executed": false,
+    "rust_executed": false,
+    "native_executed": false,
+    "typed_caller_full_scan_executed": false,
+    "old_test_methods_preserved": 29,
+    "new_test_method_count": 0,
+    "remaining_out_of_scope_top_level_single_marker_records": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+        "sequence": [
+          "pub(in super::super) enum Action {\n    Execute,\n    Readback,\n    BeginOriginalRead,\n    BeginOriginalExecute,\n    ReadOriginalPage { transfer: u64, index: u32 },\n    FinishOriginalRead { transfer: u64 },\n}"
+        ]
+      }
+    ],
+    "remaining_function_single_marker_records": []
+  },
+  "changes": {
+    "production_rust_files": 0,
+    "verifier_files": 0,
+    "boundary_caller_changes": 0,
+    "metadata_id_changes": 0,
+    "permissions_keys_grants_leases_or_policy": 0
+  },
+  "ordinary_acceptance": 0,
+  "pending": "Root must merge the independent Model wire schema repair and run the original Python source suite on the fixed combined source. No test pass or ordinary acceptance is inferred from V8 projection."
+}

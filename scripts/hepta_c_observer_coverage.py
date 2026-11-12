@@ -445,7 +445,21 @@ ORIGINAL_EVALUATION_OPERATION_CASES = tuple(
     )
 )
 
+PAIRED_PRODUCT_CASES = (
+    "product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds",
+    "product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority",
+    "product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending",
+    "product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters",
+    "product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign",
+    "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature",
+    "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution",
+    "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible",
+)
+
 OWNER_GROUPS = (
+    ("original_paired_product_domain", "codex-hepta-intelligence-eval", PAIRED_PRODUCT_CASES),
     ("original_artifact_head", PACKAGE, ORIGINAL_ARTIFACT_HEAD_CASES),
     ("original_artifact_preparation", "codex-hepta-learning-artifacts", ORIGINAL_ARTIFACT_PREPARATION_CASES),
     ("legacy_artifact_recovery", "codex-hepta-learning-artifacts", LEGACY_ARTIFACT_RECOVERY_CASES),

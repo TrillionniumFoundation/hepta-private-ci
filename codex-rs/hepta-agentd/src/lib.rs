@@ -323,6 +323,8 @@ mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_original_evaluation_provider;
 #[cfg(target_os = "linux")]
+mod circuit_on_policy_evaluation;
+#[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
 mod circuit_task;
 #[cfg(target_os = "linux")]
@@ -1545,3 +1547,29 @@ pub use circuit_feature_current::OriginalCircuitModelVersionPublicationV1;
 pub use circuit_feature_current::OriginalCircuitModelVersionReadbackV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitModelVersionRecoveryV1;
+
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCellEvaluationCohortCustodyV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_on_policy_evaluation::OriginalCellEvaluationCohortCurrentV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyAdmissionV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortCurrentV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortReadbackV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortRuleV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyFinalHoldoutProviderV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyHistoryV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyPairV1;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyProtocolV1;
+pub use neuron_cell_evaluation::freeze_paired_cell_learning_evaluation_plan_v1;

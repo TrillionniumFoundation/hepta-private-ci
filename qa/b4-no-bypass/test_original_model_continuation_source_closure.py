@@ -196,7 +196,7 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
             "OriginalCellQ24TrainingCommandOwnerV1::create_original_model(",
             "OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(",
             "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
-            "evaluation.require_original_operation_current(inputs.started)?",
+            "OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?",
             "state.retained.as_ref().is_some_and(|previous| previous != &model)",
         ):
             self.rejects(HOST, "fn begin_original_read(", marker)
@@ -220,7 +220,7 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
             "request.nonce != self.transfer + 1 + pages as u64",
             "OriginalCellEvaluationModelReadV1::finish(",
             "self.evaluation.take().ok_or(Error::CommitUncertain)?",
-            "after.original_model_transfer_body() != self.body.as_slice()",
+            "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()",
             "after.original_evaluation() != &self.context.evaluation",
             "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
             "after.authenticate_current(fresh)?",
@@ -266,10 +266,12 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
         for marker in (
             "request.require_initial(&self.bootstrap.config.material, nonce)?",
             "self.begin_original_read(&request)?",
-            "original.started()?",
+            "OriginalModelReadHostOperation::started(&original)?",
             "*operation = Some(original)",
-            "operation.as_mut().ok_or(Error::ReadbackRequired)?.page(&request)",
-            "operation.take().ok_or(Error::ReadbackRequired)?.finish(&request)",
+            "OriginalModelReadHostOperation::page(",
+            "operation.as_mut().ok_or(Error::ReadbackRequired)?, &request",
+            "OriginalModelReadHostOperation::finish(",
+            "operation.take().ok_or(Error::ReadbackRequired)?, &request",
             "if result.is_err()",
             "drop(operation.take())",
             "Err(_) => wire::Outcome::Uncertain",
@@ -311,7 +313,10 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
             "completed.material().authenticate_current(fresh)",
             "completed.material().require_original_model_input(",
             "input.material_digest() != model.material_digest()",
-            "self.model_completion.is_some() || self.evaluation.snapshot() != snapshot",
+            "self.model_completion.is_some()",
+            "self.selection.is_some()", "self.next_use.is_some()",
+            "self.publication.is_some()", "self.completion_read.is_some()",
+            "self.evaluation.snapshot() != snapshot",
         ):
             self.rejects(EVIDENCE, "fn authenticate_result(", marker)
 

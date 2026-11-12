@@ -12,6 +12,7 @@ use super::Error;
 pub(crate) struct CircuitTaskPolicyProjectionV1 {
     selected: StableId,
     entries: Vec<CellPolicyEntryV1>,
+    checkpoint_before: Digest32,
 }
 
 impl CircuitTaskPolicyProjectionV1 {
@@ -21,6 +22,12 @@ impl CircuitTaskPolicyProjectionV1 {
 
     pub(crate) fn entries(&self) -> &[CellPolicyEntryV1] {
         &self.entries
+    }
+
+    /// Exact committed original predecessor. The paired evaluation profile only
+    /// admits the existing fresh empty Cell state, represented by ZERO.
+    pub(crate) fn checkpoint_before(&self) -> Digest32 {
+        self.checkpoint_before
     }
 }
 
@@ -55,7 +62,7 @@ pub(super) fn read(
     {
         return Err(Error::InvalidBinding);
     }
-    decision.digest()?; // Previous checkpoint.
+    let checkpoint_before = decision.digest()?;
     if decision.digest()? != publication.checkpoint_digest() {
         return Err(Error::InvalidBinding);
     }
@@ -140,7 +147,7 @@ pub(super) fn read(
         }
     }
     output.end()?;
-    Ok(CircuitTaskPolicyProjectionV1 { selected, entries })
+    Ok(CircuitTaskPolicyProjectionV1 { selected, entries, checkpoint_before })
 }
 
 struct Reader<'a>(&'a [u8]);
