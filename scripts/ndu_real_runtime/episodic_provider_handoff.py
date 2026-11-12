@@ -7,6 +7,7 @@ or memory benefit. The independent provider verifier remains required. The
 """
 
 from dataclasses import asdict, dataclass
+import base64
 import hashlib
 import http.client
 import ipaddress
@@ -15,6 +16,8 @@ import math
 import os
 from pathlib import Path
 import stat
+import subprocess
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -23,6 +26,30 @@ import urllib.request
 
 MAX_REQUEST_BYTES = 1048576
 MAX_METADATA_BYTES = 65536
+_LOADED_HANDOFF_SOURCE = (
+    Path(__file__).read_bytes() if __name__ != "_mem_transport_child" else b""
+)
+_TRANSPORT_CHILD = r"""
+import base64, hashlib, json, sys, time, types
+from pathlib import Path
+raw = sys.stdin.buffer.read(2097153)
+if len(raw) > 2097152:
+    raise ValueError("bounded transport control required")
+payload = json.loads(raw)
+source = payload["source"].encode()
+if hashlib.sha256(source).hexdigest() != payload["receipt"]["transport_source_sha256"]:
+    raise ValueError("transport source binding mismatch")
+module = types.ModuleType("_mem_transport_child")
+module.__file__ = payload["source_path"]
+sys.modules[module.__name__] = module
+exec(compile(source, module.__file__, "exec"), module.__dict__)
+result = module._transport(
+    Path(payload["output"]), payload["receipt"],
+    base64.b64decode(payload["request"], validate=True),
+    payload["proxies"], module.HandoffProfile(**payload["receipt"]["profile"]),
+    time.monotonic_ns())
+sys.stdout.buffer.write(module._canonical(result))
+"""
 
 
 @dataclass(frozen=True)
@@ -122,7 +149,9 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
     inference. Launch custody and namespace authenticity are upstream duties;
     these checks bind the supplied launch receipt to its raw framed stdout.
     Environment proxy/CA settings are honored and proxy config is
-    digest-bound in admission. The timeout applies to socket operations.
+    digest-bound in admission. The parent reserves before spawning a fresh
+    transport child and kills it at the network deadline. Bounded input reads
+    and durable filesystem operations remain separate from that network budget.
     """
     for value in (request_id, case_id):
         if (
@@ -133,7 +162,7 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
             raise ValueError("bounded printable request/case identity required")
     if not isinstance(profile, HandoffProfile):
         raise ValueError("frozen handoff profile required")
-    if not isinstance(profile.endpoint, str) or len(profile.endpoint) > 8192:
+    if not isinstance(profile.endpoint, str) or len(profile.endpoint.encode()) > 4096:
         raise ValueError("endpoint URL required")
     route = urllib.parse.urlsplit(profile.endpoint)
     loopback = False
@@ -167,6 +196,8 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
         or not 1 <= profile.max_response_bytes <= 1048576
     ):
         raise ValueError("bounded timeout and response size required")
+    if _read_regular(Path(__file__), 131072) != _LOADED_HANDOFF_SOURCE:
+        raise ValueError("transport source changed since import")
     launch_dir = Path(launch_dir)
     launch_raw = _read_regular(launch_dir / "RECEIPT.json", MAX_METADATA_BYTES)
     launch = _json(launch_raw)
@@ -228,6 +259,8 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
     proxies = urllib.request.getproxies()
     admission = {
         "schema": "hepta.mem10.provider-handoff.v1",
+        "transport_source_sha256": _pin(_LOADED_HANDOFF_SOURCE)["sha256"],
+        "transport_supervision": "fresh-process-deadline-v1",
         "request_id": request_id,
         "case_id": case_id,
         "session_id": launch["session_id"],
@@ -288,6 +321,12 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
             or type(retained.get("http_status")) is not int
             or not 100 <= retained["http_status"] <= 599
             or retained.get("transport_dispatches") != 1
+            or not isinstance(retained.get("worker-stdout.bin"), dict)
+            or not isinstance(retained.get("worker-stderr.bin"), dict)
+            or retained.get("worker_reaped") is not True
+            or type(retained.get("worker_returncode")) is not int
+            or retained["worker_returncode"] != 0
+            or retained.get("worker_capture_truncated") is not False
         ):
             raise ValueError("incomplete received terminal")
         for name, pin, limit in (
@@ -295,6 +334,16 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
             ("launch.json", admission["launch"], MAX_METADATA_BYTES),
             ("response.bin", retained["response"], profile.max_response_bytes + 1),
             ("response-headers.json", retained.get("response_headers"), 262144),
+            (
+                "worker-stdout.bin",
+                retained.get("worker-stdout.bin"),
+                MAX_METADATA_BYTES,
+            ),
+            (
+                "worker-stderr.bin",
+                retained.get("worker-stderr.bin"),
+                MAX_METADATA_BYTES,
+            ),
         ):
             if pin is None:
                 continue
@@ -310,6 +359,83 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
     _write(output / "launch.json", launch_raw)
     _write(output / "request.bin", request_raw)
     started = time.monotonic_ns()
+    payload = _canonical(
+        {
+            "source": _LOADED_HANDOFF_SOURCE.decode(),
+            "source_path": str(Path(__file__).absolute()),
+            "output": str(output),
+            "receipt": receipt,
+            "request": base64.b64encode(request_raw).decode(),
+            "proxies": proxies,
+        }
+    )
+    process = None
+    worker_stdout, worker_stderr = b"", b""
+    try:
+        process = subprocess.Popen(
+            [sys.executable, "-I", "-S", "-B", "-c", _TRANSPORT_CHILD],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            start_new_session=True,
+        )
+        receipt["worker_pid"] = process.pid
+        try:
+            worker_stdout, worker_stderr = process.communicate(
+                payload,
+                timeout=max(
+                    0.001,
+                    profile.timeout_seconds - (time.monotonic_ns() - started) / 1e9,
+                ),
+            )
+        except subprocess.TimeoutExpired:
+            process.kill()
+            worker_stdout, worker_stderr = process.communicate(timeout=1)
+            receipt["reason"] = "TRANSPORT_DEADLINE"
+        else:
+            if process.returncode != 0:
+                receipt["reason"] = "TRANSPORT_CHILD_FAILED"
+            elif len(worker_stdout) > MAX_METADATA_BYTES:
+                receipt["reason"] = "TRANSPORT_CHILD_OUTPUT_LIMIT"
+            else:
+                result = _json(worker_stdout)
+                if (
+                    not isinstance(result, dict)
+                    or any(result.get(key) != value for key, value in admission.items())
+                    or result.get("status") not in {"RECEIVED", "UNKNOWN"}
+                ):
+                    raise ValueError("transport result binding mismatch")
+                receipt = {**result, "worker_pid": process.pid}
+    except (OSError, ValueError, RecursionError, subprocess.TimeoutExpired) as error:
+        receipt["reason"] = type(error).__name__
+        receipt["status"] = "UNKNOWN"
+    finally:
+        receipt["worker_returncode"] = None if process is None else process.poll()
+        receipt["worker_reaped"] = (
+            process is not None and process.returncode is not None
+        )
+        receipt["worker_capture_truncated"] = (
+            max(len(worker_stdout), len(worker_stderr)) > MAX_METADATA_BYTES
+        )
+        if receipt["worker_capture_truncated"]:
+            receipt["status"] = "UNKNOWN"
+            receipt["reason"] = "TRANSPORT_CHILD_OUTPUT_LIMIT"
+        for name, raw in (
+            ("worker-stdout.bin", worker_stdout),
+            ("worker-stderr.bin", worker_stderr),
+        ):
+            _write(output / name, raw[:MAX_METADATA_BYTES])
+            receipt[name] = _pin(raw[:MAX_METADATA_BYTES])
+        receipt["elapsed_monotonic_ns"] = time.monotonic_ns() - started
+        receipt["ended_at_unix_ns"] = time.time_ns()
+        _write(output / "RECEIPT.json", _canonical(receipt))
+    return receipt
+
+
+def _transport(output, receipt, request_raw, proxies, profile, started):
+    """Trusted child body; the parent alone settles the durable terminal."""
+    headers = receipt["headers"]
     try:
         opener = urllib.request.build_opener(
             urllib.request.ProxyHandler(proxies), _NoRedirect()
@@ -386,5 +512,4 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
     finally:
         receipt["elapsed_monotonic_ns"] = time.monotonic_ns() - started
         receipt["ended_at_unix_ns"] = time.time_ns()
-        _write(output / "RECEIPT.json", _canonical(receipt))
     return receipt

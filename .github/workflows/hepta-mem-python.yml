@@ -80,7 +80,7 @@ jobs:
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_causal_contract
       - name: Check exact provider handoff and ambiguous recovery
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 16 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 24 \
             --output "$RUNNER_TEMP/mem7-records/mem10-handoff-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_provider_handoff
       - name: Check offline provider admission and process supervision
@@ -140,6 +140,15 @@ jobs:
           sudo apt-get update 2>&1 | tee "$records/package-update.log"
           sudo apt-get install --yes --no-install-recommends bubblewrap 2>&1 | tee "$records/package-install.log"
           bwrap --version >> "$records/host.txt"
+      - name: Record read-only host policy and unchanged strict namespace probe
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 30 --minimum-tests 4 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/host-observer-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_isolation_host
+          python scripts/hepta_ci_exec.py --timeout-seconds 45 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/host-observer.json" \
+            -- python -B -m ndu_real_runtime.isolation_host \
+              --output "$RUNNER_TEMP/mem9-isolation-records/host-capabilities"
       - name: Execute strict isolation and failure controls
         env:
           HEPTA_MEM9_REQUIRE_ISOLATION: "1"
