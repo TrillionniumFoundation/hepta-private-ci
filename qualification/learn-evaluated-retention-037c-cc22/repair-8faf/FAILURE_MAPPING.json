@@ -1,0 +1,212 @@
+{
+  "source_commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+  "source_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+  "original_log": {
+    "bytes": 116135,
+    "sha256": "1eec26c9b0b30b68b54b92a209a19a99082b2a1570618b6296b8684ddcf18499",
+    "git_blob": "83b092d483ea980881859eb2558c535db32eaff2"
+  },
+  "local_before_same_16_headers": true,
+  "entries": [
+    {
+      "id": 1,
+      "kind": "ERROR",
+      "case": "test_product_callers_are_exact_without_granting_stage_authority (test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority) (boundary='learning_evidence_original_owner_readback')",
+      "group": "typed_trainer_receiver",
+      "fix_paths": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py"
+      ],
+      "explanation": "Explicit original Trainer borrow plus LearningIterationEvidenceClientV1::readback UFCS preserves the same refusal, snapshot, Training prior and awaited call; the original typed scanner now resolves the receiver without manifest caller changes.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 2,
+      "kind": "ERROR",
+      "case": "test_original_evidence_and_new_reader_caller_sets_remain_closed (test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_original_evidence_and_new_reader_caller_sets_remain_closed) (boundary='learning_evidence_original_owner_readback')",
+      "group": "typed_trainer_receiver",
+      "fix_paths": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py"
+      ],
+      "explanation": "Explicit original Trainer borrow plus LearningIterationEvidenceClientV1::readback UFCS preserves the same refusal, snapshot, Training prior and awaited call; the original typed scanner now resolves the receiver without manifest caller changes.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 3,
+      "kind": "ERROR",
+      "case": "test_real_read_edges_are_registered_and_owner_constructors_remain_closed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed) (boundary='learning_evidence_original_owner_readback')",
+      "group": "typed_trainer_receiver",
+      "fix_paths": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py"
+      ],
+      "explanation": "Explicit original Trainer borrow plus LearningIterationEvidenceClientV1::readback UFCS preserves the same refusal, snapshot, Training prior and awaited call; the original typed scanner now resolves the receiver without manifest caller changes.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 4,
+      "kind": "ERROR",
+      "case": "test_four_original_read_edges_have_exact_typed_registered_callers (test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_original_read_edges_have_exact_typed_registered_callers) (boundary='learning_evidence_original_owner_readback')",
+      "group": "typed_trainer_receiver",
+      "fix_paths": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py"
+      ],
+      "explanation": "Explicit original Trainer borrow plus LearningIterationEvidenceClientV1::readback UFCS preserves the same refusal, snapshot, Training prior and awaited call; the original typed scanner now resolves the receiver without manifest caller changes.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 5,
+      "kind": "ERROR",
+      "case": "test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides (test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides)",
+      "group": "evaluated_remote_predecessor_markers",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_published_read_source_closure.py"
+      ],
+      "explanation": "Protect the actual RemoteOwner | EvaluatedOwner branches and profile-aware authenticator calls; keep original pre/post owner reads and add deletion of either branch.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 6,
+      "kind": "FAIL",
+      "case": "test_each_source_role_and_clock_constraint_remains_present_in_order (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order)",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 7,
+      "kind": "FAIL",
+      "case": "test_new_attestation_deadline_and_readback_window_are_distinct (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_new_attestation_deadline_and_readback_window_are_distinct)",
+      "group": "profile_aware_completed_receipt",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Attack the actual evaluated::receipt call with explicit profile and move existing deadline/SystemTime attacks to the private binding module.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 8,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='config.training_evidence.clone()')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 9,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='config.selection_evidence.clone()')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 10,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.training_evidence.signing_bytes()')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 11,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.training_evidence.signature')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 12,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.selection_evidence.signing_bytes()')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 13,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.selection_evidence.signature')",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 14,
+      "kind": "FAIL",
+      "case": "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed)",
+      "group": "private_binding_extraction",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Track all original protected functions at actual owner/private-binding paths; retain signed predecessor, source-role, clock, consumption and forbidden-marker attacks. Ordered mutation spans preserve consuming signatures and disambiguate short receipt arguments.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 15,
+      "kind": "FAIL",
+      "case": "test_real_read_edges_are_registered_and_owner_constructors_remain_closed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed) (boundary='circuit_feature_original_next_use_observation')",
+      "group": "actual_next_use_observation_caller",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      ],
+      "explanation": "Expected caller tuple adds only the already registered actual evaluated NextUse source file; original constructor and unknown-caller checks remain.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    },
+    {
+      "id": 16,
+      "kind": "FAIL",
+      "case": "test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='circuit_feature_original_selection_observation')",
+      "group": "actual_selection_observation_caller",
+      "fix_paths": [
+        "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+      ],
+      "explanation": "Expected caller tuple adds only the already registered actual evaluated Selection source file; arbitrary new callers still fail the original verifier.",
+      "local_before": "same original failure header",
+      "local_after": "passed in local-after-v3 (66 tests; no failures or errors)"
+    }
+  ]
+}

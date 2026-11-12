@@ -11,6 +11,8 @@ use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::super::super::context::PublicationAccess;
 use super::super::Error;
+use super::super::RetainedVersionOriginV1;
+use super::super::RetainedVersionPurposeV1;
 use super::super::wire;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
@@ -112,7 +114,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         let lifetime = self.remaining_lifetime(lifetime)?;
-        let mut channel = original_owner_command_channel_v1(
+        let channel = original_owner_command_channel_v1(
             stream,
             consumer,
             consumer_uid,
@@ -120,24 +122,47 @@ impl OriginalCircuitRetainedVersionHostV1 {
             timeout,
             lifetime,
         )?;
+        self.serve_original_selection_channel(channel, permit).await
+    }
+
+    async fn serve_original_selection_channel(
+        self: Arc<Self>,
+        mut channel: codex_hepta_contracts::HostAuthorityPeerChannel,
+        permit: tokio::sync::OwnedSemaphorePermit,
+    ) -> Result<u64, Error> {
         loop {
             let changed = self.installed.notified();
             self.require_lifetime()?;
             channel.check_peer_lifetime()?;
             let reader = {
                 match self.state.try_lock() {
-                    Ok(state) => state.selection_reader.as_ref().map(Arc::clone),
+                    Ok(state) if self.original_final_use_outcome() == RetainedVersionFinalUseOutcomeV1::Published => {
+                        if let Some(reader) = state.selection_reader.as_ref() {
+                            // Admission of this connection still requires the
+                            // held full Material/D/T/B windows. A task reader's
+                            // own T/B pins do not replace the Material freeze.
+                            state.cut.as_ref().ok_or(Error::Unavailable)?
+                                .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
+                            Some(Arc::clone(reader))
+                        } else {
+                            None
+                        }
+                    },
+                    Ok(_) => None,
                     Err(std::sync::TryLockError::WouldBlock) => None,
                     Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
                 }
             };
             if let Some(reader) = reader {
+                let purpose = self.purpose;
                 return tokio::task::spawn_blocking(move || {
                     let _permit = permit;
-                    OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
-                        reader.as_ref(),
-                        &mut channel,
-                    )
+                    match purpose {
+                        RetainedVersionPurposeV1::TrainingNoUpdate =>
+                            OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(reader.as_ref(), &mut channel),
+                        RetainedVersionPurposeV1::EvaluatedNoUpdate =>
+                            OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_retained_channel(reader.as_ref(), &mut channel),
+                    }
                     .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
                 })
                 .await
@@ -168,7 +193,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         self.require_lifetime()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
         if request.schema != 1
-            || request.purpose != wire::OPERATION
+            || request.purpose != self.purpose.operation()
             || request.request_id != request_id
             || !(1..=128).contains(&request_id)
             || request.initial_binding != self.initial_binding.to_string()
@@ -201,6 +226,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
             };
             if self.bind_original_predecessor(&mut state).is_err() {
+                if self.origin == RetainedVersionOriginV1::Recovered {
+                    // A formerly admitted cold reader cannot admit another
+                    // connection after its held original cut fails a live read.
+                    // Already handed-out read-only connections are not revoked.
+                    state.selection_reader = None;
+                }
                 // No complete original predecessor was authenticated. This
                 // is readback uncertainty, not an accepted prepare dispatch.
                 // In particular, a wrong external cut cannot spend another
@@ -212,7 +243,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                     wire::Action::Prepare => self.prepare_original(&mut state),
                     wire::Action::Readback => {
                         self.preparation_requested.store(true, Ordering::Release);
-                        self.read_original(&state)
+                        self.read_original_recovery(&mut state)
                     }
                 };
                 state
@@ -283,3 +314,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
 #[cfg(test)]
 #[path = "circuit_retained_version_issuer_host_tests.rs"]
 mod issuer_fixture;
+
+#[cfg(test)]
+#[path = "circuit_evaluated_version_readiness_support_tests.rs"]
+mod evaluated_reader_fixture;

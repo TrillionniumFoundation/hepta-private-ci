@@ -529,3 +529,9 @@ async fn evaluated_c_recovery_of_missing_receipt_never_claims_or_signs() -> anyh
     drop(c);
     f.finish().await
 }
+
+#[path = "circuit_evaluated_next_use_remote_tests.rs"]
+mod remote_tests;
+
+#[path = "circuit_evaluated_command_roundtrip_tests.rs"]
+mod command_roundtrip_tests;

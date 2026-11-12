@@ -14,12 +14,16 @@ use super::Error;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
 use super::now;
+use super::profile::ReadProfile;
+use super::OriginalCircuitEvaluatedLearningReadContextV1;
+use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use super::wire as original;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
 
 const PURPOSE: &str = "runtime.learning.original-circuit.completion-readiness.v1";
+const EVALUATED_PURPOSE: &str = "runtime.learning.original-circuit.evaluated-completion-readiness.v1";
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -54,6 +58,42 @@ impl Request {
         }
         self.original.require_context(context, binding, request_id)
     }
+
+    pub(super) fn from_profile(
+        context: &ReadProfile,
+        binding: Digest32,
+        request_id: u64,
+    ) -> Result<Self, Error> {
+        match context {
+            ReadProfile::TrainingNoUpdate(legacy) => Self::new(legacy, binding, request_id),
+            ReadProfile::Evaluated(_) => {
+                if context.mode()? != original::Mode::NextUse {
+                    return Err(Error::Binding("evaluated readiness requires original Selection"));
+                }
+                Ok(Self {
+                    purpose: EVALUATED_PURPOSE.into(),
+                    original: context.request(binding, request_id)?,
+                })
+            }
+        }
+    }
+
+    pub(super) fn require_profile(
+        &self,
+        context: &ReadProfile,
+        binding: Digest32,
+        request_id: u64,
+    ) -> Result<(), Error> {
+        match context {
+            ReadProfile::TrainingNoUpdate(legacy) => self.require_context(legacy, binding, request_id),
+            ReadProfile::Evaluated(_) => {
+                if self.purpose != EVALUATED_PURPOSE || context.mode()? != original::Mode::NextUse {
+                    return Err(Error::Binding("fixed evaluated completion-readiness purpose"));
+                }
+                context.require_request(&self.original, binding, request_id)
+            }
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -73,7 +113,7 @@ pub(super) enum Readiness {
 /// Only the concrete ordinary assembly receives this read-only capability.
 /// Its already-held channel is moved here after actual opaque D and S arrive.
 pub(crate) struct OriginalCircuitCompletionReadinessClientV1 {
-    context: Context,
+    context: ReadProfile,
     binding: Digest32,
     channel: Mutex<Option<Channel>>,
     retained: Mutex<Option<Readback>>,
@@ -86,7 +126,6 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         dataset: &OriginalCellQ24MaterialCommandReceiptV1,
         selection: &OriginalCircuitSelectionCommandReceiptV1,
     ) -> Result<Self, Error> {
-        let started_at = now()?;
         let context = Context {
             prefix: selection.snapshot().clone(),
             scope: material.scope.clone(),
@@ -94,12 +133,43 @@ impl OriginalCircuitCompletionReadinessClientV1 {
             training_evidence: selection.training_attestation().clone(),
             selection_evidence: Some(selection.attestation().clone()),
         };
-        let binding = original::context_binding(&context, started_at)?;
+        Self::bind_profile(peer, material, dataset, ReadProfile::TrainingNoUpdate(context))
+    }
+
+    pub(crate) fn bind_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
+    ) -> Result<Self, Error> {
+        let (scope, verifier, _) = selection.original_context().receipt_configuration();
+        if scope != material.scope
+            || verifier.trust_digest() != material.verifier.trust_digest()
+            || verifier.scope_digest() != material.verifier.scope_digest()
+            || verifier.objective_digest() != material.verifier.objective_digest()
+        {
+            return Err(Error::Binding("same original evaluated Material readiness context"));
+        }
+        let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone())?;
+        Self::bind_profile(peer, material, dataset, ReadProfile::Evaluated(context))
+    }
+
+    fn bind_profile(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        context: ReadProfile,
+    ) -> Result<Self, Error> {
+        let started_at = now()?;
+        let binding = context.binding(started_at)?;
+        if context.mode()? != original::Mode::NextUse {
+            return Err(Error::Binding("completion readiness requires original Selection"));
+        }
         let initial = LearningIterationCoordinatorV1::new(
-            context.prefix.request.clone(),
-            context.prefix.owners.clone(),
+            context.prefix().request.clone(),
+            context.prefix().owners.clone(),
         )?;
-        let mut original_dataset = context.prefix.clone();
+        let mut original_dataset = context.prefix().clone();
         original_dataset.head_digest = original_dataset.receipts[2].predecessor;
         original_dataset.receipts.truncate(2);
         if initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot() {
@@ -112,7 +182,7 @@ impl OriginalCircuitCompletionReadinessClientV1 {
             dataset, material,
         )
         .map_err(|_| Error::Binding("same original Material readiness context"))?;
-        if fresh < started_at || original::context_binding(&context, fresh)? != binding {
+        if fresh < started_at || context.binding(fresh)? != binding {
             return Err(Error::Binding("original readiness binding and clock"));
         }
         Ok(Self {
@@ -136,13 +206,13 @@ impl OriginalCircuitCompletionReadinessClientV1 {
             .take()
             .ok_or(Error::Unavailable)?;
         let started_at = now()?;
-        if original::context_binding(&self.context, started_at)? != self.binding
+        if self.context.binding(started_at)? != self.binding
             || !(1..=128).contains(&channel.next_request_id)
         {
             return Err(Error::Binding("same bounded readiness connection"));
         }
         let request_id = channel.next_request_id;
-        let request = Request::new(&self.context, self.binding, request_id)?;
+        let request = Request::from_profile(&self.context, self.binding, request_id)?;
         channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
         let bytes = serde_json::to_vec(&request)?;
         let (channel, response) = tokio::task::spawn_blocking(move || {
@@ -154,14 +224,14 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         let response: Response = serde_json::from_slice(&response)?;
         response
             .request
-            .require_context(&self.context, self.binding, request_id)?;
+            .require_profile(&self.context, self.binding, request_id)?;
         let current = match response.result {
             Readiness::NotReady => None,
-            Readiness::Ready { read } => Some(read.decode(&self.context)?),
+            Readiness::Ready { read } => Some(self.context.decode(read)?),
         };
         channel.peer.check_peer_lifetime()?;
         let fresh = now()?;
-        if fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding {
+        if fresh < started_at || self.context.binding(fresh)? != self.binding {
             return Err(Error::Binding("readiness clock after original peer I/O"));
         }
         {
@@ -186,3 +256,7 @@ impl OriginalCircuitCompletionReadinessClientV1 {
 #[cfg(test)]
 #[path = "circuit_completion_readiness_support_tests.rs"]
 pub(crate) mod fixture;
+
+#[cfg(test)]
+#[path = "circuit_evaluated_completion_readiness_support_tests.rs"]
+pub(crate) mod evaluated_fixture;

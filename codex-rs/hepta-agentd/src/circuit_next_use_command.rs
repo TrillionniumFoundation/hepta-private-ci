@@ -35,9 +35,13 @@ use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationCheckpointErrorV1;
 use crate::OriginalCircuitNextUseReceiptErrorV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
+use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
+
+#[path = "circuit_evaluated_next_use_command.rs"]
+mod evaluated;
 
 #[path = "circuit_next_use_command_stage_binding.rs"]
 mod stage_binding;
@@ -91,6 +95,7 @@ pub struct OriginalCircuitNextUseCommandContextV1 {
     verifier: LearningEvidenceVerifierV1,
     training_evidence: SignedLearningEvidenceV1,
     selection_evidence: SignedLearningEvidenceV1,
+    evaluated: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
 }
 
 impl OriginalCircuitNextUseCommandContextV1 {
@@ -99,6 +104,9 @@ impl OriginalCircuitNextUseCommandContextV1 {
         verifier: LearningEvidenceVerifierV1,
         original: &OriginalCircuitSelectionCommandReceiptV1,
     ) -> Result<Self, Error> {
+        if original.evaluated_context().is_some() {
+            return Err(Error::Binding("strict original TrainingNoUpdate C profile"));
+        }
         Self::from_checkpoint(
             original.snapshot().clone(),
             scope,
@@ -121,12 +129,16 @@ impl OriginalCircuitNextUseCommandContextV1 {
             verifier,
             training_evidence,
             selection_evidence,
+            evaluated: None,
         };
         context.authenticate(now()?)?;
         Ok(context)
     }
 
     fn authenticate(&self, current: u64) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
+        if let Some(selection) = &self.evaluated {
+            return self.authenticate_evaluated(selection, current);
+        }
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.selection.clone())?;
         self.scope.validate_snapshot(&self.selection)?;
         if self.selection.receipts.len() != 4
@@ -194,6 +206,12 @@ impl OriginalCircuitNextUseCommandContextV1 {
 
     fn binding(&self, current: u64) -> Result<Digest32, Error> {
         self.authenticate(current)?;
+        if let Some(selection) = &self.evaluated {
+            return Ok(Digest32::of_parts(&[
+                b"hepta.agentd.original-circuit-evaluated-next-use-command.v1\0",
+                selection.original_receipt_binding().as_array(),
+            ]));
+        }
         Ok(Digest32::of_parts(&[
             b"hepta.agentd.original-circuit-next-use-command.v1\0",
             &encode_original_owner_snapshot_v1(&self.selection)?,
@@ -212,13 +230,14 @@ impl OriginalCircuitNextUseCommandContextV1 {
 /// The original Observer's verified receipt for actually completed ordinary C.
 /// A subsequent read always calls the original owner again. Keeping this value
 /// neither starts C nor supplies a replacement for physical CURRENT.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone)]
 pub struct OriginalCircuitNextUseCommandReceiptV1 {
     snapshot: LearningIterationSnapshotV1,
     receipt: LearningIterationReceiptV1,
     attestation: SignedLearningEvidenceV1,
     training_evidence: SignedLearningEvidenceV1,
     selection_evidence: SignedLearningEvidenceV1,
+    evaluated: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
 }
 impl OriginalCircuitNextUseCommandReceiptV1 {
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
@@ -383,8 +402,13 @@ impl OriginalCircuitNextUseCommandClientV1 {
     pub async fn attest_completed_task(
         &self,
     ) -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
-        if now()? >= self.context.selection.request.envelope.expiry_unix_seconds {
+        let current = now()?;
+        if current >= self.context.selection.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
+        }
+        if let Some(selection) = &self.context.evaluated {
+            selection.original_context().require_new_original_receipt(current)
+                .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
         }
         self.exchange(wire::Action::Execute).await
     }

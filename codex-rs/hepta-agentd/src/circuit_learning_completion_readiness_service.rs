@@ -14,6 +14,7 @@ use super::Error;
 use super::OriginalCircuitLearningReadOwnerV1;
 use super::Readback;
 use super::now;
+use super::ReadProfile;
 use super::require_timing;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
@@ -36,9 +37,41 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         lifetime: Duration,
     ) -> Result<u64, Error> {
         require_timing(timeout, lifetime)?;
-        if wire::mode(&self.context)? != wire::Mode::NextUse {
+        if wire::mode(self.context.legacy()?)? != wire::Mode::NextUse {
             return Err(Error::Binding("only original C completion readiness"));
         }
+        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
+    }
+
+    /// A separate evaluated five-cut purpose over the existing original C.
+    /// It cannot enter the strict legacy completion-readiness entry point.
+    pub fn serve_evaluated_completion_readiness(
+        &self,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
+        require_timing(timeout, lifetime)?;
+        if !matches!(&self.context, ReadProfile::Evaluated(_))
+            || self.context.mode()? != wire::Mode::NextUse
+        {
+            return Err(Error::Binding("only original evaluated C completion readiness"));
+        }
+        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
+    }
+
+    fn serve_completion_profile(
+        &self,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
         let _permit = self
             .connections
             .try_acquire()
@@ -82,13 +115,15 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     ) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let request: readiness::Request = serde_json::from_slice(bytes)?;
-        request.require_context(&self.context, self.binding, request_id)?;
-        if wire::context_binding(&self.context, started_at)? != self.binding {
+        request.require_profile(&self.context, self.binding, request_id)?;
+        if self.context.binding(started_at)? != self.binding {
             return Err(Error::Binding("same original readiness context"));
         }
         let current = self.read_original_readiness()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
+        if fresh < started_at
+            || self.context.binding(fresh)? != self.binding
+        {
             return Err(Error::Binding("readiness window after original owner I/O"));
         }
         let result = match current {
@@ -106,7 +141,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
 
     fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
         self.require_task_input_current()?;
-        let coordinator = wire::decision(&self.context)?;
+        let coordinator = self.context.decision()?;
         let selection =
             PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
         self.require_original_selection(&selection)?;

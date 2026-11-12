@@ -15,8 +15,47 @@ use super::require_clock;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCellEvaluationCommandReceiptV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 
 impl OriginalCircuitSelectionCommandClientV1 {
+    pub(in super::super) fn bind_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+        origin: Origin,
+    ) -> Result<Self, Error> {
+        let started_at = now()?;
+        let original = match origin {
+            Origin::Fresh => OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
+                material.scope.clone(), material.verifier.clone(), training, evaluation),
+            Origin::Recovered => OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
+                material.scope.clone(), material.verifier.clone(), training, evaluation),
+        }.map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
+        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(&original)?;
+        let mut actual_dataset = context.training.clone();
+        actual_dataset.head_digest = actual_dataset.receipts[2].predecessor;
+        actual_dataset.receipts.truncate(2);
+        if context.initial()? != material.initial || &actual_dataset != dataset.snapshot() {
+            return Err(Error::Binding("same original evaluated Dataset before Selection"));
+        }
+        let binding = context.binding(started_at)?;
+        peer.check_peer_lifetime()?;
+        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)
+            .map_err(|_| Error::Binding("same original evaluated Material before Selection"))?;
+        require_clock(started_at, fresh)?;
+        if context.binding(fresh)? != binding {
+            return Err(Error::Binding("unchanged full original evaluated predecessors"));
+        }
+        Ok(Self {
+            channel: Mutex::new(Some(Channel { peer, next_request_id: 1,
+                execution_requested: origin == Origin::Recovered })),
+            context, binding, retained: Mutex::new(None),
+        })
+    }
+
     pub(in super::super) fn bind_original_stage_channel(
         peer: HostAuthorityPeerChannel,
         material: &OriginalCellQ24MaterialReceiptConfigV1,

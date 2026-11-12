@@ -1,0 +1,321 @@
+{
+  "schema": "learn-evaluated-retention-037c-followup-v1",
+  "status": "IN_PROGRESS",
+  "updated_at": "2026-11-12T11:15:06.226483+00:00",
+  "package_assembly": "COMPLETE_FOR_CURRENT_SOURCE_AND_MAINTENANCE_SNAPSHOT",
+  "latest_source": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "prior_frozen_evidence_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "prior_frozen_evidence_unchanged": true,
+  "ordinary_qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_plus_root_cold_recovery": 0,
+    "multigeneration_improver": 0
+  },
+  "frozen_publication_modified": false,
+  "results": [
+    {
+      "id": "source_gate_8faf",
+      "actual_status": "FAILED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+      },
+      "evidence": [
+        "source-8faf-failed/source-closure.json",
+        "source-8faf-failed/driver.raw.log"
+      ],
+      "observed_passes": 381,
+      "observed_failures": 16,
+      "returncode": 1,
+      "timed_out": false
+    },
+    {
+      "id": "repair_local-before",
+      "actual_status": "FAILED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "exact baseline materialized subset",
+        "scope": "95 physical materialized dependency files, not a whole checkout"
+      },
+      "evidence": [
+        "repair-8faf/evidence/local-before/result.json",
+        "repair-8faf/evidence/local-before/tests.raw.log",
+        "repair-8faf/evidence/local-before/source-before.json",
+        "repair-8faf/evidence/local-before/source-after.json"
+      ],
+      "tests_run": 44,
+      "failure_subtests": 11,
+      "error_subtests": 5,
+      "returncode": 1,
+      "source_before_after_equal": true,
+      "retroactively_bound_to_cc22": false
+    },
+    {
+      "id": "repair_local-after",
+      "actual_status": "FAILED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "unpublished local postimages; original inventories bind exact bytes",
+        "scope": "95 physical materialized dependency files, not a whole checkout"
+      },
+      "evidence": [
+        "repair-8faf/evidence/local-after/result.json",
+        "repair-8faf/evidence/local-after/tests.raw.log",
+        "repair-8faf/evidence/local-after/source-before.json",
+        "repair-8faf/evidence/local-after/source-after.json"
+      ],
+      "tests_run": 66,
+      "failure_subtests": 4,
+      "error_subtests": 0,
+      "returncode": 1,
+      "source_before_after_equal": true,
+      "retroactively_bound_to_cc22": false
+    },
+    {
+      "id": "repair_local-after-v2",
+      "actual_status": "FAILED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "unpublished local postimages; original inventories bind exact bytes",
+        "scope": "95 physical materialized dependency files, not a whole checkout"
+      },
+      "evidence": [
+        "repair-8faf/evidence/local-after-v2/result.json",
+        "repair-8faf/evidence/local-after-v2/tests.raw.log",
+        "repair-8faf/evidence/local-after-v2/source-before.json",
+        "repair-8faf/evidence/local-after-v2/source-after.json"
+      ],
+      "tests_run": 66,
+      "failure_subtests": 3,
+      "error_subtests": 0,
+      "returncode": 1,
+      "source_before_after_equal": true,
+      "retroactively_bound_to_cc22": false
+    },
+    {
+      "id": "repair_local-after-v3",
+      "actual_status": "PASSED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "unpublished local postimages; original inventories bind exact bytes",
+        "scope": "95 physical materialized dependency files, not a whole checkout"
+      },
+      "evidence": [
+        "repair-8faf/evidence/local-after-v3/result.json",
+        "repair-8faf/evidence/local-after-v3/tests.raw.log",
+        "repair-8faf/evidence/local-after-v3/source-before.json",
+        "repair-8faf/evidence/local-after-v3/source-after.json"
+      ],
+      "tests_run": 66,
+      "failure_subtests": 0,
+      "error_subtests": 0,
+      "returncode": 0,
+      "source_before_after_equal": true,
+      "retroactively_bound_to_cc22": false
+    },
+    {
+      "id": "repair_c_product_rustfmt",
+      "actual_status": "PASSED_UNCHANGED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "one isolated original C postimage; not repository test execution"
+      },
+      "evidence": [
+        "repair-8faf/root-format-c-result.from-pty.json",
+        "repair-8faf/root-format-c-terminal.raw.log",
+        "repair-8faf/root-format-c-terminal.json"
+      ],
+      "returncode": 0,
+      "changed": false,
+      "native_tests_run": false
+    },
+    {
+      "id": "maintenance_8faf_v2",
+      "actual_status": "COMMAND_SUCCEEDED_WITH_SOURCE_CHANGE",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+      },
+      "evidence": [
+        "maintenance-8faf-v2-review/result.json",
+        "maintenance-8faf-v2-review/just-fix.raw.log",
+        "maintenance-8faf-v2-review/postimages.json",
+        "maintenance-8faf-v2-review/maintenance.patch"
+      ],
+      "original_driver_status": "passed",
+      "returncode": 0,
+      "clean_after": false,
+      "changed_paths": [
+        " M codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs"
+      ],
+      "postimage_count": 1,
+      "clean_gate_pass": false,
+      "native_tests_run": false
+    },
+    {
+      "id": "maintenance_postimage_rustfmt",
+      "actual_status": "PASSED_CHANGED_ISOLATED_POSTIMAGE",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "original maintenance helper postimage, before a93abb8a and after fa5cc533; not clean 8faf execution"
+      },
+      "evidence": [
+        "root-maintenance-8faf-v2-meta/format-result.from-pty.json",
+        "root-maintenance-8faf-v2-meta/format-terminal.json",
+        "root-maintenance-8faf-v2-meta/format-terminal.raw.log"
+      ],
+      "returncode": 0,
+      "changed": true,
+      "result_attribution": "derived extraction of original terminal stdout; raw terminal receipt retained",
+      "native_tests_run": false
+    },
+    {
+      "id": "format_cc22",
+      "actual_status": "PASSED_CLEAN",
+      "executed_source": {
+        "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+        "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+      },
+      "evidence": [
+        "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/fmt-result.json",
+        "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/just-fmt.raw.log"
+      ],
+      "returncode": 0,
+      "zero_postimages": true,
+      "native_tests_run": false
+    },
+    {
+      "id": "maintenance_cc22",
+      "actual_status": "PASSED_CLEAN",
+      "executed_source": {
+        "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+        "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+      },
+      "evidence": [
+        "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/result.json",
+        "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/just-fix.raw.log"
+      ],
+      "returncode": 0,
+      "postimage_count": 0,
+      "inventory_before": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+      "inventory_after": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+      "inventory_schema": "native maintenance driver; compare within this driver only",
+      "native_tests_run": false
+    },
+    {
+      "id": "source_gate_cc22",
+      "actual_status": "PASSED_CLEAN",
+      "executed_source": {
+        "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+        "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+      },
+      "evidence": [
+        "source-cc22-passed/source-result/source-closure.json",
+        "source-cc22-passed/source-result/result.json",
+        "source-cc22-passed/preparation/final-source.json",
+        "source-cc22-passed/status-original-sdk-payload.json",
+        "source-cc22-passed/source-result/driver.raw.log",
+        "source-cc22-passed/source-result/source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+        "source-cc22-passed/source-result/original-log-prefix-recovery.json"
+      ],
+      "observed_passes": 397,
+      "observed_failures": 0,
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 255.5251119658351,
+      "tracked_path_count": 14842,
+      "inventory_before": "64e1609c647a96842b8dc3729ccd9122865d7b015af1207608fe5008bcc370fe",
+      "inventory_after": "64e1609c647a96842b8dc3729ccd9122865d7b015af1207608fe5008bcc370fe",
+      "inventory_schema": "original source driver: sorted tracked/untracked-path rows with mode/bytes/SHA; compare within this driver only",
+      "complete_raw_logs": "BYTE_EXACT_COMPLETE",
+      "test_seconds_from_original_log": 253.726,
+      "hepta_log_attribution": "exact original bytes recovered from driver prefix; independently recorded original SHA and middle-segment disk read both match"
+    },
+    {
+      "id": "fullcaller_8faf",
+      "actual_status": "FAILED",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+      },
+      "evidence": [
+        "caller-8faf-terminal/fullcaller-8faf92e260e1-v2/result.json",
+        "caller-8faf-terminal/fullcaller-8faf92e260e1-v2/daemon-learning-caller-proof/verify.json",
+        "root-caller-8faf-terminal-review/verify.log"
+      ],
+      "returncode": 1,
+      "timed_out": false,
+      "inventory_before": "0c4b2bd7422194f27b2401f64d5517c101dfdbf2b1b2a752b7b25d464d607528",
+      "inventory_after": "0c4b2bd7422194f27b2401f64d5517c101dfdbf2b1b2a752b7b25d464d607528",
+      "inventory_schema": "original fullcaller driver including Git blob per row; compare within this driver only",
+      "failure_boundary": "learning_source_bound_training_stage_readback",
+      "unexpected_caller": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "distinct_from_repaired_c_trainer_receiver": true,
+      "cc22_fullcaller_run_claimed": false
+    },
+    {
+      "id": "native_helper-build",
+      "actual_status": "SUPPORT_COMMAND_PASSED_NOT_TEST_PASS",
+      "executed_source": {
+        "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+        "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+      },
+      "evidence": [
+        "native-cc22-focused-review/originals/helper-build.json",
+        "native-cc22-focused-review/originals/helpers/manifest.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "native_test_terminal_available": false
+    },
+    {
+      "id": "native_helper-verification-before",
+      "actual_status": "SUPPORT_COMMAND_PASSED_NOT_TEST_PASS",
+      "executed_source": {
+        "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+        "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+      },
+      "evidence": [
+        "native-cc22-focused-review/originals/helper-verification-before.json",
+        "native-cc22-focused-review/originals/helpers/manifest.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "native_test_terminal_available": false
+    },
+    {
+      "id": "cache_copy_prior_result",
+      "actual_status": "SUPPORT_RECORD_ONLY",
+      "executed_source": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "variant": "cache migration is environment preparation, not tested source execution"
+      },
+      "evidence": [
+        "maintenance-cc22-v1-review/native-cache-copy-8faf-v1/result.json"
+      ],
+      "original_status": "COPIED",
+      "original_exit_code": null,
+      "expanded_original_records_pending": true
+    }
+  ],
+  "pending": {
+    "focused_native_cc22": "Root reports a real failure; complete terminal and diagnostics are not yet included. No native test PASS is claimed.",
+    "root_native_exact_cases": "No terminal in this snapshot.",
+    "fullcaller_after_new_caller_repair": "Not started in this package; original 8faf finding remains preserved.",
+    "fullcaller_cc22": "Not run; caller declaration finding requires separate repair.",
+    "additional_cache_migration_originals": "Awaiting recovery owner records."
+  },
+  "inventory_comparison_rule": "Compare before/after only within one original driver; source, maintenance and caller inventory algorithms differ.",
+  "remote_ci": "Not included; no all-green CI claim."
+}

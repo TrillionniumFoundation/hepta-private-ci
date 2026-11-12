@@ -43,6 +43,9 @@ use evaluation::EvaluationLane;
 #[path = "cell_q24_candidate_stage_model.rs"]
 mod model;
 use model::ModelLane;
+#[path = "cell_q24_candidate_stage_retained.rs"]
+mod retained;
+use retained::EvaluatedContinuation;
 
 /// All endpoints are original connected streams delivered at the same initial
 /// handoff. There is no future Training receipt, B result, panel or model DTO.
@@ -62,6 +65,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     candidate: Mutex<CandidateLane>,
     evaluation: Mutex<EvaluationLane>,
     model: Mutex<ModelLane>,
+    retained: Mutex<EvaluatedContinuation>,
     end: Instant,
 }
 
@@ -129,7 +133,9 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
+                if retained::is_evaluated_no_update(snapshot) {
+                    self.read_evaluated_retained_prefix(snapshot).await
+                } else if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
                     OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?;
                     Ok(())
                 } else if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
@@ -176,8 +182,13 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
                 if stage == Stage::Proposal {
                     return self.execute_original_model(snapshot).await;
                 }
-                // A real NoUpdate follows the same existing Selector/C route.
-                // Candidate must not reach those retained-baseline commands.
+                if matches!(stage, Stage::Selection | Stage::NextUse)
+                    && retained::is_evaluated_no_update(snapshot)
+                {
+                    return self.execute_evaluated_retained_stage(snapshot, stage).await;
+                }
+                // Legacy TrainingNoUpdate keeps its strict three-cut protocol.
+                // Candidate Adopt still requires its absent original owners.
                 if matches!(stage, Stage::Selection | Stage::NextUse)
                     && snapshot.training_no_update_v2().is_none()
                 {
@@ -211,6 +222,11 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+                if retained::is_evaluated_no_update(snapshot)
+                    && matches!(receipt.observation.stage(), Stage::Selection | Stage::NextUse)
+                {
+                    return self.retained_attestation(snapshot, receipt).await;
+                }
                 if coordinator.candidate().is_some() && snapshot.receipts.len() >= 3 {
                     let training = self.training_prefix(snapshot)?;
                     if receipt.observation.stage() == Stage::Evaluation {
@@ -254,6 +270,7 @@ pub(crate) fn fixture_from_original_clients(
         candidate: Mutex::new(CandidateLane::new(initial)),
         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
         model: Mutex::new(ModelLane::fixture_unavailable()),
+        retained: Mutex::new(EvaluatedContinuation::new()),
         end,
     };
     owners.require_initial(

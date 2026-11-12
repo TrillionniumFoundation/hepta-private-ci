@@ -142,14 +142,15 @@ async fn original_evaluation_provider_releases_actual_b_and_retention_only_after
     original.finish().await
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()
--> anyhow::Result<()> {
+// Each branch keeps its own actual B owners, bytes and permanent-fence checks.
+// Partition the six complete native cohorts across bounded test cases; none of
+// their physical reads or assertions is replaced by a cached result.
+async fn current_refusal_cases(mutations: &[&str], modes: &[&str]) -> anyhow::Result<()> {
     let (original, primary, _retention, registration) = preregistered().await?;
     let trust_time = primary.at - 124;
     let objective = primary.rule.objective_digest;
     drop(primary);
-    for mutation in ["withdraw", "source-bytes", "ledger-bytes", "rollback"] {
+    for &mutation in mutations {
         let mut b = BFixture::new("original-B", objective, trust_time)?;
         b.populate(
             &original,
@@ -211,7 +212,7 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
             .is_err()
         );
     }
-    for mode in ["unreleased", "cold-readonly"] {
+    for &mode in modes {
         let mut b = BFixture::new("original-B", objective, trust_time)?;
         b.populate(
             &original,
@@ -257,9 +258,27 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support()
+async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()
 -> anyhow::Result<()> {
-    let (original, primary, _retention, registration) = preregistered().await?;
+    current_refusal_cases(&["withdraw", "source-bytes"], &[]).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows()
+-> anyhow::Result<()> {
+    current_refusal_cases(&["ledger-bytes", "rollback"], &[]).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows()
+-> anyhow::Result<()> {
+    current_refusal_cases(&[], &["unreleased", "cold-readonly"]).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes() -> anyhow::Result<()>
+{
+    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;
     let trust_time = primary.at - 124;
     let objective = primary.rule.objective_digest;
     drop(primary);
@@ -272,7 +291,16 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
         assert!(CohortAt::read(b.owners(), config, b.at).is_err());
         assert_eq!(b.source_bytes()?, bytes);
     }
-    for mutation in ["freeze-renewal", "training-renewal", "expired-window"] {
+    original.finish().await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_refuses_renewed_original_signatures() -> anyhow::Result<()> {
+    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;
+    let trust_time = primary.at - 124;
+    let objective = primary.rule.objective_digest;
+    drop(primary);
+    for mutation in ["freeze-renewal", "training-renewal"] {
         let mut b = BFixture::new("original-B", objective, trust_time)?;
         b.populate(
             &original,
@@ -283,69 +311,113 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
         let config = b.config(&original, &registration)?;
         let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
         let before = cohort.bytes()?;
-        if mutation == "expired-window" {
-            cohort.at = cohort
-                .original_config()
-                .training_evidence
-                .expires_at
-                .checked_add(1)
-                .ok_or_else(|| anyhow::anyhow!("original Training fixture expiry overflow"))?;
+        let mut signed = if mutation == "freeze-renewal" {
+            cohort.original_config().freeze_evidence.clone()
         } else {
-            let mut signed = if mutation == "freeze-renewal" {
-                cohort.original_config().freeze_evidence.clone()
-            } else {
-                cohort.original_config().training_evidence.clone()
-            };
-            signed.expires_at += 1;
-            signed.evidence_id = id(&format!("valid-original-{mutation}"));
-            signed.signature =
-                SigningKey::from_bytes(&[if mutation == "freeze-renewal" { 42 } else { 41 }; 32])
-                    .sign(&signed.signing_bytes())
-                    .to_bytes();
-            // Signature and payload are valid; the complete original byte pin
-            // changes. No new body, label or corrupt signature is substituted.
-            cohort.validate_signature(&signed, /*freeze*/ mutation == "freeze-renewal")?;
-            if mutation == "freeze-renewal" {
-                cohort.resign_freeze(signed);
-            } else {
-                cohort.resign_training(signed);
-            }
+            cohort.original_config().training_evidence.clone()
+        };
+        signed.expires_at += 1;
+        signed.evidence_id = id(&format!("valid-original-{mutation}"));
+        signed.signature =
+            SigningKey::from_bytes(&[if mutation == "freeze-renewal" { 42 } else { 41 }; 32])
+                .sign(&signed.signing_bytes())
+                .to_bytes();
+        // Signature and payload are valid; the complete original byte pin
+        // changes. No new body, label or corrupt signature is substituted.
+        cohort.validate_signature(&signed, /*freeze*/ mutation == "freeze-renewal")?;
+        if mutation == "freeze-renewal" {
+            cohort.resign_freeze(signed);
+        } else {
+            cohort.resign_training(signed);
         }
         let rejected = cohort.current();
-        if mutation == "expired-window" {
-            assert!(matches!(
+        assert!(
+            matches!(
                 rejected,
-                Err(OriginalCircuitEvaluationProviderErrorV1::Evidence(_))
-            ));
-        } else {
-            assert!(
-                matches!(
-                    rejected,
-                    Err(OriginalCircuitEvaluationProviderErrorV1::Binding(
-                        "same exact original cohort and signatures"
-                    ))
-                ),
-                "{mutation}: {rejected:?}"
-            );
-        }
+                Err(OriginalCircuitEvaluationProviderErrorV1::Binding(
+                    "same exact original cohort and signatures"
+                ))
+            ),
+            "{mutation}: {rejected:?}"
+        );
         assert!(matches!(
             cohort.current(),
             Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)
         ));
         assert_eq!(cohort.bytes()?, before);
     }
-    let mut b = BFixture::new("original-B", objective, trust_time)?;
-    b.populate(
-        &original,
-        ObservationMode::Complete,
-        /*changed_candidate_action*/ true,
-    )
-    .await?;
-    let config = b.config(&original, &registration)?;
-    let cohort = CohortAt::read(b.owners(), config, b.at)?;
+    original.finish().await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_expired_training_signature_permanently_fences_readback()
+-> anyhow::Result<()> {
+    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;
+    primary
+        .populate(
+            &original,
+            ObservationMode::Complete,
+            /*changed_candidate_action*/ false,
+        )
+        .await?;
+    let config = primary.config(&original, &registration)?;
+    let mut cohort = CohortAt::read(primary.owners(), config, primary.at)?;
+    let before = cohort.bytes()?;
+    let original_signature = cohort.original_config().training_evidence.clone();
+    // The original signature's expiry is inclusive. First verify its last
+    // valid second, then cross that boundary while the work envelope is live.
+    cohort.at = original_signature.expires_at;
+    cohort.validate_signature(&original_signature, /*freeze*/ false)?;
+    cohort.at = cohort
+        .at
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("original Training fixture expiry overflow"))?;
+    assert!(
+        cohort.at
+            < cohort
+                .original_config()
+                .training
+                .request
+                .envelope
+                .expiry_unix_seconds
+    );
+    let rejected = cohort.current();
+    assert!(
+        matches!(
+            rejected,
+            Err(OriginalCircuitEvaluationProviderErrorV1::Evidence(
+                codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+            ))
+        ),
+        "{rejected:?}"
+    );
+    assert!(matches!(
+        cohort.current(),
+        Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)
+    ));
+    assert_eq!(
+        cohort.original_config().training_evidence,
+        original_signature
+    );
+    assert_eq!(cohort.bytes()?, before);
+    original.finish().await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_provider_zero_support_consumes_holdout_once() -> anyhow::Result<()> {
+    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;
+    primary
+        .populate(
+            &original,
+            ObservationMode::Complete,
+            /*changed_candidate_action*/ true,
+        )
+        .await?;
+    let config = primary.config(&original, &registration)?;
+    let cohort = CohortAt::read(primary.owners(), config, primary.at)?;
     let mut runner = ProviderPlanFixture::new(
         &cohort.original,
-        &b.rule,
+        &primary.rule,
         &BFixture::training(&original)?,
         BFixture::original_manifests(&original),
     )?;

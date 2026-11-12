@@ -1,0 +1,38 @@
+{
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "canonical_path": "/workspace/scratch/037c0371c195/recovery-audit/desktop-source-726-v1-request.json",
+  "canonical_program_sha256": "51715f75be05dadb3db1e9c7337e55a957f56b718b23890ee1ac717cd2b8492c",
+  "source_program_sha256": "94ab77e6f14fcae3237de2565b8a0c62ad04206e62e595a4406e25fd0dea905f",
+  "command_ast_identical": true,
+  "only_canonical_changes": "source commit/tree, isolated path and attempt key",
+  "scope": "source gate 600 only; no caller/native/Rust",
+  "candidate_coordination": "Approved additive fetch --no-write-fetch-head and independent detached worktree; parent identity/config/index/sparse preserved",
+  "files": [
+    {
+      "path": "canonical-id-path-only.patch",
+      "bytes": 882,
+      "sha256": "0854e704ae98e2e1e3661c80e526c276f8ca6640c89394b32d203cda173659f0"
+    },
+    {
+      "path": "canonical-source-driver.py",
+      "bytes": 4051,
+      "sha256": "51715f75be05dadb3db1e9c7337e55a957f56b718b23890ee1ac717cd2b8492c"
+    },
+    {
+      "path": "preparation-and-source-driver.py",
+      "bytes": 11550,
+      "sha256": "8a359a712d4cf0bd2e83cb696005347be773c2c4e0ae24a4d7c86d7d9a8fc69c"
+    },
+    {
+      "path": "request.json",
+      "bytes": 11933,
+      "sha256": "91f671ca54ec3134ddc6d3275ff695ef84e6d2a979f9d65c82cf745941ed95bc"
+    },
+    {
+      "path": "source-driver.py",
+      "bytes": 4051,
+      "sha256": "94ab77e6f14fcae3237de2565b8a0c62ad04206e62e595a4406e25fd0dea905f"
+    }
+  ]
+}

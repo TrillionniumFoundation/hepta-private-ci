@@ -25,7 +25,19 @@ use original::DeepFixture;
 async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources()
 -> anyhow::Result<()> {
     let started = std::time::Instant::now();
+    let stage = |name: &str| {
+        use std::io::Write as _;
+        let mut stderr = std::io::stderr().lock();
+        let _ = writeln!(
+            stderr,
+            "HEPTA_DEEP_S_C_STAGE stage={name} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+        let _ = stderr.flush();
+    };
+    stage("fixture_start");
     let mut f = DeepFixture::ready().await?;
+    stage("fixture_done");
     let original_bytes = f.original_bytes()?;
     let context = OriginalCircuitSelectionCommandContextV1::from_original_training(
         f.dataset.snapshot().clone(),
@@ -48,16 +60,20 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         context, /*readback_only*/ false, /*retained*/ None,
     )?;
     let server = selection_command::serve(Arc::clone(&selector), channel);
+    stage("selection_command_start");
     let selected = client.execute_selection().await?;
+    stage("selection_command_done");
     assert_eq!(selected.training_attestation(), f.training.attestation());
     assert_eq!(selected.snapshot().receipts.len(), 4);
     drop(client);
+    stage("selection_command_join");
     assert_eq!(
         server
             .join()
             .map_err(|_| anyhow::anyhow!("actual S command"))??,
         1
     );
+    stage("selection_command_joined");
     let selector_bytes = f.receipt_bytes("selector")?;
 
     let original::InitialSelector {
@@ -87,7 +103,9 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
     );
     // The Observer does not execute C. This different request/session/input
     // runs through the ordinary feature task and consumes the retained model.
+    stage("ordinary_c_start");
     let completed_c = execute(&f.session, /*request_id*/ 1).await?;
+    stage("ordinary_c_done");
     let decision = read_receipt(&f.session, &f.definition, &completed_c)?;
     assert_ne!(
         completed_c.input().scope.run_id,
@@ -112,14 +130,19 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         /*retained*/ None,
     )?;
     let server = next_command::serve(Arc::clone(&observer), channel);
+    stage("c_attestation_start");
     let saved = client.attest_completed_task().await?;
+    stage("c_attestation_done");
     assert_eq!(saved.snapshot().receipts.len(), 5);
     let observer_bytes = f.receipt_bytes("observer")?;
+    stage("hot_readback_start");
     assert_eq!(client.readback().await?, saved);
+    stage("hot_readback_done");
     assert_eq!(f.original_bytes()?, original_bytes);
     assert_eq!(f.receipt_bytes("selector")?, selector_bytes);
     assert_eq!(f.receipt_bytes("observer")?, observer_bytes);
     drop(client);
+    stage("hot_command_join");
     assert_eq!(
         server
             .join()
@@ -127,18 +150,21 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         2
     );
     drop(observer);
+    stage("hot_publication_join");
     assert_eq!(
         published_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual C publication"))??,
         5
     );
+    stage("hot_selector_join");
     assert_eq!(
         selector_c
             .join()
             .map_err(|_| anyhow::anyhow!("actual S readback for C"))??,
         4
     );
+    stage("hot_trainer_join");
     assert_eq!(
         trainer_c
             .join()
@@ -146,6 +172,7 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         4
     );
 
+    stage("hot_owners_joined");
     // Reopen only the same Observer files/witness. Its incoming T/S channels
     // were already bound before Dataset/T, and cannot receive a fresh lifetime.
     let original::InitialSelector {
@@ -161,6 +188,7 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         selected.snapshot().clone(),
         Some(selected.attestation().clone()),
     )?;
+    stage("cold_reopen_start");
     let recovered = Arc::new(
         f.observer(&observer_config, /*create*/ false)?
             .into_command_owner_from_original_readbacks(
@@ -172,18 +200,24 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
                 selected,
             )?,
     );
+    stage("cold_reopen_done");
     let (client, channel) =
         next_command::client(context, /*readback_only*/ true, Some(saved.clone()))?;
     let server = next_command::serve(Arc::clone(&recovered), channel);
+    stage("cold_readback_start");
     assert_eq!(client.readback().await?, saved);
+    stage("cold_readback_done");
+    stage("cold_write_refusal_start");
     assert!(matches!(
         client.attest_completed_task().await,
         Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
     ));
+    stage("cold_write_refusal_done");
     assert_eq!(f.original_bytes()?, original_bytes);
     assert_eq!(f.receipt_bytes("selector")?, selector_bytes);
     assert_eq!(f.receipt_bytes("observer")?, observer_bytes);
     drop(client);
+    stage("cold_command_join");
     assert_eq!(
         server
             .join()
@@ -191,38 +225,46 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
         1
     );
     drop(recovered);
+    stage("cold_publication_join");
     assert_eq!(
         published_cold
             .join()
             .map_err(|_| anyhow::anyhow!("cold C publication"))??,
         2
     );
+    stage("cold_selector_join");
     assert_eq!(
         selector_cold
             .join()
             .map_err(|_| anyhow::anyhow!("cold original S"))??,
         2
     );
+    stage("cold_trainer_join");
     assert_eq!(
         trainer_cold
             .join()
             .map_err(|_| anyhow::anyhow!("cold original T"))??,
         2
     );
+    stage("cold_owners_joined");
     drop(selector);
+    stage("selection_publication_join");
     assert_eq!(
         published_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S publication"))??,
         15
     );
+    stage("selection_trainer_join");
     assert_eq!(
         trainer_s
             .join()
             .map_err(|_| anyhow::anyhow!("original S Trainer"))??,
         14
     );
+    stage("material_shutdown_start");
     let counts = f.finish().await?;
+    stage("material_shutdown_done");
     assert_eq!(counts[0], 1, "the original Dataset bootstrap is read once");
     assert_eq!(
         counts[1], counts[2],

@@ -1,0 +1,34 @@
+{
+  "command": [
+    "python3",
+    "scripts/hepta_ci_exec.py",
+    "--timeout-seconds",
+    "600",
+    "--minimum-tests",
+    "1",
+    "--output",
+    "/home/qian-qi/hepta-learn-037c-evidence/source-cc22a69972d0-v1/source-closure.json",
+    "--",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-cc22a699",
+  "environment": {
+    "HEPTA_CI_LANE": "source-head",
+    "PATH": "/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/opt/gradle/current/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/35.0.1:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qian-qi/hepta-learn-source-20261112-037c-cc22a699/scripts",
+    "SOURCE_SHA": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "TESTED_SHA": "cc22a69972d029d3ef28d49096f396eb5214c616"
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "request_key": "learn-037c-source-cc22a69972d0-v1",
+  "uid": 1000
+}

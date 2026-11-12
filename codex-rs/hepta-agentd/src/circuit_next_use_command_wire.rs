@@ -53,7 +53,7 @@ impl Request {
     ) -> Self {
         Self {
             schema: 1,
-            operation: OPERATION.into(),
+            operation: context.operation().into(),
             request_id,
             binding: binding.to_string(),
             operation_id: context.selection.request.operation_id.to_string(),
@@ -71,7 +71,7 @@ impl Request {
         next_request_id: u64,
     ) -> Result<(), Error> {
         if self.schema != 1
-            || self.operation != OPERATION
+            || self.operation != context.operation()
             || self.request_id != next_request_id
             || !(1..=128).contains(&self.request_id)
             || self.binding != binding.to_string()
@@ -221,7 +221,7 @@ pub(super) fn authenticate_receipt(
         .selected_bundle
         .digest()
         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-    let selected = &context.selection.receipts[3].observation;
+    let selected = &context.selection.receipts.last().ok_or(Error::Binding("original Selection predecessor"))?.observation;
     if !matches!(&receipt.observation,
         LearningIterationObservationV1::RetainedModelNextUse {
             retained_bundle, state_partition, checkpoint_digest, selection_digest,
@@ -267,11 +267,18 @@ pub(super) fn authenticate_receipt(
     for predecessor in &predecessors {
         verify_signed_actor_separation(predecessor, &observer, current)?;
     }
+    if let Some(selection) = &context.evaluated {
+        for predecessor in selection.original_receipt_predecessors(current)
+            .map_err(crate::OriginalCircuitNextUseReceiptErrorV1::from)? {
+            verify_signed_actor_separation(&predecessor, &observer, current)?;
+        }
+    }
     Ok(OriginalCircuitNextUseCommandReceiptV1 {
         snapshot: coordinator.snapshot().clone(),
         receipt,
         attestation: signed,
         training_evidence: context.training_evidence.clone(),
         selection_evidence: context.selection_evidence.clone(),
+        evaluated: context.evaluated.clone(),
     })
 }

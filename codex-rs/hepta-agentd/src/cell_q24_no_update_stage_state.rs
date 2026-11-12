@@ -43,7 +43,46 @@ pub(super) struct Continuation {
     pub(super) original_selection: Option<OriginalCircuitSelectionCommandReceiptV1>,
 }
 
+/// The original initially admitted channels move once into the separate
+/// evaluated continuation. No peer, lifetime or execution bit is recreated.
+pub(super) struct EvaluatedRetainedChannels {
+    pub(super) version: HostAuthorityPeerChannel,
+    pub(super) selector: HostAuthorityPeerChannel,
+    pub(super) next_use: HostAuthorityPeerChannel,
+    pub(super) readiness: HostAuthorityPeerChannel,
+}
+
 impl Continuation {
+    pub(super) fn take_evaluated_retained_channels(
+        &mut self,
+        owners: &Owners,
+        original: &crate::OriginalCircuitEvaluatedRetentionContextV1,
+    ) -> Result<EvaluatedRetainedChannels, Error> {
+        original.original_receipt_predecessors(auth::now()?)
+            .map_err(|_| Error::WrongScope)?;
+        let snapshot = original.snapshot();
+        let (scope, verifier, training_signature) = original.receipt_configuration();
+        if snapshot.request != owners.material.initial.request
+            || snapshot.owners != owners.material.initial.owners
+            || scope != owners.material.scope
+            || verifier.trust_digest() != owners.material.verifier.trust_digest()
+            || verifier.scope_digest() != owners.material.verifier.scope_digest()
+            || verifier.objective_digest() != owners.material.verifier.objective_digest()
+            || self.records.len() != 3
+            || self.records.iter().zip(&snapshot.receipts).any(|(actual, expected)| &actual.0 != expected)
+            || self.records[2].1 != training_signature
+            || self.version.is_some() || self.selector.is_some()
+            || self.next_use.is_some() || self.readiness.is_some() {
+            return Err(Error::WrongScope);
+        }
+        Ok(EvaluatedRetainedChannels {
+            version: self.version_initial.take().ok_or(Error::CommitUncertain)?,
+            selector: self.selector_initial.take().ok_or(Error::CommitUncertain)?,
+            next_use: self.next_use_initial.take().ok_or(Error::CommitUncertain)?,
+            readiness: self.readiness_initial.take().ok_or(Error::CommitUncertain)?,
+        })
+    }
+
     pub(super) fn new(
         experience: OriginalCellQ24MaterialCommandClientV1,
         dataset: OriginalCellQ24MaterialCommandClientV1,

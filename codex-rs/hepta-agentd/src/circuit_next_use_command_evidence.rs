@@ -13,7 +13,6 @@ use super::now;
 use super::require_clock;
 use super::wire;
 use crate::OriginalCircuitNextUseReceiptOwnerV1;
-use crate::OriginalCircuitNextUseRemoteSourcesV1;
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {
     pub(super) fn serve_evidence_channel(
@@ -55,16 +54,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         let (receipt, signed) = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
-            self.runtime
-                .block_on(OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
-                    original,
-                    OriginalCircuitNextUseRemoteSourcesV1 {
-                        snapshot: &self.context.selection,
-                        live: &self.live,
-                        trainer: &self.trainer,
-                        selector: &self.selector,
-                    },
-                ))?
+            self.observe_original(original, wire::Action::Readback)?
         };
         let current = now()?;
         require_clock(started_at, current)?;

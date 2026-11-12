@@ -75,9 +75,7 @@ impl ResidentOriginalStageOwnersV3 {
                 if matches!(self, Self::Candidate(_))
                     && snapshot.training_no_update_v2().is_none() =>
             {
-                Err(Error::OwnerUnavailable(
-                    "original Candidate selection and adoption route is absent",
-                ))
+                OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(snapshot, stage)
             }
             Stage::Experience
             | Stage::Dataset

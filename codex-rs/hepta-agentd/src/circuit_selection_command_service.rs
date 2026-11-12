@@ -31,6 +31,10 @@ use crate::OriginalCircuitSelectionRemoteSourcesV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
+#[path = "circuit_evaluated_selection_command_service.rs"]
+mod evaluated;
+use evaluated::OriginalPredecessors;
+
 #[path = "circuit_selection_command_evidence.rs"]
 mod evidence;
 
@@ -40,7 +44,7 @@ mod readonly;
 pub struct OriginalCircuitSelectionCommandOwnerV1<W: AnchorWitnessStore> {
     owner: Mutex<OriginalCircuitSelectionReceiptOwnerV1<W>>,
     live: OriginalCircuitLearningReadClientV1,
-    trainer: LearningIterationEvidenceClientV1,
+    predecessors: OriginalPredecessors,
     context: OriginalCircuitSelectionCommandContextV1,
     initial_head: Digest32,
     binding: Digest32,
@@ -89,7 +93,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         Ok(Self {
             owner: Mutex::new(owner),
             live,
-            trainer,
+            predecessors: OriginalPredecessors::Legacy(trainer),
             context,
             initial_head: initial.head_digest,
             binding,
@@ -205,23 +209,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
                 Err(_) => return Ok(wire::CommandResult::Busy),
             };
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
-            let source = OriginalCircuitSelectionRemoteSourcesV1 {
-                snapshot: &self.context.training,
-                live: &self.live,
-                trainer: &self.trainer,
-            };
-            if execute {
-                self.runtime.block_on(
-                    OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(
-                        original, source,
-                    ),
-                )
-            } else {
-                self.runtime
-                    .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
-                        original, source,
-                    ))
-            }
+            self.observe_original(original, if execute { wire::Action::Execute } else { wire::Action::Readback })
         };
         match completed {
             Ok((receipt, signed)) => wire::encode_completed(&self.context, receipt, signed, now()?),

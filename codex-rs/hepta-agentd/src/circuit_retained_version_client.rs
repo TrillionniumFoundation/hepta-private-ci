@@ -19,6 +19,7 @@ use super::wire;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCellEvaluationCommandReceiptV1;
 
 struct OriginalVersionChannel {
     peer: HostAuthorityPeerChannel,
@@ -91,6 +92,32 @@ impl OriginalCircuitRetainedVersionClientV1 {
         )
     }
 
+    pub(crate) fn bind_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+    ) -> Result<Self, Error> {
+        let started = now()?;
+        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
+            training, evaluation, RetainedVersionOriginV1::Fresh)?;
+        Self::bind_cut(peer, cut, RetainedVersionOriginV1::Fresh, started)
+    }
+
+    pub(crate) fn recover_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+    ) -> Result<Self, Error> {
+        let started = now()?;
+        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
+            training, evaluation, RetainedVersionOriginV1::Recovered)?;
+        Self::bind_cut(peer, cut, RetainedVersionOriginV1::Recovered, started)
+    }
+
     fn bind(
         peer: HostAuthorityPeerChannel,
         material: &OriginalCellQ24MaterialReceiptConfigV1,
@@ -101,6 +128,15 @@ impl OriginalCircuitRetainedVersionClientV1 {
         let started = now()?;
         let cut =
             OriginalVersionCut::from_original(material.clone(), dataset.clone(), training, origin)?;
+        Self::bind_cut(peer, cut, origin, started)
+    }
+
+    fn bind_cut(
+        peer: HostAuthorityPeerChannel,
+        cut: OriginalVersionCut,
+        origin: RetainedVersionOriginV1,
+        started: u64,
+    ) -> Result<Self, Error> {
         peer.check_peer_lifetime()?;
         cut.require_fresh(started, PublicationAccess::Readback)?;
         Ok(Self {

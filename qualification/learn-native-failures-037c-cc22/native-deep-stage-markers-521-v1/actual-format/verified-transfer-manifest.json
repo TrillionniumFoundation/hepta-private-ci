@@ -1,0 +1,110 @@
+{
+  "terminal_session": "dpty-15b287ee0be6dd1a49f6e1f04ae7ad5b5b7a8f93115a943adf2c28fa92dde9d0",
+  "terminal_exit": 0,
+  "originals": [
+    {
+      "path": "manifest.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/manifest.json",
+      "bytes": 3717,
+      "sha256": "52d57e3b151115be1171c8a96f5c50bd1c81a030957307ac99b34e8d6e553296",
+      "version": "2050:2425360:3717:1794484410418835777:1794484410418835777"
+    },
+    {
+      "path": "toolchain-steps.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/toolchain-steps.json",
+      "bytes": 932,
+      "sha256": "a24e1850936e89d7a68f4ca41fa5110013624e11d26ffdf261cff1f79f4fc166",
+      "version": "2050:2425353:932:1794484410348742821:1794484410348742821"
+    },
+    {
+      "path": "rustfmt-launch.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/rustfmt-launch.json",
+      "bytes": 510,
+      "sha256": "4f0f58faacea6ad878ecefe6ec322bff069fd99f35ed7cfe1234bfc1e09aff44",
+      "version": "2050:2425354:510:1794484410387997367:1794484410387997367"
+    },
+    {
+      "path": "rustfmt.raw.log",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/rustfmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:2425355:0:1794484410409996704:1794484410409996704"
+    },
+    {
+      "path": "deep-stage-markers-prefmt.patch",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/deep-stage-markers-prefmt.patch",
+      "bytes": 6429,
+      "sha256": "baa525ed25469cba63d382c9dca1c5835a378f2c50b65a05a9c09ed3a2aff8be",
+      "version": "2050:2425356:6429:1794484410416360533:1794484410416360533"
+    },
+    {
+      "path": "deep-stage-markers-formatted.patch",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/deep-stage-markers-formatted.patch",
+      "bytes": 6429,
+      "sha256": "baa525ed25469cba63d382c9dca1c5835a378f2c50b65a05a9c09ed3a2aff8be",
+      "version": "2050:2425357:6429:1794484410416539878:1794484410416539878"
+    },
+    {
+      "path": "format-only.patch",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/format-only.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:2425358:0:1794484410416539878:1794484410416539878"
+    },
+    {
+      "path": "input-manifest.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/input-manifest.json",
+      "bytes": 2129,
+      "sha256": "0d17a84285717a714b6af803b691fa067395e9d4abd2c756d7278dbd4fbbb305",
+      "version": "2050:2425347:2129:1794484410284989328:1794484410284989328"
+    },
+    {
+      "path": "before-format-manifest.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/before-format-manifest.json",
+      "bytes": 658,
+      "sha256": "29ab86d955946f6fdef3a6bc6341faf0fcd2e876753b76888c418b618f131d6b",
+      "version": "2050:2425352:658:1794484410289243591:1794484410289243591"
+    },
+    {
+      "path": "format-method-provenance.json",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/format-method-provenance.json",
+      "bytes": 495,
+      "sha256": "1a215fea5b56db121ea0d90e8fd8066dee04e4f7d63b50337aafc92013d595b2",
+      "version": "2050:2425348:495:1794484410285145347:1794484410285145347"
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "remote": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/postimages/codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "bytes": 14725,
+      "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+      "version": "2050:2559873:14725:1794484410288899774:1794484410288899774"
+    }
+  ],
+  "manifest_sha256": "52d57e3b151115be1171c8a96f5c50bd1c81a030957307ac99b34e8d6e553296",
+  "postimage": {
+    "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+    "origin": {
+      "base_git_blob": "218cbb06e2e078be28f48d2019cc901aee478499",
+      "non_diagnostic_source_bytes_unchanged": true,
+      "task": "deep-timeout-test-only-stage-markers"
+    },
+    "base": {
+      "bytes": 13323,
+      "sha256": "dd5d7906176bd4681b103522bcf9f204d5490c7c272122065031f3a965d89870",
+      "blob": "218cbb06e2e078be28f48d2019cc901aee478499"
+    },
+    "before": {
+      "bytes": 14725,
+      "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+      "blob": "7179071338fb9779017a7e138742ce0b389c086e"
+    },
+    "after": {
+      "bytes": 14725,
+      "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+      "blob": "7179071338fb9779017a7e138742ce0b389c086e"
+    }
+  },
+  "formatter_input_unchanged": true,
+  "native_tests_run": false,
+  "qualification": "isolated diagnostic formatting; no native result"
+}

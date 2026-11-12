@@ -18,7 +18,6 @@ use super::now;
 use super::original_state;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCircuitSelectionReceiptOwnerV1;
-use crate::OriginalCircuitSelectionRemoteSourcesV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
@@ -75,15 +74,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         let completed = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
-            self.runtime
-                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
-                    original,
-                    OriginalCircuitSelectionRemoteSourcesV1 {
-                        snapshot: &self.context.training,
-                        live: &self.live,
-                        trainer: &self.trainer,
-                    },
-                ))
+            self.observe_original(original, wire::Action::Readback)
         };
         // All Cell/Trainer/Selector owner locks are released before encoding
         // or writing a response. No branch can attest or publish a selection.

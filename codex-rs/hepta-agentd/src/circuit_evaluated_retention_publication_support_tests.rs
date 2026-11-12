@@ -335,3 +335,6 @@ impl PublicationFixture {
 
 #[path = "circuit_evaluated_retention_receipt_tests.rs"]
 mod receipt_tests;
+
+#[path = "circuit_evaluated_version_recovery_support_tests.rs"]
+mod version_recovery_tests;

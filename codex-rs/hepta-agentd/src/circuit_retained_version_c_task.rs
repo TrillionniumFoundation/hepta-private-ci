@@ -140,9 +140,7 @@ impl RetainedVersionInstalledTaskV1 {
         &self,
         cut: &OriginalVersionCut,
     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
-        let coordinator = cut
-            .training
-            .authenticate(super::now()?, PublicationAccess::Readback)?;
+        let coordinator = cut.coordinator(super::now()?, PublicationAccess::Readback)?;
         let task = &self.cell.task;
         task.require_current()?;
         CircuitTaskSourceReadbackV1::require_original_input(

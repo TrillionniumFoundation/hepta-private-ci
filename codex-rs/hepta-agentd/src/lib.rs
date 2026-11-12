@@ -606,6 +606,8 @@ pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptCo
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
 #[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
+#[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
@@ -635,6 +637,8 @@ pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceip
 pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
 #[cfg(target_os = "linux")]
@@ -859,6 +863,8 @@ pub use circuit_experience_intake::append_original_circuit_experience_v2;
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]
 pub(crate) use circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitEvaluatedLearningReadContextV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitEvaluatedRetentionContextV1;
 #[cfg(target_os = "linux")]

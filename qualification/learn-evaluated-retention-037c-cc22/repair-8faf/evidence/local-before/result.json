@@ -1,0 +1,24 @@
+{
+  "kind": "local exact-8faf six affected source suites, not whole-tree/native",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_cell_learning_evaluation_source_closure",
+    "test_generation_learning_evidence_source_closure",
+    "test_original_circuit_observer_source_closure",
+    "test_original_evaluation_receipt_owner_source_closure",
+    "test_original_published_read_source_closure",
+    "test_original_no_update_stage_source_closure"
+  ],
+  "cwd": "/workspace/scratch/037c0371c195/source-8faf-repair-v1/work",
+  "started_at": "2026-11-12T10:14:27.687986+00:00",
+  "finished_at": "2026-11-12T10:14:37.469722+00:00",
+  "returncode": 1,
+  "log_bytes": 35891,
+  "log_sha256": "c88ebe89a59e9bb4dbd3a421e468af6caedae686a29036909d4255c408ef9275",
+  "source_files": 95,
+  "source_before_after_equal": true,
+  "test_queue": "local Python only"
+}

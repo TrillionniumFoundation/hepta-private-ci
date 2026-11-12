@@ -393,12 +393,27 @@ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -
     let bytes = f.f.original.bytes()?;
     let (evidence, channel) = next::evidence_client(&context)?;
     let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);
-    assert_eq!(
-        evidence
-            .readback(completed.snapshot(), completed.receipt())
-            .await?,
-        *completed.attestation(),
-    );
+    let evidence_started = std::time::Instant::now();
+    let original_evidence = evidence
+        .readback(completed.snapshot(), completed.receipt())
+        .await;
+    let evidence_elapsed = evidence_started.elapsed();
+    let original_evidence = match original_evidence {
+        Ok(original) => original,
+        Err(error) => {
+            // Keep the original failure and peer result. No second request,
+            // replacement channel or extended evidence deadline is attempted.
+            drop(evidence);
+            let original_server = tokio::task::spawn_blocking(move || evidence_server.join())
+                .await
+                .context("original Observer diagnostic join")?
+                .map_err(|_| anyhow::anyhow!("original Observer evidence thread"))?;
+            anyhow::bail!(
+                "before actual publication withdrawal: evidence={error:?}; elapsed={evidence_elapsed:?}; original_server={original_server:?}"
+            );
+        }
+    };
+    assert_eq!(original_evidence, *completed.attestation());
     f.f.original.version.withdraw()?;
     assert!(
         evidence
@@ -501,12 +516,13 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     ));
     let bytes = f.f.original.bytes()?;
     let expires = f.selected.attestation().expires_at;
-    tokio::time::sleep(
-        Duration::from_secs(expires.saturating_sub(now()?).saturating_add(1))
-            + Duration::from_millis(100),
-    )
-    .await;
-    assert!(client.attest_completed_task().await.is_err());
+    wait_after_original_expiry(expires).await?;
+    assert!(matches!(
+        client.attest_completed_task().await,
+        Err(OriginalCircuitNextUseCommandErrorV1::Evidence(
+            SignedEvidenceError::ValidityWindow
+        ))
+    ));
     assert!(matches!(
         client.readback().await,
         Err(OriginalCircuitNextUseCommandErrorV1::Unavailable)

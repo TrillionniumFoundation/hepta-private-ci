@@ -53,7 +53,7 @@ impl Request {
     ) -> Self {
         Self {
             schema: 1,
-            operation: OPERATION.into(),
+            operation: context.operation().into(),
             request_id,
             binding: binding.to_string(),
             operation_id: context.training.request.operation_id.to_string(),
@@ -71,7 +71,7 @@ impl Request {
         next_request_id: u64,
     ) -> Result<(), Error> {
         if self.schema != 1
-            || self.operation != OPERATION
+            || self.operation != context.operation()
             || self.request_id != next_request_id
             || !(1..=128).contains(&self.request_id)
             || self.binding != binding.to_string()
@@ -250,10 +250,17 @@ pub(super) fn authenticate_receipt(
         return Err(Error::Binding("original enrolled Selector"));
     }
     verify_signed_actor_separation(&training, &selector, current)?;
+    if let Some(original) = &context.evaluated {
+        for predecessor in original.original_receipt_predecessors(current)
+            .map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)? {
+            verify_signed_actor_separation(&predecessor, &selector, current)?;
+        }
+    }
     Ok(OriginalCircuitSelectionCommandReceiptV1 {
         snapshot: coordinator.snapshot().clone(),
         receipt,
         attestation: signed,
         training_evidence: context.training_evidence.clone(),
+        evaluated: context.evaluated.as_ref().map(crate::OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
     })
 }

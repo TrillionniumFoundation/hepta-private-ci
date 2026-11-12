@@ -7,6 +7,12 @@ use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitEvaluatedRetentionContextV1;
 
+#[path = "circuit_evaluated_selection_remote.rs"]
+mod remote;
+#[path = "circuit_evaluated_selection_command_owner_adapter.rs"]
+mod command_owner_adapter;
+pub use remote::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
+
 pub struct OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
     pub context: OriginalCircuitEvaluatedRetentionContextV1,
     pub signer: TrustedLearningSignerV1,

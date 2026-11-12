@@ -34,7 +34,7 @@ impl Request {
     pub(super) fn new(cut: &OriginalVersionCut, request_id: u64, action: Action) -> Self {
         Self {
             schema: 1,
-            purpose: OPERATION.into(),
+            purpose: cut.purpose().operation().into(),
             request_id,
             initial_binding: cut.initial_binding.to_string(),
             binding: cut.binding.to_string(),

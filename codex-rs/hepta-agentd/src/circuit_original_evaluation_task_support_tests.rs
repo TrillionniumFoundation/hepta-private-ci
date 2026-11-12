@@ -24,26 +24,49 @@ pub(crate) async fn original_evaluation_source(
         definition.candidates[0].activation_index;
     definition.candidates[0].activation_index = selected_activation;
     let selected = definition.candidates[selected_index].candidate_id.clone();
-    // Keep the original source order and bind the complete fixture definition
-    // to it before the registry or Cell journal freezes either representation.
-    let mut candidates = std::mem::take(&mut definition.candidates);
+    let candidate_count = definition.candidates.len();
     anyhow::ensure!(
-        candidates.len() == input.candidates.len(),
+        candidate_count == input.candidates.len(),
         "complete original fixture candidate set"
     );
+    // Freeze the fixture definition in the actual input's complete order.
+    // Cell admission compares definition and masks position by position;
+    // permuting only the masks would reject before any B publication exists.
+    // The original candidate-to-activation mapping and selected ID stay fixed.
+    let mut candidates = std::mem::take(&mut definition.candidates)
+        .into_iter()
+        .map(|candidate| (candidate.candidate_id.clone(), candidate))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    anyhow::ensure!(candidates.len() == candidate_count);
     definition.candidates = input
         .candidates
         .iter()
         .map(|mask| {
-            let index = candidates
-                .iter()
-                .position(|candidate| candidate.candidate_id == mask.candidate_id)
-                .ok_or_else(|| anyhow::anyhow!("exact original fixture candidate identity"))?;
-            Ok(candidates.remove(index))
+            candidates
+                .remove(&mask.candidate_id)
+                .ok_or_else(|| anyhow::anyhow!("complete original fixture candidate order"))
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
-    anyhow::ensure!(candidates.is_empty(), "all original fixture candidates");
+    anyhow::ensure!(candidates.is_empty());
     let (mut circuit, mut bindings) = configuration();
+    // Keep each original route's outcome and edges paired with its candidate.
+    // Registry admission also compares routes and the definition by position.
+    anyhow::ensure!(bindings[0].routes.len() == candidate_count);
+    let mut routes = std::mem::take(&mut bindings[0].routes)
+        .into_iter()
+        .map(|route| (route.candidate_id.clone(), route))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    anyhow::ensure!(routes.len() == candidate_count);
+    bindings[0].routes = definition
+        .candidates
+        .iter()
+        .map(|candidate| {
+            routes
+                .remove(&candidate.candidate_id)
+                .ok_or_else(|| anyhow::anyhow!("complete original fixture route order"))
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    anyhow::ensure!(routes.is_empty());
     bindings[0].cell = definition.clone();
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;
@@ -91,7 +114,21 @@ pub(crate) async fn original_evaluation_source(
         .await?;
     owner.publish_result(&identity, &record, &receipt)?;
     let publication = owner.read_publication(&identity, &record)?;
-    pretty_assertions::assert_eq!(publication.original_policy()?.selected(), &selected);
+    let policy = publication.original_policy()?;
+    pretty_assertions::assert_eq!(policy.selected(), &selected);
+    pretty_assertions::assert_eq!(
+        policy
+            .entries()
+            .iter()
+            .map(|entry| &entry.candidate_id)
+            .collect::<Vec<_>>(),
+        publication
+            .input()
+            .candidates
+            .iter()
+            .map(|mask| &mask.candidate_id)
+            .collect::<Vec<_>>()
+    );
     drop(driver);
     store.close().await;
     Ok((identity, owner, publication))

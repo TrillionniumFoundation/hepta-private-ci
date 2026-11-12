@@ -1,0 +1,82 @@
+{
+  "base_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "base_tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "baseline_sha256": "7725f09680e6f63b9123f8c1ee51e19e8b9e54d169c8c34fc8c7c6165b8d5a22",
+      "baseline_blob": "1e2481ff4be46cdf8350bc6488e323a3fcbc8af0",
+      "post_sha256": "446216e0cc4c2a8738394e4c8b7b8aec81319aedd5b44dca6989cc5d50007b24",
+      "post_blob": "2038a6abbb39038da02586f651e269a33d4648fb",
+      "post_bytes": 1102253
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "baseline_sha256": "303d9d1f083cdd069d16f5ae19b6fd1e7c961452b0e8f8d50dda26793caeb5f2",
+      "baseline_blob": "3d4784411e7c65e54643fe1a11d80bbc339c9650",
+      "post_sha256": "06248c65a377b1ce3b80e31a9ba00d06240e76d403423ae7fc596842afa07812",
+      "post_blob": "6d0aee2f77f295024fbccb12493f15c77ad67a9a",
+      "post_bytes": 9898
+    }
+  ],
+  "changed_boundary": [
+    "learning_source_bound_training_stage_readback"
+  ],
+  "boundary_count": 534,
+  "protected_count": 386,
+  "all_other_manifest_values_unchanged": true,
+  "rust_changed": false,
+  "verifier_changed": false,
+  "qualification": false,
+  "patch_sha256": "2919f2b5154291b1329d735cc5ec4562731367ccc89d56f1e96069e6895ac1a6",
+  "local_tests": {
+    "status": "PASS",
+    "count": 5,
+    "duration_seconds": 1.083,
+    "exit_code": 0,
+    "suite": "test_original_training_source_capture_source_closure.py",
+    "source_scope": "isolated exact source dependencies; full index not yet run",
+    "original_execution_record": "LOCAL_QA_RESULT.json"
+  },
+  "full_rust_index_test": {
+    "status": "PASS",
+    "submitter": "root only",
+    "tool": "mcp__codex_apps__h_pty_start",
+    "request_path": "/workspace/scratch/037c0371c195/candidate-sourcebound-caller-cc22-v1/desktop-full-index-boundary-request.json",
+    "request_sha256": "34d686ff3d148d182adf4e5b0931bbdb9b1728a3cfca6c7da408c88890c49a98",
+    "driver_sha256": "5ef48ecbda9372956cc443d88ec7a32660a2980db09d7025f2b9b3303f3cde13",
+    "remote_records": "/home/qian-qi/hepta-learn-037c-evidence/sourcebound-readback-caller-cc22-v1",
+    "timeout_seconds": 600,
+    "expected_checks": [
+      "exact original before failure",
+      "single actual readonly caller postimage passes",
+      "cloned actual endpoint in unregistered file rejected",
+      "unregistered UFCS call rejected",
+      "unregistered typed-method call rejected",
+      "full 14842-file inventory and Git metadata unchanged"
+    ],
+    "session_id": "dpty-3e32e01d4910fb5fe8ff7a5e6b30644135b9475ef743aa31760cad5cd79e23fa",
+    "exit_code": 0,
+    "started_at": "2026-11-12T11:11:22.110555+00:00",
+    "finished_at": "2026-11-12T11:13:47.750430+00:00",
+    "rust_files_scanned": 6595,
+    "full_rust_index_sha256": "f423f23ad8889f4a66344a56f83ef0567a105bb0fa419fa74ba894175df10666",
+    "source_before_equals_after": true,
+    "source_file_count": 14842,
+    "source_inventory_sha256": "99fa9e226682f3d23c91c3f38cf2025556e2d4b53abb7954e83cf1589c7b90a3",
+    "git_metadata_before_equals_after": true,
+    "unregistered_callers_rejected": 3,
+    "original_log_sha256": "e2437f591c917ee35442ac0cc0877e263f35b03d1dd06f12b6b340cf32e4fcbb",
+    "verified_originals": "execution-readback/VERIFIED_MANIFEST.json"
+  },
+  "artifact_sha256": {
+    "LOCAL_QA_RESULT.json": "3e7c064e4ed497d9dd383211f2138ddbeeafa09a2488b0d57dabab9b71bd75b7",
+    "REPORT.md": "0bb7fa9613067557ed90090a7f30b97b61e9a9427e8068cff59808f1ea3742c5",
+    "full-index-boundary-check.py": "5ef48ecbda9372956cc443d88ec7a32660a2980db09d7025f2b9b3303f3cde13",
+    "desktop-full-index-bootstrap.py": "6b8cc660100860b6a335e4000575b3ae419ecf4a85bb4ab9cde32075e43390ee",
+    "desktop-full-index-boundary-request.json": "34d686ff3d148d182adf4e5b0931bbdb9b1728a3cfca6c7da408c88890c49a98",
+    "source-bound-training-readback-caller.patch": "2919f2b5154291b1329d735cc5ec4562731367ccc89d56f1e96069e6895ac1a6"
+  },
+  "published_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "published_tree": "778a2c1c1f77fd1ea3d3cd0c203cef6c38db2ec0"
+}

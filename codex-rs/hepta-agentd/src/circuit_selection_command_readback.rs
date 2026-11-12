@@ -22,6 +22,8 @@ use crate::LearningIterationEvidencePeerV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCellEvaluationCommandReceiptV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_iteration_evidence_client::command_evidence::OriginalCommandEvidenceV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
@@ -96,6 +98,33 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
             self.material.verifier.clone(),
             training,
         )?;
+        self.finish_binding(dataset, selection, context, started_at)
+    }
+
+    /// Explicit four-cut read-only binding of the same initially held Selector
+    /// peer. The original T/E/S responses remain complete immutable pins.
+    pub fn bind_original_evaluated_selection(
+        self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+        selection: OriginalCircuitSelectionCommandReceiptV1,
+    ) -> Result<LearningIterationEvidenceClientV1, Error> {
+        let started_at = now()?;
+        let original = OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
+            self.material.scope.clone(), self.material.verifier.clone(), training, evaluation,
+        ).map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
+        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(&original)?;
+        self.finish_binding(dataset, selection, context, started_at)
+    }
+
+    fn finish_binding(
+        self,
+        dataset: OriginalCellQ24MaterialCommandReceiptV1,
+        selection: OriginalCircuitSelectionCommandReceiptV1,
+        context: OriginalCircuitSelectionCommandContextV1,
+        started_at: u64,
+    ) -> Result<LearningIterationEvidenceClientV1, Error> {
         if context.initial()? != self.material.initial {
             return Err(Error::Binding(
                 "same original Selector readback initial cut",
@@ -238,7 +267,7 @@ pub(super) fn request(
     request_id: u64,
 ) -> wire::Request {
     let mut request = wire::Request::new(context, binding, request_id, wire::Action::Readback);
-    request.operation = OPERATION.into();
+    request.operation = operation(context).into();
     request
 }
 
@@ -250,7 +279,7 @@ pub(super) fn require_request(
 ) -> Result<(), Error> {
     let expected = request(context, context_binding(context, current)?, request_id);
     if observed.schema != expected.schema
-        || observed.operation != OPERATION
+        || observed.operation != operation(context)
         || observed.request_id != request_id
         || !(1..=128).contains(&request_id)
         || observed.binding != expected.binding
@@ -265,4 +294,12 @@ pub(super) fn require_request(
         ));
     }
     Ok(())
+}
+
+fn operation(context: &OriginalCircuitSelectionCommandContextV1) -> &'static str {
+    if context.evaluated.is_some() {
+        "runtime.learning.original-circuit-evaluated-selection.readback.v1"
+    } else {
+        OPERATION
+    }
 }

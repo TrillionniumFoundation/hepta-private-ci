@@ -217,6 +217,10 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
         )
     }
 
+    pub(super) fn evaluation_attestation(&self) -> &SignedLearningEvidenceV1 {
+        self.evaluation.attestation()
+    }
+
     pub(crate) fn receipt_context_binding(&self) -> Digest32 {
         Digest32::of_parts(&[
             b"hepta.agentd.original-evaluated-retention-receipt-context.v1\0",

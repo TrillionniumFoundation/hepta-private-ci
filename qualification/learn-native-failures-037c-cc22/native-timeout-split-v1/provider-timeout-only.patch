@@ -1,0 +1,60 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -142,14 +142,18 @@
+     original.finish().await
+ }
+ 
+-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+-async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()
+--> anyhow::Result<()> {
++// Each branch keeps its own actual B owners, bytes and permanent-fence checks.
++// Partition the six complete native cohorts across bounded test cases; none of
++// their physical reads or assertions is replaced by a cached result.
++async fn current_refusal_cases(
++    mutations: &[&str],
++    modes: &[&str],
++) -> anyhow::Result<()> {
+     let (original, primary, _retention, registration) = preregistered().await?;
+     let trust_time = primary.at - 124;
+     let objective = primary.rule.objective_digest;
+     drop(primary);
+-    for mutation in ["withdraw", "source-bytes", "ledger-bytes", "rollback"] {
++    for &mutation in mutations {
+         let mut b = BFixture::new("original-B", objective, trust_time)?;
+         b.populate(
+             &original,
+@@ -211,7 +215,7 @@
+             .is_err()
+         );
+     }
+-    for mode in ["unreleased", "cold-readonly"] {
++    for &mode in modes {
+         let mut b = BFixture::new("original-B", objective, trust_time)?;
+         b.populate(
+             &original,
+@@ -254,6 +258,25 @@
+         assert_eq!(b.source_bytes()?, source_before);
+     }
+     original.finish().await
++}
++
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()
++-> anyhow::Result<()> {
++    current_refusal_cases(&["withdraw", "source-bytes"], &[]).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows()
++-> anyhow::Result<()> {
++    current_refusal_cases(&["ledger-bytes", "rollback"], &[]).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows()
++-> anyhow::Result<()> {
++    current_refusal_cases(&[], &["unreleased", "cold-readonly"]).await
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

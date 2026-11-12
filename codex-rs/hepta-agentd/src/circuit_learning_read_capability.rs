@@ -26,6 +26,14 @@ use crate::CircuitTaskErrorV1;
 use crate::LearningIterationCheckpointErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_evaluated_learning_read.rs"]
+mod evaluated;
+pub use evaluated::OriginalCircuitEvaluatedLearningReadContextV1;
+
+#[path = "circuit_learning_read_profile.rs"]
+mod profile;
+use profile::ReadProfile;
+
 #[path = "circuit_learning_completion_readiness.rs"]
 mod readiness;
 pub(crate) use readiness::OriginalCircuitCompletionReadinessClientV1;
@@ -97,7 +105,7 @@ struct Channel {
 /// pidfd. This constructor cannot discover/reconnect an owner, deserialize a
 /// capability from a receipt, or upgrade a read to a command.
 pub struct OriginalCircuitLearningReadClientV1 {
-    context: OriginalCircuitLearningReadContextV1,
+    context: ReadProfile,
     binding: Digest32,
     channel: Mutex<Option<Channel>>,
     retained: Mutex<Option<OriginalCircuitLearningReadbackV1>>,
@@ -113,9 +121,29 @@ impl OriginalCircuitLearningReadClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        Self::from_original_profile(
+            stream,
+            original_task_process,
+            original_task_uid,
+            original_task_pidfd,
+            ReadProfile::TrainingNoUpdate(context),
+            timeout,
+            lifetime,
+        )
+    }
+
+    fn from_original_profile(
+        stream: UnixStream,
+        original_task_process: AgentdRootAuthorityPeer,
+        original_task_uid: u32,
+        original_task_pidfd: OwnedFd,
+        context: ReadProfile,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
         require_timing(timeout, lifetime)?;
         let started_at = now()?;
-        let binding = wire::context_binding(&context, started_at)?;
+        let binding = context.binding(started_at)?;
         let channel = original_owner_command_channel_v1(
             stream,
             original_task_process,
@@ -125,7 +153,7 @@ impl OriginalCircuitLearningReadClientV1 {
             lifetime,
         )?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&context, fresh)? != binding {
+        if fresh < started_at || context.binding(fresh)? != binding {
             return Err(Error::Binding("original read bootstrap clock"));
         }
         Ok(Self {
@@ -149,13 +177,15 @@ impl OriginalCircuitLearningReadClientV1 {
             .take()
             .ok_or(Error::Unavailable)?;
         let started_at = now()?;
-        if wire::context_binding(&self.context, started_at)? != self.binding {
+        if self.context.binding(started_at)? != self.binding {
             return Err(Error::Binding("original fixed read context"));
         }
         if channel.next_request_id > 128 {
             return Err(Error::Unavailable);
         }
-        let request = wire::Request::new(&self.context, self.binding, channel.next_request_id)?;
+        let request = self
+            .context
+            .request(self.binding, channel.next_request_id)?;
         channel.next_request_id = channel
             .next_request_id
             .checked_add(1)
@@ -169,10 +199,10 @@ impl OriginalCircuitLearningReadClientV1 {
         .map_err(|_| Error::Unavailable)??;
         let response: wire::Response = serde_json::from_slice(&response)?;
         response.require_request(&request)?;
-        let current = response.read.decode(&self.context)?;
+        let current = self.context.decode(response.read)?;
         channel.peer.check_peer_lifetime()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
+        if fresh < started_at || self.context.binding(fresh)? != self.binding {
             return Err(Error::Binding("original read clock moved backwards"));
         }
         {
@@ -197,13 +227,14 @@ impl OriginalCircuitLearningReadClientV1 {
         training: &SignedLearningEvidenceV1,
         selection: Option<&SignedLearningEvidenceV1>,
     ) -> Result<(), Error> {
-        if &self.context.prefix != prefix
-            || self.context.scope.binding() != scope.binding()
-            || self.context.verifier.trust_digest() != verifier.trust_digest()
-            || self.context.verifier.scope_digest() != verifier.scope_digest()
-            || self.context.verifier.objective_digest() != verifier.objective_digest()
-            || &self.context.training_evidence != training
-            || self.context.selection_evidence.as_ref() != selection
+        let context = self.context.legacy()?;
+        if &context.prefix != prefix
+            || context.scope.binding() != scope.binding()
+            || context.verifier.trust_digest() != verifier.trust_digest()
+            || context.verifier.scope_digest() != verifier.scope_digest()
+            || context.verifier.objective_digest() != verifier.objective_digest()
+            || &context.training_evidence != training
+            || context.selection_evidence.as_ref() != selection
         {
             return Err(Error::Binding("same original Observer read context"));
         }
@@ -235,3 +266,6 @@ pub(crate) mod fixture;
 
 #[cfg(test)]
 pub(crate) use readiness::fixture as readiness_fixture;
+
+#[cfg(test)]
+pub(crate) use readiness::evaluated_fixture as evaluated_readiness_fixture;

@@ -68,6 +68,7 @@ mod evaluated;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptV1;
+pub use evaluated::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
 use evaluated::Profile;
 
 /// One original TrainingNoUpdate cut. The complete original Generator signature
@@ -100,7 +101,7 @@ pub struct OriginalCircuitSelectionRemoteSourcesV1<'a> {
     pub trainer: &'a LearningIterationEvidenceClientV1,
 }
 
-// Private dispatch has exactly the two concrete original source implementations.
+// Private dispatch has only the concrete original source implementations.
 // It cannot be supplied as a public callback or implemented by another module.
 trait SelectionSources {
     fn snapshot(&self) -> &LearningIterationSnapshotV1;
@@ -114,13 +115,16 @@ trait SelectionSources {
         None
     }
     fn location(&self) -> ObservationLocation;
+    fn require_profile(&self, _profile: &Profile) -> Result<(), Error> {
+        Ok(())
+    }
     async fn observe(
         &self,
         config: &OriginalCircuitSelectionReceiptConfigV1,
     ) -> Result<LearningIterationObservationV1, Error>;
 }
 
-// This is selected only by the two concrete source implementations below.
+// This is selected only by the concrete original source implementations.
 // It preserves the existing local-owner read protocol; a remote observation
 // also brackets the original Selector journal with two live Trainer reads.
 enum ObservationLocation {
@@ -400,6 +404,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("original TrainingNoUpdate prefix").into());
         }
+        source.require_profile(&self.profile)?;
         let observed = source.observe(&self.config).await?;
         self.config.scope.validate_observation(&observed)?;
         Ok(observed)
@@ -440,8 +445,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         // neither this observation nor authentication recursively reads T.
         let evidence = match source.location() {
             ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {
-                // Preserve the established local-owner order, including
-                // detecting a withdrawal while its Trainer read is in flight.
+                // Read the actual Cell/Source after all original T/B awaits,
+                // including remote evaluated reads and in-flight withdrawal.
                 let evidence = self.training_evidence(source).await?;
                 if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());

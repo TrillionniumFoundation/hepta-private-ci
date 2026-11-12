@@ -34,9 +34,13 @@ use super::wire as evidence_wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationCheckpointErrorV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::OriginalCircuitSelectionReceiptErrorV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+
+#[path = "circuit_evaluated_selection_command.rs"]
+mod evaluated;
 
 #[path = "circuit_selection_command_stage_binding.rs"]
 mod stage_binding;
@@ -86,12 +90,12 @@ type Error = OriginalCircuitSelectionCommandErrorV1;
 
 /// Fresh dispatch can only be configured from an actual opaque Trainer result.
 /// This is a point-in-time predecessor, not a lease or a prefilled future cut.
-#[derive(Clone)]
 pub struct OriginalCircuitSelectionCommandContextV1 {
     training: LearningIterationSnapshotV1,
     scope: FrozenLearningScopeV2,
     verifier: LearningEvidenceVerifierV1,
     training_evidence: SignedLearningEvidenceV1,
+    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
 }
 
 impl OriginalCircuitSelectionCommandContextV1 {
@@ -130,12 +134,16 @@ impl OriginalCircuitSelectionCommandContextV1 {
             scope,
             verifier,
             training_evidence,
+            evaluated: None,
         };
         context.authenticate(now()?)?;
         Ok(context)
     }
 
     fn authenticate(&self, current: u64) -> Result<VerifiedLearningEvidenceV1, Error> {
+        if let Some(context) = &self.evaluated {
+            return self.authenticate_evaluated(context, current);
+        }
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.training.clone())?;
         self.scope.validate_snapshot(&self.training)?;
         let receipt = self
@@ -182,6 +190,12 @@ impl OriginalCircuitSelectionCommandContextV1 {
 
     fn binding(&self, current: u64) -> Result<Digest32, Error> {
         self.authenticate(current)?;
+        if let Some(context) = &self.evaluated {
+            return Ok(Digest32::of_parts(&[
+                b"hepta.agentd.original-circuit-evaluated-selection-command.v1\0",
+                context.receipt_context_binding().as_array(),
+            ]));
+        }
         Ok(Digest32::of_parts(&[
             b"hepta.agentd.original-circuit-selection-command.v1\0",
             &encode_original_owner_snapshot_v1(&self.training)?,
@@ -197,12 +211,12 @@ impl OriginalCircuitSelectionCommandContextV1 {
 
 /// Verified actual Selection output. C may use this exact cut and both original
 /// signatures; a cached value never substitutes for a subsequent CURRENT read.
-#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OriginalCircuitSelectionCommandReceiptV1 {
     snapshot: LearningIterationSnapshotV1,
     receipt: LearningIterationReceiptV1,
     attestation: SignedLearningEvidenceV1,
     training_evidence: SignedLearningEvidenceV1,
+    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
 }
 impl OriginalCircuitSelectionCommandReceiptV1 {
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
@@ -361,8 +375,12 @@ impl OriginalCircuitSelectionCommandClientV1 {
     pub async fn execute_selection(
         &self,
     ) -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
-        if now()? >= self.context.training.request.envelope.expiry_unix_seconds {
+        let current = now()?;
+        if current >= self.context.training.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
+        }
+        if let Some(context) = &self.context.evaluated {
+            context.require_new_original_receipt(current).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
         }
         self.exchange(wire::Action::Execute).await
     }

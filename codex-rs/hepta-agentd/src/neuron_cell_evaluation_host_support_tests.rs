@@ -1,6 +1,9 @@
 //! Explicit same-UID transport and synthetic B time for original host tests.
 //! Public production factories still require independent original processes.
 //! Every successful response comes from the actual original host and journals.
+#[path = "neuron_cell_evaluation_initial_connection_support_tests.rs"]
+mod initial_connection;
+
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;

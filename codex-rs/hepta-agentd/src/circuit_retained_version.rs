@@ -1,5 +1,6 @@
 //! The original retained-version host and an attenuated ordinary LEARN client.
-//! This purpose prepares only strict TrainingNoUpdate. Separate original
+//! Separate fixed profiles prepare strict TrainingNoUpdate or complete evaluated
+//! NoUpdate. Separate original
 //! Artifact selection, Control CURRENT and FinalUse custody remain in the host.
 //! Root receives neither a grant nor files, keys or a task-execution capability.
 
@@ -55,6 +56,8 @@ pub enum OriginalCircuitRetainedVersionErrorV1 {
     Material(#[from] crate::OriginalCellQ24MaterialCommandErrorV1),
     #[error("original Trainer: {0}")]
     Training(#[from] crate::OriginalCellQ24TrainingCommandErrorV1),
+    #[error("original Evaluator: {0}")]
+    Evaluation(#[from] crate::OriginalCellEvaluationCommandErrorV1),
     #[error("original Trainer connection: {0}")]
     Connection(#[from] crate::OriginalCellQ24TrainingCommandConnectionErrorV1),
     #[error("original task source: {0}")]
@@ -123,6 +126,21 @@ impl OriginalCircuitRetainedVersionReadbackV1 {
     }
     pub fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
+    }
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum RetainedVersionPurposeV1 {
+    TrainingNoUpdate,
+    EvaluatedNoUpdate,
+}
+
+impl RetainedVersionPurposeV1 {
+    fn operation(self) -> &'static str {
+        match self {
+            Self::TrainingNoUpdate => wire::OPERATION,
+            Self::EvaluatedNoUpdate => "runtime.learning.original-evaluated-retained-version.command.v1",
+        }
     }
 }
 

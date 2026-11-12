@@ -3,6 +3,9 @@
 //! carry actual Cell/TaskSource owners and read-only predecessor capabilities.
 
 use super::*;
+#[path = "circuit_evaluated_next_use_remote.rs"]
+mod remote;
+pub use remote::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
 use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitEvaluatedSelectionReceiptV1;

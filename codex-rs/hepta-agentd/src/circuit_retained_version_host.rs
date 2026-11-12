@@ -21,7 +21,9 @@ use tokio::sync::Notify;
 use tokio::sync::Semaphore;
 
 use super::super::OriginalCircuitRetainedPublicationInputsV1;
-use super::super::PreparedOriginalCircuitRetainedPublicationV1;
+use super::RetainedVersionPurposeV1;
+use crate::OriginalCellEvaluationCommandConnectionV1;
+use crate::OriginalCellEvaluationCommandClientV1;
 use super::Error;
 use super::OriginalCircuitRetainedTaskInputsV1;
 use super::RetainedVersionOriginV1;
@@ -51,8 +53,28 @@ mod service;
 #[path = "circuit_retained_version_state.rs"]
 mod state;
 
-type RetainedVersionPreparedV1 =
-    PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+#[path = "circuit_retained_version_prepared.rs"]
+mod prepared_custody;
+use prepared_custody::RetainedVersionPreparedV1;
+
+enum InitialVersionEvidence {
+    TrainingNoUpdate,
+    EvaluatedNoUpdate(OriginalCellEvaluationCommandConnectionV1),
+}
+impl InitialVersionEvidence {
+    fn purpose(&self) -> RetainedVersionPurposeV1 {
+        match self {
+            Self::TrainingNoUpdate => RetainedVersionPurposeV1::TrainingNoUpdate,
+            Self::EvaluatedNoUpdate(_) => RetainedVersionPurposeV1::EvaluatedNoUpdate,
+        }
+    }
+    fn into_evaluator(self) -> Option<OriginalCellEvaluationCommandConnectionV1> {
+        match self {
+            Self::TrainingNoUpdate => None,
+            Self::EvaluatedNoUpdate(evaluator) => Some(evaluator),
+        }
+    }
+}
 type RetainedVersionInputsV1 =
     OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
@@ -120,6 +142,8 @@ struct RetainedVersionHostStateV1 {
     dataset: OriginalCellQ24DatasetCommandReadbackV1,
     initial_trainer: Option<OriginalCellQ24TrainingCommandConnectionV1>,
     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
+    initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
+    evaluator: Option<OriginalCellEvaluationCommandClientV1>,
     cut: Option<OriginalVersionCut>,
     expected: Option<RetainedVersionColdCutV1>,
     control: Arc<NeuronGenerationCurrentOwnerV1>,
@@ -136,6 +160,7 @@ pub struct OriginalCircuitRetainedVersionHostV1 {
     material: OriginalCellQ24MaterialReceiptConfigV1,
     initial_binding: Digest32,
     origin: RetainedVersionOriginV1,
+    purpose: RetainedVersionPurposeV1,
     state: Mutex<RetainedVersionHostStateV1>,
     preparation_requested: AtomicBool,
     publication_requested: AtomicBool,
@@ -163,6 +188,40 @@ impl OriginalCircuitRetainedVersionHostV1 {
         final_use_issuer: AgentdUnixFinalUseGrantProvider,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        Self::from_original_profile(material, dataset, trainer, InitialVersionEvidence::TrainingNoUpdate,
+            inputs, task, artifact_checkpoint, final_use_issuer, lifetime)
+    }
+
+    /// The separate evaluated purpose requires an original E connection held
+    /// before the future T/B cut. The Version host only reads that E owner.
+    pub fn from_original_evaluated_owners(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        trainer: OriginalCellQ24TrainingCommandConnectionV1,
+        evaluator: OriginalCellEvaluationCommandConnectionV1,
+        inputs: RetainedVersionInputsV1,
+        task: OriginalCircuitRetainedTaskInputsV1,
+        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
+        final_use_issuer: AgentdUnixFinalUseGrantProvider,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::from_original_profile(material, dataset, trainer,
+            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), inputs, task,
+            artifact_checkpoint, final_use_issuer, lifetime)
+    }
+
+    fn from_original_profile(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        trainer: OriginalCellQ24TrainingCommandConnectionV1,
+        evidence: InitialVersionEvidence,
+        inputs: RetainedVersionInputsV1,
+        task: OriginalCircuitRetainedTaskInputsV1,
+        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
+        final_use_issuer: AgentdUnixFinalUseGrantProvider,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        let purpose = evidence.purpose();
         let started = super::now()?;
         let (initial_binding, at) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
@@ -188,10 +247,13 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             RetainedVersionOriginV1::Fresh,
+            purpose,
             RetainedVersionHostStateV1 {
                 dataset,
                 initial_trainer: Some(trainer),
                 trainer: None,
+                initial_evaluator: evidence.into_evaluator(),
+                evaluator: None,
                 cut: None,
                 expected: None,
                 control,
@@ -213,12 +275,43 @@ impl OriginalCircuitRetainedVersionHostV1 {
         original: OriginalCircuitRetainedVersionRecoveryV1,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        Self::recover_original_profile(material, dataset, trainer,
+            InitialVersionEvidence::TrainingNoUpdate, original, lifetime)
+    }
+
+    /// Read-only cold recovery of a complete four-cut evaluated NoUpdate.
+    /// The original E connection and already-held C owners remain mandatory.
+    pub fn recover_from_original_evaluated_owners(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        trainer: OriginalCellQ24TrainingCommandConnectionV1,
+        evaluator: OriginalCellEvaluationCommandConnectionV1,
+        original: OriginalCircuitRetainedVersionRecoveryV1,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::recover_original_profile(material, dataset, trainer,
+            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), original, lifetime)
+    }
+
+    fn recover_original_profile(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        trainer: OriginalCellQ24TrainingCommandConnectionV1,
+        evidence: InitialVersionEvidence,
+        original: OriginalCircuitRetainedVersionRecoveryV1,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        let purpose = evidence.purpose();
+        let count = match purpose {
+            RetainedVersionPurposeV1::TrainingNoUpdate => 3,
+            RetainedVersionPurposeV1::EvaluatedNoUpdate => 4,
+        };
         let (initial_binding, _) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
         if original.intent_digest.is_zero()
-            || original.training.receipts.len() != 3
-            || original.attestations.len() != 3
+            || original.training.receipts.len() != count
+            || original.attestations.len() != count
         {
             return Err(Error::Binding("original retained recovery cut"));
         }
@@ -238,10 +331,13 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             RetainedVersionOriginV1::Recovered,
+            purpose,
             RetainedVersionHostStateV1 {
                 dataset,
                 initial_trainer: Some(trainer),
                 trainer: None,
+                initial_evaluator: evidence.into_evaluator(),
+                evaluator: None,
                 cut: None,
                 expected: Some(RetainedVersionColdCutV1 {
                     training: original.training,
@@ -261,6 +357,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         material: OriginalCellQ24MaterialReceiptConfigV1,
         initial_binding: Digest32,
         origin: RetainedVersionOriginV1,
+        purpose: RetainedVersionPurposeV1,
         state: RetainedVersionHostStateV1,
         lifetime: Duration,
     ) -> Result<Self, Error> {
@@ -272,6 +369,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             origin,
+            purpose,
             state: Mutex::new(state),
             preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
             publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),

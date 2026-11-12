@@ -257,7 +257,10 @@ class EvaluatedNextUseClosureTests(unittest.TestCase):
     def test_both_live_predecessors_and_readonly_original_s_are_mandatory(self):
         for marker in (
             "let training = match &self.profile", "Profile::Legacy =>",
-            "source.trainer()", "prior(&self.config, LearningIterationStageV1::Training)?",
+            "let trainer: &LearningIterationEvidenceClientV1 = source.trainer()",
+            '.ok_or(OwnerError::Binding("original C Trainer source"))?',
+            "LearningIterationEvidenceClientV1::readback(trainer,",
+            "prior(&self.config, LearningIterationStageV1::Training)?",
             "Profile::Evaluated(selection) =>", "source.evaluated_owners()",
             ".require_original_receipt_owners(trainer, evaluator)",
             "let selector: &LearningIterationEvidenceClientV1 = source.selector();",

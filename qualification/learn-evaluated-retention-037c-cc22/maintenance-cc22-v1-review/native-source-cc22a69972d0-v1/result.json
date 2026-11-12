@@ -1,0 +1,147 @@
+{
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "base": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+  "request_key": "learn-037c-native-maintenance-cc22a69972d0-v1",
+  "started_at": "2026-11-12T10:37:23.133064+00:00",
+  "cache_copy_record_sha256": "2c20846125376450713aaa812fd548b5882b867298789a34deff30bf495c30e3",
+  "before": {
+    "head": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+    "status": " M codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs\n",
+    "diff_sha256": "e7ea05d3b1d9561cddfd864bc349579f3bcc54886ee3bb3a07b79cc634485842",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+  },
+  "caller_before": {
+    "head": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+    "status": "",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-caller-20261112-037c-726af8f4/info/sparse-checkout",
+    "sparse_sha256": "06eb818bc68edb02bfbf63ecf5b3b9df33c8422ede64d2c9a7a440f8988bac77"
+  },
+  "restored": {
+    "command": [
+      "git",
+      "restore",
+      "--source=8faf92e260e118508fc62f4f38f3816db24cd4cc",
+      "--worktree",
+      "--",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs"
+    ],
+    "started_at": "2026-11-12T10:37:23.583199+00:00",
+    "finished_at": "2026-11-12T10:37:23.597375+00:00",
+    "returncode": 0,
+    "log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "fetch": {
+    "command": [
+      "git",
+      "fetch",
+      "origin",
+      "cc22a69972d029d3ef28d49096f396eb5214c616"
+    ],
+    "started_at": "2026-11-12T10:37:23.687958+00:00",
+    "finished_at": "2026-11-12T10:37:30.765921+00:00",
+    "returncode": 0,
+    "log": {
+      "bytes": 144,
+      "sha256": "e0fd81532b17d589ba6e4a00074e4641cb62a72047048ea2a6d63e8dafd9c0a2",
+      "blob": "43e7e155b32893656c3c36c6c4e1dd7357ce8729"
+    }
+  },
+  "checkout": {
+    "command": [
+      "git",
+      "checkout",
+      "--detach",
+      "cc22a69972d029d3ef28d49096f396eb5214c616"
+    ],
+    "started_at": "2026-11-12T10:37:30.769733+00:00",
+    "finished_at": "2026-11-12T10:37:36.105147+00:00",
+    "returncode": 0,
+    "log": {
+      "bytes": 182,
+      "sha256": "5a80538f9919c31421a211b98065b00fcd10920c127a398ef9e34663c48237e6",
+      "blob": "2a8e42a0c54a01fe9acd864dde8ade84be8b7d3e"
+    }
+  },
+  "after": {
+    "head": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+    "status": "",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+  },
+  "caller_after": {
+    "head": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+    "status": "",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-caller-20261112-037c-726af8f4/info/sparse-checkout",
+    "sparse_sha256": "06eb818bc68edb02bfbf63ecf5b3b9df33c8422ede64d2c9a7a440f8988bac77"
+  },
+  "includes": [
+    {
+      "path": "docs/modules/MODULES.json",
+      "bytes": 60119,
+      "sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716",
+      "blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d"
+    },
+    {
+      "path": "qualification/neuron-v13-generation/proposal_worker.py",
+      "bytes": 16818,
+      "sha256": "edd91e3ada420024afe3f2e4d4180de0ba8708e12f642b57d2aef882b6539501",
+      "blob": "a5845d8203bea1b9f17bb6abc917d01b06c9bea5"
+    }
+  ],
+  "source_exit_code": 0,
+  "finished_at": "2026-11-12T10:37:36.283450+00:00",
+  "format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "started_at": "2026-11-12T10:37:41.572108+00:00",
+    "finished_at": "2026-11-12T10:37:43.603264+00:00",
+    "returncode": 0,
+    "log": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "blob": "3c392c1e9260334291874d1c0eaad4cb4d7c054e"
+    },
+    "source_before_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+    "source_after_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+    "source_after": {
+      "head": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "status": "",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+      "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+    },
+    "patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "postimages": []
+  },
+  "maintenance_driver": {
+    "path": "/home/qian-qi/hepta-learn-037c-evidence/native-attempt-v4-data-246e6406.py",
+    "sha256": "246e64061259a03a3eb49c9bc14d0af090402f4084b4c3667591a027f66fc35f",
+    "only_change": "TARGET moves to byte-verified isolated /data cache; original source/locks and command remain unchanged"
+  }
+}

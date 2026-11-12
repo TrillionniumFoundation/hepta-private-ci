@@ -40,7 +40,7 @@ EXPECTED = {
     "learning_source_bound_training_stage_readback": (
         AGENT + "cell_q24_training_command_service.rs",
         AGENT + "cell_q24_model_command_lane.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+        AGENT + "cell_q24_training_command_readback_service.rs",
     ),
     "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),

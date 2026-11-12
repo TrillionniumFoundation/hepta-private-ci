@@ -30,15 +30,15 @@ SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
     "learning_original_published_read_client_create": (),
-    "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
+    "learning_original_published_read_client_current": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs'),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
     "learning_original_published_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
     "learning_original_published_read_owner_serve": (),
     "learning_original_source_input_current": ('codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
-    "learning_original_circuit_selection_remote_attest": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
-    "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs", 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs',),
-    "learning_original_circuit_next_use_remote_attest": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
-    "learning_original_circuit_next_use_remote_readback": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs"),
+    "learning_original_circuit_selection_remote_attest": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',),
+    "learning_original_circuit_selection_remote_readback": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',),
+    "learning_original_circuit_next_use_remote_attest": ('codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',),
+    "learning_original_circuit_next_use_remote_readback": ('codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',),
     "learning_original_owner_physical_current": ("codex-rs/hepta-agentd/src/learning_owner_journal.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs", "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",),
 }
 
@@ -162,8 +162,8 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "channel.next_request_id > 128",
             "channel.peer.request(&bytes)?",
             "response.require_request(&request)?",
-            "response.read.decode(&self.context)?",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.decode(response.read)?",
+            "self.context.binding(fresh)? != self.binding",
             "retained.as_ref().is_some_and(|prior| prior != &current)",
             "channel.peer.check_peer_lifetime()?",
         ):
@@ -194,9 +194,9 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
         for marker in (
-            "request.require_context(&self.context, self.binding, request_id)?",
+            "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.binding(fresh)? != self.binding",
             "wire::OriginalRead::from_original(read)?",
             "bytes.is_empty() || bytes.len() > 16_384",
         ):
@@ -205,7 +205,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
         for path, function, predecessor, verifier in (
             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
-            (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
+            (OBSERVER, "fn read_remote_next_use(", "predecessors", "evaluated::authenticate_predecessors"),
         ):
             for marker in (
                 "live.require_original_context(",
@@ -213,12 +213,18 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             ):
                 self.rejects(path, function, marker)
             for marker in (
-                "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+                "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
                 f"self.{predecessor}(&source).await?",
-                f"{verifier}(&self.config, &before, now()?)?",
+                f"{verifier}(&self.config, &self.profile, &before, now()?)?",
                 "let bytes = self.journal.read(&self.saved)?;",
             ):
                 self.rejects(path, "fn readback_source(", marker)
+            for replacement in ("ObservationLocation::RemoteOwner", "ObservationLocation::EvaluatedOwner"):
+                self.rejects(
+                    path, "fn readback_source(",
+                    "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                    replacement,
+                )
             for marker in (
                 "if self.prepare(source).await? != *observed",
                 f"self.{predecessor}(source).await?",
@@ -226,7 +232,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
                 "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
             ):
                 self.rejects(path, "fn finish_original_readback(", marker)
-            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, evidence, current)?")
+            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, &self.profile, evidence, current)?")
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",
@@ -245,11 +251,11 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         for marker in (
             "digest(&bundle)? != baseline",
             "source_publication.is_none()",
-            "state_partition.run_id == context.prefix.request.source_run_id",
+            "state_partition.run_id == prefix.request.source_run_id",
             "*candidate_bundle == baseline && *selection_digest == selection",
-            "context.scope.validate_observation(&observation)?",
+            "scope.validate_observation(&observation)?",
         ):
-            self.rejects(WIRE, "fn decode(", marker)
+            self.rejects(WIRE, "fn decode_original(", marker)
         self.rejects(WIRE, "fn digest(", "digest.is_zero() || digest.to_string() != text")
         for path in (MAIN, SERVICE, WIRE):
             source = (ROOT / path).read_text()

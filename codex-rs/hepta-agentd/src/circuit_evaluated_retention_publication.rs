@@ -35,12 +35,12 @@ pub struct PreparedOriginalCircuitEvaluatedRetentionV1<
     New: AnchorWitnessStore,
 > {
     context: OriginalCircuitEvaluatedRetentionContextV1,
-    trainer: OriginalCellQ24TrainingCommandClientV1,
-    evaluator: OriginalCellEvaluationCommandClientV1,
+    pub(super) trainer: OriginalCellQ24TrainingCommandClientV1,
+    pub(super) evaluator: OriginalCellEvaluationCommandClientV1,
     prepared: PreparedAgentdGenerationUpdateV1<Old, New>,
     definition: CellDefinitionV1,
     source: CircuitTaskSourceInputV1,
-    completed: PublishedCircuitFeatureCompletionV1,
+    pub(super) completed: PublishedCircuitFeatureCompletionV1,
 }
 
 /// Consume original owner capabilities only after actual Trainer and Evaluator

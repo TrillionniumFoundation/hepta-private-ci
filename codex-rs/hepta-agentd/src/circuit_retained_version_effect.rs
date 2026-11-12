@@ -16,7 +16,7 @@ use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
 use super::RetainedVersionHostPhaseV1;
 use super::RetainedVersionHostStateV1;
-use crate::PreparedOriginalCircuitRetainedPublicationV1;
+use super::RetainedVersionPreparedV1;
 
 impl OriginalCircuitRetainedVersionHostV1 {
     pub(super) fn prepare_original(
@@ -38,14 +38,18 @@ impl OriginalCircuitRetainedVersionHostV1 {
         task.require_completed_a(&inputs.completed)?;
         cut.require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
         let trainer = state.trainer.take().ok_or(Error::CommitUncertain)?;
-        let prepared = self
-            .runtime
-            .block_on(crate::prepare_original_circuit_retained_publication_v1(
-                cut.original_context(),
-                trainer,
-                *inputs,
-            ))
-            .map_err(|_| Error::CommitUncertain)?;
+        let prepared = match &cut.evaluated {
+            None => RetainedVersionPreparedV1::TrainingNoUpdate(self.runtime.block_on(
+                crate::prepare_original_circuit_retained_publication_v1(
+                    cut.original_context(), trainer, *inputs)).map_err(|_| Error::CommitUncertain)?),
+            Some(context) => {
+                let evaluator = state.evaluator.take().ok_or(Error::CommitUncertain)?;
+                RetainedVersionPreparedV1::EvaluatedNoUpdate(self.runtime.block_on(
+                    crate::prepare_original_circuit_evaluated_retention_v1(
+                        context.clone_for_original_receipt(), trainer, evaluator, *inputs))
+                    .map_err(|_| Error::CommitUncertain)?)
+            }
+        };
         state.phase = Some(RetainedVersionHostPhaseV1::Prepared {
             original: Box::new(prepared),
             task,
@@ -146,12 +150,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
             else {
                 return Err(Error::CommitUncertain);
             };
-            task.require_completed_a(&original.completed)?;
+            task.require_completed_a(original.completed())?;
             require_not_cancelled(&cancellation)?;
-            let (published, trainer) = self.runtime.block_on(
-                PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(
-                    *original, signed,
-                ),
+            let (published, trainer, evaluator) = self.runtime.block_on(
+                (*original).publish(signed),
             ).map_err(|_| Error::CommitUncertain)?;
             let cut = state.cut.as_ref().ok_or(Error::CommitUncertain)?;
             let intent = match &published.0.publication {
@@ -167,6 +169,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 .install_original(published, cut, intent)
                 .map_err(|_| Error::CommitUncertain)?;
             state.trainer = Some(trainer);
+            state.evaluator = evaluator;
             state.phase = Some(RetainedVersionHostPhaseV1::Installed {
                 original: installed,
                 config: Some(config),

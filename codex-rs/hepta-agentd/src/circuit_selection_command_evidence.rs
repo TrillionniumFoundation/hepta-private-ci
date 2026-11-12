@@ -12,7 +12,6 @@ use super::OriginalCircuitSelectionCommandOwnerV1;
 use super::now;
 use super::wire;
 use crate::OriginalCircuitSelectionReceiptOwnerV1;
-use crate::OriginalCircuitSelectionRemoteSourcesV1;
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
     pub(super) fn serve_evidence_channel(
@@ -53,15 +52,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         let (receipt, signed) = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
-            self.runtime
-                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
-                    original,
-                    OriginalCircuitSelectionRemoteSourcesV1 {
-                        snapshot: &self.context.training,
-                        live: &self.live,
-                        trainer: &self.trainer,
-                    },
-                ))?
+            self.observe_original(original, wire::Action::Readback)?
         };
         let original = wire::authenticate_receipt(&self.context, receipt, signed, now()?)?;
         if request.receipt_digest != original.attestation.payload_digest.to_string() {

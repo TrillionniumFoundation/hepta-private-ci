@@ -1,0 +1,99 @@
+{
+  "expected_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+    "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_published_read_source_closure.py"
+  ],
+  "actual_compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "head": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "status": "ahead",
+    "ahead_by": 2,
+    "behind_by": 0,
+    "total_commits": 2,
+    "too_large": null,
+    "base_commit": {
+      "sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b29869e856d08db1bfb066116a9c443376ccc57d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b29869e856d08db1bfb066116a9c443376ccc57d"
+    },
+    "merge_base_commit": {
+      "sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b29869e856d08db1bfb066116a9c443376ccc57d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b29869e856d08db1bfb066116a9c443376ccc57d"
+    },
+    "files": [
+      {
+        "filename": ".github/blob-size-allowlist.txt",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 0,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "CALLERS.toml",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+        "status": "modified",
+        "additions": 8,
+        "deletions": 8,
+        "changes": 16,
+        "previous_filename": null
+      },
+      {
+        "filename": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "status": "modified",
+        "additions": 8,
+        "deletions": 7,
+        "changes": 15,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+        "status": "modified",
+        "additions": 4,
+        "deletions": 1,
+        "changes": 5,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "status": "modified",
+        "additions": 72,
+        "deletions": 42,
+        "changes": 114,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "previous_filename": null
+      },
+      {
+        "filename": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "status": "modified",
+        "additions": 10,
+        "deletions": 4,
+        "changes": 14,
+        "previous_filename": null
+      }
+    ]
+  },
+  "exact_paths_match": true
+}

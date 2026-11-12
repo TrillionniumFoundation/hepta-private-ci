@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "patch",
+    "--batch",
+    "--fuzz=0",
+    "--no-backup-if-mismatch",
+    "-p1",
+    "--input",
+    "/workspace/scratch/037c0371c195/native-failures-integration-v1/native-failures-integration-v1.patch"
+  ],
+  "exit_code": 0,
+  "stdout": "patching file codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\npatching file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\npatching file codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs\npatching file codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs\n",
+  "stderr": "",
+  "all_four_postimages_exact": true
+}
