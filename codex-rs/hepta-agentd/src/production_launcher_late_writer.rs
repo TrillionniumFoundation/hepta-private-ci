@@ -28,6 +28,7 @@ impl AgentdProductionLaunch {
             q24_model_handoff,
             publication_handoff,
             initial_handoff,
+            historical_handoff,
             uid,
             gid,
             control,
@@ -75,9 +76,17 @@ impl AgentdProductionLaunch {
                 )
             })
             .transpose()?;
+        let historical = historical_handoff
+            .map(|handoff| {
+                crate::receive_root_historical_task_read_handoff(
+                    handoff,
+                    remaining(bootstrap_deadline)?,
+                )
+            })
+            .transpose()?;
         // Preserve the original accept barrier: all five actual lanes precede
         // writer loading and any optional learning/Model exchange.
-        let root = crate::receive_root_production_inputs(
+        let mut root = crate::receive_root_production_inputs(
             bootstrap,
             root_pidfd,
             expected,
@@ -93,6 +102,20 @@ impl AgentdProductionLaunch {
                 "late writer loaded another original Starting identity".into(),
             ));
         }
+        let historical_read = if let Some(historical) = historical {
+            let connection = root.take_historical_task_read_connection()?;
+            let client = historical
+                .connect_original(
+                    connection,
+                    remaining(bootstrap_deadline)?.min(Duration::from_millis(500)),
+                    session_end,
+                )
+                .await?;
+            client.require_same_original_session(&root.session)?;
+            Some(client)
+        } else {
+            None
+        };
         let mut model_factory = None;
         if let Some(learning) = learning {
             let learning: crate::RootLearningHandoffV1 = learning;
@@ -145,6 +168,7 @@ impl AgentdProductionLaunch {
                 q24_model: model_factory,
                 publication,
                 initial_publication,
+                historical_read,
                 original_source_capture: None,
                 original_run_start_retention: None,
                 session_end,

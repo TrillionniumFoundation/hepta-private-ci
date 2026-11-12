@@ -18,7 +18,7 @@ use crate::calculator_deadline::Deadline;
 #[path = "production_initial_q24_cli.rs"]
 mod initial_q24;
 
-const FLAGS: [&str; 23] = [
+const FLAGS: [&str; 24] = [
     "--root-production-profile",
     "--q24-initial-deployment-fd",
     "--root-production-handoff-fd",
@@ -26,6 +26,7 @@ const FLAGS: [&str; 23] = [
     "--root-q24-model-handoff-fd",
     "--root-generation-publication-handoff-fd",
     "--root-generation-initial-handoff-fd",
+    "--root-historical-task-read-handoff-fd",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -58,6 +59,7 @@ pub(super) struct LaunchInputs {
     pub(super) q24_model_handoff: Option<UnixDatagram>,
     pub(super) publication_handoff: Option<UnixDatagram>,
     pub(super) initial_handoff: Option<UnixDatagram>,
+    pub(super) historical_handoff: Option<UnixDatagram>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -190,6 +192,10 @@ pub(super) fn parse(
             "initial and learned publication require separate original Root sessions",
         ));
     }
+    let historical_handoff = selected
+        .remove("--root-historical-task-read-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -260,6 +266,7 @@ pub(super) fn parse(
         initial_deployment,
         initial_handoff,
         &[
+            historical_handoff,
             learning_handoff,
             q24_model_handoff,
             publication_handoff,
@@ -292,6 +299,7 @@ pub(super) fn parse(
         q24_model_handoff,
         publication_handoff,
         initial_handoff,
+        historical_handoff,
         initial_deployment,
         Some(control),
         Some(app_server),
@@ -339,6 +347,10 @@ pub(super) fn parse(
         .transpose()?
         .map(UnixDatagram::from);
     let initial_handoff = initial_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let historical_handoff = historical_handoff
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
@@ -394,6 +406,7 @@ pub(super) fn parse(
             q24_model_handoff,
             publication_handoff,
             initial_handoff,
+            historical_handoff,
             uid,
             gid,
             control,
