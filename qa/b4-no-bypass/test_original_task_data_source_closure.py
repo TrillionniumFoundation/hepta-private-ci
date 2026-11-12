@@ -103,6 +103,7 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         paths = {DATA, DECISION, TASK, MATERIALIZER, CLIENT, ROOT_TASK,
                  route.PROTOCOL, route.PROVIDER, DERIVE}
+        paths.update(path for callers in CALLERS.values() for path in callers)
         cls.sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
             for path in paths

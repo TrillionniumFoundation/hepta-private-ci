@@ -171,7 +171,8 @@ impl PreparedHostAuthoritySession {
             &self.registration,
             &self.owner_pidfd,
             |_| {
-                retained = Some(inputs.retain_original(
+                retained = Some(RootHistoricalSourceInputsV1::retain_original(
+                    inputs,
                     &self.registration.registered_identity.identity()?,
                     &initial.deployment.target,
                     self.config.peer_uid,

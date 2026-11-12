@@ -278,7 +278,7 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
         self.rejects_removal(SESSION, "enable_initial_source_capture", (
             "original_root()?", "initial.source_capture.is_some()",
             "initial.phase.load(Ordering::Acquire) != PREPARED",
-            "self.service.with_initial_publication_context(", "inputs.retain_original(",
+            "self.service.with_initial_publication_context(", "RootHistoricalSourceInputsV1::retain_original(",
             "self.registration.registered_identity.identity()?",
             "&initial.deployment.target", "root.require_current()?",
         ))
@@ -380,6 +380,8 @@ class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
 
     def test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set(self):
         for identifier, call in (
+            ("root_historical_source_fixed_inputs",
+             "fn unregistered(inputs: RootHistoricalSourceInputsV1) { inputs.retain_original(identity, target, uid, gid); }"),
             ("root_historical_source_enable_unconnected",
              "fn unregistered(host: &mut PreparedHostAuthoritySession) { host.enable_initial_source_capture(inputs); }"),
             ("root_historical_source_request_unconnected",
