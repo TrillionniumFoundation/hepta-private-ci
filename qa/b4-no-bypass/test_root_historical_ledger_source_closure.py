@@ -101,7 +101,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
 
     def test_capture_ready_requires_post_context_physical_record_and_deadline(self):
         self.check_markers(AGENT + "authority_host_historical_ledger_pin.rs", "fn with_original_ledger_capture<T>(", (
-            "original.refusal.inspect(||", "original.baseline.phase != LedgerPhase::Enrolled",
+            "RootDataRefusalV1::inspect(&original.refusal, ||", "original.baseline.phase != LedgerPhase::Enrolled",
             "let result = action(Some(&mut pending))?", "let (captured, observation, mut held)",
             "held.require_unchanged(&observation)?", "!= captured"))
         self.reject_removal(AGENT + "authority_host_historical_ledger_pin.rs", "fn with_original_ledger_capture<T>(",

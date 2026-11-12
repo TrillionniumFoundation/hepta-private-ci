@@ -172,7 +172,8 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             .source
             .read_original_retired_source_cell(load_original_source)?;
         let pin = &self.original.source.expected.pin;
-        self.run_start.require_original_publisher(
+        RootOriginalRunStartReadV1::require_original_publisher(
+            self.run_start,
             source.source.original_identity(),
             &self.original.target,
             &pin.publisher,
@@ -181,7 +182,8 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &pin.writer,
             &pin.target_files,
         )?;
-        let run_start = self.run_start.read_original_publication(
+        let run_start = RootOriginalRunStartReadV1::read_original_publication(
+            self.run_start,
             load_original_run_start()?,
             source.source.original_identity(),
         )?;
@@ -190,14 +192,15 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
                 "Source request is not the original Root-retained RunStart",
             ));
         }
-        let ledger = self.ledger.observe_original_terminal(
+        let ledger = PendingOriginalLedgerHistoryV1::observe_original_terminal(
+            self.ledger,
             &self.original.source,
             &source.source,
             &source.definition,
             &source.cell,
         )?;
-        let run_start_digest = self.run_start.retained_digest()?;
-        let ledger_digest = ledger.data_cut_digest()?;
+        let run_start_digest = RootOriginalRunStartReadV1::retained_digest(self.run_start)?;
+        let ledger_digest = RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)?;
         let cut = Digest32::of_parts(&[
             b"hepta.root.original-historical-complete-task-cut.v1\0",
             &self.original.target.digest().map_err(io::Error::other)?,
