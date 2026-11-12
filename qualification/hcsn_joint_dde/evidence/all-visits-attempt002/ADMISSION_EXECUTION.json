@@ -1,0 +1,16 @@
+{
+  "claim": "Read-only arithmetic/counterexample tests, zero model calls; no preexecution source snapshot captured.",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_joint_dde.test_retained_values",
+    "-v"
+  ],
+  "exit": 0,
+  "source_sha256_observed_after": {
+    "qualification/hcsn_joint_dde/test_retained_values.py": "7ebf1b7cc9dcd17e6310feae845504cb6b811bd623998f22cc1b4cbd89848d4d",
+    "qualification/hcsn_joint_dde/verify_retained_values.py": "bede69c0adc83a80a1084c053400ea58441852eaf6eb280fe346ed7b88519379"
+  },
+  "tests": 4
+}
