@@ -1,0 +1,22 @@
+{
+  "static_yaml": "PASS",
+  "bash_blocks": 9,
+  "python_heredocs": 4,
+  "exact_input_pins": "PASS",
+  "safe_input_controls": [
+    "valid_zip_exact_bytes",
+    "unsafe_path_rejected",
+    "unsafe_path_rejected",
+    "unsafe_path_rejected",
+    "unsafe_path_rejected",
+    "symlink_rejected",
+    "wrong_hash_not_published"
+  ],
+  "observed_active_schema": "perc1.active-source-qualification.v1",
+  "observed_active_status": "PASS_LOCAL_ACTIVE_PIPELINE",
+  "hosted_executed": false,
+  "files": {
+    "/workspace/scratch/e11c579132dc/hepta-perc/.github/workflows/hepta-perc-real-source.yml": "9a25f656dc673e30db7d1586c878e40bde35f5bc2e38677bad2d79fc91b1c8f9",
+    "/workspace/scratch/e11c579132dc/hepta-perc/scripts/perc1_ci_inputs.py": "a7f00205c05947e03cd61170df1426c94a61d2f0dd4975fa7f3534d2d8c8b8ec"
+  }
+}

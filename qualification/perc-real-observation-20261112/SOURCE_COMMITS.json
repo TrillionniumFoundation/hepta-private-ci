@@ -1,0 +1,111 @@
+{
+  "base_commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+  "review_note": "Source changes are split by controller, source retention, native-owner probe, CLI, qualification drivers and scoped CI. The two standalone evidence drivers exceed 500 lines but remain below 800 and are isolated from library/daemon code.",
+  "source_head_before_evidence_commit": "67fb0dd815f2962e9b4ad390d6b1b762e5b595de",
+  "stages": [
+    {
+      "commit": "00b85ebc86dc67ea059f4e75600e54d1042e64b4",
+      "local_commit": "00b85ebc86dc67ea059f4e75600e54d1042e64b4",
+      "title": "feat(perc): bind active perception decisions to retained owner effects",
+      "already_published": true
+    },
+    {
+      "commit": "91bfa110ed031ca72bdfb02c8be5ab090eb8e23b",
+      "local_commit": "91bfa110ed031ca72bdfb02c8be5ab090eb8e23b",
+      "title": "test(perc): cover retained active decisions and unknown capture recovery",
+      "already_published": true
+    },
+    {
+      "commit": "2e0cecbc5943cac3ae2cc2e2f1e138faeb038ec8",
+      "local_commit": "2e0cecbc5943cac3ae2cc2e2f1e138faeb038ec8",
+      "title": "fix(perc): retain bounded public decision inputs for cold inspection",
+      "already_published": true
+    },
+    {
+      "commit": "58abb32132c74739e22abc07d71af7fd630912e2",
+      "local_commit": "b7804003e753efa740b8fdc708dcce8c8149eb48",
+      "title": "PERC: preserve pinned screenshot, document and bounded OCR source artifacts",
+      "tree": "990199037104bf90380175da7dbe85e3419c6a84",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "9909d56a72552f16fb504cfc14a5bf926543dd87",
+      "local_commit": "fbaf8c45943d8fcbc1acabdb4d0ebea57cd78cd2",
+      "title": "fix(perc): accept versioned owned evidence in active prefixes",
+      "tree": "4ff56f37962ae4d7aee2105644dc51329a133785",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "422d83e09fa7fc1c647fa02642601290a554352f",
+      "local_commit": "48c0ba2f640731d7794cc39a5bd940da92fd06cc",
+      "title": "PERC: qualify source retention, OCR bounds and owner cold readback",
+      "tree": "6d6581a055a56e4480e12a853d52a847b0a6fe23",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "52f65f87338a3cb47b971eaadcd2a86537219efc",
+      "local_commit": "2256f20a7eb41265f444d414c08b0edbb2524424",
+      "title": "feat(perc): qualify native diagnostic head and durable Cell owner",
+      "tree": "cca7db8a610e857eca514e45425aaef76c1f8199",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "61c7ea80cdffbbf110dec261958a4cf7c3c6bdde",
+      "local_commit": "08d897e63fe6a62ceee2b7d6a6b51ceee4b65788",
+      "title": "test(perc): retain native owner cold read and unknown outcome evidence",
+      "tree": "d94f81bc20d2fbf35c0d749e56f56ff244e6bc2a",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "698398ee42f8fbfd03fc599f3ecb8992c6cd5eb7",
+      "local_commit": "f744bcda95ef729719a5c8e616e74c6fac573f64",
+      "title": "fix(perc): preserve STOP identity and verify retained decision evidence",
+      "tree": "84b6dde4cf655c0a72753c2d1a1fb1bad7e90696",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "6be129438c53ad8532b81eb88b1c77ac3b28da85",
+      "local_commit": "9ae45e62d878e337f32dd65623581221331194e1",
+      "title": "feat(perc): retain bounded browser and document source evidence",
+      "tree": "5b886415131be366f671a01407e0446030fc7ac7",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "fd340ee14b2b5cc4c384f3e56796de6b9f4dc158",
+      "local_commit": "7df07ddb3f193ae0c7754496ba3363c1f5f9b43a",
+      "title": "feat(perc): connect source capture and retained active decision CLI",
+      "tree": "f12f5f1179d5bce8595692dbbf30b3de3b691ac4",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "8111b12a7a458cef713de7026b17cb11dba313b8",
+      "local_commit": "2eb53c86d4505492fd6ed3e63fee5ab0fdc454eb",
+      "title": "test(perc): qualify real source through native durable owner",
+      "tree": "31b78db1f572d7e3fd1ae1c3768042200a7782b2",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "cdcc54395d0a320ef84372c034a04b28ebfd28d1",
+      "local_commit": "4f1f6b657f33e5c84f7692b55755dbc117072211",
+      "title": "fix(perc): sync active decision directories and align exact text fixtures",
+      "tree": "3196d161cb969f6ce131bb3296be5da4fd1042ec",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "b12ae28105dc75dcfee3ed036b5c5b7cc80e6d85",
+      "local_commit": "2806d9dce6a3929637ee27c90d37bf2aedb1293c",
+      "title": "test(perc): execute real ROI acquisition STOP and cold decision recovery",
+      "tree": "2cd709e1ad8b169e8754a931d21c81bbccb6f0fb",
+      "tree_verified_identical": true
+    },
+    {
+      "commit": "67fb0dd815f2962e9b4ad390d6b1b762e5b595de",
+      "local_commit": "d37f3eb98f94537326fd9ee457bf0e6310d7d553",
+      "title": "ci(perc): qualify exact source with real OCR browser and native owner",
+      "tree": "faf4b1475b43e4c48db5dd64876ab053caae4afe",
+      "tree_verified_identical": true
+    }
+  ],
+  "local_source_head_before_evidence_commit": "d37f3eb98f94537326fd9ee457bf0e6310d7d553",
+  "publication": "Authenticated GitHub Git-data publication after command-line Git lacked credentials. Every source-stage tree matches its local original. Commit metadata differs; mapping below preserves identity."
+}
