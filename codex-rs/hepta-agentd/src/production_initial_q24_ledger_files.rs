@@ -272,3 +272,7 @@ fn now() -> Result<u64, AgentdError> {
         .map(|time| time.as_secs())
         .map_err(invalid)
 }
+
+#[cfg(test)]
+#[path = "production_initial_q24_ledger_files_tests.rs"]
+mod tests;
