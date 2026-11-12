@@ -19,6 +19,8 @@ mod observer;
 mod post_a_artifact_inputs;
 #[path = "ordinary_q24_post_a_c_inputs_tests.rs"]
 mod post_a_c_inputs;
+#[path = "ordinary_q24_post_a_completed_data_tests.rs"]
+mod post_a_completed_data;
 #[path = "ordinary_q24_post_a_deployment_tests.rs"]
 mod post_a_deployment;
 #[path = "ordinary_q24_post_a_file_tests.rs"]
@@ -29,8 +31,12 @@ mod post_a_launch;
 mod post_a_owner;
 #[path = "ordinary_q24_post_a_plan_tests.rs"]
 mod post_a_plan;
+#[path = "ordinary_q24_post_a_process_tests.rs"]
+mod post_a_process;
 #[path = "ordinary_q24_post_a_progress_tests.rs"]
 mod post_a_progress;
+#[path = "ordinary_q24_post_a_retained_tests.rs"]
+mod post_a_retained;
 #[path = "ordinary_q24_post_a_selection_tests.rs"]
 mod post_a_selection;
 #[path = "ordinary_q24_post_a_source_tests.rs"]
