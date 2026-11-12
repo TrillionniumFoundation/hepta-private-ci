@@ -60,6 +60,14 @@ impl OwnerChannel {
         self.end
     }
 
+    pub(crate) fn limit_original_end(
+        &mut self,
+        end: Instant,
+    ) -> Result<(), HostIssuerTransportError> {
+        self.end = self.end.min(end);
+        self.check(self.end)
+    }
+
     pub(crate) fn deadline(&self, timeout: Duration) -> Instant {
         (Instant::now() + timeout).min(self.end)
     }

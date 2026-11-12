@@ -8,6 +8,7 @@ use std::net::Shutdown;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
+use std::time::Instant;
 
 #[path = "authority_host_descriptor.rs"]
 mod descriptor;
@@ -36,6 +37,22 @@ impl HostAuthorityPeerChannel {
     /// This creates no permission and never exposes or replaces its pidfd.
     pub fn check_peer_lifetime(&self) -> Result<(), HostIssuerTransportError> {
         self.owner.check(self.owner.end())
+    }
+
+    /// Shorten this already pinned channel to the original enclosing deadline.
+    /// A later deadline cannot extend it. Expiry or loss of the pinned owner
+    /// closes the original stream permanently, before any further frame I/O.
+    pub fn limit_original_end(&mut self, end: Instant) -> Result<(), HostIssuerTransportError> {
+        if self.stream.is_none() {
+            return Err(HostIssuerTransportError::Closed);
+        }
+        let result = self.owner.limit_original_end(end);
+        if result.is_err()
+            && let Some(stream) = self.stream.take()
+        {
+            let _ = stream.shutdown(Shutdown::Both);
+        }
+        result
     }
 
     pub fn from_stream(
