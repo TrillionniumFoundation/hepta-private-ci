@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn-uniform-law-native-attempt-unknown-v1",
+  "host": "desktop",
+  "idempotency_key": "hcsn-initial-law-vjp-4092-attempt001",
+  "directory": "/home/qian-qi/hcsn-initial-law-vjp-20261112-4092",
+  "archive_sha256": "0f4ed10b212b65e5ba1b7ea7e1634e324e0d8a4a0f713f62790b57672cdf27b3",
+  "original_launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.shell_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "readbacks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "status": "UNKNOWN",
+  "job_id": null,
+  "actual_optimizer_updates": null,
+  "retried_under_new_key": false,
+  "scope": "Earlier uniform-grid initial-law VJP diagnostic. Not the reset-aligned candidate."
+}

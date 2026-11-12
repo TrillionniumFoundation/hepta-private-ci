@@ -1,0 +1,82 @@
+{
+  "additional_reviews": {
+    "cold_restore_started_at_units": "model time, not wall latency",
+    "cost_scope": "test_process_cost covers the unittest child and its descendants only; subsequent standalone prefix, cold restore and uninterrupted comparison are excluded.",
+    "original_module_counts": [
+      8,
+      6,
+      5,
+      9,
+      5,
+      2,
+      2,
+      2,
+      3,
+      2
+    ],
+    "original_test_count": 44,
+    "resource_peak_scope": "Linux RUSAGE_CHILDREN ru_maxrss high-water maximum, not summed process-tree peak; no device energy measurement",
+    "training_loop_actual_updates": 120,
+    "training_runner_guard_failure_detected": false,
+    "training_trace_records": 121,
+    "workflow_checks_out_exact_head": true,
+    "workflow_uses_fresh_output_directory": true
+  },
+  "counterfactual": "Scale both inherited graded.py jump rates by 1.01 in an isolated copy, leave all other bytes and physics unchanged, restore in a fresh interpreter.",
+  "f934_counterexamples_relabelled_as_common": false,
+  "finding": "Concrete spatial class source binding omitted its inherited GradedSpatialGenerator implementation.",
+  "fixed_state_io_sha256": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446",
+  "green": {
+    "binding_sources": {
+      "hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+      "hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+      "hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+      "hcsn_joint_dde/state_io.py": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446",
+      "hcsn_reset_aligned/mesh.py": "9b2d57a70ee677e9d71a18d16ec555b15bc18b3dca636cbaa3b7afd5941bf3a8"
+    },
+    "error": "checkpoint schema or exact operator binding mismatch",
+    "only_modified_isolated_source": "qualification/hcsn_joint_dde/graded.py",
+    "original_probe_exit_code": 1,
+    "probe_exit_explanation": "The byte-identical RED driver expects acceptance; the fixed restore raises the required binding error, then the unchanged driver preserves CalledProcessError.",
+    "restore_accepted": false,
+    "restore_process_exit_code": 1,
+    "state_io_sha256": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446",
+    "status": "GREEN_EXPECTED_BINDING_REJECTION"
+  },
+  "old_state_io_commit": "fb663f141f5763692a5fc05e09ae60e8d7da4bdf",
+  "old_state_io_git_blob": "e5fe5c225cbe7fdf21d3e96cdaba5397e36cf8d3",
+  "old_state_io_sha256": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+  "original_repository_sources_modified_by_reviewer": false,
+  "preliminary_attempt": "attempt001-copied-after-root-fix is retained separately; source copy raced with the root fix and correctly rejected. It is not labelled old-source RED.",
+  "red": {
+    "altered_only_isolated_file": "qualification/hcsn_joint_dde/graded.py",
+    "binding_sources": {
+      "hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+      "hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+      "hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+      "hcsn_reset_aligned/mesh.py": "9b2d57a70ee677e9d71a18d16ec555b15bc18b3dca636cbaa3b7afd5941bf3a8"
+    },
+    "binding_unchanged": true,
+    "generator_max_difference": 0.8724465205233543,
+    "graded_file_bound": false,
+    "inherited_rates_source": "/workspace/scratch/4092c1be8e0c/p1-common-review/operator-copy/qualification/hcsn_joint_dde/graded.py",
+    "integration_started_at": 0.137,
+    "new_graded_sha256": "a833acbd17639fef74e472f69dbd782426cbca3a3056c079c44fbd8b48de404d",
+    "old_graded_sha256": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "old_operator_continuation_errors": {
+      "active": 0.00029686968102832223,
+      "discounted_active_time": 0.00038463687808498737,
+      "discounted_events": 0.0021399242863752166,
+      "discounted_remaining_phase": 0.0004403204012836462,
+      "events": 0.0023139703213813645,
+      "refractory": 0.0004467671702342371,
+      "upper": 1.7281234892278438e-05
+    },
+    "original_sources_modified": false,
+    "restore_accepted": true
+  },
+  "same_probe_sha256": "2cba04819672c6649ae77a708882c564aa81923dba30d8d4265390286f9d6625",
+  "schema": "hcsn-inherited-operator-binding-red-green-v1"
+}
