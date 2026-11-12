@@ -1,0 +1,35 @@
+{
+  "source": "14eefbe4114483ec73683482ad0f9c3a68475749",
+  "tree": "3358b29f672b49f4dd2c5870b2fcc1d86dffb449",
+  "dirty": "",
+  "start_utc": "2026-11-12T06:49:00Z",
+  "runs": {
+    "source-qa": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_run_start_read_only_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.348,
+      "log_sha256": "ec1bb6d462972d2e24cb5dfab0e91c178fc4f4230482acf4f3c02522199c1354"
+    },
+    "protected-inventory": {
+      "command": [
+        "python3",
+        "-c",
+        "import json,sys,tomllib; from pathlib import Path; sys.path.insert(0,'scripts'); import verify_hepta_callers as proof; root=Path('.').resolve(); data=tomllib.loads((root/'CALLERS.toml').read_text()); print(json.dumps({'protected_rows':len(proof._verify_protected_files(root,data)),'inventory_entries':len(proof._verify_privileged_inventory(data,proof._boundary_rows(data))),'full_caller_scan':False},sort_keys=True))"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.015,
+      "log_sha256": "044034894a8361131f17afd7f73b1d97defc7a4b5211c15728b066ab0c976191"
+    }
+  },
+  "end_utc": "2026-11-12T06:49:09Z"
+}

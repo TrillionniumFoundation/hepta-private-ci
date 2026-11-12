@@ -1,0 +1,174 @@
+{
+  "base": "106f5e41f2ff8421c5aad10eeb746d453ed00563",
+  "branch": "codex/learn-run-start-cloud-20261112-ff41",
+  "stages": [
+    {
+      "stage": "shared parser",
+      "local_commit": "eb27c990353e80458b342aaa7efdd1b6310a5428",
+      "remote_commit": "f1baaa872ae677de31feff1a3e2bc55f550bf85d",
+      "tree": "5998d1451ed5f0b30f62790be5bc62ebe850dfe2"
+    },
+    {
+      "stage": "physical view",
+      "local_commit": "4ead26e055d2cf0df1d2ba6fdb6952361508d0d4",
+      "remote_commit": "4a4765dcd0eebdcf496b2c0102c69db913319e0a",
+      "tree": "572e960fa15905e9bb431d638befaba93a8b0aa7"
+    },
+    {
+      "stage": "boxed value correction",
+      "local_commit": "371e2dd259ec201796147e3fab67418c414e86a8",
+      "remote_commit": "c54890c0c55be9339cc596a355dbb562d634e7bc",
+      "tree": "19df26079f832998148d4c489e220899469ea6d8"
+    },
+    {
+      "stage": "real file tests",
+      "local_commit": "ce8b224add8cfd732fd0bdf6fd73661873dabdc6",
+      "remote_commit": "f491886fd0dc26c1c0bb16f93ee51bc7dc795982",
+      "tree": "c965cdfc0428de16cb064d93eeb4d75de8fcf86f"
+    },
+    {
+      "stage": "source guards",
+      "local_commit": "14eefbe4114483ec73683482ad0f9c3a68475749",
+      "remote_commit": "e471021382675020e53cf984b7f067d33a7a02bb",
+      "tree": "3358b29f672b49f4dd2c5870b2fcc1d86dffb449"
+    }
+  ],
+  "new_recovery_candidate": true,
+  "old_lost_source_results_reused": false,
+  "native_status": "not_run",
+  "new_native_cases": 13,
+  "source_qa_tests": 10,
+  "protected_rows": 372,
+  "inventory_entries": 504,
+  "full_caller_scan": false,
+  "bazel_build": false,
+  "cargo_resolution": "not_run_here",
+  "whole_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_and_root_cold_restart": 0
+  },
+  "dependency_lock_update_exit": 0,
+  "dependency_lock_check_exit": 0,
+  "module_lock_changed": false,
+  "module_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+  "source_files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob": "2124f5b0dac39e5e7697f388b4f39270056ba7cd",
+      "sha256": "0907ce6d5637f47aaaa6f6aa0666587a7b4438eece85f0ddf9378c22478aca0f"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "513a3381d42b8c321ea02f575e99c5ca4f2d92c3",
+      "sha256": "4277ce2271b702ec56cf78e53801f295a33f586a4339e9a454e73bcd2674874b"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "8e2cdb1004f236b0166dec16b2a455dd8c087fa2",
+      "sha256": "9548f29c2848eef29e7543a1c2aad4a8021bee39457b93abab31049a17c6b250"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "git_blob": "2b9b86c2d9be9611f678c18dcfc25c3ad993cbf2",
+      "sha256": "2f417160691f4cbe3eeafc84264518d024fbc4edc42d9d6b9ef3bfed09f21d66"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "git_blob": "98b0294da716e644290d19208eed46709cb58b21",
+      "sha256": "b4dd9534e3bec7c7588e88e6a920fba37ff81a4d5d8edd705458decbcbf0bfca"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "git_blob": "ddeb559d1a2d59eda0ef3b12efd1a6c195b0f4b1",
+      "sha256": "7c42108e0c5449f4ba063f686b93f384748fa17d64418ee20a60456f42193f53"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_frames.rs",
+      "git_blob": "17eeaa306d2a659909abc9d4081a35d5326dc46a",
+      "sha256": "d3a7f6f2fcff4e80d57c50c59d7d7206f2629c38682b85042e567962cf7653cf"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_read_only.rs",
+      "git_blob": "155a00fcb105516e5672b813b6a4b2e70f526a44",
+      "sha256": "66484abf93386676e89db74d9f7204896fd4f2c5b812bf6f7ed82c9f6f0ca1ea"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_read_only_frame_tests.rs",
+      "git_blob": "02878342a95a4d33c9f8fb6aea3db898e45add25",
+      "sha256": "fdb723aee9884e93e285358f3002e0b7a299aa15a15bd0db6309f1a33c248c39"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_read_only_tests.rs",
+      "git_blob": "cb82e4eb5585639181aee34ccc00f23ae84865a4",
+      "sha256": "768f1164fbab4358ba5af05e640473676dba013af950b24ef989f4915dda5076"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+      "git_blob": "6d9a23cc5bdc2e2c3091d0108f5caf5c780ac4e7",
+      "sha256": "6dd335a49a38ba081c87cb5e8aafcc1371240deb4183ba9e03023bdacf7b6c6f"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_run_start_read_only_source_closure.py",
+      "git_blob": "28a66660a244c81c61c54e619025b83018bdb51f",
+      "sha256": "9694f2462b7cf669b3960ec8400d7c5d115d2091f8347f68fd47b75971552966"
+    }
+  ],
+  "retained_originals": [
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-check.json",
+      "bytes": 1442,
+      "sha256": "86badd670ef800383be5bf5de2270881daa0ea80b43a069dabba3df897f94688"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-check.log",
+      "bytes": 1116,
+      "sha256": "795d7ee352b70411f092717566008d3e280e8ba6668d23e831b5b3f47dd489bb"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-first.json",
+      "bytes": 620,
+      "sha256": "0b4c7496d184b2b63b187ac00050c98fae164013f8d06f246fd795fbc05aec4b"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-first.log",
+      "bytes": 149,
+      "sha256": "5353ddecebdb07719f4dfc7f6043039635de102b541209c7b3dd4e70431ba303"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-inherited-ca.json",
+      "bytes": 471,
+      "sha256": "68051e900cb5bd6063e2c81da4a54e3e25aa687a4c53bc61d9a649984401aa86"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-inherited-ca.log",
+      "bytes": 4340,
+      "sha256": "ce2086ccc5e63ef28c27aa4b3e775ba17880422ce35ffab883d95ea4feb97c02"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-installed.json",
+      "bytes": 368,
+      "sha256": "144a31ae5f1e29b2da8297bc30c6df43c638b40d56eafe6b20306d2d5951baf7"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/bazel-lock-update-installed.log",
+      "bytes": 2087,
+      "sha256": "d165a3033b69c73d3cdc3d746c7886f2368f8ea672d124638939d44fa9450ed1"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/protected-inventory.log",
+      "bytes": 77,
+      "sha256": "044034894a8361131f17afd7f73b1d97defc7a4b5211c15728b066ab0c976191"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/source-qa.log",
+      "bytes": 2123,
+      "sha256": "ec1bb6d462972d2e24cb5dfab0e91c178fc4f4230482acf4f3c02522199c1354"
+    },
+    {
+      "path": "qualification/learn-run-start-readonly-recovery-20261112/source-validation.json",
+      "bytes": 1275,
+      "sha256": "f0da744b1c6b592560ee79954769eccfc7f8ca63fc7aceb774974493fa1faa95"
+    }
+  ]
+}
