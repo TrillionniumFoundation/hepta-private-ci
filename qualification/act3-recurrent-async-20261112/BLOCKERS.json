@@ -1,0 +1,144 @@
+{
+  "schema": "act3-recurrent-async-source-status-v1",
+  "recorded_at_utc": "2026-11-12T06:55:24.093Z",
+  "tested_source": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+  "tested_tree": "205a4d1958f2d57d4dbb9a1368846e53022e79b2",
+  "blockers": [
+    {
+      "id": "joint_recurrent_original_asynchronous_worker",
+      "status": "LOCAL_EXACT_SOURCE_PASS",
+      "planned": 58,
+      "passed": 58,
+      "skipped": 0,
+      "scope": "same UID/same boot cooperative original filesystem owner; exact hidden/config/model and original pending invocation; actual original worker after controller SIGKILL",
+      "retained_control_databases": 19,
+      "retained_sigkill_cases": 7,
+      "retained_deliberate_controller_death_cases": 9,
+      "joint_readback_claimed_success": false
+    },
+    {
+      "id": "async_retry",
+      "status": "UNQUALIFIED",
+      "reason": "Retryable-precommit and uncertain async outcomes remain UNKNOWN; no replay from status, missing effect or lost pipe."
+    },
+    {
+      "id": "finite_notes_product_caller",
+      "status": "IMPLEMENTED_FULL_PRODUCT_EXECUTION_UNVERIFIED",
+      "source": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+      "source_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b02850c04dcd40f2703e95cc670df531468fd0e3/codex-rs/hepta-agentd/NOTES_ORIGINAL_THREAD.md",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b02850c04dcd40f2703e95cc670df531468fd0e3/codex-rs/hepta-agentd/PRODUCTION_LAUNCHER.md"
+      ],
+      "requires": [
+        "original human AuthBus delivery",
+        "original Core callback",
+        "Root sealed original Session and policy",
+        "original protected writer and FinalUse",
+        "actual Notes receipt and fresh current goal read"
+      ]
+    },
+    {
+      "id": "generic_action_skill_goal_checking_host",
+      "status": "NOT_INTEGRATED_AT_REFERENCED_SOURCE",
+      "source": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+      "reason": "Opaque HTTP host must retain ActionSkill rejection; provider completion alone is insufficient."
+    },
+    {
+      "id": "native_original_seed_execution",
+      "status": "QUEUED_NO_TERMINAL_ORIGINAL",
+      "run_id": 43163424939,
+      "head": "b02850c04dcd40f2703e95cc670df531468fd0e3"
+    },
+    {
+      "id": "original_host_access",
+      "status": "NOT_ESTABLISHED",
+      "operation": "h.host_list",
+      "result": "MCP -32603 request timeout",
+      "source": "RESOURCE_OBSERVATIONS.json"
+    },
+    {
+      "id": "actual_new_boot_and_common_rollback",
+      "status": "UNQUALIFIED",
+      "reason": "Constructed boot mismatch refusal is not reboot continuation or an independently authenticated rollback witness."
+    },
+    {
+      "id": "new_learned_complete_skill_composition",
+      "status": "UNQUALIFIED",
+      "reason": "Existing guarded inspect/ensure/stop options and old trained artifact only. No complete-skill catalog, grounded selection/composition labels or new training."
+    },
+    {
+      "id": "independent_new_application_version_fault_family_benefit",
+      "status": "NOT_RUN",
+      "new_independent_real_tasks": 0,
+      "new_model_fits": 0,
+      "requires": [
+        "original production runtime and actual application adapters",
+        "externally sourced frozen task/version/fault roster",
+        "same-host fixed-library and learned-policy observations with full cost"
+      ]
+    },
+    {
+      "id": "full_lifetime_cost_and_promotion",
+      "status": "NO_UPDATE",
+      "full_lifetime_cost_qualified": false,
+      "promotion": false,
+      "production_adoption": false
+    }
+  ],
+  "original_ci": [
+    {
+      "id": 43165832661,
+      "name": "ACT3 controlled operational contracts",
+      "head": "8c11ca58559f0fc05678387e09588bf2368d4d84",
+      "status": "pending",
+      "conclusion": null,
+      "updated_at": "2026-11-12T06:06:40Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43165832661"
+    },
+    {
+      "id": 43163424939,
+      "name": "ACT2 original Notes seed executable",
+      "head": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T05:44:52Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43163424939"
+    },
+    {
+      "id": 43171318594,
+      "name": "blocking-ci",
+      "head": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T06:53:42Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43171318594"
+    },
+    {
+      "id": 43171318459,
+      "name": "Hepta architecture convergence",
+      "head": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T06:53:42Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43171318459"
+    },
+    {
+      "id": 43171318561,
+      "name": "v8-canary",
+      "head": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T06:53:42Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43171318561"
+    },
+    {
+      "id": 43171314187,
+      "name": "ACT3 recurrent lifecycle original recovery",
+      "head": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T06:53:40Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43171314187"
+    }
+  ]
+}

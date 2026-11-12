@@ -22,6 +22,8 @@ SUITES = (
     "test_durable_async_owner",
     "test_recurrent_lifecycle",
     "test_recurrent_lifecycle_adversarial",
+    "test_async_recurrent_lifecycle",
+    "test_async_recurrent_adversarial",
 )
 
 
@@ -88,10 +90,11 @@ def main():
         "numpy": np.__version__,
         "platform": platform.platform(),
         "planned_suites": list(SUITES),
-        "scope": "Linux cooperative same-UID same-boot process death and original filesystem owner",
+        "scope": "Linux cooperative same-UID same-boot GRU, original filesystem owner, async worker and controller death",
         "production_authority": False,
         "new_boot_recovery_qualified": False,
         "common_rollback_qualified": False,
+        "async_retry_qualified": False,
         "new_training_runs": 0,
         "independent_real_tasks": 0,
         "learning_advantage_claimed": False,
