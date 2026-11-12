@@ -251,6 +251,7 @@ impl AgentdAutomationEffectHost {
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        crate::automation_predispatch_export::observe(store, intent, &fence, now_ms).await;
         let mut driver = HttpAuthorizedEffectDriver {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
@@ -675,7 +676,7 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 #[cfg(all(test, unix))]
-mod tests {
+pub(crate) mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;
     use std::time::SystemTime;
@@ -716,16 +717,16 @@ mod tests {
     use super::*;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c52";
-    const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
+    pub(crate) const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
 
-    struct Fixture {
+    pub(crate) struct Fixture {
         _temp: tempfile::TempDir,
-        identity: AgentdIdentity,
-        store: AutomationStore,
+        pub(crate) identity: AgentdIdentity,
+        pub(crate) store: AutomationStore,
     }
 
     impl Fixture {
-        async fn new() -> Self {
+        pub(crate) async fn new() -> Self {
             let temp = tempfile::tempdir().unwrap_or_else(|_| panic!("temp root"));
             let root = temp
                 .path()
@@ -777,7 +778,7 @@ mod tests {
             }
         }
 
-        fn open_effect_host(
+        pub(crate) fn open_effect_host(
             &self,
             server: &MockServer,
             scope: &Sha256Digest,
@@ -876,7 +877,7 @@ mod tests {
         .unwrap_or_else(|_| panic!("definition"))
     }
 
-    fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
+    pub(crate) fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
         AuthorizedEffectIntent {
             run_id: "agentd-product-effect-run".to_string(),
             step_id: "effect".to_string(),
@@ -893,7 +894,7 @@ mod tests {
         }
     }
 
-    async fn prepare_effect(
+    pub(crate) async fn prepare_effect(
         fixture: &Fixture,
         now_ms: u64,
         intent: &AuthorizedEffectIntent,
@@ -976,7 +977,7 @@ mod tests {
         fence
     }
 
-    fn signed_final_use(
+    pub(crate) fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
         signing_key: &SigningKey,
@@ -1335,6 +1336,12 @@ mod tests {
                 "{name}"
             );
             server.verify().await;
+            assert!(
+                !fixture.identity.layout.automation_root()
+                    .join(crate::automation_predispatch_export::DIRECTORY)
+                    .exists(),
+                "{name}: rejected skill envelope must not create a predispatch shadow fact"
+            );
             drop(host);
             let reopened = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
                 .expect("reopen original authority");

@@ -1,0 +1,109 @@
+name: Hepta PRED native producer feedback
+
+# Branch-scoped development checks. Existing aggregate and deployment gates
+# remain authoritative; this does not qualify live data or policy benefit.
+on:
+  push:
+    branches:
+      - codex/pred-native-producer-20261112-86e9
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pred-native-feedback-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  NEXTEST_TEST_THREADS: "2"
+
+jobs:
+  native:
+    name: Native predispatch producer (source-head)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/pred-native-feedback"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/pred-native-feedback/source.txt"
+          python3 scripts/hepta_workspace.py
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+        with:
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - name: Resolve repository-verified V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record toolchain and check formatting
+        id: format
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version --verbose > "$RUNNER_TEMP/pred-native-feedback/rustc.txt"
+          cargo --version > "$RUNNER_TEMP/pred-native-feedback/cargo.txt"
+          cargo fmt -p codex-hepta-agentd -- --config imports_granularity=Item --check
+      - name: Retain formatting diagnosis in an isolated worktree
+        if: failure() && steps.format.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          diagnostic="$RUNNER_TEMP/pred-native-format"
+          git worktree add --detach "$diagnostic" "$GITHUB_SHA"
+          cargo fmt --manifest-path "$diagnostic/codex-rs/Cargo.toml" -p codex-hepta-agentd -- --config imports_granularity=Item
+          git -C "$diagnostic" diff --binary > "$RUNNER_TEMP/pred-native-feedback/format-suggestion.patch"
+          if test "$(wc -c < "$RUNNER_TEMP/pred-native-feedback/format-suggestion.patch")" -le 524288; then
+            cat "$RUNNER_TEMP/pred-native-feedback/format-suggestion.patch"
+          fi
+      - name: Test native capture and original authorized effect host
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/pred-native-feedback/tests.json" \
+            -- just test --locked -p codex-hepta-agentd --lib \
+            -E 'test(automation_predispatch_export) | test(automation_effect_host::tests)' \
+            --no-tests fail --retries 0
+      - name: Check changed owner lints
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Verify source remains unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain native execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pred-native-feedback-${{ github.sha }}
+          path: ${{ runner.temp }}/pred-native-feedback
+          if-no-files-found: error
+          retention-days: 14
