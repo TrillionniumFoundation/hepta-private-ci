@@ -89,7 +89,12 @@ class OrdinaryInitialQ24SourceTests(unittest.TestCase):
                        "self.neuron_generation_bootstrap.is_some()", "self.root_learning_inputs.is_some()"):
             self.reject_removal("config_initial_q24.rs",
                                 "fn require_original_initial_q24_configuration(", marker)
-        self.reject_removal("production_initial_q24_clock.rs", "fn sample(", ".unwrap_or(u64::MAX)")
+        for marker in ("let cell_micros = now().unwrap_or(u64::MAX)",
+                       "let circuit_millis = SystemTime::now()", ".duration_since(UNIX_EPOCH)",
+                       "u64::try_from(elapsed.as_millis()).ok()",
+                       "cell_micros == u64::MAX || circuit_millis == u64::MAX",
+                       "circuit_millis: u64::MAX", "cell_micros: u64::MAX"):
+            self.reject_removal("production_initial_q24_clock.rs", "fn sample(", marker)
         self.reject_removal("production_initial_q24_clock.rs", "fn require_source_deadline(",
                             "observed >= source.deadline_micros")
 
