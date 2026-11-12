@@ -1,0 +1,41 @@
+{
+  "before": {
+    "head": "7d88f0068cafd31871f6b9652e71fdd85a2b5c95",
+    "tree": "3fbaa9140029b62eeb21edceea85df8da25c094f",
+    "status": "",
+    "source_files": 7948,
+    "source_digest": "d4e6a16bd52b255f8f6773c4dae325162dc1b8855446d6851eacec0c9a070f08"
+  },
+  "after": {
+    "head": "7d88f0068cafd31871f6b9652e71fdd85a2b5c95",
+    "tree": "3fbaa9140029b62eeb21edceea85df8da25c094f",
+    "status": "",
+    "source_files": 7948,
+    "source_digest": "d4e6a16bd52b255f8f6773c4dae325162dc1b8855446d6851eacec0c9a070f08"
+  },
+  "started_utc": "2026-11-12T12:10:49.439672+00:00",
+  "duration_seconds": 7.347735166549683,
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "test_publication_v2_source_closure",
+        "test_post_a_publication_source_closure",
+        "test_original_publication_route_source_closure",
+        "test_derived_learning_source_closure",
+        "-v"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "markers": {
+    "status": "PASS",
+    "inventory": 774,
+    "protected": 625
+  },
+  "exact_source": true,
+  "native": "NOT_RUN",
+  "full_caller": "NOT_RUN"
+}

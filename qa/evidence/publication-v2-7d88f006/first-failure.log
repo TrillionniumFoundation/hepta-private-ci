@@ -1,0 +1,612 @@
+test_actual_root_context_precedes_new_live_description (test_publication_v2_source_closure.PublicationV2SourceTests.test_actual_root_context_precedes_new_live_description) ... ok
+test_actual_version_and_origin_callers_are_closed (test_publication_v2_source_closure.PublicationV2SourceTests.test_actual_version_and_origin_callers_are_closed) ... ok
+test_durable_origin_remains_canonical_and_private (test_publication_v2_source_closure.PublicationV2SourceTests.test_durable_origin_remains_canonical_and_private) ... ok
+test_every_wire_exchange_keeps_actual_live_authority_and_fixed_version (test_publication_v2_source_closure.PublicationV2SourceTests.test_every_wire_exchange_keeps_actual_live_authority_and_fixed_version) ... ok
+test_new_live_admission_cannot_substitute_any_other_durable_field (test_publication_v2_source_closure.PublicationV2SourceTests.test_new_live_admission_cannot_substitute_any_other_durable_field) ... ok
+test_only_original_sealed_route_selects_v2 (test_publication_v2_source_closure.PublicationV2SourceTests.test_only_original_sealed_route_selects_v2) ... ok
+test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) ... 
+  test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='socket', marker='Self::DurableV2 => "cell-generation-publication-v2.sock"') ... FAIL
+  test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='owner_prefix', marker='Self::LegacyV1 => "generation-publication"') ... FAIL
+  test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='owner_prefix', marker='Self::DurableV2 => "generation-publication-v2"') ... FAIL
+test_actual_closed_callers_reject_omission_and_new_entry (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_actual_closed_callers_reject_omission_and_new_entry) ... ok
+test_locked_material_checks_both_bytes_and_file_stamps_twice (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_locked_material_checks_both_bytes_and_file_stamps_twice) ... ok
+test_material_custody_and_distinct_read_description_cannot_be_substituted (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_material_custody_and_distinct_read_description_cannot_be_substituted) ... ok
+test_ordinary_cli_keeps_late_and_legacy_inputs_separate (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_ordinary_cli_keeps_late_and_legacy_inputs_separate) ... ok
+test_original_holders_cannot_become_raw_wire_fields (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_original_holders_cannot_become_raw_wire_fields) ... ok
+test_registration_cannot_skip_canonical_data_or_real_root_authority (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_registration_cannot_skip_canonical_data_or_real_root_authority) ... ok
+test_root_plan_keeps_original_recipient_and_all_file_inputs (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_root_plan_keeps_original_recipient_and_all_file_inputs) ... ok
+test_route_uses_original_root_uid_phase_initial_and_end (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_route_uses_original_root_uid_phase_initial_and_end) ... ok
+test_third_handoff_must_match_all_original_parts_and_precede_ack (test_post_a_publication_source_closure.PostAPublicationSourceTests.test_third_handoff_must_match_all_original_parts_and_precede_ack) ... ok
+test_existing_session_retains_original_owner_and_one_shot_registration (test_original_publication_route_source_closure.OriginalPublicationRouteSourceTests.test_existing_session_retains_original_owner_and_one_shot_registration) ... ok
+test_late_capture_and_acknowledgement_cannot_renew_the_original_end (test_original_publication_route_source_closure.OriginalPublicationRouteSourceTests.test_late_capture_and_acknowledgement_cannot_renew_the_original_end) ... ok
+test_real_learning_scope_and_checkpoint_surround_the_original_seal (test_original_publication_route_source_closure.OriginalPublicationRouteSourceTests.test_real_learning_scope_and_checkpoint_surround_the_original_seal) ... ok
+test_sealed_route_keeps_actual_root_recipient_and_writer_identity (test_original_publication_route_source_closure.OriginalPublicationRouteSourceTests.test_sealed_route_keeps_actual_root_recipient_and_writer_identity) ... ok
+test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) ... 
+  test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='open_registered_writer()') ... ERROR
+  test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='read_root_json(path)') ... ERROR
+  test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='Instant::now() + extra') ... ERROR
+  test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='SigningKey::from_bytes(bytes)') ... ERROR
+  test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='result.or_else(fallback)') ... ERROR
+test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) ... 
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.schema_version != 2') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.update_scope.is_none()') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='self.with_learning_profile(') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.require_cell_scope(&initial)?') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='let binding = scope.binding()') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='validate_runtime_lanes(config)?') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='paths.push(&socket_path)') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='validate_lane_paths(&paths, config.peer_gid)?') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='learning_store(&config.state_dir, &initial, mode, Some(scope))?') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='backend.frozen_scope_binding() != Some(binding)') ... ERROR
+  test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='q24_model: None') ... ERROR
+test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) ... 
+  test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=0) ... ERROR
+  test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=1) ... ERROR
+  test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=2) ... ERROR
+  test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=3) ... ERROR
+  test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=4) ... ERROR
+test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) ... ERROR
+test_factory_reservation_retains_original_physical_and_clock_checks (test_derived_learning_source_closure.DerivedLearningSourceTests.test_factory_reservation_retains_original_physical_and_clock_checks) ... ok
+test_file_cli_preserves_metadata_and_existing_learning_predecessor (test_derived_learning_source_closure.DerivedLearningSourceTests.test_file_cli_preserves_metadata_and_existing_learning_predecessor) ... ok
+test_mutation_and_postchecks_cannot_escape_or_be_swallowed (test_derived_learning_source_closure.DerivedLearningSourceTests.test_mutation_and_postchecks_cannot_escape_or_be_swallowed) ... ERROR
+test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) ... 
+  test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) (function='prepare_original_derived_learning_checkpoint', marker='OriginalDerivedLearningMode::Register => StoreMode::Register') ... ERROR
+  test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) (function='prepare_original_derived_learning_checkpoint', marker='OriginalDerivedLearningMode::Reopen => StoreMode::Reopen') ... ERROR
+test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) ... ERROR
+test_same_service_helpers_and_original_store_have_exact_callers (test_derived_learning_source_closure.DerivedLearningSourceTests.test_same_service_helpers_and_original_store_have_exact_callers) ... ok
+
+======================================================================
+ERROR: test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='open_registered_writer()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 215, in test_core_cannot_reopen_a_writer_or_create_a_relative_timeout
+    self.mutate(path, insert)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='read_root_json(path)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 215, in test_core_cannot_reopen_a_writer_or_create_a_relative_timeout
+    self.mutate(path, insert)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='Instant::now() + extra')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 215, in test_core_cannot_reopen_a_writer_or_create_a_relative_timeout
+    self.mutate(path, insert)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='SigningKey::from_bytes(bytes)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 215, in test_core_cannot_reopen_a_writer_or_create_a_relative_timeout
+    self.mutate(path, insert)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_core_cannot_reopen_a_writer_or_create_a_relative_timeout (test_derived_learning_source_closure.DerivedLearningSourceTests.test_core_cannot_reopen_a_writer_or_create_a_relative_timeout) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', forbidden='result.or_else(fallback)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 215, in test_core_cannot_reopen_a_writer_or_create_a_relative_timeout
+    self.mutate(path, insert)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.schema_version != 2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.update_scope.is_none()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='self.with_learning_profile(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='profile.require_cell_scope(&initial)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='let binding = scope.binding()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='validate_runtime_lanes(config)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='paths.push(&socket_path)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='validate_lane_paths(&paths, config.peer_gid)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='learning_store(&config.state_dir, &initial, mode, Some(scope))?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='backend.frozen_scope_binding() != Some(binding)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_derived_checkpoint_is_cell_scoped_on_the_original_registration (test_derived_learning_source_closure.DerivedLearningSourceTests.test_derived_checkpoint_is_cell_scoped_on_the_original_registration) (function='prepare_original_derived_learning_checkpoint', marker='q24_model: None')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 162, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(path, name, guard, occurrence)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 162, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(path, name, guard, occurrence)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 162, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(path, name, guard, occurrence)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 162, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(path, name, guard, occurrence)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end) (path='codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs', occurrence=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 162, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(path, name, guard, occurrence)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_every_stage_keeps_the_original_absolute_end (test_derived_learning_source_closure.DerivedLearningSourceTests.test_every_stage_keeps_the_original_absolute_end)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 163, in test_every_stage_keeps_the_original_absolute_end
+    self.reject(DERIVED, "require_original_end", "Instant::now() >= end")
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_mutation_and_postchecks_cannot_escape_or_be_swallowed (test_derived_learning_source_closure.DerivedLearningSourceTests.test_mutation_and_postchecks_cannot_escape_or_be_swallowed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 169, in test_mutation_and_postchecks_cannot_escape_or_be_swallowed
+    self.mutate(path, lambda source: source.replace(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) (function='prepare_original_derived_learning_checkpoint', marker='OriginalDerivedLearningMode::Register => StoreMode::Register')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back) (function='prepare_original_derived_learning_checkpoint', marker='OriginalDerivedLearningMode::Reopen => StoreMode::Reopen')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 115, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 110, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+ERROR: test_register_and_reopen_cannot_be_inferred_or_fall_back (test_derived_learning_source_closure.DerivedLearningSourceTests.test_register_and_reopen_cannot_be_inferred_or_fall_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 152, in test_register_and_reopen_cannot_be_inferred_or_fall_back
+    self.mutate(DERIVED, lambda source: source.replace(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 93, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_derived_learning_source_closure.py", line 90, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs:fn prepare_original_derived_learning_checkpoint(: required code order missing: ['end: Instant', 'require_original_end(end)?', 'profile.schema_version != 2 || profile.update_scope.is_none()', 'self.with_learning_profile(', '&profile,', '|initial, _| {', 'require_original_end(end)?', 'profile.require_cell_scope(&initial)?', 'let binding = scope.binding()', 'validate_runtime_lanes(config)?', 'paths.push(&socket_path)', 'validate_lane_paths(&paths, config.peer_gid)?', 'let mode = match mode', 'OriginalDerivedLearningMode::Register => StoreMode::Register', 'OriginalDerivedLearningMode::Reopen => StoreMode::Reopen', 'require_original_end(end)?', 'learning_store(&config.state_dir, &initial, mode, Some(scope))?', 'backend.frozen_scope_binding() != Some(binding)', 'require_original_end(end)?', 'Ok((backend, socket_path))', 'require_original_end(end)?', 'Ok(RegisteredHostLearningCheckpointV1 {', 'backend: Arc::new(backend)', 'profile,', 'socket_path,', 'q24_model: None']
+
+======================================================================
+FAIL: test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='socket', marker='Self::DurableV2 => "cell-generation-publication-v2.sock"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_publication_v2_source_closure.py", line 101, in mutate
+    changed = change(source)
+              ^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 162, in change
+    self.assertGreater(len(matches), occurrence, (path, name, marker))
+AssertionError: 0 not greater than 0 : ('codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs', 'socket', 'Self::DurableV2 => "cell-generation-publication-v2.sock"')
+
+======================================================================
+FAIL: test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='owner_prefix', marker='Self::LegacyV1 => "generation-publication"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_publication_v2_source_closure.py", line 101, in mutate
+    changed = change(source)
+              ^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 162, in change
+    self.assertGreater(len(matches), occurrence, (path, name, marker))
+AssertionError: 0 not greater than 0 : ('codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs', 'owner_prefix', 'Self::LegacyV1 => "generation-publication"')
+
+======================================================================
+FAIL: test_versions_and_namespaces_never_infer_or_downgrade (test_publication_v2_source_closure.PublicationV2SourceTests.test_versions_and_namespaces_never_infer_or_downgrade) (function='owner_prefix', marker='Self::DurableV2 => "generation-publication-v2"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_publication_v2_source_closure.py", line 101, in mutate
+    changed = change(source)
+              ^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 162, in change
+    self.assertGreater(len(matches), occurrence, (path, name, marker))
+AssertionError: 0 not greater than 0 : ('codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs', 'owner_prefix', 'Self::DurableV2 => "generation-publication-v2"')
+
+----------------------------------------------------------------------
+Ran 28 tests in 4.759s
+
+FAILED (failures=3, errors=26)
