@@ -1,6 +1,6 @@
 //! Two new product processes over the original completed business files.
-//! The original independent source stays dead; its closed handoff is retained
-//! only so the Root's explicit existing-data route can send its original FDs.
+//! Only the original Root and completed-history handoffs are present. The
+//! original independent source stays dead and receives no new handoff.
 
 use std::os::fd::AsRawFd;
 use std::os::unix::net::UnixDatagram;
@@ -21,7 +21,6 @@ pub(super) struct RunningOrdinaryCold<'a> {
     pub(super) plan: OriginalColdPlan<'a>,
     pub(super) daemon: OriginalChild,
     pub(super) root: OriginalChild,
-    closed_source: UnixDatagram,
 }
 
 impl<'a> RunningOrdinaryCold<'a> {
@@ -38,7 +37,7 @@ impl<'a> RunningOrdinaryCold<'a> {
         plan.original.daemon.require_dead()?;
         plan.original.root.require_dead()?;
         let mut slots = Vec::new();
-        for _ in 0..7 {
+        for _ in 0..2 {
             slots.push(tempfile::tempfile()?);
         }
         let own_pidfd = tempfile::tempfile()?;
@@ -54,21 +53,10 @@ impl<'a> RunningOrdinaryCold<'a> {
             .arg("--root-pidfd")
             .arg(own_pidfd.as_raw_fd().to_string())
             .arg("--historical-task-deployment")
-            .arg(&plan.historical)
-            .arg("--post-a-learning-deployment")
-            .arg(&plan.learning)
-            .arg("--post-a-publication-deployment")
-            .arg(&plan.publication)
-            .arg("--post-a-independent-evaluation-deployment")
-            .arg(&plan.original.plan.root.independent_b);
+            .arg(&plan.historical);
         for (name, file) in [
             "--root-handoff-fd",
             "--root-historical-task-read-handoff-fd",
-            "--root-learning-handoff-fd",
-            "--root-q24-model-handoff-fd",
-            "--root-generation-publication-handoff-fd",
-            "--root-independent-b-evaluation-handoff-fd",
-            "--root-independent-b-source-handoff-fd",
         ]
         .into_iter()
         .zip(&slots)
@@ -76,16 +64,16 @@ impl<'a> RunningOrdinaryCold<'a> {
             command.arg(name).arg(file.as_raw_fd().to_string());
         }
         let descriptors: Vec<_> = slots.iter().map(AsRawFd::as_raw_fd).collect();
-        let (root, (plan, daemon, closed_source)) = super::root_pair::spawn_with_original_pairs(
+        let (root, (plan, daemon)) = super::root_pair::spawn_with_original_pairs(
             &mut command,
             &descriptors,
             own_pidfd.as_raw_fd(),
             end,
-            move |mut pairs| {
-                let closed_source = pairs
-                    .pop()
-                    .ok_or_else(|| anyhow::anyhow!("original closed source pair absent"))?;
-                anyhow::ensure!(pairs.len() == 6, "exact original learner handoffs required");
+            move |pairs| {
+                anyhow::ensure!(
+                    pairs.len() == 2,
+                    "only the original Root and history handoffs required"
+                );
                 plan.original.source.require_dead()?;
                 let daemon = spawn_original_daemon(&plan, &pairs)?;
                 loop {
@@ -105,7 +93,7 @@ impl<'a> RunningOrdinaryCold<'a> {
                 plan.administration
                     .register_original_child(plan.original, &daemon)?;
                 let owner = daemon.original_pidfd()?;
-                Ok(((plan, daemon, closed_source), owner))
+                Ok(((plan, daemon), owner))
             },
         )?;
         drop((slots, own_pidfd));
@@ -116,12 +104,7 @@ impl<'a> RunningOrdinaryCold<'a> {
             .original
             .root
             .require_distinct_live(&root)?;
-        let running = Self {
-            plan,
-            daemon,
-            root,
-            closed_source,
-        };
+        let running = Self { plan, daemon, root };
         running.require_live()?;
         Ok(running)
     }
@@ -201,15 +184,9 @@ impl<'a> RunningOrdinaryCold<'a> {
     )> {
         self.require_live()?;
         self.daemon.request_original_shutdown()?;
-        let Self {
-            plan,
-            daemon,
-            root,
-            closed_source,
-        } = self;
+        let Self { plan, daemon, root } = self;
         let daemon = daemon.wait_success_until(plan.administration.end)?;
         let root = root.wait_success_until(plan.administration.end)?;
-        drop(closed_source);
         daemon.require_dead()?;
         root.require_dead()?;
         Ok((plan, daemon, root))
@@ -266,10 +243,6 @@ fn spawn_original_daemon(
     for (name, pair) in [
         "--root-production-handoff-fd",
         "--root-historical-task-read-handoff-fd",
-        "--root-learning-handoff-fd",
-        "--root-q24-model-handoff-fd",
-        "--root-generation-publication-handoff-fd",
-        "--root-independent-b-evaluation-handoff-fd",
     ]
     .into_iter()
     .zip(pairs)

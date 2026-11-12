@@ -1,8 +1,9 @@
-//! Explicit cold DATA selects existing owners. The new actual Root must still
-//! authenticate every old cut; these descriptions cannot renew old evidence.
+//! Explicit completed-history DATA opens no original learning writer. The new
+//! actual Root must authenticate every old cut without renewing old evidence.
 
 use std::fs::File;
 use std::os::unix::fs::FileExt;
+use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_types::Digest32;
@@ -11,14 +12,14 @@ use serde_json::json;
 
 use super::cold_administration::OriginalColdAdministration;
 use super::post_a_retained::RetainedOrdinaryQ24Fixture;
+use crate::ordinary_q24_cold_snapshot_tests::OriginalBusinessSnapshot;
 
 pub(super) struct OriginalColdPlan<'a> {
     pub(super) original: &'a RetainedOrdinaryQ24Fixture,
     pub(super) administration: OriginalColdAdministration,
     pub(super) profile: crate::HostAuthorityLearningProfileV1,
     pub(super) historical: PathBuf,
-    pub(super) learning: PathBuf,
-    pub(super) publication: PathBuf,
+    pub(super) completed_deployment: PathBuf,
     pub(super) sealed: File,
 }
 
@@ -51,10 +52,13 @@ impl<'a> OriginalColdPlan<'a> {
             profile.original_initial_data()? == initial,
             "cold must retain the entire old request, owners, business expiry and initial head"
         );
-        let read = |path| -> anyhow::Result<Value> {
-            Ok(serde_json::from_slice(&super::observer::read_private(
+        let read = |path: &Path| -> anyhow::Result<Value> {
+            let pin = OriginalBusinessSnapshot::capture(&[path.to_path_buf()])?;
+            let value = serde_json::from_slice(&super::observer::read_private(
                 path, /*bound*/ 65_536,
-            )?)?)
+            )?);
+            pin.require_unchanged(&[path.to_path_buf()])?;
+            Ok(value?)
         };
         let mut historical = read(&original.plan.root.historical)?;
         anyhow::ensure!(
@@ -62,29 +66,45 @@ impl<'a> OriginalColdPlan<'a> {
             "original historical recipient metadata differs"
         );
         historical["initial"] = serde_json::to_value(&profile)?;
-        let mut learning = read(&original.plan.root.learning)?;
-        anyhow::ensure!(
-            learning["mode"] == "register"
-                && learning["initial"] == initial.head_digest.to_string(),
-            "original learning registration metadata differs"
+        let completed_path = PathBuf::from(
+            historical["completed_learning_deployment"]
+                .as_str()
+                .ok_or_else(|| anyhow::anyhow!("original first-acceptance deployment absent"))?,
         );
-        learning["mode"] = json!("reopen");
-        let mut publication = read(&original.plan.root.publication)?;
+        let mut completed = read(&completed_path)?;
         anyhow::ensure!(
-            publication["schema"] == 2
-                && publication["inputs"]["mode"] == "reserve"
-                && publication["initial"] == initial.head_digest.to_string(),
-            "original explicit V2 publication metadata differs"
+            completed["schema"] == 1
+                && completed["purpose"] == "runtime.learning.completed-deployment.v1"
+                && completed["mode"] == "accept"
+                && completed["initial"] == initial.head_digest.to_string()
+                && completed["target"]
+                    == Digest32::from_array(
+                        original
+                            .plan
+                            .resources
+                            .original
+                            .plan
+                            .deployment
+                            .target
+                            .digest()?
+                    )
+                    .to_string()
+                && completed["independent_b"]
+                    == serde_json::to_value(&original.plan.root.independent_b)?
+                && completed["publication"]
+                    == serde_json::to_value(&original.plan.root.publication)?,
+            "original first-acceptance deployment differs"
         );
-        publication["inputs"]["mode"] = json!("recover");
+        // Only this explicit phase is excluded from the Root's durable
+        // deployment binding. All seven original paths and cuts stay fixed.
+        completed["mode"] = json!("capture_retired");
         let directory = &administration.directory;
         let historical_path = directory.join("historical.json");
-        let learning_path = directory.join("learning.json");
-        let publication_path = directory.join("publication.json");
+        let completed_deployment = directory.join("completed-learning.json");
+        historical["completed_learning_deployment"] = serde_json::to_value(&completed_deployment)?;
         for (path, value) in [
             (&historical_path, &historical),
-            (&learning_path, &learning),
-            (&publication_path, &publication),
+            (&completed_deployment, &completed),
         ] {
             super::root::write_json(path, value)?;
         }
@@ -111,7 +131,8 @@ impl<'a> OriginalColdPlan<'a> {
                 && daemon["delivery_mode"] == "create"
                 && daemon["continuation"]["task"]["mode"] == "create"
                 && daemon["continuation"]["generation"]["selection_mode"] == "create"
-                && daemon["continuation"]["generation"]["next_use_mode"] == "create",
+                && daemon["continuation"]["generation"]["next_use_mode"] == "create"
+                && daemon["completed_history"].is_null(),
             "original daemon deployment was not the real fresh ordinary phase"
         );
         daemon["identity_digest"] = json!(
@@ -120,13 +141,9 @@ impl<'a> OriginalColdPlan<'a> {
             )?
             .to_string()
         );
-        daemon["freeze_mode"] = json!("recover");
-        daemon["stages"]["mode"] = json!("recover");
-        daemon["delivery_mode"] = json!("recover");
-        daemon["continuation"]["task"]["mode"] = json!("recover");
-        daemon["continuation"]["task"]["recovery"] = json!("capture_retired");
-        daemon["continuation"]["generation"]["selection_mode"] = json!("recover");
-        daemon["continuation"]["generation"]["next_use_mode"] = json!("recover");
+        // The product must branch before these original Create-mode owners.
+        // Changing them to Recover would hide an accidental writer reopen.
+        daemon["completed_history"] = json!("capture_retired");
         super::root::write_json(&directory.join("original-daemon-deployment.json"), &before)?;
         super::root::write_json(&directory.join("cold-daemon-deployment.json"), &daemon)?;
         let sealed =
@@ -142,8 +159,7 @@ impl<'a> OriginalColdPlan<'a> {
             administration,
             profile,
             historical: historical_path,
-            learning: learning_path,
-            publication: publication_path,
+            completed_deployment,
             sealed,
         })
     }
