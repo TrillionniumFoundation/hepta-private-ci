@@ -1,0 +1,51 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": "",
+    "file_count": 14842,
+    "inventory_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": "",
+    "file_count": 14842,
+    "inventory_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "finished_at": "2026-11-12T10:40:35.473653+00:00",
+    "log_bytes": 69896,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "f36972fca43ae85dfb8286b9130e2a151fdb18dea2ec5fe16ec26001722af5bc",
+    "returncode": 0,
+    "started_at": "2026-11-12T10:37:46.258231+00:00"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-12T10:40:41.181251+00:00",
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 0,
+    "patch_bytes": 0,
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-native-maintenance-cc22a69972d0-v1",
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "started_at": "2026-11-12T10:37:43.849144+00:00",
+  "status": "passed"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_sha_after": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/data/hepta-learn-037c-20261112/target-cache-v1/debug/hepta-joint-propose",
+      "executable": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "0a144016bc0f95c570b8fefcfb3eaa2f87171aa0ef2c888c971990f348813c4f",
+      "bytes": 1439936
+    }
+  },
+  "complete": true,
+  "exit_code": 0
+}

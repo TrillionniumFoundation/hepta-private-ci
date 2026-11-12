@@ -1,0 +1,51 @@
+{
+  "after": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "command": [
+    "python3",
+    "scripts/hepta_cell_test_helpers.py",
+    "--package",
+    "codex-hepta-infer-worker-host",
+    "--output-dir",
+    "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers",
+    "--verify-only"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 0.32359468610957265,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T10:56:21.254170+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 1141,
+  "log_file": "helper-verification-before.json.2de2b98d72cc4b7fa3effa4b6ebd35e0.log",
+  "log_sha256": "0ec939face6e3652fb18295837e663400e9630563bfa3987bf4cb3ff57809acb",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "started_at": "2026-11-12T10:56:20.919984+00:00",
+  "status": "passed",
+  "tested_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-common-20261112-037c"
+}

@@ -1,0 +1,84 @@
+{
+  "driver": {
+    "path": "source-result/driver.raw.log",
+    "bytes": 90825,
+    "sha256": "a0ec360b5ed15d45d0ce5dc40448617f666a57a81f192044442cbb5522b780e3",
+    "full_original_bytes_verified": true,
+    "direct_chunks": [
+      {
+        "chunk_sha256": "b97cdb6c03a0631101b883f8705799a6661f1c42f9f341756a0032654f50b3c7",
+        "eof": false,
+        "next_offset": 16384,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-learn-037c-evidence/source-cc22a69972d0-v1/driver.raw.log",
+        "size": 90825,
+        "version": "2050:1642138:90825:1794480299143995912:1794480299143995912"
+      },
+      {
+        "chunk_sha256": "7f9b9a3caf8e39e8997c6b4cc0d7394bee103386d79e2ed2c493887d455ae8b3",
+        "eof": false,
+        "next_offset": 32768,
+        "offset": 16384,
+        "path": "/home/qian-qi/hepta-learn-037c-evidence/source-cc22a69972d0-v1/driver.raw.log",
+        "size": 90825,
+        "version": "2050:1642138:90825:1794480299143995912:1794480299143995912"
+      },
+      {
+        "chunk_sha256": "2d274619402ab3d041d14f68a4882a26e593e42b3e2cd726ece7d68b95d66df1",
+        "eof": false,
+        "next_offset": 49152,
+        "offset": 32768,
+        "path": "/home/qian-qi/hepta-learn-037c-evidence/source-cc22a69972d0-v1/driver.raw.log",
+        "size": 90825,
+        "version": "2050:1642138:90825:1794480299143995912:1794480299143995912"
+      }
+    ],
+    "tail": {
+      "operation_id": "f938d4a2892d82a20311576c255f7902d46f5f8ff01bfe8c6aede66f706ec71c",
+      "native_payload_bytes": 55984,
+      "native_payload_sha256": "32519131da3bea35fea009de42bc7b6a499211759e7cdc15bb24a5dc70e1b76b",
+      "offset": 49152,
+      "next_offset": 90825,
+      "version": "2050:1642138:90825:1794480299143995912:1794480299143995912",
+      "chunk_bytes": 41673,
+      "chunk_sha256": "4fe47487fc1dbe2c240618d01760a48dc40508f61d61ca6413d1310a2237b7c5"
+    }
+  },
+  "hepta_middle": {
+    "operation_id": "58614680b7c5bfb3902f283056500a7851c20623c4ffbfadbb64887d48c18426",
+    "native_payload_bytes": 87847,
+    "native_payload_sha256": "6c04216d8dfe0a8788bb77788a87e7a24afe3e8738ca61002d0c82d654c7193b",
+    "offset": 16384,
+    "next_offset": 81920,
+    "version": "2050:1642140:89504:1794480299021999513:1794480299021999513",
+    "chunk_bytes": 65536,
+    "chunk_sha256": "9a2aea97801d547dcb3b3137b908320732419f35832a487027ada2e36dc7a0d1"
+  },
+  "hepta_full_status": "FULL_ORIGINAL_BYTES_VERIFIED_VIA_DRIVER_PREFIX",
+  "source_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "hepta_recovery": {
+    "kind": "exact-original-log-byte-recovery-from-complete-driver-prefix",
+    "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+    "input": "driver.raw.log",
+    "input_bytes": 90825,
+    "input_sha256": "a0ec360b5ed15d45d0ce5dc40448617f666a57a81f192044442cbb5522b780e3",
+    "output": "source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+    "output_bytes": 89504,
+    "output_sha256": "9c0957c52f00b32ed36b9ec7144df744e763f918c2e37340966ac923092d2034",
+    "original_expected_sha256_from": "source-closure.json",
+    "prefix_bytes": 89504,
+    "independent_full_disk_read": false,
+    "independent_disk_segment_crosscheck": {
+      "offset": 16384,
+      "length": 65536,
+      "native_operation_id": "58614680b7c5bfb3902f283056500a7851c20623c4ffbfadbb64887d48c18426",
+      "all_bytes_equal": true
+    },
+    "tests_from_original_log": 397,
+    "test_seconds_from_original_log": 253.726,
+    "test_footer": "OK",
+    "no_gate_or_read_restarted": true
+  }
+}
