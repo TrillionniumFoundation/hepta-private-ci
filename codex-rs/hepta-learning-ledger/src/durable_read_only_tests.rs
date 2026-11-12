@@ -89,7 +89,7 @@ impl Fixture {
             let receipt = ledger.append(frontier.anchor.chain_digest, event)?;
             let next = LedgerWitnessFrontier {
                 anchor: LedgerAnchor {
-                    sequence: receipt.sequence,
+                    sequence: receipt.sequence.get(),
                     chain_digest: receipt.chain_digest,
                 },
                 segment: None,
@@ -293,7 +293,7 @@ fn ledger_readonly_rejects_segmented_or_sealed_frontiers() -> TestResult {
             LedgerWitnessFrontier::empty(),
             LedgerWitnessFrontier {
                 anchor: LedgerAnchor {
-                    sequence: receipt.sequence,
+                    sequence: receipt.sequence.get(),
                     chain_digest: receipt.chain_digest,
                 },
                 segment: frontier_kind.0,

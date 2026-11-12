@@ -3,6 +3,19 @@
 
 use super::*;
 
+pub(crate) fn retained_signature_envelopes(
+    producer: &OriginalCellQ24TaskLedgerProducerV1,
+) -> Result<[Vec<u8>; 2], Error> {
+    let mut state = producer
+        .state
+        .lock()
+        .map_err(|_| Error::Binding("test owner lock"))?;
+    Ok([
+        state.journal.read(&producer.decision_key)?,
+        state.journal.read(&producer.outcome_key)?,
+    ])
+}
+
 pub(crate) fn retained_decision(
     producer: &OriginalCellQ24TaskLedgerProducerV1,
 ) -> Result<SignedLearningEvidenceV1, Error> {

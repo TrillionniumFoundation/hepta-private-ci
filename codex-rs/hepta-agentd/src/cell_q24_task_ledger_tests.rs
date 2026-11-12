@@ -23,6 +23,8 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 mod faults;
 #[path = "cell_q24_task_ledger_test_support.rs"]
 mod fixture;
+#[path = "cell_q24_task_ledger_history_tests.rs"]
+mod history;
 #[path = "cell_q24_task_outcome_control_tests.rs"]
 mod outcome_control;
 #[path = "cell_q24_task_ledger_recovery_support.rs"]
