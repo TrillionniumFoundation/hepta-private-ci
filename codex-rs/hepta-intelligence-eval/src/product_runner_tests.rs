@@ -2,6 +2,8 @@ use super::*;
 
 #[path = "product_execution_tests.rs"]
 mod execution_tests;
+#[path = "product_holdout_release_tests.rs"]
+mod original_release;
 
 use std::sync::Arc;
 use std::sync::Mutex;
