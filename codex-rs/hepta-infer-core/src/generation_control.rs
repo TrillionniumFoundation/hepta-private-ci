@@ -289,12 +289,23 @@ impl DurableInferenceControl {
         token: Option<&mut Option<GenerationDispatchTokenV1>>,
     ) -> Result<GenerationRecordV1, Error> {
         let request_id = event.request_id().to_owned();
-        let mut next = self.generation.clone();
-        next.apply(event.clone())?;
+        // Stage only this request; retained results from other requests may be
+        // large and must not be cloned by an unrelated control transition.
+        let next = self.generation.next_record(event.clone())?;
         let json = serde_json::to_string(&event)
             .map_err(|_| Error::CorruptJournal("generation encode"))?;
         let encoded = format!("{JOURNAL_PREFIX}{json}\n");
-        let reserved = next.reserved_bytes()?;
+        let previous_reserved = self
+            .generation
+            .records
+            .get(&request_id)
+            .map_or(0, GenerationRecordV1::reserved_bytes);
+        let reserved = self
+            .generation
+            .reserved_bytes()?
+            .checked_sub(previous_reserved)
+            .and_then(|bytes| bytes.checked_add(next.reserved_bytes()))
+            .ok_or(Error::ArithmeticOverflow)?;
         let next_bytes = self.ensure_append_capacity(&encoded, reserved)?;
         // A new family must not consume the existing native caller's dispatch /
         // terminal headroom. Its original serial-call policy remains unchanged.
@@ -313,12 +324,10 @@ impl DurableInferenceControl {
             drop(token.take());
         }
         self.append_with_generation_reserve(&encoded, reserved)?;
-        self.generation = next;
-        self.generation
-            .records
-            .get(&request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+        // Publish only after the original append/flush/sync succeeds. The
+        // journal's owner identity and all unrelated records remain unchanged.
+        self.generation.records.insert(request_id, next.clone());
+        Ok(next)
     }
 }
 
@@ -334,31 +343,36 @@ impl Event {
     }
 }
 
+impl GenerationRecordV1 {
+    fn reserved_bytes(&self) -> u64 {
+        if self.result.is_some() {
+            return 0;
+        }
+        let metadata =
+            u64::from(self.dispatched_at_micros.is_none()) + u64::from(!self.cancel_requested) + 1;
+        u64::from(self.binding.result_limit_bytes) * 4 + metadata * METADATA_RESERVE
+    }
+}
+
 impl GenerationJournal {
     pub(super) fn reserved_bytes(&self) -> Result<u64, Error> {
-        self.records
-            .values()
-            .filter(|record| record.result.is_none())
-            .try_fold(0_u64, |total, record| {
-                let metadata = u64::from(record.dispatched_at_micros.is_none())
-                    + u64::from(!record.cancel_requested)
-                    + 1;
-                total
-                    .checked_add(
-                        u64::from(record.binding.result_limit_bytes) * 4
-                            + metadata * METADATA_RESERVE,
-                    )
-                    .ok_or(Error::ArithmeticOverflow)
-            })
+        self.records.values().try_fold(0_u64, |total, record| {
+            total
+                .checked_add(record.reserved_bytes())
+                .ok_or(Error::ArithmeticOverflow)
+        })
     }
 
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("generation decode"))?;
-        self.apply(event)
+        let record = self.next_record(event)?;
+        self.records
+            .insert(record.binding.request_id.clone(), record);
+        Ok(())
     }
 
-    fn apply(&mut self, event: Event) -> Result<(), Error> {
+    fn next_record(&self, event: Event) -> Result<GenerationRecordV1, Error> {
         if let Event::Admit {
             binding,
             observed_at_micros,
@@ -368,22 +382,19 @@ impl GenerationJournal {
             if self.records.contains_key(&binding.request_id) {
                 return Err(Error::Conflict);
             }
-            self.records.insert(
-                binding.request_id.clone(),
-                GenerationRecordV1 {
-                    binding,
-                    admitted_at_micros: observed_at_micros,
-                    dispatched_at_micros: None,
-                    cancel_requested: false,
-                    aborted_before_dispatch: false,
-                    result: None,
-                },
-            );
-            return Ok(());
+            return Ok(GenerationRecordV1 {
+                binding,
+                admitted_at_micros: observed_at_micros,
+                dispatched_at_micros: None,
+                cancel_requested: false,
+                aborted_before_dispatch: false,
+                result: None,
+            });
         }
-        let record = self
+        let mut record = self
             .records
-            .get_mut(event.request_id())
+            .get(event.request_id())
+            .cloned()
             .ok_or(Error::RequestNotFound)?;
         if record.result.is_some() {
             return Err(Error::InvalidTransition);
@@ -413,19 +424,19 @@ impl GenerationJournal {
                 if record.dispatched_at_micros.is_none() {
                     return Err(Error::InvalidTransition);
                 }
-                validate_result(record, &result)?;
+                validate_result(&record, &result)?;
                 record.result = Some(result);
             }
             Event::AbortBeforeDispatch { result, .. } => {
                 if record.dispatched_at_micros.is_some() {
                     return Err(Error::InvalidTransition);
                 }
-                validate_result(record, &result)?;
+                validate_result(&record, &result)?;
                 record.aborted_before_dispatch = true;
                 record.result = Some(result);
             }
         }
-        Ok(())
+        Ok(record)
     }
 }
 

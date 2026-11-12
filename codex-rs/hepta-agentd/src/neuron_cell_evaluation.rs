@@ -420,7 +420,16 @@ impl fmt::Display for CellEvaluationErrorV1 {
         write!(formatter, "{self:?}")
     }
 }
-impl Error for CellEvaluationErrorV1 {}
+impl Error for CellEvaluationErrorV1 {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Binding(_) => None,
+            Self::Journal(error) => Some(error),
+            Self::Product(error) => Some(error),
+            Self::Execution(error) => Some(error),
+        }
+    }
+}
 
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_tests.rs"]

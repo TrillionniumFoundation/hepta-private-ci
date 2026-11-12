@@ -14,8 +14,7 @@ use crate::protocol::Reader;
 use crate::protocol::Sampler;
 use crate::protocol::parse;
 
-#[path = "proposal_test_support.rs"]
-mod support;
+use crate::test_support as support;
 use support::Fixture;
 use support::raw_frame;
 use support::request;

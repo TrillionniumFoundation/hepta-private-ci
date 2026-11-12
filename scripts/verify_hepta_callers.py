@@ -603,7 +603,7 @@ def _verify_function_order(
         function = item.get("function")
         sequence = item.get("sequence")
         if not isinstance(function, str) or not re.fullmatch(
-            r"fn [A-Za-z_]\w*\(", function
+            r"fn [A-Za-z_]\w*(?:<[A-Za-z_]\w*: [A-Za-z_]\w*>)?\(", function
         ):
             raise VerificationFailure(f"{relative}: exact function marker required")
         if code.count(function) != 1:

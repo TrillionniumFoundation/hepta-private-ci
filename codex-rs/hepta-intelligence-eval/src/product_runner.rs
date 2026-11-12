@@ -966,7 +966,19 @@ impl fmt::Display for ProductEvaluationError {
         write!(formatter, "{self:?}")
     }
 }
-impl StdError for ProductEvaluationError {}
+impl StdError for ProductEvaluationError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Binding(_) | Self::Integrity(_) => None,
+            Self::Frozen(error) => Some(error),
+            Self::Temporal(error) => Some(error),
+            Self::Holdout(error) => Some(error),
+            Self::Provider(error) => Some(error),
+            Self::Signed(error) => Some(error),
+            Self::Sink(error) => Some(error),
+        }
+    }
+}
 
 impl From<EvaluationClosureError> for ProductEvaluationError {
     fn from(value: EvaluationClosureError) -> Self {

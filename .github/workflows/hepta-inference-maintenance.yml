@@ -1,6 +1,10 @@
 name: Hepta inference maintenance
 
 on:
+  push:
+    branches:
+      - codex/framework-generation-staging-20261112-8166
+      - codex/framework-convergence-20261112-8166
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:

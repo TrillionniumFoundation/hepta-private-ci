@@ -58,6 +58,19 @@ impl JointGenerationProcessWorkerV1 {
         Self::open_files(config, files, clock)
     }
 
+    /// Select one bounded resident using the host's already opened files.
+    /// Only immutable model/public assets and their initial encoding are reused.
+    /// A failed session is never respawned or replayed automatically.
+    pub fn open_resident_files(
+        config: JointGenerationProcessConfigV1,
+        files: JointGenerationProcessFilesV1,
+        clock: Arc<dyn Fn() -> u64 + Send + Sync>,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        let mut worker = Self::open_files(config, files, clock)?;
+        worker.resident = Some(super::resident::ResidentTransport::default());
+        Ok(worker)
+    }
+
     /// Fingerprint the actual supplied files without reopening any asset path.
     /// Weights and public input become immutable in-memory bytes; the opened
     /// executable inode is retained. The host keeps the executable immutable and
@@ -88,6 +101,7 @@ impl JointGenerationProcessWorkerV1 {
             public_digest: config.public_digest,
             device_digest: config.device_digest,
             clock,
+            resident: None,
         })
     }
 }

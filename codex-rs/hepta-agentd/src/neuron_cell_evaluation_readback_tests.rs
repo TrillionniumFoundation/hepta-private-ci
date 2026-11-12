@@ -287,14 +287,24 @@ fn missing_cell_execution_readback_never_claims_or_releases() {
     let mut test = Harness::new();
     let before = test.fixture.holdout_bytes();
     let minimum = test.executions.inner.anchor();
+    let original = match test.readback() {
+        Err(error) => error,
+        Ok(_) => panic!("missing original execution unexpectedly completed"),
+    };
     assert!(matches!(
-        test.readback(),
-        Err(CellEvaluationErrorV1::Execution(
-            ProductEvaluationExecutionErrorV1::Store(
-                ProductEvaluationExecutionStoreErrorV1::Missing
-            )
+        &original,
+        CellEvaluationErrorV1::Execution(ProductEvaluationExecutionErrorV1::Store(
+            ProductEvaluationExecutionStoreErrorV1::Missing
         ))
     ));
+    #[cfg(target_os = "linux")]
+    {
+        let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
+        assert!(matches!(
+            crate::cell_q24_learning_owner_error::owner_error(receipt),
+            crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
+        ));
+    }
     assert_eq!(test.calls(), (0, 0, 0, 0));
     assert_eq!(test.executions.inner.anchor(), minimum);
     assert_eq!(test.fixture.holdout_bytes(), before);
@@ -316,12 +326,22 @@ fn pending_cell_execution_readback_never_reissues_work() {
     let before = test.fixture.holdout_bytes();
     let minimum = test.executions.inner.anchor();
     let calls = test.calls();
+    let original = match test.readback() {
+        Err(error) => error,
+        Ok(_) => panic!("pending original execution unexpectedly completed"),
+    };
     assert!(matches!(
-        test.readback(),
-        Err(CellEvaluationErrorV1::Execution(
-            ProductEvaluationExecutionErrorV1::Pending
-        ))
+        &original,
+        CellEvaluationErrorV1::Execution(ProductEvaluationExecutionErrorV1::Pending)
     ));
+    #[cfg(target_os = "linux")]
+    {
+        let receipt = crate::OriginalCellEvaluationReceiptErrorV1::Cell(original);
+        assert!(matches!(
+            crate::cell_q24_learning_owner_error::owner_error(receipt),
+            crate::LearningIterationRuntimeErrorV1::CommitUncertain
+        ));
+    }
     assert_eq!(test.calls(), calls);
     assert_eq!(test.executions.inner.anchor(), minimum);
     assert_eq!(test.fixture.holdout_bytes(), before);
