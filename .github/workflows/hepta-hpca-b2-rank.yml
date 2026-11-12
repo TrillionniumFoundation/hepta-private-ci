@@ -20,3 +20,5 @@ jobs:
         run: |
           python3 qualification/hpca-neuroscience-20261110/posttrain_b2_rank.py --output /tmp/b2-rank-recomputed.json
           cmp qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_RANK_REPORT.json /tmp/b2-rank-recomputed.json
+          python3 qualification/hpca-neuroscience-20261110/posttrain_b2_family_decomposition.py --output /tmp/b2-family-recomputed.json
+          cmp qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_FAMILY_DECOMPOSITION.json /tmp/b2-family-recomputed.json
