@@ -25,7 +25,6 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use crate::AgentdRootQ24ModelFactoryV1;
@@ -34,6 +33,9 @@ use crate::CellQ24TrainingOwnerV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Error;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
+
+#[path = "cell_q24_local_decision_signing.rs"]
+mod signing;
 
 /// A finite policy frozen by the existing Selector host before Root enrollment.
 /// Retention and deferral keep the independent evaluator's qualified result.
@@ -155,61 +157,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24LocalDecisionOwnerV1<W> {
             .original_proposal(factory, trainer, dataset, inputs, snapshot)
             .await?;
         let saved = self.saved(&proposal);
-        let config = &self.config;
-        let key = &self.key;
-        let bytes = match self.journal.read(&saved) {
-            Ok(bytes) => bytes,
-            Err(Error::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {
-                let current = now()?;
-                if current >= config.initial.request.envelope.expiry_unix_seconds {
-                    return Err(Error::Binding("new local decision after deadline"));
-                }
-                config.verifier.require_signer_binding(
-                    LearningEvidenceRoleV1::Selector,
-                    &config.signer,
-                    current,
-                )?;
-                decision(config.policy, &proposal, current)?;
-                self.journal.commit_once(&saved, || {
-                    let issued_at = now()?;
-                    if issued_at >= config.initial.request.envelope.expiry_unix_seconds {
-                        return Err(Error::Binding("new local decision after deadline"));
-                    }
-                    config.verifier.require_signer_binding(
-                        LearningEvidenceRoleV1::Selector,
-                        &config.signer,
-                        issued_at,
-                    )?;
-                    let receipt = decision(config.policy, &proposal, issued_at)?;
-                    let payload = payload(&receipt)?;
-                    let mut signed = SignedLearningEvidenceV1 {
-                        evidence_id: evidence_id(saved.binding_digest)?,
-                        principal_id: config.signer.principal.principal_id.clone(),
-                        role: LearningEvidenceRoleV1::Selector,
-                        trust_digest: config.verifier.trust_digest(),
-                        scope_digest: config.verifier.scope_digest(),
-                        objective_digest: config.verifier.objective_digest(),
-                        authority_epoch: config.signer.principal.authority_epoch,
-                        issued_at,
-                        expires_at: issued_at
-                            .checked_add(config.maximum_signature_lifetime_seconds)
-                            .ok_or(Error::Binding("local decision expiry overflow"))?
-                            .min(config.signer.principal.expires_at),
-                        payload_digest: Digest32::of_bytes(&payload),
-                        signature: [0; 64],
-                    };
-                    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-                    config.verifier.verify(
-                        LearningEvidenceRoleV1::Selector,
-                        &signed,
-                        &payload,
-                        issued_at,
-                    )?;
-                    learning_owner_evidence::encode(&payload, &signed)
-                })?
-            }
-            Err(error) => return Err(error),
-        };
+        let bytes = self.sign_original_proposal(&proposal, &saved)?;
         if self
             .original_proposal(factory, trainer, dataset, inputs, snapshot)
             .await?
@@ -253,6 +201,25 @@ impl<W: AnchorWitnessStore> OriginalCellQ24LocalDecisionOwnerV1<W> {
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<LearningIterationSnapshotV1, Error> {
+        let prefix = self.proposal_prefix(factory, snapshot)?;
+        let original = factory
+            .readback(trainer, dataset, inputs)
+            .await
+            .map_err(|error| {
+                if crate::cell_q24_learning_owner_error::is_commit_uncertain(&error) {
+                    Error::CommitUncertain
+                } else {
+                    Error::Binding("original Model proposal unavailable")
+                }
+            })?;
+        self.require_original_proposal(prefix, &original)
+    }
+
+    fn proposal_prefix(
+        &self,
+        factory: &AgentdRootQ24ModelFactoryV1,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<LearningIterationCoordinatorV1, Error> {
         factory
             .require_learning_scope(&self.config.initial, &self.config.scope)
             .map_err(|_| Error::Binding("local policy original Root operation"))?;
@@ -280,16 +247,14 @@ impl<W: AnchorWitnessStore> OriginalCellQ24LocalDecisionOwnerV1<W> {
                 break;
             }
         }
-        let original = factory
-            .readback(trainer, dataset, inputs)
-            .await
-            .map_err(|error| {
-                if crate::cell_q24_learning_owner_error::is_commit_uncertain(&error) {
-                    Error::CommitUncertain
-                } else {
-                    Error::Binding("original Model proposal unavailable")
-                }
-            })?;
+        Ok(prefix)
+    }
+
+    fn require_original_proposal(
+        &self,
+        prefix: LearningIterationCoordinatorV1,
+        original: &crate::CellQ24ModelProposalReceiptV1,
+    ) -> Result<LearningIterationSnapshotV1, Error> {
         if prefix.snapshot().receipts.last() != Some(original.learning_receipt())
             || prefix.next_stage() != Some(LearningIterationStageV1::Selection)
             || prefix.next_task_bundle() == Some(&self.config.initial.request.selected_bundle)
