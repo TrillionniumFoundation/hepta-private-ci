@@ -10736,7 +10736,7 @@ receiver_type = "AgentdProductionLaunch"
 definition_path = "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
 definition_markers = ["pub async fn assemble_original_post_a_q24(", "CellQ24DatasetTaskV1::capture_historical(", "self.assemble_q24_learning(config, inputs).await?"]
 product_callers = ["codex-rs/hepta-agentd/src/main.rs"]
-caller_markers = ["launch.assemble_original_post_a_q24(config).await?"]
+caller_markers = ["codex_hepta_agentd::AgentdProductionLaunch::assemble_original_post_a_q24("]
 
 [[boundary]]
 id = "ordinary_post_a_deferred_handoffs"
@@ -10796,4 +10796,4 @@ required_function_order = [{ function = "fn receive_original_late_writer(", sequ
 path = "codex-rs/hepta-agentd/src/main.rs"
 required = []
 forbidden = []
-required_function_order = [{ function = "fn main(", sequence = ["startup.receive().await?", "launch.assemble_original_initial_q24(config).await?", "launch.assemble_original_post_a_q24(config).await?", "launch.run(config, arg0_paths).await?"] }]
+required_function_order = [{ function = "fn main(", sequence = ["startup.receive().await?", "launch.assemble_original_initial_q24(config).await?", "codex_hepta_agentd::AgentdProductionLaunch::assemble_original_post_a_q24(", "launch.run(config, arg0_paths).await?"] }]
