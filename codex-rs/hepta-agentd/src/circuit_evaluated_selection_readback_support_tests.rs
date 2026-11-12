@@ -119,14 +119,14 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
                     let response = host
                         .evidence_response(bytes, request_id)
                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                    if let Some((after, file)) = &invalidate_source_after_read {
-                        if request_id == *after {
-                            // The actual S response already passed its final
-                            // T/B/Cell read. Only C's final Source check sees
-                            // this durable original Source becoming unreadable.
-                            file.set_len(0)
-                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
-                        }
+                    if let Some((after, file)) = &invalidate_source_after_read
+                        && request_id == *after
+                    {
+                        // The actual S response already passed its final
+                        // T/B/Cell read. Only C's final Source check sees
+                        // this durable original Source becoming unreadable.
+                        file.set_len(0)
+                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
                     }
                     Ok(response)
                 })? {
