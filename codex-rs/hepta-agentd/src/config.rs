@@ -20,6 +20,9 @@ mod desktop;
 mod circuit_task;
 
 #[cfg(target_os = "linux")]
+#[path = "config_run_start_retention.rs"]
+mod run_start_retention;
+#[cfg(target_os = "linux")]
 #[path = "config_source_capture.rs"]
 mod source_capture;
 
@@ -159,6 +162,9 @@ pub struct AgentdConfig {
     #[cfg(target_os = "linux")]
     original_source_capture:
         Option<crate::production_launcher::source_capture::OriginalSourceCaptureRequestV1>,
+    #[cfg(target_os = "linux")]
+    original_run_start_retention:
+        Option<crate::production_launcher::run_start_retention::OriginalInitialRunStartRetainerV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -333,6 +339,8 @@ impl AgentdConfig {
             original_source_close: None,
             #[cfg(target_os = "linux")]
             original_source_capture: None,
+            #[cfg(target_os = "linux")]
+            original_run_start_retention: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,

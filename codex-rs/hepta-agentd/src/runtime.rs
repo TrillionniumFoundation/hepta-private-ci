@@ -58,6 +58,8 @@ pub async fn run_with_shutdown(
     #[cfg(target_os = "linux")]
     let original_source_capture = config.take_original_source_capture()?;
     #[cfg(target_os = "linux")]
+    let original_run_start_retention = config.take_original_run_start_retention();
+    #[cfg(target_os = "linux")]
     let original_q24_outcome = config.take_original_q24_outcome_control();
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
@@ -271,9 +273,13 @@ pub async fn run_with_shutdown(
     }
     if let Some(path) = objective_profile_file {
         state.refresh_generation()?;
-        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
-            &identity, &path,
-        )?);
+        let host = crate::objective_runtime::ObjectiveRuntimeHost::open(&identity, &path)?;
+        #[cfg(target_os = "linux")]
+        let host = match original_run_start_retention {
+            Some(retained) => host.with_original_run_start_retention(retained)?,
+            None => host,
+        };
+        let host = Arc::new(host);
         let current_generation = state.current_generation()?;
         host.reconcile(
             &state,

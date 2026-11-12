@@ -146,6 +146,7 @@ impl AgentdProductionLaunch {
                 publication,
                 initial_publication,
                 original_source_capture: None,
+                original_run_start_retention: None,
                 session_end,
             },
             ordinary,

@@ -63,6 +63,10 @@ mod learning_source;
 #[path = "objective_submission.rs"]
 mod submission;
 
+#[cfg(target_os = "linux")]
+#[path = "objective_run_start_retention.rs"]
+mod run_start_retention;
+
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
     Conflict {
@@ -75,6 +79,9 @@ pub(crate) struct ObjectiveRuntimeHost {
     profile: ObjectiveAdmissionProfileV1,
     profile_digest: Digest32,
     state: Mutex<ObjectiveHostState>,
+    #[cfg(target_os = "linux")]
+    original_run_start_retention:
+        Option<crate::production_launcher::run_start_retention::OriginalInitialRunStartRetainerV1>,
 }
 
 struct ObjectiveHostState {
@@ -109,6 +116,8 @@ impl ObjectiveRuntimeHost {
                 highest_sequences,
                 notes_cursor: 0,
             }),
+            #[cfg(target_os = "linux")]
+            original_run_start_retention: None,
         })
     }
 

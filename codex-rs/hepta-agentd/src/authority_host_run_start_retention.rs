@@ -43,7 +43,7 @@ pub(crate) struct OriginalRunStartPublicationDataV1 {
 }
 
 impl OriginalRunStartPublicationDataV1 {
-    fn validate(&self) -> io::Result<()> {
+    pub(crate) fn validate(&self) -> io::Result<()> {
         StableId::new(&self.run_id).map_err(io::Error::other)?;
         digest(&self.profile_digest)?;
         digest(&self.record_digest)?;

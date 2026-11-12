@@ -388,3 +388,7 @@ mod initial_root_tests;
 #[cfg(target_os = "linux")]
 #[path = "neuron_generation_current_initial_learning_trust.rs"]
 mod initial_learning_trust;
+
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_initial_run_start.rs"]
+mod initial_run_start;

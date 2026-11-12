@@ -16,6 +16,8 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+#[path = "root_generation_initial_run_start.rs"]
+mod run_start;
 #[path = "root_generation_initial_source_capture.rs"]
 mod source_capture;
 
@@ -34,6 +36,7 @@ pub(crate) struct RootGenerationInitialClient {
     connection: crate::RootGenerationPublicationConnectionV1,
     lane: Mutex<Option<Lane>>,
     fenced: AtomicBool,
+    run_start_attempted: AtomicBool,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -102,6 +105,7 @@ impl RootGenerationInitialClient {
                 sequence: 2,
             })),
             fenced: AtomicBool::new(false),
+            run_start_attempted: AtomicBool::new(false),
         })
     }
 
