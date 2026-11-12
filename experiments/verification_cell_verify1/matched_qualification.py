@@ -7,6 +7,7 @@ attestation. No result from this module grants execution or production rights.
 """
 
 from collections import defaultdict
+from copy import deepcopy
 import hashlib
 import itertools
 import json
@@ -49,6 +50,43 @@ def _canonical(value):
 
 def _digest(value):
     return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()
+
+
+def _container_ids(value):
+    if type(value) is dict:
+        return (id(value),) + tuple(
+            identity for key in sorted(value) for identity in _container_ids(value[key])
+        )
+    if type(value) in (list, tuple):
+        return ((id(value),) if type(value) is list else ()) + tuple(
+            identity for item in value for identity in _container_ids(item)
+        )
+    return ()
+
+
+def _authenticate(callback, arguments, reason):
+    """Isolate verifier inputs and reject value changes or container rebinding.
+
+    The scorer never consumes the callback's objects. Container identities also
+    detect a same-content replacement that would hide mutation of a detached
+    alias from a canonical-byte comparison alone.
+    """
+    if callback is None:
+        return False
+    detached = deepcopy(arguments)
+    before, identities = _canonical(detached), _container_ids(detached)
+    try:
+        accepted = callback(*detached) is True
+    except Exception:
+        accepted = False
+    try:
+        unchanged = (
+            _canonical(detached) == before and _container_ids(detached) == identities
+        )
+    except (TypeError, ValueError, RecursionError):
+        unchanged = False
+    _require(unchanged, reason)
+    return accepted
 
 
 def _exact_signflip(deltas):
@@ -101,14 +139,11 @@ def _design_status(manifest, design, verify_design):
     )
     authenticated = False
     if bound and consistent:
-        receipt_sha = _digest(design)
-        try:
-            authenticated = (
-                verify_design is not None and verify_design(manifest, design) is True
-            )
-        except Exception:
-            authenticated = False
-        _require(_digest(design) == receipt_sha, "design changed during authentication")
+        authenticated = _authenticate(
+            verify_design,
+            (manifest, design),
+            "design changed or validated inputs changed during authentication",
+        )
     return consistent, bound, authenticated, assignment_sha
 
 
@@ -417,6 +452,9 @@ def analyze_matched(
     Passing a callback is a host assertion; independent custody is not established
     by this implementation or by source-group strings.
     """
+    # Detach scorer state from aliases retained by the caller or its callbacks.
+    # Each verifier then receives its own disposable copy of this frozen state.
+    manifest, observations, design = deepcopy((manifest, observations, design))
     pairs = _validate_manifest(manifest)
     _require(
         type(observations) is list and len(observations) <= 2 * len(pairs),
@@ -448,16 +486,18 @@ def analyze_matched(
     for row in observations:
         if row["terminal_error"] is not None:
             # Fail closed: no callback, exception, None or truthy non-bool is not proof.
-            try:
-                okay = verify_label is not None and verify_label(manifest, row) is True
-            except Exception:
-                okay = False
+            okay = _authenticate(
+                verify_label,
+                (manifest, row),
+                "validated inputs changed during authentication",
+            )
             label_ok &= okay
         if row["cost_units"] is not None:
-            try:
-                okay = verify_cost is not None and verify_cost(manifest, row) is True
-            except Exception:
-                okay = False
+            okay = _authenticate(
+                verify_cost,
+                (manifest, row),
+                "validated inputs changed during authentication",
+            )
             cost_ok &= okay
     _require(
         _digest([manifest, observations]) == input_sha,
