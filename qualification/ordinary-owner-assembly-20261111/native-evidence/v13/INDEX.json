@@ -1,0 +1,331 @@
+{
+  "schema": "hepta.original-native-evidence-v13-index.v1",
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "source_classification": "Full original component qualification FAILED; archive transfer COMPLETE.",
+  "native_result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+  "archive": {
+    "parts": 42,
+    "ascii_characters": 1977904,
+    "bytes": 1483428,
+    "sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c",
+    "git_blob": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+    "read_attempts": 29,
+    "successful_responses": 22,
+    "failed_responses": 7,
+    "all_failures_MCP_timeout": true,
+    "all_original_paths_exact": true,
+    "per_file_eof_versions_size_sha_verified": true,
+    "prior36_prefix_independently_recomputed": true,
+    "all_original_metadata_values_match": true,
+    "atomic_cross_file_snapshot_claimed": false,
+    "independent_second_tar_parse": false
+  },
+  "transfer": {
+    "git_blob": "b532a1de9c88cddeef8d81e0377165f075cc8aac",
+    "bytes": 43753,
+    "sha256": "dc23d42dd601b2eb02fad84b7dab60492321cb515531afa76bbf2bda026788ed"
+  },
+  "root_review": {
+    "git_blob": "ed5924a7ce03f04ee1cb817109f1b24e7d73c788",
+    "bytes": 3059,
+    "sha256": "7a805d31b4bf92fc172a8281bc0842024202f8a5b20e05e13d02824e1c613c4c"
+  },
+  "original_export_success": {
+    "session": "dpty-620547b1c3fa10cbc52d78252ba076c66bab72a9aae1cffbb2dbec8ec4c4ce33",
+    "proof": "76ef5b2c6aaa7dcb300d2cf6cf26b97825cda3d2",
+    "exit_code": 0,
+    "complete_pty_bytes": 5927,
+    "source_before_after_clean": true
+  },
+  "native_scope": {
+    "ordinary_passed": 1943,
+    "ordinary_failed": 1,
+    "root_passed": 15,
+    "root_failed": 2,
+    "root_exact_parents": 17,
+    "qa_passed": 236,
+    "full_caller_passed": true,
+    "retries": 0,
+    "original_cleanup_passed": 9
+  },
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": "a99665cb7d3920375f6cbb6d5ef31d23c221b387",
+    "post": {
+      "git_blob": "417d30783e3d244646286a79dc224ba5a2f27888",
+      "bytes": 13296,
+      "sha256": "3cdefab18b17b5fd888ce56443bfe32d54a728f6ec70c75da551bd99d1461a99"
+    },
+    "change": "Append only this exact archive SHA256 and path. Prior content and global limits unchanged."
+  },
+  "evidence_branch_code_is_not_tested_candidate": true,
+  "entries": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/original-records.tar.xz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04495f75a40aa96a1183f6e00fc980ca88a3246f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ORIGINAL_EXPORT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e6bcc3b326c721c37df02192eac5084552cd665"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/REQUEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c84a37d9e2d9fe9097f6dbdcecb952a2e32b29b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/CONFIG.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "508e62d7c5adbdda4ebf8f45e6eee22cbe4e779c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/PLAN.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a92a17191d8e7718b861edc717b250d29a80d017"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/PREPARATION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74fed3c1daf1fd47b599d62aee1622aa41ab179d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ROOT_PREPARATION_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0e5a60a18af9ae2ee6053e2d947b7b37ba03952"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/INDEPENDENT_PREPARATION_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70303a7df95f29dc4a502b75d0f4a94d278bd135"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ADMISSION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aeb5f4d949b463ed3df8f4934b8aadccbbe9de16"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/PTY_PROOF.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76ef5b2c6aaa7dcb300d2cf6cf26b97825cda3d2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ORIGINAL_RESULT_v3.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ORIGINAL_ORDINARY_FAILURE_PROOF_v2.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "466119445e75b976b1e825124b5e8063e112394b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ORIGINAL_PRECISION_CORRECTIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/superseded/TRANSFER_8_OF_42.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abd5b0c5e00ea97cb377aac88f3657fe2859d810"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/superseded/TRANSFER_36_OF_42.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d4ecca4d81407284b58c600a70c71a14f85646b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d75df6e948102c769decec3be758fe24c302506e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/TRANSFER.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b532a1de9c88cddeef8d81e0377165f075cc8aac"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/ROOT_BYTE_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed5924a7ce03f04ee1cb817109f1b24e7d73c788"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-00.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "96031100e2191b2bbf47d99f0b53e3e0751c7655"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-01.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "456aaa4b7055b9291e53f2be0f4807d9d1b0c50c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-02.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc8d8dffe68e54a70b29402f7d169d8120e8c779"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-03.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "854e8ac6935cf79a5dbc1d9874d6302965f2d4dd"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-04.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "916cc57458fe1a093fda15c9c4e657acc686b5ab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-05.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c66f25c647c39e5e2e59426e0a5803666f76684"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-06.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6946b272ea85e8b13df830bdd05420deea72eed"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-07.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36de1a74dff89c1d56e12d8e38d3548b1e0357bc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-08.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a27fdaa3a00dc8f3881859cb53c37d1b4ff9b67"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-09.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "424526eec4490a89fd584190ada6fcbe794b125d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-10.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e790348abc5dd54e54da9597781496eb4b9c7a2c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-11.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f547ab2ef9f7bdf47d07e03a37edf97e4446b256"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-12.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1d2ebeb2024f77fab749801d09e3b05ca08f265"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-13.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3ac4835e4a25195ca98df2235f4ca8a2cb9672f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-14.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58aa9a5f009eb8e44e8aca87c1fdbe0236aed798"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-15.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5d72cd4417d257994223e99da5587fa5323a50b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-16.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f59216aa9620a490106a61d1913e95788ae15c2a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-17.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73bfaf8577ba513c7f3667a61a52090d67c8225e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-18.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "760203d9d268d9af0f80c4bb034baef7cec30c24"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-19.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "561852259c97dfc11a4815806828d8b7d66d7c73"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-20.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adbf8eac88859979970ed125248a16c750372c2f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-21.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef52e8e7429390d22880ebb54ccc640d84749cdf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-22.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19800a5764f7f48bbd47d5e33811bab338286e97"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v13/receipts/packet-23.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b45cd2a323982363c8297016867051daf06082b2"
+    }
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_daemon_root_restart": false
+  },
+  "limits": [
+    "Original unchanged exporter member/manifest verification is retained, not reclassified as an independent transfer-time tar parse.",
+    "All original failures, timeouts and partial checkpoints are preserved.",
+    "Raw originals retain their bytes; derived large time integers use exact decimal strings."
+  ]
+}

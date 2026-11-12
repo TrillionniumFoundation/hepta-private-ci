@@ -1,0 +1,62 @@
+{
+  "schema": "hepta-v13-original-records-export-root-review-v1",
+  "status": "approved for one exact original-export invocation; not yet dispatched",
+  "request": "8c84a37d9e2d9fe9097f6dbdcecb952a2e32b29b",
+  "configuration": "508e62d7c5adbdda4ebf8f45e6eee22cbe4e779c",
+  "plan": "a92a17191d8e7718b861edc717b250d29a80d017",
+  "manifest": "74fed3c1daf1fd47b599d62aee1622aa41ab179d",
+  "independent_review": "70303a7df95f29dc4a502b75d0f4a94d278bd135",
+  "source": {
+    "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/source",
+    "terminal": {
+      "name": "ordinary-5a2e937-seven-final-v6",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records",
+      "terminal": "progress.json",
+      "sha256": "dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56",
+      "expected": {
+        "status": "failed-native-components",
+        "source_sha": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+        "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+      }
+    }
+  },
+  "invocation": {
+    "args": 24,
+    "chunks": 20,
+    "join_exact": true,
+    "programs_unchanged": true,
+    "unsafe_integer_paths": []
+  },
+  "root_read": {
+    "complete_fixed_exporter": true,
+    "complete_fixed_wrapper": true,
+    "complete_PLAN_and_manifest": true,
+    "complete_independent_review": true,
+    "current_raw_RESULT_and_failure_proof_exact_to_Root_retained_originals": true,
+    "native_request_value_equal": true
+  },
+  "decision": [
+    "Use only original 4370-byte exporter79494fe659157c453d4f0804cb01581eecce6052 and146-byte wrappere6560092b622a84e24c20ca7fb8b2589b0233cc4 with-B.",
+    "Only the new declared V13 export directory may be written. Original failed V32 source, records, permissions, credentials and refs remain unchanged. Source drift or an existing output directory is failure, not permission to reset or overwrite.",
+    "The original records walk copies bytes then rechecks path metadata and SHA. Its lstat/read/recheck is not a descriptor-anchored atomic snapshot or O_NOFOLLOW guarantee.",
+    "Original records JSON remains raw bytes. Additional requests/observations envelopes are normalized by original Python json.dumps; embedded RESULTv3/proofv2 texts remain exact. Superseded projections remain labelled.",
+    "Original source status failed-native-components, ordinary1943/1, Root15/2 and all9cleanup results are retained. Export success will not change native qualification or0/0/0.",
+    "If h acknowledgement is uncertain, reconcile only this identical request/idempotency_key. Do not start a second export under a new key."
+  ],
+  "limits": {
+    "actual_export": "not yet observed",
+    "whole_archive_transfer": "not yet performed",
+    "independent_tar_parse": "not performed",
+    "unread_stdout": "full ordinary/full caller and additional toolchain/helper stdout not individually read; original exporter must retain actual records",
+    "V12": "paused incomplete at bf70d3b18624f5e754a709d4908a42e4bf3fcb8c"
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_daemon_and_Root_restart": false
+  }
+}

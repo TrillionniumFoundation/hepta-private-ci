@@ -1,0 +1,386 @@
+{
+  "schema": "hepta.v13-original-v32-export.independent-static-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "NO_CONFIRMED_STATIC_BLOCKER_NOT_DISPATCHED_BY_REVIEWER",
+  "reviewed_artifacts": {
+    "request": {
+      "git_blob": "8c84a37d9e2d9fe9097f6dbdcecb952a2e32b29b",
+      "bytes": 497732,
+      "sha256": "154046a5d96d17cbb37c0cd7d930d9cc79e9cc9e847e4974614f7eb286762c7d"
+    },
+    "config": {
+      "git_blob": "508e62d7c5adbdda4ebf8f45e6eee22cbe4e779c",
+      "bytes": 458483,
+      "sha256": "ae8a444a916dae2cbaf56f7e1d9d185cbe42acee3d2a440184a70084ab0548c4"
+    },
+    "plan": {
+      "git_blob": "a92a17191d8e7718b861edc717b250d29a80d017",
+      "bytes": 9065,
+      "sha256": "a6699ba4a62078c4ba2663b83ee03f59d80f22769ecc62b083b4a20ea12d1757"
+    },
+    "manifest": {
+      "git_blob": "74fed3c1daf1fd47b599d62aee1622aa41ab179d",
+      "bytes": 23346,
+      "sha256": "0855e960880c847a5a874746e7594df1ef70cbe7698536af5ad51a4a343afcf0"
+    },
+    "exporter": {
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "wrapper": {
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    }
+  },
+  "original_source": {
+    "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "anchor": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/source",
+    "records": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records",
+    "expected_terminal": {
+      "status": "failed-native-components",
+      "source_sha": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+    },
+    "terminal_file": "progress.json",
+    "terminal_sha256": "dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56"
+  },
+  "invocation": {
+    "argc": 24,
+    "config_chunks": 20,
+    "chunk_bytes": [
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      24000,
+      2483
+    ],
+    "join_exact": true,
+    "unsafe_number_paths": [],
+    "executable": "/usr/bin/python3",
+    "host": "ai395",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-5a2e937-original-records-export-v13-20261112",
+    "first_arguments": [
+      "-B",
+      "-c",
+      "unchanged146-byte wrapper",
+      "unchanged4370-byte exporter"
+    ],
+    "wrapper_execution_semantics": "The wrapper receives the exact exporter at sys.argv[1], replaces argv with [original argv0, concatenated original config chunks], then compiles only that fixed exporter. The nested original native request remains JSON data.",
+    "maximum_argument_utf8_bytes": 24000,
+    "no_NUL": true,
+    "shell": false,
+    "configuration_chunks_verified_against_manifest": true,
+    "complete_request_and_config_below_repository_512000_byte_limit": true
+  },
+  "static_scope_findings": [
+    "The only input attempt is the already terminal original V32 work ordinary-5a2e937-seven-final-v6, exactly head5a2e9371814e9ee0ec55781a81844ef03434874b/tree22d55a327460ab4a835387a4a61332dbece6866d. Current/source successors are not inputs.",
+    "The only requested output root is the distinct new ordinary-5a2e937-original-records-export-v13-20261112 directory. Its actual nonexistence has not been checked by this reviewer; the unchanged program asserts absence and creates it before export. No old directory is reused or cleaned.",
+    "The unchanged program runs only original Git identity commands for the anchor. The embedded native request, original stdout command lines, cleanup commands and source metadata are serialized as evidence, never executed by this exporter.",
+    "The original terminal status/source and progress SHA are hard checks. Anchor HEAD/tree/clean are checked before and after, and every copied original record is rechecked by path metadata and full SHA.",
+    "Original per-file32MiB and total128MiB bounds, regular/single-link record requirement and the sole helpers/bin exclusion remain exact. The helper manifest and original build/pre/post verification records remain included.",
+    "All output writes shown by the fixed exporter are under its new WORK: original-records.tar.xz, declared base64 parts, export.json, or failure.json. It contains no source reset/edit, credential or permission mutation, network policy change, branch/ref/PR change or Cargo/just/native execution.",
+    "Path-based lstat/read/recheck is preserved. This is not an O_NOFOLLOW or descriptor-anchored atomic snapshot guarantee, and the review does not reinterpret it as one.",
+    "If the exporter succeeds, its original second tar open verifies the member-name set and each regular member's bytes against captured payloads. No archive has been created or parsed by this reviewer; that future exporter check is distinct from later whole-byte transfer and any independent second tar parser."
+  ],
+  "original_inputs_personally_GET_and_hashed": {
+    "progress": {
+      "git_blob": "a5ac2d271aa2e0536936a31d54f9ab6cbcf69247",
+      "bytes": 88446,
+      "sha256": "dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56"
+    },
+    "final_source": {
+      "git_blob": "3544abb2b2edca18f198fbfb022fd9f05352a9db",
+      "bytes": 127,
+      "sha256": "20c8c294018a5157fd82011563cd61e2e6a4678b7e82627ebd7864cfd7c220ce"
+    },
+    "root_result_v3": {
+      "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+      "bytes": 34254,
+      "sha256": "e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211"
+    },
+    "ordinary_failure_proof_v2": {
+      "git_blob": "466119445e75b976b1e825124b5e8063e112394b",
+      "bytes": 30687,
+      "sha256": "0f881b882f8588c93deb6302ddab2d8d58b637430a06a5cea109331d170f3fe7"
+    },
+    "precision_note_v3": {
+      "git_blob": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c",
+      "bytes": 2481,
+      "sha256": "ea851ce1c284b5d95d0e8a2660f469793d127f0c61e0b4366012360e1d834ddf"
+    },
+    "native_request": {
+      "git_blob": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+      "bytes": 56726,
+      "sha256": "2dd94271c26baa2c8e2b1c5b95a1b496914e64d896f7c804c1a2d565845129d9"
+    },
+    "ordinary_summary": {
+      "git_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02",
+      "bytes": 1294,
+      "sha256": "b44b0557e56918c0c5685df81ce313ab786114d978ef0ddc86a77b5cf75f201b"
+    },
+    "root_summary": {
+      "git_blob": "7919c6b683512bce0c306da02fdf02fd88deecd9",
+      "bytes": 3326,
+      "sha256": "e2869b6a2f4b7e70ce25ed1ba96bdea48c00ba162b32da7ab197775a59b3c95d"
+    },
+    "pty_observations": {
+      "git_blob": "3cc2942ab039ede8c8d49ede91328a540f8bad1a",
+      "bytes": 72218,
+      "sha256": "1041e9132faac2ef102807e4a4abb798ff761bca8faf9a824b2d4effc6d4a830"
+    },
+    "progress_receipts": {
+      "git_blob": "07c41dcd68b077af20a33872226aaade95c401ac",
+      "bytes": 122480,
+      "sha256": "694701d5ad517dba783b5b1e31cc1d3fb338a993c33edf65356bb20b35afd2c7"
+    },
+    "custody_receipts": {
+      "git_blob": "dcf858f9ee50191bc1f2e489a1ce53da4f83c7fb",
+      "bytes": 20204,
+      "sha256": "ef5293020e6f2b7538b622269066110fa08b4b34d410c7d8c6a47cac19cd5cce"
+    },
+    "raw_pty_container": {
+      "git_blob": "16114a01cdb807f6bad34407524c72fd87978001",
+      "bytes": 24596,
+      "sha256": "93166229bd220b85d66fc8c52edea1f0cdc787e620184edeb341136ba9caa3cf"
+    }
+  },
+  "original_evidence_checks": {
+    "checks": {
+      "one_source": true,
+      "source_binding": true,
+      "progress_hard_sha": true,
+      "final_identity": true,
+      "native_request_value": true,
+      "current_RESULT_exact_text": true,
+      "current_failure_exact_text": true,
+      "correction_value": true,
+      "counts_match": true,
+      "cleanup_match": true,
+      "step_projection_fields_match": true,
+      "execution_records_match": true,
+      "references_match": true,
+      "tools_match": true,
+      "superseded_not_qualification": true
+    },
+    "unsafe_numbers": {
+      "root_result_v3": [],
+      "ordinary_failure_proof_v2": []
+    },
+    "exact_decimals": {
+      "ordinary": {
+        "raw_decimal": "1794467909046914025",
+        "current_result_string_preserved": true,
+        "summary": {
+          "git_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02",
+          "bytes": 1294,
+          "sha256": "b44b0557e56918c0c5685df81ce313ab786114d978ef0ddc86a77b5cf75f201b"
+        }
+      },
+      "root": {
+        "raw_decimal": "1794468147708128878",
+        "current_result_string_preserved": true,
+        "summary": {
+          "git_blob": "7919c6b683512bce0c306da02fdf02fd88deecd9",
+          "bytes": 3326,
+          "sha256": "e2869b6a2f4b7e70ce25ed1ba96bdea48c00ba162b32da7ab197775a59b3c95d"
+        }
+      }
+    },
+    "step_projection_note": "All41 retained step projections match their corresponding original fields; original command/cwd/launcher_pid remain in original progress, not duplicated in the summary projection.",
+    "pty_six_pages_complete": true,
+    "pty_zero_length_poll_sequences": [
+      5,
+      7,
+      9
+    ],
+    "native_source_fields": {
+      "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+      "work_root": "/home/qq/af52-learning-local-decision-20261111",
+      "work_name": "ordinary-5a2e937-seven-final-v6"
+    },
+    "complete_original_PTY_bytes": {
+      "bytes": 17881,
+      "sha256": "c5c4071758e29e60e8011db219fad87138ddff23d075a21741ded15de8a338e2",
+      "git_blob": "f7bea6e1d90700e25f610686591a392e36daa957",
+      "exact_text_bytes": true,
+      "terminal": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 17881,
+        "bytes_stored": 17881,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794465046780,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 3512701,
+        "pid": 3512730,
+        "state": "exited"
+      }
+    },
+    "six_PTY_pages": [
+      {
+        "sequence": 1,
+        "offset": 0,
+        "next_offset": 3139,
+        "bytes": 3139,
+        "sha256": "c154ab8901ddc8caec434ddaa56ac1436c23adcc7782f064ad79459138f55791"
+      },
+      {
+        "sequence": 2,
+        "offset": 3139,
+        "next_offset": 4354,
+        "bytes": 1215,
+        "sha256": "6afc22717f62ebc37d9fe13bf1402e539bc232da17bb5fcc66efbf0691c60e53"
+      },
+      {
+        "sequence": 3,
+        "offset": 4354,
+        "next_offset": 6421,
+        "bytes": 2067,
+        "sha256": "09efcd4f8bcd3b276098ce793db110146003daa4df27af233461ca7e980681e2"
+      },
+      {
+        "sequence": 8,
+        "offset": 6421,
+        "next_offset": 7697,
+        "bytes": 1276,
+        "sha256": "3dc00d202b40bee9177af13d35154c9411a9e0489acf31e606e1f1ea385ec5d8"
+      },
+      {
+        "sequence": 11,
+        "offset": 7697,
+        "next_offset": 11577,
+        "bytes": 3880,
+        "sha256": "52a594d32a36d11b32723347291dedc510fc36126d2f3409edbdab06bb3481e4"
+      },
+      {
+        "sequence": 13,
+        "offset": 11577,
+        "next_offset": 17881,
+        "bytes": 6304,
+        "sha256": "fa5ebd4659326d5bde64ab840c310596a56dfd350a586cf7a27d354dc5b107e1"
+      }
+    ],
+    "each_PTY_page_equal_to_full_original_byte_container": true,
+    "preserved_PTY_control_read_errors": [
+      4,
+      6,
+      10,
+      12
+    ],
+    "additional_three_stdout_batch_timeout_retained": true,
+    "actual_custody_files_rehashed": 8,
+    "actual_UID_eUID_GID_zero_records": 4,
+    "embedded_original_PTY_progress_and_custody_read_receipts_value_equal": true
+  },
+  "precision_and_normalization": [
+    "Current Root-derived RESULTv3 dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe and corrected ordinary-failure proofv2 466119445e75b976b1e825124b5e8063e112394b are each embedded as exact original UTF8 text, not reconstructed from parsed numbers.",
+    "Raw original summary decimals1794467909046914025 and1794468147708128878 were read as strings from the original UTF8. Current RESULT quotes those exact decimal strings, and ordinary proof retains the first exactly. A recursive scan found no unsafe integer Number values in current CONFIG or either current derived artifact.",
+    "RESULTv1 and RESULTv2, the earlier ordinary-failure projection and correction note are explicitly superseded by exact Git identities. Superseded RESULTv1 text remains exact; neither old projection is used as current native timestamp or qualification evidence.",
+    "Original records copied from disk remain raw byte payloads. Added requests/observations JSON envelopes are deliberately normalized by the unchanged exporter and are not claimed byte-identical to their separately pinned raw JSON files.",
+    "input_crosscheck.original_steps is a projection of41 original steps: all included fields match; original command/cwd/launcher_pid fields remain in the original progress file. An initial full-object equality check was narrowed to retained fields after confirming those deliberate omissions, with no discrepancy in any retained value."
+  ],
+  "outcome_preserved": {
+    "status": "failed-native-components",
+    "ordinary": {
+      "errors": 0,
+      "executed": 1944,
+      "failed": 1,
+      "passed": 1943,
+      "skipped": 0,
+      "total": 1944
+    },
+    "root": {
+      "errors": 0,
+      "executed": 17,
+      "failed": 2,
+      "passed": 15,
+      "skipped": 0,
+      "total": 17
+    },
+    "ordinary_exit": 100,
+    "root_exit": 100,
+    "ordinary_JUnit_collection_exit": 1,
+    "root_JUnit_collection_exit": 1,
+    "original_PTY_exit": 1,
+    "original_PTY_output_complete": true,
+    "original_PTY_capture_error": null,
+    "cleanup": [
+      {
+        "name": "unmount-witness-bind",
+        "status": "passed"
+      },
+      {
+        "name": "unmount-bind",
+        "status": "passed"
+      },
+      {
+        "name": "remove-owned-fixture",
+        "status": "passed"
+      },
+      {
+        "name": "record-ownership",
+        "status": "passed"
+      },
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ],
+    "cleanup_overrides_failures": false,
+    "source_clean_bound": true,
+    "actual_outer_operator_uid": 1000,
+    "helper_and_qa_results_not_inherited_by_next_source": true
+  },
+  "unchanged_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false
+  },
+  "review_limits": [
+    "Git reads and pure in-isolate byte/JSON/hash operations only; no h/PTY dispatch or read for this review, no Python/AST execution, no native/Cargo/checker/test, no branch/ref mutation.",
+    "The complete Root raw log is separately pinned and included by the original records walk; this bounded review did not separately GET that118773-byte raw log or its320500-byte read container again.",
+    "Full ordinary raw stdout and full-caller stdout were not independently downloaded by this review. Original progress/execution metadata and current Root-derived assessment bind them; the exporter will copy the original records.",
+    "No present host directory state, archive bytes/member count, export success or archive transfer completion is asserted.",
+    "V12 remains paused at checkpointbf70d3b18624f5e754a709d4908a42e4bf3fcb8c with all original read failures retained; this V13 review neither resumes nor changes that incomplete transfer."
+  ]
+}

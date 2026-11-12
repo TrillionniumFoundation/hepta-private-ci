@@ -1,0 +1,70 @@
+# V13: preserve the original failed V32 native records
+
+Status: complete request prepared for Root review; **not dispatched**. This is an original-record export, not a native test, repair or qualification rerun.
+
+## Exact source and outcome
+
+The only input attempt is `ordinary-5a2e937-seven-final-v6`, bound to commit `5a2e9371814e9ee0ec55781a81844ef03434874b` and tree `22d55a327460ab4a835387a4a61332dbece6866d`.
+
+The complete original progress is `a5ac2d271aa2e0536936a31d54f9ab6cbcf69247` (88,446 B; SHA256 `dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56`). Its exact status is `failed-native-components`.
+
+- Ordinary seven-package selection: 1,944 executed, 1,943 passed, 1 failed.
+- Original Root parent selection: 17 executed, 15 passed, 2 failed; selected JUnit skipped count is zero. The 1,367 nextest filter exclusions are not additional selected tests.
+- The four original QA groups recorded 221 / 5 / 5 / 5 passes. Full caller, its separate self-test, helper build, and helper pre/post verification have passed original execution records; this exporter will not execute any of them.
+- Both original ordinary and Root execution records failed, and both JUnit collection steps returned exit 1. Keep those failures and every error record.
+- All nine recorded cleanup entries passed. They do not override the failed tests.
+- Source identities after maintenance, before/after tests and final are the same exact clean source. The original reference and external-tool identities are unchanged.
+- The four actual Root UID records each show uid/euid/gid 0. The outer operator is uid 1000; the two roles are not conflated.
+- Ordinary complete chains, positive adoption, ordinary NoUpdate/rollback chains, independent consumer acceptance and real daemon-plus-Root OS restart acceptance remain zero/false.
+
+## Exact programs and invocation
+
+Use only the frozen request JSON `8c84a37d9e2d9fe9097f6dbdcecb952a2e32b29b` (SHA256 `154046a5d96d17cbb37c0cd7d930d9cc79e9cc9e847e4974614f7eb286762c7d`, 497732 B) after Root's review and authorization.
+
+The request's executable is `/usr/bin/python3`, host `ai395`, cwd `/home/qq/af52-learning-local-decision-20261111`, rows 24, cols 200. It has 24 argv entries:
+
+1. `-B` (preserve the prior bytecode suppression).
+2. `-c`.
+3. The unchanged 146-byte wrapper, Git `e6560092b622a84e24c20ca7fb8b2589b0233cc4`, SHA256 `869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d`.
+4. The unchanged 4,370-byte original exporter, Git `79494fe659157c453d4f0804cb01581eecce6052`, SHA256 `2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815`.
+5. The remaining 20 entries are the exact UTF-8 CONFIG in ordered chunks of at most 24,000 bytes. Joining them reproduces `508e62d7c5adbdda4ebf8f45e6eee22cbe4e779c` / 458483 B / SHA256 `ae8a444a916dae2cbaf56f7e1d9d185cbe42acee3d2a440184a70084ab0548c4`.
+
+Every argument is smaller than 128 KiB and contains no NUL. No shell is invoked. The old native request `ef0da4aaf894a87fedd2ab6771ae74bcc615c76f` is included only as JSON data. Its original full program and CONFIG argv are preserved, but there is no path in this exporter that executes that nested request.
+
+Stable, unused-by-this-agent idempotency key: `af52-ordinary-5a2e937-original-records-export-v13-20261112`. Root owns actual admission and dispatch. If a start result is unknown, reconcile that same identity; do not issue a new key or duplicate export.
+
+## Read and write scope
+
+Read the fixed clean anchor `/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/source` using the original read-only Git identity commands. Read the single terminal records directory:
+
+`/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records`
+
+Create only the new output directory:
+
+`/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112`
+
+The unchanged exporter refuses an existing output directory. It checks the terminal progress SHA and exact status/source fields, reads all regular single-link original records, binds their original size/SHA/Git identity and metadata, and rechecks their unchanged bytes plus the anchor. The sole unchanged exclusion is `helpers/bin/**`: helper executable custody remains bound by the complete original helper manifest and build/verification records. No other records, JUnit files, execution logs, source/tool inventories or cleanup records are omitted by this CONFIG.
+
+No source reset, deletion, permission change, credential change, network configuration, branch/ref/PR update, Cargo, just or native component execution is requested. The original safety bounds remain 32 MiB per original file and 128 MiB total payload. A refusal is retained as the exporter's failure output; it is not a reason to weaken a bound or clean/alter the input.
+
+The original exporter creates `original-records.tar.xz`, rereads every member and checks its bytes against the captured payloads, then writes its original `export.json` and 48,000-character base64 parts. This full member verification is part of the unchanged exporter. No completion is claimed before its actual terminal result.
+
+## Original bytes, normalized metadata and precision
+
+Original files copied from the records directory remain byte-for-byte originals, including the failing ordinary/Root executions, JUnit summaries/XML, progress and full Root log. The independently read Root log is 118,773 B, SHA256 `561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8`, raw Git identity `154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b`; its original fixed-version read container is `8093f7e43062e7a3c09f4e728f68f7ff3dd3864f`.
+
+The complete terminal PTY is 17,881 B, SHA256 `c5c4071758e29e60e8011db219fad87138ddff23d075a21741ded15de8a338e2`, exit 1, complete, capture_error null. Its original six page offsets/hashes have been independently verified through EOF. The four earlier read timeouts remain in the embedded original observations; they are control-plane failures, not native timeouts.
+
+The exporter intentionally reserializes added `requests/` and `observations/` JSON values using its original sorted/indented format. Those normalized envelopes are not claimed byte-identical to their separately pinned raw Git response/request objects. Exact raw PTY text and current/superseded RESULT JSON texts are stored as strings so their source bytes can be recovered exactly.
+
+Current Root-derived assessment is RESULT v3 `dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe` (34,254 B; SHA256 `e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211`). The corrected early ordinary-failure evidence is v2 `466119445e75b976b1e825124b5e8063e112394b` (30,687 B; SHA256 `0f881b882f8588c93deb6302ddab2d8d58b637430a06a5cea109331d170f3fe7`). Both are included as exact UTF-8 text. The latter retains its original earlier observation-stage context; only current RESULT v3 and original terminal progress determine the final attempt status.
+
+Unified precision note `5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c` retains the superseded RESULT v1 `5a9abca495743069217509ebd40efe4755742f29`, RESULT v2 `84d2037f63bc1f85351d9408d854742a9c1b5d1b`, earlier ordinary-failure projection `20d2fda7a8c87d7dcadb22503e5a7429aade73cd`, and earlier correction note `75c2d93557197bd5c9261f9f3cd469f10f11b46b` by exact byte/SHA/Git identities. RESULT v1 is also preserved as explicitly superseded exact text. None of these historical projections supplies current native timestamps or qualification assertions.
+
+Both original native summary byte identities and decimal nanosecond strings were independently rechecked: ordinary `1794467909046914025`, Root `1794468147708128878`. No native summary is rewritten. Current RESULT v3, corrected failure proof v2 and the executable CONFIG contain no unsafe integer Number values. Original JSON files copied from records are never parsed and reserialized as replacement originals.
+
+## Remaining reading and execution limits
+
+The eight-file custody receipt was independently checked for original EOF, byte length, SHA and Git identity. All four actual Root UID records, three original execution records, and the complete 1,994-byte helper manifest were retained. The extra three small stdout reads timed out; their contents are not invented. Ordinary full raw stdout and full-caller stdout are bound by original execution metadata and will be included by the exporter; they were not individually downloaded for this assessment.
+
+This preparation used Git reads and pure V8 byte/JSON/hash checks only. No Python/AST run, h/PTY operation, archive export, native execution, formatter, checker, transfer or independent tar parser was run by this task. After an authorized successful export, verify and preserve the original export result, all transfer part identities and complete archive byte/SHA/Git identity. Report the exporter's original member verification separately from any later independent second tar parse. Neither one changes the original failed native outcome or the zero business acceptance counters.

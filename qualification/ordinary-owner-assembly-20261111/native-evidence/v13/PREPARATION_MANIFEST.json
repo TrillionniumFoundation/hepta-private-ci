@@ -1,0 +1,662 @@
+{
+  "schema": "hepta-original-v32-terminal-record-export-preparation-v13",
+  "status": "frozen-for-Root-review-not-dispatched",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "artifacts": [
+    {
+      "name": "CONFIG.json",
+      "git_blob": "508e62d7c5adbdda4ebf8f45e6eee22cbe4e779c",
+      "bytes": 458483,
+      "sha256": "ae8a444a916dae2cbaf56f7e1d9d185cbe42acee3d2a440184a70084ab0548c4"
+    },
+    {
+      "name": "exact-request.json",
+      "git_blob": "8c84a37d9e2d9fe9097f6dbdcecb952a2e32b29b",
+      "bytes": 497732,
+      "sha256": "154046a5d96d17cbb37c0cd7d930d9cc79e9cc9e847e4974614f7eb286762c7d"
+    },
+    {
+      "name": "PLAN.md",
+      "git_blob": "a92a17191d8e7718b861edc717b250d29a80d017",
+      "bytes": 9065,
+      "sha256": "a6699ba4a62078c4ba2663b83ee03f59d80f22769ecc62b083b4a20ea12d1757"
+    }
+  ],
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "work_name": "ordinary-5a2e937-seven-final-v6",
+    "anchor": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/source",
+    "records": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records",
+    "progress": {
+      "key": "progress",
+      "git_blob": "a5ac2d271aa2e0536936a31d54f9ab6cbcf69247",
+      "bytes": 88446,
+      "sha256": "dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56"
+    },
+    "expected_terminal_status": "failed-native-components",
+    "final_identity": {
+      "key": "final_source",
+      "git_blob": "3544abb2b2edca18f198fbfb022fd9f05352a9db",
+      "bytes": 127,
+      "sha256": "20c8c294018a5157fd82011563cd61e2e6a4678b7e82627ebd7864cfd7c220ce"
+    },
+    "actual_final_identity": {
+      "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "status": "",
+      "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+    }
+  },
+  "outcome": {
+    "status": "failed-native-components",
+    "ordinary": {
+      "errors": 0,
+      "executed": 1944,
+      "failed": 1,
+      "passed": 1943,
+      "skipped": 0,
+      "total": 1944
+    },
+    "root": {
+      "errors": 0,
+      "executed": 17,
+      "failed": 2,
+      "passed": 15,
+      "skipped": 0,
+      "total": 17
+    },
+    "original_errors": [
+      "ordinary original JUnit collection failed",
+      "ordinary original test execution failed",
+      "root original JUnit collection failed",
+      "root original test execution failed"
+    ],
+    "cleanup": [
+      {
+        "name": "unmount-witness-bind",
+        "status": "passed"
+      },
+      {
+        "name": "unmount-bind",
+        "status": "passed"
+      },
+      {
+        "name": "remove-owned-fixture",
+        "status": "passed"
+      },
+      {
+        "name": "record-ownership",
+        "status": "passed"
+      },
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ],
+    "source_head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "source_clean": true
+  },
+  "acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "fixture_based_root_components": true,
+    "predecessor_results_used": false,
+    "known_failure_exemptions": false,
+    "next_source_inherits_no_PASS": true
+  },
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-5a2e937-original-records-export-v13-20261112",
+    "rows": 24,
+    "cols": 200,
+    "args_count": 24,
+    "config_chunk_count": 20,
+    "maximum_chunk_utf8_bytes": 24000,
+    "maximum_argument_utf8_bytes": 24000,
+    "all_arguments_below_128KiB": true,
+    "no_NUL": true,
+    "shell": false,
+    "bytecode_suppression": "-B",
+    "unused_key_by_preparing_agent": true,
+    "dispatch_authority": "Root only; this preparation has made no h/PTY request."
+  },
+  "unchanged_programs": {
+    "exporter": {
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "wrapper": {
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    },
+    "shape_reference_v12_request": "8ddc60db11826a1de79342c3caed547e7623f2e2",
+    "shape_reference_v12_config": "eac6f2aea94ad2e20a49f04c64e964c67f587338"
+  },
+  "nested_native_evidence": {
+    "pin": {
+      "git_blob": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+      "bytes": 56726,
+      "sha256": "2dd94271c26baa2c8e2b1c5b95a1b496914e64d896f7c804c1a2d565845129d9"
+    },
+    "representation": "Complete original JSON value retained as evidence only; original raw request has the separately pinned Git byte identity. Exporter normalizes added requests JSON but never executes this request.",
+    "native_config_matches_source": true
+  },
+  "config_chunks": [
+    {
+      "index": 0,
+      "offset": 0,
+      "end_exclusive": 24000,
+      "bytes": 24000,
+      "sha256": "02c880be2c6cc00dceadabdc750f1e22a8eb303698609bf69183d270508bd25d"
+    },
+    {
+      "index": 1,
+      "offset": 24000,
+      "end_exclusive": 48000,
+      "bytes": 24000,
+      "sha256": "2ea03cabe93e1f93cea9837412dd8ea8b2ae3b26917046970689360c6072b108"
+    },
+    {
+      "index": 2,
+      "offset": 48000,
+      "end_exclusive": 72000,
+      "bytes": 24000,
+      "sha256": "73006c87a1b0f1a8d26b5c175c0cfcfe8b1325028f35749d09d94653ef477e41"
+    },
+    {
+      "index": 3,
+      "offset": 72000,
+      "end_exclusive": 96000,
+      "bytes": 24000,
+      "sha256": "5ee690c63a0ffb33153eaaf0713a65fe5e18227bbd52d6127245a675812759b6"
+    },
+    {
+      "index": 4,
+      "offset": 96000,
+      "end_exclusive": 120000,
+      "bytes": 24000,
+      "sha256": "c63e3757463e5783c6882425f90d3322ff11bbe4117f617c9d25cb9a38d139a8"
+    },
+    {
+      "index": 5,
+      "offset": 120000,
+      "end_exclusive": 144000,
+      "bytes": 24000,
+      "sha256": "76743d01ad7c303b19d092534518080f87f084fda72057f33b5efed929e50f8d"
+    },
+    {
+      "index": 6,
+      "offset": 144000,
+      "end_exclusive": 168000,
+      "bytes": 24000,
+      "sha256": "47e010a39efccfbc506f6c28a699c7abc05abc53ba49f7e51c0246accfcc2698"
+    },
+    {
+      "index": 7,
+      "offset": 168000,
+      "end_exclusive": 192000,
+      "bytes": 24000,
+      "sha256": "8b49d1b0ba376bae744f602fb77b024d17cd3ec70f3942f13ba48b3ab7383ae4"
+    },
+    {
+      "index": 8,
+      "offset": 192000,
+      "end_exclusive": 216000,
+      "bytes": 24000,
+      "sha256": "273dffc9f8c6fe21529a36adc9696d1ac59840d583b6a3c2317c1c204e2f8346"
+    },
+    {
+      "index": 9,
+      "offset": 216000,
+      "end_exclusive": 240000,
+      "bytes": 24000,
+      "sha256": "d159f85a6a457ae22583674a0c303aa98ef7d17a816211ba8658a5e0d78be57d"
+    },
+    {
+      "index": 10,
+      "offset": 240000,
+      "end_exclusive": 264000,
+      "bytes": 24000,
+      "sha256": "5974b6c340476efb3c53f9be68daf04b9a5fe28fad4d711f8a5181fc81c5295b"
+    },
+    {
+      "index": 11,
+      "offset": 264000,
+      "end_exclusive": 288000,
+      "bytes": 24000,
+      "sha256": "cdc55bd572831ac597e5448d62f65789d6e84520de65bc8da97ddee1f11f0602"
+    },
+    {
+      "index": 12,
+      "offset": 288000,
+      "end_exclusive": 312000,
+      "bytes": 24000,
+      "sha256": "2727f797317e297ce9520b9ef28823066dd6693d63c99b5302e5cb4988299a0b"
+    },
+    {
+      "index": 13,
+      "offset": 312000,
+      "end_exclusive": 336000,
+      "bytes": 24000,
+      "sha256": "089857b8b06497abe76246b9c2b3a729f8a145aaf015c97fb64169381b9b8eaf"
+    },
+    {
+      "index": 14,
+      "offset": 336000,
+      "end_exclusive": 360000,
+      "bytes": 24000,
+      "sha256": "3ae174ea916b408c7d103bfc252f25989710f0e34ab891013dc384610c782246"
+    },
+    {
+      "index": 15,
+      "offset": 360000,
+      "end_exclusive": 384000,
+      "bytes": 24000,
+      "sha256": "24198d576cb06a705ca70ce7c06fbc45c319deb8ebdaf7426c4dc81511856f41"
+    },
+    {
+      "index": 16,
+      "offset": 384000,
+      "end_exclusive": 408000,
+      "bytes": 24000,
+      "sha256": "8b9cd3f3a66962f9a06acb2326fb8d17c37901e89cd7f6f33b42c79cf8ffc94b"
+    },
+    {
+      "index": 17,
+      "offset": 408000,
+      "end_exclusive": 432000,
+      "bytes": 24000,
+      "sha256": "bc035ebdc5310d8f9005a91e388dbc8d0b3d94cf33840d8ed58d3099edcb9311"
+    },
+    {
+      "index": 18,
+      "offset": 432000,
+      "end_exclusive": 456000,
+      "bytes": 24000,
+      "sha256": "726182c1ca3902cde18ef8820741634ca0d6c23564bb7d20825048ae7a12fb1b"
+    },
+    {
+      "index": 19,
+      "offset": 456000,
+      "end_exclusive": 458483,
+      "bytes": 2483,
+      "sha256": "4aff6c1088cf992546ac7daa95d8e353348e2ff6aade3332a0f4db0c237bc007"
+    }
+  ],
+  "input_pins": [
+    {
+      "name": "progress",
+      "key": "progress",
+      "git_blob": "a5ac2d271aa2e0536936a31d54f9ab6cbcf69247",
+      "bytes": 88446,
+      "sha256": "dd663fb0d9eb2bb0beb526cb0c46d6ef684b0278b57dadb432b18a8880179e56"
+    },
+    {
+      "name": "final_source",
+      "key": "final_source",
+      "git_blob": "3544abb2b2edca18f198fbfb022fd9f05352a9db",
+      "bytes": 127,
+      "sha256": "20c8c294018a5157fd82011563cd61e2e6a4678b7e82627ebd7864cfd7c220ce"
+    },
+    {
+      "name": "raw_terminal_container",
+      "key": "raw_terminal_container",
+      "git_blob": "16114a01cdb807f6bad34407524c72fd87978001",
+      "bytes": 24596,
+      "sha256": "93166229bd220b85d66fc8c52edea1f0cdc787e620184edeb341136ba9caa3cf"
+    },
+    {
+      "name": "pty_observations",
+      "key": "pty_observations",
+      "git_blob": "3cc2942ab039ede8c8d49ede91328a540f8bad1a",
+      "bytes": 72218,
+      "sha256": "1041e9132faac2ef102807e4a4abb798ff761bca8faf9a824b2d4effc6d4a830"
+    },
+    {
+      "name": "progress_read_receipts",
+      "key": "progress_read_receipts",
+      "git_blob": "07c41dcd68b077af20a33872226aaade95c401ac",
+      "bytes": 122480,
+      "sha256": "694701d5ad517dba783b5b1e31cc1d3fb338a993c33edf65356bb20b35afd2c7"
+    },
+    {
+      "name": "custody_read_receipt",
+      "key": "custody_read_receipt",
+      "git_blob": "dcf858f9ee50191bc1f2e489a1ce53da4f83c7fb",
+      "bytes": 20204,
+      "sha256": "ef5293020e6f2b7538b622269066110fa08b4b34d410c7d8c6a47cac19cd5cce"
+    },
+    {
+      "name": "root_result_v3",
+      "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+      "bytes": 34254,
+      "sha256": "e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211"
+    },
+    {
+      "name": "ordinary_failure_proof_v2",
+      "git_blob": "466119445e75b976b1e825124b5e8063e112394b",
+      "bytes": 30687,
+      "sha256": "0f881b882f8588c93deb6302ddab2d8d58b637430a06a5cea109331d170f3fe7"
+    },
+    {
+      "name": "precision_note_v3",
+      "git_blob": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c",
+      "bytes": 2481,
+      "sha256": "ea851ce1c284b5d95d0e8a2660f469793d127f0c61e0b4366012360e1d834ddf"
+    }
+  ],
+  "raw_evidence": {
+    "terminal": {
+      "bytes": 17881,
+      "sha256": "c5c4071758e29e60e8011db219fad87138ddff23d075a21741ded15de8a338e2",
+      "git_blob": "f7bea6e1d90700e25f610686591a392e36daa957"
+    },
+    "terminal_pages": [
+      {
+        "offset": 0,
+        "next_offset": 3139,
+        "bytes": 3139,
+        "sha256": "c154ab8901ddc8caec434ddaa56ac1436c23adcc7782f064ad79459138f55791"
+      },
+      {
+        "offset": 3139,
+        "next_offset": 4354,
+        "bytes": 1215,
+        "sha256": "6afc22717f62ebc37d9fe13bf1402e539bc232da17bb5fcc66efbf0691c60e53"
+      },
+      {
+        "offset": 4354,
+        "next_offset": 6421,
+        "bytes": 2067,
+        "sha256": "09efcd4f8bcd3b276098ce793db110146003daa4df27af233461ca7e980681e2"
+      },
+      {
+        "offset": 6421,
+        "next_offset": 7697,
+        "bytes": 1276,
+        "sha256": "3dc00d202b40bee9177af13d35154c9411a9e0489acf31e606e1f1ea385ec5d8"
+      },
+      {
+        "offset": 7697,
+        "next_offset": 11577,
+        "bytes": 3880,
+        "sha256": "52a594d32a36d11b32723347291dedc510fc36126d2f3409edbdab06bb3481e4"
+      },
+      {
+        "offset": 11577,
+        "next_offset": 17881,
+        "bytes": 6304,
+        "sha256": "fa5ebd4659326d5bde64ab840c310596a56dfd350a586cf7a27d354dc5b107e1"
+      }
+    ],
+    "terminal_observation_pin": {
+      "key": "pty_observations",
+      "git_blob": "3cc2942ab039ede8c8d49ede91328a540f8bad1a",
+      "bytes": 72218,
+      "sha256": "1041e9132faac2ef102807e4a4abb798ff761bca8faf9a824b2d4effc6d4a830"
+    },
+    "root_log": {
+      "container": {
+        "git_blob": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f",
+        "bytes": 320500,
+        "sha256": "06580387d9752d01f43b67d96192598300db27fab55d191bfecb865e3ec8b4cc"
+      },
+      "raw": {
+        "git_blob": "154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b",
+        "bytes": 118773,
+        "sha256": "561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8"
+      },
+      "archive_source": "Original complete records file is copied byte for byte; the full separately pinned read container is not reserialized as replacement original log."
+    },
+    "custody_byte_checks": [
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-toolchain.uid.json",
+        "bytes": 47,
+        "sha256": "30a5bc91446ad6408c3a1feebd35a726f1f0b4fb6cbd9e58fc5abad6c6390d45",
+        "git_blob": "5ce4c4d6d3834b4abe4ab540f52f6c68cf62de2d",
+        "version": "66306:75282836:47:1794467909324065150:1794468148357105028",
+        "eof": true,
+        "observed": {
+          "uid": 0,
+          "euid": 0,
+          "gid": 0,
+          "pid": 3943490
+        }
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-cargo-metadata.uid.json",
+        "bytes": 47,
+        "sha256": "9f4a7cea11d3d0af0ae288dc633131b42833a627c704fc3b3914c0711878ca04",
+        "git_blob": "b11660d50621f5b0b25b88e20ac0e4cb143ba2f6",
+        "version": "66306:75282843:47:1794467909525616291:1794468148357105028",
+        "eof": true,
+        "observed": {
+          "uid": 0,
+          "euid": 0,
+          "gid": 0,
+          "pid": 3943604
+        }
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-binary-list.uid.json",
+        "bytes": 47,
+        "sha256": "d070093477281438af4f5f4b850327e78a2694b75c2697073ee13345d6fa52ed",
+        "git_blob": "4f31ead2c392d6947d73360df3d59a51714a388e",
+        "version": "66306:75282852:47:1794467909784169958:1794468148357105028",
+        "eof": true,
+        "observed": {
+          "uid": 0,
+          "euid": 0,
+          "gid": 0,
+          "pid": 3943720
+        }
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root.uid.json",
+        "bytes": 47,
+        "sha256": "66b48e461f10836e4ba7e05e786d2c612f2b566a7c606a41c564677ebfd4eddc",
+        "git_blob": "b4ba883be3e5371caad10370e2b07060bed648b5",
+        "version": "66306:75282865:47:1794468114434791826:1794468148357105028",
+        "eof": true,
+        "observed": {
+          "uid": 0,
+          "euid": 0,
+          "gid": 0,
+          "pid": 3949905
+        }
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-toolchain.execution.json",
+        "bytes": 1436,
+        "sha256": "41278908564b9da53af52278a996f7d816f0e5bae5738695352505eba78e42b4",
+        "git_blob": "be562b03700b195abbaa50bb215e1cbdaa45bcdd",
+        "version": "66306:75282839:1436:1794467909389902376:1794468148357105028",
+        "eof": true
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-cargo-metadata.execution.json",
+        "bytes": 1506,
+        "sha256": "a5a26212b3e724354da7d8efe4ec2434c102e6344c85badc5476af6018462973",
+        "git_blob": "b6e13945a8ac53605c7cd68cd181ed1dfcd0cc41",
+        "version": "66306:75282846:1506:1794467909643051988:1794468148357105028",
+        "eof": true
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/root-binary-list.execution.json",
+        "bytes": 3985,
+        "sha256": "c46911f7fa6ca261a70e0cae714105e539c34c083248a29a0d181b67869c2606",
+        "git_blob": "b301bc281216a6c71028e84a4a60e6687ee54551",
+        "version": "66306:75282855:3985:1794468114110171264:1794468148357105028",
+        "eof": true
+      },
+      {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-seven-final-v6/records/helpers/manifest.json",
+        "bytes": 1994,
+        "sha256": "5679e12faba01b65f4d5aae3b488e67e353db9b1bf27451172ce686e29395d9b",
+        "git_blob": "0d9eda8aa3c0a7ab01b307e6f50fa2ae786da598",
+        "version": "66306:75544947:1994:1794467379877291236:1794468148357105028",
+        "eof": true
+      }
+    ]
+  },
+  "precision": {
+    "current_result": {
+      "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+      "bytes": 34254,
+      "sha256": "e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211"
+    },
+    "current_ordinary_failure": {
+      "git_blob": "466119445e75b976b1e825124b5e8063e112394b",
+      "bytes": 30687,
+      "sha256": "0f881b882f8588c93deb6302ddab2d8d58b637430a06a5cea109331d170f3fe7"
+    },
+    "unified_correction": {
+      "git_blob": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c",
+      "bytes": 2481,
+      "sha256": "ea851ce1c284b5d95d0e8a2660f469793d127f0c61e0b4366012360e1d834ddf"
+    },
+    "superseded": {
+      "result_v1": {
+        "filename": "RESULT.json",
+        "git_blob": "5a9abca495743069217509ebd40efe4755742f29",
+        "bytes": 34894,
+        "sha256": "ab0d7da2290c8afac55b700c4a49c5c08534d5d44ff5e93466ee4e24cdb833b0"
+      },
+      "result_v2": {
+        "filename": "RESULT.json",
+        "git_blob": "84d2037f63bc1f85351d9408d854742a9c1b5d1b",
+        "bytes": 32828,
+        "sha256": "b24edd5af8cd4f9fd77f0903ad76a3299387c348e2feda4ef23c3d3f59deb9d6"
+      },
+      "ordinary_failure_v1": {
+        "filename": "ORIGINAL_ORDINARY_FAILURE.json",
+        "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd",
+        "bytes": 29434,
+        "sha256": "6cab55c3edfa4d7e79137ad47c71ee42f34a038385aff872b8413601c0e90f0d"
+      },
+      "earlier_correction_note": {
+        "filename": "RESULT_PRECISION_CORRECTION.json",
+        "git_blob": "75c2d93557197bd5c9261f9f3cd469f10f11b46b",
+        "bytes": 2346,
+        "sha256": "41a19bce5f70db7ba6512e4ce6cd57e24ec8883dd32ce191be7fae240a1a4a24"
+      }
+    },
+    "original_summary_checks": [
+      {
+        "name": "ordinary",
+        "pin": {
+          "filename": "ordinary.junit.summary.json",
+          "git_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02",
+          "bytes": 1294,
+          "sha256": "b44b0557e56918c0c5685df81ce313ab786114d978ef0ddc86a77b5cf75f201b"
+        },
+        "raw_decimal": "1794467909046914025",
+        "v2_decimal": "1794467909046914025",
+        "exact": true
+      },
+      {
+        "name": "root",
+        "pin": {
+          "filename": "root.junit.summary.json",
+          "git_blob": "7919c6b683512bce0c306da02fdf02fd88deecd9",
+          "bytes": 3326,
+          "sha256": "e2869b6a2f4b7e70ce25ed1ba96bdea48c00ba162b32da7ab197775a59b3c95d"
+        },
+        "raw_decimal": "1794468147708128878",
+        "v2_decimal": "1794468147708128878",
+        "exact": true
+      }
+    ],
+    "unsafe_integer_number_paths": [],
+    "raw_derived_texts_preserved": true,
+    "original_records_are_not_replaced_by_normalized_projections": true,
+    "status_counts_source_cleanup_unchanged": true
+  },
+  "validation": {
+    "program_bytes_hashes_match": true,
+    "config_join_exact": true,
+    "native_request_JSON_value_exact": true,
+    "source_progress_status_and_clean_identity_bound": true,
+    "current_corrected_derived_artifacts_safe": true,
+    "all_original_input_text_hashes_verified_on_GET": true,
+    "terminal_page_ranges_contiguous_and_complete": true,
+    "terminal_page_and_whole_sha_verified": true,
+    "custody_eight_files_eof_len_sha_git_verified": true,
+    "current_config_and_request_under_repository_512000_byte_limit": true
+  },
+  "export_scope": {
+    "new_output": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112",
+    "source_count": 1,
+    "input_is_terminal": true,
+    "write_existing_source": false,
+    "reset_source": false,
+    "change_permissions_or_credentials": false,
+    "change_refs_PR_or_CI": false,
+    "run_native_or_Cargo_or_just": false,
+    "original_32MiB_per_file_and_128MiB_total_limits_unchanged": true,
+    "sole_original_exclusion": "helpers/bin/** (executable bound by original custody manifest/build/verification records)",
+    "new_output_must_not_exist": true,
+    "original_exporter_verifies_every_tar_member_if_it_completes": true
+  },
+  "reading_limits": {
+    "ordinary_log": "Exact failing tail independently read and verified; full raw log bound by original execution/JUnit records, not individually downloaded in this assessment.",
+    "caller_log": "Original passed execution record fully read; raw stdout bound by its original digest, not individually downloaded here.",
+    "toolchain_and_helper_stdout": "The extra small-log read timed out. UID records, execution records, and helper manifest were successfully read and byte-verified. No stdout contents are invented.",
+    "archive": "Full original-record export is pending a separately frozen V13 export request; no archive completion is claimed here."
+  },
+  "execution_limits": {
+    "Git_reads_and_pure_V8_hash_JSON_checks_only": true,
+    "Python_or_AST_run": false,
+    "h_or_PTY": false,
+    "archive_created": false,
+    "native_test_rerun": false,
+    "formatter_or_checker": false,
+    "archive_transfer": false,
+    "independent_second_tar_parse": false,
+    "branch_or_PR_write": false
+  },
+  "history": {
+    "unissued_result_v2_memory_draft": {
+      "config": {
+        "git_blob": "ceaf034d99fb76c48fce255e8868a19c1ce299b7",
+        "bytes": 423636,
+        "sha256": "a345f0c2e704ef4c0888e69f1db4b804b096dc797e67cc6eebb9628a98626173"
+      },
+      "request": {
+        "git_blob": "694f73d96036b02f1c05e85d29a6476db7c2cf22",
+        "bytes": 461030,
+        "sha256": "a84405d31fab4db05e6b4ff11a6dc2198040cdb11db27cad32b3e1d42056009e"
+      },
+      "note": "Memory-only preparation; not uploaded, not dispatched, not a current request. Final request uses corrected RESULT v3."
+    },
+    "preterminal_preparation": {
+      "plan": "6e03853f8dde042356084f7db74a63451bae43a0",
+      "preparation": "5e6442933115188fc62324ee456c32ff27565f6e",
+      "status": "historical not executable"
+    }
+  }
+}

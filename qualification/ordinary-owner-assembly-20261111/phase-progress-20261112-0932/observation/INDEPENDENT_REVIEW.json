@@ -1,0 +1,295 @@
+{
+  "schema": "hepta.independent-original-observation-stream-until-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "/root/hepta_audit",
+  "status": "no-confirmed-static-blocker-in-isolated-constructor-cut-unqualified",
+  "delivery": {
+    "git_blob": "c10b5264ce2cfd57ae82166b6527585cc3111146",
+    "bytes": 12554,
+    "sha256": "0842e0115f80e3c18ba0f901350692f5504cfb2dbe6287c68e1087a124177d89"
+  },
+  "exact_operations": {
+    "git_blob": "3ac77eb43d0e80e6112c7c5577744e5ddb56f3df",
+    "bytes": 18823,
+    "sha256": "46f9674051ec7759fca63bf2bc20eb8d760071d9472697bb49f6e8ea8c4c140a"
+  },
+  "fixed_source_base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "actual_product_preimage": "9d3d24bd5104be99372c8a55859360e792120605",
+    "actual_original_tests": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+    "same_as_previously_pinned_3c5_product": true,
+    "new_test_absence_at_d973_confirmed": true
+  },
+  "prerequisites": {
+    "foundation_review": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33",
+    "frontier_review": "0345ba4c362f4ecf3097fed52c9b0a2ae84b9e02",
+    "grant_review": "b650b7df9b25cc0f50b906601d671d4aa106ef78",
+    "core_draft_review": "84ef12e62b83dee5848315adef97560f49c6bbdb"
+  },
+  "independent_integrity": {
+    "base_reads": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+        "git_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+        "bytes": 9788,
+        "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+        "git_blob": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+        "bytes": 8738,
+        "sha256": "19a771fb858202cf9e0af31ea01230e877f30cec2afd4c9931d939f32e2913e4",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_writer_proof.rs",
+        "git_blob": "24a680da8a485dfe7668732b54f15d18015abefd",
+        "bytes": 7542,
+        "sha256": "539de4414a3463a1a2ab0b070818b56a08b26dad79d44c74de49e3d6e138117f",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      }
+    ],
+    "new_test_absence": {
+      "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "actual_lookup": "GitHub 404 NOT_FOUND"
+    },
+    "full_postimage_gets_and_hashes": true,
+    "replay": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+        "pre_git": "9d3d24bd5104be99372c8a55859360e792120605",
+        "post_git": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c",
+        "bytes": 13169,
+        "sha256": "971216ee16d408873f4aa9acfceb79b748eb6acc807e825e5d1bf9bb4d112864",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+        "pre_git": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+        "post_git": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e",
+        "bytes": 8807,
+        "sha256": "488c5338ed7ca4aa8c55321f1a59e2c1160ab630fea8f93c7053aaca8442a9d4",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+        "pre_git": null,
+        "post_git": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+        "bytes": 4676,
+        "sha256": "2d8bab1e48de976fb0326c9e89236f7386d07cc9719540fde63d5521e79dd4ae",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "pre_git": "37ea232602494310f405cac3c612c22314fc01a3",
+        "post_git": "ffa8a49d2c2d086c00f4945d25d66cac0cd5f523",
+        "bytes": 686817,
+        "sha256": "5c4273335c4c185d5473f18d6e079244aa1dacc8c63edc81658c06ff37bb64c6",
+        "ops": 3,
+        "forward_equal": true,
+        "reverse_equal": true
+      }
+    ],
+    "equivalence": {
+      "old_public_body_exact": true,
+      "old_private_body_exact": true,
+      "old_struct_fields_prefix_exact": true,
+      "whole_original_source_restored_by_single_reversed_insertion": true,
+      "root_lifetime_read_io_suffix_exact": true,
+      "new_private_derived_by_five_unique_substitutions": true,
+      "old_tests_complete_prefix_exact": true
+    },
+    "five_explicit_private_derivation": {
+      "replacements": [
+        [
+          "fn from_stream_for_uid(",
+          "fn from_stream_for_uid_until("
+        ],
+        [
+          "lifetime: Duration,",
+          "end: Instant,"
+        ],
+        [
+          ") -> Result<Self, AgentdRootAuthorityError> {\n        if peer.pid == 0",
+          ") -> Result<Self, AgentdRootAuthorityError> {\n        let lifetime = end\n            .checked_duration_since(Instant::now())\n            .ok_or(AgentdRootAuthorityError::Refused)?;\n        if peer.pid == 0"
+        ],
+        [
+          "check_lifetime(root.get_ref())?;\n        Ok(Self {",
+          "check_lifetime(root.get_ref())?;\n        if Instant::now() >= end {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        Ok(Self {"
+        ],
+        [
+          "end: Instant::now() + lifetime,",
+          "end,"
+        ]
+      ]
+    }
+  },
+  "findings": [
+    {
+      "subject": "Old production behavior retained",
+      "conclusion": "仅插入两个 constructor，反向移除后全原 9788 B 产品源恢复。原 struct、两原 constructor、root_lifetime、read 的 semaphore/唯一slot take/取消/期限/parse/restore、framed_exchange、bounded_text 和实际 pidfd check_lifetime 后缀逐字相等。旧 6 个测试完整前缀保留。",
+      "original_checks": "原 read 在同一个 permit 下取走 stream，actual pidfd+原 deadline 检查后异步 framed I/O，再 actual pidfd、parse、deadline 后验，最后才恢复原 stream；取消或未知错误保留空 slot。新入口没有重写这一原错误/不重开合同。"
+    },
+    {
+      "subject": "Absolute Instant reaches transport",
+      "conclusion": "新 crate-private UID0入口将 supplied end 传给私有 helper；remaining 仅作原 lifetime 零值/300秒 bounds校验，最终 Self.end 直接是 supplied end，没有 now+remaining 重算。pidfd kind/fdinfo/boot/start、SO_PEERCRED、实际 liveness、nonblocking+Tokio registration与 AsyncFd 独占保管均按原验证顺序。",
+      "postcheck": "原最后 check_lifetime 后新增实际 Instant::now() >= end 拒绝，跨过 end 的 constructor 不返回 live stream；原 read 从 self.end 算每次 min deadline 并在完整 parse 后再次检查。因此相对 helper 不会因稍后 bootstrap 构造而续期。",
+      "bounded_scope": "仅证明该 constructor保留所给本进程 Instant。它未证明 supplied end 的可信起源；实际 receiver 必须从最早原接收点抓取并与 sealed/LiveRoot BOOTTIME 各自收窄。进程间 Instant 不当可序列化授权，500ms观察freshness未更改。"
+    },
+    {
+      "subject": "Actual identity and ownership",
+      "conclusion": "RootObservationStream 原已是 pub(crate) 类型，原 root_authority 模块调用结构不靠新公开字段；新 helper私有，固定入口 UID0。原 held pidfd 的真实 fdinfo PID、原 boot_id/start ticks与 actual socket peer都保留；原 lifetime Arc 只暴露 pidfd observation句柄，不产生签名/lease/scope。",
+      "limits": "构造仍须已有 I/O-enabled Tokio runtime，与原 constructor相同；没有新增 runtime/background task。新路径只有原 bootstrap procfs和peer/pidfd操作，没有额外 observation request/refresh/grant/claim。"
+    },
+    {
+      "subject": "Error and cancel semantics",
+      "conclusion": "缺失/零/过长/已过期构造窗口及原身份不匹配沿 Refused；构造末尾实际到期用 Unavailable。旧 read 的不确定/超时/取消仍使 slot为空，不能接收晚到回复后重新恢复。静态查 error类型实际 derive Eq/PartialEq/Debug，新增精确断言与原返回分支一致。",
+      "remaining_work": "本切片不关闭其他 phase lanes，不能把该 stream局部空槽当共同 terminal gate。runtime 的新 phase receiver/session须持同 gate并在构造/ACK前后实际 live+双域期限后验；完整控制器还未在此交付。"
+    }
+  ],
+  "metadata": {
+    "boundary_before": 509,
+    "boundary_after": 510,
+    "changed_old": [],
+    "new_ids": [
+      "root_original_observation_stream_until"
+    ],
+    "protected_before": 370,
+    "protected_after": 370,
+    "protected_changed": [
+      {
+        "index": 169,
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+        "post_path": "codex-rs/hepta-agentd/src/root_observation_stream.rs"
+      }
+    ],
+    "required_exact": true,
+    "old_required_order_prefix_exact": true,
+    "all_old_509_boundary_tables_exact": true,
+    "existing_protected_change": "唯一第 169 个索引保护块是原 root_observation_stream.rs；删去两条新增函数规则后整个原块逐字相等。原 required/forbidden、原 constructor/read/framing顺序未改，370保护块总数不变。",
+    "actual_callers": "新 root_original_observation_stream_until boundary 暂外部caller空集；没有把 runtime计划文件列成已存在调用。原 explicit-UID方法边界不变。",
+    "new_function_navigation": [
+      {
+        "function": "fn from_stream_until(",
+        "sequence_length": 2,
+        "positions": [
+          0,
+          225
+        ],
+        "literal_calls": [],
+        "body_includes_header": true
+      },
+      {
+        "function": "fn from_stream_for_uid_until(",
+        "sequence_length": 45,
+        "positions": [
+          251,
+          282,
+          334,
+          389,
+          418,
+          460,
+          505,
+          538,
+          590,
+          624,
+          682,
+          760,
+          795,
+          883,
+          886,
+          1055,
+          1084,
+          1122,
+          1155,
+          1203,
+          1254,
+          1319,
+          1369,
+          1425,
+          1486,
+          1550,
+          1584,
+          1638,
+          1703,
+          1741,
+          1814,
+          1899,
+          1952,
+          1987,
+          2080,
+          2394,
+          2549,
+          2590,
+          2629,
+          2698,
+          2720,
+          2774,
+          2820,
+          2854,
+          2875
+        ],
+        "literal_calls": [
+          {
+            "marker": "Path::new(\"anon_inode:[pidfd]\")",
+            "count": 1,
+            "supported_shape": true
+          },
+          {
+            "marker": ".strip_prefix(\"Pid:\")",
+            "count": 1,
+            "supported_shape": true
+          },
+          {
+            "marker": ".rsplit_once(\") \")",
+            "count": 1,
+            "supported_shape": true
+          }
+        ],
+        "body_includes_header": true
+      }
+    ],
+    "checker_rule_scope": "亲读原 _verify_function_order：actual function body包含 fn header，sequence至少两项；三个 literal_calls皆是原支持的单string参数 call形状，在对应实际函数仅一处且处于真实代码。通过字符串/源码导航检查的具体范围如上；没有执行原mask/parser/checker或完整typed index。",
+    "counts_note": "509→510 required/boundary集合和原 required顺序前缀相等，370→370。最终 allowlist摘要待 Root以合并完整bytes更新；本审不修改 checker/上限/例外。"
+  },
+  "component_tests": {
+    "original_tests": 6,
+    "new_tests": 4,
+    "executed": 0,
+    "new_root_parents": 0,
+    "post_blob": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+    "source_facts": [
+      "沿原 identity_for/pidfd_for/read_request/reply helpers，实际 same-UID socketpair 与 held self pidfd。",
+      "两次实际原帧请求、JSON u64回复，end精确保留。",
+      "既定end之后读返回原Unavailable且对端EOF，第二次仍Unavailable，未发新帧。",
+      "读到一次请求后服务端shutdown Write，返回Unavailable并关闭；第二次不重发。",
+      "条件实际非Root public UID0拒绝；错PID/boot/start、非pidfd、zero/501ms timeout、expired/over300s end准确拒绝。"
+    ],
+    "types_and_waits": "显式 pretty_assertions::assert_eq消除 glob歧义；原 Read/Write/OwnedFd/Instant/helpers签名可达。Async构造在 #[tokio::test] 中，阻塞server在独立std线程；原请求helper2秒read bound和新EOF5秒bound存在。没有确认新helper/lifetime/类型阻断；未编译。",
+    "qualification": "数字42仅传输解析测试，不是Root已验证observation、真实grant、业务Outcome或同session phase效果。新测试没有硬性短调度上界断言；不代表实际运行通过。"
+  },
+  "exclusions": {
+    "h_calls": 0,
+    "pty_calls": 0,
+    "native": 0,
+    "cargo": 0,
+    "formatter": 0,
+    "checker": 0,
+    "ref_mutations": 0,
+    "business_counts": "0/0/0 unchanged",
+    "no_full_phase_or_cold_restart_claim": true,
+    "no_roles_keys_or_authority_created": true,
+    "no_qualification_inheritance": true,
+    "no_permission_or_budget_change": true
+  },
+  "conclusion": "固定 c10b526/3ac77e/bfece0/ffa8候选在这次完整局部源码与metadata静审中无已确认新阻断。可交Root整合评估，但仍是未编译、未执行、actual phase caller尚未生成的基础constructor切片；其余 core Initial握手/source join/共同关闭装配阻断仍按84ef12保持。"
+}

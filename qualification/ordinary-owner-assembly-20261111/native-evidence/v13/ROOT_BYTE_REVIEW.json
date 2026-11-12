@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.original-native-v13-root-byte-review.v1",
+  "reviewer": "/root",
+  "status": "Root independently verified full transfer and server upload Git identity",
+  "archive": {
+    "git_blob": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+    "bytes": 1483428,
+    "sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c"
+  },
+  "checks": {
+    "parts": 42,
+    "ascii_characters": 1977904,
+    "bytes": 1483428,
+    "sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c",
+    "git_blob": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+    "read_attempts": 29,
+    "successful_responses": 22,
+    "failed_responses": 7,
+    "all_failures_MCP_timeout": true,
+    "all_original_paths_exact": true,
+    "per_file_eof_versions_size_sha_verified": true,
+    "prior36_prefix_independently_recomputed": true,
+    "all_original_metadata_values_match": true,
+    "atomic_cross_file_snapshot_claimed": false,
+    "independent_second_tar_parse": false
+  },
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "original_metadata_equals_original_terminal": true,
+  "old8_prefix_verified": {
+    "parts": 8,
+    "ascii": 384000,
+    "bytes": 288000,
+    "sha256": "219b941f55fd8e71dedf405145f8f46c3d5fc70d5588c2afddf370b127507e4b",
+    "read_attempts": 9,
+    "failures": 4,
+    "whole_archive_verified": false
+  },
+  "handoff36_prefix_verified": {
+    "parts": 36,
+    "bytes": 1296000,
+    "sha256": "b5909289e5a92781e67e0aba2c11092ffc4a0ae704d09ba5cd39557805ea187b"
+  },
+  "total_receipt_packets": 24,
+  "all_packets_fetched_and_digest_verified": true,
+  "final_root_packets_create_get_exact": true,
+  "binary_upload_server_git": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+  "qualification_result": "Historical V32 source failed: ordinary1943/1; Root15/2; original236QA/fullcaller passed. Transfer completeness does not change the execution.",
+  "qualification_result_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+  "scope_limit": [
+    "The complete archive is reconstructed from all independently versioned original part files, not from a single-version binary download or an atomic multi-file snapshot.",
+    "Root verified every returned original path, file EOF/size/version/SHA, part bytes, all42 ordering and full archive SHA256/Git identity; original exporter metadata also equals the original terminal metadata.",
+    "The unchanged original exporter claimed verified archive members/manifest; no second independent tar.xz decompression/member parse was performed during transfer.",
+    "All seven MCP timeouts remain raw failed reads; no cause beyond the reported MCP timeout is inferred.",
+    "Only helper executable is excluded as originally declared; its original manifest/build/preverify/postverify evidence is retained by the export.",
+    "No source, original records, permissions, native execution, process or archive-export operation was modified or repeated by this transfer."
+  ],
+  "originals_unchanged": true
+}

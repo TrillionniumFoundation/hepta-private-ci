@@ -1,0 +1,881 @@
+{
+  "schema": "hepta.immutable-original-archive-partial-transfer-checkpoint.v2",
+  "transfer": "V13 terminal V32 original records",
+  "status": "paused-at-36-of-42-by-Root-handoff; no h request in flight",
+  "scope": {
+    "host": "ai395",
+    "base": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112",
+    "metadata": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/export.json",
+    "archive": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/original-records.tar.xz",
+    "expected": {
+      "bytes": 1483428,
+      "sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c",
+      "git_blob": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+      "parts": 42,
+      "members": 141,
+      "payload_files": 140,
+      "manifest_sha256": "50b77a43a22caa3c76040e68812344dac09ab805b73bd5cc0aa64f0efc7d7aab"
+    },
+    "source": {
+      "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+      "status": ""
+    }
+  },
+  "source_classification": {
+    "original_source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "original_result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "original_status": "failed-native-components",
+    "ordinary": {
+      "executed": 1944,
+      "passed": 1943,
+      "failed": 1
+    },
+    "root": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "archive_preservation_does_not_qualify_new_source": true
+  },
+  "original_export_metadata": {
+    "git_blob": "6e6bcc3b326c721c37df02192eac5084552cd665",
+    "bytes": 6184,
+    "sha256": "4c7fdc7914a8222873e551e5b678899f7e80fde7d6de3e77403d9e39b285b643",
+    "version": "66306:75545241:6184:1794472102478786934:1794472102478786934"
+  },
+  "prior_checkpoint": {
+    "git_blob": "abd5b0c5e00ea97cb377aac88f3657fe2859d810",
+    "bytes": 15543,
+    "sha256": "6e7e2b1439411ea83f79860aa65143e9b4258697c2f3222fa733ae08890150dd",
+    "original_8_parts_fully_reconstructed_and_verified": true,
+    "previous_failures_preserved": 4
+  },
+  "root_terminal_proof": {
+    "git_blob": "76ef5b2c6aaa7dcb300d2cf6cf26b97825cda3d2",
+    "bytes": 26350,
+    "sha256": "9a47c15c6d52d46f7ed2e590462c728cec6102b6ed71605ebf9506bd26620cd2"
+  },
+  "progress": {
+    "verified_original_parts": 36,
+    "total_original_parts": 42,
+    "complete_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "missing_indices": [
+      36,
+      37,
+      38,
+      39,
+      40,
+      41
+    ],
+    "verified_ascii_characters": 1728000,
+    "decoded_contiguous_prefix_bytes": 1296000,
+    "prefix_sha256": "b5909289e5a92781e67e0aba2c11092ffc4a0ae704d09ba5cd39557805ea187b",
+    "prefix_scope": "Exactly parts000 through035 only; this is not the full archive hash.",
+    "expected_complete_archive": {
+      "bytes": 1483428,
+      "sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c",
+      "git_blob": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+      "parts": 42,
+      "members": 141,
+      "payload_files": 140,
+      "manifest_sha256": "50b77a43a22caa3c76040e68812344dac09ab805b73bd5cc0aa64f0efc7d7aab"
+    },
+    "whole_archive_byte_identity_verified": false,
+    "archive_uploaded_to_Git": false
+  },
+  "part_inventory": [
+    {
+      "part": 0,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-000.txt",
+      "version": "66306:75545199:48000:1794472102476426349:1794472102476426349",
+      "bytes": 48000,
+      "sha256": "aebe3e71d7f66d5002d4ce716f9a5bcedfc5d6c6e63326780d1412ca16d04050",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 3
+    },
+    {
+      "part": 1,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-001.txt",
+      "version": "66306:75545200:48000:1794472102476491336:1794472102476491336",
+      "bytes": 48000,
+      "sha256": "54180c73c42cd92b6d03e7ce558cc0945b7ab996b8d8d0452e433cd3dff74984",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 3
+    },
+    {
+      "part": 2,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-002.txt",
+      "version": "66306:75545201:48000:1794472102476525765:1794472102476525765",
+      "bytes": 48000,
+      "sha256": "534aaf6aee82ec69dd2fb92193326dc275eeb5837a4bae87cf394d6911409418",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 4
+    },
+    {
+      "part": 3,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-003.txt",
+      "version": "66306:75545202:48000:1794472102476550604:1794472102476550604",
+      "bytes": 48000,
+      "sha256": "7eb1a95ed09b7307dd04281ea9cea87053360610bfacb3a4973638b2acb32151",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 4
+    },
+    {
+      "part": 4,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-004.txt",
+      "version": "66306:75545203:48000:1794472102476585943:1794472102476585943",
+      "bytes": 48000,
+      "sha256": "1f38502bd67d6c12940fae0277b10f4bfb1d4c4b312c96e769074f5ba1d5b3bd",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 5
+    },
+    {
+      "part": 5,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-005.txt",
+      "version": "66306:75545204:48000:1794472102476607892:1794472102476607892",
+      "bytes": 48000,
+      "sha256": "f6fde70f9e69f3ec06f5482c213b55312cf5d59ddd9cdc70e8468b50c8062ae1",
+      "source_packet": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+      "prior_attempt": 5
+    },
+    {
+      "part": 6,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-006.txt",
+      "version": "66306:75545205:48000:1794472102476629291:1794472102476629291",
+      "bytes": 48000,
+      "sha256": "8206eee7a56a5c94ac87d7752dcc589aa70e261a8de539e72870cf977bc2d07d",
+      "source_packet": "854e8ac6935cf79a5dbc1d9874d6302965f2d4dd",
+      "prior_attempt": 6
+    },
+    {
+      "part": 7,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-007.txt",
+      "version": "66306:75545206:48000:1794472102476651661:1794472102476651661",
+      "bytes": 48000,
+      "sha256": "0f543f9cd8601818f8669ea4da58c5c6945c55208a423fc8fcb7cd025fbe0939",
+      "source_packet": "854e8ac6935cf79a5dbc1d9874d6302965f2d4dd",
+      "prior_attempt": 6
+    },
+    {
+      "part": 8,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-008.txt",
+      "version": "66306:75545207:48000:1794472102476674970:1794472102476674970",
+      "bytes": 48000,
+      "sha256": "8302db8219fed91fe373930e84775a23a02e9241e74aca401aae75b9bd57a215",
+      "attempt": 9
+    },
+    {
+      "part": 9,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-009.txt",
+      "version": "66306:75545208:48000:1794472102476704609:1794472102476704609",
+      "bytes": 48000,
+      "sha256": "8231bf032c888484c9bebcda1d6c2f41b2bedf229ffacadd76a5cbc50a660a08",
+      "attempt": 9
+    },
+    {
+      "part": 10,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-010.txt",
+      "version": "66306:75545209:48000:1794472102476726168:1794472102476726168",
+      "bytes": 48000,
+      "sha256": "f2d6106ae4ec33aa79163f8fb88b0f1e5ee5ba3141c5e912fb5763b0bb388b51",
+      "attempt": 10
+    },
+    {
+      "part": 11,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-011.txt",
+      "version": "66306:75545210:48000:1794472102476746917:1794472102476746917",
+      "bytes": 48000,
+      "sha256": "b15606c35692367c64cf699471387c86d807c861d644338b15912608fdcf9b0a",
+      "attempt": 10
+    },
+    {
+      "part": 12,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-012.txt",
+      "version": "66306:75545211:48000:1794472102476767116:1794472102476767116",
+      "bytes": 48000,
+      "sha256": "c81e3e8eb6e009db1f799a4465932481951a82ec8fc75d0998e9d899304d5c2e",
+      "attempt": 11
+    },
+    {
+      "part": 13,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-013.txt",
+      "version": "66306:75545212:48000:1794472102476786726:1794472102476786726",
+      "bytes": 48000,
+      "sha256": "ad69fe7dbb6bdc1773df892ea5c9e5ca40492b0538c627f3325c69fe5fb69c61",
+      "attempt": 11
+    },
+    {
+      "part": 14,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-014.txt",
+      "version": "66306:75545213:48000:1794472102476820355:1794472102476820355",
+      "bytes": 48000,
+      "sha256": "9e6d1710c03ffb07c0af03cd92c65b3aa60ce7837da3ef9dfccb48d1939d2bdf",
+      "attempt": 12
+    },
+    {
+      "part": 15,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-015.txt",
+      "version": "66306:75545214:48000:1794472102476841064:1794472102476841064",
+      "bytes": 48000,
+      "sha256": "ff3392fc7a9822f4691b1827003bb20423ba6efd3f198808b270a613c97c587f",
+      "attempt": 12
+    },
+    {
+      "part": 16,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-016.txt",
+      "version": "66306:75545215:48000:1794472102476860613:1794472102476860613",
+      "bytes": 48000,
+      "sha256": "995848788e53811dc917f0b06ad9237e8c1edb7fe292d520db91d3bfe7db4475",
+      "attempt": 13
+    },
+    {
+      "part": 17,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-017.txt",
+      "version": "66306:75545216:48000:1794472102476888892:1794472102476888892",
+      "bytes": 48000,
+      "sha256": "270dd88d23ec367df7fb836821873b29c85fd164f27a5d429915446175505581",
+      "attempt": 13
+    },
+    {
+      "part": 18,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-018.txt",
+      "version": "66306:75545217:48000:1794472102476910471:1794472102476910471",
+      "bytes": 48000,
+      "sha256": "f4f02a575cc5463f65ce3fde5e8ab3f05a97716a4cb2026496ecdb553f54d661",
+      "attempt": 14
+    },
+    {
+      "part": 19,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-019.txt",
+      "version": "66306:75545218:48000:1794472102476938480:1794472102476938480",
+      "bytes": 48000,
+      "sha256": "03afbd35e9bb3ceb45716b883067edc78ed350ae9e06cf7757e0bf9da8d2f316",
+      "attempt": 14
+    },
+    {
+      "part": 20,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-020.txt",
+      "version": "66306:75545219:48000:1794472102476963279:1794472102476963279",
+      "bytes": 48000,
+      "sha256": "1f85818dc2d1d8a101a403323e2062f2417b0643e439ba6872bb60e83461db78",
+      "attempt": 16
+    },
+    {
+      "part": 21,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-021.txt",
+      "version": "66306:75545220:48000:1794472102476982279:1794472102476982279",
+      "bytes": 48000,
+      "sha256": "efae3d08b71c0c1169aeb6a18a6478d1296c170433879c070cdcc704bcda3536",
+      "attempt": 16
+    },
+    {
+      "part": 22,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-022.txt",
+      "version": "66306:75545221:48000:1794472102477003128:1794472102477003128",
+      "bytes": 48000,
+      "sha256": "0962aca320c56c5ee87ef570378b519ed9d8ff4be26b5822805cf285a5f258cb",
+      "attempt": 17
+    },
+    {
+      "part": 23,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-023.txt",
+      "version": "66306:75545222:48000:1794472102477023087:1794472102477023087",
+      "bytes": 48000,
+      "sha256": "fe41b26641ff4ac2da2d188a1da3cd76c0a113e4ed853224fa4ecd7f9387a585",
+      "attempt": 17
+    },
+    {
+      "part": 24,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-024.txt",
+      "version": "66306:75545223:48000:1794472102477051796:1794472102477051796",
+      "bytes": 48000,
+      "sha256": "cf1a615a2feaa6d3334732fb721c722147959f6ce07861878e69bb5a2d45e786",
+      "attempt": 19
+    },
+    {
+      "part": 25,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-025.txt",
+      "version": "66306:75545224:48000:1794472102477072395:1794472102477072395",
+      "bytes": 48000,
+      "sha256": "c1a227aac528541306d87a2d997ca3fd450a73e48e60b140f2522503cf3ca7bb",
+      "attempt": 19
+    },
+    {
+      "part": 26,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-026.txt",
+      "version": "66306:75545225:48000:1794472102477091445:1794472102477091445",
+      "bytes": 48000,
+      "sha256": "d29358c51cc6b1d8e5a37c52b297d14a73a3634e2601ff900d60e8964d8611a3",
+      "attempt": 20
+    },
+    {
+      "part": 27,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-027.txt",
+      "version": "66306:75545226:48000:1794472102477110434:1794472102477110434",
+      "bytes": 48000,
+      "sha256": "9d87b6719e9e7bb0b47ff66a66a33d9965064d0ec449769dd594120e29916d6c",
+      "attempt": 20
+    },
+    {
+      "part": 28,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-028.txt",
+      "version": "66306:75545227:48000:1794472102477129433:1794472102477129433",
+      "bytes": 48000,
+      "sha256": "aa158cc8cb0eb23bcb9182b30da9c23c0342e707a52e2b223b620bcde85b7396",
+      "attempt": 21
+    },
+    {
+      "part": 29,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-029.txt",
+      "version": "66306:75545228:48000:1794472102477160822:1794472102477160822",
+      "bytes": 48000,
+      "sha256": "4a911a02990dad079248598c3a626104afe5271f28cbc89c8de3cc6a4333f17e",
+      "attempt": 21
+    },
+    {
+      "part": 30,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-030.txt",
+      "version": "66306:75545229:48000:1794472102477181482:1794472102477181482",
+      "bytes": 48000,
+      "sha256": "ba220cd084ab7fcceda5344cf45242e9264586ac7c7b95bb65d5705d8cc75a5e",
+      "attempt": 22
+    },
+    {
+      "part": 31,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-031.txt",
+      "version": "66306:75545230:48000:1794472102477201241:1794472102477201241",
+      "bytes": 48000,
+      "sha256": "3986154fc73c3419fe037d109f4930e1a8f95a3ee565bd4bcb687c19660432c1",
+      "attempt": 22
+    },
+    {
+      "part": 32,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-032.txt",
+      "version": "66306:75545231:48000:1794472102477225290:1794472102477225290",
+      "bytes": 48000,
+      "sha256": "108514b476c63dbc3c13a319aa4d7af8d3a842e9424a3187cb54673fe94fb1e6",
+      "attempt": 24
+    },
+    {
+      "part": 33,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-033.txt",
+      "version": "66306:75545232:48000:1794472102477245339:1794472102477245339",
+      "bytes": 48000,
+      "sha256": "6a6762a80c982871106cb9b3d4a8c7340364c95ebbc6dd32fbebc64b0c8fa99d",
+      "attempt": 24
+    },
+    {
+      "part": 34,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-034.txt",
+      "version": "66306:75545233:48000:1794472102477277018:1794472102477277018",
+      "bytes": 48000,
+      "sha256": "c0c21ce9aac2bb285dc01119a37c047e0cdf2ced767bf14658d7ee944feab719",
+      "attempt": 25
+    },
+    {
+      "part": 35,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-035.txt",
+      "version": "66306:75545234:48000:1794472102477297257:1794472102477297257",
+      "bytes": 48000,
+      "sha256": "88677aab12feb796e4a2b50b11b5bc0f8bc674ba77ff01f99f569c7bbbc06d29",
+      "attempt": 25
+    }
+  ],
+  "reads": {
+    "previous_attempt_range": [
+      0,
+      8
+    ],
+    "resumed_attempt_range": [
+      9,
+      25
+    ],
+    "next_attempt": 26,
+    "total_attempts": 26,
+    "previous_successful_responses": 5,
+    "previous_failed_responses": 4,
+    "resumed_successful_responses": 14,
+    "resumed_failed_responses": 3,
+    "total_successful_responses": 19,
+    "total_failed_responses": 7,
+    "consecutive_timeouts": 0,
+    "active_request": null,
+    "prior_packets": [
+      {
+        "label": "original-read-receipts-0-0",
+        "attempts": [
+          0
+        ],
+        "git_blob": "96031100e2191b2bbf47d99f0b53e3e0751c7655",
+        "bytes": 1323,
+        "sha256": "c1d28662a050e2aba3c0aab1b9ab1c73e5c7b5b2ccf769a971ad6ea2422e8186",
+        "get_exact": true
+      },
+      {
+        "label": "original-read-receipts-1-1",
+        "attempts": [
+          1
+        ],
+        "git_blob": "456aaa4b7055b9291e53f2be0f4807d9d1b0c50c",
+        "bytes": 8749,
+        "sha256": "9f2cdb4e293e75d9c1ced44131e3dda9255a7ae4bd196ad50920e8fe22cb0fcb",
+        "get_exact": true
+      },
+      {
+        "label": "original-read-receipts-2-5",
+        "attempts": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "git_blob": "fc8d8dffe68e54a70b29402f7d169d8120e8c779",
+        "bytes": 297185,
+        "sha256": "8fd693e46a2947910fbfd560b4e3a5d73be7b95c2ae5b0becfa510c4f767d21f",
+        "get_exact": true
+      },
+      {
+        "label": "original-read-receipts-6-8",
+        "attempts": [
+          6,
+          7,
+          8
+        ],
+        "git_blob": "854e8ac6935cf79a5dbc1d9874d6302965f2d4dd",
+        "bytes": 101171,
+        "sha256": "3ecc9a36bdd278eddc3c77a0d6c44bf1a2999c7305c64c293c6e77f61e3e59c9",
+        "get_exact": true
+      }
+    ],
+    "resumed_packets": [
+      {
+        "attempt": 9,
+        "git_blob": "916cc57458fe1a093fda15c9c4e657acc686b5ab",
+        "bytes": 99019,
+        "sha256": "cffccdb35c4b63df5cad82d47e5d55436464e4a0d42d894f5af6db34cf1f50f8",
+        "parts": [
+          8,
+          9
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 10,
+        "git_blob": "9c66f25c647c39e5e2e59426e0a5803666f76684",
+        "bytes": 99069,
+        "sha256": "b15e43d43772408a1a2a0d63362e5bd8eb44e0caa134bdcc7a45622cc3ffb769",
+        "parts": [
+          10,
+          11
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 11,
+        "git_blob": "d6946b272ea85e8b13df830bdd05420deea72eed",
+        "bytes": 99069,
+        "sha256": "267a92b02040c28b82f252fa1b2d482e148a6ed3a58479bd2a778cd76fdba7ee",
+        "parts": [
+          12,
+          13
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 12,
+        "git_blob": "36de1a74dff89c1d56e12d8e38d3548b1e0357bc",
+        "bytes": 99069,
+        "sha256": "1fb547c862043828447e6ca42c737b4771ccd45d72972be3a8a782509cf0969a",
+        "parts": [
+          14,
+          15
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 13,
+        "git_blob": "3a27fdaa3a00dc8f3881859cb53c37d1b4ff9b67",
+        "bytes": 99069,
+        "sha256": "7c48adfffad2ee0025eb00d11c3b529b2ba8a539393086bd54d7335857f51115",
+        "parts": [
+          16,
+          17
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 14,
+        "git_blob": "424526eec4490a89fd584190ada6fcbe794b125d",
+        "bytes": 99069,
+        "sha256": "8df40760202e22892b6295bb63e0952142e66a954e9db9aa2f24d9594a4588db",
+        "parts": [
+          18,
+          19
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 15,
+        "git_blob": "e790348abc5dd54e54da9597781496eb4b9c7a2c",
+        "bytes": 1437,
+        "sha256": "129cd53868f8598686337250e85a6874f196afd15dffffb58f5abdc9bf8305eb",
+        "parts": [
+          20,
+          21
+        ],
+        "status": "failed-preserved",
+        "get_exact": true
+      },
+      {
+        "attempt": 16,
+        "git_blob": "f547ab2ef9f7bdf47d07e03a37edf97e4446b256",
+        "bytes": 99069,
+        "sha256": "5c5d6f4332097877c34b6283b2ad825fb7546d3009194a9cae9b0ad395795ff2",
+        "parts": [
+          20,
+          21
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 17,
+        "git_blob": "d1d2ebeb2024f77fab749801d09e3b05ca08f265",
+        "bytes": 99069,
+        "sha256": "8935b21869356281c47f48a0b40c2a2e9b37dc852eb64e0cce8c04517199301b",
+        "parts": [
+          22,
+          23
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 18,
+        "git_blob": "d3ac4835e4a25195ca98df2235f4ca8a2cb9672f",
+        "bytes": 1437,
+        "sha256": "d3d0f8fb846b3c258fb0c5cbefdc652c0814e46123b1b7de5f6af0a07d336170",
+        "parts": [
+          24,
+          25
+        ],
+        "status": "failed-preserved",
+        "get_exact": true
+      },
+      {
+        "attempt": 19,
+        "git_blob": "58aa9a5f009eb8e44e8aca87c1fdbe0236aed798",
+        "bytes": 99069,
+        "sha256": "e5cc2cc8f2807d57d6f10ee38a7066d1140cbbbba0885a559f7f8d56de89a394",
+        "parts": [
+          24,
+          25
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 20,
+        "git_blob": "a5d72cd4417d257994223e99da5587fa5323a50b",
+        "bytes": 99069,
+        "sha256": "402af400ebef2cac1a8756da5c93a68b15c31af670a4ffa9899934397506ad01",
+        "parts": [
+          26,
+          27
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 21,
+        "git_blob": "f59216aa9620a490106a61d1913e95788ae15c2a",
+        "bytes": 99069,
+        "sha256": "24d39520be28ac08e792ff211467456a213c51e894f1192ac57ef76e40e2173b",
+        "parts": [
+          28,
+          29
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 22,
+        "git_blob": "73bfaf8577ba513c7f3667a61a52090d67c8225e",
+        "bytes": 99069,
+        "sha256": "f23811aff64abf036f040c4e07134c05309fd42de276872b8989ea1163796d34",
+        "parts": [
+          30,
+          31
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 23,
+        "git_blob": "760203d9d268d9af0f80c4bb034baef7cec30c24",
+        "bytes": 1437,
+        "sha256": "b5c888ec55afd33bcc0142a95162ec10491a9f310b8fcc196aae89685f794c2f",
+        "parts": [
+          32,
+          33
+        ],
+        "status": "failed-preserved",
+        "get_exact": true
+      },
+      {
+        "attempt": 24,
+        "git_blob": "561852259c97dfc11a4815806828d8b7d66d7c73",
+        "bytes": 99069,
+        "sha256": "eee8e47fc7c8684b17fb1ff542854dcb474ee6dbd978f6223adb089e9cb4e69f",
+        "parts": [
+          32,
+          33
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      },
+      {
+        "attempt": 25,
+        "git_blob": "adbf8eac88859979970ed125248a16c750372c2f",
+        "bytes": 99069,
+        "sha256": "f74430de45b01703c15921356fe69e4e761d93f166a1046e8c8083912349761c",
+        "parts": [
+          34,
+          35
+        ],
+        "status": "verified-original-files",
+        "get_exact": true
+      }
+    ],
+    "new_failures": [
+      {
+        "attempt": 15,
+        "parts": [
+          20,
+          21
+        ],
+        "request": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-020.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-021.txt"
+          ],
+          "max_file_bytes": 48000,
+          "max_response_bytes": 262144
+        },
+        "error": null,
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "packet": {
+          "attempt": 15,
+          "git_blob": "e790348abc5dd54e54da9597781496eb4b9c7a2c",
+          "bytes": 1437,
+          "sha256": "129cd53868f8598686337250e85a6874f196afd15dffffb58f5abdc9bf8305eb"
+        }
+      },
+      {
+        "attempt": 18,
+        "parts": [
+          24,
+          25
+        ],
+        "request": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-024.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-025.txt"
+          ],
+          "max_file_bytes": 48000,
+          "max_response_bytes": 262144
+        },
+        "error": null,
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "packet": {
+          "attempt": 18,
+          "git_blob": "d3ac4835e4a25195ca98df2235f4ca8a2cb9672f",
+          "bytes": 1437,
+          "sha256": "d3d0f8fb846b3c258fb0c5cbefdc652c0814e46123b1b7de5f6af0a07d336170"
+        }
+      },
+      {
+        "attempt": 23,
+        "parts": [
+          32,
+          33
+        ],
+        "request": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-032.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-033.txt"
+          ],
+          "max_file_bytes": 48000,
+          "max_response_bytes": 262144
+        },
+        "error": null,
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "packet": {
+          "attempt": 23,
+          "git_blob": "760203d9d268d9af0f80c4bb034baef7cec30c24",
+          "bytes": 1437,
+          "sha256": "b5c888ec55afd33bcc0142a95162ec10491a9f310b8fcc196aae89685f794c2f"
+        }
+      }
+    ],
+    "all_previous_errors_preserved_in_original_packets": true,
+    "all_resumed_requests_responses_errors_preserved": true,
+    "raw_response_scope": "Packets retain the exact observed MCP response text and request object. Per-file versions are independently stable, not a simultaneous cross-file snapshot."
+  },
+  "handoff": {
+    "owner_after_pause": "/root",
+    "resume_part": 36,
+    "next_attempt": 26,
+    "next_requests": [
+      {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-036.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-037.txt"
+        ],
+        "max_file_bytes": 48000,
+        "max_response_bytes": 262144
+      },
+      {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-038.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-039.txt"
+        ],
+        "max_file_bytes": 48000,
+        "max_response_bytes": 262144
+      },
+      {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-040.txt",
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-041.txt"
+        ],
+        "max_file_bytes": 48000,
+        "max_response_bytes": 262144
+      }
+    ],
+    "single_batch_in_flight": true,
+    "stop_after_two_consecutive_MCP_timeouts": true,
+    "current_consecutive_timeouts": 0,
+    "reason": "Root reprioritized this agent to the actual task admission/queue source cut after the current batch completed. No in-flight read was cancelled.",
+    "resume_requires_original_files_only": true,
+    "do_not_reexport": true,
+    "whole_upload_gate": "Only after all42 original parts are obtained, concatenate in declared order and decode, then verify 1483428 bytes, SHA256 85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c and Git04495f75a40aa96a1183f6e00fc980ca88a3246f before create_blob(base64)."
+  },
+  "preserved_exporter_claim": {
+    "members": 141,
+    "payload_files": 140,
+    "excluded": [
+      {
+        "path": "ordinary-5a2e937-seven-final-v6/helpers/bin/hepta-joint-propose",
+        "reason": "helper executable is bound by its original custody manifest and native build logs"
+      }
+    ],
+    "manifest_sha256": "50b77a43a22caa3c76040e68812344dac09ab805b73bd5cc0aa64f0efc7d7aab",
+    "source_before": {
+      "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "status": "",
+      "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+    },
+    "source_after": {
+      "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "status": "",
+      "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+    },
+    "independent_transfer_tar_member_parse": false
+  },
+  "verification_boundary": {
+    "performed": [
+      "All first8 parts reconstructed from prior Git receipts; versions/lengths/hashes match original checkpoint.",
+      "Every newly received original part verified against h EOF/size/version/SHA.",
+      "Full contiguous36-part prefix redecoded and SHA256 computed in pure V8.",
+      "All17 resumed attempt packets created and GET-verified exactly; three new timeout errors retained."
+    ],
+    "not_performed": [
+      "full archive verification",
+      "full archive upload",
+      "independent second tar/member parse",
+      "native/Cargo/test",
+      "new export",
+      "remote program/PTY/process",
+      "source or records mutation",
+      "branch/ref update"
+    ],
+    "no_native_result_reclassification": true
+  }
+}

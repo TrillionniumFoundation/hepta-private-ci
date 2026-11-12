@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.immutable-original-archive-resumed-read-receipt.v1",
+  "prior_checkpoint": "abd5b0c5e00ea97cb377aac88f3657fe2859d810",
+  "original_export_metadata": "6e6bcc3b326c721c37df02192eac5084552cd665",
+  "note": "Exact observed MCP response object retained, including the original text block. Per-file versions are independent; whole archive hash is still required.",
+  "receipt": {
+    "attempt": 23,
+    "tool": "mcp__codex_apps__h_read_multiple_files",
+    "request": {
+      "host": "ai395",
+      "paths": [
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-032.txt",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-5a2e937-original-records-export-v13-20261112/part-033.txt"
+      ],
+      "max_file_bytes": 48000,
+      "max_response_bytes": 262144
+    },
+    "parts": [
+      32,
+      33
+    ],
+    "scope": "Only original immutable exporter-declared part files; no process or write.",
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    },
+    "error": null,
+    "terminal": true,
+    "verification": {
+      "status": "failed-preserved",
+      "mcp_timeout": true,
+      "source_bytes_received": false
+    }
+  }
+}
