@@ -1,0 +1,98 @@
+{
+  "state": "failed",
+  "source_sha": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "source_tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+  "scope": "exact fixed source Python controls; no formatter, native, full caller proof or ordinary task execution",
+  "tracked_rust_files_present": 6630,
+  "boundaries": 480,
+  "protected_rows": 368,
+  "source_inventory": 310,
+  "steps": [
+    {
+      "name": "source-closure",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "returncode": 1,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_bytes": 692914,
+      "log_sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "observed_passed_tests": 8,
+      "observed_failed_tests": 302,
+      "expected_tests": 310,
+      "actual_reported_test_counts": [
+        "310"
+      ],
+      "passed": false,
+      "raw_sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "raw_bytes": 692914
+    },
+    {
+      "name": "observer-parser",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_bytes": 3123,
+      "log_sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "observed_passed_tests": 16,
+      "observed_failed_tests": 0,
+      "expected_tests": 16,
+      "actual_reported_test_counts": [
+        "16"
+      ],
+      "passed": true,
+      "raw_sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "raw_bytes": 3123
+    },
+    {
+      "name": "caller-self-test",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_bytes": 48,
+      "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "expected_tests": null,
+      "actual_reported_test_counts": [],
+      "passed": true,
+      "raw_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "raw_bytes": 48
+    }
+  ],
+  "native_tests_executed": 0,
+  "full_caller_proof_executed": false,
+  "acceptance": {
+    "positive_adoption": 0,
+    "no_update_or_fallback": 0,
+    "daemon_and_root_cold_restart": 0
+  },
+  "source_after": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "source_tree_after": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+  "source_status_after": ""
+}

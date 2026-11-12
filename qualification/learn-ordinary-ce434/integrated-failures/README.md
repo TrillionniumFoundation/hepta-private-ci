@@ -94,3 +94,11 @@ Fixed f8 local execution retained all 6,573 tracked Rust files. Source closure f
 `f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7` / tree `51361a51fe1ed38f36ebe3bdd9267a8f6b0773b6` joins the actual Candidate Root entry, retained publication bridge and independent B provider. Its actual Git parents/tree and merged file bytes were checked. Its 446 boundaries, 348 complete protected rows, 292 source methods and 137 ordinary native inventory entries are static counts only. The cloud environment became unavailable before Root issued the new source suite. No old pass is inherited.
 
 A separately frozen, create-only request attempts to restore only the prior exact V8 pair. Its connector returned `Transport closed`, with no observed job id or request digest. Restoration and remote execution remain **unknown**; this is not a native test run or proof of no effect. Keep the original key/arguments, inspect its original result, and do not replay under another key. Main remains unmerged; all three ordinary acceptance counts remain zero.
+
+## Unified 619/514 results and v12 terminal readback
+
+- Fixed 619 ran 310 methods: 309 pass / 1 literal quote guard fail. Parser 16/16 and caller self-test passed. Original clean identity and logs are retained.
+- Original formatter produced 514 (118 reviewed files; two Python ASTs unchanged). Fixed 514 ran 310 methods and reported `FAILED (errors=302)`, including subtest errors; 234 top-level ok log lines. The raw helper's subtraction to 8 is not a method pass count. Parser 16/16 and self-test passed. Native/full proof were not run.
+- Large original logs are split into exact contiguous parts. Use manifest `original_file_reassembly`: concatenate listed parts with no separator and check complete byte size/SHA256. Identical driver logs are retained separately.
+- v12 is authoritatively failed/exit 1. Original wrapper shows pinned V8 archive missing before helper/native execution. Prior exact restoration success is preserved; the cause of later unavailability is unestablished. No performance gain is proven.
+- Ordinary positive adoption, full NoUpdate/fallback and real daemon/Root cold restart remain 0.

@@ -1,0 +1,940 @@
+{
+  "left": "1a5b31e619f845f84e70049094b69893234813f4",
+  "right": "6d900c56b330089f0de380b28c7f57bb8072be30",
+  "merge_base": "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7",
+  "tree": "d35c0ed410128d68445d8e0a111b32184acfee12",
+  "boundaries": 480,
+  "protected_rows": 368,
+  "whole_protected_row_multiset": true,
+  "reviewed_boundary_conflicts": [
+    {
+      "id": "learning_original_owner_command_channel",
+      "field": "product_callers",
+      "base": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"
+      ],
+      "left": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs"
+      ],
+      "right": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "merged": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_owner_snapshot_encode",
+      "field": "product_callers",
+      "base": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs"
+      ],
+      "left": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs"
+      ],
+      "right": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs"
+      ],
+      "merged": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs"
+      ]
+    }
+  ],
+  "qa_merges": [
+    {
+      "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+      "new_module": true,
+      "tuple_updates": [],
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_material_initial_context_check",
+          "root_resident_gate_effect_current",
+          "learning_original_candidate_stage_current_material"
+        ],
+        "left": [
+          "learning_original_material_initial_context_check"
+        ],
+        "right": [
+          "root_resident_gate_effect_current",
+          "learning_original_candidate_stage_current_material"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "new_module": true,
+      "tuple_updates": [],
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_evaluation_panel_current"
+        ],
+        "left": [],
+        "right": [
+          "learning_original_evaluation_panel_current"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ],
+        "left": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode"
+        ],
+        "right": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_owner_command_channel",
+          "circuit_feature_original_selection_observation",
+          "learning_original_training_initial_connection_dataset",
+          "learning_original_training_command_client_readback",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check"
+        ],
+        "left": [
+          "learning_original_owner_command_channel",
+          "circuit_feature_original_selection_observation",
+          "learning_original_training_initial_connection_dataset",
+          "learning_original_training_command_client_readback",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check"
+        ],
+        "right": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_published_read_owner_create",
+          "learning_original_source_input_current"
+        ],
+        "left": [
+          "learning_original_published_read_owner_create",
+          "learning_original_source_input_current"
+        ],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ],
+        "left": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode"
+        ],
+        "right": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_dataset_readback_current",
+          "learning_original_dataset_readback_context",
+          "learning_original_dataset_readback_cut",
+          "learning_original_owner_command_channel"
+        ],
+        "left": [
+          "learning_original_dataset_readback_current",
+          "learning_original_dataset_readback_context",
+          "learning_original_dataset_readback_cut",
+          "learning_original_owner_command_channel"
+        ],
+        "right": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_training_command_client_readback",
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ],
+        "left": [
+          "learning_original_training_command_client_readback",
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode"
+        ],
+        "right": [
+          "learning_original_owner_command_channel",
+          "learning_original_owner_snapshot_encode",
+          "learning_original_owner_snapshot_decode"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_original_training_initial_connection_dataset",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check",
+          "learning_original_owner_command_channel"
+        ],
+        "left": [
+          "learning_original_training_initial_connection_dataset",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check",
+          "learning_original_owner_command_channel"
+        ],
+        "right": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "root_resident_gate_effect_current"
+        ],
+        "left": [],
+        "right": [
+          "root_resident_gate_effect_current"
+        ]
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "tuple_updates": {
+        "base": [
+          "learning_retained_publication_context",
+          "learning_retained_publication_prepare",
+          "learning_original_training_command_client_readback"
+        ],
+        "left": [
+          "learning_retained_publication_context",
+          "learning_retained_publication_prepare",
+          "learning_original_training_command_client_readback"
+        ],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "tuple_updates": {
+        "base": [],
+        "left": [],
+        "right": []
+      },
+      "all_other_method_bodies_preserved": true
+    }
+  ],
+  "parser_function_bodies_unchanged": true,
+  "source_methods_inventory": 310,
+  "source_modules_inventory": 44,
+  "native_groups_inventory": 32,
+  "native_cases_inventory": 150,
+  "entries": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61b9c5e46d8a1db28b073f1b2a9dbfe01ecc31d5",
+      "novel": true,
+      "chars": 949193,
+      "bytes": 949193,
+      "sha256": "3fc424f02eac1d08f1765fadee6e60a77ea54ce56ce1cb5e1b1585b45073890e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71b367f0d2c59fbe378106fd66886ec4db3ce983"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "42b95b37a5dd2890e5c695adf29f21786686e811"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3237cc73c8883a1b84b07b286b2cff190d720f4d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55ab4f9b0020a0c6160e038340d4ee4a53b20096"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cda0d99839418249cde935eca1f183087cf9531"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5451cbd4e1e2fb1fe06cb2e3dd3eb368497d604f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e866723ae11b9d085ece718526cc60ffc349ecbd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be34ba5f2c3d2f3da4ccba10c37440adf15e4d75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c388aa670241fc815ec3accd3783939d1069f50f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "66230e6fbc42792670a7c9cec9010ed71a11656f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95062a5eb48032780ec392c62971925cd08ddfd3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "432df874d4f7b5aa4cee28563800b7dcefafa379"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a63b297638dc54584ff5961d958138b87fcbbc3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9d8ac2a6c51b3e957d51a48b0e3b792c072e403"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b59bb7e2d44d90aebf6929630e6eb977b3256c0d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0ebd1a974d8d9bbf5b2ef71008df3ba02299357"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da4472f0bd2a3c04204675313f588912ccba3374"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b11c789feb8ac46ec7a5105338eb9be8bc8bcac7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c7724a53e84d6fcf157548459702daa7636482fc",
+      "novel": true,
+      "chars": 66711,
+      "bytes": 66711,
+      "sha256": "5968c420392370bf0972d4014329f20c106d005bea5401e514c04a6ca4ba7995"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d189854aad02614ae25a05d5ca17b2cd2e0829b"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8298707b0e6206218da4eaa0a1d3510c0d278c24"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85325b5656642cb67e342c7bab19de4f31ba4638"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7db14754db753bf6df6648cd6dbd4504f2d76a70"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "79d9220ba8bdbfd2fa69c0393c7a0aa0a9a2e209"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61ac7b61e820ce5a255bc04ea59279f1934086f6"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ab91d3309f3a8353e8557f01aa14909a5cb3b4b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04c6489a8e002d95718de96cd0394b1fe17307d0"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61b1cece4b32e3bed963a0723e07f3c5f2c2813a"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a0d21e05a7bd81de739dd34142c6282a603c6c2",
+      "novel": true,
+      "chars": 13492,
+      "bytes": 13492,
+      "sha256": "faa4dc2b6c82203244ea03999c44cf6758c6a12913e14b9993e17aabc56124c9"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1956501f3dbe7fd126caf8cf646f7b7639d93a0c"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "314ed6892e18457ce9e9ca7fbcb908737093411d",
+      "novel": true,
+      "chars": 16062,
+      "bytes": 16062,
+      "sha256": "b3279e9378ca9d1e7f39fce45ca28ba03e36de4c41443c40e43208d61f1cbdff"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e54c84561c5799746d620d7c8672898df62ac2f6",
+      "novel": true,
+      "chars": 20077,
+      "bytes": 20077,
+      "sha256": "a66178fd2e81b02a298c8662fbeb460000cf59025f5c4816aa369749aeda0ba3"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c4b25ddee2aed5a908ee9af71d821f703e4be72"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6bd505b0dbc8274ea77f6926a4a013699b7781cd",
+      "novel": true,
+      "chars": 14845,
+      "bytes": 14845,
+      "sha256": "ef2681a5c5ccdbf6ad5c69339a1601e5452504699a8fd9dfb4462e38fb5b3fc0"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "087c79f21675d50d2842947cabdc039d9c575288",
+      "novel": true,
+      "chars": 17878,
+      "bytes": 17878,
+      "sha256": "17bc1a573e2b00a61cb40ec9e7eb148cce1e2aaa230fb93fb267b997fa44a9f7"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45745035eff8929356fb72c92381f138f7f2ec3e",
+      "novel": true,
+      "chars": 13567,
+      "bytes": 13567,
+      "sha256": "f82d993c5fe46f442ae5e4aed3a206d4cc58479f5afd5c107122d4224aa30607"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c06b0a11e4bb67e20db2447bee2e42fe85088558",
+      "novel": true,
+      "chars": 12760,
+      "bytes": 12760,
+      "sha256": "9ea65b372ff58c30674173646baad66279992e14fc95900e26fc42fb60c455a4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc8207a8cb6d4bd04fb6587c881560437800f966"
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "225c7ee0a56c8aa478463c4122c1620d0f403928",
+      "novel": true,
+      "chars": 27300,
+      "bytes": 27300,
+      "sha256": "0ac37a10fae1f459d58e758c63e3274a1cd882af7eeb55dc4019278725661cc8"
+    }
+  ]
+}

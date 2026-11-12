@@ -520,8 +520,42 @@
           "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
           "isError": true
         },
-        "native_tests_executed": "unknown",
-        "performance_gain_established": false
+        "native_tests_executed": 0,
+        "performance_gain_established": false,
+        "retained_prior_observation": {
+          "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+          "args_bytes": 18468,
+          "args_sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+          "script_sha256": "6a3ba7e88b494c9eeb14e26813ab6e5ce729a66d2d4175a3957f51fa02bd6409",
+          "native_runner_sha256": "0872c39c54be44b40c227c02c2a07e1cf5f7ef30d503aa502d66d19102870ac9",
+          "source": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+          "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+          "previous_request_job": "1a1cdd1805d-2564-13c7",
+          "previous_request_terminal": "failed",
+          "previous_actual_pre_native_failure": "unexpected qualification repository",
+          "native_runner_delta": "Replace a stale 20261111 repository prefix with the exact dedicated 20261112-v12 path; no test case, binding, timeout, Rust, lockfile or native command change",
+          "ordinary_acceptance": 0,
+          "submission_response": {
+            "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "isError": true
+          },
+          "native_tests_executed": "unknown",
+          "performance_gain_established": false
+        },
+        "reconciled_job_id": "1a1cde817c7-2564-13f4",
+        "request_digest": "2bc653702eaac387dfa865e57dfa3e992dd6f717edfa0a5e04a9d3527e5e739f",
+        "reconciliation_reused": false,
+        "terminal": "failed",
+        "exit_code": 1,
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "helper_build_executed": false,
+        "failure": "Original wrapper FileNotFoundError for pinned V8 archive before helper or native setup; performance not established.",
+        "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_status_after": ""
       }
     },
     {
@@ -775,6 +809,84 @@
       "source_status_after": "",
       "full_caller_proof_executed": false,
       "native_tests_executed": 0,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "1a5b31e619f845f84e70049094b69893234813f4",
+      "tree": "6fd8cb4b938d5c0ee1406a0ce0a64104ea5bb99d",
+      "parents": [
+        "a368fd4b1381e823c9fa69e7f2ed16ae223a4e60",
+        "96719b494a8d887f01a6eb23f0da8ffbeb1ed928"
+      ],
+      "static_boundaries": 464,
+      "static_protected_rows": 356,
+      "qualification_executed": false,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "619f3ea4ee34096c467da1c15c4a8836fc231113",
+      "tree": "d35c0ed410128d68445d8e0a111b32184acfee12",
+      "parents": [
+        "1a5b31e619f845f84e70049094b69893234813f4",
+        "6d900c56b330089f0de380b28c7f57bb8072be30"
+      ],
+      "source_checks": {
+        "run": 310,
+        "pass": 309,
+        "fail": 1,
+        "raw_sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+        "failure": "Qualification group literal double quotes mismatched AST serializer single quotes"
+      },
+      "parser_pass": 16,
+      "caller_self_test_exit": 0,
+      "native_tests_executed": 0,
+      "full_caller_proof_executed": false,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "514fe5f53cfdc254477667f8862d652ea756c807",
+      "tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+      "parents": [
+        "619f3ea4ee34096c467da1c15c4a8836fc231113"
+      ],
+      "format_exit": 0,
+      "format_changed_files": 118,
+      "python_ast_unchanged": true,
+      "qualification": {
+        "source_sha": "514fe5f53cfdc254477667f8862d652ea756c807",
+        "source_tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+        "run_methods": 310,
+        "unittest_report": "FAILED (errors=302)",
+        "errors_include_subtests": true,
+        "top_level_ok_log_lines": 234,
+        "helper_observed_passed_tests": 8,
+        "helper_subtraction_is_not_a_method_pass_count": true,
+        "parser_pass": 16,
+        "caller_self_test_exit": 0,
+        "raw_sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+        "reason": "Exact raw markers and mutation locations no longer match rustfmt layout; verifier and negative controls are being preserved.",
+        "native_tests_executed": 0,
+        "full_caller_proof_executed": false,
+        "full_chain_acceptance": {
+          "positive": 0,
+          "no_update": 0,
+          "daemon_root_cold_restart": 0
+        }
+      },
+      "source_after": "514fe5f53cfdc254477667f8862d652ea756c807",
+      "source_status_after": "",
       "full_chain_acceptance": {
         "positive": 0,
         "no_update": 0,
@@ -1242,6 +1354,153 @@
       "bytes": 36,
       "sha256": "9d1fbdc56dd103742d822041ee6d803226590dc41eac52fa5d1222fc3ddc835f",
       "observation": "Complete original wrapper error: stale repository-prefix guard rejected before native setup or tests."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "300bc8363930ea0b19fa82777b39732837127d2df21ae4a88e00533ec0fae885",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/result.json",
+      "bytes": 3048,
+      "sha256": "80efa928e3a8aada5e166256805fe91313d9d59b9f8fd5219d6b504d3278425a",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/source-closure.log",
+      "bytes": 98824,
+      "sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/qualify_619f_source_v1.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_619f_source_v1.py",
+      "bytes": 4011,
+      "sha256": "76b7acd178abb9e5313e48b86f682e928bec07748ae165381a09d18fa3558792",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/result.json",
+      "bytes": 3050,
+      "sha256": "a9b98a260d0f892898514834e0e5b168b60dbaaa04c536b0d82eaa460b07addc",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-001",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 350000,
+      "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-002",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 342914,
+      "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/qualify_514f_source_v1.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_514f_source_v1.py",
+      "bytes": 4011,
+      "sha256": "d36b93ecb22a6c46dc6ae2aa92fa4dc5e3678c8767ff2e7bd6ac82d26241e7d6",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/caller-self-test.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/caller-self-test.driver.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/observer-parser.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/observer-parser.driver.log",
+      "bytes": 3123,
+      "sha256": "300bc8363930ea0b19fa82777b39732837127d2df21ae4a88e00533ec0fae885",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/source-closure.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/source-closure.driver.log",
+      "bytes": 98824,
+      "sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/caller-self-test.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/caller-self-test.driver.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/observer-parser.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/observer-parser.driver.log",
+      "bytes": 3123,
+      "sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-001",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 350000,
+      "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-002",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 342914,
+      "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/original-format/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-owners-619f-format-v1/result.json",
+      "bytes": 45801,
+      "sha256": "0d9a59c5a701af33bf839da8f1d517d021a014c79af87fffda508bcd94730da8",
+      "observation": "Original formatter result; no source or native tests in this request."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v12-crypto-diagnostic-after-restore-v1/result.json",
+      "bytes": 2330,
+      "sha256": "40476f18532d64af5fe4e05e20bc099201fc66de6285d0fa258abbef6eb2356a",
+      "observation": "Original terminal file; pinned V8 archive missing before helper/native execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v12-crypto-diagnostic-after-restore-v1/native-wrapper.log",
+      "bytes": 1054,
+      "sha256": "fbed48bcc51f0db3ec5f6aae521119858826b6b1c87b06dc68ce1a3949f973ad",
+      "observation": "Original terminal file; pinned V8 archive missing before helper/native execution."
     }
   ],
   "normalized_observations": [
@@ -1326,6 +1585,22 @@
     {
       "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/terminal.json",
       "note": "Original process-status fields, kept separately from preparation/application outcome."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/terminal.json",
+      "note": "Authoritative durable terminal state after same-key reconciliation; initial timeout observation retained."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/unified-source-merges/evaluator-1a5b31e6.json",
+      "note": "Actual Git tree, real parents/common ancestors, explicitly distinguished virtual content base, complete protected-row merge and exact postimages."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/unified-source-merges/version-619f3ea4.json",
+      "note": "Actual Git tree with true f254 base, two reviewed caller unions, complete protected rows, actual inventories and exact postimages."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/qualification-interpretation.json",
+      "note": "Derived interpretation, separate from original logs; helper raw values preserved but invalid pass subtraction explained."
     }
   ],
   "retained_typed_requests": [
@@ -1366,6 +1641,51 @@
       "sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
       "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
       "observation": "Exact frozen typed request, Git blob readback verified before original submission; unknown response never authorizes a new-key replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/unified-619f-format-only.json",
+      "bytes": 6385,
+      "sha256": "f655541fab1127f5db5ce197fc3721724f61c12bb61c410c1d03fbf5d0c4c3f4",
+      "idempotency_key": "learn-ce434-fixed-619f-unified-format-only-v1",
+      "observation": "Exact original frozen formatter request, no native or source tests."
+    }
+  ],
+  "original_file_reassembly": [
+    {
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 692914,
+      "sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-001",
+          "bytes": 350000,
+          "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-002",
+          "bytes": 342914,
+          "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71"
+        }
+      ],
+      "join": "byte-concatenate in order, no separator"
+    },
+    {
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 692914,
+      "sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-001",
+          "bytes": 350000,
+          "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-002",
+          "bytes": 342914,
+          "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71"
+        }
+      ],
+      "join": "byte-concatenate in order, no separator"
     }
   ]
 }
