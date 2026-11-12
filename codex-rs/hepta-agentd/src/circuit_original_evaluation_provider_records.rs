@@ -252,6 +252,14 @@ impl<'a> Episode<'a> {
             circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)
                 .map_err(|_| Error::Binding("original ledger-bound execution identity"))?;
         let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
+        // Ledger candidates are a canonical set; the signed Source policy
+        // retains its original action order and is never reordered here.
+        let mut canonical_candidates = policy
+            .entries()
+            .iter()
+            .map(|entry| entry.candidate_id.clone())
+            .collect::<Vec<_>>();
+        canonical_candidates.sort();
         let input = source.input();
         let admitted_at = source
             .original_record()
@@ -277,12 +285,7 @@ impl<'a> Episode<'a> {
             || decision.run_snapshot_digest != input.ndu_snapshot_digest
             || decision.selected_candidate_id != *policy.selected()
             || decision.selected_propensity != ProbabilityQ32::ONE
-            || decision.candidate_ids
-                != policy
-                    .entries()
-                    .iter()
-                    .map(|entry| entry.candidate_id.clone())
-                    .collect::<Vec<_>>()
+            || decision.candidate_ids != canonical_candidates
             || decision.candidate_completeness_digest.is_zero()
             || decision.authentication_digest.is_zero()
             || decision.support_digest.is_zero()

@@ -12,6 +12,7 @@ use pretty_assertions::assert_eq;
 
 pub(super) enum ObservationMode {
     Complete,
+    NonCanonicalOrder,
     MissingLast,
     WrongUnitLast,
 }
@@ -143,7 +144,11 @@ impl BFixture {
         let history_at = rule.history_start_unix_seconds + 10;
         for (index, episode) in rule.history.iter().enumerate() {
             let principal = d(&format!("{}-history-principal-{index}", rule.plan_id));
-            let input = self.input(&episode.behavior_run_id, principal, index);
+            let mut input = self.input(&episode.behavior_run_id, principal, index);
+            if matches!(mode, ObservationMode::NonCanonicalOrder) {
+                input.candidates.sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
+                assert!(input.candidates.windows(2).any(|pair| pair[0].candidate_id > pair[1].candidate_id));
+            }
             material::evaluation_provider::decision(
                 self.writer.as_mut().expect("original B ledger"),
                 &self.credentials,
@@ -170,7 +175,11 @@ impl BFixture {
         }
         for (index, target) in rule.targets.iter().enumerate() {
             let principal = d(&format!("{}-heldout-principal-{index}", rule.plan_id));
-            let input = self.input(&target.episode.behavior_run_id, principal, index + 10);
+            let mut input = self.input(&target.episode.behavior_run_id, principal, index + 10);
+            if matches!(mode, ObservationMode::NonCanonicalOrder) {
+                input.candidates.sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
+                assert!(input.candidates.windows(2).any(|pair| pair[0].candidate_id > pair[1].candidate_id));
+            }
             material::evaluation_provider::decision(
                 self.writer.as_mut().expect("original B ledger"),
                 &self.credentials,
