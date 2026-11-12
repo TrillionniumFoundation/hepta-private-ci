@@ -13,6 +13,12 @@ pub struct RootGenerationPublicationHandoffV1 {
     pub(crate) root_pid: u32,
 }
 
+impl RootGenerationPublicationHandoffV1 {
+    pub(crate) fn require_original_root(&self) -> Result<(), AgentdError> {
+        require_root_pin(&self.root_pidfd, self.root_pid)
+    }
+}
+
 /// Consume one original offer after the dedicated Root listener is ready.
 pub fn send_root_generation_publication_handoff(
     socket: UnixDatagram,
