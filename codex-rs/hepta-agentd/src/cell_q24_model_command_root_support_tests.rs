@@ -157,9 +157,10 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
     ) -> anyhow::Result<Self> {
         let context = context(material, registration, &completed, &signatures)?;
         let (client, mut peer) = fixture_client(context.clone(), FixtureAccess::Fresh)?;
+        let server_context = context.clone();
         let server = std::thread::spawn(move || -> anyhow::Result<()> {
             assert!(peer.exchange(|bytes| response(
-                &context,
+                &server_context,
                 &actual,
                 material_digest,
                 bytes,
@@ -174,7 +175,35 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
             .map_err(|_| anyhow::anyhow!("original Model fixture peer"))??;
         let read = read?;
         assert_eq!(read.snapshot(), &completed);
-        assert_eq!(read.predecessors.as_slice(), signatures.as_slice());
+        assert_eq!(
+            read.original_predecessors_for_publication().as_slice(),
+            signatures.as_slice(),
+        );
+        read.require_original_context(
+            &context.material,
+            &context.registration,
+            &context.dataset,
+            &context.training,
+            &context.evaluation,
+        )?;
+        let mut wrong_context = read.clone();
+        wrong_context.context = Digest32::of_bytes(b"another publication context");
+        assert!(wrong_context.require_original_context(
+            &context.material,
+            &context.registration,
+            &context.dataset,
+            &context.training,
+            &context.evaluation,
+        ).is_err());
+        let mut reordered_predecessors = read.clone();
+        reordered_predecessors.predecessors.swap(0, 1);
+        assert!(reordered_predecessors.require_original_context(
+            &context.material,
+            &context.registration,
+            &context.dataset,
+            &context.training,
+            &context.evaluation,
+        ).is_err());
         Ok(read)
     }
 

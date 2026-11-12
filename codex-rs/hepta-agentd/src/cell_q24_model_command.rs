@@ -4,6 +4,9 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
@@ -95,6 +98,49 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
     }
     pub fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
+    }
+
+    /// Revalidate this opaque original read against the complete D/T/E and
+    /// registered panel context. This pure check is not a substitute for the
+    /// caller's actual Model read in the same publication operation.
+    pub(crate) fn require_original_context(
+        &self,
+        material: &crate::OriginalCellQ24MaterialReceiptConfigV1,
+        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+        dataset: &crate::OriginalCellQ24MaterialCommandReceiptV1,
+        training: &crate::OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &crate::OriginalCellEvaluationCommandReceiptV1,
+    ) -> Result<u64, Error> {
+        let context = context::Context::from_original(
+            material.clone(),
+            registration.clone(),
+            dataset.clone(),
+            training.clone(),
+            evaluation.clone(),
+        )?;
+        let current = context.authenticate(now()?)?;
+        context.require_qualified()?;
+        let expected = wire::decode_completed(
+            &context,
+            &STANDARD_NO_PAD.encode(self.record),
+            current,
+        )?;
+        if &expected != self {
+            return Err(Error::Binding(
+                "same original Model full context and proposal record",
+            ));
+        }
+        // Sample and authenticate again after all pure decoding; callers use
+        // this result only after their own final physical owner I/O.
+        context.authenticate(current)
+    }
+
+    /// Original signed data for the publication context binding. This cannot
+    /// create a Model receipt, sign a result, or grant publication authority.
+    pub(crate) fn original_predecessors_for_publication(
+        &self,
+    ) -> &[SignedLearningEvidenceV1; 4] {
+        &self.predecessors
     }
 
     /// Root may project only the record obtained by this original command
