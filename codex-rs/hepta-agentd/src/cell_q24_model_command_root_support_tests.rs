@@ -218,6 +218,9 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
         material_digest: Digest32,
     ) -> anyhow::Result<()> {
         let context = context(material, registration, &completed, &signatures)?;
+        for execute in [false, true] {
+        let context = context.clone();
+        let actual = actual.clone();
         let (client, mut peer) = fixture_client(context.clone(), FixtureAccess::Fresh)?;
         let frames = Arc::new(AtomicUsize::new(0));
         let observed = Arc::clone(&frames);
@@ -231,7 +234,12 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
                     request.require_context(&context, nonce)
                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                     let outcome = if nonce == 1 {
-                        if request.action != wire::Action::BeginOriginalRead {
+                        let expected_action = if execute {
+                            wire::Action::BeginOriginalExecute
+                        } else {
+                            wire::Action::BeginOriginalRead
+                        };
+                        if request.action != expected_action {
                             return Err(HostIssuerTransportError::InvalidRequest);
                         }
                         let wire::Outcome::Completed { record } = wire::encode_completed(
@@ -264,10 +272,13 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
             }
             Ok(())
         });
-        assert!(matches!(
-            client.begin_original_model_read().await,
-            Err(Error::Evaluation(_)),
-        ));
+        let rejected = if execute {
+            client.begin_original_model_commit(Arc::new(AtomicBool::new(false))).await
+        } else {
+            client.begin_original_model_read().await
+        };
+        assert!(matches!(&rejected, Err(Error::Evaluation(_))));
+        drop(rejected);
         assert!(client.channel.lock().unwrap().is_none());
         assert!(client.retained.lock().unwrap().is_none());
         assert!(matches!(client.readback().await, Err(Error::Unavailable)));
@@ -275,9 +286,14 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
             client.begin_original_model_read().await,
             Err(Error::Unavailable),
         ));
+        assert!(matches!(
+            client.begin_original_model_commit(Arc::new(AtomicBool::new(false))).await,
+            Err(Error::Unavailable),
+        ));
         drop(client);
         server.join().map_err(|_| anyhow::anyhow!("unsealed Model material peer"))??;
         assert_eq!(frames.load(Ordering::SeqCst), 2, "no Finish or retried request");
+        }
         Ok(())
     }
 

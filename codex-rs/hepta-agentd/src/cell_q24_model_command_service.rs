@@ -82,7 +82,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
         request.require_initial(&self.bootstrap.config.material, nonce)?;
         let result = (|| {
             match request.action {
-                wire::Action::BeginOriginalRead => {
+                wire::Action::BeginOriginalRead | wire::Action::BeginOriginalExecute => {
                     if operation.is_some() {
                         return Err(Error::Binding("one original Model operation per channel"));
                     }

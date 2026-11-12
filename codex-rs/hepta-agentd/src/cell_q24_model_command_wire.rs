@@ -23,6 +23,7 @@ pub(in super::super) enum Action {
     Execute,
     Readback,
     BeginOriginalRead,
+    BeginOriginalExecute,
     ReadOriginalPage { transfer: u64, index: u32 },
     FinishOriginalRead { transfer: u64 },
 }

@@ -31,13 +31,21 @@ impl OriginalCellQ24ModelCommandHostV1 {
         &self,
         request: &wire::Request,
     ) -> Result<OriginalModelReadHostOperation<'_>, Error> {
-        if request.action != wire::Action::BeginOriginalRead {
-            return Err(Error::Binding("original Model Begin"));
-        }
+        let execute = match request.action {
+            wire::Action::BeginOriginalRead => false,
+            wire::Action::BeginOriginalExecute => true,
+            _ => return Err(Error::Binding("original Model Begin")),
+        };
         let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
         if state.fenced { return Err(Error::CommitUncertain); }
-        if state.model.is_none() { return Err(Error::ReadbackRequired); }
-        // Failure after the first actual source read cannot reopen this host.
+        if execute && (state.execution_requested || state.model.is_some())
+            || !execute && state.model.is_none()
+        {
+            return Err(Error::ReadbackRequired);
+        }
+        // This is the Model host's state lock, never the native Training lane.
+        // Every native call below returns and drops its permit before E or
+        // the next peer request can run.
         state.fenced = true;
         let inputs = self.original_inputs(&mut state)?;
         let evaluation = self.runtime.block_on(
@@ -49,14 +57,60 @@ impl OriginalCellQ24ModelCommandHostV1 {
         let context = self.original_context(&mut state, &inputs, before)?;
         context.require_qualified()?;
         request.require_context(&context, request.nonce)?;
-        let observed = effect::observe(
-            OriginalCellQ24TrainingCommandOwnerV1::read_original_model(
-                inputs.original.as_ref(),
-                state.model.as_mut().ok_or(Error::ReadbackRequired)?,
-                &context,
-                before,
-            ),
-        )?;
+        let body = before.original_model_transfer_body().to_vec();
+        let pages = body.len().div_ceil(wire::MATERIAL_PAGE_BYTES);
+        if body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES
+            || request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)
+        {
+            return Err(Error::Binding("bounded original Model full material transfer"));
+        }
+        let digest = Digest32::of_bytes(&body);
+        let observed = if execute {
+            // Use the same existing Execute brand and original custody. A
+            // failed or cancelled attempt never receives another Execute.
+            state.execution_requested = true;
+            let fresh = context.authenticate(inputs.started)?;
+            if fresh >= context.material.initial.request.envelope.expiry_unix_seconds {
+                return Err(Error::DeadlineExceeded);
+            }
+            if self.bootstrap.cancellation.load(Ordering::Acquire) {
+                return Err(Error::Cancelled);
+            }
+            before.authenticate_current(fresh)?;
+            before.require_original_model_input(
+                &context.training_cut, context.training.attestation(), fresh,
+            )?;
+            let (file, witness) = state.custody.take().ok_or(Error::ReadbackRequired)?;
+            state.model = Some(
+                OriginalCellQ24TrainingCommandOwnerV1::create_original_model(
+                    inputs.original.as_ref(), file, witness, &context, before,
+                )?,
+            );
+            // create_original_model has released its original Training lane.
+            let fresh = context.authenticate(fresh)?;
+            if fresh >= context.material.initial.request.envelope.expiry_unix_seconds {
+                return Err(Error::DeadlineExceeded);
+            }
+            if self.bootstrap.cancellation.load(Ordering::Acquire) {
+                return Err(Error::Cancelled);
+            }
+            before.authenticate_current(fresh)?;
+            effect::observe(
+                OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(
+                    inputs.original.as_ref(),
+                    state.model.as_mut().ok_or(Error::ReadbackRequired)?,
+                    &context, before,
+                ),
+            )?
+        } else {
+            effect::observe(
+                OriginalCellQ24TrainingCommandOwnerV1::read_original_model(
+                    inputs.original.as_ref(),
+                    state.model.as_mut().ok_or(Error::ReadbackRequired)?,
+                    &context, before,
+                ),
+            )?
+        };
         let effect::Observed::Completed(observed) = observed else {
             return Err(match observed {
                 effect::Observed::Missing => Error::Missing,
@@ -77,14 +131,6 @@ impl OriginalCellQ24ModelCommandHostV1 {
         if state.retained.as_ref().is_some_and(|previous| previous != &model) {
             return Err(Error::CommitUncertain);
         }
-        let body = before.original_model_transfer_body().to_vec();
-        let pages = body.len().div_ceil(wire::MATERIAL_PAGE_BYTES);
-        if body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES
-            || request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)
-        {
-            return Err(Error::Binding("bounded original Model full material transfer"));
-        }
-        let digest = Digest32::of_bytes(&body);
         Ok(OriginalModelReadHostOperation {
             host: self, state, original: inputs.original, context,
             evaluation: Some(evaluation), observed, model, record, body, digest,
