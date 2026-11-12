@@ -224,3 +224,6 @@ fn root_start() -> io::Result<u64> {
         .filter(|value| *value != 0)
         .ok_or_else(|| io::Error::other("actual Root incarnation missing"))
 }
+
+pub(crate) use deployment::RegisteredInitialLearningTrustV1;
+pub use deployment::RootInitialLearningTrustFilesV1;

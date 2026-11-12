@@ -501,3 +501,6 @@ impl PreparedHostAuthoritySession {
         }
     }
 }
+
+pub(crate) use generation_initial::RegisteredInitialLearningTrustV1;
+pub use generation_initial::RootInitialLearningTrustFilesV1;

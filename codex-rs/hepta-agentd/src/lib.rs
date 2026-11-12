@@ -1434,3 +1434,5 @@ pub use cell_q24_publication_driver::OriginalCellQ24RetainedArtifactForRootV1;
 
 #[cfg(target_os = "linux")]
 mod root_initial_learning_trust_data;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootInitialLearningTrustFilesV1;

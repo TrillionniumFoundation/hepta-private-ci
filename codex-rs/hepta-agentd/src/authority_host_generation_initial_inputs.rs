@@ -15,6 +15,7 @@ pub enum RootGenerationInitialModeV1 {
 }
 
 pub struct RootGenerationInitialEnrollmentV1 {
+    pub learning_trust: Option<Arc<crate::RootInitialLearningTrustFilesV1>>,
     pub mode: RootGenerationInitialModeV1,
     pub current_directory: Arc<RootAuthorityDirectory>,
     pub target: crate::RootGenerationJournalInputsV1,

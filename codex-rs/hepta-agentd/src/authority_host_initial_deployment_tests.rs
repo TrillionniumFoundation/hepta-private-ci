@@ -67,6 +67,7 @@ impl RootGenerationInitialDeploymentFilesV1 {
         .map_err(io::Error::other)?;
         let current = &artifacts.retained_current;
         let descriptor = InitialDeploymentData {
+            learning_trust: None,
             schema_version: 1,
             mode: inputs.mode,
             operation,
