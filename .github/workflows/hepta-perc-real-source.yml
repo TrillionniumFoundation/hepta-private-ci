@@ -43,6 +43,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: ${{ github.workspace }}/scripts
       OMP_NUM_THREADS: "1"
+      OMP_THREAD_LIMIT: "1"
       OPENBLAS_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
       RUSTUP_TOOLCHAIN: "1.96.0"
@@ -189,6 +190,18 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/perc1_ci_inputs.py --output "$PERC_CI_PRIVATE/inputs" > "$PERC_CI_PUBLIC/INPUTS.json"
+      - name: Build the trained MLP native control before contract discovery
+        id: trained_native
+        run: |
+          set -euo pipefail
+          python scripts/perc1_trained_native.py --repo "$GITHUB_WORKSPACE" \
+            --source-ref "$SOURCE_SHA" --build-dir "$PERC_CI_PRIVATE/trained-native-build" \
+            --cargo "$(rustup which --toolchain 1.96.0 cargo)" \
+            --rustc "$(rustup which --toolchain 1.96.0 rustc)" --online \
+            > "$PERC_CI_PRIVATE/trained-native-build-driver.stdout.log" \
+            2> "$PERC_CI_PRIVATE/trained-native-build-driver.stderr.log"
+          test -x "$PERC_CI_PRIVATE/trained-native-build/perc1-trained-native"
+          printf 'PERC1_TRAINED_NATIVE_BINARY=%s\n' "$PERC_CI_PRIVATE/trained-native-build/perc1-trained-native" >> "$GITHUB_ENV"
       - name: Run all PERC Python cases with real weight, document and browser prerequisites
         id: tests
         run: |
@@ -236,6 +249,7 @@ jobs:
                   'test_perc1_source_freeze', 'test_perc1_source_feature_profile',
                   'test_perc1_profiled_source_entry', 'test_perc1_terminal_comparison',
                   'test_perc1_cord_task', 'test_perc1_source_reuse', 'test_perc1_repeat_training',
+                  'test_perc1_cord_training', 'test_perc1_trained_native',
               )
           }
           producer = [name for name in cases if name.startswith('test_perc1_producer.ProducerExecutionTests.')]
@@ -341,8 +355,14 @@ jobs:
               if path.is_file():
                   shutil.copyfile(path, public / ('native-' + name))
           manifest = {}
-          for folder in ('inputs', 'legacy-source', 'document-smoke', 'source-qualification', 'active-qualification'):
+          for name in ('build.json', 'build.stdout.log', 'build.stderr.log'):
+              path = private / 'trained-native-build' / name
+              if path.is_file():
+                  shutil.copyfile(path, public / ('trained-native-' + name))
+          for folder in ('inputs', 'legacy-source', 'trained-native-build', 'document-smoke', 'source-qualification', 'active-qualification'):
               for path in sorted((private / folder).rglob('*')):
+                  if folder == 'trained-native-build' and 'target' in path.relative_to(private / folder).parts:
+                      continue
                   if path.is_file() and not path.is_symlink():
                       with path.open('rb') as stream:
                           fingerprint = hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -368,7 +388,7 @@ jobs:
               'source_failure_type': source_failure.get('error_type') if source_failure else None,
               'active_qualification_status': active['status'] if active else 'NOT_COMPLETED',
               'stage_outcomes': {name: stages.get(name, {}).get('outcome', 'unknown')
-                                 for name in ('checkout', 'python', 'bind', 'legacy_checkout', 'legacy', 'runtime', 'browser', 'inputs', 'tests', 'native', 'source', 'active')},
+                                 for name in ('checkout', 'python', 'bind', 'legacy_checkout', 'legacy', 'runtime', 'browser', 'inputs', 'trained_native', 'tests', 'native', 'source', 'active')},
               'scientific_status': 'HOLD', 'adoption': 'NoUpdate',
               'source_independence_verified': False, 'production_daemon_integrated': False,
               'publication_scope': 'case-status and compiler logs, selected summaries and SHA/size provenance only; no FUNSD images/crops, OCR content, wire, RGB, or owner journals',
