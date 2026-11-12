@@ -7,6 +7,7 @@ use super::super::benchmark;
 use super::*;
 use crate::learning_owner_evidence;
 use crate::neuron_cell_evaluation::OriginalCellEvaluationObserversV1;
+use crate::root_independent_b_candidate_notice::CandidateNotice;
 use crate::root_independent_b_protocol::PreparedPlanData;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -22,7 +23,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
         action: impl FnOnce(PreparedPlanData) -> io::Result<T>,
-    ) -> io::Result<T> {
+    ) -> io::Result<(T, CandidateNotice)> {
         let end = self.end.min(frame_end);
         // Keep both real SH locks through the durable Ready CAS, not just the
         // inner Root callback. No native borrow can release these descriptors.
@@ -33,7 +34,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 .try_lock()
                 .map_err(|_| io::Error::other("original B native owners busy"))?;
             let files = &mut state.files;
-            let (value, training, protocol, authorities, saved_plan) = service
+            let (value, notice, training, protocol, authorities, saved_plan) = service
                 .with_learning_profile(
                     config,
                     registration,
@@ -128,6 +129,15 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                             .to_string(),
                             expires_at_seconds: enrollment.expires_at_seconds,
                         };
+                        let notice = CandidateNotice::from_original_training(
+                            self.original_binding(),
+                            &training,
+                            data.clone(),
+                            enrollment.registered_at_seconds,
+                        )?;
+                        if let Some(source) = &enrollment.admitted_source {
+                            source.require_original(files)?;
+                        }
                         let value = action(data);
                         observers
                             .require_original_plan(&plan)
@@ -147,7 +157,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         enrollment.realized_training_head = Some(training_head.into_array());
                         enrollment.realized_plan = Some(plan_digest.into_array());
                         enrollment.original_training_attestation = Some(signed);
-                        Ok((value?, training, protocol, authorities, plan))
+                        Ok((value?, notice, training, protocol, authorities, plan))
                     },
                 )?;
             owner_alive(owner, end)?;
@@ -176,7 +186,10 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 return Err(io::Error::other("original B postcontext differs"));
             }
             owner_alive(owner, end)?;
-            Ok(value)
+            if let Some(source) = &enrollment.admitted_source {
+                source.require_original(files)?;
+            }
+            Ok((value, notice))
         })
     }
 }
