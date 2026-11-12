@@ -8,6 +8,15 @@ on:
       - scripts/ndu_real_runtime/actor.py
       - scripts/ndu_real_runtime/episode.py
       - scripts/ndu_real_runtime/test_content_identity_native.py
+      - scripts/ndu_real_runtime/macro*.py
+      - scripts/ndu_real_runtime/test_macro*.py
+      - scripts/ndu_real_runtime/metacontrol_macro_contract.py
+      - scripts/ndu_real_runtime/critic_context.py
+      - scripts/ndu_real_runtime/controllers.py
+      - scripts/ndu_real_runtime/objective.py
+      - scripts/ndu_real_runtime/neural.py
+      - scripts/ndu_real_runtime/ocr.py
+      - scripts/ndu_real_materials/**
       - scripts/ndu_real_runtime/metacontrol_value_gate.py
       - scripts/ndu_real_runtime/test_metacontrol_value_gate.py
   workflow_dispatch:
@@ -95,6 +104,7 @@ jobs:
             "torch==2.5.1+cpu" --index-url https://download.pytorch.org/whl/cpu
 
       - name: Record the actual runtime and kernel qualification
+        id: runtime
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -130,7 +140,7 @@ jobs:
           assert sys.version_info[:2] == (3, 11) and platform.system() == "Linux"
           assert os.geteuid() != 0 and record["seccomp_library"]
           assert torch.__version__ == "2.5.1+cpu" and torch.version.cuda is None
-          # The original native suite must fail if Landlock is unavailable.
+          # Both native suites must fail if Landlock is unavailable.
           # This observation grants no skip, fallback, or permission change.
           PY
 
@@ -159,6 +169,51 @@ jobs:
           raise SystemExit(0 if passed else 1)
           PY
 
+      - name: Require both new native macro methods separately with zero skips
+        if: always() && steps.runtime.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ctrl-content-identity-native/macro-tests.log"
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          out = Path(os.environ["RUNNER_TEMP"]) / "ctrl-content-identity-native"
+          identity = json.loads((out / "identity.json").read_text())
+          name = "ndu_real_runtime.test_macro_native.NativeMacroTests"
+          suite = unittest.defaultTestLoader.loadTestsFromName(name)
+          required = {
+              name + ".test_native_stop_and_read_reselect_deliver_and_score",
+              name + ".test_training_and_exploration_overrides_are_rejected_before_launch",
+          }
+          discovered = {test.id() for test in suite}
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = (required <= discovered and result.wasSuccessful()
+                    and result.testsRun >= 2 and not result.skipped
+                    and not result.expectedFailures and not result.unexpectedSuccesses)
+          record = {"schema": "ctrl.native-macro.tests.v1",
+                    "status": "PASSED_NATIVE_FIXTURE" if passed else "HOLD",
+                    "source_sha": identity["source_sha"],
+                    "tested_sha": identity["tested_sha"],
+                    "tested_tree": identity["tested_tree"],
+                    "suite": name, "minimum_tests": 2,
+                    "required_test_ids": sorted(required),
+                    "discovered_test_ids": sorted(discovered),
+                    "executed_tests": result.testsRun, "errors": len(result.errors),
+                    "failures": len(result.failures), "skipped": len(result.skipped),
+                    "expected_failures": len(result.expectedFailures),
+                    "unexpected_successes": len(result.unexpectedSuccesses),
+                    "control_training_labels": "manufactured fixture only",
+                    "independent_real_tasks_added": 0,
+                    "policy_evaluation_performed": False,
+                    "full_physical_cost_observed": False,
+                    "adoption_authorized": False}
+          with (out / "macro-tests.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          print(json.dumps(record, sort_keys=True))
+          raise SystemExit(0 if passed else 1)
+          PY
+
       - name: Require unchanged source and index
         if: always() && steps.checkout.outcome == 'success'
         run: |
@@ -167,7 +222,7 @@ jobs:
           git diff --cached --exit-code
           test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Retain fixture-only runtime records and test logs
+      - name: Retain original and macro fixture runtime records and logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

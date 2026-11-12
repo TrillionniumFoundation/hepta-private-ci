@@ -72,6 +72,19 @@ class EpisodeHost:
         self.public.mkdir()
         self.actor_output.mkdir()
         self.training, self.exploration = training, list(exploration)
+        self.macro_policy = profile.get("macro_policy")
+        if self.macro_policy is not None:
+            pin = self.macro_policy
+            if (
+                training
+                or exploration
+                or set(pin) != {"path", "sha256"}
+                or Path(pin["path"]).is_symlink()
+                or file_sha(pin["path"]) != pin["sha256"]
+            ):
+                raise ValueError(
+                    "Invalid frozen macro deployment or exploration override"
+                )
         if case["role"] not in {"train", "development", "retention_validation"}:
             raise PermissionError(
                 "Sealed confirmation has no release in this pilot host"
@@ -99,6 +112,16 @@ class EpisodeHost:
             )
         self.utility_profile_sha256 = canonical_sha(utility_profile(self.control))
         self.control_profile_sha256 = canonical_sha(asdict(self.control))
+        if self.macro_policy:
+            from .macro_actor import verify_host_deployment
+
+            verify_host_deployment(
+                self.macro_policy,
+                config,
+                weights_sha256=profile["model_sha256"],
+                control_sha256=self.control_profile_sha256,
+                utility_sha256=self.utility_profile_sha256,
+            )
         self.deployment_profile = Path(profile["weights"]).with_name(
             "deployment-profile.json"
         )
@@ -240,6 +263,8 @@ class EpisodeHost:
                 or value.get("control_profile_sha256") != self.control_profile_sha256
                 or value.get("memory_mode") != self.control.memory_mode
                 or value.get("content_identity_profile") not in (None, SELECTION_SCHEMA)
+                or value.get("macro_policy_sha256")
+                != (self.macro_policy["sha256"] if self.macro_policy else None)
             ):
                 raise ValueError("Invalid actor readiness or actual model pin")
             self.ready = True
@@ -259,13 +284,13 @@ class EpisodeHost:
             or value.get("parameters_unchanged") is not True
         ):
             raise ValueError("Unexpected actor message or model mutation")
-        if self.training != (
+        if (self.training or self.macro_policy is not None) != (
             "candidate_features" in value and "candidate_metadata" in value
         ):
             raise ValueError(
                 "Deployment/training feature disclosure differs from the locked phase"
             )
-        if self.training:
+        if self.training or self.macro_policy is not None:
             legal = [
                 action
                 for action in ACTIONS
@@ -403,6 +428,13 @@ class EpisodeHost:
             command += ["--training-exploration"]
         if self.deployment_profile.exists():
             command += ["--deployment-profile", str(self.deployment_profile)]
+        if self.macro_policy:
+            command += [
+                "--macro-policy",
+                self.macro_policy["path"],
+                "--expected-macro-policy-sha256",
+                self.macro_policy["sha256"],
+            ]
         return command
 
     def run(self):
@@ -417,6 +449,7 @@ class EpisodeHost:
                         *self.config["runtime_roots"],
                         self.profile["weights"],
                         self.profile["control_plan"],
+                        *([self.macro_policy["path"]] if self.macro_policy else []),
                         *(
                             [str(self.deployment_profile)]
                             if self.deployment_profile.exists()
