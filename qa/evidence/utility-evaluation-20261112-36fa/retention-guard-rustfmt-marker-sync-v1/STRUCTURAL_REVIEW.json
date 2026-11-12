@@ -1,0 +1,160 @@
+{
+  "format": "hepta.retention-rustfmt-marker-sync.static-review.v1",
+  "base_callers_blob": "2354abb1eb485629ecdf17a2e8952a529b8df384",
+  "partial_projection": true,
+  "full_source_gate_run": false,
+  "runtime_guard_coverage": false,
+  "boundary_rows": 534,
+  "boundary_rows_all_unchanged": true,
+  "protected_rows": 409,
+  "protected_row_leaf_differences": [
+    {
+      "path": [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "sequence",
+        21
+      ],
+      "before": "if observed[0].qualification.product().decision.decision.disposition",
+      "after": "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    },
+    {
+      "path": [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "top_level",
+        2
+      ],
+      "before": "if observed[0].qualification.product().decision.decision.disposition",
+      "after": "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    },
+    {
+      "path": [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "sequence",
+        56
+      ],
+      "before": "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "after": "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    },
+    {
+      "path": [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "top_level",
+        10
+      ],
+      "before": "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "after": "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    }
+  ],
+  "other_parsed_fields_unchanged": true,
+  "qa_constants_changed": [
+    {
+      "before": "if observed[0].qualification.product().decision.decision.disposition",
+      "after": "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    },
+    {
+      "before": "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "after": "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    },
+    {
+      "before": "primary.qualified &&",
+      "after": "primary.qualified\n        &&"
+    },
+    {
+      "before": "!primary.qualified &&",
+      "after": "!primary.qualified\n        &&"
+    }
+  ],
+  "qa_AST_equal_after_exact_four_literal_normalization": true,
+  "qa_functions": [
+    {
+      "name": "setUpClass",
+      "identical_AST": true,
+      "only_expected_literal_AST_delta": false
+    },
+    {
+      "name": "assert_rejected",
+      "identical_AST": true,
+      "only_expected_literal_AST_delta": false
+    },
+    {
+      "name": "guard",
+      "identical_AST": true,
+      "only_expected_literal_AST_delta": false
+    },
+    {
+      "name": "test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected",
+      "identical_AST": false,
+      "only_expected_literal_AST_delta": true
+    },
+    {
+      "name": "test_guard_must_execute_at_the_original_top_level_before_success_mapping",
+      "identical_AST": true,
+      "only_expected_literal_AST_delta": false
+    },
+    {
+      "name": "test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain",
+      "identical_AST": true,
+      "only_expected_literal_AST_delta": false
+    }
+  ],
+  "QA_method_count": 3,
+  "allowlist_exact_single_line_append": "sha256:a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9 CALLERS.toml",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "before": {
+        "bytes": 1255349,
+        "sha256": "42f75c0b463c6793048e3b5afd50b18f57e5e770a3b7fc9e89c1c4c29b532b91",
+        "git_blob_sha": "2354abb1eb485629ecdf17a2e8952a529b8df384"
+      },
+      "after": {
+        "bytes": 1255591,
+        "sha256": "a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9",
+        "git_blob_sha": "2216d20b41a447ea57ef9c8210cd5a6205aea55e"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+      "before": {
+        "bytes": 6384,
+        "sha256": "db4b6eec02081970257497d67dafadb584e5fa48ce5b2b3991ded19b1ec73b3f",
+        "git_blob_sha": "bf3bb477804f7cf177f35e55e97b1f4624887c90"
+      },
+      "after": {
+        "bytes": 6645,
+        "sha256": "fee761437034e121e1df82ead791f5cc8a22dafefb6ff75c3ca4fac62d54ebc4",
+        "git_blob_sha": "71647b7319f629667de3c485212bfab7fbdd808e"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": {
+        "bytes": 12130,
+        "sha256": "061992ecee306da24766613b47c58c57c4b171b3d11ac850c0a3c4aa926beee5",
+        "git_blob_sha": "c528a8d35c21a433ada16cdbb2e92aef5093f9a4"
+      },
+      "after": {
+        "bytes": 12215,
+        "sha256": "52598a29f8d0e7f76144660197f6298b145485a01cc6f970d63bf9e652b47e82",
+        "git_blob_sha": "a677f5e0da7093e113110d7d9cdbed05c783b879"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 20062,
+    "sha256": "6c781fff3c3d9d7ec66b5f060e29c12dc280ec0cca334dbd257248f059324298",
+    "git_blob_sha": "ae98aa23ac8695e176f5dd8ed77116a6e644166f"
+  }
+}

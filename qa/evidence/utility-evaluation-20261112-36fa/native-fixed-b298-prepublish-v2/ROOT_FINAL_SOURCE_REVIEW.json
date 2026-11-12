@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.utility.post-maintenance-root-review.v1",
+  "status": "maintenance-bytes-and-source-reviewed-before-marker-sync",
+  "source_parent": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "prepared_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+  "maintenance_tree": "faf047faf110c20115453766329bd2a66f303df7",
+  "files": 14851,
+  "after_fix_inventory_sha256_observed": "750264e5cb5226c6745cdd827198aabda90ce0dd3a53480ccf04c6f6bc5b0d4b",
+  "after_fix_inventory_independently_reconstructed": false,
+  "after_fmt_inventory_bytes": 3440077,
+  "after_fmt_inventory_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+  "actual_changed_paths": [
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+  ],
+  "commands": [
+    {
+      "name": "toolchain",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']]; [subprocess.run(c,check=True) for c in commands]"
+      ],
+      "execution": {
+        "log_bytes": 415,
+        "log_sha256": "6c72114ad2667b12c3e486c8d80e7d74876bb6757ec198df455da1536061ccbe",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "requested_at": "2026-11-12T13:24:30.611798+00:00",
+      "finished_at": "2026-11-12T13:24:30.778960+00:00"
+    },
+    {
+      "name": "fix",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "execution": {
+        "log_bytes": 115670,
+        "log_sha256": "13bdffd3abada189a1899fda17e8e827f2d2c7e513d04eeefb34ae4d988110f3",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "requested_at": "2026-11-12T13:24:30.793942+00:00",
+      "finished_at": "2026-11-12T13:37:48.747509+00:00"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+      ],
+      "execution": {
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "requested_at": "2026-11-12T13:37:54.267716+00:00",
+      "finished_at": "2026-11-12T13:37:58.274913+00:00"
+    }
+  ],
+  "raw_fix": {
+    "bytes": 115670,
+    "sha256": "13bdffd3abada189a1899fda17e8e827f2d2c7e513d04eeefb34ae4d988110f3",
+    "blob": "a7cb03329b0f95430b64acae6ad44efa8b14baad",
+    "gzip_bytes": 19125,
+    "gzip_sha256": "2c2c980b7ed0074c9ff6806474b5be1984cb150a08661988c271304adb0dcd31",
+    "gzip_blob": "e8b4c376f00ccbe6ec7717794769ebdff42829f5"
+  },
+  "postimages_original": {
+    "bytes": 35622,
+    "sha256": "22ef5595ab73d573f3fa4b66e9dd12182abb828c6b297a5a072367be2c4a4fbc",
+    "blob": "51793847115c061780d52fdc88cdc5cd8bedafd3",
+    "gzip_bytes": 10671,
+    "gzip_sha256": "44b7e7d9c8f92c9c550c55159376cc146314ab14af44effc63a13f63777dec70",
+    "gzip_blob": "4bbc13ffd637e45eb54b312f9246f722888a2c46"
+  },
+  "checks": [
+    "Full original fix gzip exactly decodes to independently fetched full original raw and command-record hash",
+    "All three actual postimages match their original manifest and exact prepared preimages",
+    "Actual original Git patch applies without fuzz to all three exact preimages and yields all full postimages",
+    "Both production guard changes are whitespace-only; manually reviewed exact diff preserves their original conditions and error strings",
+    "Fixture nested-if becomes equivalent short-circuit let-chain with unchanged action/error/body",
+    "Complete after-fmt physical inventory independently reconstructed and matched",
+    "Complete final Merkle tree independently reconstructed"
+  ],
+  "review_correction": "Initial root review stopped on its own unsupported assumption that after-fix bytes equal the final fixture plus old guard bytes. The native intermediate hash differs; no source failure or compiler failure was inferred. Final after-fmt bytes are independently verified, with the intermediate phase left as an observed hash until its actual inventory is read.",
+  "remaining_before_freeze": [
+    "Two retention guard source markers and corresponding mutation literals must follow actual formatting; ordinary prepares a narrow three-non-Rust-file synchronization",
+    "Original full source/caller/native gates still have no result on a new source commit"
+  ],
+  "not_claimed": [
+    "new source commit",
+    "full-gate acceptance",
+    "positive retention-guard runtime coverage",
+    "real authorized ordinary utility"
+  ]
+}

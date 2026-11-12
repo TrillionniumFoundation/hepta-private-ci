@@ -1,0 +1,162 @@
+{
+  "finished_at": "2026-11-12T13:47:00.826402+00:00",
+  "observations": [
+    {
+      "baseline": true,
+      "deflate_bytes": 1143972,
+      "deflate_sha256": "22f9f320623f26e2226f173e7817579f876235a3bf39de64555fe78492d4d7d0",
+      "delta": [],
+      "exact_gzip_compress_mtime0_reproduction": true,
+      "file_version": {
+        "ctime_ns": 1794489862473551970,
+        "device": 2050,
+        "inode": 53940300,
+        "mtime_ns": 1794489862473551970,
+        "size": 1143990
+      },
+      "files": 14851,
+      "gzip_bytes": 1143990,
+      "gzip_git_blob_sha": "5d5f3c578f353afff83cf22a63b5b00e2c60517f",
+      "gzip_header_base64": "H4sIAAAAAAACAw==",
+      "gzip_sha256": "047c0b5ad18be53047b7bf118c1e04bb2838516818c0683eaff9aca138f47038",
+      "gzip_trailer_base64": "wQ3ZSs19NAA=",
+      "label": "source-before",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/source-before.files.json.gz",
+      "raw_bytes": 3440077,
+      "raw_git_blob_sha": "899177497702abb24084d279df39f42a9af57191",
+      "raw_sha256": "5cbe4f67b27b7c57d0bb8d3ec8d3fe6ac75d5b09578c23af7b6179f6546d4aab"
+    },
+    {
+      "deflate_bytes": 1143975,
+      "deflate_sha256": "153958efafe3edc4fe2165a61594ad704cf16e5792ed0d361e374057fe1480fa",
+      "delta": [
+        {
+          "after": {
+            "blob": "abb48293df85dc2a71f5a9540e488da9159230bd",
+            "bytes": 5722,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+            "sha256": "a93abb8a3e51347696c666e47cdd0da6f34f48cf856d71f6baf5ca14f034aaff"
+          },
+          "before": {
+            "blob": "27fbc11be9afac9a008fdfe08f2c29ed2b3f53df",
+            "bytes": 5746,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+            "sha256": "7851baefc3c89ebf278369423609e6898176ab2a57c8afe1bc8ec0f0c5daeb91"
+          },
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs"
+        }
+      ],
+      "exact_gzip_compress_mtime0_reproduction": true,
+      "file_version": {
+        "ctime_ns": 1794490672893985774,
+        "device": 2050,
+        "inode": 53940314,
+        "mtime_ns": 1794490672893985774,
+        "size": 1143993
+      },
+      "files": 14851,
+      "gzip_bytes": 1143993,
+      "gzip_git_blob_sha": "1a939322420f4ffe337be4aaf170e04bc1599381",
+      "gzip_header_base64": "H4sIAAAAAAACAw==",
+      "gzip_sha256": "5b0718ed7f7f951cdae12daa1f1e47185531a114de97f90efa77e8cb89d61ed7",
+      "gzip_trailer_base64": "xxy/ys19NAA=",
+      "label": "source-after-fix",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/source-after-fix.files.json.gz",
+      "raw_bytes": 3440077,
+      "raw_git_blob_sha": "6fdf0c6409670e3afa4112caad073895d769d7ca",
+      "raw_sha256": "750264e5cb5226c6745cdd827198aabda90ce0dd3a53480ccf04c6f6bc5b0d4b"
+    },
+    {
+      "deflate_bytes": 1143974,
+      "deflate_sha256": "71ae82550b312ce0683c2490dc490d61edeef0a4251ca6f019de92cfed87e5db",
+      "delta": [
+        {
+          "after": {
+            "blob": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+            "bytes": 5718,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+            "sha256": "fa5cc5336720a595eb072492d95c160ae1a0637eedafec3232a82c9ef832a70f"
+          },
+          "before": {
+            "blob": "27fbc11be9afac9a008fdfe08f2c29ed2b3f53df",
+            "bytes": 5746,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+            "sha256": "7851baefc3c89ebf278369423609e6898176ab2a57c8afe1bc8ec0f0c5daeb91"
+          },
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs"
+        },
+        {
+          "after": {
+            "blob": "18f897c8053202c4d45c99e8504192f479fb67e3",
+            "bytes": 10741,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+            "sha256": "28c03f1adca8dbc53154e14da0232b5aa6130ebbf9c8b55a3c6c71c082c98458"
+          },
+          "before": {
+            "blob": "aea0027ad5f6e51825469b5d8fb8b14d202da575",
+            "bytes": 10690,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+            "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2"
+          },
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs"
+        },
+        {
+          "after": {
+            "blob": "7c8eadbd9cb73446208bdc386121af656e390ce4",
+            "bytes": 9073,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+            "sha256": "e0ccf9118eab8e321a5b686a2fdb843811f377008c0a097397e271634308cb41"
+          },
+          "before": {
+            "blob": "8a779085dd02536a646415406abcaa471b097c10",
+            "bytes": 9008,
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+            "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598"
+          },
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+        }
+      ],
+      "exact_gzip_compress_mtime0_reproduction": true,
+      "file_version": {
+        "ctime_ns": 1794490680335907649,
+        "device": 2050,
+        "inode": 53940319,
+        "mtime_ns": 1794490680335907649,
+        "size": 1143992
+      },
+      "files": 14851,
+      "gzip_bytes": 1143992,
+      "gzip_git_blob_sha": "d912401fccac5494340e2054f37a83a524ff3aaa",
+      "gzip_header_base64": "H4sIAAAAAAACAw==",
+      "gzip_sha256": "cf243a7df2d6bd7698df017c0a7f1b9b4f46b5a8785d9e505beed0eb93826e61",
+      "gzip_trailer_base64": "yDvU9M19NAA=",
+      "label": "source-after-fmt",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/source-after-fmt.files.json.gz",
+      "raw_bytes": 3440077,
+      "raw_git_blob_sha": "252a72a09f17c0aaeeea11db85e177cca92a0012",
+      "raw_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff"
+    }
+  ],
+  "original_result": {
+    "bytes": 54926,
+    "git_blob_sha": "51d81f75db5224ba1372f380ba7249c1d3efccfb",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/RESULT.json",
+    "sha256": "16b444ef1b727062153dbb16e57bd489413fecc834e3107fb8f5fce4a67f58e6"
+  },
+  "purpose": "Read retained original inventory bytes; no source mutation, compiler, or tests",
+  "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "qualification": false,
+  "source_files_read": false,
+  "started_at": "2026-11-12T13:46:59.836160+00:00",
+  "status": "observed_exact_original_inventory_differences",
+  "zlib_runtime_version": "1.3",
+  "zlib_version": "1.3"
+}

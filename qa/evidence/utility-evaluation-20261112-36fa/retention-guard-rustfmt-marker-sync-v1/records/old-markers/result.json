@@ -1,0 +1,34 @@
+{
+  "phase": "old-markers",
+  "scope": "three original source-mutation QA methods in partial isolated projection",
+  "not_full_source_gate": true,
+  "not_runtime_guard_coverage": true,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_original_evaluation_retention_guard_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source",
+  "timeout_seconds": 600,
+  "started_at": "2026-11-12T13:45:49.311662+00:00",
+  "finished_at": "2026-11-12T13:45:49.580303+00:00",
+  "elapsed_seconds": 0.26494186499985517,
+  "returncode": 1,
+  "timed_out": false,
+  "exception": null,
+  "source_unchanged": true,
+  "source_files": 7,
+  "raw_log": {
+    "bytes": 4529,
+    "sha256": "1787603e1e8e168e90c414312e400965eec7fecee3af43683c8ebad17c2f6638",
+    "git_blob_sha": "d37d1ec2e9b9776494b1fed046cc39f2d5755772"
+  },
+  "status": "failed_scoped_qa"
+}

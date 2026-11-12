@@ -1,0 +1,346 @@
+{
+  "format": "hepta.retention-rustfmt-marker-sync.preparation-and-scoped-QA.v1",
+  "status": "prepared_three_non_Rust_postimages_with_actual_scoped_before_after_QA",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_prepared_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+  "published_commit": null,
+  "source_refs_modified": false,
+  "native_source_modified_by_this_task": false,
+  "full_source_closure_executed": false,
+  "full_caller_verifier_executed": false,
+  "cargo_or_runtime_guard_behavior_tests_executed": false,
+  "real_independent_A_B_C_qualification": false,
+  "input_contract": {
+    "isolated_root": "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg",
+    "scope": "3 original source mutation methods; not original full gate nor runtime guard coverage",
+    "files": {
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs": {
+        "bytes": 10741,
+        "sha256": "28c03f1adca8dbc53154e14da0232b5aa6130ebbf9c8b55a3c6c71c082c98458",
+        "git_blob_sha": "18f897c8053202c4d45c99e8504192f479fb67e3"
+      },
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs": {
+        "bytes": 9073,
+        "sha256": "e0ccf9118eab8e321a5b686a2fdb843811f377008c0a097397e271634308cb41",
+        "git_blob_sha": "7c8eadbd9cb73446208bdc386121af656e390ce4"
+      },
+      ".github/blob-size-allowlist.txt": {
+        "bytes": 12130,
+        "sha256": "061992ecee306da24766613b47c58c57c4b171b3d11ac850c0a3c4aa926beee5",
+        "git_blob_sha": "c528a8d35c21a433ada16cdbb2e92aef5093f9a4"
+      },
+      "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py": {
+        "bytes": 6384,
+        "sha256": "db4b6eec02081970257497d67dafadb584e5fa48ce5b2b3991ded19b1ec73b3f",
+        "git_blob_sha": "bf3bb477804f7cf177f35e55e97b1f4624887c90"
+      },
+      "CALLERS.toml": {
+        "bytes": 1255349,
+        "sha256": "42f75c0b463c6793048e3b5afd50b18f57e5e770a3b7fc9e89c1c4c29b532b91",
+        "git_blob_sha": "2354abb1eb485629ecdf17a2e8952a529b8df384"
+      },
+      "scripts/verify_hepta_callers.py": {
+        "bytes": 38402,
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+        "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+      },
+      "scripts/hepta_typed_callers.py": {
+        "bytes": 7672,
+        "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+        "git_blob_sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+      }
+    }
+  },
+  "change_contract": {
+    "paths": [
+      "CALLERS.toml",
+      "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "boundary_count": 534,
+    "protected_count": 409,
+    "all_534_boundary_rows_unchanged": true,
+    "protected_leaf_changes_only": [
+      [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "sequence",
+        21
+      ],
+      [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "top_level",
+        2
+      ],
+      [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "sequence",
+        56
+      ],
+      [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "top_level",
+        10
+      ]
+    ],
+    "QA_AST_normalization_exactly_four_string_constants": true,
+    "assertions_mutations_control_flow_order_preserved": true,
+    "full_old_allowlist_preserved_with_one_exact_SHA256_append": true
+  },
+  "postimages": [
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1255591,
+      "sha256": "a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9",
+      "git_blob_sha": "2216d20b41a447ea57ef9c8210cd5a6205aea55e",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+      "bytes": 6645,
+      "sha256": "fee761437034e121e1df82ead791f5cc8a22dafefb6ff75c3ca4fac62d54ebc4",
+      "git_blob_sha": "71647b7319f629667de3c485212bfab7fbdd808e",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 12215,
+      "sha256": "52598a29f8d0e7f76144660197f6298b145485a01cc6f970d63bf9e652b47e82",
+      "git_blob_sha": "a677f5e0da7093e113110d7d9cdbed05c783b879",
+      "full_GitHub_UTF8_readback_equal": true
+    }
+  ],
+  "packet": {
+    "bytes": 459385,
+    "sha256": "0c7810eccb628e7c85f5634e6f863354aed8c1c2d7cd639cc0e517d165f17167",
+    "git_blob_sha": "77d30701c6e8e51d90e48fd3b6017e9ad092947a",
+    "encoding": "base64 text with one LF; decode base64 then gunzip JSON; decode each files[].postimage_base64",
+    "full_GitHub_UTF8_readback_equal": true,
+    "identity_record": {
+      "path": "PACKET_IDENTITY.json",
+      "bytes": 525,
+      "sha256": "98a95ffef47dbf823863f4b8fcbcff6a9078d2a772a3498247f61761d6da755b",
+      "git_blob_sha": "13a28ce238a1e8b3ff91607654c7db6c1bd517dd"
+    }
+  },
+  "actual_scoped_attempts": [
+    {
+      "phase": "old-markers",
+      "methods_run": 3,
+      "method_pass": 0,
+      "method_fail": 2,
+      "method_error": 1,
+      "returncode": 1,
+      "timed_out": false,
+      "source_unchanged": true,
+      "result": {
+        "path": "records/old-markers/result.json",
+        "bytes": 1031,
+        "sha256": "22a7ba42d6aece275eeb48be7ee0f53ea4a4fcd58a8e82d3f5bf165383b77d56",
+        "git_blob_sha": "3bb53adff869b26d2b57367674d8b3f267f3b90f"
+      },
+      "raw": {
+        "path": "records/old-markers/raw.log",
+        "bytes": 4529,
+        "sha256": "1787603e1e8e168e90c414312e400965eec7fecee3af43683c8ebad17c2f6638",
+        "git_blob_sha": "d37d1ec2e9b9776494b1fed046cc39f2d5755772"
+      }
+    },
+    {
+      "phase": "synchronized-markers",
+      "methods_run": 3,
+      "method_pass": 3,
+      "method_fail": 0,
+      "method_error": 0,
+      "returncode": 0,
+      "timed_out": false,
+      "source_unchanged": true,
+      "result": {
+        "path": "records/synchronized-markers/result.json",
+        "bytes": 1038,
+        "sha256": "24d2f53c158e1559962316bd68c7e8e4d008009fb770e40c542c3274bed7ead3",
+        "git_blob_sha": "af2977794e6a6bafabe69be778667bdbb2a7101a"
+      },
+      "raw": {
+        "path": "records/synchronized-markers/raw.log",
+        "bytes": 890,
+        "sha256": "460c5482e0b90f49314d4a1dda5de88a49cf0801a5a56132a096f333c09ac42d",
+        "git_blob_sha": "f4410c6fac396d24d0413e8ef8d5dc2874bac073"
+      }
+    }
+  ],
+  "scoped_input_limit": "Both attempts use a partial seven-file isolated projection, original verifier/helper, full CALLERS and only the two relevant actual formatted Rust files. This is not the original full source or caller gate.",
+  "source_input_equality": {
+    "within_both_attempts": true,
+    "across_attempts_only_three_non_Rust_prepared_paths_changed": true,
+    "both_actual_formatted_Rust_inputs_unchanged": true,
+    "original_verifier_and_helper_unchanged": true
+  },
+  "placements": [
+    {
+      "path": "INPUTS.json",
+      "bytes": 1822,
+      "sha256": "2325242d21896218df97c8b35d40d9a978c9381b71f26ceeadbe203c714529c8",
+      "git_blob_sha": "937c007ab462a2ff89f4bd63742c34970220517b",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/INPUTS.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "actual-native-maintenance.patch",
+      "bytes": 3876,
+      "sha256": "9cbee8a42a576a5fa876dffbc76dc5f8ec6f6144d14d7a78e4cc0108e2fb2c82",
+      "git_blob_sha": "ad4843b3834becc427b8197e7263a4ddaef20440",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/actual-native-maintenance.patch",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "marker-sync.patch",
+      "bytes": 20062,
+      "sha256": "6c781fff3c3d9d7ec66b5f060e29c12dc280ec0cca334dbd257248f059324298",
+      "git_blob_sha": "ae98aa23ac8695e176f5dd8ed77116a6e644166f",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/marker-sync.patch",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "STRUCTURAL_REVIEW.json",
+      "bytes": 5568,
+      "sha256": "38fbbe7eb8fe5ef16a3001b7c0a0ac6083cca91c30cfd2563c22098ba3c7eb68",
+      "git_blob_sha": "2cbeb583480ac24eeb1fbbe29f0ffab1aeb58ee9",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/STRUCTURAL_REVIEW.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "run_three_methods.py",
+      "bytes": 3132,
+      "sha256": "863326e61eb7cb05605cc37a00b48d3564b072689d472e588007aa6abc931de3",
+      "git_blob_sha": "1df8ceeb6418a1c5433bb8f712272a248a0a7c82",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/run_three_methods.py",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "PACKET_IDENTITY.json",
+      "bytes": 525,
+      "sha256": "98a95ffef47dbf823863f4b8fcbcff6a9078d2a772a3498247f61761d6da755b",
+      "git_blob_sha": "13a28ce238a1e8b3ff91607654c7db6c1bd517dd",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/PACKET_IDENTITY.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 2998,
+      "sha256": "6971828527399ec6b0deadda89210f61a58a4ec13aa6f17d949d3a01970f68b0",
+      "git_blob_sha": "70a5f5675c3f8ae6aaa93251e6c1588f91dad439",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/README.md",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/EXACT_PHASE_TRANSITION.json",
+      "bytes": 358,
+      "sha256": "a9b63bd88fe184e7b6dcfa64734e123877749ae8ce3124c5e23e4611bc86b030",
+      "git_blob_sha": "20b707dc357eb0eb6d6dac87464749525f0de301",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/EXACT_PHASE_TRANSITION.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/old-markers/execution-start.json",
+      "bytes": 640,
+      "sha256": "9dbd743a0c45ad6fd7622880e9e4b4db68fd584d15d02e606f76c5488cd4f0a2",
+      "git_blob_sha": "91bb5503b4b318e2472643d429665b287848fd59",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/old-markers/execution-start.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/old-markers/source-before.json",
+      "bytes": 1564,
+      "sha256": "c4365be9f7c680dfc9cf24835dd21f680d7faed67478437c9ce964b12c958c07",
+      "git_blob_sha": "bde360cab062c3926ebf7f5333ea1c90b3183fc2",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/old-markers/source-before.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/old-markers/source-after.json",
+      "bytes": 1564,
+      "sha256": "c4365be9f7c680dfc9cf24835dd21f680d7faed67478437c9ce964b12c958c07",
+      "git_blob_sha": "bde360cab062c3926ebf7f5333ea1c90b3183fc2",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/old-markers/source-after.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/old-markers/raw.log",
+      "bytes": 4529,
+      "sha256": "1787603e1e8e168e90c414312e400965eec7fecee3af43683c8ebad17c2f6638",
+      "git_blob_sha": "d37d1ec2e9b9776494b1fed046cc39f2d5755772",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/old-markers/raw.log",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/old-markers/result.json",
+      "bytes": 1031,
+      "sha256": "22a7ba42d6aece275eeb48be7ee0f53ea4a4fcd58a8e82d3f5bf165383b77d56",
+      "git_blob_sha": "3bb53adff869b26d2b57367674d8b3f267f3b90f",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/old-markers/result.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/synchronized-markers/execution-start.json",
+      "bytes": 649,
+      "sha256": "a31636c4632b6ec88b1657fb6828a6f73dcd422bdbe8af511cb20b08decdc4fe",
+      "git_blob_sha": "0ca4c75f76acd5cd6b419ea97f7661a54ba39f35",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/synchronized-markers/execution-start.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/synchronized-markers/source-before.json",
+      "bytes": 1564,
+      "sha256": "bb1351ef8d33a971a2b21863e9347e2725e8486c6bba9f458fa4c30f839b1765",
+      "git_blob_sha": "6047d8567d629ff9ed0e004d0428aa02f3326161",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/synchronized-markers/source-before.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/synchronized-markers/source-after.json",
+      "bytes": 1564,
+      "sha256": "bb1351ef8d33a971a2b21863e9347e2725e8486c6bba9f458fa4c30f839b1765",
+      "git_blob_sha": "6047d8567d629ff9ed0e004d0428aa02f3326161",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/synchronized-markers/source-after.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/synchronized-markers/raw.log",
+      "bytes": 890,
+      "sha256": "460c5482e0b90f49314d4a1dda5de88a49cf0801a5a56132a096f333c09ac42d",
+      "git_blob_sha": "f4410c6fac396d24d0413e8ef8d5dc2874bac073",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/synchronized-markers/raw.log",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "records/synchronized-markers/result.json",
+      "bytes": 1038,
+      "sha256": "24d2f53c158e1559962316bd68c7e8e4d008009fb770e40c542c3274bed7ead3",
+      "git_blob_sha": "af2977794e6a6bafabe69be778667bdbb2a7101a",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/records/synchronized-markers/result.json",
+      "full_GitHub_UTF8_readback_equal": true
+    },
+    {
+      "path": "POSTIMAGES.json.gz.b64",
+      "bytes": 459385,
+      "sha256": "0c7810eccb628e7c85f5634e6f863354aed8c1c2d7cd639cc0e517d165f17167",
+      "git_blob_sha": "77d30701c6e8e51d90e48fd3b6017e9ad092947a",
+      "destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/POSTIMAGES.json.gz.b64",
+      "full_GitHub_UTF8_readback_equal": true
+    }
+  ],
+  "manifest_suggested_destination": "qa/evidence/utility-evaluation-20261112-36fa/retention-guard-rustfmt-marker-sync-v1/MANIFEST.json",
+  "verification_note": "Each listed source postimage and evidence blob was actually created or reused as immutable Git data and then fetched in full with exact UTF-8 content equality. The large CALLERS postimage is packaged for evidence placement to avoid an oversized evidence blob."
+}

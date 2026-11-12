@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "import json,sys;sys.dont_write_bytecode=True;p=json.loads(sys.stdin.read());exec(compile(p['driver'],'native-c0f78493-v1.py','exec'),{'__name__':'__main__','INPUT':p})"
+    ],
+    "created_unix_ms": 1794492297365,
+    "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1d0137095-2564-1b21",
+    "idempotency_key": "hepta-utility-36fa-native-c0f78493-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1d0137095-2564-1b21",
+    "request_digest": "5448751a769a8b7782f6abcfb398a5971c525bab3123ec7d9deeccdbe1f7c306",
+    "request_fingerprint": 6073232854028553079,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1d0137095-2564-1b21"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1d0137095-2564-1b21"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

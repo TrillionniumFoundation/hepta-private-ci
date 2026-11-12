@@ -1,0 +1,147 @@
+{
+  "schema": "hepta.utility.formatted-guard-marker-root-review.v1",
+  "status": "reviewed-source-ready-for-non-Rust-native-application-and-publication",
+  "native_maintenance_tree": "faf047faf110c20115453766329bd2a66f303df7",
+  "final_source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "source_files": 14851,
+  "expected_physical_inventory_bytes": 3440077,
+  "expected_physical_inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+  "actual_original_evidence_placements_checked": 19,
+  "boundary_count": 534,
+  "protected_count": 409,
+  "caller_leaf_changes": [
+    {
+      "path": [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "sequence",
+        21
+      ],
+      "before": "if observed[0].qualification.product().decision.decision.disposition",
+      "after": "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    },
+    {
+      "path": [
+        "protected_file",
+        338,
+        "required_function_order",
+        1,
+        "top_level",
+        2
+      ],
+      "before": "if observed[0].qualification.product().decision.decision.disposition",
+      "after": "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    },
+    {
+      "path": [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "sequence",
+        56
+      ],
+      "before": "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "after": "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    },
+    {
+      "path": [
+        "protected_file",
+        389,
+        "required_function_order",
+        0,
+        "top_level",
+        10
+      ],
+      "before": "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "after": "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    }
+  ],
+  "qa_constant_changes": [
+    [
+      "if observed[0].qualification.product().decision.decision.disposition",
+      "if observed[0]\n            .qualification\n            .product()\n            .decision\n            .decision\n            .disposition"
+    ],
+    [
+      "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)",
+      "if primary.qualified\n        && checked_members\n            .iter()\n            .skip(1)\n            .any(|member| !member.qualified)"
+    ],
+    [
+      "primary.qualified &&",
+      "primary.qualified\n        &&"
+    ],
+    [
+      "!primary.qualified &&",
+      "!primary.qualified\n        &&"
+    ]
+  ],
+  "other_qa_AST_equal": true,
+  "original_qa_function_count": 6,
+  "old_actual_test_result": {
+    "methods": 3,
+    "passed": 0,
+    "failed": 2,
+    "errors": 1,
+    "exit": 1
+  },
+  "new_actual_test_result": {
+    "methods": 3,
+    "passed": 3,
+    "failed": 0,
+    "errors": 0,
+    "exit": 0
+  },
+  "both_runs_source_unchanged": true,
+  "only_three_non_Rust_inputs_differ_between_runs": true,
+  "all_original_534_boundaries_unchanged": true,
+  "all_other_protected_fields_unchanged": true,
+  "exact_allowlist_append": "sha256:a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9 CALLERS.toml",
+  "final_delta_from_prepared_a8": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a677f5e0da7093e113110d7d9cdbed05c783b879"
+    },
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2216d20b41a447ea57ef9c8210cd5a6205aea55e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18f897c8053202c4d45c99e8504192f479fb67e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c8eadbd9cb73446208bdc386121af656e390ce4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71647b7319f629667de3c485212bfab7fbdd808e"
+    }
+  ],
+  "new_tree_objects": 7,
+  "not_claimed": [
+    "full source closure pass",
+    "full caller pass",
+    "Rust behavior test pass",
+    "positive retention guard runtime coverage",
+    "real authorized ordinary A/B/C qualification"
+  ]
+}

@@ -1,0 +1,13 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
+@@ -126,7 +126,9 @@
+             channel.check_peer_lifetime()?;
+             let reader = {
+                 match self.state.try_lock() {
+-                    Ok(state) => state.selection_reader.as_ref().map(Arc::clone),
++                    Ok(state) if self.original_final_use_outcome() == RetainedVersionFinalUseOutcomeV1::Published =>
++                        state.selection_reader.as_ref().map(Arc::clone),
++                    Ok(_) => None,
+                     Err(std::sync::TryLockError::WouldBlock) => None,
+                     Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
+                 }

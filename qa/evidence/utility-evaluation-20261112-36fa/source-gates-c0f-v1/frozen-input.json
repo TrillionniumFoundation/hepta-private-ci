@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.utility.desktop-source-gates.v1",
+  "state": "READY_FOR_EXACT_SOURCE_RUN",
+  "run_identity": "hepta-utility-36fa-source-gates-c0f78493-v1",
+  "object_repository": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+  "source_checkout": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+  "records": "/home/qian-qi/hepta-utility-36fa-evidence/source-gates-c0f78493-v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "budgets_seconds": {
+    "source-closure": 600,
+    "self-test": 300,
+    "verify": 4800
+  },
+  "workflow_reference": ".github/workflows/hepta-daemon-learning-native.yml",
+  "qualification": "A new exact published-source desktop execution only. No old cloud run or prior memory projection is resumed, and source gates do not prove real authorized A/B/C or cold recovery.",
+  "native_ready": {
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/EXACT_CHECKOUT.json",
+    "bytes": 574,
+    "sha256": "303c6dff926ef461b17579fd4b96abbcdabb56cec3f53295a9026b5f4ad52852",
+    "at": "2026-11-12T14:08:01.515236+00:00",
+    "maintenance_stable": true,
+    "source_snapshot": {
+      "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "files": 14851,
+      "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+      "status": "",
+      "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+    }
+  },
+  "driver_path": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/driver.py",
+  "outer_process_timeout_seconds": 7200,
+  "historical_results_inherited": false
+}

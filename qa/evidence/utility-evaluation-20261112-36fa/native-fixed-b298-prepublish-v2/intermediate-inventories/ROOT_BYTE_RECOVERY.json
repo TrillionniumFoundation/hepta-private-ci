@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.utility.native-v2-inventory-byte-recovery-root.v1",
+  "actual_original_observation_blob": "5128cd5fdd0b68c43b9501b9a3f44290deb6a641",
+  "source_files_read_by_native_extraction": false,
+  "native_qualification": false,
+  "root_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "root_zlib_runtime": "1.3.2",
+  "inventories": [
+    {
+      "label": "source-before",
+      "raw_bytes": 3440077,
+      "raw_sha256": "5cbe4f67b27b7c57d0bb8d3ec8d3fe6ac75d5b09578c23af7b6179f6546d4aab",
+      "raw_git_blob_sha": "899177497702abb24084d279df39f42a9af57191",
+      "actual_delta_rows": 0,
+      "gzip_byte_identical_reproduction": true,
+      "gzip_bytes": 1143990,
+      "gzip_sha256": "047c0b5ad18be53047b7bf118c1e04bb2838516818c0683eaff9aca138f47038",
+      "gzip_git_blob_sha": "5d5f3c578f353afff83cf22a63b5b00e2c60517f",
+      "parts": [
+        {
+          "name": "source-before.part-00.b64",
+          "bytes": 400001,
+          "sha256": "a142d6ece972e5a14c35d343c72256266051ebc63b60f61d1d47e3805a9a6d06",
+          "blob": "9b6c7750470d84df8c7eca75cc183e2ec7913132"
+        },
+        {
+          "name": "source-before.part-01.b64",
+          "bytes": 400001,
+          "sha256": "4a2fd93a2f69d53aece5e31abcd8a19f131fda86a6b2f8a6158c3ef13ee859e8",
+          "blob": "61f4163ef80a7d867294617357c0c6a684b3c40c"
+        },
+        {
+          "name": "source-before.part-02.b64",
+          "bytes": 400001,
+          "sha256": "8be30beb7c46616c1bc5f541fab3a8fcaeb073940c0dbf893f6492aeae055d92",
+          "blob": "3524ef696f14e806ab484d7a4e3c241d41e677f4"
+        },
+        {
+          "name": "source-before.part-03.b64",
+          "bytes": 325321,
+          "sha256": "4a5b28bea544bf2749ae79faefb9de3363fea5053d39e5358f53193477db2208",
+          "blob": "d221d6dfd935875fdbd63f5dcbb10a608732da82"
+        }
+      ]
+    },
+    {
+      "label": "source-after-fix",
+      "raw_bytes": 3440077,
+      "raw_sha256": "750264e5cb5226c6745cdd827198aabda90ce0dd3a53480ccf04c6f6bc5b0d4b",
+      "raw_git_blob_sha": "6fdf0c6409670e3afa4112caad073895d769d7ca",
+      "actual_delta_rows": 1,
+      "gzip_byte_identical_reproduction": true,
+      "gzip_bytes": 1143993,
+      "gzip_sha256": "5b0718ed7f7f951cdae12daa1f1e47185531a114de97f90efa77e8cb89d61ed7",
+      "gzip_git_blob_sha": "1a939322420f4ffe337be4aaf170e04bc1599381",
+      "parts": [
+        {
+          "name": "source-after-fix.part-00.b64",
+          "bytes": 400001,
+          "sha256": "a142d6ece972e5a14c35d343c72256266051ebc63b60f61d1d47e3805a9a6d06",
+          "blob": "9b6c7750470d84df8c7eca75cc183e2ec7913132"
+        },
+        {
+          "name": "source-after-fix.part-01.b64",
+          "bytes": 400001,
+          "sha256": "cae1a270220b225173572613d09571926ca0140a8bf5f4a85afa1718f050b47d",
+          "blob": "fdc34b74ddcd33550e397e36d5da1059e84cc970"
+        },
+        {
+          "name": "source-after-fix.part-02.b64",
+          "bytes": 400001,
+          "sha256": "f9c8d36b30e5402fb284b8886f08ed5571cb3b5338af8e39a68e2f36e7699ea1",
+          "blob": "7f0bfef4ad4d7393a01b04838fd9ce648cd44fd4"
+        },
+        {
+          "name": "source-after-fix.part-03.b64",
+          "bytes": 325325,
+          "sha256": "7687088d20a6d250ba79879eedb593ab3fc90cc990ec2405791383d1f409f8f1",
+          "blob": "898a3a3bbd0f66930eadc2a4959595f87854ec5f"
+        }
+      ]
+    },
+    {
+      "label": "source-after-fmt",
+      "raw_bytes": 3440077,
+      "raw_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+      "raw_git_blob_sha": "252a72a09f17c0aaeeea11db85e177cca92a0012",
+      "actual_delta_rows": 3,
+      "gzip_byte_identical_reproduction": true,
+      "gzip_bytes": 1143992,
+      "gzip_sha256": "cf243a7df2d6bd7698df017c0a7f1b9b4f46b5a8785d9e505beed0eb93826e61",
+      "gzip_git_blob_sha": "d912401fccac5494340e2054f37a83a524ff3aaa",
+      "parts": [
+        {
+          "name": "source-after-fmt.part-00.b64",
+          "bytes": 400001,
+          "sha256": "a142d6ece972e5a14c35d343c72256266051ebc63b60f61d1d47e3805a9a6d06",
+          "blob": "9b6c7750470d84df8c7eca75cc183e2ec7913132"
+        },
+        {
+          "name": "source-after-fmt.part-01.b64",
+          "bytes": 400001,
+          "sha256": "063b61d23276eb7a776f7c8c61c437cadc0e7086a75d09e4ffabb55b41513f70",
+          "blob": "d10d29833912c4ce6ac8e6f9c4720aa5d3e075ea"
+        },
+        {
+          "name": "source-after-fmt.part-02.b64",
+          "bytes": 400001,
+          "sha256": "4d6ca1740c31f18ebf712657585c34db2b7b403242eaf02de0b68df34358dd81",
+          "blob": "f2ee2893f942f1f77f6c3cc1958df70362dbbcca"
+        },
+        {
+          "name": "source-after-fmt.part-03.b64",
+          "bytes": 325325,
+          "sha256": "b9fe62b0f5c38d09c922e10535e69d70edff47194876f7864193cc33d5917ac0",
+          "blob": "aea850332a277182780113d25a7149d87c88b955"
+        }
+      ]
+    }
+  ],
+  "intermediate_finding": "The actual after-fix fixture is 5722 bytes (abb48293\u2026), whereas its actual after-fmt file is 5718 bytes (8bf830aa\u2026). The two guard files remain at prepared bytes until fmt. No intermediate fixture full source is invented or claimed recovered.",
+  "scope": "Full inventory bytes reconstructed from the previously independently checked before inventory and the exact actual changed rows. Equality is verified against the original native raw and gzip hashes; all three phases remain prepublication maintenance, not behavior tests."
+}

@@ -1,0 +1,44 @@
+test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected) ... FAIL
+test_guard_must_execute_at_the_original_top_level_before_success_mapping (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_guard_must_execute_at_the_original_top_level_before_success_mapping) ... FAIL
+test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain) ... ERROR
+
+======================================================================
+ERROR: test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 114, in test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain
+    self.assert_rejected(PANEL, panel.replace(unknown, "", 1))
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 49, in assert_rejected
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/scripts/verify_hepta_callers.py", line 646, in _verify_function_order
+    raise VerificationFailure(
+original_evaluation_retention_guard_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs: unique top-level code marker required: if observed[0].qualification.product().decision.decision.disposition
+
+======================================================================
+FAIL: test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 68, in test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected
+    source, start, end, guard = self.guard(path)
+                                ^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 61, in guard
+    self.assertEqual(source.count(marker), 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_guard_must_execute_at_the_original_top_level_before_success_mapping (test_original_evaluation_retention_guard_source_closure.OriginalEvaluationRetentionGuardClosureTests.test_guard_must_execute_at_the_original_top_level_before_success_mapping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 96, in test_guard_must_execute_at_the_original_top_level_before_success_mapping
+    source, start, end, guard = self.guard(path)
+                                ^^^^^^^^^^^^^^^^
+  File "/tmp/hepta-retention-guard-rustfmt-36fa-_glm6hfg/proof-source/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py", line 61, in guard
+    self.assertEqual(source.count(marker), 1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.139s
+
+FAILED (failures=2, errors=1)

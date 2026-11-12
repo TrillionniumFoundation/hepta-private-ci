@@ -1,0 +1,63 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs
+index 27fbc11be..8bf830aa0 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs
+@@ -119,14 +119,14 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
+                     let response = host
+                         .evidence_response(bytes, request_id)
+                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+-                    if let Some((after, file)) = &invalidate_source_after_read {
+-                        if request_id == *after {
+-                            // The actual S response already passed its final
+-                            // T/B/Cell read. Only C's final Source check sees
+-                            // this durable original Source becoming unreadable.
+-                            file.set_len(0)
+-                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
+-                        }
++                    if let Some((after, file)) = &invalidate_source_after_read
++                        && request_id == *after
++                    {
++                        // The actual S response already passed its final
++                        // T/B/Cell read. Only C's final Source check sees
++                        // this durable original Source becoming unreadable.
++                        file.set_len(0)
++                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                     }
+                     Ok(response)
+                 })? {
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
+index aea0027ad..18f897c80 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
+@@ -226,7 +226,12 @@ pub(super) fn material(
+     // Current material cannot turn a positive primary result plus a complete
+     // negative retention result into Model input. Preserve the original
+     // decisions and fail closed; this is not a synthesized NoUpdate.
+-    if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified) {
++    if primary.qualified
++        && checked_members
++            .iter()
++            .skip(1)
++            .any(|member| !member.qualified)
++    {
+         return Err(Error::Binding(
+             "qualified original B requires eligible retention",
+         ));
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
+index 8a779085d..7c8eadbd9 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
+@@ -140,7 +140,12 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
+         // A complete negative retention result cannot authorize a positive B
+         // decision. It is not rewritten as NoUpdate: the original signed
+         // primary decision and every frozen member contract remain unchanged.
+-        if observed[0].qualification.product().decision.decision.disposition
++        if observed[0]
++            .qualification
++            .product()
++            .decision
++            .decision
++            .disposition
+             == IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+             && observed.iter().skip(1).any(|member| {
+                 member.qualification.product().decision.decision.disposition

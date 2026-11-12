@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.source-publication-and-native-alignment.v1",
+  "observed_at": "2026-11-12 14:08:15 UTC",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "parents": [
+    "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "b29869e856d08db1bfb066116a9c443376ccc57d"
+  ],
+  "physical_files": 14851,
+  "physical_inventory_bytes": 3440077,
+  "physical_inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+  "complete_merkle_reconstruction": "d274a29b580fd053af901e2a781a8dcfe2d74891",
+  "canonical_transport": "d793119c5a0ca6d10cc8041cd1b5740dc8b9d405",
+  "canonical_raw_bytes": 1293,
+  "canonical_raw_sha256": "8aefa9dd70ba73ec646dbca656270509dfa3c1afed23b08e10330540a587d4d3",
+  "git_ref_and_pr_head_full_readback_verified": true,
+  "pr": 6203,
+  "draft": true,
+  "merged": false,
+  "marker_sync": {
+    "result_sha": "53838813dd5fb90af5936b6bf3d3aa228f0443cb",
+    "sdk_original_sha": "cafb7266cf09fe0f1c4730bf6e3299dbec4c3bb6",
+    "tests_started": false
+  },
+  "canonical_alignment": {
+    "result_sha": "dae0df10601f21fabd0391a49ba2c3e8246f9ab9",
+    "sdk_original_sha": "683fbeac14f0c453b8118e81888479d422cd7b8e",
+    "source_bytes_unchanged": true,
+    "default_index_bytes_unchanged": true,
+    "clean_after": true,
+    "tests_started": false
+  },
+  "native_validation": {
+    "job_id": "1a1d0137095-2564-1b21",
+    "idempotency_key": "hepta-utility-36fa-native-c0f78493-v1",
+    "actual_input": "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+    "reviewed_driver": "5be7e21dff083c19c2b56c75964d6fa1a765a412",
+    "status": "launched_terminal_outcome_pending",
+    "qualification": false
+  },
+  "real_ordinary_adopt": 0,
+  "real_evaluated_no_update": 0,
+  "real_daemon_and_root_cold_recovery": 0
+}

@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.utility.fixed-b298.prepublication-native-evidence-index.v1",
+  "job_id": "1a1cfee2b08-2564-1aeb",
+  "source_parent": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "prepared_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+  "formatted_tree": "faf047faf110c20115453766329bd2a66f303df7",
+  "formatted_files": 14851,
+  "formatted_physical_inventory_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+  "qualification": false,
+  "tests_started": false,
+  "source_ref_changed": false,
+  "fix_exit": 0,
+  "fmt_exit": 0,
+  "original_history_fsck_exit": 3,
+  "original_history_failure_preserved": true,
+  "driver_blob": "6320e1d2c20e2ad0d0dcf8eba801bbda800ca6da",
+  "input_blob": "52bd7dfb83a64c752263162a92df06493b15741d",
+  "full_result": {
+    "blob": "51d81f75db5224ba1372f380ba7249c1d3efccfb",
+    "bytes": 54926,
+    "sha256": "16b444ef1b727062153dbb16e57bd489413fecc834e3107fb8f5fce4a67f58e6"
+  },
+  "fix_raw": {
+    "blob": "a7cb03329b0f95430b64acae6ad44efa8b14baad",
+    "bytes": 115670,
+    "sha256": "13bdffd3abada189a1899fda17e8e827f2d2c7e513d04eeefb34ae4d988110f3"
+  },
+  "fmt_raw": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "compressed_files": [
+    {
+      "name": "fixgzip",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/fix.log.gz",
+      "bytes": 19125,
+      "sha256": "2c2c980b7ed0074c9ff6806474b5be1984cb150a08661988c271304adb0dcd31",
+      "blob": "e8b4c376f00ccbe6ec7717794769ebdff42829f5",
+      "base64_blob": "6dc1d47897ce9ab7b5bd92b672563f76e41c94ce",
+      "base64_bytes": 25501,
+      "companion_readback": "equal"
+    },
+    {
+      "name": "postimages",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/ACTUAL_MAINTENANCE_POSTIMAGES.json.gz",
+      "bytes": 10671,
+      "sha256": "44b7e7d9c8f92c9c550c55159376cc146314ab14af44effc63a13f63777dec70",
+      "blob": "4bbc13ffd637e45eb54b312f9246f722888a2c46",
+      "base64_blob": "283532deb0e6f627fb5821dc8cd035884d694f75",
+      "base64_bytes": 14229,
+      "companion_readback": "equal"
+    }
+  ],
+  "terminal_text": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/RESULT_SUMMARY.json",
+      "bytes": 6280,
+      "sha256": "1515a21c76c80b45cdc9eedda2e7f9b03eb24c134685981a50fff3c36f4a7448",
+      "blob": "1d8b285b562c75a3e26c783713ec2758f8c027eb"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/ACTUAL_MAINTENANCE_MANIFEST.json",
+      "bytes": 2687,
+      "sha256": "73d02e9097f913d4928e3ae7659661e2c1fd84365e732da1818b7ef843b0c422",
+      "blob": "b510f75a4f74f515d5782a1fb877a4c973af8e27"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/ACTUAL_MAINTENANCE_DIFF.patch",
+      "bytes": 3876,
+      "sha256": "9cbee8a42a576a5fa876dffbc76dc5f8ec6f6144d14d7a78e4cc0108e2fb2c82",
+      "blob": "ad4843b3834becc427b8197e7263a4ddaef20440"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/fix-RESULT.json",
+      "bytes": 556,
+      "sha256": "26013effdff651a3daa9d3d0d66d8133c24b369e0adf247b787a9cf4f5ac484a",
+      "blob": "e90c303ceed329f6fba91172d335ceca829bbb9e"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/fmt-RESULT.json",
+      "bytes": 529,
+      "sha256": "bb0257c3764721fcf7785e9fd09e202ba9f386e9f81341c63a2f5c31c5603e89",
+      "blob": "a51389b35bff9b32374dd65b20e0eebde8909957"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/toolchain.log",
+      "bytes": 415,
+      "sha256": "6c72114ad2667b12c3e486c8d80e7d74876bb6757ec198df455da1536061ccbe",
+      "blob": "d656464647e38bb1413e281f73ac33be11c4a635"
+    }
+  ],
+  "readiness": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/MAINTENANCE_READY.json",
+      "bytes": 3206,
+      "sha256": "af335de75d13b9d2e1d1b3c1ac8eb33c6193bb91a391028c80dcb22c32be96d5",
+      "blob": "2eb5b7d26a99a4170ccbcae7a7b6758baff915b1"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/CACHE_RESOURCE_BEFORE.json",
+      "bytes": 670,
+      "sha256": "63905fd15bc3ee222b189ff98a30cfc3f32003813ec170f7435ea8e7dad097a1",
+      "blob": "99dc160e0dfc58e6fc8f4412274d4dc8c455197e"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/CACHE_RESOURCE_AFTER.json",
+      "bytes": 470,
+      "sha256": "95c3eb5ad7044736e498dd2da40e138887d43dc38aae11da5b1f66d42786c594",
+      "blob": "00645b3597d4886239fee963a83a9150b62bf5cf"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/toolchain-RESULT.json",
+      "bytes": 673,
+      "sha256": "6a0a2d8448fd1fb7d23d66cfb01ab4ee24eb61c179917088d3a03a2667725f23",
+      "blob": "d30a23ed3352b53692124bcc7b191ae4e2135b03"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/STATE.json",
+      "bytes": 430,
+      "sha256": "3ce4d9eda20719d22bf55f46b588f2d38945edd54d8fa4be38c9a9da6de22dee",
+      "blob": "f69103e6b21b2c93c2d0df702088ba8e1f088452"
+    }
+  ],
+  "actual_postimage_blobs": [
+    {
+      "blob": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "bytes": 5718,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "sha256": "fa5cc5336720a595eb072492d95c160ae1a0637eedafec3232a82c9ef832a70f"
+    },
+    {
+      "blob": "18f897c8053202c4d45c99e8504192f479fb67e3",
+      "bytes": 10741,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "sha256": "28c03f1adca8dbc53154e14da0232b5aa6130ebbf9c8b55a3c6c71c082c98458"
+    },
+    {
+      "blob": "7c8eadbd9cb73446208bdc386121af656e390ce4",
+      "bytes": 9073,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "sha256": "e0ccf9118eab8e321a5b686a2fdb843811f377008c0a097397e271634308cb41"
+    }
+  ],
+  "inventory_differential": {
+    "driver_blob": "6de7e5ea18cb18320835b82fa0550ce18febd879",
+    "input_blob": "6ab400da81b726c623f0e79391fd0adf4e8021c1",
+    "result_blob": "5128cd5fdd0b68c43b9501b9a3f44290deb6a641",
+    "job_id": "1a1d002e0b7-2564-1b08",
+    "note": "Actual retained full inventories read and hashed on desktop. Only the exact differential rows and gzip identities were retrieved here; full original gzip files have not been separately retrieved off-host in this phase."
+  },
+  "next": "Await reviewed three non-Rust marker updates; canonical source not published/aligned/tested by this operation."
+}

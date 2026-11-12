@@ -1,0 +1,160 @@
+{
+  "actual_maintenance_delta_paths": [
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+  ],
+  "cargo_command_requested": true,
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']]; [subprocess.run(c,check=True) for c in commands]"
+      ],
+      "execution": {
+        "log_bytes": 415,
+        "log_sha256": "6c72114ad2667b12c3e486c8d80e7d74876bb6757ec198df455da1536061ccbe",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "finished_at": "2026-11-12T13:24:30.778960+00:00",
+      "name": "toolchain",
+      "requested_at": "2026-11-12T13:24:30.611798+00:00",
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "execution": {
+        "log_bytes": 115670,
+        "log_sha256": "13bdffd3abada189a1899fda17e8e827f2d2c7e513d04eeefb34ae4d988110f3",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "finished_at": "2026-11-12T13:37:48.747509+00:00",
+      "name": "fix",
+      "requested_at": "2026-11-12T13:24:30.793942+00:00",
+      "timeout_seconds": 7200
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+      ],
+      "execution": {
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "finished_at": "2026-11-12T13:37:58.274913+00:00",
+      "name": "fmt",
+      "requested_at": "2026-11-12T13:37:54.267716+00:00",
+      "timeout_seconds": 900
+    }
+  ],
+  "commands_passed": true,
+  "final_prepublication_tree": "faf047faf110c20115453766329bd2a66f303df7",
+  "finished_at": "2026-11-12T13:38:04.895243+00:00",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "full_original_result": {
+    "bytes": 54926,
+    "git_blob_sha": "51d81f75db5224ba1372f380ba7249c1d3efccfb",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-prepublish-maintenance-v2/RESULT.json",
+    "sha256": "16b444ef1b727062153dbb16e57bd489413fecc834e3107fb8f5fce4a67f58e6"
+  },
+  "history_failure_preserved": true,
+  "new_empty_cache_created": true,
+  "prepared_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+  "previous_history_fsck_exit": 3,
+  "prior_failed_attempt": {
+    "bytes": 39829,
+    "commands": [],
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/data/hepta-utility-36fa-e8-diagnostic-target-v1'",
+    "finished_at": "2026-11-12T13:13:21.873315+00:00",
+    "sha256": "c9641ba9252c89ca0b13884887936caccb0b17c8b5e38e5107d4db3be1f683f8",
+    "source_applied": true
+  },
+  "qualification": false,
+  "retained_e8_before": {
+    "files": 14741,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "index_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "physical_inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status_bytes": 0,
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after_fix": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "index_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "physical_inventory_sha256": "750264e5cb5226c6745cdd827198aabda90ce0dd3a53480ccf04c6f6bc5b0d4b",
+    "status_bytes": 12213,
+    "status_sha256": "996e4cb9978be8c7d8bdfd97552fd1c4cc33d1929970e53d19e3058b4b8a0fe4"
+  },
+  "source_after_fmt": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "index_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "physical_inventory_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+    "status_bytes": 12213,
+    "status_sha256": "87ed00f16e19f71c21492dd024e70f713602ef1036eaa13734a66918c0ec92d7"
+  },
+  "source_before": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "index_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "physical_inventory_sha256": "5cbe4f67b27b7c57d0bb8d3ec8d3fe6ac75d5b09578c23af7b6179f6546d4aab",
+    "status_bytes": 12213,
+    "status_sha256": "6332dbc99119465007eff324b33fb594b35037afa23414cf5850195bde4c03f1"
+  },
+  "source_final_observation": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "index_tree": "a8c41e56f1f8685444022692d1a636ec61b44e70",
+    "physical_inventory_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+    "status_bytes": 12213,
+    "status_sha256": "87ed00f16e19f71c21492dd024e70f713602ef1036eaa13734a66918c0ec92d7"
+  },
+  "source_parent": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_reapplied": false,
+  "started_at": "2026-11-12T13:24:16.710174+00:00",
+  "status": "prepublication_maintenance_complete",
+  "target": {
+    "created_empty": true,
+    "device": 2067,
+    "free_bytes_before": 190338596864,
+    "inode": 33030346,
+    "loss_cause": "Unknown",
+    "path": "/data/hepta-utility-36fa-final-native-target-v1",
+    "prior_target_observation": {
+      "exists": false,
+      "path": "/data/hepta-utility-36fa-e8-diagnostic-target-v1"
+    },
+    "rebuild_cost_recorded_in_this_attempt": true
+  },
+  "tests_started": false
+}

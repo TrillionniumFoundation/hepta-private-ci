@@ -1,0 +1,67 @@
+{
+  "Rust_inputs_unchanged": true,
+  "actual_changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py"
+  ],
+  "actual_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "before_tree": "faf047faf110c20115453766329bd2a66f303df7",
+  "cargo_started": false,
+  "completed_paths": [
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "expected_final_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "finished_at": "2026-11-12T13:54:37.545049+00:00",
+  "index_tree_after": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "qualification": false,
+  "source_after": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "inventory_file": {
+      "bytes": 1143993,
+      "git_blob_sha": "3d734ad277b10d4863545c6e68f810604429227d",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-marker-sync-v1/source-after-staging.files.json.gz",
+      "sha256": "3c918a210def53cb84c29afc903f3b1275de476f17f5334746b8a4eabf4dc9c7"
+    },
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status_bytes": 12213,
+    "status_sha256": "6332dbc99119465007eff324b33fb594b35037afa23414cf5850195bde4c03f1"
+  },
+  "source_before": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "inventory_file": {
+      "bytes": 1143992,
+      "git_blob_sha": "d912401fccac5494340e2054f37a83a524ff3aaa",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-marker-sync-v1/source-before.files.json.gz",
+      "sha256": "cf243a7df2d6bd7698df017c0a7f1b9b4f46b5a8785d9e505beed0eb93826e61"
+    },
+    "inventory_sha256": "399f9c4ec265e00eab812a1b1328606aff45d41c9063e257f36d1721d58b2dff",
+    "status_bytes": 12213,
+    "status_sha256": "87ed00f16e19f71c21492dd024e70f713602ef1036eaa13734a66918c0ec92d7"
+  },
+  "source_final_observation": {
+    "files": 14851,
+    "head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "inventory_file": {
+      "bytes": 1143993,
+      "git_blob_sha": "3d734ad277b10d4863545c6e68f810604429227d",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-b298-marker-sync-v1/source-final-observation.files.json.gz",
+      "sha256": "3c918a210def53cb84c29afc903f3b1275de476f17f5334746b8a4eabf4dc9c7"
+    },
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status_bytes": 12213,
+    "status_sha256": "6332dbc99119465007eff324b33fb594b35037afa23414cf5850195bde4c03f1"
+  },
+  "source_parent": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_ref_changed": false,
+  "started_at": "2026-11-12T13:54:23.136779+00:00",
+  "status": "three_nonrust_markers_applied",
+  "tests_started": false
+}
