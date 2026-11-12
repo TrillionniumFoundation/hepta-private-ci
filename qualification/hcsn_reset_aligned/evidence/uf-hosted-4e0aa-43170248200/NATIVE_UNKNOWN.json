@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-uf-native-unknown-v1",
+  "host": "desktop",
+  "idempotency_key": "hcsn-uf-readouts-4092-4e0aa-attempt001",
+  "code_commit": "4e0aa275988fe3919c5f802a3891b8337b30dc83",
+  "directory": "/home/qian-qi/hcsn-uf-readouts-20261112-4092",
+  "archive_sha256": "71d28b097e6ea1ef9143a034edb2a4f365f43a9fa716e79b2fc54fd90d671403",
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.shell_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "reconcile_same_key": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.shell_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "readbacks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "status": "UNKNOWN",
+  "job_id": null,
+  "new_key_retry": false,
+  "qualified_hosted_result_is_separate": true
+}
