@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.original-root17-failure.v4",
+  "source": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+  "status": "root-component-diagnostic-failed",
+  "actual_uid": 0,
+  "executed": 17,
+  "passed": 15,
+  "failed": 2,
+  "skipped_within_selected_roster": 0,
+  "retries": 0,
+  "started_at": "2026-11-12T02:43:53.148723+00:00",
+  "finished_at": "2026-11-12T02:44:28.186170+00:00",
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "source_clean_before_after": true,
+  "evidence": [
+    {
+      "name": "root.junit.xml",
+      "blob": "c1a7678e07626c99ef76ca0d115f83032774070d",
+      "bytes": 10126,
+      "sha256": "eabc21351aa241a8de861ba933e746a57617a4c3a22a98fefda33174d28fa5e7",
+      "expected_git": "c1a7678e07626c99ef76ca0d115f83032774070d"
+    },
+    {
+      "name": "root.execution.json",
+      "blob": "5a4c8c6a26284eabfcd9149a5cfbd35659267d0e",
+      "bytes": 3969,
+      "sha256": "6cae7880309a0006b3d053c7c50440bb8588010969d2b9d9e2fc38dc88557603"
+    },
+    {
+      "name": "root.counts.json",
+      "blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261"
+    },
+    {
+      "name": "root.uid.json",
+      "blob": "6926d732c23a063fd55b5b7532d3e8882466367c",
+      "bytes": 47,
+      "sha256": "edc1dabc53c9cff209b08f6f0cc21000230e1a49985b18964254050a52f52094"
+    },
+    {
+      "name": "root.junit.summary.json",
+      "blob": "ccf5679db7558ea1ba3bc679a1d1d8b121c15977",
+      "bytes": 3332,
+      "sha256": "604e7e45bed210df4e53cbeece3174fad893b610b5f4f821b6c07e87beed8a81"
+    },
+    {
+      "name": "final-source-identity.json",
+      "blob": "f6c335eac4ff5931a69e3e67fd8802f21c3760c8",
+      "bytes": 127,
+      "sha256": "b2e765df0b49971e4ab8a96388dba64e64efa1da4b5af09ad80a66b019cff4b7"
+    },
+    {
+      "name": "root.execution.json.834480fab712431c9fdf7acd0eb8675b.log",
+      "blob": "8fcd181c561947a362f924067678ec24fae2b8d1",
+      "bytes": 47835,
+      "sha256": "85304302826b1b2147caf41328393d7d87c6232b85db26cc818b10661893afb9"
+    }
+  ],
+  "first_observed_errors": {
+    "initial": {
+      "phase": "Publish",
+      "stage": "original Feature CURRENT live-current-guard",
+      "error": "Invalid(Unavailable)",
+      "reason": "retained observation age exceeded original MAX_AGE_NS",
+      "request_started_ns": "1477205696090294",
+      "last_checked_ns": "1477205957602368",
+      "now_ns": "1477206229727211",
+      "age_ns": 533636917,
+      "time_regressed": false
+    },
+    "publication": {
+      "phase": "Publish",
+      "stage": "connect original CURRENT purpose",
+      "error": "root writer observation is unavailable or fenced",
+      "reason": "retained observation age exceeded original MAX_AGE_NS",
+      "request_started_ns": "1477218656901587",
+      "last_checked_ns": "1477219033706641",
+      "now_ns": "1477219260569695",
+      "age_ns": 603668108,
+      "time_regressed": false
+    },
+    "ordering": "Both retained-time checks and original-error-fence precede session/worker Drop. Later parent PeerDenied follows child failure; no earlier parent cause established.",
+    "cause_not_yet_proven": "Background observation progress and synchronous fixture/runtime scheduling under static review. Earlier time-regression or cache-contention hypotheses are not proved by this run."
+  },
+  "diagnosis": "Original 500ms freshness refusal remains enforced. No failed check, timeout, proof, ownership or retirement requirement is waived.",
+  "exact_request_blob": "cde29911abdedfea73c5b53a47b29770942a5e25",
+  "harness_blob": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+  "full_original_archive": "V8 immutable export/transfer pending; seven raw result files already retained exactly in Git.",
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_ordinary_consumer": false,
+  "cold_process_restart": false,
+  "full_qualification": false,
+  "no_result_inheritance": true
+}
