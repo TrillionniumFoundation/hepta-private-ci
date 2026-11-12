@@ -80,7 +80,7 @@ jobs:
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_causal_contract
       - name: Check exact provider handoff and ambiguous recovery
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 16 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 24 \
             --output "$RUNNER_TEMP/mem7-records/mem10-handoff-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_provider_handoff
       - name: Record the isolated revocation campaign
