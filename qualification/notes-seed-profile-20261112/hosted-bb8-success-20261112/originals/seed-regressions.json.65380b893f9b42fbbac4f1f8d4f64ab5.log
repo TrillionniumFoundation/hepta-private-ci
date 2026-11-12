@@ -1,0 +1,937 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:144:9
+    [1m[94m|[0m
+[1m[94m144[0m [1m[94m|[0m         &self,
+    [1m[94m|[0m         [1m[33m^^^^^[0m [1m[33mthe lifetime is elided here[0m
+[1m[94m145[0m [1m[94m|[0m     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    [1m[94m= [0m[1mnote[0m: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m145[0m [1m[94m| [0m    ) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                  [92m++++[0m
+
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:155:26
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m|[0m     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^^^^[0m                     [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33mthe lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m| [0m    pub fn active_config(&self) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                                            [92m++++[0m
+
+[1m[33mwarning[0m: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+[1m[92m   Compiling[0m codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 53.16s
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+[32;1m Nextest run[0m ID [1m89b5d608-2355-437c-985e-090748ced239[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m5[0m tests across [1m2[0m binaries ([1m792[0m tests [33;1mskipped[0m)
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mandroid_runtime::tests[0m[36m::[0m[34;1mandroid_runtime_fixed_helper_uses_original_bytes_then_independent_read_job[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mandroid_runtime::tests[0m[36m::[0m[34;1mandroid_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mandroid_runtime::tests[0m[36m::[0m[34;1mandroid_runtime_invalidation_allows_only_original_readback_and_payload_drift_sends_nothing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mandroid_runtime::tests[0m[36m::[0m[34;1mandroid_runtime_requires_terminal_success_complete_lossless_same_job_output[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mandroid_runtime::tests[0m[36m::[0m[34;1mandroid_runtime_unknown_start_and_lost_reply_never_repeat_effect_or_reconnect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1magentd_forces_explicit_cognitive_write_profile_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1magentd_forces_hepta_turn_recovery_on[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1mdesktop_embedding_keeps_the_store_but_removes_general_cognitive_tool_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1mmanifest_queue_capacity_reaches_app_server_runtime_options_exactly[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1mnotes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthbus_dispatch::tests[0m[36m::[0m[34;1mabandoned_first_claim_without_admission_is_quarantined_after_lookup_missing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthbus_dispatch::tests[0m[36m::[0m[34;1mlost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthbus_dispatch::tests[0m[36m::[0m[34;1mmatching_receipt_metadata_with_different_queue_input_never_acknowledges[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthbus_dispatch::tests[0m[36m::[0m[34;1mready_generation_and_owner_private_trust_are_required_before_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthbus_dispatch::tests[0m[36m::[0m[34;1mrevocation_during_queue_request_prevents_success_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::deadline::tests[0m[36m::[0m[34;1mlate_actual_lifetime_read_cannot_enter_registry_or_issuer_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::deadline::tests[0m[36m::[0m[34;1mlate_actual_owner_check_cannot_enter_registry_or_issuer_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1mcapability_does_not_retain_dropped_or_inactive_original_runtime[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1missuer_revocation_is_an_exact_strict_original_selector[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1mlive_route_rejects_each_changed_root_lifetime_and_nonce[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1mobserved_current_root_identity_refuses_zero_nonce_and_changed_birth[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1mpaused_or_ended_route_cannot_be_reactivated_by_capability[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_admin::tests[0m[36m::[0m[34;1mstrict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_bootstrap_seal::tests[0m[36m::[0m[34;1mbounded_encoder_does_not_append_an_oversized_fragment[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_bootstrap_seal::tests[0m[36m::[0m[34;1mnon_root_cannot_create_the_bootstrap_descriptor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_bootstrap_seal::tests::original_writer[0m[36m::[0m[34;1mroot_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_bootstrap_seal::tests::original_writer[0m[36m::[0m[34;1mroot_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_bootstrap_seal::tests[0m[36m::[0m[34;1mroot_descriptor_is_unlinked_sealed_and_never_mutable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests::physical_material[0m[36m::[0m[34;1madopted_current_before_uid_release_cannot_be_adopted_again_or_reinitialized[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests::physical_material[0m[36m::[0m[34;1minterrupted_install_resumes_same_original_current_cas_without_republication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests::physical_material[0m[36m::[0m[34;1mphysical_current_survives_live_source_loss_and_refuses_corrupt_retained_image[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests::physical_material[0m[36m::[0m[34;1mphysical_material_never_promotes_actual_dirty_current_predecessor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests::physical_material[0m[36m::[0m[34;1mphysical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_never_promotes_actual_dirty_publishing_or_fenced[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_requires_actual_exit_and_preserves_cut_and_counter[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_current_handoff_two_real_cas_handles_choose_one_successor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_retired_adoption_never_promotes_dirty_publishing_or_fenced[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::adoption::tests[0m[36m::[0m[34;1mroot_retirement_proof_cannot_replace_protected_predecessor_lifetime[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::fresh_tests[0m[36m::[0m[34;1mroot_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::session_custody_tests[0m[36m::[0m[34;1mescaped_original_root_session_and_live_verifier_retain_same_registered_file[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_cycle_is_durable_exact_and_never_implicitly_reinitialized[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_expiry_after_actual_cas_returns_unknown_and_permanently_closes_object[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_trusted_successor_keeps_global_counter_separate_from_publisher_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_two_independent_handles_cannot_both_win_the_same_original_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_checkpoint::tests[0m[36m::[0m[34;1mroot_unavailable_read_permanently_fences_even_after_original_file_returns[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_consumer_frontier::tests[0m[36m::[0m[34;1mroot_forged_epoch_revision_namespace_and_replayed_transport_ids_do_not_mutate[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_consumer_frontier::tests[0m[36m::[0m[34;1mroot_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_consumer_frontier::tests[0m[36m::[0m[34;1mroot_storage_disappearance_and_restoration_does_not_revive_a_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_consumer_frontier::tests[0m[36m::[0m[34;1mroot_two_original_stores_are_isolated_and_exact_cas_survives_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_consumer_frontier::tests[0m[36m::[0m[34;1mroot_two_real_handles_race_one_durable_cas_and_refuse_the_other[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_native_launch::tests[0m[36m::[0m[34;1mnative_resources_and_private_draft_paths_are_required_without_loader_overrides[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mchanged_plan_fields_never_mutate_the_original_registry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mconcurrent_canonical_revision_or_epoch_change_is_not_overwritten[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mexact_postimage_retry_does_not_advance_frontier_or_extend_deadline[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mexpired_original_preparation_is_read_only_and_preserves_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mordinary_process_is_rejected_before_opening_config[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mpreparation_rejects_invalid_lifetime_revision_and_time[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mpruned_original_cannot_be_recreated_from_the_plan[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1mrevoked_predecessor_or_committed_postimage_cannot_be_renewed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::issuer_renewal::tests[0m[36m::[0m[34;1munknown_plan_fields_are_rejected[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::listeners::tests[0m[36m::[0m[34;1mall_original_listeners_precede_the_one_shot_handoff_and_failure_cleans_up[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::listeners::tests[0m[36m::[0m[34;1mreadiness_is_not_called_for_an_invalid_original_lane_parent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::process_tests[0m[36m::[0m[34;1moriginal_owner_process_rejects_same_uid_with_different_gid[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::desktop_startup::tests[0m[36m::[0m[34;1mjoint_root_bounds_every_saved_selector_and_original_helper_path[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::desktop_startup::tests[0m[36m::[0m[34;1mjoint_root_fresh_and_recovery_profiles_cannot_relabel_each_other[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::desktop_startup::tests[0m[36m::[0m[34;1mjoint_root_requires_both_exact_previous_policies_and_a_distinct_actual_pair[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::filesystem::tests[0m[36m::[0m[34;1moriginal_registry_reader_child[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::filesystem::tests[0m[36m::[0m[34;1moriginal_root_filesystem_preserves_registry_reads_and_denies_control_writes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::filesystem::tests[0m[36m::[0m[34;1moriginal_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::reservation::tests[0m[36m::[0m[34;1mexpired_original_consume_neither_reads_nor_rearms_the_queued_reservation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::reservation::tests[0m[36m::[0m[34;1moriginal_reservation_consume_keeps_the_elapsed_episode_budget[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::reservation::tests[0m[36m::[0m[34;1mreservation_checks_real_sender_and_rejects_missing_credential_option[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::reservation::tests[0m[36m::[0m[34;1mreservation_closes_unexpected_rights_and_disables_credentials_for_original_offer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::reservation::tests[0m[36m::[0m[34;1mreservation_rejects_extra_authority_fields_zero_nonce_and_wrong_destination[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::tests[0m[36m::[0m[34;1mordinary_file_cannot_be_a_pending_root_deployment[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::tests[0m[36m::[0m[34;1moriginal_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::tests[0m[36m::[0m[34;1msuccessor_policy_contract_cannot_drop_the_old_recovery_or_invent_a_policy_lifetime[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_runtime::session::notes_startup::tests[0m[36m::[0m[34;1msuccessor_policy_contract_requires_the_exact_old_identity_and_distinct_reserved_target[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::admin_issuer::tests[0m[36m::[0m[34;1mactual_issuer_receipt_matches_exact_retained_canonical_postimage[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::admin_issuer::tests[0m[36m::[0m[34;1mlate_client_confirmation_preserves_committed_revoke_and_refuses_renewal[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::admin_issuer::tests[0m[36m::[0m[34;1mterminal_confirmation_refuses_new_epoch_without_reconstructing_original_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::logind::tests[0m[36m::[0m[34;1moriginal_held_physical_login_matches_actual_logind_and_wrong_birth_or_uid_refuses[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::tests[0m[36m::[0m[34;1mlane_decoders_reject_unknown_duplicate_and_self_selected_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::tests[0m[36m::[0m[34;1mobservation_discards_a_lease_expiring_during_io_or_a_different_epoch[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::tests[0m[36m::[0m[34;1mobservation_never_truncates_a_complete_revocation_head_to_fit[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::tests::root[0m[36m::[0m[34;1mprotected_service_client[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::tests::root[0m[36m::[0m[34;1mroot_data_service_three_lanes_use_original_wire_key_and_dedicated_peer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::text_ui::deadline_tests[0m[36m::[0m[34;1mfirst_text_byte_does_not_refresh_the_connection_budget[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::text_ui::deadline_tests[0m[36m::[0m[34;1midle_text_connection_respects_exchange_and_remaining_root_budgets[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::text_ui::deadline_tests[0m[36m::[0m[34;1mtimely_text_frame_still_uses_the_original_peer_channel[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_service::writer::fresh::tests[0m[36m::[0m[34;1moriginal_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_wire::tests[0m[36m::[0m[34;1mshared_proof_digest_covers_signature_and_closed_nested_original_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mauthority_host_wire::tests[0m[36m::[0m[34;1mshared_typed_proof_signature_binds_original_identity_epochs_lease_and_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mcancellation_preserves_in_flight_queue_ack_before_scheduler_exit[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mprocess_shutdown_does_not_turn_into_durable_timer_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mproduction_constructor_keeps_retired_timer_absent_after_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mproduction_constructor_never_resumes_a_draining_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mproduction_constructor_rejects_mismatched_identity_before_spawn[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1mproduction_service_retirement_drains_owner_then_unpublishes_only_automation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::service_tests[0m[36m::[0m[34;1munknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::tests[0m[36m::[0m[34;1mautomation_reconcile_payload_uses_stable_client_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::tests[0m[36m::[0m[34;1mdispatch_retry_budget_is_bounded_and_progress_resets_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation::tests[0m[36m::[0m[34;1mqueue_failures_after_admission_seam_are_never_dispatch_retries[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation_effect_host::tests[0m[36m::[0m[34;1mhost_dispatches_exact_wire_payload_once[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation_effect_host::tests[0m[36m::[0m[34;1mhost_preserves_ordinary_opaque_and_non_skill_json_payloads[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mautomation_effect_host::tests[0m[36m::[0m[34;1mplain_host_rejects_skill_envelopes_before_claim_or_provider_contact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mbrowser_servo::tests[0m[36m::[0m[34;1mchallenge_request_digest_must_match_signed_final_use_binding[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mbrowser_servo::tests[0m[36m::[0m[34;1mfinal_use_fence_covers_exactly_the_browser_local_dispatch_boundary[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mbrowser_servo::tests[0m[36m::[0m[34;1mnon_effect_calls_never_enter_final_use_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_channel::tests[0m[36m::[0m[34;1mcalculator_lost_effect_reply_disables_only_effect_and_keeps_correlated_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_channel::tests[0m[36m::[0m[34;1mcalculator_recovery_rejects_effect_before_sending_any_datagram[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_deadline::tests[0m[36m::[0m[34;1mtotal_budget_rejects_clock_regression_and_late_final_io[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_recovery_process::tests[0m[36m::[0m[34;1mcalculator_recovery_process_rejects_unsafe_or_mismatched_executable_before_start[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_recovery_process::tests[0m[36m::[0m[34;1mcalculator_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcalculator_recovery_selection::tests[0m[36m::[0m[34;1mstartup_selector_and_legacy_exact_are_exclusive_and_strict[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mactual_cost_overrun_is_recorded_and_routes_to_budget_fallback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mall_join_materializes_frozen_reference_bytes_for_the_next_native_cell[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::batch_tests[0m[36m::[0m[34;1mcircuit_deadline_after_cell_fsync_prevents_batch_contact_and_reopens_pending[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::batch_tests[0m[36m::[0m[34;1mfiltered_expired_member_does_not_block_live_request_after_fsync[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::batch_tests[0m[36m::[0m[34;1mone_frozen_batch_keeps_scoped_state_and_ack_replay_independent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::batch_tests[0m[36m::[0m[34;1mpartial_batch_receipt_failure_recovers_only_original_pending_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mchanged_principal_source_or_deadline_never_reaches_the_model[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::clock_tests[0m[36m::[0m[34;1meither_clock_regression_after_admission_prevents_contact_and_retains_hold[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::clock_tests[0m[36m::[0m[34;1msingle_entry_retains_measured_host_wait_for_original_request_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::credit_tests[0m[36m::[0m[34;1mcircuit_credit_rejects_completion_bytes_without_matching_cell_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::credit_tests::signed_tests[0m[36m::[0m[34;1msigned_credit_rejects_cross_owner_ledger_episode_before_any_append[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests::credit_tests[0m[36m::[0m[34;1mterminal_credit_requires_both_owners_and_exact_original_inputs[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mdurable_circuit_to_native_cell_and_ack_loss_replay_use_one_model_call[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1meither_late_phase_clock_regression_preserves_pending_for_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mfinal_dispatch_gate_rechecks_time_after_durable_cell_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mfrozen_registry_rejects_bundle_route_schema_and_candidate_drift[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mlost_claim_before_cell_admission_cannot_start_new_work_from_recovery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1mtwo_cells_share_one_model_facility_but_keep_separate_state_and_causal_output[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_cell::tests[0m[36m::[0m[34;1munknown_model_response_recovers_original_output_and_late_cost_without_reexecution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1mcircuit_deadline_wakes_before_a_later_feedback_activation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1mdelayed_feedback_waits_without_appending_empty_scheduling_events[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1melapsed_task_deadline_never_creates_a_run_or_contacts_a_cell[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1mlost_circuit_completion_ack_reads_the_original_committed_cell_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1mlost_claim_ack_cannot_become_a_fresh_cell_dispatch[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcircuit_task::driver::tests[0m[36m::[0m[34;1mtask_reaches_durable_terminal_and_replays_the_exact_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mbootstrap_rejects_wrong_lifetime_peer_and_non_pidfd_capabilities[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mcancelling_an_exchange_discards_its_late_reply_and_cannot_rearm_the_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mconcurrent_checkpoint_read_cannot_consume_the_original_inflight_reply[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mexact_framing_keeps_a_complete_refusal_lane_usable_without_retrying[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests::initial[0m[36m::[0m[34;1mchanged_current_or_incomplete_ack_drops_the_consumed_lane_without_resend[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests::initial[0m[36m::[0m[34;1minitial_current_keeps_original_token_and_the_same_live_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests::initial[0m[36m::[0m[34;1mnon_current_handoff_is_rejected_before_output_and_closes_owned_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1minvalid_request_is_refused_before_io_without_consuming_the_channel[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mmalformed_or_mismatched_reply_never_leaves_a_reusable_stream[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1moriginal_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_checkpoint_unix::tests[0m[36m::[0m[34;1mpartial_frame_deadline_permanently_closes_the_original_stream[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::budget[0m[36m::[0m[34;1mbyte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::budget[0m[36m::[0m[34;1mlearned_ranker_can_select_a_candidate_outside_legacy_top_four[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::budget[0m[36m::[0m[34;1mlearned_winner_survives_legacy_byte_cut_and_response_stays_bounded[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::budget[0m[36m::[0m[34;1moversized_learned_winner_does_not_consume_the_only_result_slot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests[0m[36m::[0m[34;1mcontext_reads_real_owner_content_and_removes_committed_tombstones[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests[0m[36m::[0m[34;1mencoded_read_budget_unavailability_is_local_not_store_failure[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests[0m[36m::[0m[34;1mfinal_use_binds_complete_owner_cut_not_only_memory_snapshot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::hnmf[0m[36m::[0m[34;1mchanged_hnmf_context_before_publication_fails_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::hnmf[0m[36m::[0m[34;1mcurrent_hnmf_context_filters_owner_candidates_before_delivery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_context::tests::hnmf[0m[36m::[0m[34;1mfinal_use_revalidation_rejects_changed_hnmf_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_ranker::tests[0m[36m::[0m[34;1mcurrent_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_ranker::tests[0m[36m::[0m[34;1mmissing_or_revoked_current_witness_closes_ranker_without_baseline_fallback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_ranker::tests[0m[36m::[0m[34;1mnew_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_ranker::tests[0m[36m::[0m[34;1mrunning_socket_uses_launch_bound_model_and_isolates_ranker_revocation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_ranker::tests[0m[36m::[0m[34;1msqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_retrieval_learning::tests[0m[36m::[0m[34;1mdifferent_rpc_ids_create_distinct_assignment_records[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_retrieval_learning::tests[0m[36m::[0m[34;1mhistorical_assignment_retry_keeps_original_predecessor_after_later_appends[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_retrieval_learning::tests[0m[36m::[0m[34;1mindexed_historical_identity_does_not_accept_changed_assignment[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_retrieval_learning::tests[0m[36m::[0m[34;1msame_rpc_and_observation_replays_idempotently[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcognitive_retrieval_learning::tests[0m[36m::[0m[34;1msame_rpc_with_different_assignment_is_identity_conflict[0m
+[32;1m        PASS[0m [   0.133s] [35;1mcodex-hepta-agentd[0m [36mapp_runtime::tests[0m[36m::[0m[34;1mseed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state[0m
+[32;1m        PASS[0m [   0.018s] [35;1mcodex-hepta-agentd[0m [36mconfig::notes_seed::tests[0m[36m::[0m[34;1moriginal_notes_seed_profile_does_not_supply_notes_execution_owners[0m
+[32;1m        PASS[0m [   0.029s] [35;1mcodex-hepta-agentd[0m [36mconfig::notes_seed::tests[0m[36m::[0m[34;1moriginal_notes_seed_profile_rechecks_files_before_runtime[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::root_handoff::credentials::tests[0m[36m::[0m[34;1manother_live_thread_is_rejected_without_changing_credentials[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::root_handoff::late_writer::custody_tests[0m[36m::[0m[34;1mpostload_birth_refusal_consumes_config_but_retains_active_original_session_file[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::root_handoff::tests[0m[36m::[0m[34;1moriginal_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::root_handoff::tests[0m[36m::[0m[34;1mroot_handoff_rejects_zero_uid_or_gid_without_releasing_a_runtime[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::tests[0m[36m::[0m[34;1mcognitive_retrieval_process_profile_is_explicit_and_fail_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mconfig::tests[0m[36m::[0m[34;1mconfig_binds_exact_registered_agent_roots_and_workspace[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcontrol::tests[0m[36m::[0m[34;1mdangling_control_symlink_is_not_treated_as_a_missing_entry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcontrol::tests[0m[36m::[0m[34;1mlive_control_socket_entry_is_preserved[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcontrol::tests[0m[36m::[0m[34;1mmissing_control_socket_path_is_preparable_without_a_listener[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcontrol::tests[0m[36m::[0m[34;1mnon_socket_control_path_is_preserved[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcontrol::tests[0m[36m::[0m[34;1mstale_control_socket_entry_is_removed_before_rebinding[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1manother_valid_revision_starts_a_new_pressure_streak[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mboth_bounds_saturate_without_generating_equal_cap_writes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mchanged_lifetime_and_counter_regression_are_refused[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mevent_loss_is_not_cleared_by_a_later_zero_count[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mfast_polling_cannot_create_pressure_or_repeated_proposals[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mfeedback_requires_two_separated_same_direction_samples[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mfixed_target_obeys_slew_bound_and_does_not_refill_same_budget[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mfresh_native_usage_cannot_refresh_old_or_foreign_demand_evidence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mold_future_and_replayed_measurements_are_refused[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mproposal_revalidates_original_sample_age_even_with_a_fresh_read[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mretained_charge_above_a_lowered_cap_is_a_valid_observation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mreversed_pressure_does_not_reuse_the_old_streak[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mtwo_native_reads_cannot_reuse_one_demand_sample[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1munknown_wait_reason_and_explicit_pause_do_not_raise_cap[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mcpu_policy::tests[0m[36m::[0m[34;1mzero_budget_is_not_inferred_to_be_user_pause[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_frontier::tests[0m[36m::[0m[34;1mindependent_handles_have_exactly_one_cas_winner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_frontier::tests[0m[36m::[0m[34;1mmissing_corrupt_wrong_owner_and_symlink_never_reinitialize[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_frontier::tests[0m[36m::[0m[34;1mrestart_retains_cas_and_rejects_an_old_local_snapshot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_frontier::tests[0m[36m::[0m[34;1munsafe_permissions_and_hardlinks_are_refused[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_concurrent_requests_get_unique_durable_sequences[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_discards_expired_response_and_never_reuses_reserved_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_fails_closed_on_counter_or_time_overflow[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_rejects_body_scope_subject_route_and_epoch_without_consuming_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_shares_durable_sequence_with_final_use_and_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests[0m[36m::[0m[34;1mdeployment_authbus_uses_original_signature_and_registered_host_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests[0m[36m::[0m[34;1mdeployment_writer_objective_discards_post_io_expiry_without_reusing_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests[0m[36m::[0m[34;1mdeployment_writer_objective_refuses_revoked_or_changed_exact_lease_before_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests[0m[36m::[0m[34;1mdeployment_writer_objective_refuses_wrong_proof_or_spawn_before_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests[0m[36m::[0m[34;1mdeployment_writer_objective_uses_original_claims_and_caps_expiry_to_the_live_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_final_tests[0m[36m::[0m[34;1moriginal_five_clock_samples_keep_post_io_expiry_consumed_and_text_history_exact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_final_tests[0m[36m::[0m[34;1mprotected_objective_compatibility_entry_cannot_bypass_original_writer_registration[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_final_tests[0m[36m::[0m[34;1mregistered_objective_text_and_human_signatures_cap_parent_and_refuse_new_use_after_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_followup[0m[36m::[0m[34;1mhuman_text_independent_issuer_revocation_refuses_new_canonical_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_followup[0m[36m::[0m[34;1mobjective_independent_issuer_revocation_refuses_new_canonical_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::authbus::tests::writer_tests::issuer_followup[0m[36m::[0m[34;1mtext_independent_issuer_revocation_refuses_new_canonical_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::calculator::issuer_final_tests[0m[36m::[0m[34;1mcalculator_original_signature_is_capped_by_its_shorter_independent_parent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::calculator::issuer_followup[0m[36m::[0m[34;1mcalculator_independent_issuer_revocation_refuses_new_signed_effect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_competing_successors_publish_only_one_complete_pair[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_cross_session_pair_or_reused_incarnation_cannot_change_owner_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_expired_or_revoked_writer_keeps_both_original_slots[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_partial_pair_and_ambiguous_slot_are_never_promoted[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_public_entry_requires_actual_root_before_any_state_change[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::desktop::tests[0m[36m::[0m[34;1mdesktop_policy_wrong_calculator_predecessor_does_not_replace_notes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::observation::tests[0m[36m::[0m[34;1mactual_issuer_result_preserves_original_bytes_id_nonce_epoch_binding_and_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::observation::tests[0m[36m::[0m[34;1mdropped_capture_cannot_return_an_older_artifact_as_latest_issue[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::observation::tests[0m[36m::[0m[34;1meviction_and_restart_are_unknown_and_never_reissue_or_extend_storage[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::observation::tests[0m[36m::[0m[34;1missued_observation_selector_rejects_unknown_and_duplicate_fields[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::observation::tests[0m[36m::[0m[34;1moversized_metadata_and_counter_overflow_cannot_fall_back_to_old_latest[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_ambiguous_notes_slot_cannot_install_or_replace_policy[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_changed_canonical_proof_cannot_sign_after_original_delegation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_distinct_payloads_share_canonical_signer_and_original_counter[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_lookalike_registry_cannot_install_delegation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_policy_incarnation_cas_retains_key_head_counter_and_old_grant[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_preserves_original_objective_route_across_exact_policy_replacement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_repeated_binding_never_renews_expired_or_pruned_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_revoked_effect_and_writer_cannot_sign_or_reset[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests[0m[36m::[0m[34;1mdeployment_notes_wrong_scope_subject_or_incarnation_creates_no_lease_or_grant[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_deadline[0m[36m::[0m[34;1mindependent_issuer_deadline_caps_grant_and_expiry_creates_no_new_effect_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_parent[0m[36m::[0m[34;1mnotes_grant_revoked_independent_issuer_parent_cannot_sign_or_create_effect_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_parent[0m[36m::[0m[34;1mnotes_policy_revoked_independent_issuer_parent_cannot_replace_target[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_routing[0m[36m::[0m[34;1mdeployment_notes_route_denied_notes_writer_never_falls_back_to_generic_grant[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_routing[0m[36m::[0m[34;1mdeployment_notes_route_preserves_authorized_non_notes_and_canonical_issuer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_routing[0m[36m::[0m[34;1mdeployment_notes_route_requires_original_non_notes_policy_and_exact_live_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::notes::tests::issuer_routing[0m[36m::[0m[34;1mdeployment_notes_route_wrong_notes_scope_or_owner_creates_no_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::original_grant::tests[0m[36m::[0m[34;1mexact_original_head_cas_refuses_stale_revision_without_advancing_real_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::original_grant::tests[0m[36m::[0m[34;1mexpired_original_artifact_can_only_be_observed_without_advancing_any_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::original_grant::tests[0m[36m::[0m[34;1moriginal_signature_nonce_and_each_signed_field_are_independently_required[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::original_grant::tests[0m[36m::[0m[34;1mvalid_own_signature_cannot_bypass_old_epoch_canonical_id_or_elapsed_budget[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_final_use_discards_post_io_expiry_without_reusing_its_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_live_observation_cannot_use_an_older_clone_for_a_requested_new_revision[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_live_observation_uses_the_original_revision_revocation_and_expiry_checks[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_protected_concurrent_revision_cannot_sign_with_an_older_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_protected_factory_rejects_unprotected_parent_without_creating_key[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_protected_final_use_uses_exact_lease_revision_binding_and_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::root::tests[0m[36m::[0m[34;1mdeployment_protected_root_factory_retains_original_key_head_counter_and_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::tests[0m[36m::[0m[34;1mactual_random_key_signs_original_grant_and_ids_survive_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::tests[0m[36m::[0m[34;1moriginal_agentd_client_reads_real_server_grant_and_denial_on_same_channel[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::tests[0m[36m::[0m[34;1moriginal_final_use_owner_rejects_replay_revocation_and_local_state_rollback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::tests[0m[36m::[0m[34;1mout_of_scope_and_invalid_grants_do_not_issue_and_revocation_is_durable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::human::tests[0m[36m::[0m[34;1mexact_human_binding_survives_reopen_and_readback_never_changes_the_original_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::human::tests[0m[36m::[0m[34;1mgeneric_signature_cannot_upgrade_into_human_provenance_or_consume_another_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::recovery::tests[0m[36m::[0m[34;1mencoded_capacity_preserves_original_refs_and_does_not_consume_next_intent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::recovery::tests[0m[36m::[0m[34;1mrestart_recovers_only_exact_namespace_and_old_generation_without_signing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::retirement::tests[0m[36m::[0m[34;1mretirement_frees_capacity_without_reissuing_past_intents_after_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::retirement::tests[0m[36m::[0m[34;1mretiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::retirement::tests[0m[36m::[0m[34;1mthirty_two_refused_signs_close_without_eviction_and_next_input_works_after_original_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::tests[0m[36m::[0m[34;1mfull_retention_refuses_new_identity_without_eviction_or_new_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::tests[0m[36m::[0m[34;1mmissing_lookup_and_scope_conflict_do_not_sign_or_consume_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::tests[0m[36m::[0m[34;1mretained_text_signature_uses_original_key_store_and_sequence_after_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::unsigned::tests[0m[36m::[0m[34;1mlost_sign_ack_returns_exact_retained_original_and_cannot_be_closed_or_replaced[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::text::unsigned::tests[0m[36m::[0m[34;1mlost_unsigned_close_ack_and_late_sign_stay_closed_after_original_owner_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::issuer_deadline[0m[36m::[0m[34;1mfinal_issuer_observation_does_not_publish_a_writer_that_just_expired[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::issuer_parent[0m[36m::[0m[34;1mwriter_proof_revoked_issuer_parent_cannot_create_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::issuer_parent[0m[36m::[0m[34;1mwriter_rotation_revoked_issuer_parent_cannot_replace_retained_proof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1mconcurrent_exact_rotations_reconcile_one_original_counter_reservation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1mexpired_or_original_pruned_predecessor_keeps_strict_signed_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1mfull_successor_and_generation_must_match_before_any_sequence_is_spent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1moriginal_revocation_allows_one_rotation_and_exact_lost_ack_reconcile[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1mpost_io_expiry_keeps_old_proof_and_never_refunds_reserved_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests::rotation[0m[36m::[0m[34;1msame_canonical_lease_id_is_refused_before_any_predecessor_replacement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests[0m[36m::[0m[34;1mwriter_proof_concurrent_registration_returns_one_exact_retained_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests[0m[36m::[0m[34;1mwriter_proof_expiring_after_durable_sequence_is_discarded_without_refund[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests[0m[36m::[0m[34;1mwriter_proof_is_retained_across_reads_reopen_and_shared_original_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests[0m[36m::[0m[34;1mwriter_proof_rejects_effect_lease_stale_full_lease_and_revocation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdeployment_issuer::writer::tests[0m[36m::[0m[34;1mwriter_proof_unrelated_lease_mutation_advances_metadata_without_changing_proof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_catalog::tests[0m[36m::[0m[34;1mdesktop_catalog_has_only_six_finite_tools_and_preserves_legacy_catalog[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_seed::tests[0m[36m::[0m[34;1mdesktop_seed_rechecks_actual_configuration_and_session_metadata[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_seed::tests[0m[36m::[0m[34;1mnew_desktop_seed_binds_six_tools_and_cannot_enter_legacy_notes_recovery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_tool::proof::tests[0m[36m::[0m[34;1mactual_callback_decoder_enforces_canonical_operands_and_app_specific_status_selection[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_tool::proof::tests[0m[36m::[0m[34;1meach_app_requires_current_exact_callback_but_can_observe_its_completed_original_item[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_tool::proof::tests[0m[36m::[0m[34;1mneither_app_can_choose_authority_or_replace_the_original_callback_route[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_tool::runtime::tests[0m[36m::[0m[34;1ma_later_application_cannot_inherit_the_first_applications_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mdesktop_thread_tool::runtime::tests[0m[36m::[0m[34;1mmissing_history_and_current_state_do_not_manufacture_an_effect_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mevent_buffer::tests[0m[36m::[0m[34;1mbounded_buffer_reports_cursor_gap_and_resumes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_issuer_dead_original_process_cannot_authorize_inherited_stream_reply[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_issuer_lifetime_is_absolute_and_lost_ack_never_reopens[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_issuer_preserves_typed_objective_then_original_final_use_on_one_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_issuer_wrong_body_or_extra_field_permanently_closes_both_operations[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::root_client::tests[0m[36m::[0m[34;1mroot_text_sign_then_lookup_keeps_original_generation_and_signature_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1mconcurrent_requests_do_not_interleave_and_complete_denial_can_be_observed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1mmalformed_or_wrong_binding_responses_fence_the_channel_without_retry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1moriginal_authority_verifies_grants_without_trusting_the_provider_head[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1moversized_and_empty_frames_are_rejected_without_reading_a_body[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1mtotal_deadline_is_not_extended_by_partial_response_progress[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1mtruncated_response_closes_the_channel_and_oversized_binding_writes_nothing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mfinal_use_issuer::tests[0m[36m::[0m[34;1mwrong_peer_and_unbounded_timeouts_fail_before_any_request[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mgrant_provider_worker::tests[0m[36m::[0m[34;1mcancelled_waiter_does_not_release_capacity_held_by_the_original_worker[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::bootstrap_tests[0m[36m::[0m[34;1mg2_initial_and_successor_attach_only_the_original_matching_role[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::bootstrap_tests[0m[36m::[0m[34;1mg2_successor_local_identity_and_queryabi_cannot_alias_old_history[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::bootstrap_tests[0m[36m::[0m[34;1mg2_truncated_oversized_or_other_version_records_never_reach_ioctl[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::bootstrap_tests[0m[36m::[0m[34;1mg2_wrong_process_root_role_slot_or_page_is_rejected_before_transport[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::bootstrap_tests[0m[36m::[0m[34;1mlegacy_v2_constructor_does_not_silently_admit_g2[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mchanged_boot_and_inaccessible_history_remain_unavailable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mconflict_does_not_query_or_commit_the_previous_request_using_the_same_d[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy[0m[36m::[0m[34;1mcpu_policy_native_recheck_refuses_revision_drift_and_post_io_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy[0m[36m::[0m[34;1mcpu_policy_preparation_reads_original_device_and_never_installs_or_allocates_d[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_consumer_preparation_event_loss_also_fences_later_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_consumer_preserves_one_proposal_and_fences_observed_event_loss[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_final_use_installs_only_after_the_consumer_observation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_final_use_never_turns_entered_transport_failure_into_non_entry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_final_use_refuses_changed_identity_revision_age_and_missing_proposal[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests::cpu_policy_consumer[0m[36m::[0m[34;1mcpu_policy_final_use_retries_same_k_d_and_installs_once_with_a_fresh_proposal[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mknown_request_refusals_cannot_query_an_older_applied_delivery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mmalformed_success_is_a_contradiction_and_lost_transport_reply_remains_unknown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mnative_usage_requires_an_existing_manager_or_recovery_observe_handle[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mproduction_owner_request_and_a02_wire_vectors_match[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mread_usage_accepts_boot_origin_and_full_unsigned_observation_range[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mread_usage_correlates_observer_handle_without_consuming_delivery_sequence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mread_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mread_usage_rejects_foreign_or_malformed_response_headers[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mread_usage_rejects_impossible_single_cpu_snapshots[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1mrecovery_observes_original_manager_namespace_without_reinstalling_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mhos2_device::tests[0m[36m::[0m[34;1msuccessful_acknowledgement_matches_all_four_shared_history_values[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::evaluation_tests[0m[36m::[0m[34;1mcurrent_use_attestation_binds_the_exact_sealed_publication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::evaluation_tests[0m[36m::[0m[34;1mevaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::evaluation_tests[0m[36m::[0m[34;1mindependently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::evaluation_tests[0m[36m::[0m[34;1msigned_candidate_passes_only_with_bound_owner_run_context_and_root_trust[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::evaluation_tests[0m[36m::[0m[34;1msigned_use_rejects_context_snapshot_candidate_set_and_run_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests[0m[36m::[0m[34;1maborted_owner_work_retains_its_budget_until_computation_finishes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests[0m[36m::[0m[34;1mmissing_current_owner_fails_before_product_use[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests::signed[0m[36m::[0m[34;1msigned_evaluation_completes_existing_owner_preparation_and_run_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests::signed[0m[36m::[0m[34;1msigned_input_cannot_install_host_trust_or_change_actual_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests[0m[36m::[0m[34;1mtotal_budget_timeout_never_creates_a_dispatch_or_ledger_capability[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintelligence_product::tests[0m[36m::[0m[34;1munsigned_currentness_substitution_fails_before_owner_use[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mintuition_policy::tests[0m[36m::[0m[34;1mhost_identity_and_owner_pins_fail_closed_before_policy_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mactive_run_capacity_is_bound_by_runtime_composition[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mbulk_deadline_error_retains_completed_prefix_and_failed_record[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mbulk_unknown_error_retains_completed_prefix_and_failed_record[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mcancellation_deadline_overflow_preserves_dispatched_run[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mcancellation_preserves_the_dispatch_boundary_and_reason[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mdrain_closes_admission_and_preserves_dispatch_uncertainty[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mfreezes_the_complete_run_tuple_before_context_attachment[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mindeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mlast_available_revision_accepts_terminal_observation_once[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mlast_representable_cancel_deadline_remains_reconcilable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mlifecycle_deadline_is_enforced_after_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1moperation_identity_is_idempotent_only_for_equal_semantics[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrecovery_rehydrates_only_an_indeterminate_non_redispatchable_run[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrejected_terminal_observation_preserves_recovered_uncertainty[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrevalidated_durable_explicit_abstain_never_enters_runtime_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrevalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrevision_overflow_preserves_dispatched_and_cancelling_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mrevision_overflow_preserves_pre_dispatch_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlane_b_runtime::tests[0m[36m::[0m[34;1mterminal_observation_is_idempotent_and_only_closed_runs_can_be_removed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1meach_checkpoint_reopens_and_exact_retry_performs_no_second_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1mforeign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1mmalformed_counts_strings_tags_and_truncated_checkpoints_are_rejected[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1mmaximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1mvalid_json_with_corrupt_protected_record_metadata_is_never_restored[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mlearning_iteration_checkpoint::tests[0m[36m::[0m[34;1mwrite_failure_and_lost_ack_reconcile_original_record_without_reexecution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_command_runtime::tests[0m[36m::[0m[34;1mcompletion_and_unwind_keep_the_original_drop_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_command_runtime::tests[0m[36m::[0m[34;1mpending_cancellation_keeps_the_original_drop_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_command_runtime::tests[0m[36m::[0m[34;1mruntime_entry_rejection_keeps_the_original_drop_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mconfigured_inode_is_published_and_accepts_the_dedicated_role[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mexisting_final_is_not_replaced_and_own_pending_is_removed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mfinal_replacement_inode_survives_listener_drop[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mpending_collision_is_preserved_without_publishing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mpending_replacement_inode_survives_failed_publication_cleanup[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnative_g2_socket_publication::tests[0m[36m::[0m[34;1mpreexisting_same_inode_alias_is_rejected_without_removing_final[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1mactual_file_owners_compute_sign_and_publish_only_bound_comparison[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1mchanged_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1mdifferent_task_and_unknown_holdout_release_remain_fail_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1mmissing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1msame_snapshot_but_changed_journal_cut_is_rejected_before_provider[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1msignatures_for_another_fair_budget_cannot_publish_this_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_cell_evaluation::tests[0m[36m::[0m[34;1munfair_or_missing_training_declarations_never_consume_holdout[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mcancel_and_drain_survive_reopen_and_retain_actual_worker_cost[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mchanged_model_identity_remains_pending_with_no_published_prefix[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mexpiration_during_admission_settles_known_no_contact_without_calling_model[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mfence_at_final_no_contact_settlement_keeps_admission_unresolved[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mlost_response_retains_precontact_clock_floor_across_host_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation::tests[0m[36m::[0m[34;1mordinary_owner_reopen_reads_original_worker_and_committed_prefix_without_dispatch[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests[0m[36m::[0m[34;1mforward_retirement_preserves_mode_and_fences_the_unchanged_non_stop_predecessor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests[0m[36m::[0m[34;1mresumed_or_changed_drained_cut_rejects_the_original_retirement_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests[0m[36m::[0m[34;1mretirement_requires_both_settled_request_and_actual_output_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests::same_model[0m[36m::[0m[34;1msame_model_cannot_bypass_ack_or_drain_and_original_updates_keep_rejecting_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests::same_model[0m[36m::[0m[34;1msame_model_requires_distinct_task_run_exact_epoch_and_complete_unchanged_manifest[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests::same_model[0m[36m::[0m[34;1msame_model_requires_own_signed_purpose_and_lost_ack_recovery_never_claims_again[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::drained_tests[0m[36m::[0m[34;1mstrict_legacy_bytes_and_retirement_signatures_cannot_be_substituted[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::expected_context_tests[0m[36m::[0m[34;1mexpected_context_cold_pending_replay_and_cancellation_keep_original_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::expected_context_tests[0m[36m::[0m[34;1mexpected_context_lost_witness_ack_recovers_exact_commit_without_another_append[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::expected_context_tests[0m[36m::[0m[34;1mexpected_context_reads_only_guarded_durable_admission_and_rejects_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::expected_context_tests[0m[36m::[0m[34;1mexpected_context_rejects_foreign_task_and_current_generation_replacement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::test_support::expected_context_tests[0m[36m::[0m[34;1mexpected_context_requires_exact_checkpoint_and_preserves_replay_and_conflict[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mactual_new_current_or_withdrawal_cut_rejects_stale_selection_before_claim[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mbad_signature_and_wrong_effect_binding_never_advance_current_or_nonce[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mconsumed_nonce_with_rejected_cas_stays_pending_until_new_signed_forward_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mlost_publication_ack_cold_reads_original_and_fences_old_guarded_bytes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mprepared_target_is_durable_but_cannot_dispatch_or_resume[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_current::tests[0m[36m::[0m[34;1mselection_expiry_after_real_nonce_claim_blocks_final_control_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_process_bootstrap::tests[0m[36m::[0m[34;1mactual_joint_reopens_the_same_clock_journal_prefix_and_original_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_process_bootstrap::tests[0m[36m::[0m[34;1mactual_opened_files_reject_raced_aliases_and_non_regular_assets[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_process_bootstrap::tests[0m[36m::[0m[34;1midentity_assets_clock_and_descriptor_are_checked_before_any_owner_creation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_process_bootstrap::tests[0m[36m::[0m[34;1mpaths_reject_aliases_and_reopen_never_falls_back_to_creation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mabsent_service_is_not_a_blocker_but_unstarted_or_closed_bootstrap_is[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mboth_drain_paths_retain_unknown_work_and_unacknowledged_output[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mbounded_queue_and_drain_before_worker_start_prevent_model_entry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mclosing_the_last_handle_invalidates_an_idle_drain_observation_immediately[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1mpending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1mprivate_socket_pages_acknowledges_and_reopens_exact_original_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1msimultaneous_steps_compare_predecessors_inside_one_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1mstale_generation_changed_content_and_oversized_input_do_not_mutate_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1mtyped_generation_bootstrap_does_not_implicitly_expose_control[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1mtyped_operation_with_same_derived_id_cannot_impersonate_control_intent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::control[0m[36m::[0m[34;1muncertain_dispatch_cancels_and_reads_original_without_second_execution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::episode[0m[36m::[0m[34;1mfresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::episode[0m[36m::[0m[34;1mreal_actor_delivery_and_cold_reopen_append_one_authenticated_outcome[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mhost_fence_at_precontact_or_precommit_preserves_pending_without_publication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::joint[0m[36m::[0m[34;1msynthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::no_contact[0m[36m::[0m[34;1mcontacted_unknown_worker_remains_unresolved_through_drain_and_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::no_contact[0m[36m::[0m[34;1mfenced_live_stack_and_cold_missing_control_record_remain_pending[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::no_contact[0m[36m::[0m[34;1mfleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::observation[0m[36m::[0m[34;1mowner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::observation[0m[36m::[0m[34;1mplanned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mordinary_shutdown_reopens_original_pending_and_exact_committed_outbox[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mpartial_startup_failure_preserves_the_configured_unknown_blocker[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mquarantine_is_a_drain_blocker_and_never_a_retirement_acknowledgement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mqueued_old_cancel_and_reconcile_cannot_target_a_new_pending_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests[0m[36m::[0m[34;1mretirement_waits_for_exact_ack_and_only_then_permits_same_owner_successor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::adopted_learning::contract[0m[36m::[0m[34;1mbackend_without_encoder_retains_its_explicit_optional_contract[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::adopted_learning::contract[0m[36m::[0m[34;1mpublished_contract_mismatch_cannot_become_selection_or_recovered_next_use[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::adopted_learning[0m[36m::[0m[34;1mupdated_actor_rechecks_current_withdrawal_and_revocation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::adopted_learning[0m[36m::[0m[34;1mupdated_candidate_uses_original_actor_and_recovers_without_another_reset[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::expected_context[0m[36m::[0m[34;1mguarded_no_contact_deadline_commits_original_identity_without_model_dispatch[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::expected_context[0m[36m::[0m[34;1mordinary_runtime_rechecks_revocation_after_dispatch_and_readback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::expected_context[0m[36m::[0m[34;1mordinary_runtime_recovers_original_identity_after_foreign_or_uncertain_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::learning[0m[36m::[0m[34;1mordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::learning[0m[36m::[0m[34;1mrunning_actor_refuses_current_withdrawal_and_revocation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::learning[0m[36m::[0m[34;1munpublished_actor_refuses_learning_readback_and_keeps_transport_errors[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update[0m[36m::[0m[34;1mlive_current_withdrawal_and_revocation_block_dispatch_and_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update[0m[36m::[0m[34;1mnormal_runtime_reset_and_journal_reopen_keep_original_receipt[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::same_model[0m[36m::[0m[34;1mcold_same_model_task_runs_new_input_and_recovers_receipt_without_reexecution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::successive[0m[36m::[0m[34;1mcold_takeover_rejects_real_stopped_drained_but_unacknowledged_output[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_runtime::tests::update::successive[0m[36m::[0m[34;1msuccessive_selected_tasks_require_closed_terminal_takeover_after_current_advances[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_update_bootstrap::learning::tests[0m[36m::[0m[34;1mactual_same_model_use_cold_reopens_without_new_nonce_or_journal_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_update_bootstrap::learning::tests[0m[36m::[0m[34;1mcurrent_withdrawal_and_revocation_refuse_new_learning_observations_and_recovery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_generation_update_bootstrap::learning::tests[0m[36m::[0m[34;1mretained_use_rejects_failed_cancelled_rejected_and_late_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_runtime::tests[0m[36m::[0m[34;1magentd_neuron_owner_is_a_compiled_product_surface[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests[0m[36m::[0m[34;1mactual_owner_descriptor_aliases_and_wrong_flags_fail_before_decode_or_write[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded[0m[36m::[0m[34;1mguarded_control_lock_failure_keeps_preparation_bound_to_its_original_task[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded[0m[36m::[0m[34;1mguarded_preflight_rejects_identity_epoch_binding_and_actual_fd_aliases_before_writes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::initial[0m[36m::[0m[34;1minitial_lost_publication_ack_reopens_original_signed_result_without_new_claim_or_cost[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::initial[0m[36m::[0m[34;1minitial_unsigned_bad_signature_wrong_binding_and_changed_current_never_activate[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::initial::runtime[0m[36m::[0m[34;1mactual_initial_v13_rejection_replays_then_retires_to_a_new_selected_task[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::initial::runtime[0m[36m::[0m[34;1minitial_ready_rejects_wrong_runtime_identity_and_queue_before_preparation_cost[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::initial[0m[36m::[0m[34;1muncertain_initial_claim_remains_pending_until_new_signed_forward_publication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded[0m[36m::[0m[34;1mready_rechecks_actual_runtime_identity_queue_and_live_authority_before_charging_or_spawning[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::runtime[0m[36m::[0m[34;1mcold_same_model_v13_task_uses_typed_worker_and_cold_recovery_without_reexecution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded::runtime[0m[36m::[0m[34;1mcold_typed_publication_recovery_charges_preparation_once_and_replays_real_v13_rejection[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests::guarded[0m[36m::[0m[34;1mtyped_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests[0m[36m::[0m[34;1midentity_epoch_and_closure_mismatch_leave_all_owner_files_untouched[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests[0m[36m::[0m[34;1mpreparation_scope_is_sticky_after_lock_failure_and_atomic_between_tasks[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mneuron_v13_generation_bootstrap::tests[0m[36m::[0m[34;1mreal_v13_rejection_retains_cost_and_reopens_original_result_without_repreparation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_changed_operation_and_receipt_bindings_are_refused[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_old_nonapplication_receipt_is_not_a_rejection_tombstone[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_readback_loss_drift_and_regression_preserve_history_without_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_receipt_retirement_is_not_waiting_input_and_source_state_is_not_evidence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_success_requires_original_receipt_and_exact_current_goal[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_tool_success_keeps_read_and_original_navigation_semantics[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_action_observer::tests[0m[36m::[0m[34;1mnotes_act2_tool_success_requires_current_goal_after_readback_loss_or_drift[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::startup::tests[0m[36m::[0m[34;1mnotes_startup_refuses_invalid_reservations_before_send[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::startup::tests[0m[36m::[0m[34;1mnotes_startup_refuses_uncleared_root_credential_mode_before_send[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::startup::tests[0m[36m::[0m[34;1mnotes_startup_sends_exact_reserved_identity_without_descriptors[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mabsent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mbootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mcanonical_notes_model_uses_original_two_descriptor_bootstrap_and_startup[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mdatagram_or_named_effect_descriptor_cannot_be_attached[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mduplicate_unknown_wrong_identity_and_oversized_offers_close_received_descriptor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mexpired_deadline_cannot_receive_an_offer_or_emit_an_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_bootstrap::tests[0m[36m::[0m[34;1mnotes_startup_mismatched_offer_is_rejected_before_target_composition_or_attached_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mclosed_peer_buffered_frame_remains_readable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mclosed_peer_partial_frame_still_returns_unexpected_eof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mindependent_recovery_survives_effect_loss_and_filters_late_datagrams[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1minherited_socketpair_preserves_exact_frame_bytes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1minvalid_bound_does_not_write_and_explicit_invalidation_is_permanent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mlost_reply_permanently_disables_further_effect_entry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mlost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mmalformed_reply_prefix_closes_stream_without_accepting_a_later_reply[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_channel::tests[0m[36m::[0m[34;1mnamed_socket_is_not_a_bootstrap_channel[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_document_observer::tests[0m[36m::[0m[34;1mnotes_document_observer_clones_do_not_queue_behind_an_inflight_exchange[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_document_observer::tests[0m[36m::[0m[34;1mnotes_document_observer_clones_fence_revision_and_content_without_writing_effects[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_document_observer::tests[0m[36m::[0m[34;1mnotes_objective_private_document_observer_correlates_fresh_nonce_and_never_writes_effect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_document_observer::tests[0m[36m::[0m[34;1mnotes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1macknowledged_prior_operation_allows_next_original_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1malready_acknowledged_selected_operation_remains_exact_and_idempotent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1manother_pending_target_blocks_latest_and_exact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1mduplicate_order_and_duplicate_operation_are_never_none[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1mempty_validated_cut_has_no_previous_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1mexact_selector_cannot_cross_previous_target_or_invent_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1mlatest_uses_exact_previous_target_instead_of_global_latest[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1monly_durable_acknowledged_other_targets_allow_no_selection[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1moriginal_order_is_generation_then_sequence_not_lexical_id[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::desktop_recorded::recovery::tests[0m[36m::[0m[34;1mtwo_pending_operations_on_same_target_cannot_fit_one_helper[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::recorded::tests[0m[36m::[0m[34;1mrecorded_source_requires_exact_raw_tuple_signed_commitments_and_operation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::thread_sender_tests[0m[36m::[0m[34;1ma_retained_original_turn_source_cannot_be_attributed_to_a_new_call[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::ui_worker::tests[0m[36m::[0m[34;1mnotes_ui_failed_or_cancelled_refresh_cannot_renew_cached_ready[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::ui_worker::tests[0m[36m::[0m[34;1mnotes_ui_invalid_navigation_cannot_publish_partial_readiness[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_literal_adapter::ui_worker::tests[0m[36m::[0m[34;1mnotes_ui_readback_failure_and_cancellation_cannot_renew_an_old_snapshot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_recovery_process::tests[0m[36m::[0m[34;1mnotes_recovery_process_rejects_unsafe_or_mismatched_executable_before_start[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_recovery_process::tests[0m[36m::[0m[34;1mnotes_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_recovery_selection::tests[0m[36m::[0m[34;1mstartup_selector_and_legacy_exact_are_exclusive_and_strict[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_execution::tests[0m[36m::[0m[34;1mfinite_profile_rejects_enabled_builtins_agents_and_external_mcp[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_execution::tests[0m[36m::[0m[34;1mpersistent_profile_requires_no_environment_and_records_actual_file_bytes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_seed::tests[0m[36m::[0m[34;1mpersisted_seed_metadata_requires_exact_original_identity_and_catalog[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::human::tests[0m[36m::[0m[34;1moriginal_human_ingress_requires_exact_admitted_input_and_cannot_use_direct_turn_start[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::human::tests[0m[36m::[0m[34;1mqueue_reconciliation_must_observe_the_same_persisted_turn_without_new_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mabsent_original_items_cannot_be_replaced_by_model_result_text[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mdiscovery_recovers_first_original_identity_without_tool_reply_or_model_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mincomplete_core_with_committed_older_receipt_remains_unknown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mincomplete_newer_turn_never_falls_back_to_an_older_write[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mselector_and_exact_references_are_exclusive_and_cannot_supply_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::status::tests[0m[36m::[0m[34;1mslow_core_cannot_restart_the_recorded_lookup_budget[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::tests[0m[36m::[0m[34;1ma_new_call_cannot_escape_the_original_turn_operation_fence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::tests[0m[36m::[0m[34;1mmodel_arguments_cannot_supply_identity_authority_or_a_new_tool_route[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::tests[0m[36m::[0m[34;1moriginal_callback_requires_exact_in_progress_item_and_fixed_thread[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_thread_tool::tests[0m[36m::[0m[34;1mretained_unknown_item_can_only_be_referenced_for_read_only_status[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_endpoint::tests[0m[36m::[0m[34;1mnotes_ui_actual_session_gets_a_bounded_cached_view_and_only_queues_one_command[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_endpoint::tests[0m[36m::[0m[34;1mnotes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_endpoint::tests[0m[36m::[0m[34;1mshared_session_lifetime_rejects_wrong_birth_and_observes_actual_child_exit[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_queue::tests[0m[36m::[0m[34;1mbounded_actions_and_views_refuse_new_work_without_replacing_existing_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_queue::tests[0m[36m::[0m[34;1mexpired_actions_never_reach_worker_and_do_not_erase_earlier_retention[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_queue::tests[0m[36m::[0m[34;1moriginal_actions_remain_fifo_while_refresh_is_coalesced_and_cannot_fill_them[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_wire::tests[0m[36m::[0m[34;1mnotes_document_readback_matches_original_desktop_wire_without_terminal_claim[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_wire::tests[0m[36m::[0m[34;1moriginal_session_can_decode_private_fields_absent_observation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mnotes_ui_wire::tests[0m[36m::[0m[34;1moriginal_session_wire_keeps_text_literal_and_rejects_authority_fields[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests[0m[36m::[0m[34;1mdurable_authentication_frontier_allows_only_exact_replay[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests::history[0m[36m::[0m[34;1mabstention_and_conflict_remain_distinct_historical_publications[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests::history[0m[36m::[0m[34;1mexpired_historical_request_matches_after_reopen_without_changing_journal[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests::history[0m[36m::[0m[34;1mhistory_requires_every_retained_authentication_and_body_field[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests::history[0m[36m::[0m[34;1mtrusted_anchor_must_exist_match_and_cover_publication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests[0m[36m::[0m[34;1mlegacy_record_without_protocol_identity_is_rejected_at_final_use[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests[0m[36m::[0m[34;1mrecovered_authentication_rejects_revoked_and_stale_owner_trust[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mobjective_runtime::tests[0m[36m::[0m[34;1mruntime_consumes_compiled_record_but_not_explicit_abstain[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_anchor_journal::tests[0m[36m::[0m[34;1mjournal_never_discards_a_complete_invalid_frame[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_anchor_journal::tests[0m[36m::[0m[34;1mjournal_preserves_committed_anchor_across_reopen_and_generation_rollover[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_anchor_journal::tests[0m[36m::[0m[34;1mjournal_repairs_only_an_incomplete_crash_tail[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1manchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mowner_evidence_policy_rejects_authenticated_wrong_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mowner_evidence_receipt_is_context_bound[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mowner_evidence_rejects_context_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mowner_evidence_rejects_parameter_signal_value_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mowner_evidence_set_includes_mutation_policy_and_canonical_kinds[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mreal_append_ack_crash_then_registry_rollback_is_rejected_on_restart[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_host::tests[0m[36m::[0m[34;1mretained_external_anchor_blocks_rolled_back_registry_reopen[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_owner_evidence::tests[0m[36m::[0m[34;1mconcrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_owner_evidence::tests[0m[36m::[0m[34;1mconcrete_dataset_and_policy_adapters_bind_live_frontiers[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_owner_evidence::tests[0m[36m::[0m[34;1mdynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_owner_evidence::tests[0m[36m::[0m[34;1mdynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_owner_evidence::tests[0m[36m::[0m[34;1mdynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_process_bootstrap::tests[0m[36m::[0m[34;1mdescriptor_digest_rejects_byte_substitution[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_process_bootstrap::tests[0m[36m::[0m[34;1mmutable_owner_hardlink_alias_is_rejected[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests[0m[36m::[0m[34;1magentd_lifetime_owner_submits_restarts_and_reconciles_idempotently[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1mcoordinator_uses_native_proposal_owner_and_reconciles_lost_ack[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1mevaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1minvalid_signature_prevents_dataset_training_and_checkpoint_progress[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1mno_update_next_use_checks_actual_selection_stage_and_controller[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mactual_delivery_preserves_pending_without_backend_and_claimed_with_closed_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mcompleted_recovery_checks_current_revocation_controller_and_signature_expiry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mcompleted_recovery_checks_ready_and_clock_after_awaiting_owner_attestation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mcompleted_recovery_reauthenticates_all_signed_stages_without_reproposing_or_checkpointing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mcompleted_recovery_rejects_each_invalid_retained_signature_before_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mfresh_receipt_wait_rechecks_time_and_ready_before_checkpointing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mpartial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests[0m[36m::[0m[34;1mreadback_missing_or_partial_checkpoint_never_creates_or_resumes_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1mscope_and_generation_readiness_refuse_before_owner_work[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::learning_iteration_tests[0m[36m::[0m[34;1mseparate_keys_under_one_controller_cannot_self_evaluate[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::terminal_learning_tests[0m[36m::[0m[34;1mexact_owner_evidence_and_dataset_budget_are_enforced[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::terminal_learning_tests[0m[36m::[0m[34;1mnative_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::terminal_learning_tests[0m[36m::[0m[34;1mrecovered_ledger_does_not_invent_a_durable_iteration_checkpoint[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::lifetime_tests::terminal_learning_tests[0m[36m::[0m[34;1msupervised_profile_freezes_fits_and_reads_back_actual_native_candidate[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mplasticity_runtime::tests[0m[36m::[0m[34;1mruntime_queue_capacity_is_bounded[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_authority::tests[0m[36m::[0m[34;1mexpired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_authority::tests[0m[36m::[0m[34;1mexternal_frontier_mismatch_is_not_repaired_from_the_local_directory[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_authority::tests[0m[36m::[0m[34;1mmissing_clock_keyring_or_external_frontier_has_no_compatibility_fallback[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_authority::tests[0m[36m::[0m[34;1moriginal_authority_uses_the_injected_clock_keyring_and_external_cas[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_authority::tests[0m[36m::[0m[34;1mrejected_keyring_drift_preserves_original_durable_claims[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::notes_tests[0m[36m::[0m[34;1mattached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::notes_tests[0m[36m::[0m[34;1mmalformed_notes_descriptors_or_identity_publish_neither_host[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::notes_tests[0m[36m::[0m[34;1mnotes_independent_frontier_refusal_does_not_publish_or_read_handoff[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::notes_tests[0m[36m::[0m[34;1moriginal_notes_offer_ack_returns_identity_only_after_both_handles_install[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::notes_tests[0m[36m::[0m[34;1munavailable_original_notes_ack_does_not_publish_or_return_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests[0m[36m::[0m[34;1minstalled_original_objective_sender_reuses_same_writer_and_live_verifier[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests::notes_literal_control_tests[0m[36m::[0m[34;1mnotes_literal_control_lost_reply_retains_one_exact_unknown_observation_without_resubmit[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests::notes_literal_control_tests[0m[36m::[0m[34;1mnotes_literal_control_wrong_peer_sends_zero_bytes_and_never_rearms_original_ticket[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests::notes_literal_control_tests::receipt_tests[0m[36m::[0m[34;1mnotes_literal_recovery_checks_identity_and_never_erases_first_publication[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests[0m[36m::[0m[34;1mretained_signed_body_hash_matches_original_agentd_wire_projection[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::objective_sender_tests[0m[36m::[0m[34;1muninstalled_original_objective_sender_refuses_without_a_new_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1mandroid_runtime_bootstrap_preserves_original_writer_and_refuses_revoked_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1mfinal_metadata_callback_cannot_expire_authority_before_atomic_install[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1mfrontier_and_current_cut_refusals_leave_neither_host_registered[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1minstalled_original_writer_keeps_the_protected_clock_and_original_verifier_live[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1missuer_peer_refusal_leaves_neither_host_registered[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1moriginal_live_verifier_and_protected_clock_failures_during_recovery_do_not_install[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests::owner_custody[0m[36m::[0m[34;1mescaped_original_host_and_writer_retain_the_same_registered_owner_file[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests::owner_custody[0m[36m::[0m[34;1mroot_preparation_does_not_unlock_a_retained_uninstalled_original_writer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1mrevoked_cut_and_initial_expiry_do_not_open_the_protected_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_composition::tests[0m[36m::[0m[34;1msuccess_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::desktop_deployment::tests[0m[36m::[0m[34;1mjoint_header_requires_matching_owner_generation_and_actual_target_pair[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::desktop_deployment::tests[0m[36m::[0m[34;1mjoint_wire_never_defaults_a_release_interaction_or_old_recovery[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::desktop_deployment::tests[0m[36m::[0m[34;1mrecovery_schema_requires_exact_typed_previous_pair_and_fresh_never_consumes_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mabsolute_original_deadline_cannot_be_renewed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mexplicit_desktop_transfers_distinct_readonly_capabilities_without_notes_inputs[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1minherited_deployment_cannot_retain_the_root_producers_writable_description[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mordinary_daemon_arguments_remain_byte_exact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mordinary_payload_file_is_not_a_sealed_original_input[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mpartial_and_duplicate_launch_flags_preserve_inherited_rights[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mproduction_launcher::inputs::tests[0m[36m::[0m[34;1mpartial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mdispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mfinal_delivered_terminal_releases_staged_turn[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mindeterminate_terminal_reopens_blocked_and_reconciles_monotonically[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mnamed_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mnon_dispatch_terminal_is_idempotent_and_retains_stage_for_retry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mnot_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mowner_remains_send_sync_with_fault_injection[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mpost_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mprompt_runtime::tests[0m[36m::[0m[34;1mstaged_attachment_is_bound_to_exact_thread_and_turn[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_authority_session::tests[0m[36m::[0m[34;1mboth_original_frontiers_finish_before_new_head_is_published[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_authority_session::tests[0m[36m::[0m[34;1mexact_original_consumers_activate_writer_and_drop_fences_retained_clones[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_authority_session::tests::file_custody[0m[36m::[0m[34;1moriginal_blocking_cas_keeps_file_after_session_and_worker_retire[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_authority_session::tests::resources[0m[36m::[0m[34;1mretired_original_session_releases_both_journals_and_live_root_after_worker_exit[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_authority_session::tests[0m[36m::[0m[34;1muncertain_original_consumer_update_fences_even_with_fresh_root_responses[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_bound_socket::tests[0m[36m::[0m[34;1moriginal_root_bound_listener_child[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_bound_socket::tests[0m[36m::[0m[34;1moriginal_root_bound_listener_preserves_peer_identity_and_path_custody[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_bound_socket::tests[0m[36m::[0m[34;1mrefuses_shared_or_aliased_parent_without_creating_a_rendezvous[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_cache::tests[0m[36m::[0m[34;1mfresh_unrelated_registry_updates_do_not_fence_fixed_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_cache::tests[0m[36m::[0m[34;1mrequest_start_bounds_age_and_ceiling_projection_rounds_conservatively[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_cache::tests[0m[36m::[0m[34;1mrevocations_only_accumulate_and_update_barrier_does_not_publish_early[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_cache::tests[0m[36m::[0m[34;1mrollback_same_revision_equivocation_wrong_boot_and_late_clock_permanently_fence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1mcancelled_original_exchange_discards_late_reply_and_stays_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1mconcurrent_read_is_refused_without_discarding_the_original_inflight_exchange[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1mmalformed_oversized_and_partial_frames_permanently_close_the_lane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1moriginal_fixed_stream_accepts_bounded_reads_without_reconnect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1moriginal_peer_death_refuses_before_inherited_socket_reaches_eof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_observation_stream::tests[0m[36m::[0m[34;1mproduction_uid_and_boot_start_identity_are_pinned_before_any_frame[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_handoff::tests[0m[36m::[0m[34;1mmalformed_marker_or_extra_right_closes_all_received_streams[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_handoff::tests[0m[36m::[0m[34;1mnamed_socket_or_invalid_deadline_is_not_an_inherited_root_handoff[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_handoff::tests[0m[36m::[0m[34;1mordered_descriptor_frame_preserves_open_objects_and_sets_cloexec[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_inputs::tests[0m[36m::[0m[34;1mempty_or_oversized_handoff_is_refused_before_custody_or_parsing[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_inputs::tests[0m[36m::[0m[34;1minvalid_timing_refuses_before_any_descriptor_or_connection_use[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_inputs::tests[0m[36m::[0m[34;1mordinary_json_file_is_not_a_root_production_handoff[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_production_inputs::tests[0m[36m::[0m[34;1munsealed_memfd_is_refused_before_parsing_or_connecting[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_writer_proof::tests[0m[36m::[0m[34;1mcorrectly_signed_single_effect_lease_cannot_become_the_long_lived_writer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_writer_proof::tests[0m[36m::[0m[34;1mobservation_requires_full_fixed_identity_but_allows_unrelated_store_advancement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_writer_proof::tests[0m[36m::[0m[34;1moriginal_signature_domain_key_spelling_and_static_registration_are_all_required[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mroot_writer_proof::tests[0m[36m::[0m[34;1mverified_complete_proof_and_ascii_signature_create_exact_original_lease[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests[0m[36m::[0m[34;1mactual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests[0m[36m::[0m[34;1mnotes_local_handoff_before_expiry_refuses_and_consumes_current_into_dirty[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests[0m[36m::[0m[34;1mnotes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_and_lease_generations[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::composition_tests[0m[36m::[0m[34;1mnotes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::composition_tests[0m[36m::[0m[34;1mnotes_objective_session_registration_returns_observer_for_the_same_private_target[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::desktop_prepare_deadline_tests[0m[36m::[0m[34;1melapsed_desktop_budget_cannot_refresh_before_either_original_reservation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests[0m[36m::[0m[34;1mnotes_actual_app_crash_original_owner_reopen_and_helper_ack_restart[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests[0m[36m::[0m[34;1mnotes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::gui_tests::fence_gui_tests[0m[36m::[0m[34;1mnotes_actual_ui_authorized_fence_excludes_delayed_original[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::gui_tests[0m[36m::[0m[34;1mnotes_actual_ui_original_owner_roundtrip[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::literal_prepare_tests[0m[36m::[0m[34;1mnotes_literal_preparation_retains_exact_owner_payload_without_grant_or_effect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::literal_prepare_tests[0m[36m::[0m[34;1mnotes_literal_protected_time_preserves_milliseconds_and_rejects_overflow[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests[0m[36m::[0m[34;1mnotes_recovered_writer_persists_lost_reply_and_retires_without_replay[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::objective_tests[0m[36m::[0m[34;1mfinite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::objective_tests::reconciliation_scope_tests[0m[36m::[0m[34;1mfinite_notes_reconciler_excludes_device_grants_dispatch_and_observation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::objective_tests[0m[36m::[0m[34;1msigned_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::hos2_recovery_tests::notes_tests::previous_tests[0m[36m::[0m[34;1mnotes_objective_previous_receipt_host_reconciles_without_registering_dispatch_or_issuer[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mautomation_generation_change_during_open_remains_fail_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mautomation_owner_fence_still_terminates_the_runtime_monitor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mautomation_owner_mismatch_remains_fail_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::drain_tests[0m[36m::[0m[34;1mclosing_admission_counts_blocked_build_then_prevents_model_contact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::drain_tests[0m[36m::[0m[34;1mcompleted_circuit_keeps_drain_blocked_until_result_callback_returns[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::drain_tests[0m[36m::[0m[34;1mlate_ready_and_generation_refresh_cannot_reopen_draining_ingress[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::drain_tests[0m[36m::[0m[34;1munavailable_owner_blocks_drain_even_without_a_circuit_profile[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress[0m[36m::[0m[34;1mhistorical_completion_repair_does_not_renew_revoked_objective_authority[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress[0m[36m::[0m[34;1mordinary_ingress_rejects_invalid_trust_generation_and_deadline_before_contact[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::runtime_tests[0m[36m::[0m[34;1mabandoned_request_keeps_lane_and_queue_bounded_until_real_work_stops[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress::runtime_tests[0m[36m::[0m[34;1mbootstrap_rejects_a_writer_outside_the_process_running_generation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests::circuit_task_ingress[0m[36m::[0m[34;1msigned_objective_sink_ack_loss_replays_original_circuit_and_cell_result[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mcompatibility_retrieval_mode_does_not_require_hnmf_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mcompatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mdispatch_uncertain_tick_stays_live_for_durable_reconciliation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mdrain_runtime_keeps_control_reconciliation_live_until_terminal_observation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mduplicate_automation_attachment_does_not_replace_the_live_store[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mgeneration_change_during_open_is_fenced_before_serving[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mgeneration_monitor_honors_host_cancellation_during_readiness_probe[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mhnmf_required_retrieval_mode_fails_closed_without_current_context[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mproduct_write_profile_fails_closed_when_cognitive_store_is_unavailable[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mruntime_automation_store_failure_stops_only_the_scheduler_plane[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1mstale_generation_is_fenced_before_cognitive_store_open[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1munavailable_automation_store_degrades_without_startup_failure[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime::tests[0m[36m::[0m[34;1munavailable_cognitive_store_degrades_without_leaking_open_error[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::failure_latch_tests[0m[36m::[0m[34;1mobserved_required_failure_latches_stop_even_when_caller_handles_error[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::failure_latch_tests[0m[36m::[0m[34;1mrejected_or_panicking_retirement_callback_latches_host_failure[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::failure_latch_tests[0m[36m::[0m[34;1mretirement_timeout_does_not_masquerade_as_a_shared_fence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::failure_latch_tests[0m[36m::[0m[34;1mretirement_writer_fence_cancels_siblings_and_blocks_fresh_names[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::failure_latch_tests[0m[36m::[0m[34;1msuccessful_optional_quarantine_does_not_latch_host_failure[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mdropped_retirement_wait_does_not_erase_an_unacknowledged_abort[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1misolated_optional_failure_does_not_poison_healthy_host[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mlate_owner_acknowledgement_after_timeout_preserves_clean_shutdown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mobserved_required_failure_cannot_become_cancelled_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mordinary_host_abort_does_not_invent_a_retirement_request[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mrejected_quarantine_cannot_be_reclassified_as_normal_shutdown[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mrejected_retirement_remains_failed_after_cleanup[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mshutdown_listener_failure_is_latched_across_reentry[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1msuccessful_optional_retirement_preserves_clean_host_outcome[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::outcome_tests[0m[36m::[0m[34;1mtimed_out_retirement_aborted_by_shutdown_remains_failed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1ma_writer_fence_during_retirement_still_propagates[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mfailed_drain_is_quarantine_not_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mforty_first_running_service_retires_without_stopping_other_services[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mowner_retirement_rejection_or_panic_never_publishes_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mrejected_service_factory_is_never_invoked[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mretirement_cannot_stop_required_or_legacy_uncontracted_tasks[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mretirement_keeps_observing_unrelated_failures[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::retirement_tests[0m[36m::[0m[34;1mretirement_timeout_never_acknowledges_unfinished_drain[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::abi_tests[0m[36m::[0m[34;1mabi_bound_replacements_reuse_one_slot_and_reject_stale_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::abi_tests[0m[36m::[0m[34;1mincompatible_abi_never_starts_factory_or_consumes_a_slot[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1ma_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mfailed_retirement_callback_fences_host_without_releasing_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mquarantined_failure_is_not_an_acknowledged_retirement[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mrejected_registration_never_invokes_factory_or_advances_fence[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mreplacements_reuse_one_slot_even_at_full_identity_capacity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mretired_legacy_name_cannot_bypass_its_single_use_contract[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::tests[0m[36m::[0m[34;1mstale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::service_generations::writer_tests[0m[36m::[0m[34;1msqlite_writer_rotates_256_times_without_consuming_new_service_identities[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1madmission_is_bounded_and_rejects_duplicate_or_invalid_names[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mcancelled_observation_keeps_completion_identity[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mcooperative_shutdown_precedes_forced_abort[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mforty_first_service_executes_and_failure_preserves_required_services[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mgeneration_fence_cannot_be_downgraded_to_optional_availability[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1moptional_panic_preserves_registered_identity_and_quarantines_once[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mquarantine_panic_is_fatal_and_still_drains[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mquarantine_rejection_is_fatal_and_reaps_other_tasks[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mrequired_clean_exit_is_not_misreported_as_success[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mshutdown_grace_cannot_be_zero_or_unbounded[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mruntime_tasks::tests[0m[36m::[0m[34;1mshutdown_listener_error_does_not_detach_live_tasks[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mconfigured_intelligence_runner_is_not_advertised_without_daemon_ingress[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mcurrent_durable_run_start_requires_live_owner_trust[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mdaemon_control_owns_the_run_lifecycle_and_advertises_it[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mfinal_use_revalidation_rejects_stale_spawn_generation_before_store_access[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mmissing_local_record_immediately_fences_the_serving_agent[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mserving_agent_survives_unrelated_registry_corruption[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::isolation_tests[0m[36m::[0m[34;1mtargeted_read_preserves_lifecycle_and_resource_fences[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_objective::lock_tests[0m[36m::[0m[34;1mnotes_objective_drain_child[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_objective::lock_tests[0m[36m::[0m[34;1mnotes_objective_drain_does_not_reenter_run_mutex[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_objective::lock_tests[0m[36m::[0m[34;1mnotes_objective_unknown_reads_original_owner_without_renewing_expired_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_organ::tests[0m[36m::[0m[34;1mfinite_notes_readiness_keeps_app_server_and_text_ingress_closed[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_organ::tests[0m[36m::[0m[34;1mmissing_original_root_cannot_open_notes_organ_admission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mstate::notes_organ::tests[0m[36m::[0m[34;1moriginal_fleet_draining_and_permanent_fence_close_finite_notes_readiness[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::provider::tests[0m[36m::[0m[34;1mfifo_reader_child[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::provider::tests[0m[36m::[0m[34;1mprovider_route_fifo_is_rejected_before_read[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::provider::tests[0m[36m::[0m[34;1mroot_configuration_fifo_is_rejected_before_read[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests[0m[36m::[0m[34;1mold_owner_receipt_does_not_gain_approval_permission_on_decode_or_reconnect[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests[0m[36m::[0m[34;1mrecovery_pages_original_namespace_without_requesting_a_new_signature[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests[0m[36m::[0m[34;1mrecovery_rejects_another_namespace_or_a_number_above_hello_watermark[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests::unsigned_protocol[0m[36m::[0m[34;1mlost_close_reply_stays_unknown_until_matching_original_closure_proof[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests::unsigned_protocol[0m[36m::[0m[34;1monly_prewrite_failures_prove_non_transmission[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::signer::tests::unsigned_protocol[0m[36m::[0m[34;1munsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retained_old_generation[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtext_session::worker::tests[0m[36m::[0m[34;1mmissing_root_keeps_reconnect_alive_and_cannot_admit_input[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtopology_plasticity_host::tests[0m[36m::[0m[34;1mtopology_anchor_store_preserves_fence_and_anchor[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd[0m [36mtopology_plasticity_host::tests[0m[36m::[0m[34;1mtopology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart[0m
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd::notes_thread_seed_product[0m [34;1mlauncher_seeds_one_unused_original_thread_without_model_contact[0m
+[32;1m        PASS[0m [   0.047s] [35;1mcodex-hepta-agentd[0m [36mconfig::notes_seed::tests[0m[36m::[0m[34;1moriginal_notes_seed_profile_rejects_mixed_configurations_in_both_orders[0m
+[32;1m        PASS[0m [   0.580s] [35;1mcodex-hepta-agentd::notes_thread_seed_product[0m [34;1mstandard_profile_rejects_original_notes_seed_before_model_contact[0m
+────────────
+[32;1m     Summary[0m [   0.815s] [1m5[0m tests run: [1m5[0m [32;1mpassed[0m, [1m792[0m [33;1mskipped[0m

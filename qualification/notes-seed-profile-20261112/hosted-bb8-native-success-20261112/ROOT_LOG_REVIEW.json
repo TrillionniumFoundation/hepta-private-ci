@@ -45,7 +45,7 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 75335,
       "raw_inner_log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
-      "original_artifact_member_pending": true
+      "original_artifact_member_pending": false
     },
     {
       "command": [
@@ -74,7 +74,7 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 104315,
       "raw_inner_log_sha256": "bac01a23ba8604c54f0708caf08be212fda5b688b8baa471f1ad93181e435233",
-      "original_artifact_member_pending": true
+      "original_artifact_member_pending": false
     },
     {
       "command": [
@@ -100,7 +100,7 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 34959,
       "raw_inner_log_sha256": "8a390cdddcf1537d8bfd9120168de3f46fdad502e0814ee7bbfcaebe46bbc648",
-      "original_artifact_member_pending": true
+      "original_artifact_member_pending": false
     },
     {
       "command": [
@@ -127,7 +127,7 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 177117,
       "raw_inner_log_sha256": "6db18899024a4116eb974816273af9f5641d9ea00f1c04484f8d51ba6950b938",
-      "original_artifact_member_pending": true
+      "original_artifact_member_pending": false
     }
   ],
   "exact_named_pass_lines": [
@@ -152,7 +152,8 @@
     "bytes": 58747,
     "sha256": "c1ca84e7e1ccdcfae1515c4e6f5efe50ac0b07d86adbc219bcdb6fc8d08a1c66",
     "members_reported": 18,
-    "original_members_root_readback": false
+    "original_members_root_readback": true,
+    "root_verification": "../hosted-bb8-success-20261112/ROOT_ZIP_VERIFICATION.json"
   },
   "old_failures_preserved": true,
   "owner_decision": null,

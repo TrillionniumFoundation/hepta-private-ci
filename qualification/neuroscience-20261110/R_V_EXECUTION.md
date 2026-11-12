@@ -1,4 +1,4 @@
-# R/V 实际执行入口与资产缺口（2026-11-12 13:49:21 UTC）
+# R/V 实际执行入口与资产缺口（2026-11-12 15:18:14 UTC）
 
 `replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文记录 wrapper 入口与当前上游实际结果；wrapper的正式freeze和B/C四个固定宏执行均已完成；四次都COMPLETED且实际STOP，无READ、质量0，完整原件及六份来源快照已核验。最新状态以 [TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md) 为准。
 
@@ -99,6 +99,6 @@ conditional的96次均STOP：94校准不完整、2 evaluation特征域越界；�
 
 原bootstrap结尾错误读取run-v1/COMPLETED.json，导致外层exit1；实际run-v2 COMPLETED和12个成功stage原件已核验。保留FAILED原件，不据该收尾错误重跑actor。未来启动器才可在新明确版本统一campaign_output与completion路径。
 
-MEM v3的生成终态已按#6201原7文件hash闭合，执行源fa3b624不能归给后来的#6136组合源码；原registry身份仍UNKNOWN，未重派发。ACT #6113的受控GRU恢复不构成回放效益，#6127原native seed失败保留。新增[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243)的5fc hosted原caller、双binary build、1＋5方法及两named-case receipt均实际通过；root独立读回/解压原ZIP全部18成员，唯一失败为一处ensure!格式。ordinary v3缺stddef.h的旧失败、先前120秒超时及Clang资源成功预检分别保留。格式单点修复已推bb8ac6fe...，新run43231943175截至14:19已通过caller审计、双binary编译中，不能继承旧六方法结果；未派发的5fc v4已被新源码取代。参见[完整ZIP核验](../notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json)和[当前blocker清单](BLOCKER_CLOSURE_NEXT.md)。这些验证未授予Root身份或证明回放收益。
+MEM v3 的生成终态已按 #6201 原 7 文件 hash 闭合，执行源 fa3b624 不归给后来的组合源码；原 registry 身份仍 UNKNOWN，未重派发。ACT #6113 受控恢复与 #6127 原 seed 失败分别保留。新增 [#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243) exact bb8ac6fe22d1314c36643b0cab95eb031cd86832 的 hosted run43231943175/job131229238631 已于 14:30:30 完整 success：caller、双 binary build、1＋5 方法、两具名 receipt 与格式均通过，六方法各一次 PASS。root 从 Git 完整读回并独立核验 58,747 B 原 ZIP 的 18 个成员（400,928 B 原文），source 前后相同、原格式/status/patch 均 0 B；641,661 B 原 job log 也已连续分片复核。旧 5fc 格式失败、ordinary 缺头文件、早期超时和取件 403 保留，v4 未派发。见[完整新产物核验](../notes-seed-profile-20261112/hosted-bb8-success-20261112/ROOT_ZIP_VERIFICATION.json)和[当前 blocker 清单](BLOCKER_CLOSURE_NEXT.md)。这闭合有限 seed 工程检查，R 的独立情景/技能回放效益仍 OPEN。
 
 真实run-v2资产入口、正式freeze与B/C四个固定ID的原执行均已完成，四次原终态和完整报告已核验。资产验证、旧fixture、原cold-load和冻结成功不额外计作新actor完成；新B/C仍是已暴露development。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。
