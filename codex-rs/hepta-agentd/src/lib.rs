@@ -1452,6 +1452,8 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1
 #[cfg(target_os = "linux")]
 pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
 #[cfg(target_os = "linux")]
+pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelReadV1;
+#[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialClientV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialConnectionV1;

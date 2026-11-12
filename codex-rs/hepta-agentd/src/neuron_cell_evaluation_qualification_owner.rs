@@ -51,6 +51,8 @@ pub use sources::OriginalCellEvaluationQualificationSourcesV1;
 
 #[path = "neuron_cell_evaluation_panel.rs"]
 mod panel;
+pub(crate) use panel::TrainingOperation;
+pub(crate) use panel::TrainingRead;
 pub use panel::OriginalCellEvaluationPanelErrorV1;
 pub use panel::OriginalCellEvaluationPanelMemberOwnersV1;
 pub use panel::OriginalCellEvaluationPanelMemberReadbackV1;
@@ -201,7 +203,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         started_at: u64,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         binding::new_work_time(&self.config, started_at, binding::now()?)?;
-        let prepared = source.prepare(&self.config, started_at).await?;
+        let prepared = source
+            .prepare(&self.config, started_at, TrainingRead::Independent)
+            .await?;
         let current = binding::now()?;
         binding::new_work_time(&self.config, started_at, current)?;
         binding::authenticate(&self.config, &prepared, current)?;
@@ -233,7 +237,14 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         drop(sink);
         let bytes = self.completed_bytes()?;
         let restored = self
-            .finish_readback(source, &prepared, &bytes, started_at, true)
+            .finish_readback(
+                source,
+                &prepared,
+                &bytes,
+                started_at,
+                /*new_publication*/ true,
+                TrainingRead::Independent,
+            )
             .await?;
         if restored != qualification {
             return Err(Error::CommitUncertain);
@@ -274,3 +285,4 @@ pub(crate) use panel::OriginalCellEvaluationModelInputV1;
 pub use panel::OriginalCellEvaluationModelMaterialClientV1;
 pub use panel::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use panel::OriginalCellEvaluationModelMaterialV1;
+pub(crate) use panel::OriginalCellEvaluationModelReadV1;

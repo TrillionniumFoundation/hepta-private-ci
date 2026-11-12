@@ -6,6 +6,8 @@ use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
 use super::super::Owners;
+use super::super::TrainingOperation;
+use super::super::TrainingRead;
 use super::super::contract::Context;
 use super::super::require_clock;
 use super::Error;
@@ -15,7 +17,6 @@ use crate::CellEvaluationQualificationRequestV1;
 use crate::CellEvaluationRunnerV1;
 use crate::OriginalCellEvaluationPanelMemberOwnersV1;
 use crate::OriginalCellEvaluationPanelMemberReadbackV1;
-use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::OriginalCircuitEvaluationCohortReadbackV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_evidence;
@@ -26,11 +27,27 @@ impl Owners {
         &mut self,
         context: &Context,
     ) -> Result<Vec<u8>, Error> {
+        if self.fenced {
+            return Err(Error::CommitUncertain);
+        }
+        let result = self.read_original_model_material(context).await;
+        self.fence_result(result)
+    }
+
+    async fn read_original_model_material(
+        &mut self,
+        context: &Context,
+    ) -> Result<Vec<u8>, Error> {
         let started_at = self.current_time()?;
-        let evaluation = self
-            .completion(context, super::super::wire::Action::Readback)
+        context.authenticate(started_at)?;
+        let operation = self.begin_training_operation(context).await?;
+        let training = match operation.as_ref() {
+            Some(original) => TrainingRead::Operation(original),
+            None => TrainingRead::Independent,
+        };
+        let (evaluation, observed) = self
+            .read_original_completion(context, super::super::wire::Action::Readback, training)
             .await?;
-        let observed = self.panel.retained.clone().ok_or(Error::CommitUncertain)?;
         let mut members = Vec::with_capacity(observed.retention().len() + 1);
         members.push(member(
             &self.panel.primary,
@@ -61,15 +78,19 @@ impl Owners {
         // The complete original snapshots were read between two actual Panel
         // CURRENT observations. Neither a cached scope nor its unsigned digest
         // can substitute for the snapshot committed by the signed arm record.
-        let after = self.read_panel().await?;
+        let after = self.read_panel(training).await?;
         if after != observed {
-            self.fenced = true;
             return Err(Error::CommitUncertain);
         }
-        OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(
-            &mut self.evaluator,
-            evaluation.receipt(),
-            evaluation.attestation(),
+        if let Some(original) = operation {
+            TrainingOperation::finish(original).await?;
+        }
+        let evaluation = self.finish_original_completion(
+            context,
+            super::super::wire::Action::Readback,
+            evaluation,
+            &after,
+            started_at,
         )?;
         let current = self.current_time()?;
         require_clock(started_at, current)?;

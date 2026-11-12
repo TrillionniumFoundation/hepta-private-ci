@@ -241,6 +241,18 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
         // signed commitments are checked at this fresh common time.
         let current = clock()?;
         require_clock(started_at, current)?;
+        let material = self.authenticate_material(bytes, &expected, current)?;
+        let material = self.retain_completed_material(channel, material, current)?;
+        drop(cancellation);
+        Ok(material)
+    }
+
+    fn authenticate_material(
+        &self,
+        bytes: Vec<u8>,
+        expected: &Option<Receipt>,
+        current: u64,
+    ) -> Result<OriginalCellEvaluationModelMaterialV1, Error> {
         let body = super::codec::Body::decode(&bytes)?;
         let snapshot = crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1(
             &body.snapshot,
@@ -258,11 +270,6 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
         }
         verify::material(&self.context, &evaluation, &bytes, current)?;
         let digest = Digest32::of_bytes(&bytes);
-        let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-        if retained.is_some_and(|old| old != digest) {
-            return Err(Error::CommitUncertain);
-        }
-        *retained = Some(digest);
         let material = OriginalCellEvaluationModelMaterialV1 {
             context: self.context.clone(),
             evaluation: evaluation.clone(),
@@ -270,11 +277,28 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
             binding: digest,
             observed_at: current,
         };
-        *self.expected.try_lock().map_err(|_| Error::Unavailable)? = Some(evaluation);
-        *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
-        drop(cancellation);
         Ok(material)
     }
+
+    fn retain_completed_material(
+        &self,
+        channel: Channel,
+        material: OriginalCellEvaluationModelMaterialV1,
+        current: u64,
+    ) -> Result<OriginalCellEvaluationModelMaterialV1, Error> {
+        material.authenticate_current(current)?;
+        let digest = material.binding();
+        let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
+        if retained.is_some_and(|old| old != digest) {
+            return Err(Error::CommitUncertain);
+        }
+        *retained = Some(digest);
+        *self.expected.try_lock().map_err(|_| Error::Unavailable)? =
+            Some(material.original_evaluation().clone());
+        *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
+        Ok(material)
+    }
+
 }
 
 fn request(
@@ -312,6 +336,43 @@ fn request(
 }
 
 fn transfer(
+    channel: &mut Channel,
+    binding: Digest32,
+    cancelled: &AtomicBool,
+) -> Result<Vec<u8>, Error> {
+    let transfer = channel.next;
+    let bytes = read_pages(channel, binding, cancelled)?;
+    finish_transfer(channel, binding, transfer, &bytes, cancelled)?;
+    Ok(bytes)
+}
+
+fn finish_transfer(
+    channel: &mut Channel,
+    binding: Digest32,
+    transfer: u64,
+    bytes: &[u8],
+    cancelled: &AtomicBool,
+) -> Result<(), Error> {
+    let commitment = Digest32::of_bytes(bytes).to_string();
+    match request(
+        channel,
+        binding,
+        wire::Read::Finish {
+            transfer,
+            digest: commitment.clone(),
+        },
+        cancelled,
+    )? {
+        wire::Outcome::Completed {
+            transfer: original,
+            total,
+            digest,
+        } if original == transfer && total == bytes.len() && digest == commitment => Ok(()),
+        _ => Err(Error::CommitUncertain),
+    }
+}
+
+fn read_pages(
     channel: &mut Channel,
     binding: Digest32,
     cancelled: &AtomicBool,
@@ -367,25 +428,7 @@ fn transfer(
             if Digest32::of_bytes(&result).to_string() != commitment {
                 return Err(Error::CommitUncertain);
             }
-            let final_read = request(
-                channel,
-                binding,
-                wire::Read::Finish {
-                    transfer,
-                    digest: commitment.clone(),
-                },
-                cancelled,
-            )?;
-            match final_read {
-                wire::Outcome::Completed {
-                    transfer: original,
-                    total,
-                    digest,
-                } if original == transfer && total == complete && digest == commitment => {
-                    return Ok(result);
-                }
-                _ => return Err(Error::CommitUncertain),
-            }
+            return Ok(result);
         }
         if index + 1 == MAX_PAGES {
             return Err(Error::Binding("original material page limit"));
@@ -406,3 +449,7 @@ fn transfer(
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_model_material_connection_support_tests.rs"]
 mod tests;
+
+#[path = "neuron_cell_evaluation_model_read_operation.rs"]
+mod operation;
+pub(crate) use operation::OriginalCellEvaluationModelReadV1;

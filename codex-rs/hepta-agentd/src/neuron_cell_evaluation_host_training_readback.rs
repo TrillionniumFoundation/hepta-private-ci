@@ -65,6 +65,11 @@ impl OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> {
         for member in &mut panel.retention {
             member.trainer = Arc::clone(&trainer);
         }
-        OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
+        let mut host = OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)?;
+        host.owners
+            .get_mut()
+            .map_err(|_| Error::Unavailable)?
+            .shared_training = Some(trainer);
+        Ok(host)
     }
 }

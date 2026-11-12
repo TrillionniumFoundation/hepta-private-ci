@@ -16,6 +16,8 @@ use super::super::OriginalCellEvaluationQualificationSourcesV1;
 use super::Error;
 use super::OriginalCellEvaluationPanelMemberReadbackV1;
 use super::OriginalCellEvaluationPanelTaskV1;
+use super::TrainingOperation;
+use super::TrainingRead;
 use super::original;
 use crate::CellEvaluationJournalsV1;
 use crate::CellEvaluationRunnerV1;
@@ -50,7 +52,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         &mut self,
         task: &OriginalCellEvaluationPanelTaskV1,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: TrainingRead<'_>,
     ) -> Result<OriginalCellEvaluationPanelMemberReadbackV1, Error> {
+        if let TrainingRead::Operation(original) = training {
+            TrainingOperation::require_member(original, &self.trainer, &self.qualification.config)?;
+        }
         // The original Qualification owns its internal SystemTime checks.
         // The panel's final common clock reauthenticates every window later.
         let started_at = original::now()?;
@@ -70,7 +76,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         };
         let bytes = self.qualification.completed_bytes()?;
         let prepared = sources
-            .prepare(&self.qualification.config, started_at)
+            .prepare(&self.qualification.config, started_at, training)
             .await?;
         let qualification = self
             .qualification
@@ -80,6 +86,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 &bytes,
                 started_at,
                 /*new_publication*/ false,
+                training,
             )
             .await?;
         drop(sources);
