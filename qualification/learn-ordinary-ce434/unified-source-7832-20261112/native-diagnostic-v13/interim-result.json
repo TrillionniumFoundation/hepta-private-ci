@@ -1,0 +1,79 @@
+{
+  "source_sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+  "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+  "canonical_tmpdir": "/tmp/hlca-i8ezvbci",
+  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "private_v8_inputs": {
+    "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "original_manifest_unchanged": true,
+    "private_artifacts": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-dcf71113bf19-v13-crypto-isolated-exact-inputs/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "acquisition": "official exact release retrieval"
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-dcf71113bf19-v13-crypto-isolated-exact-inputs/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "acquisition": "verified original copy"
+      }
+    ]
+  },
+  "state": "focused-native",
+  "steps": [
+    {
+      "name": "helper-build",
+      "exit_code": 0,
+      "seconds": 503.77337257913314,
+      "log_sha256": "f7de1351437a3318055c517021668bd5db3a552020a4c04469f16ff475947e91",
+      "log_bytes": 246
+    },
+    {
+      "name": "helper-verify",
+      "exit_code": 0,
+      "seconds": 0.17515984806232154,
+      "log_sha256": "36cf06f91fb141becf37e10d71f9c7b50144fbc85726d5e32e344cafa05e9708",
+      "log_bytes": 1282
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "purpose": "diagnostic of seven original native failures; not full-owner or ordinary acceptance",
+  "expected_diagnostic_cases": [
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+    ]
+  ]
+}
