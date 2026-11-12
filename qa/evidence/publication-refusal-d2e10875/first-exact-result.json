@@ -1,0 +1,42 @@
+{
+  "before": {
+    "head": "e29ae318b1200b72595fe345ffe3b86b4b8f9b9d",
+    "tree": "6613f23623da3782a435d9346c643be7cf701eab",
+    "status": "",
+    "source_files": 7955,
+    "source_digest": "10c58642501d3fe2ef2fcd0cb0ebc26e4e40a1aff25dbe6394c1b2305caa5630"
+  },
+  "after": {
+    "head": "e29ae318b1200b72595fe345ffe3b86b4b8f9b9d",
+    "tree": "6613f23623da3782a435d9346c643be7cf701eab",
+    "status": "",
+    "source_files": 7955,
+    "source_digest": "10c58642501d3fe2ef2fcd0cb0ebc26e4e40a1aff25dbe6394c1b2305caa5630"
+  },
+  "started_utc": "2026-11-12T12:35:19.743072+00:00",
+  "duration_seconds": 131.80522513389587,
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "markers": {
+    "status": "PASS",
+    "inventory": 782,
+    "protected": 634
+  },
+  "exact_source": true,
+  "native": "NOT_RUN",
+  "full_caller": "NOT_RUN"
+}
