@@ -10,11 +10,9 @@ use crate::CognitiveScope;
 use crate::EpisodicImportReceipt;
 use crate::EpisodicSnapshotVerifier;
 use crate::LocalAdmission;
-use crate::MemoryLifecycleState;
 use crate::MemoryVerification;
 use crate::ProductionCognitiveMutationError;
 use crate::ProductionWriterError;
-use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::episodic_source::invalid;
 use crate::episodic_source::snapshot::MAX_BINDINGS;
@@ -93,27 +91,9 @@ impl ProductionCognitiveMutationCapability {
             {
                 return Err(invalid("episodic source identity or generation changed"));
             }
-            for binding in &previous.bindings {
-                let id = StableMemoryId::parse(&binding.memory_id).map_err(invalid)?;
-                let current = store.latest_memory_tx(&mut transaction, access, &id).await?;
-                let source_head: Option<(i64, String)> = sqlx::query_as(
-                    "SELECT source_revision, content_sha256 FROM source_ledger
-                     WHERE source_id = ? ORDER BY source_revision DESC LIMIT 1",
-                ).bind(&binding.canonical_source_id).fetch_optional(&mut *transaction)
-                    .await.map_err(unavailable)?;
-                if source_head != Some((i64::try_from(binding.canonical_source_revision)
-                        .map_err(|error| invalid(error.to_string()))?, binding.source_content_sha256.clone()))
-                    || current.citations.len() != 1
-                    || current.citations[0].source_id.as_str() != binding.canonical_source_id
-                    || current.citations[0].revision != binding.canonical_source_revision
-                    || current.id.revision != binding.memory_revision
-                    || (current.lifecycle == MemoryLifecycleState::Active) != binding.active
-                    || current.scope != *scope
-                    || bindings.insert((binding.source_id.clone(), binding.key.clone()), binding.clone()).is_some()
-                {
-                    return Err(invalid("canonical episodic head changed outside the bridge"));
-                }
-            }
+            bindings = self.revalidate_episodic_bindings_tx(
+                &mut transaction, access, scope, previous,
+            ).await?;
             if previous.generation == body.generation {
                 if previous.snapshot_sha256 != snapshot.sha256 || previous.admission_sha256 != admission_sha256 {
                     return Err(invalid("same episodic generation has different contents or admitted source identity"));
@@ -211,6 +191,9 @@ impl ProductionCognitiveMutationCapability {
         }
     }
 }
+
+#[path = "production_episodic_read.rs"]
+mod read;
 
 #[path = "production_episodic_write.rs"]
 mod write;

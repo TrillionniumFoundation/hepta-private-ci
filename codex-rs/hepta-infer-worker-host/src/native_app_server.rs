@@ -3,7 +3,6 @@
 //! This profile observes real turn events and token usage. It makes no claim
 //! about local weights, accelerator memory, artifact selection or training.
 
-use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -18,8 +17,6 @@ use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_client::RemoteObservedTypedRequestError;
-use codex_app_server_protocol::AdditionalContextEntry;
-use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::JSONRPCErrorError;
@@ -40,7 +37,6 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::HealthSnapshot;
-use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
 use codex_hepta_codex_adapter::APP_SERVER_V2_PROTOCOL_ID;
 use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerRequestBinding;
@@ -67,12 +63,16 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+#[path = "native_context.rs"]
+mod context;
 #[path = "native_run_control.rs"]
 mod control;
 #[path = "native_message_output.rs"]
 mod messages;
 #[path = "native_recovery.rs"]
 mod recovery;
+pub use context::NativeContextDelivery;
+use context::NativeContextRequest;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use messages::NativeMessageOutput;
@@ -186,7 +186,7 @@ impl AppServerModelDriver {
         control: &mut DurableInferenceControl,
         request_id: &str,
         prompt: String,
-        context_query: Option<String>,
+        context_request: NativeContextRequest,
         intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
@@ -205,7 +205,7 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        if context_query.is_some() {
+        if context_request.query.is_some() {
             let capabilities = owner.capabilities().await?;
             let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
                 capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
@@ -283,30 +283,14 @@ impl AppServerModelDriver {
         // preparatory provider I/O cannot leave an older context parked across
         // the final model-request attachment boundary.
         owner.session_ingress().await?;
-        let context = match context_query {
+        let context = match context_request.query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
-        let owner_context_digest = context
-            .as_ref()
-            .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
-            .transpose()?;
-        let additional_context = context
-            .as_ref()
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
+        let context::PreparedContext {
+            owner_context_digest,
+            additional_context,
+        } = context::prepare_attachment(context.as_ref(), context_request.delivery)?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());

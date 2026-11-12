@@ -13,6 +13,7 @@ on:
       - codex-rs/hepta-memory/**
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-infer-worker-host/**
       - codex-rs/rust-toolchain.toml
       - .github/actions/setup-ci/**
       - scripts/format.py
@@ -216,16 +217,18 @@ jobs:
           git diff --binary "$BASE_SHA" "$SOURCE_SHA" > "$records/source.patch"
           git diff --name-only --diff-filter=ACMRT -z "$BASE_SHA" "$SOURCE_SHA" > "$records/source-paths.zlist"
           tar --null -T "$records/source-paths.zlist" -czf "$records/changed-source-before.tar.gz"
-          memory=false; control=false; protocol=false; drain=false
+          memory=false; control=false; protocol=false; drain=false; delivery=false
           [[ ! -f codex-rs/hepta-memory/src/episodic_source.rs ]] || memory=true
           [[ ! -f codex-rs/hepta-agentd/src/production_episodic_control_tests.rs ]] || control=true
           [[ ! -f codex-rs/hepta-agent-protocol/src/episodic.rs ]] || protocol=true
           [[ ! -f codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs ]] || drain=true
-          printf 'memory=%s\ncontrol=%s\nprotocol=%s\ndrain=%s\n' "$memory" "$control" "$protocol" "$drain" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
+          [[ ! -f codex-rs/hepta-infer-worker-host/src/native_context_tests.rs ]] || delivery=true
+          printf 'memory=%s\ncontrol=%s\nprotocol=%s\ndrain=%s\ndelivery=%s\n' "$memory" "$control" "$protocol" "$drain" "$delivery" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
           printf 'Absent stages have no native test result; infrastructure success is not owner qualification.\n' >> "$records/stages.txt"
           cat "$records/stages.txt" >> "$GITHUB_STEP_SUMMARY"
           [[ "$control" == false || ( "$memory" == true && "$protocol" == true ) ]]
           [[ "$drain" == false || "$control" == true ]]
+          [[ "$delivery" == false || "$control" == true ]]
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
@@ -371,6 +374,65 @@ jobs:
                   <= datetime.fromisoformat(receipt["finished_at"])):
               raise SystemExit("qualification profile case is outside its execution interval")
           PY
+      - name: Test native delivery, replay and legacy attachment on the composed source
+        if: steps.stage.outputs.delivery == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          junit="$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml"
+          test -f "$junit"
+          test ! -L "$junit"
+          mv "$junit" "$records/before-delivery.junit.xml"
+          delivery_exit=0
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 7 \
+            --output "$records/native-delivery-tests.json" \
+            -- just test --locked -p codex-hepta-infer-worker-host --lib \
+              -E 'test(native_app_server::context::tests::) | test(native_app_server::control::tests::) | test(native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)' \
+              --no-capture --retries 0 || delivery_exit=$?
+          if [[ -f "$junit" && ! -L "$junit" ]]; then
+            cp "$junit" "$records/native-delivery.junit.xml"
+          fi
+          if [[ "$delivery_exit" -ne 0 ]]; then
+            exit "$delivery_exit"
+          fi
+          python3 - <<'PY'
+          from datetime import datetime
+          import json
+          import os
+          from pathlib import Path
+          import uuid
+          import xml.etree.ElementTree as ET
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          previous = ET.parse(records / "before-delivery.junit.xml").getroot()
+          current = ET.parse(records / "native-delivery.junit.xml").getroot()
+          receipt = json.loads((records / "native-delivery-tests.json").read_text())
+          cases = current.findall(".//testcase")
+          expected = {
+              "native_app_server::context::tests::delivery_off_withholds_physical_context_but_keeps_revalidation_and_replay",
+              "native_app_server::control::tests::context_delivery_is_bound_before_connection_and_preserves_legacy_admission",
+              "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+              "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+              "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+              "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+              "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+          }
+          if (len(cases) != len(expected) or {case.get("name") for case in cases} != expected
+                  or current.get("tests") != "7" or current.get("failures") != "0"
+                  or current.get("errors") != "0"
+                  or any(case.find(tag) is not None for case in cases for tag in ("failure", "error", "skipped"))
+                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != 7
+                  or receipt["observed_failed_tests"] != 0):
+              raise SystemExit("native delivery did not pass all seven original cases")
+          if str(uuid.UUID(current.attrib["uuid"])) == previous.get("uuid"):
+              raise SystemExit("native delivery reused a previous nextest report")
+          for case in cases:
+              case_time = datetime.fromisoformat(case.attrib["timestamp"])
+              if not (datetime.fromisoformat(receipt["started_at"]) <= case_time
+                      <= datetime.fromisoformat(receipt["finished_at"])):
+                  raise SystemExit("native delivery case is outside its execution interval")
+          PY
       - name: Test protocol package after the control stage is present
         if: steps.stage.outputs.control == 'true'
         run: |
@@ -381,12 +443,16 @@ jobs:
         if: steps.stage.outputs.memory == 'true'
         env:
           CONTROL_PRESENT: ${{ steps.stage.outputs.control }}
+          DELIVERY_PRESENT: ${{ steps.stage.outputs.delivery }}
         shell: bash
         run: |
           set -euo pipefail
           packages=(codex-hepta-memory)
           if [[ "$CONTROL_PRESENT" == true ]]; then
             packages+=(codex-hepta-agentd codex-hepta-agent-protocol)
+          fi
+          if [[ "$DELIVERY_PRESENT" == true ]]; then
+            packages+=(codex-hepta-infer-worker-host)
           fi
           for package in "${packages[@]}"; do
             python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 \
