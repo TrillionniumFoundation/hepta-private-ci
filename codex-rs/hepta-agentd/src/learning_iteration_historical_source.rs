@@ -169,7 +169,12 @@ impl LearningIterationRuntimeBootstrapV1 {
         if delivery.continuation.is_some() {
             return Err(refused("original post-A continuation already installed"));
         }
-        continuation.require_original_delivery(&delivery.source, owners, identity)?;
+        crate::production_launcher::OriginalPostAContinuationV1::require_original_delivery(
+            &continuation,
+            &delivery.source,
+            owners,
+            identity,
+        )?;
         delivery.continuation = Some(continuation);
         Ok(self)
     }
@@ -196,7 +201,11 @@ impl OriginalHistoricalLearningDeliveryV1 {
         let delivery_cancelled = joined.clone();
         let continuation_cancelled = joined.clone();
         let delivery = self.run_delivery(handle, Arc::clone(&state), joined.clone());
-        let continuation = continuation.run(state, joined);
+        let continuation = crate::production_launcher::OriginalPostAContinuationV1::run(
+            continuation,
+            state,
+            joined,
+        );
         // Both owned futures remain joined after an error or shutdown. An
         // original publisher or issuer already in progress is never detached.
         let (delivery, continuation) = tokio::join!(
