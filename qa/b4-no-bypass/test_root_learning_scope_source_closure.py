@@ -28,7 +28,7 @@ INPUTS = AGENT + "root_production_learning_inputs.rs"
 WORKER = AGENT + "learning_iteration.rs"
 SCOPE = "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs"
 CALLERS = {
-    "learning_frozen_update_scope_constructor": (PROFILE, Q24_PLAN, PREPARED),
+    "learning_frozen_update_scope_constructor": (PROFILE, Q24_PLAN, PREPARED, AGENT + "cell_composed_q24_training_work.rs"),
     "root_learning_scoped_profile_constructor": (PREPARED, AGENT + "authority_host_post_a_derive.rs"),
     "root_learning_scoped_checkpoint_record": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),

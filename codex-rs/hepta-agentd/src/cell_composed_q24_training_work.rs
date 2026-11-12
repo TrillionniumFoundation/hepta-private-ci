@@ -100,10 +100,9 @@ impl OriginalQ24TrainingWorkDataV1 {
         for previous in &training.receipts[..training.receipts.len() - 1] {
             if let LearningIterationObservationV1::Dataset { rows: actual, .. } =
                 &previous.observation
+                && rows.replace(*actual).is_some()
             {
-                if rows.replace(*actual).is_some() {
-                    return Err(Error::Binding("one actual original Dataset required"));
-                }
+                return Err(Error::Binding("one actual original Dataset required"));
             }
         }
         let rows = rows.ok_or(Error::Binding("original Dataset rows absent"))?;

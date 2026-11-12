@@ -24,7 +24,7 @@ PROFILE = AGENT + "authority_host_learning_profile.rs"
 PREPARED = AGENT + "cell_q24_prepared_learning.rs"
 MATERIAL = AGENT + "cell_q24_prepared_training_material.rs"
 CALLERS = {
-    "learning_frozen_update_scope_constructor": (PROFILE, PLAN, PREPARED),
+    "learning_frozen_update_scope_constructor": (PROFILE, PLAN, PREPARED, AGENT + "cell_composed_q24_training_work.rs"),
     "cell_q24_single_head_training_plan": (TRAINING, MATERIAL),
     "cell_q24_single_head_candidate_validation": (),
 }
