@@ -41,6 +41,10 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 #[path = "circuit_selection_command_stage_binding.rs"]
 mod stage_binding;
 
+#[path = "circuit_selection_command_readback.rs"]
+pub(super) mod readonly;
+pub use readonly::OriginalCircuitSelectionReadbackConnectionV1;
+
 #[path = "circuit_selection_command_service.rs"]
 mod serving;
 #[path = "circuit_selection_command_wire.rs"]

@@ -58,6 +58,9 @@ pub enum OriginalCircuitSelectionReceiptErrorV1 {
 }
 type Error = OriginalCircuitSelectionReceiptErrorV1;
 
+#[path = "circuit_selection_readback_host.rs"]
+mod readback_host;
+
 /// One original TrainingNoUpdate cut. The complete original Generator signature
 /// is pinned across live reads and cold recovery, including its validity window.
 /// This profile admits no unverified Evaluation or Proposal predecessor.

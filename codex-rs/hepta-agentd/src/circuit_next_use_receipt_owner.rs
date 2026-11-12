@@ -58,6 +58,9 @@ pub enum OriginalCircuitNextUseReceiptErrorV1 {
 }
 type Error = OriginalCircuitNextUseReceiptErrorV1;
 
+#[path = "circuit_next_use_readback_host.rs"]
+mod readback_host;
+
 /// Fixed original Selection cut and host-enrolled Observer. An immutable trust
 /// snapshot is not an enrollment operation or evidence of independent operators.
 #[derive(Clone)]
