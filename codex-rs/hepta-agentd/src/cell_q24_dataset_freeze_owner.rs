@@ -231,17 +231,13 @@ fn validate_config(
         &config.signer,
         now()?,
     )?;
-    Ok(ProductEvaluationExecutionKeyV1 {
-        plan_id: preparation.config.request.operation_id.clone(),
-        binding_digest: Digest32::of_parts(&[
-            b"hepta.agentd.original-q24-dataset-freeze-owner.v1\0",
-            identity.as_array(),
-            original.trust_digest().as_array(),
-            config.signer.principal.principal_id.as_str().as_bytes(),
-            &config.signer.verifying_key,
-            &config.maximum_signature_lifetime_seconds.to_be_bytes(),
-        ]),
-    })
+    Ok(crate::original_q24_dataset_freeze_execution_key_v1(
+        &preparation.config.request.operation_id,
+        identity,
+        original.trust_digest(),
+        &config.signer,
+        config.maximum_signature_lifetime_seconds,
+    ))
 }
 
 fn sign_original(

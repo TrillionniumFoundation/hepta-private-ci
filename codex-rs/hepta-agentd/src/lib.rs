@@ -498,6 +498,8 @@ pub use neuron_generation_receipt_owner::OriginalGenerationLearningReceiptOwnerV
 pub use neuron_generation_receipt_owner::OriginalGenerationLearningReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use neuron_generation_receipt_owner::OriginalGenerationLearningRoleV1;
+#[cfg(target_os = "linux")]
+mod cell_q24_dataset_identity;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 mod learning_iteration_auth;
@@ -511,6 +513,10 @@ mod learning_iteration_research_external;
 mod learning_iteration_research_external_material;
 mod learning_owner_evidence;
 mod learning_owner_journal;
+#[cfg(target_os = "linux")]
+pub(crate) use cell_q24_dataset_identity::original_q24_dataset_freeze_execution_key_v1;
+#[cfg(target_os = "linux")]
+pub(crate) use cell_q24_dataset_identity::original_q24_dataset_preparation_identity_v1;
 mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
