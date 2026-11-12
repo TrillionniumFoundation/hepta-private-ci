@@ -19,6 +19,12 @@ from .schema import canonical, digest, exact, identifier, require, sha
 
 KINDS = ("expand_roi", "change_view", "reobserve")
 MAX_DECISION_BYTES = 65536
+MAX_TRAINED_HEAD_BYTES = 2 * 1024 * 1024
+# Exact shipped v2 reader/selector at a5583f0f. Its prefix and selection path
+# below stays unchanged; other historical code identities remain refused.
+LEGACY_V2_CODE_SHA256 = (
+    "fa0edc0b0fe696f0b7e71a1f6a2f3ff7ccc8ca3d1d0334bb552839275a419eb6"
+)
 
 
 def observed_prefix(owner, task_sha256, operation_ids):
@@ -82,7 +88,7 @@ def observed_prefix(owner, task_sha256, operation_ids):
     }
 
 
-def _retain(owner, kind, identity, value):
+def _retain(owner, kind, identity, value, *, max_bytes=MAX_DECISION_BYTES):
     """Retain immutable bounded JSON under the local owner's existing writer lock."""
     directory = owner.root / kind
     directory.mkdir(exist_ok=True, mode=0o700)
@@ -93,7 +99,7 @@ def _retain(owner, kind, identity, value):
     finally:
         os.close(parent)
     raw = canonical(value)
-    require(len(raw) <= MAX_DECISION_BYTES, "decision exceeds retained bound")
+    require(len(raw) <= max_bytes, "decision/head exceeds retained bound")
     path = directory / (identity + ".json")
     if not path.exists():
         require(sum(1 for _ in directory.iterdir()) < 4096, "decision history bound")
@@ -116,11 +122,11 @@ def _retain(owner, kind, identity, value):
         require(
             stat.S_ISREG(info.st_mode)
             and info.st_nlink == 1
-            and info.st_size <= MAX_DECISION_BYTES,
+            and info.st_size <= max_bytes,
             "invalid retained decision file",
         )
         require(
-            stream.read(MAX_DECISION_BYTES + 1) == raw,
+            stream.read(max_bytes + 1) == raw,
             "operation decision changed or incomplete; no new dispatch",
         )
         # A prior process may have stopped after complete bytes but before fsync.
@@ -134,7 +140,7 @@ def _retain(owner, kind, identity, value):
     return sha(raw)
 
 
-def _read(owner, kind, identity):
+def _read(owner, kind, identity, *, max_bytes=MAX_DECISION_BYTES):
     directory = owner.root / kind
     require(not directory.is_symlink(), "decision directory symlink refused")
     descriptor = os.open(
@@ -145,10 +151,10 @@ def _read(owner, kind, identity):
         require(
             stat.S_ISREG(info.st_mode)
             and info.st_nlink == 1
-            and 0 < info.st_size <= MAX_DECISION_BYTES,
+            and 0 < info.st_size <= max_bytes,
             "invalid retained decision/head file",
         )
-        raw = stream.read(MAX_DECISION_BYTES + 1)
+        raw = stream.read(max_bytes + 1)
     value = json.loads(raw)
     require(canonical(value) == raw, "noncanonical retained decision/head")
     return value
@@ -179,7 +185,10 @@ def _select(head, candidates, prefix, mode, seed):
             features["prefix_sha256"] == sha(prefix)
             and features["acquired_receipt_sha256s"] == prefix["receipt_sha256s"]
             and (
-                features["acquired_latent"] == []
+                (
+                    prefix["schema"] == "perc1.active-prefix.v1"
+                    and features["acquired_latent"] == []
+                )
                 or features["acquired_latent"] == prefix["latent_summary"]
             ),
             "candidate features include unretained or changed evidence",
@@ -216,27 +225,56 @@ def read_decision(owner, operation_id):
     owner.status()  # Require an open, exclusively owned journal before sidecar I/O.
     identifier(operation_id)
     decision = _read(owner, "active-decisions", sha(operation_id.encode()))
+    profiled = decision.get("schema") == "perc1.active-capture-decision.v3"
     exact(
         decision,
         (
             "schema operation_id owner_binding_sha256 code_sha256 selector_code_sha256 "
             "head_sha256 prefix catalog_sha256 catalog mode seed selection kind request quoted_microcredits"
+            + (" feature_profile_sha256" if profiled else "")
         ),
     )
     require(
-        decision["schema"] == "perc1.active-capture-decision.v2"
+        decision["schema"]
+        in ("perc1.active-capture-decision.v2", "perc1.active-capture-decision.v3")
         and decision["operation_id"] == operation_id
         and decision["owner_binding_sha256"] == sha(owner.binding)
-        and decision["code_sha256"] == sha(Path(__file__).read_bytes())
+        and (
+            decision["code_sha256"] == sha(Path(__file__).read_bytes())
+            or (not profiled and decision["code_sha256"] == LEGACY_V2_CODE_SHA256)
+        )
         and decision["selector_code_sha256"] == _selector_sha256(),
         "decision owner or execution version changed",
     )
-    head = _read(owner, "active-heads", digest(decision["head_sha256"]))
+    head = _read(
+        owner,
+        "active-heads",
+        digest(decision["head_sha256"]),
+        max_bytes=MAX_TRAINED_HEAD_BYTES if profiled else MAX_DECISION_BYTES,
+    )
     require(sha(head) == decision["head_sha256"], "retained selector head changed")
     prefix = decision["prefix"]
+    if profiled:
+        from .source_feature_profile import bind_head
+        from .source_feature_profile import observed_prefix as profiled_prefix
+
+        profile = _read(
+            owner, "active-feature-profiles", digest(decision["feature_profile_sha256"])
+        )
+        require(
+            sha(profile) == decision["feature_profile_sha256"],
+            "retained feature profile changed",
+        )
+        bind_head(profile, head)
+        restored_prefix = profiled_prefix(
+            owner, prefix["task_sha256"], prefix["operation_ids"], profile
+        )
+    else:
+        restored_prefix = observed_prefix(
+            owner, prefix["task_sha256"], prefix["operation_ids"]
+        )
     require(
-        observed_prefix(owner, prefix["task_sha256"], prefix["operation_ids"])
-        == prefix,
+        restored_prefix == prefix,
         "retained actor prefix changed",
     )
     require(
@@ -270,6 +308,7 @@ def observe(
     observed_operations,
     mode="active",
     seed=0,
+    feature_profile=None,
 ):
     """Select STOP or a registered capture, retaining failure/UNKNOWN attempts.
 
@@ -286,10 +325,22 @@ def observe(
     producer.owner.status()
     identifier(operation_id)
     require(sha(head) == digest(expected_head_sha256), "frozen selector head changed")
-    prefix = observed_prefix(producer.owner, task_sha256, observed_operations)
+    if feature_profile is None:
+        prefix = observed_prefix(producer.owner, task_sha256, observed_operations)
+    else:
+        from .source_feature_profile import bind_head
+        from .source_feature_profile import observed_prefix as profiled_prefix
+
+        feature_profile = json.loads(canonical(feature_profile))
+        bind_head(feature_profile, head)
+        prefix = profiled_prefix(
+            producer.owner, task_sha256, observed_operations, feature_profile
+        )
     selection, selected = _select(head, candidates, prefix, mode, seed)
     decision = {
-        "schema": "perc1.active-capture-decision.v2",
+        "schema": "perc1.active-capture-decision.v2"
+        if feature_profile is None
+        else "perc1.active-capture-decision.v3",
         "operation_id": operation_id,
         "owner_binding_sha256": sha(producer.owner.binding),
         "code_sha256": sha(Path(__file__).read_bytes()),
@@ -305,10 +356,27 @@ def observe(
         "request": selected["request"] if selected else None,
         "quoted_microcredits": selected["upper_cost"] if selected else 0,
     }
+    if feature_profile is not None:
+        decision["feature_profile_sha256"] = sha(feature_profile)
     # Detach mutable caller dictionaries before any operator callback runs.
     decision = json.loads(canonical(decision))
     _check_operation(producer.owner, decision)
-    _retain(producer.owner, "active-heads", expected_head_sha256, head)
+    _retain(
+        producer.owner,
+        "active-heads",
+        expected_head_sha256,
+        head,
+        max_bytes=MAX_DECISION_BYTES
+        if feature_profile is None
+        else MAX_TRAINED_HEAD_BYTES,
+    )
+    if feature_profile is not None:
+        _retain(
+            producer.owner,
+            "active-feature-profiles",
+            sha(feature_profile),
+            feature_profile,
+        )
     decision_sha256 = _retain(
         producer.owner, "active-decisions", sha(operation_id.encode()), decision
     )
