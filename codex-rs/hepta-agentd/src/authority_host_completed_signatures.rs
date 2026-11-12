@@ -146,10 +146,14 @@ pub(super) fn verify_original_completions(
     let verify_at = |at| -> io::Result<()> {
         let (payload, signed) = learning_owner_evidence::decode(completed(&fixed[0].records[0].1)?)
             .map_err(io::Error::other)?;
-        context
-            .current_verifier()
-            .verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, at)
-            .map_err(io::Error::other)?;
+        codex_hepta_learning_ledger::LearningEvidenceVerifierV1::verify(
+            context.current_verifier(),
+            LearningEvidenceRoleV1::Evaluator,
+            &signed,
+            &payload,
+            at,
+        )
+        .map_err(io::Error::other)?;
         let mut verified = Vec::with_capacity(7);
         for (receipt, signed) in &signatures {
             let request = OriginalReceiptVerificationV1::new(

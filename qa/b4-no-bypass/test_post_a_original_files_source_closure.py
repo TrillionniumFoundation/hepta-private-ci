@@ -51,10 +51,10 @@ class PostAOriginalFilesSourceTests(unittest.TestCase):
     def test_original_file_constructors_are_closed_to_actual_root_composition(self):
         proof = route.PROOF
         ids = ("root_post_a_original_file_open", "root_post_a_original_file_read",
-               "root_post_a_original_file_identity", "root_post_a_baseline_files_open",
+               "root_post_a_original_file_identity", "root_post_a_original_file_distinct", "root_post_a_baseline_files_open",
                "root_post_a_baseline_files_read")
         rows = [r for r in proof._boundary_rows(self.manifest) if r.identifier in ids]
-        self.assertEqual(len(rows), 5)
+        self.assertEqual(len(rows), 6)
         sources = {FILE: proof._strip_cfg_test_items(proof._strip_rust_non_code(
             (ROOT / FILE).read_text()))}
         for path in {path for row in rows for path in row.product_callers}:
