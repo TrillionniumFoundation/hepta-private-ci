@@ -10,6 +10,7 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process::Command;
+use std::process::Child;
 use std::process::Stdio;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -23,6 +24,21 @@ use sha2::Sha256;
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 const ACK: &str = "mem15-import-ack:";
+
+// On an early error, stop only this owned process and reap off the async thread.
+// No successful exit is manufactured; absent EXIT/ack remains UNKNOWN.
+struct ChildGuard(Option<Child>);
+
+impl Drop for ChildGuard {
+    fn drop(&mut self) {
+        if let Some(mut child) = self.0.take() {
+            let _ = child.kill();
+            let _ = std::thread::Builder::new().name("mem15-child-reaper".into()).spawn(move || {
+                let _ = child.wait();
+            });
+        }
+    }
+}
 
 pub(super) struct ObservedChild {
     pub(super) receipt: Value,
@@ -41,10 +57,18 @@ impl ObservedChild {
             return Err("A import acknowledgement/OS exit unresolved; do not reimport".into());
         }
         let reply: Value = serde_json::from_str(replies[0])?;
+        let envelope: Value = serde_json::from_str(snapshot)?;
+        let body = &envelope["body"];
+        let canonical = super::super::canonical_digest(body)?;
         if reply["schema"] != "hepta.mem15.import-ack.v1"
             || reply["pid"] != self.receipt["pid"]
             || reply["snapshot_sha256"] != Sha256Digest::for_bytes(snapshot.as_bytes()).as_str()
             || reply["imported"]["active_records"] != 1
+            || envelope["sha256"].as_str() != Some(canonical.as_str())
+            || reply["imported"]["snapshot_sha256"] != envelope["sha256"]
+            || !body["authority_id"].is_string() || !body["namespace"].is_string()
+            || !body["generation"].is_u64()
+            || ["authority_id", "namespace", "generation"].into_iter().any(|key| reply["imported"][key] != body[key])
         {
             return Err("A acknowledgement does not bind the exact original import".into());
         }
@@ -109,7 +133,8 @@ pub(super) async fn observe(
     });
     super::write_receipt(root, "INTENT.json", &intent)?;
     let started = now()?;
-    let mut child = command.spawn()?;
+    let mut owned = ChildGuard(Some(command.spawn()?));
+    let child = owned.0.as_mut().ok_or("owned child missing")?;
     let pid = child.id();
     let process_identity = std::fs::read_to_string(format!("/proc/{pid}/stat")).ok();
     super::write_receipt(root, "STARTED.json", &serde_json::json!({
@@ -126,6 +151,8 @@ pub(super) async fn observe(
         }
         tokio::time::sleep(Duration::from_millis(10)).await;
     };
+    // try_wait/wait returned an actual status. Drop a reaped handle without kill.
+    owned.0.take();
     let exited = now()?;
     let executable_after = pin(executable)?;
     let input_after = pin(&input_path)?;

@@ -46,8 +46,12 @@ but all native file/tool/history bypasses have not been proven closed.
 3. Parent retains stdin, executable hash before/after, stdout/stderr, PID/proc
    identity, start and OS-exit timestamps. Only exit code 0, no supervisor timeout,
    exactly one ack with matching PID/input hash and one active record permit C.
+   The returned owner authority/namespace/generation/snapshot digest must match
+   the original snapshot envelope and its independently recomputed canonical hash.
    A's 10-second outer process limit does not extend the import RPC boundary.
    An uncertain/lost ack never causes reimport, a new A identity or C dispatch.
+   On early supervisor errors, an owned child guard kills only that child and
+   attempts background OS reaping; missing terminal evidence still stays UNKNOWN.
 4. Only after the OS wait returns does parent start the real `hepta-infer-worker`
    CLI. C has a cleared environment and separate empty process work/home/cache
    directories; it is not in an independent mount/user/network namespace. C's
