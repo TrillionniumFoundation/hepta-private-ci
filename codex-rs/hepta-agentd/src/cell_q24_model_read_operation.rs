@@ -32,6 +32,7 @@ pub(crate) struct OriginalCellQ24ModelReadV1<'a> {
     digest: Digest32,
     started: u64,
     cancellation: Cancelled,
+    effect_cancellation: Option<Arc<AtomicBool>>,
 }
 
 /// A completed observation from one actual Begin/Finish, never a new authority.
@@ -48,15 +49,49 @@ impl OriginalCellQ24ModelCommandClientV1 {
     pub(crate) async fn begin_original_model_read(
         &self,
     ) -> Result<OriginalCellQ24ModelReadV1<'_>, Error> {
+        self.begin_original_operation(wire::Action::BeginOriginalRead, None).await
+    }
+
+    /// The existing original Execute capability is consumed at most once.
+    /// Its result remains provisional until the same operation's native tail.
+    pub(crate) async fn begin_original_model_commit(
+        &self,
+        cancellation: Arc<AtomicBool>,
+    ) -> Result<OriginalCellQ24ModelReadV1<'_>, Error> {
+        if cancellation.load(Ordering::Acquire) { return Err(Error::Cancelled); }
+        if now()? >= self.context.material.initial.request.envelope.expiry_unix_seconds {
+            return Err(Error::DeadlineExceeded);
+        }
+        self.begin_original_operation(
+            wire::Action::BeginOriginalExecute, Some(cancellation),
+        ).await
+    }
+
+    async fn begin_original_operation(
+        &self,
+        action: wire::Action,
+        effect_cancellation: Option<Arc<AtomicBool>>,
+    ) -> Result<OriginalCellQ24ModelReadV1<'_>, Error> {
         let started = now()?;
         require_clock(self.observed_at, started)?;
-        let channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+        let channel = {
+            let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
+            if action == wire::Action::BeginOriginalExecute
+                && slot.as_ref().is_some_and(|channel| channel.execution_requested)
+            {
+                return Err(Error::ReadbackRequired);
+            }
+            let mut channel = slot.take().ok_or(Error::Unavailable)?;
+            if action == wire::Action::BeginOriginalExecute {
+                channel.execution_requested = true;
+            }
+            channel
+        };
         let transfer = channel.next;
         let cancellation = Cancelled(Arc::new(AtomicBool::new(false)));
         let (mut channel, outcome) = exchange(
-            self, channel, wire::Action::BeginOriginalRead,
-            Arc::clone(&cancellation.0), started,
+            self, channel, action,
+            Arc::clone(&cancellation.0), effect_cancellation.clone(), started,
         ).await?;
         let (record, total, digest) = match outcome {
             wire::Outcome::OriginalReadStarted {
@@ -88,7 +123,7 @@ impl OriginalCellQ24ModelCommandClientV1 {
             let (returned, outcome) = exchange(
                 self, channel,
                 wire::Action::ReadOriginalPage { transfer, index: index as u32 },
-                Arc::clone(&cancellation.0), started,
+                Arc::clone(&cancellation.0), effect_cancellation.clone(), started,
             ).await?;
             channel = returned;
             let wire::Outcome::OriginalReadPage {
@@ -118,7 +153,7 @@ impl OriginalCellQ24ModelCommandClientV1 {
         )?;
         let operation = OriginalCellQ24ModelReadV1 {
             client: self, channel: Some(channel), model, material, transfer, total,
-            digest, started, cancellation,
+            digest, started, cancellation, effect_cancellation,
         };
         operation.require_current(fresh)?;
         Ok(operation)
@@ -133,6 +168,9 @@ impl OriginalCellQ24ModelReadV1<'_> {
     /// windows at the current OS clock. This performs no Finish or new read.
     pub(crate) fn require_current(&self, lower: u64) -> Result<u64, Error> {
         self.channel.as_ref().ok_or(Error::Unavailable)?.peer.check_peer_lifetime()?;
+        if self.effect_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire)) {
+            return Err(Error::Cancelled);
+        }
         let fresh = self.client.context.authenticate(self.started.max(lower))?;
         self.material.authenticate_current(fresh)?;
         let input = self.material.require_original_model_input(
@@ -154,7 +192,7 @@ impl OriginalCellQ24ModelReadV1<'_> {
         let (channel, outcome) = exchange(
             self.client, channel,
             wire::Action::FinishOriginalRead { transfer: self.transfer },
-            Arc::clone(&self.cancellation.0), lower,
+            Arc::clone(&self.cancellation.0), self.effect_cancellation.clone(), lower,
         ).await?;
         let wire::Outcome::OriginalReadFinished {
             transfer, record, total, digest,
@@ -194,6 +232,7 @@ async fn exchange(
     mut channel: Channel,
     action: wire::Action,
     cancellation: Arc<AtomicBool>,
+    effect_cancellation: Option<Arc<AtomicBool>>,
     lower: u64,
 ) -> Result<(Channel, wire::Outcome), Error> {
     if !(1..=128).contains(&channel.next) || client.context.binding()? != client.binding {
@@ -207,7 +246,9 @@ async fn exchange(
     }
     let (mut channel, response) = tokio::task::spawn_blocking(move || {
         channel.peer.check_peer_lifetime()?;
-        if cancellation.load(Ordering::Acquire) { return Err(Error::Cancelled); }
+        if cancellation.load(Ordering::Acquire)
+            || effect_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))
+        { return Err(Error::Cancelled); }
         let response = channel.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
         channel.peer.check_peer_lifetime()?;
         Ok::<_, Error>((channel, response))

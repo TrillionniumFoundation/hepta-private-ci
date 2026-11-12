@@ -121,7 +121,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
                         before,
                     ))?
                 }
-                wire::Action::BeginOriginalRead
+                wire::Action::BeginOriginalRead | wire::Action::BeginOriginalExecute
                 | wire::Action::ReadOriginalPage { .. }
                 | wire::Action::FinishOriginalRead { .. } => {
                     return Err(Error::Binding("original staged Model route required"));
