@@ -13112,7 +13112,7 @@ required_function_order = [{ function = "fn original_historical_successor_curren
 path = "codex-rs/hepta-agentd/src/circuit_task_source_data.rs"
 required = []
 forbidden = []
-required_function_order = [{ function = "fn decode_original_successor_data(", sequence = ["self.decode_data()"] }]
+required_function_order = [{ function = "fn decode_original_successor_data(", sequence = ["Result<(CircuitTaskSourcePublicationV1, CellDecisionReceiptV1), Error>", "self.decode_data()"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs"

@@ -165,6 +165,9 @@ class SuccessorHistoricalClientSourceTests(unittest.TestCase):
         self.check(LIVE, "original_historical_successor_current", ("RetainedPublication::Update(_)", "NeuronGenerationCurrentOwnerV1::require_original_root_historical_receipt(", "Ok(Arc::clone(&self.current))"))
         self.mutate(LIVE, lambda s: s.replace('#[cfg(target_os = "linux")]\n    pub(crate) fn original_historical_successor_current(', 'pub(crate) fn original_historical_successor_current(', 1))
 
+    def test_successor_data_uses_the_complete_canonical_decoder(self):
+        self.check(DATA, "decode_original_successor_data", ("self.decode_data()",))
+
     def test_original_task_and_full_a_completion_bind_the_opaque_c_source(self):
         self.check(CAP, "recover_original_completed_successor", ("LiveGenerationCurrent::original_historical_successor_current(", "NeuronGenerationCurrentOwnerV1::read_original_completed_successor(", "matches!(mode, OriginalSuccessorRecoveryModeV1::CaptureRetired)", "source.read_original()?"))
         self.check(CAP, "read_original", ("self.0.failed.load(Ordering::Acquire)", "Publication::Update { original, previous }", "PublishedCircuitFeatureCompletionV1::read_original_historical_completion(", "actual_a.binding != previous.binding", "actual_a.source != previous.source", "actual_a.receipt != previous.receipt", "data != held.data", "data.cut.definition", "RootHistoricalTaskPublicationDataV1::decode_original_successor_data(", "input != &source_input(held.task.source(), input.operation_id.clone())", "source.bundle_digest() != held.task.definition().bundle_digest", "data.cut.writer_epoch != original.target().writer_epoch()", "source.require_decision(&decision)", "self.0.failed.store(true, Ordering::Release)"))

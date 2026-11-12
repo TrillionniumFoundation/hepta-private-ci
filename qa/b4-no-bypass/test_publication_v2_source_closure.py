@@ -165,7 +165,7 @@ class PublicationV2SourceTests(unittest.TestCase):
             "request.schema != version.schema()", "request.purpose != version.purpose()", "request.request_id != sequence"))
         self.check(CLIENT, "from_original_stream", ("PublicationVersion::from_purpose(&bootstrap.purpose)?", "response.schema != version.schema()",
             "response.purpose != version.purpose()", "profile.writer != bootstrap.writer", "profile.digest()? != profile.binding"))
-        self.check(CLIENT, "exchange", ("response.schema != self.version.schema()", "response.purpose != self.version.purpose()", "response.profile != self.profile"))
+        self.check(CLIENT, "exchange_response", ("response.schema != self.version.schema()", "response.purpose != self.version.purpose()", "response.profile != self.profile"))
 
     def test_only_original_sealed_route_selects_v2(self):
         self.check(INPUTS, "read_original_route", ("PublicationVersion::from_purpose(&bundle.purpose)?", ".join(version.socket())", "bundle.root != original.root", "bundle.consumer != original.consumer"))
