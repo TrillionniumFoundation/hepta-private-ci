@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.finite-notes-seed-ci-coverage.v1",
+  "prior_commit": "7e6affec5ffa987f561f431988cfdb3e2c25ba83",
+  "prior_workflow_blob": "96732bf75ef5ca0594250473755273d132de7c11",
+  "post_workflow_blob": "71ec1b1ece9411fb4bb505825ea66e2401196550",
+  "post_workflow_sha256": "5fd173ccf08ae242842f189f1d2b056c7793d11c7c23cd3a092897901657b0f3",
+  "post_workflow_bytes": 9733,
+  "problem": "Original dedicated workflow runs only on one upstream branch; this explicit fix branch requires its original positive plus all five new regression methods.",
+  "preserved": {
+    "original_branch_trigger": true,
+    "original_positive_command": true,
+    "original_positive_minimum_one": true,
+    "original_exact_named_case_receipt": true,
+    "build_both_actual_binaries": true,
+    "exact_locked_source": true,
+    "original_format_check": true,
+    "original_source_after_and_logs": true,
+    "original_artifact_upload": true
+  },
+  "added": {
+    "explicit_research_branch_trigger": "research/neuro4-finite-notes-seed-20261112-862531d",
+    "original_caller_proof": true,
+    "regression_minimum": 5,
+    "each_expected_method_exact_PASS_once": true
+  },
+  "validation": "Execution pending on this newly published workflow; static string review is not YAML or runtime execution.",
+  "owner_decision": null
+}
