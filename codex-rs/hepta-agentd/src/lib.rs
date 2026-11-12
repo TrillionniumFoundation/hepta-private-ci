@@ -161,6 +161,8 @@ mod root_independent_b_publication_data;
 #[cfg(target_os = "linux")]
 pub use root_independent_b_publication_data::OriginalRootBPublicationDataV2;
 #[cfg(target_os = "linux")]
+mod root_independent_b_notice;
+#[cfg(target_os = "linux")]
 mod root_independent_b_source_client;
 #[cfg(target_os = "linux")]
 mod root_independent_b_source_protocol;
