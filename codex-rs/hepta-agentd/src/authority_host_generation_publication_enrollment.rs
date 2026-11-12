@@ -92,7 +92,7 @@ pub struct RootGenerationPublicationEnrollmentV1 {
 }
 
 impl HostAuthorityService {
-    pub(crate) fn enroll_generation_publication(
+    pub(super) fn enroll_armed_generation_publication(
         &self,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
@@ -100,6 +100,7 @@ impl HostAuthorityService {
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
         version: PublicationVersion,
+        refusal: Arc<PublicationRefusal>,
     ) -> io::Result<RegisteredGenerationPublication> {
         original_root()?;
         self.with_learning_profile(
@@ -484,6 +485,7 @@ impl HostAuthorityService {
                 let enrolled = RegisteredGenerationPublication {
                     profile,
                     reserved,
+                    refusal,
                     profile_store,
                     profile_owner,
                     decision: decision.snapshot,

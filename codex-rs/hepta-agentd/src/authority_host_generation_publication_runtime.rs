@@ -155,6 +155,8 @@ fn serve_optional_with_end(
                     Err(mpsc::TryRecvError::Disconnected) => return Ok(()),
                 }
             };
+            let operation_end = end.min(submission.end);
+            owner_alive(owner, operation_end)?;
             let slot = service.enroll_generation_publication(
                 config,
                 registration,
@@ -162,21 +164,30 @@ fn serve_optional_with_end(
                 learning,
                 submission.inputs,
                 publication.runtime.version,
+                operation_end,
             );
             let slot = match slot {
                 Ok(slot) => {
-                    if original_end.is_some() {
-                        owner_alive(owner, end)?;
-                    }
-                    if stopping.load(Ordering::Acquire)
-                        || submission
-                            .acknowledgement
-                            .try_send(Ok(slot.profile.binding.clone()))
-                            .is_err()
-                    {
-                        return Err(io::Error::other(
-                            "original publication enrollment acknowledgement lost",
-                        ));
+                    let acknowledged = (|| {
+                        if original_end.is_some() {
+                            owner_alive(owner, end)?;
+                        }
+                        owner_alive(owner, operation_end)?;
+                        if stopping.load(Ordering::Acquire)
+                            || submission
+                                .acknowledgement
+                                .try_send(Ok(slot.profile.binding.clone()))
+                                .is_err()
+                        {
+                            return Err(io::Error::other(
+                                "original publication enrollment acknowledgement lost",
+                            ));
+                        }
+                        Ok(())
+                    })();
+                    if let Err(error) = acknowledged {
+                        slot.refuse()?;
+                        return Err(error);
                     }
                     slot
                 }

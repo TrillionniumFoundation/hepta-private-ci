@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io;
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
@@ -56,6 +57,11 @@ use versions::ReservedPublicationProfile;
 mod bootstrap;
 pub(crate) use bootstrap::decode_original_publication_bootstrap;
 pub(crate) use bootstrap::encode_original_publication_bootstrap;
+#[path = "authority_host_publication_refusal.rs"]
+mod refusal;
+use refusal::PublicationRefusal;
+#[path = "authority_host_publication_registration.rs"]
+mod registration;
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -131,6 +137,7 @@ pub struct RootGenerationPublicationOfferV1 {
 pub(crate) struct RegisteredGenerationPublication {
     pub(crate) profile: PublicationProfile,
     reserved: ReservedPublicationProfile,
+    refusal: Arc<PublicationRefusal>,
     profile_store: HostAuthorityFrontierStore<PublicationRecord>,
     profile_owner: String,
     decision: LearningIterationSnapshotV1,
@@ -143,6 +150,13 @@ pub(crate) struct RegisteredGenerationPublication {
 }
 
 impl RegisteredGenerationPublication {
+    pub(crate) fn refuse(&self) -> io::Result<()> {
+        // This is called only outside an inspection, on uncertain enrollment
+        // delivery. Refuse independently before trying to decode the primary.
+        self.refusal.refuse()?;
+        fence_record(&self.profile_store, &self.profile_owner)
+    }
+
     fn require_profile(&self) -> io::Result<()> {
         if self
             .profile_store
