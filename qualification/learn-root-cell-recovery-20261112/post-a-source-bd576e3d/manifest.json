@@ -1,0 +1,606 @@
+{
+  "label": "post-a-source-bd576e3d",
+  "bytes": 10496,
+  "sha256": "84273c4c06f6bf0d51fb145b385fb62dc673a0460da09b1232271fc3b4b56fc6",
+  "result": {
+    "before": {
+      "head": "bd576e3ddf3ac658092ab0cccb9b3f74bac6c457",
+      "tree": "204ee5e06a50c4bf35d842a8a02a6d938a6b496c",
+      "status": "",
+      "files": 15307,
+      "digest": "185bf49b0ffeadfb81780a35f961074645528cd0e8a7f9fac53ca7bc054521d3"
+    },
+    "after": {
+      "head": "bd576e3ddf3ac658092ab0cccb9b3f74bac6c457",
+      "tree": "204ee5e06a50c4bf35d842a8a02a6d938a6b496c",
+      "status": "",
+      "files": 15307,
+      "digest": "185bf49b0ffeadfb81780a35f961074645528cd0e8a7f9fac53ca7bc054521d3"
+    },
+    "unchanged": true,
+    "started": "2026-11-12T13:51:09.094437+00:00",
+    "finished": "2026-11-12T13:54:47.096456+00:00",
+    "elapsed": 218.00201493799977,
+    "rust_files": 6729,
+    "caller_results": [
+      {
+        "id": "learning_original_q24_stage_install_generation",
+        "status": "PASS",
+        "receipt": {
+          "id": "learning_original_q24_stage_install_generation",
+          "symbol": "OriginalCellQ24LearningStageOwnersV1::install_generation",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs",
+            "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs"
+          ]
+        }
+      },
+      {
+        "id": "learning_original_q24_training_material_export",
+        "status": "PASS",
+        "receipt": {
+          "id": "learning_original_q24_training_material_export",
+          "symbol": "OriginalCellQ24LearningStageOwnersV1::read_original_training_material",
+          "callPattern": null,
+          "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_artifact_original_selection_files",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_artifact_original_selection_files",
+          "symbol": "LearningArtifactReadViewV1::locate_selected_original_files",
+          "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)locate_selected_original_files\\s*\\(",
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+            "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+            "codex-rs/hepta-agentd/src/production_initial_q24_load.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"
+          ]
+        }
+      },
+      {
+        "id": "q24_successor_original_c_ingress",
+        "status": "PASS",
+        "receipt": {
+          "id": "q24_successor_original_c_ingress",
+          "symbol": "OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress",
+          "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_installed_successor_ingress\\s*\\(",
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "q24_successor_original_signed_finish",
+        "status": "PASS",
+        "receipt": {
+          "id": "q24_successor_original_signed_finish",
+          "symbol": "OriginalQ24PreparedSuccessorV1::publish",
+          "callPattern": null,
+          "receiverType": "OriginalQ24PreparedSuccessorV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_historical_current_trust_receipt",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_historical_current_trust_receipt",
+          "symbol": "OriginalHistoricalLearningTrustV1::require_original_receipt",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_stage_authorities",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_stage_authorities",
+          "symbol": "OriginalHistoricalLearningTrustV1::original_stage_authorities",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_freeze_files",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_freeze_files",
+          "symbol": "SigningFilesData::freeze_original",
+          "callPattern": null,
+          "receiverType": "SigningFilesData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_stage_files",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_stage_files",
+          "symbol": "StageFilesData::into_original_inputs",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_bootstrap_encode",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_bootstrap_encode",
+          "symbol": "encode_original_publication_bootstrap",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/authority_host_original_publication_route.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_bootstrap_decode",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_bootstrap_decode",
+          "symbol": "decode_original_publication_bootstrap",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_read_route",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_read_route",
+          "symbol": "RootGenerationPublicationHandoffV1::read_original_route",
+          "callPattern": null,
+          "receiverType": "RootGenerationPublicationHandoffV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/root_publication_preparation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_retain",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_retain",
+          "symbol": "RootGenerationPublicationHandoffV1::retain_original_preparation",
+          "callPattern": null,
+          "receiverType": "RootGenerationPublicationHandoffV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_context",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_context",
+          "symbol": "OriginalPreparedPublicationRoute::require_current",
+          "callPattern": null,
+          "receiverType": "OriginalPreparedPublicationRoute",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_fixed_data",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_fixed_data",
+          "symbol": "OriginalPreparedPublicationRoute::with_original_data",
+          "callPattern": null,
+          "receiverType": "OriginalPreparedPublicationRoute",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_material.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "root_prepared_publication_connection",
+        "status": "PASS",
+        "receipt": {
+          "id": "root_prepared_publication_connection",
+          "symbol": "OriginalPreparedPublicationRoute::into_original_connection",
+          "callPattern": null,
+          "receiverType": "OriginalPreparedPublicationRoute",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_material_open",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_material_open",
+          "symbol": "OriginalMaterialWriter::open_from_original_root",
+          "callPattern": null,
+          "receiverType": "OriginalMaterialWriter",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_material_commit",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_material_commit",
+          "symbol": "OriginalMaterialWriter::commit_original_material",
+          "callPattern": null,
+          "receiverType": "OriginalMaterialWriter",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_late_input_open",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_late_input_open",
+          "symbol": "OriginalLateInput::open_original",
+          "callPattern": null,
+          "receiverType": "OriginalLateInput",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_late_input_wait",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_late_input_wait",
+          "symbol": "OriginalLateInput::wait_original_value",
+          "callPattern": null,
+          "receiverType": "OriginalLateInput",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_original_late_value_parse",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_original_late_value_parse",
+          "symbol": "OriginalLateValue::with_original_bytes",
+          "callPattern": null,
+          "receiverType": "OriginalLateValue",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_historical_feature_read",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_historical_feature_read",
+          "symbol": "OriginalHistoricalTaskReadReceiptV1::with_current_feature_read",
+          "callPattern": null,
+          "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/circuit_feature_current_publication.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_historical_feature_completion",
+        "status": "FAIL",
+        "error": "post_a_historical_feature_completion: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_feature_historical_source.rs']"
+      },
+      {
+        "id": "post_a_c_fixed_late_pin",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_fixed_late_pin",
+          "symbol": "OriginalLateInput::require_original_pin",
+          "callPattern": null,
+          "receiverType": "OriginalLateInput",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_explicit_plan",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_explicit_plan",
+          "symbol": "CTaskData::open_original",
+          "callPattern": null,
+          "receiverType": "CTaskData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_original_new_files",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_original_new_files",
+          "symbol": "files::open_original_new_files",
+          "callPattern": null,
+          "receiverType": null,
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_original_new_task",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_original_new_task",
+          "symbol": "OriginalCTaskPlan::open_original_new_task",
+          "callPattern": null,
+          "receiverType": "OriginalCTaskPlan",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_original_existing_task",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_original_existing_task",
+          "symbol": "OriginalCTaskPlan::open_original_existing_task",
+          "callPattern": null,
+          "receiverType": "OriginalCTaskPlan",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_explicit_root_mode",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_explicit_root_mode",
+          "symbol": "OriginalCTaskPlan::require_original_mode",
+          "callPattern": null,
+          "receiverType": "OriginalCTaskPlan",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_c_original_recovery_inputs",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_c_original_recovery_inputs",
+          "symbol": "OriginalExistingCTask::into_original_recovery",
+          "callPattern": null,
+          "receiverType": "OriginalExistingCTask",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_generation_original_files",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_generation_original_files",
+          "symbol": "GenerationFilesData::open_original",
+          "callPattern": null,
+          "receiverType": "GenerationFilesData",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_generation_original_live_handoff",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_generation_original_live_handoff",
+          "symbol": "OriginalGenerationFiles::into_original_handoff",
+          "callPattern": null,
+          "receiverType": "OriginalGenerationFiles",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_generation_original_historical_handoff",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_generation_original_historical_handoff",
+          "symbol": "OriginalGenerationFiles::into_original_historical_handoff",
+          "callPattern": null,
+          "receiverType": "OriginalGenerationFiles",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_generation_exact_mode",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_generation_exact_mode",
+          "symbol": "OriginalGenerationFiles::require_original_lifecycle",
+          "callPattern": null,
+          "receiverType": "OriginalGenerationFiles",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_continuation_original_constructor",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_continuation_original_constructor",
+          "symbol": "OriginalPostAContinuationV1::from_original_inputs",
+          "callPattern": null,
+          "receiverType": "OriginalPostAContinuationV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_continuation_original_delivery",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_continuation_original_delivery",
+          "symbol": "OriginalPostAContinuationV1::require_original_delivery",
+          "callPattern": null,
+          "receiverType": "OriginalPostAContinuationV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_continuation_supervised_run",
+        "status": "FAIL",
+        "error": "post_a_continuation_supervised_run: codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs: unresolved possible OriginalPostAContinuationV1::run receiver"
+      },
+      {
+        "id": "post_a_continuation_original_install",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_continuation_original_install",
+          "symbol": "LearningIterationRuntimeBootstrapV1::with_original_post_a_continuation",
+          "callPattern": null,
+          "receiverType": "LearningIterationRuntimeBootstrapV1",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_artifact_original_inputs",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_artifact_original_inputs",
+          "symbol": "OriginalArtifactPlan::open_original",
+          "callPattern": null,
+          "receiverType": "OriginalArtifactPlan",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+          ]
+        }
+      },
+      {
+        "id": "post_a_artifact_original_publication",
+        "status": "PASS",
+        "receipt": {
+          "id": "post_a_artifact_original_publication",
+          "symbol": "OriginalArtifactPlan::publish_and_select_original",
+          "callPattern": null,
+          "receiverType": "OriginalArtifactPlan",
+          "receiverMethods": [],
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+          ]
+        }
+      }
+    ],
+    "qa_command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_post_a_*source_closure.py",
+      "-v"
+    ],
+    "qa_returncode": 1,
+    "qa_bytes": 117439,
+    "qa_sha256": "b88d4995071f52265809cd8823dcdbdd12e1ebb2ae41c51db173900dc8c939bf",
+    "scope": "Affected Root post-A caller closed sets and post-A source negative controls only; no native or whole-chain qualification"
+  },
+  "blob": "3357cd4f1fd5bdcae5311237859b1d31ceeef728"
+}

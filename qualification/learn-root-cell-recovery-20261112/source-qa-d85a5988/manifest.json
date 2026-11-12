@@ -1,0 +1,41 @@
+{
+  "label": "source-qa-d85a5988",
+  "bytes": 18497,
+  "sha256": "d1401caf1a5743c48c03a3d8bc13ac059ea95c4cf6815315d726c8adf5aab3c6",
+  "result": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "*source_closure.py",
+      "-v"
+    ],
+    "before": {
+      "head": "d85a598836a055a5630cf752bde2202ef540c7d6",
+      "tree": "e9d34c186c70dce288cbb836afc812fc7428f14f",
+      "status": "",
+      "tracked_files": 15281,
+      "tracked_digest": "eb096a9758a86a1872d2cfddf22e01aa4d848380933d7edbf4a5c160bb10070a"
+    },
+    "after": {
+      "head": "d85a598836a055a5630cf752bde2202ef540c7d6",
+      "tree": "e9d34c186c70dce288cbb836afc812fc7428f14f",
+      "status": "",
+      "tracked_files": 15281,
+      "tracked_digest": "eb096a9758a86a1872d2cfddf22e01aa4d848380933d7edbf4a5c160bb10070a"
+    },
+    "unchanged": true,
+    "started": "2026-11-12T13:03:10.312159+00:00",
+    "finished": "2026-11-12T13:05:21.620679+00:00",
+    "elapsed": 131.30851234200236,
+    "returncode": 1,
+    "log_bytes": 123633,
+    "log_sha256": "18d3b5411232b715c613f3298c29e79db224334eea7a6abf4b17685f2f261605",
+    "scope": "all source closure QA only; no native tests or whole caller qualification"
+  },
+  "blob": "d11b50d0a0fc71ebe8ab812b31e4549a5fd6dd56"
+}
