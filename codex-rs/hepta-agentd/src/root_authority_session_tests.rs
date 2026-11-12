@@ -720,11 +720,16 @@ async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
         waiting.unwrap().join().unwrap(),
         Err(AgentdRootAuthorityError::Unavailable)
     ));
-    let validated = crate::root_observation_cache::tests::component_last_validated_read(
-        &live.cache,
+    let validated =
+        crate::root_observation_cache::tests::component_last_validated_read(&live.cache);
+    assert!(
+        validated >= end,
+        "cache validation did not cross the session end"
     );
-    assert!(validated >= end, "cache validation did not cross the session end");
-    assert!(validated - origin <= MAX_AGE_NS, "the cache itself had already expired");
+    assert!(
+        validated - origin <= MAX_AGE_NS,
+        "the cache itself had already expired"
+    );
     // The retained proof cannot authorize a new call after this original
     // session end. This is a negative read, never a retry of an effect.
     assert!(matches!(

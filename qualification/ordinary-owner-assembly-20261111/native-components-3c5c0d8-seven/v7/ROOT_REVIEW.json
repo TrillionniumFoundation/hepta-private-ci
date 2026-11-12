@@ -1,0 +1,70 @@
+{
+  "schema": "hepta-v33-original-native-root-admission-review-v1",
+  "status": "approved for one exact source qualification; not dispatched at review freeze",
+  "source": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+  },
+  "request": {
+    "name": "exact-request.json",
+    "git_blob": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d",
+    "bytes": 56726,
+    "sha256": "3cbab0c6381f7e8aa37af43423e45f76d8f65a3ae81708a83bfaa9123f25e688"
+  },
+  "configuration": {
+    "name": "CONFIG.json",
+    "git_blob": "1cff1b2e2da8d282db64007e3ded3e465f2d0ecc",
+    "bytes": 3305,
+    "sha256": "e3f2d7fbfb594be4017271822a40c7e8173e68c976e186e42c8128d57afc940f"
+  },
+  "manifest": "e1f669d38236e8e4bab9508ac4826a3b81c69ec4",
+  "exact_ops": "10c8378b3ebb7b8bfe966d94faba59a586b2fa8f",
+  "root_tree_integration_proof": "c1318396ef5d9d8733fffba006a5bcdf79b38697",
+  "independent_composition_review": "477cb55bd729dc48883321764f33452ff4e684e8",
+  "root_checks": {
+    "pins": 4,
+    "config_changed_fields": [
+      "head",
+      "tree",
+      "work_name",
+      "attempt"
+    ],
+    "request_changed_fields": [
+      "args",
+      "idempotency_key"
+    ],
+    "exact_ops": 6,
+    "forward_reverse_unique": true,
+    "harness_unchanged": true,
+    "gate_config_unchanged": true
+  },
+  "admission": {
+    "previous_native": "V32 terminal exit1; failed ordinary/Root tests retained; all9cleanup passed",
+    "previous_export": "V13 terminal exit0; archive transfer incomplete and not a test qualification",
+    "agent_native_invocations": 0,
+    "owner": "Root only",
+    "new_key": "af52-ordinary-3c5c0d8-seven-final-v7-20261112",
+    "new_work": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7",
+    "reconcile_unknown": "Only same exact request and idempotency key. Do not create a second attempt to hide unknown completion.",
+    "original_gate": {
+      "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "packages": 7,
+      "Root_exact_parents": 17,
+      "retries": 0,
+      "overall_timeout_seconds": 27000,
+      "caller_timeout_seconds": 3600
+    }
+  },
+  "root_read": "Complete fixed plan and final manifest read; original full harness previously reviewed and byte identity rechecked. Original semantics retained; no new helper, wrapper, gate, timeout, retry, exception or expected pass count.",
+  "handling": "If actual fmt/fix changes source, retain original dirty source/maintenance patch and assess a newly committed source before another full original qualification. Do not auto-reset, weaken checks or inherit successful prefixes.",
+  "business_acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "actual_daemon_and_Root_OS_restart": false,
+    "same_session_phase": "not in this fixed source"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "hepta-v33-original-preflight-record-reads-v1",
+  "progress": {
+    "request": {
+      "host": "ai395",
+      "paths": [
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/progress.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/progress.json\",\"sha256\":\"0c117f032641fdfa7deab06f7d990400ff967b111b4693b38400a7e5d4e6d85e\",\"size\":5924,\"text\":\"{\\n  \\\"classification\\\": \\\"COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE\\\",\\n  \\\"cleanup\\\": [\\n    {\\n      \\\"error\\\": \\\"RuntimeError('read-only donor metadata changed during this attempt')\\\",\\n      \\\"name\\\": \\\"read-only-reference\\\",\\n      \\\"status\\\": \\\"failed\\\"\\n    }\\n  ],\\n  \\\"current_stage\\\": \\\"finished-or-awaiting-original\\\",\\n  \\\"errors\\\": [\\n    \\\"cleanup read-only-reference: RuntimeError('read-only donor metadata changed during this attempt')\\\"\\n  ],\\n  \\\"expected_root_parents\\\": [\\n    \\\"authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history\\\",\\n    \\\"authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint\\\",\\n    \\\"authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client\\\",\\n    \\\"authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen\\\",\\n    \\\"root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin\\\",\\n    \\\"authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history\\\",\\n    \\\"authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files\\\",\\n    \\\"authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness\\\",\\n    \\\"root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec\\\",\\n    \\\"root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights\\\",\\n    \\\"authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody\\\",\\n    \\\"learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd\\\",\\n    \\\"root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights\\\",\\n    \\\"final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming\\\",\\n    \\\"final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files\\\",\\n    \\\"neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current\\\",\\n    \\\"neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery\\\"\\n  ],\\n  \\\"failure\\\": \\\"RuntimeError: original-rust-idle-preflight failed; original launch log retained\\\",\\n  \\\"format_base\\\": \\\"5edc50004a25cc585851f4aa6009ccc0d8f87705\\\",\\n  \\\"independent_consumer_accepted\\\": false,\\n  \\\"known_failure_exemptions\\\": false,\\n  \\\"operator_euid\\\": 1000,\\n  \\\"operator_gid\\\": 1000,\\n  \\\"operator_uid\\\": 1000,\\n  \\\"ordinary_complete_chains\\\": 0,\\n  \\\"ordinary_no_update_rollback_chains\\\": 0,\\n  \\\"ordinary_packages\\\": [\\n    \\\"codex-hepta-agentd\\\",\\n    \\\"codex-hepta-learning-artifacts\\\",\\n    \\\"codex-hepta-intelligence-eval\\\",\\n    \\\"codex-hepta-contracts\\\",\\n    \\\"codex-hepta-neuron\\\",\\n    \\\"codex-hepta-learning-ledger\\\",\\n    \\\"codex-hepta-fleet\\\"\\n  ],\\n  \\\"physical_daemon_root_restart_accepted\\\": false,\\n  \\\"positive_adoption_chains\\\": 0,\\n  \\\"predecessor_results_used\\\": false,\\n  \\\"reference_after\\\": {\\n    \\\"head\\\": \\\"3c8dabe46598599e91b2b8b80081e09069ff9426\\\",\\n    \\\"status\\\": \\\"\\\",\\n    \\\"tree\\\": \\\"6fe2c2426f22383416697016445cf444aafdd2ff\\\"\\n  },\\n  \\\"reference_path\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source\\\",\\n  \\\"root_packages\\\": [\\n    \\\"codex-hepta-agentd\\\",\\n    \\\"codex-hepta-contracts\\\"\\n  ],\\n  \\\"schema\\\": \\\"hepta.final-ordinary-root-native.v2\\\",\\n  \\\"source_path\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/source\\\",\\n  \\\"source_sha\\\": \\\"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\\\",\\n  \\\"source_tree\\\": \\\"55d558880526306893bc21a9ac64c32d3c6f6f60\\\",\\n  \\\"status\\\": \\\"failed\\\",\\n  \\\"steps\\\": [\\n    {\\n      \\\"command\\\": [\\n        \\\"sudo\\\",\\n        \\\"-n\\\",\\n        \\\"python3\\\",\\n        \\\"-c\\\",\\n        \\\"\\\\nimport json,os,sys\\\\nfrom pathlib import Path\\\\nassert os.getuid()==os.geteuid()==0\\\\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\\\\nactive=[]\\\\nfor p in Path('/proc').iterdir():\\\\n    if not p.name.isdigit():\\\\n        continue\\\\n    try:\\\\n        comm=(p/'comm').read_text().strip()\\\\n        if comm in names:\\\\n            try:\\\\n                cwd=os.readlink(p/'cwd')\\\\n            except OSError:\\\\n                cwd=None\\\\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\\\\n    except FileNotFoundError:\\\\n        continue\\\\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\\\\nraise SystemExit(1 if active else 0)\\\\n\\\"\\n      ],\\n      \\\"cwd\\\": \\\"/home/qq/af52-learning-local-decision-20261111\\\",\\n      \\\"elapsed_seconds\\\": 0.03308293712325394,\\n      \\\"exit_code\\\": 1,\\n      \\\"launcher_pid\\\": 15586,\\n      \\\"log\\\": {\\n        \\\"bytes\\\": 852,\\n        \\\"path\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/original-rust-idle-preflight.launch.log\\\",\\n        \\\"sha256\\\": \\\"b67f1a3c3ff349308b72d0df03117cd3ef5da42ed3ca978dbf8101ba1000fd44\\\"\\n      },\\n      \\\"name\\\": \\\"original-rust-idle-preflight\\\",\\n      \\\"state\\\": \\\"completed\\\",\\n      \\\"timed_out\\\": false\\n    }\\n  ],\\n  \\\"traceback\\\": \\\"Traceback (most recent call last):\\\\n  File \\\\\\\"<string>\\\\\\\", line 703, in <module>\\\\n    raw(\\\\\\\"original-rust-idle-preflight\\\\\\\",[\\\\\\\"sudo\\\\\\\",\\\\\\\"-n\\\\\\\",\\\\\\\"python3\\\\\\\",\\\\\\\"-c\\\\\\\",RUST_PREFLIGHT],timeout=60)\\\\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\\\n  File \\\\\\\"<string>\\\\\\\", line 196, in raw\\\\n    raise RuntimeError(name + \\\\\\\" failed; original launch log retained\\\\\\\")\\\\nRuntimeError: original-rust-idle-preflight failed; original launch log retained\\\\n\\\"\\n}\\n\",\"version\":\"66306:75545245:5924:1794472670337565395:1794472670337565395\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "preflight_log": {
+    "request": {
+      "host": "ai395",
+      "paths": [
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/original-rust-idle-preflight.launch.log"
+      ],
+      "max_file_bytes": 16384,
+      "max_response_bytes": 32768
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/original-rust-idle-preflight.launch.log\",\"sha256\":\"b67f1a3c3ff349308b72d0df03117cd3ef5da42ed3ca978dbf8101ba1000fd44\",\"size\":852,\"text\":\"{\\\"actual_preflight_uid\\\": 0, \\\"active_rust\\\": [{\\\"pid\\\": 7029, \\\"comm\\\": \\\"cargo-clippy\\\", \\\"cwd\\\": \\\"/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs\\\"}, {\\\"pid\\\": 7046, \\\"comm\\\": \\\"cargo\\\", \\\"cwd\\\": \\\"/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs\\\"}, {\\\"pid\\\": 12921, \\\"comm\\\": \\\"cargo\\\", \\\"cwd\\\": \\\"/home/qq/work/chain-bt-owner-convergence-20261112-4a0b\\\"}, {\\\"pid\\\": 14143, \\\"comm\\\": \\\"rustc\\\", \\\"cwd\\\": \\\"/home/qq/work/chain-bt-owner-convergence-20261112-4a0b/trillionnium\\\"}, {\\\"pid\\\": 14969, \\\"comm\\\": \\\"cargo\\\", \\\"cwd\\\": \\\"/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs\\\"}, {\\\"pid\\\": 14971, \\\"comm\\\": \\\"clippy-driver\\\", \\\"cwd\\\": \\\"/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs\\\"}, {\\\"pid\\\": 14996, \\\"comm\\\": \\\"cargo\\\", \\\"cwd\\\": \\\"/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs\\\"}]}\\n\",\"version\":\"66306:75545246:852:1794472670126541091:1794472670126541091\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "configuration_read": {
+    "request": {
+      "host": "ai395",
+      "paths": [
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/configuration.json"
+      ],
+      "max_file_bytes": 16384,
+      "max_response_bytes": 32768
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "directory_listing": {
+    "request": {
+      "path": "ssh://ai395/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records",
+      "max_depth": 2
+    },
+    "response_retained": false,
+    "outcome": "unknown; complete second Promise response was not stored before local handler failed"
+  },
+  "local_handler_limit": {
+    "status": "local handler JSON.parse rejected a non-JSON tool error before the second Promise result was stored",
+    "configuration_response_retained": true,
+    "directory_view_request_retained": true,
+    "directory_view_response_retained": false,
+    "directory_view_outcome": "unknown to retained handler evidence; no success, timeout or directory inventory claimed"
+  }
+}

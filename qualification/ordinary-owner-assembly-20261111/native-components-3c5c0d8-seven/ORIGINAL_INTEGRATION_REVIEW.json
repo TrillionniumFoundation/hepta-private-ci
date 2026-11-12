@@ -1,0 +1,279 @@
+{
+  "schema": "hepta-v33-assembly-independent-static-review-v1",
+  "status": "no confirmed integration blocker; proposed entry set reviewed, not native qualification",
+  "reviewed_assembly": {
+    "git_blob": "565c4508c69aeb87983d35844fe8eec3c09435e5",
+    "bytes": 18518,
+    "sha256": "f1e26b3d5cf0ce699df99bb7f83b037bac9dd74c1650699b45ca9128dd72b43e"
+  },
+  "base": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "scope": "Bounded composition review. Reuses completed three-slice semantic reviews; independently checks declared entries, actual source bytes, parent source tree entries, manifest/review binding, evidence precision and applicable nested instructions.",
+  "integration": {
+    "source_entries": 8,
+    "evidence_entries": 40,
+    "assembly_entries": 1,
+    "total_declared_entries": 49,
+    "all_paths_unique": true,
+    "source_files_match_three_reviewed_manifests": true,
+    "source_actual_utf8_bytes_sha256_git_verified": true,
+    "parent_preimages_match_actual_nonrecursive_git_trees": true,
+    "source_pin_checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "preimage": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "postimage": {
+          "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+          "bytes": 23838,
+          "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "preimage": "7573cc6064186aab16e4dab5c12dd0eb97b71a1d",
+        "postimage": {
+          "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+          "bytes": 10876,
+          "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "preimage": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "postimage": {
+          "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+          "bytes": 21570,
+          "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "preimage": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "postimage": {
+          "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+          "bytes": 26931,
+          "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "preimage": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "postimage": {
+          "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+          "bytes": 14877,
+          "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "preimage": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "postimage": {
+          "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+          "bytes": 15464,
+          "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "preimage": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "postimage": {
+          "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+          "bytes": 8982,
+          "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "preimage": "8b9a140054028e8246677ac0959064a59f81c51f",
+        "postimage": {
+          "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+          "bytes": 14195,
+          "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+        }
+      }
+    ],
+    "slice_pins": [
+      {
+        "manifest": "d18c950cba8a3a4a7545e2f1e72c925623b5bdc6",
+        "exact_ops": "fc5f472aba57a4f8d373824d6dcb442df874d64c",
+        "root_review": "348fb637d26336534e09e977272cb83070b10bbc",
+        "independent_reviews": [
+          "a75aa47a17d4031da6ad0a1e1f9da53a337d0c89",
+          "4556774fdb73391eefb854654f60fb379c67ff5b"
+        ]
+      },
+      {
+        "manifest": "3666fa6fcf3f706e658fab881fea7d4f3b8a664a",
+        "exact_ops": "52ec4d1e9f07541dd2db836ef74f958cb82da16a",
+        "root_review": "7c0e47ad4e89d8d0c2e2be50a37300487955f0fe",
+        "independent_reviews": [
+          "f05b7df88240f1d862c762167dad0e34ddf78bbb"
+        ]
+      },
+      {
+        "manifest": "58b31b40d3e0e437f5931b82695bd05f4f950e2a",
+        "exact_ops": "9da1ba8fc5078d12e496b7de7b7315a6e655d311",
+        "root_review": "9e83a8953a3b178e939850ca911a1fb97843841f",
+        "independent_reviews": [
+          "2227eca24ad152e66f9eaaf999d1fdf6113c1af0"
+        ]
+      }
+    ],
+    "prospective_commit_or_final_written_tree_verified": false
+  },
+  "guard_and_qualification": {
+    "no_changed_entry_in_CALLERS_QA_checker_allowlist_dependencies_or_harness": true,
+    "unchanged_callers": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "unchanged_allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "root_exact_parents": 17,
+    "retries": 0,
+    "new_ordinary_tests": 6,
+    "new_root_parents": 0,
+    "executed_for_proposed_source": 0,
+    "statement": "The proposed entries do not change the original roster, retry policy or runner; no checker, compiler, test or formatter was executed in this review."
+  },
+  "classification": {
+    "cache": "Actual bounded first-lock-admission scheduling change plus same-original-session-end recheck; explicitly a latency/CPU tradeoff, not hard real-time and not a revival of a fenced purpose.",
+    "Initial": "Error-only diagnostic slice. Unknown Recover leaf remains unknown. No repair claim or timing-neutral claim.",
+    "lease_test": "Correction to exact existing rejection classifications, retaining original-observation Revoked, old-revision RevisionMismatch and real returned revoke-revision Revoked. No product-check reordering."
+  },
+  "precision": {
+    "current_result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "current_ordinary_failure_proof": "466119445e75b976b1e825124b5e8063e112394b",
+    "precision_note": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c",
+    "originals_rewritten": false,
+    "superseded_paths": [
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/RESULT-v1.json",
+        "git_blob": "5a9abca495743069217509ebd40efe4755742f29"
+      },
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/RESULT-v2.json",
+        "git_blob": "84d2037f63bc1f85351d9408d854742a9c1b5d1b"
+      },
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/ORDINARY_FAILURE_PROOF-v1.json",
+        "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd"
+      },
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/PRECISION_NOTE-v1.json",
+        "git_blob": "75c2d93557197bd5c9261f9f3cd469f10f11b46b"
+      }
+    ],
+    "old_review_references": "Initial Root review cites historical RESULT-v1 and lease Root review cites historical proof-v1. ASSEMBLY precision and current evidence explicitly supersede those derived precision projections, while the original raw UTF-8 is retained. No claim that the failed matches assertion printed its actual error enum."
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": "not accepted; existing successor still same actor across runs",
+    "real_daemon_and_Root_OS_restart": "not accepted",
+    "same_session_late_phase": "not implemented in this assembly",
+    "independent_consumer_contract": "not implemented",
+    "historical_A_custody_into_new_process_pair": "not implemented"
+  },
+  "instructions": {
+    "query_basis": "Actual frozen parent tree, nonrecursive listings with truncated=false. Root AGENTS was already fully read by Root; not reread here.",
+    "queried_ancestors": [
+      {
+        "path": ".",
+        "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+        "entries": 56,
+        "truncated": false,
+        "instructions": [
+          {
+            "path": "AGENTS.md",
+            "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs",
+        "tree": "33120108c8793b42623d96f60f9f87ee8b21b563",
+        "entries": 165,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd",
+        "tree": "5a1424bcae1db08fd016d26acbe73b30d88ebcd1",
+        "entries": 38,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src",
+        "tree": "3a771b13e17c3d2291bc40839eec3a6f8e403fe8",
+        "entries": 773,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts",
+        "tree": "108b4a386e1c1c434b605eca198863fe36cd1900",
+        "entries": 11,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src",
+        "tree": "5b931b4ed78be397a4f07eaeb6c4d5e21d73e346",
+        "entries": 71,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "qualification",
+        "tree": "065f50be9aea90bc9a05b963940b6bf1260e09f4",
+        "entries": 79,
+        "truncated": false,
+        "instructions": []
+      },
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111",
+        "tree": "d6fdd473c9c748e27dba12062dfb6bdc4d259c2f",
+        "entries": 97,
+        "truncated": false,
+        "instructions": []
+      }
+    ],
+    "new_evidence_directories_absent_in_parent": [
+      "cache-bounded-admission-v33",
+      "initial-recover-diagnostic-v33",
+      "authority-observation-expectation-v33",
+      "native-components-5a2e937-seven"
+    ],
+    "new_entries_include_no_AGENTS": true,
+    "nested_applicable_instruction_files_found": 0,
+    "query_limit": "Only ancestors relevant to the eight direct src files and the evidence/assembly location under qualification/ordinary-owner-assembly-20261111; not a repository-wide claim."
+  },
+  "actions": {
+    "git_reads": true,
+    "unreferenced_review_blob_only": true,
+    "h": false,
+    "pty": false,
+    "native": false,
+    "Cargo": false,
+    "ref_mutation": false,
+    "source_mutation": false
+  },
+  "limitations": [
+    "Eight source and forty evidence rows plus the assembly describe the pending tree edit. Root must still compare the actual committed tree and run original qualification on that exact candidate.",
+    "Earlier failed source remains ordinary 1943 passed / 1 failed and Root 15 passed / 2 failed; none of its passing prefixes qualifies this new source.",
+    "Ordinary complete, positive adoption and ordinary no-update/rollback remain 0 / 0 / 0; independent consumer, genuine daemon+Root OS restart and same-session phase implementation are not supplied by this assembly."
+  ]
+}

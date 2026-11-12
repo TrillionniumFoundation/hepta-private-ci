@@ -227,14 +227,12 @@ impl RootObservationCache {
                 || observation.registered_agent_id != old.registered_agent_id
                 || observation.spawn_generation != old.spawn_generation
                 || observation.writer.authority_lease != old.writer.authority_lease
-                || observation.writer.authority_lease_sha256
-                    != old.writer.authority_lease_sha256
+                || observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256
                 || observation.writer.writer_authorization_sha256
                     != old.writer.writer_authorization_sha256
                 || observation.writer.owner_epoch != old.writer.owner_epoch
                 || observation.writer.local_lease_id != old.writer.local_lease_id
-                || observation.writer.local_lease_generation
-                    != old.writer.local_lease_generation
+                || observation.writer.local_lease_generation != old.writer.local_lease_generation
                 || observation.writer.store_revision < old.writer.store_revision
                 || head.revision < old.revocations.revision
                 || (head.revision == old.revocations.revision && *head != old.revocations)
@@ -255,14 +253,12 @@ impl RootObservationCache {
                     observation.registered_agent_id != old.registered_agent_id,
                     observation.spawn_generation != old.spawn_generation,
                     observation.writer.authority_lease != old.writer.authority_lease,
-                    observation.writer.authority_lease_sha256
-                        != old.writer.authority_lease_sha256,
+                    observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256,
                     observation.writer.writer_authorization_sha256
                         != old.writer.writer_authorization_sha256,
                     observation.writer.owner_epoch != old.writer.owner_epoch,
                     observation.writer.local_lease_id != old.writer.local_lease_id,
-                    observation.writer.local_lease_generation
-                        != old.writer.local_lease_generation,
+                    observation.writer.local_lease_generation != old.writer.local_lease_generation,
                     old.writer.store_revision,
                     observation.writer.store_revision,
                     old.revocations.revision,
@@ -329,7 +325,10 @@ impl RootObservationCache {
         now: u64,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
         let admission = self.capture_read_admission()?;
-        let mut slot = self.retained.try_lock().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let mut slot = self
+            .retained
+            .try_lock()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         self.current_locked(&mut slot, now, admission.generation)
     }
 
@@ -344,7 +343,10 @@ impl RootObservationCache {
         }
         let deadline_ns = self.read_deadline_ns.load(Ordering::Acquire);
         self.require_read_generation(generation)?;
-        Ok(ReadAdmission { deadline_ns, generation })
+        Ok(ReadAdmission {
+            deadline_ns,
+            generation,
+        })
     }
 
     fn require_read_generation(&self, generation: u64) -> Result<(), AgentdRootAuthorityError> {
@@ -410,7 +412,8 @@ impl RootObservationCache {
                     }
                     if now > admission.deadline_ns {
                         #[cfg(test)]
-                        self.expired_admission_deadline.store(admission.deadline_ns, Ordering::Release);
+                        self.expired_admission_deadline
+                            .store(admission.deadline_ns, Ordering::Release);
                         #[cfg(test)]
                         self.expired_admission_sample.store(now, Ordering::Release);
                         #[cfg(test)]
@@ -467,7 +470,8 @@ impl RootObservationCache {
             let projected = project(&retained.observation, now)?;
             retained.last_checked_ns = now;
             if self.fenced.load(Ordering::Acquire)
-                || self.update_generation.load(Ordering::Acquire) != generation {
+                || self.update_generation.load(Ordering::Acquire) != generation
+            {
                 #[cfg(test)]
                 eprintln!(
                     "ROOT_OBSERVATION_CACHE phase=current reason=fenced-or-updating-after-projection now={now}"

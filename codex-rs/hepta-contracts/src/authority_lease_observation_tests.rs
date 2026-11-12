@@ -133,7 +133,10 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
         .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)
         .unwrap();
     assert_eq!(receipt.previous_lease_revision, original.revision);
-    assert_eq!(receipt.lease_revision, original.revision.checked_add(1).unwrap());
+    assert_eq!(
+        receipt.lease_revision,
+        original.revision.checked_add(1).unwrap()
+    );
     assert!(matches!(
         verifier.observe_original_lease(&original),
         Err(AuthorityLeaseError::Revoked)
@@ -144,7 +147,11 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
         Err(AuthorityLeaseError::RevisionMismatch)
     ));
     assert!(matches!(
-        verifier.verify_use(&original.lease_id, receipt.lease_revision, &original.binding),
+        verifier.verify_use(
+            &original.lease_id,
+            receipt.lease_revision,
+            &original.binding
+        ),
         Err(AuthorityLeaseError::Revoked)
     ));
 }

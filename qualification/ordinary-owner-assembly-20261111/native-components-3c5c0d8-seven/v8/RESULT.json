@@ -1,0 +1,184 @@
+{
+  "schema": "hepta-v33-v8-original-native-derived-result-v1",
+  "record_kind": "Root assessment; original records retain their exact bytes",
+  "status": "failed",
+  "classification": "original formatter completed successfully but changed six source files; original clean-source gate refused the attempt",
+  "source": {
+    "head": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "parent": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "original_clean_checkout": true,
+    "final_dirty": true
+  },
+  "request": "f1a07c5d380b91f98986ebd0341e4e6fd1c0d075",
+  "admission": "7fbace51c8b82ad624af9544a045188bab3e16ae",
+  "session_id": "dpty-193d31979e6c13e9833ce22038a9972575a782f15b20a4da683506374ceb834e",
+  "terminal": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 3289,
+    "bytes_stored": 3289,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794473958842,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 40967,
+    "pid": 40968,
+    "state": "exited",
+    "bytes": 3289
+  },
+  "stages": {
+    "idle_preflight": "passed; actualUID0 no active Rust",
+    "clone_fetch_checkout_ancestry": "passed",
+    "operator_toolchain": "passed on original clean3c5 source",
+    "fmt": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "command_exit_code": 0,
+      "executor_exit_code": 1,
+      "status": "failed",
+      "elapsed_seconds": 2.757792533142492,
+      "source_before": {
+        "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+        "dirty": false,
+        "parents": [
+          "5a2e9371814e9ee0ec55781a81844ef03434874b"
+        ],
+        "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+      },
+      "source_after": {
+        "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+        "dirty": true,
+        "parents": [
+          "5a2e9371814e9ee0ec55781a81844ef03434874b"
+        ],
+        "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+      },
+      "log_bytes": 0,
+      "timed_out": false
+    }
+  },
+  "failure": "RuntimeError: original executor did not retain equal clean source identity",
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\", \"status\": \" M codex-rs/hepta-agentd/src/neuron_generation_update_live.rs\\\\n M codex-rs/hepta-agentd/src/root_authority_session.rs\\\\n M codex-rs/hepta-agentd/src/root_authority_session_tests.rs\\\\n M codex-rs/hepta-agentd/src/root_observation_cache.rs\\\\n M codex-rs/hepta-agentd/src/root_observation_cache_tests.rs\\\\n M codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs\\\\n\", \"tree\": \"55d558880526306893bc21a9ac64c32d3c6f6f60\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "reference": {
+    "before": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "after": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "equal": true
+  },
+  "original_tools_unchanged": true,
+  "external_tools_equal": true,
+  "not_reached": [
+    "seven-package just fix",
+    "fmt-after",
+    "bins",
+    "QA",
+    "caller self-test",
+    "full caller",
+    "helper build and verification",
+    "ordinary7 tests",
+    "Root17 tests"
+  ],
+  "tests": {
+    "ordinary_executed": 0,
+    "Root_executed": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "maintenance_patch": {
+    "git_blob": "3af3e8c2bfe256e780a2ae870c8aefc2198f795a",
+    "bytes": 15403,
+    "sha256": "14788c96c5e98584561b0aa4d64aadf9b4b046738b36ef9be876cfc8e793c02f",
+    "version": "66306:75545602:15403:1794473982900538139:1794473982900538139"
+  },
+  "actual_format_delta": {
+    "files": 6,
+    "hunks": 17,
+    "independent_review": "25a0b0eb64eaaca5312758e413398bec5da14de8",
+    "source": "Actual original full-index patch and fixed preimages, not a fresh direct read of full runtime postimages"
+  },
+  "evidence": {
+    "progress": {
+      "git_blob": "4e8cc653a86afff3c801fce89ab28dd8daa51e51",
+      "bytes": 17638,
+      "sha256": "e8dda8ceba351535238a14e0680b6cb149957e94ecafe490a48343392da18abc",
+      "version": "66306:75545605:17638:1794473982985989209:1794473982986576056"
+    },
+    "fmt-before.execution.json": {
+      "git_blob": "cd7387165ac4d91f46ddb68bb75d459e13db836f",
+      "bytes": 1523,
+      "sha256": "c634913a31195c28191b322f920d3f04ba40df92a49637c904d2979ab86f0c30"
+    },
+    "fmt-before.launch.log": {
+      "git_blob": "0410c886152d84031334c8e14a29a9170b44a108",
+      "bytes": 1381,
+      "sha256": "cd04b588a8b01329961438ea6c4468c619529e1ff0c6c95d322855d54f5993cb"
+    },
+    "operator-toolchain.execution.json": {
+      "git_blob": "df94b0fafb3d8bb560e9f323ee3d3fba00d58c34",
+      "bytes": 1440,
+      "sha256": "4665c578e9a9eb1d8c1764217d0f0bc75c030b51d0f61740e697364fdd0d145c"
+    },
+    "original-rust-idle-preflight.launch.log": {
+      "git_blob": "390f40f872279f9dbb386a38d392d2bb3d021f4c",
+      "bytes": 47,
+      "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+    },
+    "PTY": {
+      "git_blob": "93f01214590240aade3284ba392085f62ef6567e",
+      "bytes": 17452,
+      "sha256": "1c1370e97c4ffa6210bfd7a2fe1eb01dc293d93111fca25d52d6f42bb44d6606"
+    },
+    "READS": {
+      "git_blob": "9e8cf5679ce32061bd86f904718bfdb1612da0ef",
+      "bytes": 47082,
+      "sha256": "4341fdd66cf2f08e691711624cab0a80a83187c0f18bf3173317903ee7ca6e8f"
+    }
+  },
+  "limitations": [
+    "Complete runtime maintenance-postimages.json was not individually downloaded.",
+    "Original196-byte rustc stdout was bound by the actual execution record but not separately read in this attempt.",
+    "No test or formatter pass is inherited by a future exact source."
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_restart": false
+  },
+  "decision": "Retain original failed and dirty source. Commit only the actual reviewed formatter postimages as a new candidate, then rerun the full unchanged original qualification from its first gate."
+}

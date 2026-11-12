@@ -1,0 +1,67 @@
+{
+  "schema": "hepta-v33-same-source-after-busy-preflight-native-admission-v1",
+  "status": "frozen not yet dispatched",
+  "source": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+  },
+  "configuration": {
+    "git_blob": "57257a8d910605f72f9d057f84cf450b36ed119f",
+    "bytes": 3305,
+    "sha256": "b15106b8fc2c976bb5a0379f5694f43bb54928c3b05466f2e418d70944932093"
+  },
+  "request": {
+    "git_blob": "f1a07c5d380b91f98986ebd0341e4e6fd1c0d075",
+    "bytes": 56726,
+    "sha256": "8b2c524e06ddf11ce6da5913ee1cee262eeb0d33a11f908e80cd4af878e4d175"
+  },
+  "exact_ops": {
+    "git_blob": "f5cb1def3f50468cae1568c7d5dde3e6f42ab6a1",
+    "bytes": 8184,
+    "sha256": "2d1dab8243da62c6eb182956ec09dd04abdda7379cebd79f4cc2b184003da054"
+  },
+  "previous_attempt": {
+    "request": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d",
+    "result": "a5e9c96b78a4c936ec4c2b7f9525ea0881dd811d",
+    "supplement": "80c19e57c58f109782c020141e3ef4871fb3672e",
+    "status": "failed global Rust preflight before clone/formatter/compiler/tests",
+    "tests_executed": 0,
+    "cleanup_error": "Original missing-before reference comparison is retained, not treated as proven donor mutation."
+  },
+  "read_only_eligibility_observation": {
+    "proof": "8d0c1abb247a593c3f3c4d2973fbd72d5a225da6",
+    "created_utc": "2026-11-12T08:46:51.845Z",
+    "actual_uid": 0,
+    "active_rust": [],
+    "exit": 0,
+    "scope": "A point-in-time observation, not an exclusive lock or a current idle guarantee. The new unchanged native preflight must pass again."
+  },
+  "exact_changes": {
+    "configuration": [
+      "work_name",
+      "attempt"
+    ],
+    "outer": [
+      "args[3]",
+      "idempotency_key"
+    ],
+    "semantic_values": 3,
+    "unique_forward_reverse_operations": 4,
+    "source_tree_unchanged": true,
+    "harness_and_remaining_17_CONFIG_fields_unchanged": true,
+    "full_original_gate": "same7 packages,17 exactRoot parents,retries0,27000 overall/3600 caller and all original constants"
+  },
+  "original_review": "acefe7146d3218610780bd3cf43de41f5a65712c",
+  "root_decision": "Authorize only this fresh independent full attempt. No source-result inheritance; preserve prior refusal. No job killing, gate weakening, old work reuse, output deletion or new-key retry of an unknown completion. Unknown start is reconciled with this exact same key. Maintenance drift retains source and stops original qualification.",
+  "idempotency_key": "af52-ordinary-3c5c0d8-seven-final-v8-20261112",
+  "fresh_work": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v8",
+  "original_harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_restart": false
+  },
+  "new_tests_passed": "none; no new qualification yet"
+}

@@ -230,24 +230,20 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
         if binding != self.publication.target() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.current
-            .check_current(binding)
-            .inspect_err(|_error| {
-                #[cfg(test)]
-                eprintln!(
-                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}"
-                );
-            })?;
+        self.current.check_current(binding).inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}"
+            );
+        })?;
         self.check_live()?;
         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
-        self.current
-            .check_current(binding)
-            .inspect_err(|_error| {
-                #[cfg(test)]
-                eprintln!(
-                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}"
-                );
-            })
+        self.current.check_current(binding).inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}"
+            );
+        })
     }
 }
 

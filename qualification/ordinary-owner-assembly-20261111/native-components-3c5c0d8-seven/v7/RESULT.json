@@ -1,0 +1,159 @@
+{
+  "schema": "hepta-v33-original-native-derived-result-v1",
+  "record_kind": "Root assessment of exact failed original attempt; raw original records are separately retained",
+  "status": "failed",
+  "classification": "blocked at original global Rust-idle preflight; no clone, formatter, compiler, QA or tests reached",
+  "source": {
+    "requested_commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "requested_tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "physical_checkout_verified": false,
+    "explanation": "The original preflight precedes reference_before and isolated-clone; it exited1, so this attempt never reached a physical candidate checkout or source-clean verification."
+  },
+  "request": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d",
+  "root_review": "acefe7146d3218610780bd3cf43de41f5a65712c",
+  "admission": {
+    "git_blob": "83982b2af1f6baee960daca9139a207af1e3c7d8",
+    "bytes": 57700,
+    "sha256": "626988f84fae3444d6295f5500890137b1482269a5e8333d71442b4c4d776b1a"
+  },
+  "session_id": "dpty-08cee685aaf9920bebbefdaebfc2881011d35a977c24a7edfeb0c6f1f8e54934",
+  "terminal": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 795,
+    "bytes_stored": 795,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794472670070,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 15583,
+    "pid": 15584,
+    "state": "exited",
+    "read_offset": 0,
+    "read_next_offset": 795
+  },
+  "preflight": {
+    "exit_code": 1,
+    "timed_out": false,
+    "elapsed_seconds": 0.03308293712325394,
+    "actual_uid": 0,
+    "active_rust": [
+      {
+        "pid": 7029,
+        "comm": "cargo-clippy",
+        "cwd": "/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs"
+      },
+      {
+        "pid": 7046,
+        "comm": "cargo",
+        "cwd": "/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs"
+      },
+      {
+        "pid": 12921,
+        "comm": "cargo",
+        "cwd": "/home/qq/work/chain-bt-owner-convergence-20261112-4a0b"
+      },
+      {
+        "pid": 14143,
+        "comm": "rustc",
+        "cwd": "/home/qq/work/chain-bt-owner-convergence-20261112-4a0b/trillionnium"
+      },
+      {
+        "pid": 14969,
+        "comm": "cargo",
+        "cwd": "/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs"
+      },
+      {
+        "pid": 14971,
+        "comm": "clippy-driver",
+        "cwd": "/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs"
+      },
+      {
+        "pid": 14996,
+        "comm": "cargo",
+        "cwd": "/home/qq/work/mem12-native-qualification-20261112-ef0c/source-v2/codex-rs"
+      }
+    ],
+    "attribution": "Paths identify pre-existing other work; no command was sent to those processes. Root has no evidence of their eventual completion here."
+  },
+  "ordinary": {
+    "status": "not reached",
+    "executed": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "Root": {
+    "status": "not reached",
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "expected_roster_count": 17,
+    "actual_UID0_tests": "not run; actualUID0 observation above belongs only to preflight"
+  },
+  "qa": {
+    "status": "not reached"
+  },
+  "full_caller": {
+    "status": "not reached"
+  },
+  "maintenance": {
+    "status": "not reached",
+    "patch": "none observed; checkout not reached"
+  },
+  "original_failure": "RuntimeError: original-rust-idle-preflight failed; original launch log retained",
+  "original_errors": [
+    "cleanup read-only-reference: RuntimeError('read-only donor metadata changed during this attempt')"
+  ],
+  "original_cleanup": [
+    {
+      "error": "RuntimeError('read-only donor metadata changed during this attempt')",
+      "name": "read-only-reference",
+      "status": "failed"
+    }
+  ],
+  "reference_observation": {
+    "before_present": false,
+    "after": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "interpretation": "The original finally comparison raises because reference_before was never assigned after preflight failed. The reported cleanup error remains verbatim; an actual before/after donor mutation is not established by this attempt.",
+    "harness_change": false
+  },
+  "evidence": {
+    "progress": {
+      "git_blob": "e26d95a743f7587654473d6fbf5f2b68dddd26f6",
+      "bytes": 5924,
+      "sha256": "0c117f032641fdfa7deab06f7d990400ff967b111b4693b38400a7e5d4e6d85e"
+    },
+    "preflightLog": {
+      "git_blob": "4ef93a98e8bcb23ee4a00a8618e853aa774ef34b",
+      "bytes": 852,
+      "sha256": "b67f1a3c3ff349308b72d0df03117cd3ef5da42ed3ca978dbf8101ba1000fd44"
+    },
+    "recordReads": {
+      "git_blob": "118b138cf3340e0b7d1a17fee597a16caa364c10",
+      "bytes": 11134,
+      "sha256": "226826ee6815d1d17d63fcd27d6e96eae26dfd89c66189aaf012bc4e944c79bc"
+    },
+    "PTY": {
+      "git_blob": "272115d58153c4a2add329c6032873e30057cef1",
+      "bytes": 4212,
+      "sha256": "4dd310b4f9ea1278e16ede00eb5aa6e9d045a3f1e357c7f13ec5324824936b50"
+    }
+  },
+  "limits": [
+    "Configuration file read timed out; exact original request CONFIG remains pinned but is not substituted for a disk read.",
+    "A local handler parsed a non-JSON tool error before storing the second directory-listing Promise result. That original listing outcome is unretained and no complete record-directory inventory is claimed.",
+    "No new native attempt has been started by this assessment. An additional exact original read-only Rust process observation was requested; its PTY read timed out and cannot establish host idle."
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_restart": false
+  },
+  "decision": "Keep this original failed admission and its cleanup error. Do not kill other jobs, weaken the global idle check, call this NoUpdate, fabricate test counts or inherit V32 passing prefixes. A new full original attempt requires a separately observed eligible opportunity and frozen new request."
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "hepta-v33-original-preflight-PTY-proof-v1",
+  "admission": {
+    "git_blob": "83982b2af1f6baee960daca9139a207af1e3c7d8",
+    "bytes": 57700,
+    "sha256": "626988f84fae3444d6295f5500890137b1482269a5e8333d71442b4c4d776b1a"
+  },
+  "request": {
+    "host": "ai395",
+    "session_id": "dpty-08cee685aaf9920bebbefdaebfc2881011d35a977c24a7edfeb0c6f1f8e54934",
+    "offset": 0,
+    "limit": 16384,
+    "raw_bytes": true
+  },
+  "original_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-08cee685aaf9920bebbefdaebfc2881011d35a977c24a7edfeb0c6f1f8e54934/output.log\",\"available_end\":795,\"bytes_hex\":\"7b227265636f726473223a20222f686f6d652f71712f616635322d6c6561726e696e672d6c6f63616c2d6465636973696f6e2d32303236313131312f6f7264696e6172792d336335633064382d736576656e2d66696e616c2d76372f7265636f726473222c2022736f75726365223a202233633563306438653833323364633930373039613065666232663362636166616163323536343339222c20227374616765223a20226f726967696e616c2d727573742d69646c652d707265666c69676874222c2022737461747573223a202272756e6e696e67227d0d0a7b227265636f726473223a20222f686f6d652f71712f616635322d6c6561726e696e672d6c6f63616c2d6465636973696f6e2d32303236313131312f6f7264696e6172792d336335633064382d736576656e2d66696e616c2d76372f7265636f726473222c2022736f75726365223a202233633563306438653833323364633930373039613065666232663362636166616163323536343339222c20227374616765223a20226f726967696e616c2d727573742d69646c652d707265666c69676874222c2022737461747573223a202272756e6e696e67227d0d0a7b227265636f726473223a20222f686f6d652f71712f616635322d6c6561726e696e672d6c6f63616c2d6465636973696f6e2d32303236313131312f6f7264696e6172792d336335633064382d736576656e2d66696e616c2d76372f7265636f726473222c2022736f75726365223a202233633563306438653833323364633930373039613065666232663362636166616163323536343339222c20227374616765223a202266696e69736865642d6f722d6177616974696e672d6f726967696e616c222c2022737461747573223a20226661696c6564227d0d0a7b22737461747573223a20226661696c6564222c202270726f6772657373223a20222f686f6d652f71712f616635322d6c6561726e696e672d6c6f63616c2d6465636973696f6e2d32303236313131312f6f7264696e6172792d336335633064382d736576656e2d66696e616c2d76372f7265636f7264732f70726f67726573732e6a736f6e227d0d0a\",\"chunk_sha256\":\"57553f8d03fad086c402926a86115889a4cc6e28754e3d07dcf8ce8fddf1bfb3\",\"host\":\"ai395\",\"next_offset\":795,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-08cee685aaf9920bebbefdaebfc2881011d35a977c24a7edfeb0c6f1f8e54934\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":795,\"bytes_stored\":795,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794472670070,\"exit_code\":1,\"output_complete\":true,\"owner_pid\":15583,\"pid\":15584,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"records\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records\\\", \\\"source\\\": \\\"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\\\", \\\"stage\\\": \\\"original-rust-idle-preflight\\\", \\\"status\\\": \\\"running\\\"}\\r\\n{\\\"records\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records\\\", \\\"source\\\": \\\"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\\\", \\\"stage\\\": \\\"original-rust-idle-preflight\\\", \\\"status\\\": \\\"running\\\"}\\r\\n{\\\"records\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records\\\", \\\"source\\\": \\\"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\\\", \\\"stage\\\": \\\"finished-or-awaiting-original\\\", \\\"status\\\": \\\"failed\\\"}\\r\\n{\\\"status\\\": \\\"failed\\\", \\\"progress\\\": \\\"/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/progress.json\\\"}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "bytes": 795,
+  "sha256": "57553f8d03fad086c402926a86115889a4cc6e28754e3d07dcf8ce8fddf1bfb3",
+  "complete": true,
+  "lossless": true,
+  "exit": 1
+}

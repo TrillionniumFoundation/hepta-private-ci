@@ -140,7 +140,9 @@ impl LiveRoot {
         if boottime_ns()
             .inspect_err(|_error| {
                 #[cfg(test)]
-                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}");
+                eprintln!(
+                    "ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}"
+                );
             })
             .map_or(true, |checked| checked >= self.end_boottime_ns)
         {

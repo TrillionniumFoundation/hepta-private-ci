@@ -161,14 +161,19 @@ fn actual_sample(origin: u64, observed: u64) -> HostAuthorityObservationResponse
 fn actual_cache() -> (Arc<RootObservationCache>, u64) {
     let origin = boottime_ns().unwrap();
     let cache = Arc::new(cache());
-    cache.accept(actual_sample(origin, origin), origin, origin).unwrap();
+    cache
+        .accept(actual_sample(origin, origin), origin, origin)
+        .unwrap();
     (cache, origin)
 }
 
 fn require_actual_read_wait(cache: &RootObservationCache) {
     let end = std::time::Instant::now() + std::time::Duration::from_secs(2);
     while cache.admission_waits.load(Ordering::Acquire) == 0 {
-        assert!(std::time::Instant::now() < end, "the original read never entered contention");
+        assert!(
+            std::time::Instant::now() < end,
+            "the original read never entered contention"
+        );
         std::thread::yield_now();
     }
 }
@@ -183,11 +188,13 @@ fn contended_current_samples_after_the_original_guard_without_losing_the_feed() 
     // Advance the real watermark AFTER the reader has already contended.
     // Its production sample must occur after acquiring this same guard.
     let now = boottime_ns().unwrap();
-    let earlier = cache.current_locked(
-        &mut held,
-        now,
-        cache.update_generation.load(Ordering::Acquire),
-    ).unwrap();
+    let earlier = cache
+        .current_locked(
+            &mut held,
+            now,
+            cache.update_generation.load(Ordering::Acquire),
+        )
+        .unwrap();
     drop(held);
     let observed = waiting.join().unwrap().unwrap();
     assert_eq!(*observed.0, *earlier.0);
@@ -207,13 +214,15 @@ fn later_accept_cannot_renew_an_already_waiting_reads_original_budget() {
     // call must retain its first deadline. The guard stays held until it fails.
     std::thread::sleep(std::time::Duration::from_millis(200));
     let accepted = boottime_ns().unwrap();
-    cache.accept_locked(
-        &mut held,
-        actual_sample(origin, accepted),
-        accepted,
-        accepted,
-        accepted,
-    ).unwrap();
+    cache
+        .accept_locked(
+            &mut held,
+            actual_sample(origin, accepted),
+            accepted,
+            accepted,
+            accepted,
+        )
+        .unwrap();
     let second_deadline = cache.read_deadline_ns.load(Ordering::Acquire);
     assert!(second_deadline > first_deadline);
     let result = waiting.join().unwrap();
@@ -235,17 +244,27 @@ fn later_accept_cannot_renew_an_already_waiting_reads_original_budget() {
 fn absent_budget_and_poison_cannot_turn_contention_into_authority() {
     let empty = cache();
     let held = empty.retained.lock().unwrap();
-    assert!(matches!(empty.current(), Err(AgentdRootAuthorityError::Unavailable)));
+    assert!(matches!(
+        empty.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
     assert_eq!(empty.admission_waits.load(Ordering::Acquire), 0);
     drop(held);
 
     let (cache, _) = actual_cache();
     let poison = Arc::clone(&cache);
-    assert!(std::thread::spawn(move || {
-        let _held = poison.retained.lock().unwrap();
-        panic!("poison the actual original retained mutex");
-    }).join().is_err());
-    assert!(matches!(cache.current(), Err(AgentdRootAuthorityError::Unavailable)));
+    assert!(
+        std::thread::spawn(move || {
+            let _held = poison.retained.lock().unwrap();
+            panic!("poison the actual original retained mutex");
+        })
+        .join()
+        .is_err()
+    );
+    assert!(matches!(
+        cache.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
     assert!(cache.retained.is_poisoned());
 }
 
@@ -287,11 +306,16 @@ fn completed_consumer_barrier_and_generation_overflow_reject_old_admission() {
     ));
 
     let (cache, _) = actual_cache();
-    cache.update_generation.store(u64::MAX - 1, Ordering::Release);
+    cache
+        .update_generation
+        .store(u64::MAX - 1, Ordering::Release);
     cache.begin_update();
     cache.end_update();
     assert_eq!(cache.update_generation.load(Ordering::Acquire), u64::MAX);
-    assert!(matches!(cache.current(), Err(AgentdRootAuthorityError::Unavailable)));
+    assert!(matches!(
+        cache.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
 }
 
 pub(crate) fn component_with_original_retained_lock(
@@ -307,5 +331,11 @@ pub(crate) fn component_wait_for_original_read_admission(cache: &RootObservation
 }
 
 pub(crate) fn component_last_validated_read(cache: &RootObservationCache) -> u64 {
-    cache.retained.lock().unwrap().as_ref().unwrap().last_checked_ns
+    cache
+        .retained
+        .lock()
+        .unwrap()
+        .as_ref()
+        .unwrap()
+        .last_checked_ns
 }
