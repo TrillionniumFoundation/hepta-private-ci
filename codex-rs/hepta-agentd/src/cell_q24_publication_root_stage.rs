@@ -14,6 +14,8 @@ mod successor_current;
 pub(crate) use successor_current::require_successor_admission;
 #[path = "cell_q24_publication_historical_recovery.rs"]
 mod historical_recovery;
+#[path = "cell_q24_publication_successor_grant.rs"]
+mod successor_grant;
 
 /// A qualified adoption with actual original owners. Completed RetainParent,
 /// DeferCandidate and NoUpdate use the separate read-only Artifact phase.

@@ -142,6 +142,9 @@ impl OriginalPostAContinuationV1 {
             identity,
             end,
         } = self.original;
+        // C uses its actual prepared publication lane; this shared generic
+        // provider remains part of the original launcher input only.
+        drop(grants);
         loop {
             if cancelled.is_cancelled() {
                 return Ok(());
@@ -264,25 +267,11 @@ impl OriginalPostAContinuationV1 {
                     )
                     .await
                     .map_err(refused)?;
-                // The required successor worker retains both original journals across
-                // this joined issuer call. Cancellation cannot spawn another attempt.
-                let binding = prepared.final_use_binding().clone();
-                let issuer_cancelled = cancelled.clone();
-                let signed = tokio::task::spawn_blocking(move || {
-                    post_a_remaining(end)?;
-                    if issuer_cancelled.is_cancelled() {
-                        return Err(refused("original FinalUse request cancelled"));
-                    }
-                    let signed = grants.request_grant(&binding).map_err(refused)?;
-                    post_a_remaining(end)?;
-                    Ok::<_, AgentdError>(signed)
-                })
-                .await
-                .map_err(|_| refused("original FinalUse acknowledgement uncertain"))??;
                 require_continuation(&state, &identity, &cancelled, end)?;
-                let installed = crate::OriginalQ24PreparedSuccessorV1::publish(prepared, signed)
-                    .await
-                    .map_err(refused)?;
+                let installed =
+                    crate::OriginalQ24PreparedSuccessorV1::publish_from_original_root(prepared)
+                        .await
+                        .map_err(refused)?;
                 artifact_custody.require_original()?;
                 task_custody.require_original()?;
                 material.require_unchanged()?;

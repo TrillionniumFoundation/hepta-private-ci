@@ -170,7 +170,7 @@ impl PendingSuccessorOwner {
         &self,
         original: crate::cell_q24_publication_driver::OriginalSuccessorPublication,
         execution: OriginalQ24SuccessorExecutionInputsV1,
-        grant: oneshot::Receiver<SignedFinalUseGrant>,
+        grant: oneshot::Receiver<OriginalSuccessorGrant>,
         state: Arc<AgentdState>,
     ) -> Result<
         (
@@ -180,7 +180,7 @@ impl PendingSuccessorOwner {
         ),
         Error,
     > {
-        let signed = tokio::select! {
+        let requested = tokio::select! {
             _ = self.slot.closed.cancelled() => return Err(Error::CommitUncertain),
             result = tokio::time::timeout(state::remaining(self.context.initial().request.envelope.expiry_unix_seconds)?, grant) => {
                 result.map_err(|_| Error::CommitUncertain)?.map_err(|_| Error::CommitUncertain)?
@@ -190,6 +190,24 @@ impl PendingSuccessorOwner {
             .proof
             .require_current_successor_publication()
             .await?;
+        let issued = match requested {
+            OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed)),
+            OriginalSuccessorGrant::OriginalRoot => {
+                original
+                    .prepared
+                    .issue_original_successor_final_use(
+                        Arc::clone(&state),
+                        self.context.identity().clone(),
+                        Arc::clone(&self.slot),
+                    )
+                    .await
+            }
+        };
+        original
+            .proof
+            .require_current_successor_publication()
+            .await?;
+        let (prepared, signed) = issued?;
         self.slot
             .require_open()
             .map_err(|_| Error::CommitUncertain)?;
@@ -197,8 +215,7 @@ impl PendingSuccessorOwner {
             &state,
             self.context.identity(),
         )?;
-        let task = original
-            .prepared
+        let task = prepared
             .publish_successor_current(
                 signed,
                 Arc::clone(&state),

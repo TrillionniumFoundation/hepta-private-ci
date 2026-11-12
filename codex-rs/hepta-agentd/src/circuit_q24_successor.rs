@@ -55,13 +55,17 @@ struct Quote {
     binding: FinalUseBinding,
     intent: Digest32,
 }
+enum OriginalSuccessorGrant {
+    Provided(SignedFinalUseGrant),
+    OriginalRoot,
+}
 struct Installation {
     driver: OriginalCellQ24RootPublicationDriverV1,
     predecessor: AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>,
     target: OriginalCellQ24FeatureTargetV1,
     execution: OriginalQ24SuccessorExecutionInputsV1,
     quoted: oneshot::Sender<Result<Quote, Error>>,
-    grant: oneshot::Receiver<SignedFinalUseGrant>,
+    grant: oneshot::Receiver<OriginalSuccessorGrant>,
     completed: oneshot::Sender<Result<OriginalQ24InstalledSuccessorV1, Error>>,
     _work: InstallationWork,
 }
@@ -79,7 +83,7 @@ pub struct OriginalQ24SuccessorHandoffV1 {
 /// Only the existing issuer's exact signed grant can finish this one attempt.
 pub struct OriginalQ24PreparedSuccessorV1 {
     quote: Quote,
-    grant: Option<oneshot::Sender<SignedFinalUseGrant>>,
+    grant: Option<oneshot::Sender<OriginalSuccessorGrant>>,
     completed: oneshot::Receiver<Result<OriginalQ24InstalledSuccessorV1, Error>>,
     close: CloseOnDrop,
 }
@@ -194,7 +198,7 @@ impl OriginalQ24PreparedSuccessorV1 {
     }
 
     pub async fn publish(
-        mut self,
+        self,
         signed: SignedFinalUseGrant,
     ) -> Result<OriginalQ24InstalledSuccessorV1, Error> {
         if signed.grant.binding != self.quote.binding {
@@ -202,10 +206,27 @@ impl OriginalQ24PreparedSuccessorV1 {
                 "exact successor FinalUse binding",
             )));
         }
+        self.complete_original_grant(OriginalSuccessorGrant::Provided(signed))
+            .await
+    }
+
+    /// The same prepared worker, CURRENT lane and original issuer perform the
+    /// only signing attempt. No raw grant or binding is supplied by this caller.
+    pub(crate) async fn publish_from_original_root(
+        self,
+    ) -> Result<OriginalQ24InstalledSuccessorV1, Error> {
+        self.complete_original_grant(OriginalSuccessorGrant::OriginalRoot)
+            .await
+    }
+
+    async fn complete_original_grant(
+        mut self,
+        grant: OriginalSuccessorGrant,
+    ) -> Result<OriginalQ24InstalledSuccessorV1, Error> {
         self.grant
             .take()
             .ok_or_else(|| prepared_uncertain(Error::CommitUncertain))?
-            .send(signed)
+            .send(grant)
             .map_err(|_| prepared_uncertain(Error::CommitUncertain))?;
         let installed = (&mut self.completed)
             .await
