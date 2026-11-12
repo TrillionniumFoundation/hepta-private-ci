@@ -100,6 +100,7 @@ jobs:
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal",
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover",
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes",
+              "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",

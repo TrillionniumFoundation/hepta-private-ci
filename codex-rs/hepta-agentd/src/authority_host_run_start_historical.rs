@@ -115,9 +115,11 @@ impl RootOriginalRunStartReadV1<'_> {
             return Err(io::Error::other("original RunStart read identity differs"));
         }
         require_end(self.end)?;
-        let frame = self
-            .retained
-            .read_original_publication_unchecked(&files, identity)?;
+        let frame = RootRetainedRunStartDataV1::read_original_publication_unchecked(
+            self.retained,
+            &files,
+            identity,
+        )?;
         require_end(self.end)?;
         *state = ReadState::Complete {
             files,
@@ -159,10 +161,11 @@ impl RootOriginalRunStartReadV1<'_> {
             ));
         };
         require_end(self.end)?;
-        if self
-            .retained
-            .read_original_publication_unchecked(&files, &identity)?
-            != frame
+        if RootRetainedRunStartDataV1::read_original_publication_unchecked(
+            self.retained,
+            &files,
+            &identity,
+        )? != frame
         {
             return Err(io::Error::other(
                 "historical RunStart changed across recipient context",
