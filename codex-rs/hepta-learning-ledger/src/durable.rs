@@ -311,15 +311,27 @@ fn replay_frames(
     recovery: LedgerRecovery,
 ) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     let length = file.metadata()?.len();
+    file.seek(SeekFrom::Start(0))?;
+    replay_reader(file, binding, max_records, recovery, length)
+}
+
+// Both the writer and physical reader use exactly this canonical replay.
+// The reader supplies an already bounded immutable image and never repairs it.
+fn replay_reader(
+    reader: &mut dyn Read,
+    binding: Digest32,
+    max_records: usize,
+    recovery: LedgerRecovery,
+    length: u64,
+) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     if length < HEADER as u64 {
         return Err(DurableLedgerError::MissingHeader);
     }
     if length > MAX_BYTES {
         return Err(DurableLedgerError::Capacity);
     }
-    file.seek(SeekFrom::Start(0))?;
     let mut header = [0; HEADER];
-    file.read_exact(&mut header)?;
+    reader.read_exact(&mut header)?;
     if &header[..8] != MAGIC || Digest32::of_bytes(&header[..40]).as_array() != &header[40..] {
         return Err(DurableLedgerError::Corrupt);
     }
@@ -333,7 +345,7 @@ fn replay_frames(
             break;
         }
         let mut prefix = [0; 8];
-        file.read_exact(&mut prefix)?;
+        reader.read_exact(&mut prefix)?;
         let size = u32::from_be_bytes(
             prefix[..4]
                 .try_into()
@@ -356,7 +368,7 @@ fn replay_frames(
         }
         let mut frame = vec![0; total];
         frame[..8].copy_from_slice(&prefix);
-        file.read_exact(&mut frame[8..])?;
+        reader.read_exact(&mut frame[8..])?;
         if Digest32::of_bytes(&frame[..total - 32]).as_array() != &frame[total - 32..] {
             return Err(DurableLedgerError::Corrupt);
         }
@@ -416,3 +428,14 @@ mod tests;
 #[cfg(test)]
 #[path = "inspection_tests.rs"]
 mod inspection_tests;
+
+#[cfg(unix)]
+#[path = "durable_read_only.rs"]
+mod read_only;
+
+#[cfg(unix)]
+pub use read_only::LedgerReadOnlyCutV1;
+#[cfg(unix)]
+pub use read_only::LedgerReadOnlyObservationV1;
+#[cfg(unix)]
+pub use read_only::ReadOnlyLedgerViewV1;

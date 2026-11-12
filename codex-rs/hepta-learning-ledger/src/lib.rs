@@ -58,7 +58,13 @@ pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyCutV1;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyObservationV1;
 pub use durable::LedgerRecovery;
+#[cfg(unix)]
+pub use durable::ReadOnlyLedgerViewV1;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
