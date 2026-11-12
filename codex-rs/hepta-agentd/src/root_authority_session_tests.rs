@@ -457,12 +457,15 @@ pub(crate) async fn drop_original_production_after_idle(
 ) -> std::io::Result<()> {
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
-    tokio::time::timeout(timeout, async move {
+    let phase = std::cell::Cell::new("original task check");
+    tokio::time::timeout(timeout, async {
         // A task check can perform synchronous original Root reads. Holding
         // the feed permit across them would prevent the real background feed
         // from refreshing its unchanged 500ms cache while the task is live.
         before_drop()?;
+        phase.set("original refresh barrier");
         let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
+        phase.set("original current observation");
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
                 "original Root observation worker failed or finished before deliberate Drop",
@@ -476,7 +479,9 @@ pub(crate) async fn drop_original_production_after_idle(
                 "original Root observation worker failed or finished before deliberate Drop",
             ));
         }
+        phase.set("original session Drop");
         drop(inputs);
+        phase.set("original worker completion");
         while !worker.is_finished() {
             tokio::task::yield_now().await;
         }
@@ -486,7 +491,10 @@ pub(crate) async fn drop_original_production_after_idle(
     .map_err(|_| {
         std::io::Error::new(
             std::io::ErrorKind::TimedOut,
-            "original Root observation worker did not finish within deliberate Drop budget",
+            format!(
+                "original Root deliberate Drop budget elapsed during {}",
+                phase.get()
+            ),
         )
     })?
 }
