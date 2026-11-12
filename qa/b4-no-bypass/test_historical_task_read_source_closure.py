@@ -43,8 +43,8 @@ CALLERS = {
 }
 CALLERS = {"root_historical_task_read_" + key: value for key, value in CALLERS.items()}
 CALLERS["ordinary_historical_task_read_take"] = (A + "production_post_a_q24.rs",)
-CALLERS["root_historical_task_read_cold_source"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
-CALLERS["root_historical_task_read_profile"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs', 'codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
+CALLERS["root_historical_task_read_cold_source"] = ('codex-rs/hepta-agentd/src/authority_host_completed_observation.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
+CALLERS["root_historical_task_read_profile"] = ('codex-rs/hepta-agentd/src/authority_host_completed_deployment.rs', 'codex-rs/hepta-agentd/src/authority_host_completed_learning.rs', 'codex-rs/hepta-agentd/src/authority_host_completed_observation.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs', 'codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs')
 
 
 def function(source, marker):

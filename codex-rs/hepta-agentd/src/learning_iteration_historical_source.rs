@@ -18,6 +18,9 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
 use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 
+#[path = "learning_iteration_terminal_acceptance.rs"]
+mod terminal_acceptance;
+
 pub(crate) struct RegisteredHistoricalLearningSourceV1 {
     receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
     prepared: Arc<CellQ24PreparedLearningV1>,
@@ -102,43 +105,6 @@ impl RegisteredHistoricalLearningSourceV1 {
 
     pub(crate) fn request(&self) -> &LearningIterationRequestV1 {
         &self.prepared.initial().request
-    }
-
-    async fn accept_original_terminal(
-        &self,
-        snapshot: &LearningIterationSnapshotV1,
-        state: &AgentdState,
-    ) -> Result<(), AgentdError> {
-        require_complete(self, snapshot)?;
-        require_ready(state)?;
-        if state.identity() != &self.identity || Instant::now() >= self.end {
-            return Err(refused("original terminal recipient or deadline differs"));
-        }
-        let original = self
-            .terminal_acceptance
-            .try_lock()
-            .map_err(|_| refused("original terminal acceptance busy"))?
-            .take()
-            .ok_or_else(|| refused("original terminal acceptance already consumed"))?;
-        // This owned job is awaited without cancellation detaching it. Root's
-        // existing frame and original session deadlines still bound the call.
-        let accepted = tokio::task::spawn_blocking(move || {
-            crate::root_completed_learning_history::OriginalCompletedLearningAcceptanceV1::accept(
-                original,
-            )
-        })
-        .await
-        .map_err(refused)??;
-        require_ready(state)?;
-        if state.identity() != &self.identity
-            || Instant::now() >= self.end
-            || accepted.initial != self.prepared.initial().head_digest.to_string()
-            || accepted.frozen_scope != self.prepared.scope().binding().to_string()
-            || accepted.terminal_head != snapshot.head_digest.to_string()
-        {
-            return Err(refused("original terminal Root acceptance differs"));
-        }
-        Ok(())
     }
 }
 

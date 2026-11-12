@@ -32,7 +32,7 @@ class PostAMainSourceTests(unittest.TestCase):
     def test_profile_requires_original_handoffs_and_authbus_before_fd_ownership(self):
         self.check_markers(AGENT + "production_post_a_q24_cli.rs", "fn validate(", (
             "profile != Profile::PostAQ24", "deployment.is_some()", "deployment.is_none()",
-            "historical_learning_model_publication_b\n            .iter()\n            .any(Option::is_none)",
+            "historical_learning_model_publication_b[0].is_none()", "!matches!(owners, 0 | 4)",
             "incompatible.iter().any(Option::is_some)",
             "found.next().is_none_or(|pair| pair[1].is_empty()) || found.next().is_some()"))
         self.check_markers(AGENT + "production_launcher_inputs.rs", "fn parse(", (
@@ -64,7 +64,7 @@ class PostAMainSourceTests(unittest.TestCase):
             "owners::SigningFilesData::freeze_original(",
             "OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning(",
             "OriginalPostAFrozenLearningAckV1::require_prepared_scope(&ack, prepared.scope())?"))
-        for occurrence in range(3):
+        for occurrence in range(6):
             self.reject_removal(MAIN, "fn assemble_original_post_a_q24(",
                                 "self.require_original_post_a_context(&identity)?", occurrence)
 
