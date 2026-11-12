@@ -17,10 +17,13 @@ use crate::calculator_deadline::Deadline;
 
 #[path = "production_initial_q24_cli.rs"]
 mod initial_q24;
+#[path = "production_post_a_q24_cli.rs"]
+mod post_a_q24;
 
-const FLAGS: [&str; 24] = [
+const FLAGS: [&str; 25] = [
     "--root-production-profile",
     "--q24-initial-deployment-fd",
+    "--q24-post-a-deployment-fd",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
     "--root-q24-model-handoff-fd",
@@ -51,6 +54,7 @@ enum Profile {
     Notes,
     Desktop,
     InitialQ24,
+    PostAQ24,
 }
 
 pub(super) struct LaunchInputs {
@@ -72,6 +76,9 @@ pub(super) struct LaunchInputs {
 }
 
 pub(super) enum PrimaryInputs {
+    PostAQ24 {
+        deployment: Option<File>,
+    },
     InitialQ24 {
         deployment: Option<File>,
     },
@@ -128,9 +135,10 @@ pub(super) fn parse(
         Some("notes") => Profile::Notes,
         Some("desktop") => Profile::Desktop,
         Some("q24-initial") => Profile::InitialQ24,
+        Some("q24-post-a") => Profile::PostAQ24,
         _ => {
             return Err(invalid(
-                "original production profile must be android, notes, desktop or q24-initial",
+                "original production profile must be android, notes, desktop, q24-initial or q24-post-a",
             ));
         }
     };
@@ -260,15 +268,38 @@ pub(super) fn parse(
         .remove("--q24-initial-deployment-fd")
         .map(descriptor_number)
         .transpose()?;
+    let post_a_deployment = selected
+        .remove("--q24-post-a-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
     initial_q24::validate(
         profile,
         &ordinary,
         initial_deployment,
         initial_handoff,
         &[
+            post_a_deployment,
             historical_handoff,
             learning_handoff,
             q24_model_handoff,
+            publication_handoff,
+            notes,
+            notes_deployment,
+            notes_listener,
+            notes_session,
+            desktop_handoff,
+            desktop_deployment,
+            desktop_session,
+        ],
+    )?;
+    post_a_q24::validate(
+        profile,
+        &ordinary,
+        post_a_deployment,
+        &[historical_handoff, learning_handoff, q24_model_handoff],
+        &[
+            initial_deployment,
+            initial_handoff,
             publication_handoff,
             notes,
             notes_deployment,
@@ -301,6 +332,7 @@ pub(super) fn parse(
         initial_handoff,
         historical_handoff,
         initial_deployment,
+        post_a_deployment,
         Some(control),
         Some(app_server),
         payload,
@@ -357,6 +389,12 @@ pub(super) fn parse(
     let control = take_descriptor(control)?;
     let app_server = take_descriptor(app_server)?;
     let primary = match profile {
+        Profile::PostAQ24 => PrimaryInputs::PostAQ24 {
+            deployment: Some(take_readonly_file(
+                post_a_deployment
+                    .ok_or_else(|| invalid("validated post-A deployment is absent"))?,
+            )?),
+        },
         Profile::InitialQ24 => PrimaryInputs::InitialQ24 {
             deployment: Some(take_readonly_file(
                 initial_deployment
