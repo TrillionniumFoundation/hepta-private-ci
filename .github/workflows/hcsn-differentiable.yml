@@ -199,6 +199,9 @@ jobs:
             | tee "$RUNNER_TEMP/hcsn-differentiable/qvi-tests.log"
           python -m qualification.hcsn_qvi.run_oracle \
             --output "$RUNNER_TEMP/hcsn-differentiable/qvi-oracle.json"
+          python -m qualification.hcsn_qvi.run_continuum \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"
+          cat "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"
 
       - name: Check non-diffusion memory control semantics
         id: controls
