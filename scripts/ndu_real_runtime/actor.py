@@ -148,6 +148,8 @@ def run():
     )
     parser.add_argument("--control-plan", type=Path, required=True)
     parser.add_argument("--deployment-profile", type=Path)
+    parser.add_argument("--macro-policy", type=Path)
+    parser.add_argument("--expected-macro-policy-sha256")
     parser.add_argument("--operation-id", required=True)
     parser.add_argument("--tesseract", default="tesseract")
     parser.add_argument("--tessdata-dir")
@@ -182,6 +184,29 @@ def run():
     if set(plan_json) != {"control", "episode_wall_seconds", "fixed_schedule", "seed"}:
         raise ValueError("Unexpected public control-plan fields")
     plan = ControlPlan(**plan_json["control"])
+    macro_control = None
+    if args.macro_policy or args.expected_macro_policy_sha256:
+        if (
+            not args.macro_policy
+            or not args.expected_macro_policy_sha256
+            or args.training_exploration
+            or any(resume)
+            or args.checkpoint_dir is not None
+            or args.start_step != 0
+            or args.max_decisions < 4
+            or plan.memory_mode != "reset"
+        ):
+            raise ValueError(
+                "Macro research requires a fresh reset actor without forced actions"
+            )
+        from .macro_actor import FrozenMacroControl
+
+        macro_control = FrozenMacroControl(
+            read_bounded(args.macro_policy, 8 * 1024 * 1024),
+            args.expected_macro_policy_sha256,
+            weights_sha256=args.expected_weights_sha256,
+            control_sha256=canonical_sha(asdict(plan)),
+        )
     profile_digest = canonical_sha(utility_profile(plan))
     control_digest = canonical_sha(asdict(plan))
     deployment = None
@@ -298,6 +323,11 @@ def run():
                 "control_profile_sha256": control_digest,
                 "parameters_sha256": baseline_parameters,
                 "content_identity_profile": SELECTION_SCHEMA,
+                **(
+                    {"macro_policy_sha256": macro_control.sha256}
+                    if macro_control
+                    else {}
+                ),
             }
         ),
         flush=True,
@@ -339,9 +369,15 @@ def run():
                     pending, public_input, args.expected_continuation_sha256
                 )
             pending = None
-        if not args.training_exploration and (
-            args.controller == "initial"
-            or (args.controller == "tuned_fixed" and sequence >= len(fixed_schedule))
+        if (
+            macro_control is None
+            and not args.training_exploration
+            and (
+                args.controller == "initial"
+                or (
+                    args.controller == "tuned_fixed" and sequence >= len(fixed_schedule)
+                )
+            )
         ):
             # An initial-delivery baseline/final fixed STOP does no unnecessary
             # encoding. Actual process/model loading remains host-metered.
@@ -467,7 +503,12 @@ def run():
             fixed_schedule=fixed_schedule,
             seed=plan_json["seed"],
         )
-        if state["forced_action"] is not None:
+        if macro_control is not None:
+            with meter.stage("planning", "frozen complete-macro controller"):
+                action, details = macro_control.next(
+                    public_state.features, public_input, legal
+                )
+        elif state["forced_action"] is not None:
             if not args.training_exploration or state["forced_action"] not in legal:
                 raise ValueError(
                     "Only the separate training exploration permits a forced legal action"
@@ -517,7 +558,7 @@ def run():
             ),
             "meter": finish_meter(meter),
         }
-        if args.training_exploration:
+        if args.training_exploration or macro_control is not None:
             result.update(
                 candidate_features=features.tolist(), candidate_metadata=candidates
             )
