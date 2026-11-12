@@ -21,6 +21,7 @@ use ed25519_dalek::SigningKey;
 use super::CellQ24DatasetFreezePreparationV1;
 use super::CellQ24LearningPreparationErrorV1;
 use super::OriginalDatasetLedgerV1;
+use super::OriginalFreezePreparationReadV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -58,9 +59,15 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         config: OriginalCellQ24DatasetFreezeSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        preparation.signing_payload()?;
-        let saved = validate_config(preparation, &config, &key)?;
-        let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
+        let (saved, journal) = CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(
+            preparation,
+            |read| -> Result<_, Error> {
+                OriginalFreezePreparationReadV1::original_signing_payload(read)?;
+                let saved = validate_config(preparation, &config, &key, read)?;
+                let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
+                Ok((saved, journal))
+            },
+        )??;
         Ok(Self {
             journal,
             config,
@@ -78,8 +85,14 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         config: OriginalCellQ24DatasetFreezeSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let saved = validate_config(preparation, &config, &key)?;
-        let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
+        let (saved, journal) = CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(
+            preparation,
+            |read| -> Result<_, Error> {
+                let saved = validate_config(preparation, &config, &key, read)?;
+                let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
+                Ok((saved, journal))
+            },
+        )??;
         Ok(Self {
             journal,
             config,
@@ -95,7 +108,17 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         &mut self,
         preparation: &CellQ24DatasetFreezePreparationV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
-        if validate_config(preparation, &self.config, &self.key)? != self.saved {
+        CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(preparation, |read| {
+            self.authorize_in_operation(preparation, read)
+        })?
+    }
+
+    fn authorize_in_operation(
+        &mut self,
+        preparation: &CellQ24DatasetFreezePreparationV1,
+        read: &OriginalFreezePreparationReadV1<'_>,
+    ) -> Result<SignedLearningEvidenceV1, Error> {
+        if validate_config(preparation, &self.config, &self.key, read)? != self.saved {
             return Err(
                 LearningOriginalOwnerErrorV1::Binding("original preparation identity").into(),
             );
@@ -113,7 +136,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
                     )
                     .into());
                 }
-                let payload = preparation.signing_payload()?;
+                let payload = OriginalFreezePreparationReadV1::original_signing_payload(read)?;
                 let config = &self.config;
                 let key = &self.key;
                 let saved = &self.saved;
@@ -122,9 +145,9 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
                         .observed_unix_seconds()
                         .map_err(|_| LearningOriginalOwnerErrorV1::Binding("freeze clock"))?;
                     if observed >= preparation.config.request.envelope.expiry_unix_seconds
-                        || preparation.signing_payload().map_err(|_| {
-                            LearningOriginalOwnerErrorV1::Binding("original freeze changed")
-                        })? != payload
+                        || OriginalFreezePreparationReadV1::original_signing_payload(read).map_err(
+                            |_| LearningOriginalOwnerErrorV1::Binding("original freeze changed"),
+                        )? != payload
                     {
                         return Err(LearningOriginalOwnerErrorV1::Binding(
                             "original freeze admission",
@@ -132,14 +155,15 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
                     }
                     let signed =
                         sign_original(config, key, saved.binding_digest, &payload, observed)?;
-                    preparation.validate_authorization(&signed).map_err(|_| {
-                        LearningOriginalOwnerErrorV1::Binding(
-                            "current original Dataset authorization",
-                        )
-                    })?;
-                    if preparation.signing_payload().map_err(|_| {
-                        LearningOriginalOwnerErrorV1::Binding("original freeze changed")
-                    })? != payload
+                    OriginalFreezePreparationReadV1::validate_original_authorization(read, &signed)
+                        .map_err(|_| {
+                            LearningOriginalOwnerErrorV1::Binding(
+                                "current original Dataset authorization",
+                            )
+                        })?;
+                    if OriginalFreezePreparationReadV1::original_signing_payload(read).map_err(
+                        |_| LearningOriginalOwnerErrorV1::Binding("original freeze changed"),
+                    )? != payload
                     {
                         return Err(LearningOriginalOwnerErrorV1::Binding(
                             "original freeze changed before commit",
@@ -150,7 +174,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
             }
             Err(error) => return Err(error.into()),
         };
-        self.authenticate(preparation, &bytes)
+        self.authenticate(preparation, &bytes, read)
     }
 
     /// Read-only original completion, including after the iteration deadline.
@@ -159,19 +183,22 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         &mut self,
         preparation: &CellQ24DatasetFreezePreparationV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
-        if validate_config(preparation, &self.config, &self.key)? != self.saved {
-            return Err(
-                LearningOriginalOwnerErrorV1::Binding("original preparation identity").into(),
-            );
-        }
-        let bytes = self.journal.read(&self.saved)?;
-        self.authenticate(preparation, &bytes)
+        CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(preparation, |read| {
+            if validate_config(preparation, &self.config, &self.key, read)? != self.saved {
+                return Err(
+                    LearningOriginalOwnerErrorV1::Binding("original preparation identity").into(),
+                );
+            }
+            let bytes = self.journal.read(&self.saved)?;
+            self.authenticate(preparation, &bytes, read)
+        })?
     }
 
     fn authenticate(
         &mut self,
         preparation: &CellQ24DatasetFreezePreparationV1,
         bytes: &[u8],
+        read: &OriginalFreezePreparationReadV1<'_>,
     ) -> Result<SignedLearningEvidenceV1, Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         if payload
@@ -195,8 +222,8 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         {
             return Err(LearningOriginalOwnerErrorV1::Binding("original freeze Evaluator").into());
         }
-        preparation.validate_authorization(&signed)?;
-        if validate_config(preparation, &self.config, &self.key)? != self.saved
+        OriginalFreezePreparationReadV1::validate_original_authorization(read, &signed)?;
+        if validate_config(preparation, &self.config, &self.key, read)? != self.saved
             || self.journal.read(&self.saved)? != bytes
         {
             return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
@@ -209,9 +236,13 @@ fn validate_config(
     preparation: &CellQ24DatasetFreezePreparationV1,
     config: &OriginalCellQ24DatasetFreezeSigningConfigV1,
     key: &SigningKey,
+    read: &OriginalFreezePreparationReadV1<'_>,
 ) -> Result<ProductEvaluationExecutionKeyV1, Error> {
-    if let OriginalDatasetLedgerV1::Historical(ledger) = &preparation.ledger {
-        return Ok(preparation.validate_historical_freezer(ledger, config, key)?);
+    OriginalFreezePreparationReadV1::require_original_preparation(read, preparation)?;
+    if matches!(&preparation.ledger, OriginalDatasetLedgerV1::Historical(_)) {
+        return Ok(OriginalFreezePreparationReadV1::original_freezer_key(
+            read, config, key,
+        )?);
     }
     let identity = preparation.identity()?;
     let ledger = preparation

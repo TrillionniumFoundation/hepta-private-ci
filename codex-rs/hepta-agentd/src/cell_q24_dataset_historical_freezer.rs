@@ -42,9 +42,12 @@ impl CellQ24DatasetFreezePreparationV1 {
         ledger: &HistoricalDatasetLedgerV1,
         config: &OriginalCellQ24DatasetFreezeSigningConfigV1,
         key: &SigningKey,
+        operation: &OriginalDatasetOperationV1<'_>,
     ) -> Result<ProductEvaluationExecutionKeyV1, Error> {
-        self.with_historical_cut(
+        CellQ24DatasetFreezePreparationV1::with_historical_cut_in_operation(
+            self,
             ledger,
+            operation,
             |snapshot, binding, verifier, evaluator, observed_at| {
                 if config.signer != *evaluator
                     || config.verifier.trust_digest() != verifier.trust_digest()

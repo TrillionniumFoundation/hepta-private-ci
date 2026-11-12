@@ -45,12 +45,15 @@ use super::cell_q24_dataset_run_snapshot_digest_v1;
 use super::cell_q24_single_head_update_rule_v1;
 use super::dataset::HistoricalDatasetLedgerV1;
 use super::dataset::OriginalDatasetLedgerV1;
+use super::dataset::OriginalDatasetOperationV1;
 use crate::AgentdIdentity;
 use crate::CircuitTaskSourcePublicationV1;
 use crate::HostAuthorityLearningProfileV1;
 
 #[path = "cell_q24_dataset_preparation.rs"]
 mod capture;
+#[path = "cell_q24_freeze_operation.rs"]
+mod freeze_operation;
 #[path = "cell_q24_dataset_freeze_owner.rs"]
 mod freeze_owner;
 #[path = "cell_q24_dataset_historical_freezer.rs"]
@@ -61,6 +64,7 @@ mod historical_preparation;
 mod operation;
 #[path = "cell_q24_prepared_learning.rs"]
 mod prepared;
+use freeze_operation::OriginalFreezePreparationReadV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeErrorV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeOwnerV1;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeSigningConfigV1;

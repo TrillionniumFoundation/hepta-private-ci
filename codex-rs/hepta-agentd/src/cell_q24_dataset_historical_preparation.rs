@@ -50,7 +50,25 @@ impl CellQ24DatasetFreezePreparationV1 {
             u64,
         ) -> Result<T, Error>,
     ) -> Result<T, Error> {
-        Ok(HistoricalDatasetLedgerV1::with_current(
+        OriginalDatasetLedgerV1::with_original_ledger_operation(&self.ledger, |operation| {
+            self.with_historical_cut_in_operation(ledger, operation, action)
+        })?
+    }
+
+    pub(super) fn with_historical_cut_in_operation<T>(
+        &self,
+        ledger: &HistoricalDatasetLedgerV1,
+        operation: &OriginalDatasetOperationV1<'_>,
+        action: impl FnOnce(
+            &LedgerSnapshot,
+            Digest32,
+            &LearningEvidenceVerifierV1,
+            &TrustedLearningSignerV1,
+            u64,
+        ) -> Result<T, Error>,
+    ) -> Result<T, Error> {
+        Ok(OriginalDatasetOperationV1::read_historical(
+            operation,
             ledger,
             |data, verifier, evaluator, observed_at| {
                 require_historical_configuration(&self.config, ledger).map_err(io::Error::other)?;
@@ -96,45 +114,61 @@ impl CellQ24DatasetFreezePreparationV1 {
         ledger: &HistoricalDatasetLedgerV1,
         authorization: &SignedLearningEvidenceV1,
     ) -> Result<CellQ24FrozenDatasetV1, Error> {
-        self.with_historical_cut(ledger, |snapshot, _, verifier, evaluator, observed_at| {
-            let plan = self.plan()?;
-            let payload = dataset_freeze_signing_payload_v2(snapshot, &plan)?;
-            let verified = verifier.verify(
-                LearningEvidenceRoleV1::Evaluator,
-                authorization,
-                &payload,
-                observed_at,
-            )?;
-            if verified.principal() != &evaluator.principal
-                || verified.controller_id() != &evaluator.controller_id
-            {
-                return Err(Error::Binding(
-                    "freeze is not signed by the fixed current Root Evaluator",
-                ));
-            }
-            let receipt = freeze_dataset_from_ledger(
-                snapshot,
-                plan,
-                verified.principal().clone(),
-                observed_at,
-            )?;
-            let records = LedgerSnapshot::read_dataset_records(snapshot, &receipt, observed_at)?;
-            // Validation needs the shared data algorithm, not a temporary
-            // source capability or another network/physical observation.
-            crate::project_original_q24_dataset_v1(
-                snapshot,
-                &receipt,
-                &self.config.projection,
-                &records,
-                &ledger.original_task_data(),
-                observed_at,
-            )?;
-            Ok(CellQ24FrozenDatasetV1 {
-                snapshot: snapshot.clone(),
-                receipt,
-                authorization: authorization.clone(),
-            })
-        })
+        OriginalDatasetLedgerV1::with_original_ledger_operation(&self.ledger, |operation| {
+            self.validate_authorization_historical_in_operation(ledger, authorization, operation)
+        })?
+    }
+
+    pub(super) fn validate_authorization_historical_in_operation(
+        &self,
+        ledger: &HistoricalDatasetLedgerV1,
+        authorization: &SignedLearningEvidenceV1,
+        operation: &OriginalDatasetOperationV1<'_>,
+    ) -> Result<CellQ24FrozenDatasetV1, Error> {
+        self.with_historical_cut_in_operation(
+            ledger,
+            operation,
+            |snapshot, _, verifier, evaluator, observed_at| {
+                let plan = self.plan()?;
+                let payload = dataset_freeze_signing_payload_v2(snapshot, &plan)?;
+                let verified = verifier.verify(
+                    LearningEvidenceRoleV1::Evaluator,
+                    authorization,
+                    &payload,
+                    observed_at,
+                )?;
+                if verified.principal() != &evaluator.principal
+                    || verified.controller_id() != &evaluator.controller_id
+                {
+                    return Err(Error::Binding(
+                        "freeze is not signed by the fixed current Root Evaluator",
+                    ));
+                }
+                let receipt = freeze_dataset_from_ledger(
+                    snapshot,
+                    plan,
+                    verified.principal().clone(),
+                    observed_at,
+                )?;
+                let records =
+                    LedgerSnapshot::read_dataset_records(snapshot, &receipt, observed_at)?;
+                // Validation needs the shared data algorithm, not a temporary
+                // source capability or another network/physical observation.
+                crate::project_original_q24_dataset_v1(
+                    snapshot,
+                    &receipt,
+                    &self.config.projection,
+                    &records,
+                    &ledger.original_task_data(),
+                    observed_at,
+                )?;
+                Ok(CellQ24FrozenDatasetV1 {
+                    snapshot: snapshot.clone(),
+                    receipt,
+                    authorization: authorization.clone(),
+                })
+            },
+        )
     }
 
     pub(super) fn materialize_historical(
