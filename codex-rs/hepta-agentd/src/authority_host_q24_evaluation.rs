@@ -27,3 +27,8 @@ mod outputs;
 
 #[path = "authority_host_q24_evaluation_execution.rs"]
 mod execution;
+
+#[path = "authority_host_q24_evaluation_host.rs"]
+mod host;
+pub(crate) use host::OriginalRootBEvaluationBorrowV1;
+pub(crate) use host::OriginalRootIndependentBEvaluationFilesV1;
