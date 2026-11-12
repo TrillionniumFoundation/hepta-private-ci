@@ -67,3 +67,9 @@ Root-owned execution records are read through a bounded read-only descriptor bef
 Historical failed attempts remain failed and source-bound. [The earlier checkpoint](EVIDENCE_CHECKPOINT.json) and [original record archives](native-evidence/) retain their own scope. Compilation, partial receiver probes, all-boundary diagnostics, Root prediagnostics and full qualification have different meanings and must be reported separately.
 
 Chain evidence can commit provenance and support settlement. It does not authorize a local runtime version, resource budget or execution capability. The Chain NextUse reader remains separate from ordinary Hepta FinalUse acceptance; independent consumption must be established by the actual succeeding owner and business task.
+
+## Root fixture path correction after the fixed 2d3a240 diagnostic
+
+The actual UID0 run at `2d3a240d48aaa733775b134877c43981db50b702` executed the original 17 selected Root parents: 15 passed and 2 failed, without retry, timeout or output truncation. Its raw JUnit, execution record and log are retained in [root17-diagnostic-2d3-v3](root17-diagnostic-2d3-v3/). The new child diagnostics expose `Permission denied (os error 13)` before owner exit and the later parent control-socket error.
+
+The two fixtures had placed ordinary registered fleet/workspace paths behind a Root-only 0700 ancestor, even though the original dedicated-UID identity validator must canonicalize those paths. The candidate relocates only these ordinary paths beneath the existing 0:60001/02710 runtime parent and grants the two directory roots only mode0710 search access. The original private agent/cognitive/run subtrees, writer0600, CURRENT, witnesses, identity checks and negative assertions remain. [Independent reviews and exact changes](ROOT_FIXTURE_IDENTITY_PATHS/) document both fixtures. This candidate requires its own native run; no previous pass is inherited and all ordinary acceptance counts remain zero.

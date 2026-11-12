@@ -43,7 +43,8 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
             sealed.read_to_end(&mut bytes)?;
             let original: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&bytes)?;
             assert_eq!((original.root.pid, original.root.uid, original.consumer.uid), (root, 0, 60001));
-            let identity = original.registered_identity.identity()?;
+            let identity = original.registered_identity.identity()
+                .with_context(|| format!("initial child {phase:?}: validating original registered filesystem identity"))?;
             sealed.rewind()?;
             let initial = crate::receive_root_generation_initial_handoff(socket.try_clone()?, LIFETIME)
                 .with_context(|| format!("initial child {phase:?}: receiving original initial handoff"))?;

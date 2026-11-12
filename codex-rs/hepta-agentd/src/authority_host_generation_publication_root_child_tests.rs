@@ -42,7 +42,8 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             sealed.read_to_end(&mut raw)?;
             let original: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&raw)?;
             assert_eq!((original.root.pid, original.root.uid, original.consumer.uid), (root, 0, 60001));
-            let identity = original.registered_identity.identity()?;
+            let identity = original.registered_identity.identity()
+                .with_context(|| format!("publication {phase:?}: resolve original registered fleet/workspace identity"))?;
             sealed.rewind()?;
             let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)
                 .with_context(|| format!("publication {phase:?}: receive original learning handoff"))?;
@@ -64,7 +65,8 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             learning.bootstrap.rewind()?;
             learning.bootstrap.read_to_end(&mut raw)?;
             let bundle: HostAuthorityLearningBootstrapV1 = serde_json::from_slice(&raw)?;
-            assert_eq!(bundle.registered_identity.identity()?, identity);
+            assert_eq!(bundle.registered_identity.identity()
+                .with_context(|| format!("publication {phase:?}: resolve original learning identity"))?, identity);
             let initial = bundle.decode_initial()?;
             let scope = bundle.frozen_scope(&initial)?.ok_or_else(|| anyhow::anyhow!("actual Cell scope"))?;
             let checkpoint = crate::AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
