@@ -211,6 +211,37 @@ fn root_run_start_finalized_primary_before_failed_postcheck_cannot_recover() -> 
 
 #[test]
 #[ignore = "actual UID0 and original Root-owned directory custody"]
+fn root_run_start_historical_join_cannot_skip_or_swallow_physical_read() -> anyhow::Result<()> {
+    for attempt in ["skip-read", "swallow-premature-digest"] {
+        let (_directory, root) = root()?;
+        let (refusal, mut state) = pending(Arc::clone(&root), attempt)?;
+        finalize_component(&refusal, &mut state)?;
+        let target = state.expected.original.target.clone();
+        drop(state);
+        drop(refusal);
+        let retained = RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target)?;
+        retained.readback_digest()?;
+        let result = retained.with_original_run_start_data(
+            Instant::now() + Duration::from_secs(2),
+            |read| {
+                if attempt == "swallow-premature-digest" {
+                    assert!(read.retained_digest().is_err());
+                }
+                Ok(())
+            },
+        );
+        assert!(
+            result.is_err(),
+            "unread historical data admitted: {attempt}"
+        );
+        drop(retained);
+        assert!(RootRetainedRunStartDataV1::open_finalized(root, &target).is_err());
+    }
+    Ok(())
+}
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned directory custody"]
 fn root_run_start_corruption_then_restore_stays_refused_across_processes() -> anyhow::Result<()> {
     let (directory, root) = root()?;
     let (refusal, mut state) = pending(root, "cold-refusal")?;

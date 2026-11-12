@@ -86,7 +86,7 @@ def require_structure(path, source):
         for name in ("readback_digest", "read_original_publication"):
             code = component.function_code(source, name)
             begin, end = span(code, "RootDataRefusalV1::inspect(&self.refusal, || {")
-            for match in re.finditer(r"require_exact_unchecked\s*\(|OriginalInputPin::observe\s*\(", code):
+            for match in re.finditer(r"require_exact_unchecked\s*\(|OriginalInputPin::observe\s*\(|read_original_publication_unchecked\s*\(", code):
                 if not begin < match.start() < end:
                     raise PROOF.VerificationFailure("retained data read escaped independent arm")
     if path == CONTEXT:
@@ -321,7 +321,11 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
 
     def test_cold_data_readback_keeps_arm_identity_and_original_physical_cut(self):
         self.remove(STORE, "read_original_publication", (
-            "RootDataRefusalV1::inspect(&self.refusal, || {", "self.state.require_exact_unchecked()?",
+            "RootDataRefusalV1::inspect(&self.refusal, || {",
+            "self.read_original_publication_unchecked(files, original_identity)",
+        ))
+        self.remove(STORE, "read_original_publication_unchecked", (
+            "self.state.require_exact_unchecked()?",
             "neuron_generation_process_identity_digest_v1(original_identity)",
             "original.spawn_generation != original_identity.spawn_generation",
             "OriginalInputPin::observe(", "observed.observed_unix_ms",

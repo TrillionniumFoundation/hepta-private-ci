@@ -68,6 +68,7 @@ CALLERS = {
         RECORD, HANDOFF, AGENT + "authority_host_historical_cell_pin.rs",
         AGENT + "authority_host_run_start_store.rs",
         AGENT + "authority_host_run_start_context.rs",
+        AGENT + "authority_host_run_start_historical.rs",
     ),
     "root_initial_data_refusal_refuse": (
         RECORD, HANDOFF, AGENT + "authority_host_run_start_transport.rs",
