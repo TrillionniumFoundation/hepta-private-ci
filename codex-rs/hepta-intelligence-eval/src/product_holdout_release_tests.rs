@@ -227,9 +227,9 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
     let mut provider = case.provider(ReleaseMode::CorruptInside);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
-        ))
+        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
+            crate::FinalHoldoutCasStoreError::Indeterminate
+        )))
     );
     assert_eq!((provider.calls, provider.callbacks), (1, 1));
     assert!(
@@ -252,9 +252,9 @@ fn original_holdout_release_postcheck_survives_provider_ignoring_borrow() {
     let mut provider = case.provider(ReleaseMode::CorruptWithoutBorrow);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
-        ))
+        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
+            crate::FinalHoldoutCasStoreError::Indeterminate
+        )))
     );
     assert_eq!((provider.calls, provider.callbacks), (1, 0));
     provider.restore();
