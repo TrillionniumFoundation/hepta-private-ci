@@ -59,6 +59,8 @@ impl OriginalBSourceRoute {
             socket_gid: config.peer_gid,
             source_device: metadata.dev(),
             source_inode: metadata.ino(),
+            candidate_data_device: original.candidate_data_device,
+            candidate_data_inode: original.candidate_data_inode,
             registered_at_seconds: enrollment.registered_at_seconds,
             absolute_end_monotonic_ns: seal_original_end(original_end)?,
             frame_timeout_ms: config.timeout_ms,

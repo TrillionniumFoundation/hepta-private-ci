@@ -32,6 +32,8 @@ pub(crate) struct SourceBootstrap {
     pub(crate) socket_gid: u32,
     pub(crate) source_device: u64,
     pub(crate) source_inode: u64,
+    pub(crate) candidate_data_device: u64,
+    pub(crate) candidate_data_inode: u64,
     pub(crate) registered_at_seconds: u64,
     pub(crate) absolute_end_monotonic_ns: u64,
     pub(crate) frame_timeout_ms: u64,
