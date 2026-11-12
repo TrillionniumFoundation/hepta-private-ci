@@ -7,6 +7,7 @@ use std::os::fd::OwnedFd;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -43,6 +44,10 @@ mod post_a;
 mod post_a_files;
 #[path = "authority_host_post_a_freeze.rs"]
 mod post_a_freeze;
+#[path = "authority_host_post_a_provider.rs"]
+mod post_a_provider;
+#[path = "authority_host_post_a_worker.rs"]
+mod post_a_worker;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
 use crate::root_historical_learning_trust_data::TRUST_PURPOSE;
 use learning_trust::RootHistoricalLearningTrustV1;
@@ -78,6 +83,9 @@ pub(super) struct HistoricalTaskReadRuntime {
     profile: HistoricalTaskReadProfileV1,
     task: RootRetainedHistoricalCompleteTaskV1,
     learning_trust: RootHistoricalLearningTrustV1,
+    post_a: Option<post_a::PostALearningRuntime>,
+    post_a_submitter: Mutex<Option<post_a_worker::PostALearningSubmitter>>,
+    post_a_worker: Option<post_a_worker::PostALearningWorker>,
     socket: PathBuf,
     phase: AtomicU8,
 }
@@ -167,6 +175,9 @@ impl HistoricalTaskReadRuntime {
             profile,
             task,
             learning_trust,
+            post_a: None,
+            post_a_submitter: Mutex::new(None),
+            post_a_worker: None,
             socket,
             phase: AtomicU8::new(PREPARED),
         })
@@ -182,6 +193,20 @@ impl HistoricalTaskReadRuntime {
         request_id: u64,
         end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let trust_requested = match operation {
+            HistoricalReadOperationV1::Task => false,
+            HistoricalReadOperationV1::LearningTrust => true,
+            HistoricalReadOperationV1::PostAFrozenLearning => {
+                return self.install_original_frozen_learning(
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    request_id,
+                    end,
+                );
+            }
+        };
         self.task
             .with_original_historical_task(service, end, |read| {
                 require_end(end)?;
@@ -220,8 +245,8 @@ impl HistoricalTaskReadRuntime {
                         let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?;
                         RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger)?;
                         let data_cut = RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(&observed).to_string();
-                        let reply = match operation {
-                            HistoricalReadOperationV1::Task => serde_json::to_vec(&HistoricalTaskReadResponseV1 {
+                        let reply = if !trust_requested {
+                            serde_json::to_vec(&HistoricalTaskReadResponseV1 {
                                 schema: 1,
                                 purpose: PURPOSE.into(),
                                 request_id,
@@ -229,8 +254,9 @@ impl HistoricalTaskReadRuntime {
                                 data_cut,
                                 ledger,
                                 publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed),
-                            }),
-                            HistoricalReadOperationV1::LearningTrust => serde_json::to_vec(&HistoricalLearningTrustResponseV1 {
+                            })
+                        } else {
+                            serde_json::to_vec(&HistoricalLearningTrustResponseV1 {
                                 schema: 1,
                                 purpose: TRUST_PURPOSE.into(),
                                 request_id,
@@ -238,7 +264,7 @@ impl HistoricalTaskReadRuntime {
                                 data_cut,
                                 pin: self.learning_trust.pin.clone(),
                                 payload: RootHistoricalLearningTrustV1::read_original_payload(&self.learning_trust, service, &initial, &ledger)?,
-                            }),
+                            })
                         }.map_err(io::Error::other)?;
                         if reply.is_empty() || reply.len() > WIRE_BOUND {
                             return Err(io::Error::other(
