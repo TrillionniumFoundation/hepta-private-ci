@@ -29,7 +29,11 @@ pub(super) struct Request {
 }
 
 impl Request {
-    pub(super) fn new(context: &Context, binding: Digest32, request_id: u64) -> Result<Self, Error> {
+    pub(super) fn new(
+        context: &Context,
+        binding: Digest32,
+        request_id: u64,
+    ) -> Result<Self, Error> {
         if original::mode(context)? != original::Mode::NextUse {
             return Err(Error::Binding("readiness requires original Selection"));
         }
@@ -99,7 +103,9 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         original_dataset.head_digest = original_dataset.receipts[2].predecessor;
         original_dataset.receipts.truncate(2);
         if initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot() {
-            return Err(Error::Binding("same initial and original Dataset before readiness"));
+            return Err(Error::Binding(
+                "same initial and original Dataset before readiness",
+            ));
         }
         peer.check_peer_lifetime()?;
         let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
@@ -112,7 +118,10 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         Ok(Self {
             context,
             binding,
-            channel: Mutex::new(Some(Channel { peer, next_request_id: 1 })),
+            channel: Mutex::new(Some(Channel {
+                peer,
+                next_request_id: 1,
+            })),
             retained: Mutex::new(None),
         })
     }
@@ -120,8 +129,12 @@ impl OriginalCircuitCompletionReadinessClientV1 {
     /// Each poll reads the original task host. Only an authenticated NotReady
     /// reply retains the connection; every uncertain/invalid exchange consumes it.
     pub(crate) async fn read_current(&self) -> Result<Option<Readback>, Error> {
-        let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         let started_at = now()?;
         if original::context_binding(&self.context, started_at)? != self.binding
             || !(1..=128).contains(&channel.next_request_id)
@@ -135,9 +148,13 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         let (channel, response) = tokio::task::spawn_blocking(move || {
             let response = channel.peer.request(&bytes)?;
             Ok::<_, Error>((channel, response))
-        }).await.map_err(|_| Error::Unavailable)??;
+        })
+        .await
+        .map_err(|_| Error::Unavailable)??;
         let response: Response = serde_json::from_slice(&response)?;
-        response.request.require_context(&self.context, self.binding, request_id)?;
+        response
+            .request
+            .require_context(&self.context, self.binding, request_id)?;
         let current = match response.result {
             Readiness::NotReady => None,
             Readiness::Ready { read } => Some(read.decode(&self.context)?),
@@ -149,8 +166,13 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         }
         {
             let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-            if retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior)) {
-                return Err(Error::Binding("completed original C cannot change or become pending"));
+            if retained
+                .as_ref()
+                .is_some_and(|prior| current.as_ref() != Some(prior))
+            {
+                return Err(Error::Binding(
+                    "completed original C cannot change or become pending",
+                ));
             }
             if let Some(ready) = &current {
                 *retained = Some(ready.clone());

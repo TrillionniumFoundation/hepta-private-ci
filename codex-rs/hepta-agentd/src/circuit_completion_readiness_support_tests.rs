@@ -9,20 +9,34 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
-use super::*;
 use super::super::OriginalCircuitLearningReadClientV1;
 use super::super::OriginalCircuitLearningReadOwnerV1;
 use super::super::fixture;
+use super::*;
 
 pub(crate) fn client(
     context: Context,
-) -> anyhow::Result<(OriginalCircuitCompletionReadinessClientV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCircuitCompletionReadinessClientV1,
+    HostAuthorityPeerChannel,
+)> {
     anyhow::ensure!(original::mode(&context)? == original::Mode::NextUse);
     let (original, server) = fixture::client(context)?;
-    let OriginalCircuitLearningReadClientV1 { context, binding, channel, retained } = original;
-    Ok((OriginalCircuitCompletionReadinessClientV1 {
-        context, binding, channel, retained,
-    }, server))
+    let OriginalCircuitLearningReadClientV1 {
+        context,
+        binding,
+        channel,
+        retained,
+    } = original;
+    Ok((
+        OriginalCircuitCompletionReadinessClientV1 {
+            context,
+            binding,
+            channel,
+            retained,
+        },
+        server,
+    ))
 }
 
 pub(crate) fn serve<
@@ -51,11 +65,16 @@ pub(crate) fn changed_reply<
     change: Change,
 ) -> JoinHandle<anyhow::Result<u64>> {
     std::thread::spawn(move || {
-        let frames = if matches!(change, Change::WrongPurpose) { 1 } else { 2 };
+        let frames = if matches!(change, Change::WrongPurpose) {
+            1
+        } else {
+            2
+        };
         for request_id in 1..=frames {
             let mut original_read = false;
             let result = channel.exchange(|bytes| {
-                let actual = owner.readiness_response(bytes, request_id)
+                let actual = owner
+                    .readiness_response(bytes, request_id)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 let mut response: Response = serde_json::from_slice(&actual)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -78,17 +97,17 @@ pub(crate) fn changed_reply<
                 }
                 serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)
             });
-            anyhow::ensure!(original_read, "actual original C read preceded response mutation");
-            anyhow::ensure!(result? , "the changed response was actually sent");
+            anyhow::ensure!(
+                original_read,
+                "actual original C read preceded response mutation"
+            );
+            anyhow::ensure!(result?, "the changed response was actually sent");
         }
         Ok(frames)
     })
 }
 
-pub(crate) fn reject_unknown_request_fields<
-    C: AnchorWitnessStore,
-    S: AnchorWitnessStore,
->(
+pub(crate) fn reject_unknown_request_fields<C: AnchorWitnessStore, S: AnchorWitnessStore>(
     owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
     context: &Context,
 ) -> anyhow::Result<()> {

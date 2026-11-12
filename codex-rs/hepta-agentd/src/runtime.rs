@@ -78,7 +78,9 @@ pub async fn run_with_shutdown(
     let resident_learning = config.take_root_resident_learning_delivery();
     #[cfg(target_os = "linux")]
     if resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none()) {
-        return Err(AgentdError::Invalid("resident learning requires exclusive ordinary delivery".into()));
+        return Err(AgentdError::Invalid(
+            "resident learning requires exclusive ordinary delivery".into(),
+        ));
     }
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
@@ -394,6 +396,7 @@ pub async fn run_with_shutdown(
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
         if let Some(owner) = circuit_task {
+            let owner: crate::CircuitTaskRuntimeBootstrapV1 = owner;
             tasks.spawn_required(
                 "circuit-task-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
@@ -405,13 +408,16 @@ pub async fn run_with_shutdown(
                 run_production_operation_reconciler(host, interval, cancellation.clone()),
             )?;
         }
+        let control: AgentdControlServer = control;
         tasks.spawn_required("control-server", control.run())?;
         #[cfg(target_os = "linux")]
         if let Some(ui) = notes_ui {
+            let ui: crate::AgentdNotesUiRuntime = ui;
             tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;
         }
         #[cfg(target_os = "linux")]
         if let Some(tools) = notes_thread_tools {
+            let tools: crate::AgentdNotesThreadToolRuntime = tools;
             tasks.spawn_required(
                 "notes-original-thread-tools",
                 tools.run(Arc::clone(&state), cancellation.clone()),
@@ -419,6 +425,7 @@ pub async fn run_with_shutdown(
         }
         #[cfg(target_os = "linux")]
         if let Some(tools) = desktop_thread_tools {
+            let tools: crate::AgentdDesktopThreadToolRuntime = tools;
             tasks.spawn_required(
                 "desktop-original-thread-tools",
                 tools.run(Arc::clone(&state), cancellation.clone()),
@@ -457,18 +464,21 @@ pub async fn run_with_shutdown(
             crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
         )?;
         if let Some(owner) = plasticity_runtime {
+            let owner: crate::PlasticityRuntimeOwnerV1 = owner;
             tasks.spawn_required(
                 "plasticity-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
         if let Some(owner) = learning_iteration {
+            let owner: crate::LearningIterationRuntimeBootstrapV1 = owner;
             tasks.spawn_required(
                 "learning-iteration-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
         if let Some(delivery) = circuit_learning_delivery {
+            let delivery: crate::learning_iteration::CircuitLearningDeliveryRuntimeV1 = delivery;
             let store = automation_store.clone().ok_or_else(|| {
                 AgentdError::Invalid(
                     "Circuit learning requires its original AutomationStore".into(),
@@ -481,11 +491,16 @@ pub async fn run_with_shutdown(
         }
         #[cfg(target_os = "linux")]
         if let Some(delivery) = resident_learning {
+            let delivery: crate::AgentdRootResidentDeliveryV3 = delivery;
             if state.objective_runtime.get().is_none() {
-                return Err(AgentdError::Invalid("resident learning requires its original Objective owner".into()));
+                return Err(AgentdError::Invalid(
+                    "resident learning requires its original Objective owner".into(),
+                ));
             }
             let store = automation_store.clone().ok_or_else(|| {
-                AgentdError::Invalid("resident learning requires its original AutomationStore".into())
+                AgentdError::Invalid(
+                    "resident learning requires its original AutomationStore".into(),
+                )
             })?;
             tasks.spawn_required(
                 "root-resident-learning-delivery",
@@ -493,6 +508,7 @@ pub async fn run_with_shutdown(
             )?;
         }
         if let Some(owner) = terminal_learning {
+            let owner: crate::TerminalLearningRuntimeBootstrapV1 = owner;
             tasks.spawn_required(
                 "terminal-learning-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),

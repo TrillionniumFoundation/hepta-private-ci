@@ -9,13 +9,13 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
+use super::super::readiness;
 use super::Error;
 use super::OriginalCircuitLearningReadOwnerV1;
 use super::Readback;
 use super::now;
 use super::require_timing;
 use super::wire;
-use super::super::readiness;
 use crate::AgentdRootAuthorityPeer;
 use crate::CircuitTaskErrorV1;
 use crate::CircuitTaskSourceReadbackV1;
@@ -39,14 +39,25 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if wire::mode(&self.context)? != wire::Mode::NextUse {
             return Err(Error::Binding("only original C completion readiness"));
         }
-        let _permit = self.connections.try_acquire().map_err(|_| Error::Unavailable)?;
+        let _permit = self
+            .connections
+            .try_acquire()
+            .map_err(|_| Error::Unavailable)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         self.serve_readiness_channel(&mut channel)
     }
 
-    pub(in super::super) fn serve_readiness_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
+    pub(in super::super) fn serve_readiness_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
         for request_id in 1..=128 {
             let mut failure = None;
             let exchanged = channel.exchange(|bytes| {
@@ -64,7 +75,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         Err(Error::Unavailable)
     }
 
-    pub(in super::super) fn readiness_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+    pub(in super::super) fn readiness_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let request: readiness::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
@@ -92,10 +107,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
         self.require_task_input_current()?;
         let coordinator = wire::decision(&self.context)?;
-        let selection = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
+        let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
+        let selection = cell.read_learning_selection(&coordinator)?;
         self.require_original_selection(&selection)?;
         let publication = CircuitTaskSourceReadbackV1::read_run_publication(
-            &self.source, &self.identity, &self.cell.task.source().scope.run_id,
+            &self.source,
+            &self.identity,
+            &self.cell.task.source().scope.run_id,
         );
         let current = match publication {
             Err(CircuitTaskErrorV1::ReconciliationRequired) => {
@@ -115,8 +133,10 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             }
         };
         self.require_task_input_current()?;
-        if PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)? != selection {
-            return Err(Error::Binding("original Selection changed during readiness"));
+        if cell.read_learning_selection(&coordinator)? != selection {
+            return Err(Error::Binding(
+                "original Selection changed during readiness",
+            ));
         }
         self.require_task_input_current()?;
         Ok(current)

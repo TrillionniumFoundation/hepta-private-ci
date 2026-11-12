@@ -28,14 +28,14 @@ mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;
 
 #[cfg(target_os = "linux")]
+#[path = "config_resident_learning.rs"]
+mod resident_learning;
+#[cfg(target_os = "linux")]
 #[path = "config_root_handoff.rs"]
 mod root_handoff;
 #[cfg(target_os = "linux")]
 #[path = "config_root_learning.rs"]
 mod root_learning;
-#[cfg(target_os = "linux")]
-#[path = "config_resident_learning.rs"]
-mod resident_learning;
 #[cfg(target_os = "linux")]
 pub use root_handoff::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
@@ -758,7 +758,9 @@ impl AgentdConfig {
         bootstrap.require_identity(&self.identity)?;
         #[cfg(target_os = "linux")]
         if self.resident_learning_delivery.is_some() {
-            return Err(AgentdError::Invalid("resident learning already configured".into()));
+            return Err(AgentdError::Invalid(
+                "resident learning already configured".into(),
+            ));
         }
         if self.learning_iteration_bootstrap.is_some() {
             return Err(AgentdError::Invalid(

@@ -10,8 +10,8 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
-use codex_hepta_types::Digest32;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_types::Digest32;
 use std::io;
 
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
@@ -20,7 +20,10 @@ pub const ROOT_RESIDENT_LEARNING_EXECUTE_V3: &str = "runtime.learning.resident-a
 pub const ROOT_RESIDENT_LEARNING_READBACK_V3: &str = "runtime.learning.resident-readback.v3";
 
 #[derive(Clone, Copy)]
-pub(super) enum ResidentPurposeV3 { Execute, Readback }
+pub(super) enum ResidentPurposeV3 {
+    Execute,
+    Readback,
+}
 
 /// The initial cut contains the already completed A receipt. It is supplied
 /// after A exists; startup cannot prefill a future completion or role signature.
@@ -53,14 +56,22 @@ impl RootResidentLearningProfileV3 {
         intent: SignedFinalUseGrant,
         lease: AuthorityLease,
     ) -> io::Result<Self> {
-        let ResidentProfileIdentityV3 { storage, operation, deadline_ms } =
-            profile_identity(&initial, &scope, verifier)?;
+        let ResidentProfileIdentityV3 {
+            storage,
+            operation,
+            deadline_ms,
+        } = profile_identity(&initial, &scope, verifier)?;
         let expected = expected_binding(&initial, &scope, operation, ResidentPurposeV3::Execute)?;
-        require_artifacts(&intent, &lease, &expected, ROOT_RESIDENT_LEARNING_EXECUTE_V3)?;
-        if intent.grant.expires_at_unix_ms < deadline_ms
-            || lease.expires_at_unix_ms < deadline_ms
-        {
-            return Err(invalid("resident intent and lease must cover the original work deadline"));
+        require_artifacts(
+            &intent,
+            &lease,
+            &expected,
+            ROOT_RESIDENT_LEARNING_EXECUTE_V3,
+        )?;
+        if intent.grant.expires_at_unix_ms < deadline_ms || lease.expires_at_unix_ms < deadline_ms {
+            return Err(invalid(
+                "resident intent and lease must cover the original work deadline",
+            ));
         }
         let intent_bytes = intent.grant.signing_bytes().map_err(io::Error::other)?;
         let lease_bytes = serde_json::to_vec(&lease).map_err(io::Error::other)?;
@@ -71,8 +82,17 @@ impl RootResidentLearningProfileV3 {
             &intent.signature,
             &lease_bytes,
         ]);
-        Ok(Self { initial, scope, intent, lease, storage, operation, binding, deadline_ms,
-            evidence_scope: verifier.scope_digest() })
+        Ok(Self {
+            initial,
+            scope,
+            intent,
+            lease,
+            storage,
+            operation,
+            binding,
+            deadline_ms,
+            evidence_scope: verifier.scope_digest(),
+        })
     }
 
     /// Canonical public data for an explicit original Root authorization.
@@ -84,7 +104,12 @@ impl RootResidentLearningProfileV3 {
         verifier: &LearningEvidenceVerifierV1,
     ) -> io::Result<FinalUseBinding> {
         let identity = profile_identity(initial, scope, verifier)?;
-        expected_binding(initial, scope, identity.operation, ResidentPurposeV3::Execute)
+        expected_binding(
+            initial,
+            scope,
+            identity.operation,
+            ResidentPurposeV3::Execute,
+        )
     }
 
     /// The separate read-only purpose uses the same original operation bytes.
@@ -123,9 +148,8 @@ impl RootResidentLearningProfileV3 {
     }
 
     pub(super) fn encoded_initial(&self) -> io::Result<String> {
-        Ok(STANDARD_NO_PAD.encode(
-            encode_original_owner_snapshot_v1(&self.initial).map_err(io::Error::other)?
-        ))
+        Ok(STANDARD_NO_PAD
+            .encode(encode_original_owner_snapshot_v1(&self.initial).map_err(io::Error::other)?))
     }
 
     pub(super) fn expected(&self, purpose: ResidentPurposeV3) -> io::Result<FinalUseBinding> {
@@ -148,7 +172,10 @@ impl RootResidentLearningReadbackAuthorizationV3 {
         lease: AuthorityLease,
     ) -> io::Result<Self> {
         require_artifacts(
-            &intent, &lease, &profile.expected(ResidentPurposeV3::Readback)?, ROOT_RESIDENT_LEARNING_READBACK_V3,
+            &intent,
+            &lease,
+            &profile.expected(ResidentPurposeV3::Readback)?,
+            ROOT_RESIDENT_LEARNING_READBACK_V3,
         )?;
         Ok(Self { intent, lease })
     }
@@ -159,12 +186,13 @@ fn profile_identity(
     scope: &FrozenLearningScopeV2,
     verifier: &LearningEvidenceVerifierV1,
 ) -> io::Result<ResidentProfileIdentityV3> {
-    let expected = LearningIterationCoordinatorV1::new(
-        initial.request.clone(),
-        initial.owners.clone(),
-    ).map_err(io::Error::other)?;
+    let expected =
+        LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())
+            .map_err(io::Error::other)?;
     if expected.snapshot() != initial {
-        return Err(invalid("resident profile requires the exact empty initial cut"));
+        return Err(invalid(
+            "resident profile requires the exact empty initial cut",
+        ));
     }
     scope.validate_snapshot(initial).map_err(io::Error::other)?;
     if verifier.trust_digest() != initial.owners.evidence_trust_digest
@@ -173,16 +201,19 @@ fn profile_identity(
         return Err(invalid("resident original evidence verifier differs"));
     }
     let bytes = encode_original_owner_snapshot_v1(initial).map_err(io::Error::other)?;
-    let deadline_ms = initial.request.envelope.expiry_unix_seconds
-        .checked_mul(1_000).ok_or_else(|| invalid("resident deadline overflow"))?;
+    let deadline_ms = initial
+        .request
+        .envelope
+        .expiry_unix_seconds
+        .checked_mul(1_000)
+        .ok_or_else(|| invalid("resident deadline overflow"))?;
     let stable = serde_json::to_vec(&[
         initial.request.principal_id.as_str(),
         initial.request.agent_id.as_str(),
         initial.request.operation_id.as_str(),
-    ]).map_err(io::Error::other)?;
-    let storage = Digest32::of_parts(&[
-        b"hepta.root.learning.resident-storage.v3\0", &stable,
-    ]);
+    ])
+    .map_err(io::Error::other)?;
+    let storage = Digest32::of_parts(&[b"hepta.root.learning.resident-storage.v3\0", &stable]);
     let operation = Digest32::of_parts(&[
         b"hepta.root.learning.resident-operation.v3\0",
         &bytes,
@@ -190,7 +221,11 @@ fn profile_identity(
         verifier.scope_digest().as_array(),
         &deadline_ms.to_be_bytes(),
     ]);
-    Ok(ResidentProfileIdentityV3 { storage, operation, deadline_ms })
+    Ok(ResidentProfileIdentityV3 {
+        storage,
+        operation,
+        deadline_ms,
+    })
 }
 
 fn expected_binding(
@@ -205,7 +240,8 @@ fn expected_binding(
         destination_id: match purpose {
             ResidentPurposeV3::Execute => ROOT_RESIDENT_LEARNING_EXECUTE_V3,
             ResidentPurposeV3::Readback => ROOT_RESIDENT_LEARNING_READBACK_V3,
-        }.into(),
+        }
+        .into(),
         request_sha256: *Digest32::of_bytes(&encoded).as_array(),
         scope_sha256: *scope.binding().as_array(),
         payload_sha256: *operation.as_array(),
@@ -239,7 +275,9 @@ fn require_artifacts(
         || lease.binding != lease_binding(expected)
         || lease.authority_epoch != intent.grant.authority_epoch
     {
-        return Err(invalid("resident original intent/lease full context differs"));
+        return Err(invalid(
+            "resident original intent/lease full context differs",
+        ));
     }
     // Signing bytes validate bounded identifiers and canonical grant shape.
     intent.grant.signing_bytes().map_err(io::Error::other)?;
@@ -259,6 +297,9 @@ pub(super) fn authorization_binding(
     let lease = serde_json::to_vec(lease).map_err(io::Error::other)?;
     Ok(Digest32::of_parts(&[
         b"hepta.root.learning.resident-authorization.v3\0",
-        profile.binding.as_array(), &signed, &intent.signature, &lease,
+        profile.binding.as_array(),
+        &signed,
+        &intent.signature,
+        &lease,
     ]))
 }

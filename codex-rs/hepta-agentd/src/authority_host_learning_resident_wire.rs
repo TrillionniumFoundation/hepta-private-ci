@@ -54,25 +54,39 @@ pub(super) struct Response {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "status", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Reply {
-    Current { snapshot: Option<String>, evidence: Vec<String>, dispatch_pending: bool },
+    Current {
+        snapshot: Option<String>,
+        evidence: Vec<String>,
+        dispatch_pending: bool,
+    },
     Uncertain,
     Unavailable,
 }
 
-pub(super) fn encode_current(
-    observation: ResidentRuntimeObservationV3,
-) -> Result<Reply, Error> {
-    let snapshot = observation.snapshot.as_ref().map(|snapshot|
-        encode_original_owner_snapshot_v1(snapshot)
-            .map(|bytes| STANDARD_NO_PAD.encode(bytes))
-            .map_err(Error::Checkpoint)
-    ).transpose()?;
-    let evidence = observation.attestations.iter().map(|signed|
-        crate::learning_owner_evidence::encode(&[], signed)
-            .map(|bytes| STANDARD_NO_PAD.encode(bytes))
-            .map_err(|_| Error::Unavailable)
-    ).collect::<Result<Vec<_>, _>>()?;
-    Ok(Reply::Current { snapshot, evidence, dispatch_pending: observation.dispatch_pending })
+pub(super) fn encode_current(observation: ResidentRuntimeObservationV3) -> Result<Reply, Error> {
+    let snapshot = observation
+        .snapshot
+        .as_ref()
+        .map(|snapshot| {
+            encode_original_owner_snapshot_v1(snapshot)
+                .map(|bytes| STANDARD_NO_PAD.encode(bytes))
+                .map_err(Error::Checkpoint)
+        })
+        .transpose()?;
+    let evidence = observation
+        .attestations
+        .iter()
+        .map(|signed| {
+            crate::learning_owner_evidence::encode(&[], signed)
+                .map(|bytes| STANDARD_NO_PAD.encode(bytes))
+                .map_err(|_| Error::Unavailable)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Reply::Current {
+        snapshot,
+        evidence,
+        dispatch_pending: observation.dispatch_pending,
+    })
 }
 
 pub(super) fn decode_current(
@@ -81,7 +95,12 @@ pub(super) fn decode_current(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<RootResidentLearningObservationV3, Error> {
-    let Reply::Current { snapshot, evidence, dispatch_pending } = reply else {
+    let Reply::Current {
+        snapshot,
+        evidence,
+        dispatch_pending,
+    } = reply
+    else {
         return Err(match reply {
             Reply::Uncertain => Error::CommitUncertain,
             _ => Error::Unavailable,
@@ -90,39 +109,52 @@ pub(super) fn decode_current(
     if evidence.len() > 5 {
         return Err(Error::WrongScope);
     }
-    let snapshot = snapshot.map(|encoded| {
-        if encoded.len() > 10_924 {
-            return Err(Error::WrongScope);
-        }
-        let bytes = STANDARD_NO_PAD.decode(&encoded).map_err(|_| Error::WrongScope)?;
-        if STANDARD_NO_PAD.encode(&bytes) != encoded {
-            return Err(Error::WrongScope);
-        }
-        decode_original_owner_snapshot_v1(&bytes).map_err(Error::Checkpoint)
-    }).transpose()?;
-    let attestations = evidence.into_iter().map(|encoded| {
-        if encoded.len() > BOUND {
-            return Err(Error::WrongScope);
-        }
-        let bytes = STANDARD_NO_PAD.decode(&encoded).map_err(|_| Error::WrongScope)?;
-        if STANDARD_NO_PAD.encode(&bytes) != encoded {
-            return Err(Error::WrongScope);
-        }
-        let (payload, evidence) = crate::learning_owner_evidence::decode(&bytes)
-            .map_err(|_| Error::WrongScope)?;
-        if !payload.is_empty() {
-            return Err(Error::WrongScope);
-        }
-        Ok(evidence)
-    }).collect::<Result<Vec<_>, _>>()?;
+    let snapshot = snapshot
+        .map(|encoded| {
+            if encoded.len() > 10_924 {
+                return Err(Error::WrongScope);
+            }
+            let bytes = STANDARD_NO_PAD
+                .decode(&encoded)
+                .map_err(|_| Error::WrongScope)?;
+            if STANDARD_NO_PAD.encode(&bytes) != encoded {
+                return Err(Error::WrongScope);
+            }
+            decode_original_owner_snapshot_v1(&bytes).map_err(Error::Checkpoint)
+        })
+        .transpose()?;
+    let attestations = evidence
+        .into_iter()
+        .map(|encoded| {
+            if encoded.len() > BOUND {
+                return Err(Error::WrongScope);
+            }
+            let bytes = STANDARD_NO_PAD
+                .decode(&encoded)
+                .map_err(|_| Error::WrongScope)?;
+            if STANDARD_NO_PAD.encode(&bytes) != encoded {
+                return Err(Error::WrongScope);
+            }
+            let (payload, evidence) =
+                crate::learning_owner_evidence::decode(&bytes).map_err(|_| Error::WrongScope)?;
+            if !payload.is_empty() {
+                return Err(Error::WrongScope);
+            }
+            Ok(evidence)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     match &snapshot {
-        Some(snapshot) => authentication::verify_attestations(
-            profile, verifier, snapshot, &attestations, now,
-        )?,
+        Some(snapshot) => {
+            authentication::verify_attestations(profile, verifier, snapshot, &attestations, now)?
+        }
         None if !attestations.is_empty() || dispatch_pending => return Err(Error::WrongScope),
         None => {}
     }
-    Ok(RootResidentLearningObservationV3 { snapshot, attestations, dispatch_pending })
+    Ok(RootResidentLearningObservationV3 {
+        snapshot,
+        attestations,
+        dispatch_pending,
+    })
 }
 
 pub(super) fn require_original_prefix(
@@ -131,7 +163,8 @@ pub(super) fn require_original_prefix(
 ) -> Result<(), Error> {
     if let Some((previous, evidence)) = previous {
         let snapshot = current.snapshot.as_ref().ok_or(Error::CommitUncertain)?;
-        if snapshot.request != previous.request || snapshot.owners != previous.owners
+        if snapshot.request != previous.request
+            || snapshot.owners != previous.owners
             || !snapshot.receipts.starts_with(&previous.receipts)
             || !current.attestations.starts_with(evidence)
         {
@@ -147,6 +180,12 @@ pub(super) fn request(
     profile: Digest32,
     authorization: Digest32,
 ) -> Request {
-    Request { schema: 3, operation: OPERATION.into(), request_id: id,
-        profile: profile.to_string(), authorization: authorization.to_string(), action }
+    Request {
+        schema: 3,
+        operation: OPERATION.into(),
+        request_id: id,
+        profile: profile.to_string(),
+        authorization: authorization.to_string(),
+        action,
+    }
 }

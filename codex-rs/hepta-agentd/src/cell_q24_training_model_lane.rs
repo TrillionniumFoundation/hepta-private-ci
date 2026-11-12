@@ -93,12 +93,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                     return Err(crate::OriginalCellQ24CandidateMaterialErrorV1::NoCandidate.into());
                 }
             };
-            Ok(crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(
-                &self.dataset,
-                candidate,
-                completed.receipt.clone(),
-                completed.attestation.clone(),
-            )?)
+            Ok(
+                crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(
+                    &self.dataset,
+                    candidate,
+                    completed.receipt.clone(),
+                    completed.attestation.clone(),
+                )?,
+            )
         })
     }
 

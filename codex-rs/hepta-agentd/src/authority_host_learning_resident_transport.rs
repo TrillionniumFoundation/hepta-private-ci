@@ -1,10 +1,10 @@
 //! The ordinary A handoff and Root server use one new fixed purpose over the
 //! existing held-pidfd command channel. Old 500 ms evidence lanes are unchanged.
 
+use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_contracts::HostAuthorityPeerChannel;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
@@ -36,9 +36,15 @@ pub struct RootResidentLearningObservationV3 {
 }
 
 impl RootResidentLearningObservationV3 {
-    pub fn snapshot(&self) -> Option<&LearningIterationSnapshotV1> { self.snapshot.as_ref() }
-    pub fn attestations(&self) -> &[SignedLearningEvidenceV1] { &self.attestations }
-    pub fn dispatch_pending(&self) -> bool { self.dispatch_pending }
+    pub fn snapshot(&self) -> Option<&LearningIterationSnapshotV1> {
+        self.snapshot.as_ref()
+    }
+    pub fn attestations(&self) -> &[SignedLearningEvidenceV1] {
+        &self.attestations
+    }
+    pub fn dispatch_pending(&self) -> bool {
+        self.dispatch_pending
+    }
 }
 
 struct ResidentChannelV3 {
@@ -91,8 +97,17 @@ impl AgentdRootResidentLearningClientV3 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind(stream, root, held_root_pidfd, profile, verifier,
-            ClientOriginV3::Fresh, None, timeout, lifetime)
+        Self::bind(
+            stream,
+            root,
+            held_root_pidfd,
+            profile,
+            verifier,
+            ClientOriginV3::Fresh,
+            None,
+            timeout,
+            lifetime,
+        )
     }
 
     /// The new externally supplied readback intent remains a distinct purpose.
@@ -109,8 +124,17 @@ impl AgentdRootResidentLearningClientV3 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind(stream, root, held_root_pidfd, profile, verifier,
-            ClientOriginV3::Readback(authorization), expected, timeout, lifetime)
+        Self::bind(
+            stream,
+            root,
+            held_root_pidfd,
+            profile,
+            verifier,
+            ClientOriginV3::Readback(authorization),
+            expected,
+            timeout,
+            lifetime,
+        )
     }
 
     fn bind(
@@ -124,26 +148,42 @@ impl AgentdRootResidentLearningClientV3 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        profile.require_verifier(&verifier).map_err(|_| Error::WrongScope)?;
+        profile
+            .require_verifier(&verifier)
+            .map_err(|_| Error::WrongScope)?;
         let readonly = matches!(&origin, ClientOriginV3::Readback(_));
         let (intent, lease) = artifacts(&profile, &origin);
         let authorization = profile::authorization_binding(&profile, intent, lease)
             .map_err(|_| Error::WrongScope)?;
-        let channel = original_owner_command_channel_v1(
-            stream, root, 0, held_root_pidfd, timeout, lifetime,
-        ).map_err(|_| Error::Unavailable)?;
-        channel.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
+        let channel =
+            original_owner_command_channel_v1(stream, root, 0, held_root_pidfd, timeout, lifetime)
+                .map_err(|_| Error::Unavailable)?;
+        channel
+            .check_peer_lifetime()
+            .map_err(|_| Error::Unavailable)?;
         let now = now()?;
         require_window(&profile, &origin, now)?;
         if let Some((snapshot, evidence)) = &expected {
-            authentication::verify_attestations(&profile, &verifier, snapshot, evidence, now / 1_000)?;
+            authentication::verify_attestations(
+                &profile,
+                &verifier,
+                snapshot,
+                evidence,
+                now / 1_000,
+            )?;
         }
         Ok(Self {
             channel: Arc::new(Mutex::new(Some(ResidentChannelV3 {
-                peer: channel, next: 1, execution_requested: readonly, retained: expected,
+                peer: channel,
+                next: 1,
+                execution_requested: readonly,
+                retained: expected,
             }))),
             lane: Arc::new(Semaphore::new(1)),
-            profile, verifier, authorization, origin: Arc::new(origin),
+            profile,
+            verifier,
+            authorization,
+            origin: Arc::new(origin),
         })
     }
 
@@ -168,7 +208,10 @@ impl AgentdRootResidentLearningClientV3 {
             return Err(Error::DeadlineExceeded);
         }
         let channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
-        if channel.as_ref().is_none_or(|channel| channel.execution_requested) {
+        if channel
+            .as_ref()
+            .is_none_or(|channel| channel.execution_requested)
+        {
             return Err(Error::CommitUncertain);
         }
         Ok(())
@@ -184,7 +227,11 @@ impl AgentdRootResidentLearningClientV3 {
         require_window(&self.profile, &self.origin, current)?;
         let snapshot = observed.snapshot.as_ref().ok_or(Error::CommitUncertain)?;
         authentication::verify_attestations(
-            &self.profile, &self.verifier, snapshot, &observed.attestations, current / 1_000,
+            &self.profile,
+            &self.verifier,
+            snapshot,
+            &observed.attestations,
+            current / 1_000,
         )
     }
 
@@ -200,10 +247,19 @@ impl AgentdRootResidentLearningClientV3 {
         self.exchange(action).await
     }
 
-    async fn exchange(&self, action: wire::Action) -> Result<RootResidentLearningObservationV3, Error> {
-        let permit = Arc::clone(&self.lane).try_acquire_owned().map_err(|_| Error::QueueFull)?;
-        let channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+    async fn exchange(
+        &self,
+        action: wire::Action,
+    ) -> Result<RootResidentLearningObservationV3, Error> {
+        let permit = Arc::clone(&self.lane)
+            .try_acquire_owned()
+            .map_err(|_| Error::QueueFull)?;
+        let channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         let cancelled = ResidentExchangeDropV3(Arc::new(AtomicBool::new(false)));
         let send_cancelled = Arc::clone(&cancelled.0);
         let profile = self.profile.clone();
@@ -233,14 +289,19 @@ impl AgentdRootResidentLearningClientV3 {
             if send_cancelled.load(Ordering::Acquire) {
                 return Err(Error::CommitUncertain);
             }
-            let response = channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?;
+            let response = channel
+                .peer
+                .request(&bytes)
+                .map_err(|_| Error::CommitUncertain)?;
             if response.len() > wire::BOUND {
                 return Err(Error::WrongScope);
             }
-            let response: wire::Response = serde_json::from_slice(&response)
-                .map_err(|_| Error::CommitUncertain)?;
-            if response.schema != 3 || response.operation != wire::OPERATION
-                || response.request_id != id || response.profile != profile.binding.to_string()
+            let response: wire::Response =
+                serde_json::from_slice(&response).map_err(|_| Error::CommitUncertain)?;
+            if response.schema != 3
+                || response.operation != wire::OPERATION
+                || response.request_id != id
+                || response.profile != profile.binding.to_string()
                 || response.authorization != authorization.to_string()
                 || response.action != action
             {
@@ -248,7 +309,10 @@ impl AgentdRootResidentLearningClientV3 {
             }
             // Peer lifetime is the last process I/O. Signature and intent
             // windows are rechecked after it, without replacing original times.
-            channel.peer.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
+            channel
+                .peer
+                .check_peer_lifetime()
+                .map_err(|_| Error::Unavailable)?;
             let fresh = now()?;
             if fresh < started {
                 return Err(Error::Unavailable);
@@ -274,7 +338,9 @@ impl AgentdRootResidentLearningClientV3 {
                 }
             };
             Ok((outcome, channel, fresh))
-        }).await.map_err(|_| Error::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
         // If this await was cancelled, the returned channel is dropped with
         // the unobserved JoinHandle result. It is never silently restored.
         let fresh = now()?;
@@ -286,7 +352,11 @@ impl AgentdRootResidentLearningClientV3 {
             && let Some(snapshot) = &observed.snapshot
         {
             authentication::verify_attestations(
-                &self.profile, &self.verifier, snapshot, &observed.attestations, fresh / 1_000,
+                &self.profile,
+                &self.verifier,
+                snapshot,
+                &observed.attestations,
+                fresh / 1_000,
             )?;
         }
         // Only a fully bound, freshly checked explicit Root reply reaches this
@@ -318,40 +388,60 @@ impl RootResidentLearningHandleV3 {
             return Err(Error::WrongScope);
         }
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, held_consumer_pidfd, timeout, lifetime,
-        ).map_err(|_| Error::Unavailable)?;
+            stream,
+            consumer,
+            consumer_uid,
+            held_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
+        .map_err(|_| Error::Unavailable)?;
         for next in 1..=128_u64 {
-            if !channel.exchange(|bytes| {
-            let request: wire::Request = serde_json::from_slice(bytes)
-                .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
-            if bytes.len() > wire::BOUND || request.schema != 3
-                || request.operation != wire::OPERATION || request.request_id != next
-                || request.profile != self.profile.binding.to_string()
-                || request.authorization != self.authorization_binding.to_string()
-                || (self.readonly && matches!(request.action, wire::Action::Admit))
+            if !channel
+                .exchange(|bytes| {
+                    let request: wire::Request = serde_json::from_slice(bytes).map_err(|_| {
+                        codex_hepta_contracts::HostIssuerTransportError::InvalidRequest
+                    })?;
+                    if bytes.len() > wire::BOUND
+                        || request.schema != 3
+                        || request.operation != wire::OPERATION
+                        || request.request_id != next
+                        || request.profile != self.profile.binding.to_string()
+                        || request.authorization != self.authorization_binding.to_string()
+                        || (self.readonly && matches!(request.action, wire::Action::Admit))
+                    {
+                        return Err(
+                            codex_hepta_contracts::HostIssuerTransportError::InvalidRequest,
+                        );
+                    }
+                    let mode = match request.action {
+                        wire::Action::Admit => ResidentRequestModeV3::Admit,
+                        wire::Action::Readback => ResidentRequestModeV3::Readback,
+                    };
+                    let result = match self.runtime.block_on(self.request(mode)) {
+                        Ok(observation) => wire::encode_current(observation).map_err(|_| {
+                            codex_hepta_contracts::HostIssuerTransportError::Unavailable
+                        })?,
+                        Err(Error::CommitUncertain) => wire::Reply::Uncertain,
+                        Err(_) => wire::Reply::Unavailable,
+                    };
+                    let response = serde_json::to_vec(&wire::Response {
+                        schema: 3,
+                        operation: wire::OPERATION.into(),
+                        request_id: request.request_id,
+                        profile: request.profile,
+                        authorization: request.authorization,
+                        action: request.action,
+                        result,
+                    })
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                    if response.len() > wire::BOUND {
+                        return Err(codex_hepta_contracts::HostIssuerTransportError::Unavailable);
+                    }
+                    Ok(response)
+                })
+                .map_err(|_| Error::Unavailable)?
             {
-                return Err(codex_hepta_contracts::HostIssuerTransportError::InvalidRequest);
-            }
-            let mode = match request.action {
-                wire::Action::Admit => ResidentRequestModeV3::Admit,
-                wire::Action::Readback => ResidentRequestModeV3::Readback,
-            };
-            let result = match self.runtime.block_on(self.request(mode)) {
-                Ok(observation) => wire::encode_current(observation)
-                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?,
-                Err(Error::CommitUncertain) => wire::Reply::Uncertain,
-                Err(_) => wire::Reply::Unavailable,
-            };
-            let response = serde_json::to_vec(&wire::Response {
-                schema: 3, operation: wire::OPERATION.into(), request_id: request.request_id,
-                profile: request.profile, authorization: request.authorization,
-                action: request.action, result,
-            }).map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
-            if response.len() > wire::BOUND {
-                return Err(codex_hepta_contracts::HostIssuerTransportError::Unavailable);
-            }
-            Ok(response)
-            }).map_err(|_| Error::Unavailable)? {
                 return Ok(());
             }
         }
@@ -362,9 +452,10 @@ impl RootResidentLearningHandleV3 {
 fn artifacts<'a>(
     profile: &'a RootResidentLearningProfileV3,
     origin: &'a ClientOriginV3,
-) -> (&'a codex_hepta_contracts::SignedFinalUseGrant,
-      &'a codex_hepta_contracts::authority_lease::AuthorityLease)
-{
+) -> (
+    &'a codex_hepta_contracts::SignedFinalUseGrant,
+    &'a codex_hepta_contracts::authority_lease::AuthorityLease,
+) {
     match origin {
         ClientOriginV3::Fresh => (&profile.intent, &profile.lease),
         ClientOriginV3::Readback(authorization) => (&authorization.intent, &authorization.lease),
@@ -377,8 +468,10 @@ fn require_window(
     now: u64,
 ) -> Result<(), Error> {
     let (intent, lease) = artifacts(profile, origin);
-    if now < intent.grant.not_before_unix_ms || now >= intent.grant.expires_at_unix_ms
-        || now < lease.issued_at_unix_ms || now >= lease.expires_at_unix_ms
+    if now < intent.grant.not_before_unix_ms
+        || now >= intent.grant.expires_at_unix_ms
+        || now < lease.issued_at_unix_ms
+        || now >= lease.expires_at_unix_ms
     {
         return Err(Error::Unavailable);
     }
@@ -386,8 +479,11 @@ fn require_window(
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH)
-        .map_err(|_| Error::Unavailable)?.as_millis().try_into()
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| Error::Unavailable)?
+        .as_millis()
+        .try_into()
         .map_err(|_| Error::Unavailable)
 }
 

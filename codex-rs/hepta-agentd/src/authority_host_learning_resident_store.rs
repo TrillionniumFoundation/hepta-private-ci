@@ -64,11 +64,14 @@ impl ResidentCheckpointV3 {
         profile: RootResidentLearningProfileV3,
     ) -> io::Result<Self> {
         let owner_id = profile.owner_id();
-        let store = HostAuthorityFrontierStore::initialize(
-            root, owner_id.clone(), Self::vacant(&profile),
-        ).map_err(io::Error::other)?;
+        let store =
+            HostAuthorityFrontierStore::initialize(root, owner_id.clone(), Self::vacant(&profile))
+                .map_err(io::Error::other)?;
         let owner = Self {
-            store, owner_id, profile, fresh_registration: true,
+            store,
+            owner_id,
+            profile,
+            fresh_registration: true,
             admission_attempted: AtomicBool::new(false),
         };
         owner.read()?;
@@ -80,10 +83,13 @@ impl ResidentCheckpointV3 {
         profile: RootResidentLearningProfileV3,
     ) -> io::Result<Self> {
         let owner_id = profile.owner_id();
-        let store = HostAuthorityFrontierStore::open(root, owner_id.clone())
-            .map_err(io::Error::other)?;
+        let store =
+            HostAuthorityFrontierStore::open(root, owner_id.clone()).map_err(io::Error::other)?;
         let owner = Self {
-            store, owner_id, profile, fresh_registration: false,
+            store,
+            owner_id,
+            profile,
+            fresh_registration: false,
             admission_attempted: AtomicBool::new(true),
         };
         owner.read()?;
@@ -101,13 +107,14 @@ impl ResidentCheckpointV3 {
 
     pub(super) fn read(&self) -> io::Result<ResidentSnapshotV3> {
         let (record, snapshot) = self.load()?;
-        Ok(ResidentSnapshotV3 { snapshot, dispatch_pending: record.dispatch.is_some() })
+        Ok(ResidentSnapshotV3 {
+            snapshot,
+            dispatch_pending: record.dispatch.is_some(),
+        })
     }
 
     pub(super) fn admit(&self) -> io::Result<Option<FreshResidentCheckpointV3>> {
-        if !self.fresh_registration
-            || self.admission_attempted.swap(true, Ordering::AcqRel)
-        {
+        if !self.fresh_registration || self.admission_attempted.swap(true, Ordering::AcqRel) {
             return Ok(None);
         }
         let (current, snapshot) = self.load()?;
@@ -122,7 +129,8 @@ impl ResidentCheckpointV3 {
         };
         // No equality shortcut is permission. A conflict or lost durability ACK
         // returns no fresh token; any later entry can only read the same owner.
-        self.store.compare_and_set(&self.owner_id, &current, &next)
+        self.store
+            .compare_and_set(&self.owner_id, &current, &next)
             .map_err(io::Error::other)?;
         Ok(Some(FreshResidentCheckpointV3 {
             owner_id: self.owner_id.clone(),
@@ -151,7 +159,8 @@ impl ResidentCheckpointV3 {
             head: predecessor.head_digest.to_string(),
             stage: stage_code(stage),
         });
-        self.store.compare_and_set(&self.owner_id, &token.current, &next)
+        self.store
+            .compare_and_set(&self.owner_id, &token.current, &next)
             .map_err(io::Error::other)?;
         token.current = next;
         Ok(())
@@ -163,9 +172,13 @@ impl ResidentCheckpointV3 {
         predecessor: &LearningIterationSnapshotV1,
     ) -> io::Result<()> {
         self.require_token(token)?;
-        self.profile.scope.validate_snapshot(predecessor).map_err(io::Error::other)?;
+        self.profile
+            .scope
+            .validate_snapshot(predecessor)
+            .map_err(io::Error::other)?;
         let stage = LearningIterationCoordinatorV1::from_snapshot(predecessor.clone())
-            .map_err(io::Error::other)?.next_stage()
+            .map_err(io::Error::other)?
+            .next_stage()
             .ok_or_else(|| invalid("resident completed cut has no dispatch"))?;
         let dispatch = ResidentDispatchV3 {
             head: predecessor.head_digest.to_string(),
@@ -174,7 +187,9 @@ impl ResidentCheckpointV3 {
         if token.current.snapshot.as_ref() != Some(&encode(predecessor)?)
             || token.current.dispatch.as_ref() != Some(&dispatch)
         {
-            return Err(invalid("resident effect does not match the same active continuation"));
+            return Err(invalid(
+                "resident effect does not match the same active continuation",
+            ));
         }
         Ok(())
     }
@@ -186,9 +201,13 @@ impl ResidentCheckpointV3 {
         next: &LearningIterationSnapshotV1,
     ) -> io::Result<()> {
         self.require_dispatch(token, predecessor)?;
-        self.profile.scope.validate_snapshot(next).map_err(io::Error::other)?;
+        self.profile
+            .scope
+            .validate_snapshot(next)
+            .map_err(io::Error::other)?;
         LearningIterationCoordinatorV1::from_snapshot(next.clone()).map_err(io::Error::other)?;
-        if next.request != predecessor.request || next.owners != predecessor.owners
+        if next.request != predecessor.request
+            || next.owners != predecessor.owners
             || next.receipts.len() != predecessor.receipts.len() + 1
             || !next.receipts.starts_with(&predecessor.receipts)
             || next.receipts.last().is_none_or(|receipt| {
@@ -198,7 +217,9 @@ impl ResidentCheckpointV3 {
                     })
             })
         {
-            return Err(invalid("resident checkpoint is not the dispatched single successor"));
+            return Err(invalid(
+                "resident checkpoint is not the dispatched single successor",
+            ));
         }
         let record = ResidentRecordV3 {
             schema: 3,
@@ -206,7 +227,8 @@ impl ResidentCheckpointV3 {
             snapshot: Some(encode(next)?),
             dispatch: None,
         };
-        self.store.compare_and_set(&self.owner_id, &token.current, &record)
+        self.store
+            .compare_and_set(&self.owner_id, &token.current, &record)
             .map_err(io::Error::other)?;
         token.current = record;
         Ok(())
@@ -214,7 +236,9 @@ impl ResidentCheckpointV3 {
 
     fn require_token(&self, token: &FreshResidentCheckpointV3) -> io::Result<()> {
         if token.owner_id != self.owner_id || self.load()?.0 != token.current {
-            return Err(invalid("resident original CURRENT differs from the fresh continuation"));
+            return Err(invalid(
+                "resident original CURRENT differs from the fresh continuation",
+            ));
         }
         Ok(())
     }
@@ -231,12 +255,18 @@ impl ResidentCheckpointV3 {
             return Ok((record, None));
         };
         if encoded.len() > 10_924 {
-            return Err(invalid("resident snapshot exceeds the original codec bound"));
+            return Err(invalid(
+                "resident snapshot exceeds the original codec bound",
+            ));
         }
         let bytes = STANDARD_NO_PAD.decode(encoded).map_err(io::Error::other)?;
         let snapshot = decode_original_owner_snapshot_v1(&bytes).map_err(io::Error::other)?;
-        LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(io::Error::other)?;
-        self.profile.scope.validate_snapshot(&snapshot).map_err(io::Error::other)?;
+        LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
+            .map_err(io::Error::other)?;
+        self.profile
+            .scope
+            .validate_snapshot(&snapshot)
+            .map_err(io::Error::other)?;
         if STANDARD_NO_PAD.encode(&bytes) != *encoded
             || snapshot.request != self.profile.initial.request
             || snapshot.owners != self.profile.initial.owners
@@ -245,12 +275,15 @@ impl ResidentCheckpointV3 {
         }
         if let Some(dispatch) = &record.dispatch {
             let stage = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
-                .map_err(io::Error::other)?.next_stage()
+                .map_err(io::Error::other)?
+                .next_stage()
                 .ok_or_else(|| invalid("completed resident record still has dispatch intent"))?;
             if dispatch.head != snapshot.head_digest.to_string()
                 || dispatch.stage != stage_code(stage)
             {
-                return Err(invalid("resident dispatch does not match durable predecessor"));
+                return Err(invalid(
+                    "resident dispatch does not match durable predecessor",
+                ));
             }
         }
         Ok((record, Some(snapshot)))
@@ -258,9 +291,8 @@ impl ResidentCheckpointV3 {
 }
 
 fn encode(snapshot: &LearningIterationSnapshotV1) -> io::Result<String> {
-    Ok(STANDARD_NO_PAD.encode(
-        encode_original_owner_snapshot_v1(snapshot).map_err(io::Error::other)?
-    ))
+    Ok(STANDARD_NO_PAD
+        .encode(encode_original_owner_snapshot_v1(snapshot).map_err(io::Error::other)?))
 }
 
 fn stage_code(stage: LearningIterationStageV1) -> u8 {

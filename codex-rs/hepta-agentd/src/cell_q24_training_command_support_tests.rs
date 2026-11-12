@@ -234,11 +234,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
             occupied_rx.await?;
             let cancellation = Arc::new(AtomicBool::new(false));
             let mut execute = Box::pin(client.execute_training(Arc::clone(&cancellation)));
-            std::future::poll_fn(|cx| {
-                match std::future::Future::poll(execute.as_mut(), cx) {
-                    std::task::Poll::Pending => std::task::Poll::Ready(()),
-                    std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
-                }
+            std::future::poll_fn(|cx| match std::future::Future::poll(execute.as_mut(), cx) {
+                std::task::Poll::Pending => std::task::Poll::Ready(()),
+                std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
             })
             .await;
             cancellation.store(true, Ordering::Release);
@@ -254,7 +252,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
             );
             anyhow::ensure!(
                 matches!(
-                    client.execute_training(Arc::new(AtomicBool::new(false))).await,
+                    client
+                        .execute_training(Arc::new(AtomicBool::new(false)))
+                        .await,
                     Err(super::Error::Unavailable)
                 ),
                 "cancellation must not restore an executable connection"

@@ -183,10 +183,10 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn recover(", "HostAuthorityFrontierStore::open("),
             ("fn admit(", "self.admission_attempted.swap(true, Ordering::AcqRel)"),
             ("fn admit(", "snapshot.is_some() || current != Self::vacant(&self.profile)"),
-            ("fn admit(", "self.store.compare_and_set(&self.owner_id, &current, &next)"),
+            ("fn admit(", "self.store\n            .compare_and_set(&self.owner_id, &current, &next)"),
             ("fn load(", "record.binding != self.profile.binding.to_string()"),
             ("fn load(", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())"),
-            ("fn load(", "self.profile.scope.validate_snapshot(&snapshot)"),
+            ("fn load(", "self.profile\n            .scope\n            .validate_snapshot(&snapshot)"),
             ("fn begin_dispatch(", "coordinator.next_stage() != Some(stage)"),
             ("fn checkpoint(", "!next.receipts.starts_with(&predecessor.receipts)"),
         ):
@@ -204,18 +204,18 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             "self.root_pid != std::process::id()",
             "cancellation.is_cancelled()",
             "matches!(access, ResidentAccessV3::Work) && self.readonly()",
-            "verifier.read_lease(&lease.lease_id)",
+            "verifier\n            .read_lease(&lease.lease_id)",
             "current.lease != *lease || intent.grant.binding != expected",
-            "verifier.verify_use(&lease.lease_id, lease.revision, &binding)",
-            "verifier.with_dispatch_boundary(token, &binding, ||",
-            "self.issuer.hold_original_resident_intent_v3(",
+            "verifier\n            .verify_use(&lease.lease_id, lease.revision, &binding)",
+            "verifier\n            .with_dispatch_boundary(token, &binding, ||",
+            "self\n                    .issuer\n                    .hold_original_resident_intent_v3(",
             "let now_ms = issuer.require_current()?",
             "now_ms < started || cancellation.is_cancelled()",
         ):
             with self.subTest(marker=marker):
                 self.rejects(filename, "fn perform(", marker)
         for marker in (
-            "self.request_lock.try_lock()",
+            "self\n            .request_lock\n            .try_lock()",
             "verify_strict(&bytes, &signature)",
             "state.head.revoked_grant_ids.contains(&grant.grant_id)",
             "sequence > state.sequence",
@@ -239,7 +239,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn local(", "result.is_err() || self.inner.cancellation.is_cancelled()"),
             ("fn local_inner(", "inner.fresh.try_lock()"),
             ("fn local_inner(", "ResidentStoreActionV3::RequireDispatch"),
-            ("fn local_inner(", "inner.owner.authority.perform(operation, &inner.cancellation)"),
+            ("fn local_inner(", "inner\n                .owner\n                .authority\n                .perform(operation, &inner.cancellation)"),
             ("fn fence(", "self.inner.dispatch_cancel.store(true, Ordering::Release)"),
             ("fn training_cancellation(", "Arc::clone(&self.inner.dispatch_cancel)"),
         ):
@@ -249,17 +249,17 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
     def test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate(self):
         filename = "authority_host_learning_resident_runtime.rs"
         for function, marker in (
-            ("fn compose(", "stages.require_initial(&profile.initial, &profile.scope, &verifier)"),
+            ("fn compose(", "stages\n        .require_initial(&profile.initial, &profile.scope, &verifier)"),
             ("fn run(", "self.admission_requested = true"),
             ("fn run(", "if result.is_err()"),
-            ("fn admit(", "self.owner.admit(cancellation).await?"),
+            ("fn admit(", "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?"),
             ("fn admit(", "slot.take().ok_or(Error::CommitUncertain)?"),
             ("fn admit(", "stages.install_fresh_resident_gate(Arc::clone(&continuation.gate))?"),
             ("fn continue_original(", "LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal"),
             ("fn continue_original(", "gate.begin(&predecessor, stage).await?"),
             ("fn continue_original(", "watchdog.tick()"),
             ("fn continue_original(", "authentication::original_attestations("),
-            ("fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?"),
+            ("fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(filename, function, marker)
@@ -268,14 +268,14 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
     def test_queued_cancel_and_bound_refusal_never_restore_fresh_admission(self):
         filename = "authority_host_learning_resident_transport.rs"
         for marker in (
-            ".take().ok_or(Error::Unavailable)?",
+            ".take()\n            .ok_or(Error::Unavailable)?",
             "let cancelled = ResidentExchangeDropV3(",
             "Arc::clone(&cancelled.0)",
             "if send_cancelled.load(Ordering::Acquire)",
-            "channel.peer.request(&bytes)",
+            "channel\n                .peer\n                .request(&bytes)",
             "response.authorization != authorization.to_string()",
             "response.action != action",
-            "channel.peer.check_peer_lifetime()",
+            "channel\n                .peer\n                .check_peer_lifetime()",
             "fresh < observed_at",
             "wire::require_original_prefix(",
             "authentication::verify_attestations(",
@@ -284,7 +284,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
                 self.rejects(filename, "fn exchange(", marker)
         self.rejects(filename, "fn drop(", "self.0.store(true, Ordering::Release)")
         self.rejects(filename, "fn require_fresh_admission_channel(",
-                     "channel.as_ref().is_none_or(|channel| channel.execution_requested)")
+                     "channel\n            .as_ref()\n            .is_none_or(|channel| channel.execution_requested)")
         self.rejects(filename, "fn recover_original_root_stream(",
                      "ClientOriginV3::Readback(authorization)", "ClientOriginV3::Fresh")
 
@@ -293,13 +293,15 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         for function, marker in (
             ("fn prepare_enrollment(", "AgentdRootResidentLearningClientV3::readback(&root).await?"),
             ("fn prepare_enrollment(", "root.require_fresh_admission_channel()?"),
-            ("fn prepare_enrollment(", "state.require_resident_learning_source_candidate(request).await"),
-            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id)).await"),
+            ("fn prepare_enrollment(", "state\n            .require_resident_learning_source_candidate(request)\n            .await"),
+            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await"),
+            ("fn prepare_enrollment(", "state\n            .require_circuit_learning_source(request)\n            .await"),
             ("fn deliver(", "self.admission = DeliveryAdmissionV3::Readback"),
-            ("fn deliver(", "store.claim_circuit_learning(&row.intent, &digest).await"),
+            ("fn deliver(", "state\n                .require_circuit_learning_source(request)\n                .await"),
+            ("fn deliver(", "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await"),
             ("fn deliver(", "coordinator.next_stage().is_some()"),
             ("fn deliver(", "self.root.revalidate_original_observation(&observed)?"),
-            ("fn deliver(", "store.acknowledge_circuit_learning(&row.intent, &digest, &head).await"),
+            ("fn deliver(", "store\n            .acknowledge_circuit_learning(&row.intent, &digest, &head)\n            .await"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(filename, function, marker)
@@ -319,10 +321,10 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         filename = "authority_host_learning_resident_auth.rs"
         for function, marker in (
             ("fn original_attestations(", "stages.validate_recovery(snapshot).await?"),
-            ("fn original_attestations(", "stages.receipt_attestation(snapshot, receipt, now / 1_000).await?"),
+            ("fn original_attestations(", "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"),
             ("fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?"),
             ("fn verify_attestations(", "signatures.len() != snapshot.receipts.len()"),
-            ("fn verify_attestations(", "verifier.verify(role, signature, &payload, now)"),
+            ("fn verify_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),
             ("fn verify_attestations(", "snapshot.training_no_update_v2().is_none()"),
             ("fn verify_attestations(", "verify_signed_actor_separation(&previous.1, current, now)"),
         ):

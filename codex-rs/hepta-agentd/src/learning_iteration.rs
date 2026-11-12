@@ -30,6 +30,7 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;
 pub use registry::CircuitLearningDeliveryRegistryV1;
