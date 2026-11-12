@@ -12,10 +12,10 @@ use super::completed_files::OriginalControlRecord;
 use super::*;
 use crate::authority_host_runtime::OriginalCompletedLearningContextV1;
 
-#[path = "authority_host_publication_completed_open.rs"]
-mod open;
 #[path = "authority_host_publication_completed_next_use.rs"]
 mod next_use;
+#[path = "authority_host_publication_completed_open.rs"]
+mod open;
 
 /// Chosen by Root's completed-history deployment, never inferred from Missing.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
