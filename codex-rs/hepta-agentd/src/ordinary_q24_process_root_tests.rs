@@ -29,6 +29,11 @@ use crate::HostIssuerRecordProfile;
 use crate::RootArtifactPublicationInputsV1;
 
 pub(super) const LIFETIME_MS: u64 = 300_000;
+// These are declared before A's first registration. The original writer must
+// actually expire before recovery; its original issuer remains available to
+// authorize the next registered incarnation without replacing its key/store.
+const ORIGINAL_WRITER_LIFETIME_MS: u64 = 60_000;
+const ORIGINAL_ISSUER_LIFETIME_MS: u64 = 1_200_000;
 
 pub(super) struct OriginalRootInputs {
     pub(super) service: PathBuf,
@@ -39,6 +44,7 @@ pub(super) struct OriginalRootInputs {
     pub(super) authority: PathBuf,
     pub(super) current: PathBuf,
     pub(super) issuer: Value,
+    pub(super) writer_proof: PathBuf,
 }
 
 impl OriginalRootInputs {
@@ -72,7 +78,7 @@ impl OriginalRootInputs {
                     scope_sha256: binding.scope_sha256,
                     payload_sha256: binding.payload_sha256,
                 },
-                lease_lifetime_ms: LIFETIME_MS,
+                lease_lifetime_ms: ORIGINAL_ISSUER_LIFETIME_MS,
             },
         )?;
         let initialized = crate::initialize_host_authority(&state, &bootstrap)?;
@@ -105,7 +111,7 @@ impl OriginalRootInputs {
                     },
                     issued_at_unix_ms: now,
                     expires_at_unix_ms: now
-                        .checked_add(LIFETIME_MS)
+                        .checked_add(ORIGINAL_WRITER_LIFETIME_MS)
                         .ok_or_else(|| anyhow::anyhow!("original writer expiry overflow"))?,
                 },
             }),
@@ -134,7 +140,9 @@ impl OriginalRootInputs {
         };
         let service = protected.join("service.json");
         write_json(&service, &config)?;
-        crate::register_host_writer_authorization(&service)?;
+        let original_proof = crate::register_host_writer_authorization(&service)?;
+        let writer_proof = protected.join("original-writer-proof.json");
+        write_json(&writer_proof, &original_proof)?;
         // The actual historical endpoint reads its independent retained cuts
         // from this registered Root state directory. Initial capture must use
         // this same declared directory; no test moves records after A exits.
@@ -147,6 +155,7 @@ impl OriginalRootInputs {
             run_start: protected.join("run-start.json"),
             authority: state,
             current,
+            writer_proof,
             issuer: json!({
                 "key_id": initialized.signer_id,
                 "verifying_key": initialized.verifying_key,
