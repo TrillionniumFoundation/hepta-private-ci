@@ -99,7 +99,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         for suffix, expected in (
-            ("constructor", (STAGE_OWNERS,)),
+            ("constructor", ()),
             ("execute", (STAGE_OWNERS,)),
             ("readback", (SNAPSHOT, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)),
             ("attestation", ()),
