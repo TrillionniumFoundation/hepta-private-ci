@@ -9,6 +9,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let command = args
         .next()
         .ok_or("initialize, register-writer, register-learning, register-q24-model-factory, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+    if command == "independent-b-source" {
+        return codex_hepta_agentd::run_original_independent_b_source_cli(args.collect())
+            .map_err(Into::into);
+    }
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
