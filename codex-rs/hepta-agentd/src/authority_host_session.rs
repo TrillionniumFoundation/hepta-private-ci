@@ -28,6 +28,8 @@ pub use generation_initial::RootGenerationInitialDeploymentSessionV1;
 pub use generation_initial::RootGenerationInitialDeploymentV1;
 pub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;
 pub use generation_initial::RootGenerationInitialRegistrationV1;
+pub use generation_initial::RootHistoricalSourceCaptureCapabilityV1;
+pub use generation_initial::RootHistoricalSourceCaptureReceiptV1;
 
 #[path = "authority_host_generation_publication_session.rs"]
 mod generation_publication;
