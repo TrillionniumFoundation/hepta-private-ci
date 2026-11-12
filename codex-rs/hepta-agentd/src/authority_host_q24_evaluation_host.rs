@@ -35,6 +35,8 @@ use super::record::OriginalBRecord;
 
 #[path = "authority_host_q24_evaluation_operation.rs"]
 mod operation;
+#[path = "authority_host_q24_evaluation_prepare.rs"]
+mod prepare;
 
 #[path = "authority_host_q24_evaluation_registration.rs"]
 mod registration;

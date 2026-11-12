@@ -7,7 +7,10 @@ use super::*;
 use crate::learning_owner_evidence;
 
 enum Operation<'a> {
-    Complete(&'a SignedLearningEvidenceV1),
+    Complete {
+        training: &'a SignedLearningEvidenceV1,
+        plan: &'a SignedLearningEvidenceV1,
+    },
     Readback,
 }
 
@@ -21,6 +24,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         frame_end: Instant,
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
+        plan_attestation: &SignedLearningEvidenceV1,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
         self.with_operation(
@@ -30,7 +34,10 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             owner,
             frame_end,
             training_head,
-            Operation::Complete(attestation),
+            Operation::Complete {
+                training: attestation,
+                plan: plan_attestation,
+            },
             action,
         )
     }
@@ -69,12 +76,12 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
         let end = self.end.min(frame_end);
+        let mut cell_locks = None;
         self.record.inspect(end, |enrollment| {
             let mut state = self.state.try_lock().map_err(|_| io::Error::other("original B native owners are busy"))?;
             let OriginalBState { files, execution } = &mut *state;
             // Retained outside the callback, through the Root postchecks and
             // final physical readback; no borrowed observer can release them.
-            let mut cell_locks = None;
             let (value, completed, before, authorities) = service.with_learning_profile(
                 config, registration, owner, &self.profile, |actual, proof| {
                     owner_alive(owner, end)?;
@@ -92,9 +99,13 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let now = service.original_learning_unix_seconds()?;
                     require_files(files, enrollment, now)?;
                     let (protocol, authorities) = files.admitted_protocol(&actual, now)?;
+                    super::super::benchmark::restore_original_cells(files, enrollment, &training, &protocol)?;
+                    if let Operation::Complete { plan, .. } = &operation {
+                        super::prepare::retain_original_plan_statement(files, enrollment, &training, &authorities, plan, now)?;
+                    }
                     cell_locks = Some((files.candidate.lock_original()?, files.fixed_expert.lock_original()?));
                     let attestation = match &operation {
-                        Operation::Complete(original) => (*original).clone(),
+                        Operation::Complete { training: original, .. } => (*original).clone(),
                         Operation::Readback => {
                             let encoded = enrollment.original_training_attestation.as_ref()
                                 .ok_or_else(|| io::Error::other("original B Training attestation was never retained"))?;
@@ -104,7 +115,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let mode = if enrollment.completed_receipt.is_some() {
                         OriginalBResultMode::Readback
                     } else {
-                        if !matches!(operation, Operation::Complete(_)) || before != training {
+                        if !matches!(operation, Operation::Complete { .. }) || before != training {
                             return Err(io::Error::other("original B first execution requires the current Training cut"));
                         }
                         OriginalBResultMode::Complete
@@ -143,6 +154,8 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             }
             let native = execution.as_mut().ok_or_else(|| io::Error::other("original B owners disappeared"))?;
             native.observers.require_original_plan(&native.plan).map_err(io::Error::other)?;
+            let (protocol, _) = files.admitted_protocol(&self.initial, now)?;
+            super::super::benchmark::require_original_cells(files, enrollment, &completed.training, &protocol)?;
             if enrollment.heads.as_ref() != Some(&native.original_heads(Digest32::from_array(enrollment.namespace))?)
                 || enrollment.output_images != native.output_images(files)?
             { return Err(io::Error::other("original B changed after Root context")); }

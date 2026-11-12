@@ -111,7 +111,7 @@ pub(crate) fn serve_optional_until(
                             },
                         )
                         .map_err(|_| HostIssuerTransportError::Unavailable)?,
-                        Command::Complete {
+                        Command::PrepareCandidate {
                             training_head,
                             training_attestation,
                         } => {
@@ -119,6 +119,40 @@ pub(crate) fn serve_optional_until(
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             let (_, signed) =
                                 crate::learning_owner_evidence::decode(&training_attestation)
+                                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                            bound
+                                .runtime
+                                .host
+                                .prepare_original_candidate(
+                                    service,
+                                    config,
+                                    registration,
+                                    owner,
+                                    frame_end,
+                                    head,
+                                    &signed,
+                                    |actual| {
+                                        encode_response(
+                                            sequence,
+                                            &bound.runtime.bootstrap.binding,
+                                            Observation::Prepared(Box::new(actual)),
+                                        )
+                                    },
+                                )
+                                .map_err(|_| HostIssuerTransportError::Unavailable)?
+                        }
+                        Command::Complete {
+                            training_head,
+                            training_attestation,
+                            plan_attestation,
+                        } => {
+                            let head = digest(&training_head)
+                                .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                            let (_, signed) =
+                                crate::learning_owner_evidence::decode(&training_attestation)
+                                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                            let (_, plan_signed) =
+                                crate::learning_owner_evidence::decode(&plan_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             bound
                                 .runtime
@@ -131,6 +165,7 @@ pub(crate) fn serve_optional_until(
                                     frame_end,
                                     head,
                                     &signed,
+                                    &plan_signed,
                                     |actual| {
                                         encode_response(
                                             sequence,
@@ -213,9 +248,6 @@ fn completed_data(actual: OriginalRootBEvaluationBorrowV1<'_>) -> io::Result<Obs
             .map_err(io::Error::other)?;
     let comparison =
         serde_json::to_string(actual.execution().plan().record()).map_err(io::Error::other)?;
-    if comparison.len() > 8_192 {
-        return Err(io::Error::other("bounded original B comparison required"));
-    }
     Ok(Observation::Completed(Box::new(CompletedData {
         training_head: actual.training_snapshot().head_digest.to_string(),
         receipt: ReceiptData::from_original(receipt)?,
@@ -228,7 +260,7 @@ fn completed_data(actual: OriginalRootBEvaluationBorrowV1<'_>) -> io::Result<Obs
             .candidate
             .manifest
             .clone(),
-        comparison,
+        comparison_digest: Digest32::of_bytes(comparison.as_bytes()).to_string(),
         plan_digest: actual
             .execution()
             .plan()

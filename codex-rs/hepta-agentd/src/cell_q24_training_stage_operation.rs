@@ -152,3 +152,6 @@ impl OriginalQ24TrainingOperationEvidenceV1<'_> {
         &self.completed.attestation
     }
 }
+
+#[path = "cell_q24_training_b_plan.rs"]
+mod b_plan;
