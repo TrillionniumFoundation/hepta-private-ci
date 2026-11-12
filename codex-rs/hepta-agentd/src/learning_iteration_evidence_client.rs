@@ -30,9 +30,9 @@ mod wire;
 
 #[path = "cell_q24_no_update_stage_owners.rs"]
 mod ordinary_stage_owners;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageOwnersV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageStreamsV1;
-pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateTaskStreamV1;
 
 #[path = "cell_q24_training_command.rs"]
