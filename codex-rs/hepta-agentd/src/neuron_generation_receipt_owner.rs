@@ -359,9 +359,10 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
     ) -> Result<LearningIterationObservationV1, Error> {
         let source = match &self.source {
             OriginalLearningReceiptSourceV1::HistoricalFeature(source) => {
-                return source
-                    .read_original_feature_observation(predecessor, self.config.role)
-                    .map_err(|_| Error::Binding("original retired Feature data unavailable"));
+                return OriginalHistoricalCircuitFeatureSourcesV1::read_original_feature_observation(
+                    source, predecessor, self.config.role,
+                )
+                .map_err(|_| Error::Binding("original retired Feature data unavailable"));
             }
             OriginalLearningReceiptSourceV1::Feature(source) => {
                 let feature: &OriginalCircuitFeatureLearningSourcesV1 = source;
@@ -551,10 +552,11 @@ fn validate_config(
         }
         OriginalLearningReceiptSourceV1::HistoricalFeature(source) => (
             b"hepta.agentd.original-feature-receipt-owner.v1\0",
-            source
-                .require_original_feature_binding(expected)
-                .map_err(|_| Error::Binding("original historical Feature source binding"))?
-                .into_array(),
+            OriginalHistoricalCircuitFeatureSourcesV1::require_original_feature_binding(
+                source, expected,
+            )
+            .map_err(|_| Error::Binding("original historical Feature source binding"))?
+            .into_array(),
             Vec::new(),
         ),
     };

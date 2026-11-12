@@ -75,6 +75,9 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             tokio::task::spawn_blocking(move || original.open(initial, scope))
                 .await
                 .map_err(|_| Error::CommitUncertain)??;
-        self.install_generation(snapshot, selection, next_use).await
+        OriginalCellQ24LearningStageOwnersV1::install_generation(
+            self, snapshot, selection, next_use,
+        )
+        .await
     }
 }
