@@ -92,9 +92,9 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
     def test_both_factories_consume_original_values_under_the_same_root_registration(self):
         for function, marker in (
             ("fn into_runtime(", "stages: crate::OriginalCellQ24NoUpdateStageOwnersV1"),
-            ("fn into_runtime(", "self.owner, stages::ResidentOriginalStageOwnersV3::NoUpdate(stages), verifier, capacity"),
+            ("fn into_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),\n            verifier,\n            capacity"),
             ("fn into_candidate_runtime(", "stages: crate::OriginalCellQ24CandidateStageOwnersV1"),
-            ("fn into_candidate_runtime(", "self.owner, stages::ResidentOriginalStageOwnersV3::Candidate(stages), verifier, capacity"),
+            ("fn into_candidate_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::Candidate(stages),\n            verifier,\n            capacity"),
         ):
             self.rejects(FACTORY, function, marker)
         for marker in (
@@ -103,9 +103,9 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
         ):
             self.rejects(STAGES, "fn require_initial(", marker)
         for marker in (
-            "profile.require_verifier(&verifier)",
-            "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)",
-            "owner.authority.authorization_binding()",
+            "profile\n        .require_verifier(&verifier)",
+            "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )",
+            "owner\n        .authority\n        .authorization_binding()",
             "admission_requested: readonly",
         ):
             self.rejects(RUNTIME, "fn compose(", marker)
@@ -141,7 +141,7 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
         self.rejects(CANDIDATE, "fn validate_recovery<'a>", "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await")
         self.rejects(RUNTIME, "fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?")
         self.rejects(RUNTIME, "fn continue_original(", "gate.begin(&predecessor, stage).await?")
-        self.rejects(RUNTIME, "fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?")
+        self.rejects(RUNTIME, "fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?")
         for marker in (
             "Stage::Proposal => Err(Error::OwnerUnavailable(",
             "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",

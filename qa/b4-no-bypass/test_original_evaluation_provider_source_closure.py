@@ -185,16 +185,16 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             "decision.run_snapshot_digest != input.ndu_snapshot_digest",
             "decision.selected_candidate_id != *policy.selected()",
             "decision.selected_propensity != ProbabilityQ32::ONE",
-            "outcome.value.ok_or", "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
+            "outcome\n            .value\n            .ok_or", "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
             "outcome.unit_profile_digest != config.rule.unit_profile_digest",
             "outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest",
             "training.generator.principal().principal_id == outcome.observer_id",
             "training.generator.controller_id() == &outcome.observer_controller_id",
-            "training.generator.principal().credential_chain_digest == outcome.observer_credential_chain_digest",
-            "training.generator.principal().signing_key_digest == outcome.observer_signing_key_digest",
+            "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+            "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest",
             "decision.generator_id == outcome.observer_id",
             "decision.generator_controller_id == outcome.observer_controller_id",
-            "decision.generator_credential_chain_digest == outcome.observer_credential_chain_digest",
+            "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest",
             "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
         ):
             self.rejects(RECORDS, "fn read_episode(", marker)
@@ -202,7 +202,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             RECORDS, "fn read_episode(", "&requested.episode_id",
             after="circuit_learning_run_id_v1(",
         )
-        for marker in ("outcomes.insert", "outcomes.keys()", "outcome: row.value"):
+        for marker in ("outcomes\n                    .insert", "outcomes.keys()", "outcome: row.value"):
             self.rejects(RECORDS, "fn assemble(", marker)
 
     def test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions(self):
