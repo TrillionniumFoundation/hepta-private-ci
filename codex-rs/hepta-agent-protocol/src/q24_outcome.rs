@@ -40,3 +40,7 @@ pub struct Q24OriginalTerminalOutcomeReceiptV1 {
     pub outcome_sequence: u64,
     pub outcome_chain_digest: String,
 }
+
+#[cfg(test)]
+#[path = "q24_outcome_tests.rs"]
+mod tests;
