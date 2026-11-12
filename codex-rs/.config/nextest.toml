@@ -99,6 +99,15 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 max-threads = 1
 
 [[profile.default.overrides]]
+# One new opt-in whole-cold case retains the original pidfds while the actual
+# 60s/300s writer leases retire, then bounds a new read-only phase to <=120s.
+# This eight-minute harness does not renew product deadlines or old signatures.
+filter = 'package(codex-hepta-agentd) & test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 16 }
+retries = 0
+
+[[profile.default.overrides]]
 # This opt-in qualification starts real companion windows and performs several
 # original SQLite writer close/reopen and acknowledged receipt transactions.
 # Keep every operation deadline and assertion; bound the complete durable run
