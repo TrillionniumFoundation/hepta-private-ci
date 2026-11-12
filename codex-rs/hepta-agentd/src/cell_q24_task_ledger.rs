@@ -37,10 +37,14 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 mod binding;
 #[path = "cell_q24_task_outcome_control.rs"]
 pub(crate) mod control;
+#[path = "cell_q24_task_ledger_history.rs"]
+pub(crate) mod history;
 #[path = "cell_q24_task_ledger_outcome.rs"]
 mod outcome;
 #[path = "cell_q24_task_outcome_codec.rs"]
 mod outcome_codec;
+#[path = "cell_q24_task_ledger_projection.rs"]
+mod projection;
 #[path = "cell_q24_task_learning_ready.rs"]
 mod readiness;
 pub use readiness::OriginalCellQ24TaskLearningReadyV1;

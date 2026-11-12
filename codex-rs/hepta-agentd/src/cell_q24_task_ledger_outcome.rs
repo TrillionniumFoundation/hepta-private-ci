@@ -1,6 +1,7 @@
 //! Independent original business observations. Accepted witnessed ledger facts
 //! are history; only a new append consumes current Observer authorization.
 
+use super::projection::outcome_event;
 use super::*;
 
 impl OriginalCellQ24TaskLedgerProducerV1 {
@@ -220,60 +221,6 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         outcome: &AuthenticatedOutcomeV1,
         captured: &Captured,
     ) -> Result<(), Error> {
-        if outcome.record_id != self.config.outcome_record_id
-            || outcome.outcome_id != self.config.outcome_id
-            || outcome.episode_id != self.config.episode_id
-            || outcome.observer != self.config.observer.principal
-            || outcome.support_digest != captured.publication.publication_digest()
-            || outcome.unit_profile_digest != self.config.unit_profile_digest
-            || outcome.watermark.expected_delay_profile_digest
-                != self.config.expected_delay_profile_digest
-            || outcome.watermark.terminality != OutcomeTerminalityV1::Terminal
-            || outcome.watermark.censoring_reason.is_some()
-            || outcome.watermark.correction_predecessor.is_some()
-            || outcome.observed_at.is_none()
-            || outcome.watermark.finalized_at.is_none()
-            || outcome
-                .value
-                .is_none_or(|value| !(-(8_i64 << 32)..=(8_i64 << 32)).contains(&value.raw()))
-        {
-            return Err(Error::Binding(
-                "original independent Terminal business observation",
-            ));
-        }
-        Ok(())
+        super::projection::require_outcome(&self.config, &captured.publication, outcome)
     }
-}
-
-fn outcome_event(
-    outcome: &AuthenticatedOutcomeV1,
-    signed: &SignedLearningEvidenceV1,
-    observer: &TrustedLearningSignerV1,
-) -> LedgerEvent {
-    LedgerEvent::AuthenticatedOutcomeV2(AuthenticatedOutcomeRecordV2 {
-        record_id: outcome.record_id.clone(),
-        outcome_id: outcome.outcome_id.clone(),
-        episode_id: outcome.episode_id.clone(),
-        observer_id: observer.principal.principal_id.clone(),
-        observer_controller_id: observer.controller_id.clone(),
-        observer_credential_chain_digest: observer.principal.credential_chain_digest,
-        observer_signing_key_digest: observer.principal.signing_key_digest,
-        observer_scope_digest: observer.principal.scope_digest,
-        observer_authority_epoch: observer.principal.authority_epoch,
-        observed_at: outcome.observed_at,
-        value: outcome.value,
-        unit_profile_digest: outcome.unit_profile_digest,
-        support_digest: outcome.support_digest,
-        latest_observable_at: outcome.watermark.latest_observable_at,
-        expected_delay_profile_digest: outcome.watermark.expected_delay_profile_digest,
-        terminality: match outcome.watermark.terminality {
-            OutcomeTerminalityV1::Pending => AuthenticatedOutcomeTerminality::Pending,
-            OutcomeTerminalityV1::Censored => AuthenticatedOutcomeTerminality::Censored,
-            OutcomeTerminalityV1::Terminal => AuthenticatedOutcomeTerminality::Terminal,
-        },
-        censoring_reason: outcome.watermark.censoring_reason.clone(),
-        correction_predecessor: outcome.watermark.correction_predecessor.clone(),
-        finalized_at: outcome.watermark.finalized_at,
-        authentication_digest: binding::authentication_digest(signed),
-    })
 }
