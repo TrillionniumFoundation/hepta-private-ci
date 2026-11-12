@@ -1,0 +1,187 @@
+{
+  "status": "SCOPED_JAVASCRIPT_DIAGNOSTIC_ONLY_NOT_THE_PYTHON_SCANNER",
+  "positive_rows": 6,
+  "rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "base_against_old_row": [],
+      "actual_against_old_row": [
+        {
+          "kind": "sequence",
+          "label": "fn readback(",
+          "marker": "STANDARD_NO_PAD\n                    .decode(&encoded_heads)",
+          "offset": 8568
+        }
+      ],
+      "actual_against_new_row": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+      "base_against_old_row": [],
+      "actual_against_old_row": [],
+      "actual_against_new_row": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "base_against_old_row": [],
+      "actual_against_old_row": [
+        {
+          "kind": "sequence",
+          "label": "fn candidate_material_response(",
+          "marker": "let request: candidate_wire::Request = serde_json::from_slice(bytes)?",
+          "offset": 244
+        },
+        {
+          "kind": "top_level_unique",
+          "function": "fn candidate_material_response(",
+          "marker": "request.require_context(&self.context, self.binding, request_id)?"
+        },
+        {
+          "kind": "top_level_unique",
+          "function": "fn candidate_material_response(",
+          "marker": "session.require_request(&request)?"
+        },
+        {
+          "kind": "top_level_depth",
+          "function": "fn candidate_material_response(",
+          "depth": 3,
+          "marker": "session.encode_response(request, result)"
+        }
+      ],
+      "actual_against_new_row": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+      "base_against_old_row": [],
+      "actual_against_old_row": [
+        {
+          "kind": "sequence",
+          "label": "fn candidate_material_response(",
+          "marker": "let request: candidate_wire::Request =\n            serde_json::from_slice(bytes)",
+          "offset": 0
+        },
+        {
+          "kind": "top_level_unique",
+          "function": "fn candidate_material_response(",
+          "marker": "request.require_initial(&self.config.material, request_id)?"
+        },
+        {
+          "kind": "top_level_unique",
+          "function": "fn candidate_material_response(",
+          "marker": "session.require_request(&request)?"
+        }
+      ],
+      "actual_against_new_row": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "base_against_old_row": [],
+      "actual_against_old_row": [],
+      "actual_against_new_row": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs",
+      "actual_against_new_row": []
+    }
+  ],
+  "unused_closure_mutations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "function": "fn readback(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "top_level_depth",
+        "function": "fn readback(",
+        "depth": 2,
+        "marker": "let started_at = now()?"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+      "function": "fn encode_response(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "top_level_depth",
+        "function": "fn encode_response(",
+        "depth": 2,
+        "marker": "self.require_request(&request)?"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+      "function": "fn require_current(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "sequence",
+        "label": "fn require_current(",
+        "marker": "{\n        if self.next_page != 0\n            || !self.pages.is_empty()\n            || self.current.as_ref() != Some(&request.pin())\n        {\n            return Err(Error::Binding(\n                                                                  ,\n            ));\n        }\n        Ok(())\n    }",
+        "offset": 19
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+      "function": "fn encode_current(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "sequence",
+        "label": "fn encode_current(",
+        "marker": "{\n        self.require_current(&request)?;\n        let disposition = match &result {\n            MaterialResult::Current {\n                completion,\n                heads,\n                total,\n            } if *completion == request.completion\n                && *heads == request.heads\n                && *total == request.total =>\n            {\n                SessionDisposition::ContinueReadback\n            }\n            MaterialResult::Current { .. } | MaterialResult::Page { .. } => {\n                return Err(Error::Binding(                                           ));\n            }\n            _ => SessionDisposition::CloseReadback,\n        };\n        let bytes = serde_json::to_vec(&candidate_current::Response { request, result })?;\n        if bytes.len() > FRAME_BYTES {\n            return Err(Error::Binding(                                ));\n        }\n        Ok((bytes, disposition))\n    }",
+        "offset": 18
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "function": "fn candidate_material_response(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "top_level_depth",
+        "function": "fn candidate_material_response(",
+        "depth": 2,
+        "marker": "let started_at = now()?"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+      "function": "fn candidate_material_response(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "top_level_depth",
+        "function": "fn candidate_material_response(",
+        "depth": 2,
+        "marker": "if let Some(original) = self.ready()?"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs",
+      "function": "fn original_context(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "sequence",
+        "label": "fn original_context(",
+        "marker": "{\n        if self.operation != OPERATION\n            || !(1..=128).contains(&self.request_id)\n            || !(12..=32_780).contains(&self.total)\n        {\n            return Err(Error::Binding(\n                                                               ,\n            ));\n        }\n        canonical(&self.heads)?;\n        Ok(candidate_wire::Request {\n            schema: self.schema,\n            operation: candidate_wire::OPERATION.into(),\n            request_id: self.request_id,\n            binding: self.binding.clone(),\n            operation_id: self.operation_id.clone(),\n            dataset_head: self.dataset_head.clone(),\n            scope_binding: self.scope_binding.clone(),\n            actor_id: self.actor_id.clone(),\n            completion: self.completion.clone(),\n            page: 0,\n        })\n    }",
+        "offset": 20
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs",
+      "function": "fn original_candidate_current_proof_v1(",
+      "mutation": "unchanged original body moved into uninvoked async closure with unreachable outer result",
+      "rejected_by_scoped_js": true,
+      "first_failure": {
+        "kind": "sequence",
+        "label": "fn original_candidate_current_proof_v1(",
+        "marker": "{\n    let pin = Pin::from_heads(\n        candidate_wire::completion_digest(material.receipt(), material.attestation())?.to_string(),\n        material.heads(),\n    )?;\n    if request.pin() != pin {\n        return Err(Error::Binding(\n                                                               ,\n        ));\n    }\n    Ok(candidate_wire::MaterialResult::Current {\n        completion: pin.completion,\n        heads: pin.heads,\n        total: pin.total,\n    })\n}",
+        "offset": 39
+      }
+    }
+  ],
+  "actual_python_qa_run": false,
+  "full_index": false
+}

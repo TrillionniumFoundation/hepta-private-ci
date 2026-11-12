@@ -1,0 +1,39 @@
+{
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "path": ".github/workflows/hepta-daemon-learning-native.yml",
+  "metadata": {
+    "bytes": 27811,
+    "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+    "git_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff"
+  },
+  "declares_workflow_dispatch": true,
+  "dispatch_inputs": false,
+  "source_binding": "github.event.pull_request.head.sha || github.sha",
+  "jobs": [
+    "native",
+    "caller-proof"
+  ],
+  "budgets": {
+    "native_minutes": 180,
+    "caller_minutes": 100,
+    "source_seconds": 600,
+    "caller_self_test_seconds": 300,
+    "caller_verify_seconds": 4800
+  },
+  "actions_dispatch_tool_available": false,
+  "available_actions_tools": [
+    "mcp__codex_apps__github_download_workflow_artifact",
+    "mcp__codex_apps__github_fetch",
+    "mcp__codex_apps__github_fetch_commit_workflow_runs",
+    "mcp__codex_apps__github_fetch_workflow_job_logs",
+    "mcp__codex_apps__github_fetch_workflow_job_steps",
+    "mcp__codex_apps__github_fetch_workflow_run_artifacts",
+    "mcp__codex_apps__github_fetch_workflow_run_jobs",
+    "mcp__codex_apps__github_rerun_failed_workflow_run_jobs",
+    "mcp__codex_apps__github_rerun_workflow_job"
+  ],
+  "metadata_get_tool_readonly": true,
+  "rerun_tools_are_existing_run_or_job_only": true,
+  "no_action_dispatched": true,
+  "conclusion": "Existing workflow has manual trigger but current tool surface cannot dispatch an arbitrary new ref/commit. No trigger/PR/workflow mutation performed."
+}

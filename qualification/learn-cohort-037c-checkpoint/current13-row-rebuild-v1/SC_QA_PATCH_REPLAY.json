@@ -1,0 +1,44 @@
+{
+  "status": "EXACT_JAVASCRIPT_PATCH_REPLAY_ONLY_PYTHON_QA_UNRUN",
+  "source_commit": "cf4d240f84326539cde7bb7cd53f510dcce4f25b",
+  "before": {
+    "bytes": 51393,
+    "sha256": "1ef9403577d3e662564b52cf70ea68808f455aec44e317009470059c9df8a8a1",
+    "git_blob": "a3d90487a495f57de02eae9f262325232f72c127"
+  },
+  "after": {
+    "bytes": 51748,
+    "sha256": "2a06f2011ca9a75bed10223017154d08c5c3b56d8d8c0c3eccf0216a06874643",
+    "git_blob": "fc395afda1cbba4ccad23bd7ef283cef68a35195"
+  },
+  "patch": {
+    "bytes": 9998,
+    "sha256": "b982b7e4953843a153f8cec62325491b49182decc86151cae2155219f3c21b7a",
+    "git_blob": "6693771af15e607e0d0d13bb3a9cdfcc36f7af0d"
+  },
+  "hunks": 1,
+  "deleted_lines": 5,
+  "added_lines": 5,
+  "offsets": 0,
+  "fuzz": 0,
+  "all_test_class_bytes_unchanged": true,
+  "test_cases": [
+    "test_inventory_and_exact_real_callers_reject_additional_typed_callers",
+    "test_legacy_forbidden_markers_and_all_actual_functions_stay_guarded",
+    "test_every_guarded_function_rejects_an_uninvoked_closure_copy",
+    "test_live_checks_cannot_be_hidden_after_an_early_cached_result",
+    "test_opaque_custody_fields_and_private_bool_helpers_cannot_be_exposed",
+    "test_domains_are_checked_at_actual_expressions_and_comments_cannot_replace_them",
+    "test_fresh_and_cold_constructors_bind_actual_predecessors_and_never_rebrand",
+    "test_only_this_clients_complete_execute_ack_retains_fresh_origin",
+    "test_complete_five_and_six_cut_signatures_are_mandatory",
+    "test_fixed_wire_requests_echo_every_context_field_and_reject_extra_fields",
+    "test_unknown_outcomes_and_queued_cancellation_permanently_consume_the_channel",
+    "test_original_request_session_and_deadline_limits_are_not_extended",
+    "test_readonly_s_binding_keeps_full_signatures_and_real_pre_post_reads",
+    "test_actual_t_b_s_source_cell_and_journal_reads_cannot_be_replaced_by_pins",
+    "test_recovery_in_both_engines_remains_readback_without_any_new_claim",
+    "test_real_product_mounts_and_native_mechanism_cases_remain_connected"
+  ],
+  "python_syntax_and_qa_executed": false
+}
