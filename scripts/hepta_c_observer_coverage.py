@@ -238,6 +238,14 @@ INITIAL_TRAINING_CONNECTION_CASES = tuple(
         "deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
     )
 )
+ORIGINAL_TRAINING_READBACK_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + "original_readback::" + name
+    for name in (
+        "original_training_readback_unready_and_wrong_purpose_never_initialize",
+        "original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+    )
+)
 
 NEXT_USE_COMMAND_PREFIX = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::"
 NEXT_USE_COMMAND_CASES = tuple(
@@ -392,6 +400,7 @@ OWNER_GROUPS = (
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
+    ("original_training_readback", PACKAGE, ORIGINAL_TRAINING_READBACK_CASES),
     (
         "original_initial_training_connection",
         PACKAGE,

@@ -66,7 +66,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         Err(Error::Uncertain)
     }
 
-    fn original_training_readback_response(
+    pub(in crate::learning_iteration_evidence_client::training_command::bootstrap) fn original_training_readback_response(
         &self,
         bytes: &[u8],
         request_id: u64,

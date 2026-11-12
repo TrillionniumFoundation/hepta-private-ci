@@ -233,3 +233,7 @@ pub(super) fn require_request(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "cell_q24_training_readback_support_tests.rs"]
+pub(super) mod test_support;
