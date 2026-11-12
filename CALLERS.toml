@@ -13446,4 +13446,4 @@ required_order = [["RootGenerationInitialDeploymentFilesV1::open_original_initia
 path = "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
 required = []
 forbidden = ["pub(crate) fn require_profile(", "pub fn require_profile(", "pub(crate) fn fence(", "pub fn fence("]
-required_function_order = [{ function = "fn require_original_enrollment_profile(", sequence = ["self.require_profile()"] }, { function = "fn refuse_original_enrollment(", sequence = ["self.fence()"] }]
+required_function_order = [{ function = "fn require_original_enrollment_profile(", sequence = ["fn require_original_enrollment_profile(", "self.require_profile()"] }, { function = "fn refuse_original_enrollment(", sequence = ["fn refuse_original_enrollment(", "self.fence()"] }]
