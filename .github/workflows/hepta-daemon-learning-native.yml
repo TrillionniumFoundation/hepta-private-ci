@@ -3,6 +3,8 @@ name: Hepta daemon learning native
 on:
   pull_request:
     paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-learning-artifacts/**"
