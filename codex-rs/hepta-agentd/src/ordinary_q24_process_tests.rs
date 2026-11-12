@@ -13,6 +13,8 @@ mod launch;
 mod observer;
 #[path = "ordinary_q24_process_root_tests.rs"]
 mod root;
+#[path = "ordinary_q24_root_pair_tests.rs"]
+mod root_pair;
 
 use std::path::PathBuf;
 use std::process::Command;
