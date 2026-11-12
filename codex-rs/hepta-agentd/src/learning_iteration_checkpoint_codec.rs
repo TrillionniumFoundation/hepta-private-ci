@@ -7,6 +7,11 @@ use codex_hepta_types::StableId;
 
 use super::LearningIterationCheckpointErrorV1 as Error;
 
+#[path = "learning_iteration_bundle_data.rs"]
+mod bundle_data;
+pub(crate) use bundle_data::decode_original_bundle_data;
+pub(crate) use bundle_data::encode_original_bundle_data;
+
 pub(super) const MAX_BYTES: usize = 8192;
 // The snapshot codec version is independent of the outer scope schema (1/2).
 // HEPLCP01 omitted the frozen evaluation profile and is never inferred or upgraded.

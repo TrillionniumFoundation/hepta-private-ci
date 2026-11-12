@@ -25,6 +25,8 @@ use serde::Serialize;
 
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod codec;
+pub(crate) use codec::decode_original_bundle_data;
+pub(crate) use codec::encode_original_bundle_data;
 
 #[path = "learning_iteration_checkpoint_ports.rs"]
 mod ports;
