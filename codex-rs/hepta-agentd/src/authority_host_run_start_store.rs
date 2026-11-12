@@ -214,41 +214,50 @@ impl RootRetainedRunStartDataV1 {
         original_identity: &crate::AgentdIdentity,
     ) -> io::Result<RunStartReadOnlyFrameV1> {
         RootDataRefusalV1::inspect(&self.refusal, || {
-            self.state.require_exact_unchecked()?;
-            let original = &self.state.expected.original;
-            if original.identity
-                != crate::neuron_generation_process_identity_digest_v1(original_identity)
-                    .map_err(io::Error::other)?
-                    .to_string()
-                || original.spawn_generation != original_identity.spawn_generation
-                || original.target.scope().agent_id != original_identity.agent_id.as_str()
-            {
-                return Err(io::Error::other(
-                    "retained RunStart original identity differs",
-                ));
-            }
-            let observed = self.state.expected.observed.as_ref().ok_or_else(|| {
+            self.read_original_publication_unchecked(files, original_identity)
+        })
+    }
+
+    pub(super) fn read_original_publication_unchecked(
+        &self,
+        files: &RootInitialRunStartFilesV1,
+        original_identity: &crate::AgentdIdentity,
+    ) -> io::Result<RunStartReadOnlyFrameV1> {
+        self.state.require_exact_unchecked()?;
+        let original = &self.state.expected.original;
+        if original.identity
+            != crate::neuron_generation_process_identity_digest_v1(original_identity)
+                .map_err(io::Error::other)?
+                .to_string()
+            || original.spawn_generation != original_identity.spawn_generation
+            || original.target.scope().agent_id != original_identity.agent_id.as_str()
+        {
+            return Err(io::Error::other(
+                "retained RunStart original identity differs",
+            ));
+        }
+        let observed =
+            self.state.expected.observed.as_ref().ok_or_else(|| {
                 io::Error::other("original finalized RunStart observation missing")
             })?;
-            let frame = OriginalInputPin::observe(
-                &original.inputs,
-                files,
-                original_identity,
-                &original.target,
-                &observed.publication,
-                original.publisher.uid,
-                original.publisher_gid,
-                observed.observed_unix_ms,
-            )?;
-            if frame.frame_start != observed.frame_start
-                || frame.frame_end != observed.frame_end
-                || frame.observed_length < observed.observed_length
-            {
-                return Err(io::Error::other("retained RunStart physical cut differs"));
-            }
-            self.state.require_exact_unchecked()?;
-            Ok(frame)
-        })
+        let frame = OriginalInputPin::observe(
+            &original.inputs,
+            files,
+            original_identity,
+            &original.target,
+            &observed.publication,
+            original.publisher.uid,
+            original.publisher_gid,
+            observed.observed_unix_ms,
+        )?;
+        if frame.frame_start != observed.frame_start
+            || frame.frame_end != observed.frame_end
+            || frame.observed_length < observed.observed_length
+        {
+            return Err(io::Error::other("retained RunStart physical cut differs"));
+        }
+        self.state.require_exact_unchecked()?;
+        Ok(frame)
     }
 }
 

@@ -20,6 +20,8 @@ mod inputs;
 use inputs::OriginalInputPin;
 #[path = "authority_host_run_start_context.rs"]
 mod context;
+#[path = "authority_host_run_start_historical.rs"]
+mod historical;
 #[path = "authority_host_run_start_store.rs"]
 mod store;
 #[path = "authority_host_run_start_transport.rs"]
