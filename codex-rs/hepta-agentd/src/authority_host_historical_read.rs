@@ -15,6 +15,7 @@ use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use serde::Deserialize;
 
+use super::PreparedHostAuthoritySession;
 use super::generation_publication::deployment::files::MetadataFile;
 use crate::HostAuthorityLearningProfileV1;
 use crate::HostAuthorityRegistration;
@@ -31,6 +32,8 @@ use crate::root_historical_task_read_protocol::PURPOSE;
 use crate::root_historical_task_read_protocol::SOCKET;
 use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
+#[path = "authority_host_historical_read_session.rs"]
+mod prepared;
 #[path = "authority_host_historical_read_runtime.rs"]
 mod runtime;
 pub(super) use runtime::BoundHistoricalTaskRead;
