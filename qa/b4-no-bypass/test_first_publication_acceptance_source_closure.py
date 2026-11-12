@@ -39,7 +39,7 @@ def structure(path, source):
         effect = original.route.original.span(body, "if fresh_grant.is_some() {")
         for marker in (
             ".original_broker_publish(intent, signed, witness)",
-            "fresh_publication = Some(before.clone());",
+            "fresh_publication = Some(before);",
         ):
             if not effect[0] < body.index(marker) < effect[1]:
                 raise PROOF.VerificationFailure("first fact requires the original successful CAS")
@@ -125,7 +125,7 @@ class FirstPublicationAcceptanceSourceClosure(unittest.TestCase):
 
     def test_actual_cas_precedes_first_fact_after_whole_root_context(self):
         self.reject(TRANSPORT, ".original_broker_publish(intent, signed, witness)")
-        self.reject(TRANSPORT, "fresh_publication = Some(before.clone());")
+        self.reject(TRANSPORT, "fresh_publication = Some(before);")
         self.reject(TRANSPORT, "let accepted = match fresh_publication {")
         self.reject(TRANSPORT, "PublicationAcceptance::observe_original_publish(")
         self.reject(TRANSPORT, "// This branch only observes the original fact.",

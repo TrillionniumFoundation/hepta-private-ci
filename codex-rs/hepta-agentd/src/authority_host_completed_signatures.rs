@@ -55,10 +55,10 @@ pub(super) fn verify_original_completions(
         .collect::<io::Result<Vec<_>>>()?
         .try_into()
         .map_err(|_| io::Error::other("original completed cut count"))?;
-    if let Some(fact) = accepted {
-        if fact.journals != cuts || fact.independent_b != independent_b.acceptance.to_string() {
-            return Err(io::Error::other("retained terminal physical cut differs"));
-        }
+    if let Some(fact) = accepted
+        && (fact.journals != cuts || fact.independent_b != independent_b.acceptance.to_string())
+    {
+        return Err(io::Error::other("retained terminal physical cut differs"));
     }
     let (_, freeze) = learning_owner_evidence::decode(completed(&fixed[0].records[0].1)?)
         .map_err(io::Error::other)?;
