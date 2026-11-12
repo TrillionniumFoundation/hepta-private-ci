@@ -102,6 +102,13 @@ jobs:
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover",
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes",
               "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read",
+              "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer",
+              "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes",
+              "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption",
+              "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed",
+              "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce",
+              "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues",
+              "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
