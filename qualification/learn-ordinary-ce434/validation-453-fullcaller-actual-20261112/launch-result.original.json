@@ -1,0 +1,73 @@
+{
+  "actual_child_exit": 1,
+  "actual_child_pid": 1699296,
+  "command": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-launch-v1/full-caller-recorder.py",
+    "--repo",
+    "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "--evidence-dir",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1"
+  ],
+  "direct_child_is_full_caller_recorder": true,
+  "elapsed_seconds": 1321.0291494629346,
+  "errors": [],
+  "finished_at": "2026-11-12T17:03:21.131620+00:00",
+  "idempotency_key": "learn-ce434-4537458b51b6-isolated-full-caller-v1",
+  "launch_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-launch-v1",
+  "launcher_exit_code": 1,
+  "launcher_pid": 1699270,
+  "logs": [
+    {
+      "bytes": 306,
+      "complete": true,
+      "file": "recorder.stdout.log",
+      "sha256": "3255a77fa966a6c6f5c8af6a2c07b71b86190c0b1c58d00747fa7992f36168f1"
+    },
+    {
+      "bytes": 0,
+      "complete": true,
+      "file": "recorder.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "new_environment_values": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "ordinary_acceptance": 0,
+  "recorder_evidence_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1",
+  "runner_bytes": 18927,
+  "runner_readback": {
+    "bytes": 18927,
+    "complete": true,
+    "file": "full-caller-recorder.py",
+    "sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171"
+  },
+  "runner_sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171",
+  "schema": "hepta.fixed-full-caller-launch.v1",
+  "signals_sent": [],
+  "source_after": {
+    "clean": true,
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "status": "",
+    "status_bytes": 0,
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "source_before": {
+    "clean": true,
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "status": "",
+    "status_bytes": 0,
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "started_at": "2026-11-12T16:41:20.102591+00:00",
+  "status": "recorder_returned_nonzero",
+  "verifier_exit_must_be_read_from_original_recorder_records": true
+}
