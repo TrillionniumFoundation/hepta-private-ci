@@ -22,6 +22,11 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
     unsafe { libc::alarm(60) };
     let state = std::env::var_os("HEPTA_LEARNING_SERVICE_STATE")
         .ok_or_else(|| anyhow::anyhow!("original protected state"))?;
+    let terminal = match std::env::var("HEPTA_PUBLICATION_COMPONENT_TERMINAL")?.as_str() {
+        "StalePrepare" => Phase::StalePrepare,
+        "Revoked" => Phase::Revoked,
+        _ => anyhow::bail!("explicit original terminal refusal case required"),
+    };
     assert_eq!(
         std::fs::read_dir(state).unwrap_err().kind(),
         io::ErrorKind::PermissionDenied
@@ -33,7 +38,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         .enable_all().build()?.block_on(async {
         let mut original_head: Option<types::CurrentHead> = None;
         let mut published_head: Option<types::CurrentHead> = None;
-        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, Phase::Revoked] {
+        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, terminal, Phase::RefusedReopen] {
             eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=receive-original-offers");
             let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)
                 .with_context(|| format!("publication {phase:?}: receive original production handoff"))?;
@@ -97,6 +102,19 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             // Neither Root late registration nor this child's publication
             // connection has occurred. Both real original services responded.
             assert_eq!(socket.send(b"LEARNING_AND_ORIGINAL_INPUTS_READY")?, 34);
+            if matches!(phase, Phase::RefusedReopen) {
+                control(&socket, b"REOPEN_REFUSED")?;
+                let claims = production.bootstrap.consumers.device.local_state_dir.join("authority.claims");
+                let before = std::fs::read(&claims)?;
+                assert!(publication.connect(connection, TIMEOUT, LIFETIME).await.is_err(),
+                    "durably refused original slot cannot deliver a fresh CURRENT client");
+                assert_eq!(std::fs::read(&claims)?, before);
+                assert_eq!(socket.send(b"STABLE")?, 6);
+                control(&socket, b"CHECKED")?;
+                assert_eq!(socket.send(b"DONE")?, 4);
+                drop((checkpoint, production));
+                continue;
+            }
             let intent: types::UpdateIntent = data(&socket)
                 .with_context(|| format!("publication {phase:?}: receive registered original intent"))?;
             let operation = learning_retained_task_operation_id_v1(&decision)?;
@@ -207,12 +225,14 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                     assert_eq!(socket.send(b"DONE")?, 4);
                     continue;
                 }
-                let old = original_head.as_ref().ok_or_else(|| anyhow::anyhow!("original old generation"))?;
-                let mut old_prepared = old.clone();
-                old_prepared.prepared = Some(intent.clone());
-                require_uncertain(current.store.replace(old, &old_prepared).unwrap_err());
-                require_uncertain(current.store.load().unwrap_err());
-                assert_eq!(std::fs::read(&claims)?, nonce);
+                if matches!(phase, Phase::StalePrepare) {
+                    let old = original_head.as_ref().ok_or_else(|| anyhow::anyhow!("original old generation"))?;
+                    let mut old_prepared = old.clone();
+                    old_prepared.prepared = Some(intent.clone());
+                    require_uncertain(current.store.replace(old, &old_prepared).unwrap_err());
+                    require_uncertain(current.store.load().unwrap_err());
+                    assert_eq!(std::fs::read(&claims)?, nonce);
+                }
             }
             drop(current);
             assert_eq!(socket.send(b"DONE")?, 4);
@@ -221,7 +241,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         Ok::<(), anyhow::Error>(())
     })?;
     println!(
-        "ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0",
+        "ROOT_PUBLICATION_ORIGINAL lifecycle=passed terminal={terminal:?} actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true durable_refusal_blocks_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0",
         std::process::id()
     );
     let mut released = [0];

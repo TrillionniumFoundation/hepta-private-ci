@@ -50,7 +50,11 @@ pub(super) struct Fixture {
 }
 
 impl Fixture {
-    pub(super) fn new() -> anyhow::Result<Self> {
+    pub(super) fn new(terminal: Phase) -> anyhow::Result<Self> {
+        anyhow::ensure!(
+            matches!(terminal, Phase::StalePrepare | Phase::Revoked),
+            "explicit independent terminal refusal case required"
+        );
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("original protected bind required"))?,
@@ -361,7 +365,7 @@ impl Fixture {
         let profile_file = protected.path().join("learning.json");
         support::write_json(&profile_file, &profile)?;
         let (offer, receive) = UnixDatagram::pair()?;
-        let child = support::ChildOwner::spawn(receive, &state)?;
+        let child = support::ChildOwner::spawn(receive, &state, terminal)?;
         let pin = support::pidfd(child.pid()?)?;
         let end = Instant::now() + Duration::from_secs(2);
         while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)
@@ -452,9 +456,11 @@ impl Fixture {
         let inputs = RootGenerationPublicationEnrollmentV1 {
             mode: match phase {
                 Phase::Publish => RootGenerationPublicationModeV1::Reserve,
-                Phase::Recover | Phase::RetiredSession | Phase::Revoked => {
-                    RootGenerationPublicationModeV1::Recover
-                }
+                Phase::Recover
+                | Phase::RetiredSession
+                | Phase::StalePrepare
+                | Phase::Revoked
+                | Phase::RefusedReopen => RootGenerationPublicationModeV1::Recover,
             },
             current_directory: self.current_directory.clone(),
             previous: RootGenerationJournalInputsV1 {
@@ -513,9 +519,30 @@ impl Fixture {
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
                 deployment.component_trigger_original(&late_material)?;
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
-                let registered = deployment.wait_and_register(&stopping).with_context(|| {
-                    format!("publication {phase:?}: original late registration")
-                })?;
+                let registered = deployment
+                    .wait_and_register(&stopping)
+                    .with_context(|| format!("publication {phase:?}: original late registration"));
+                if matches!(phase, Phase::RefusedReopen) {
+                    let error = registered
+                        .err()
+                        .ok_or_else(|| anyhow::anyhow!("durably refused original slot reopened"))?;
+                    anyhow::ensure!(
+                        error.chain().any(|cause| cause
+                            .to_string()
+                            .contains("publication verification unfinished or refused")),
+                        "reopen failed before observing original refusal: {error:#}"
+                    );
+                    assert_eq!(self.offer.send(b"REOPEN_REFUSED")?, 14);
+                    control(&self.offer, b"STABLE")?;
+                    let snapshot = (
+                        self.protected_snapshot()?,
+                        std::fs::read(self.local.join("device/authority.claims"))?,
+                    );
+                    assert_eq!(self.offer.send(b"CHECKED")?, 7);
+                    control(&self.offer, b"DONE")?;
+                    return Ok(snapshot);
+                }
+                let registered = registered?;
                 anyhow::ensure!(
                     !registered.binding().parse::<Digest32>()?.is_zero(),
                     "actual Root acknowledgement"
@@ -572,7 +599,7 @@ impl Fixture {
                 }
                 control(&self.offer, b"STABLE")?;
                 let snapshot = (
-                    support::protected_files(&self.current_path)?,
+                    self.protected_snapshot()?,
                     std::fs::read(self.local.join("device/authority.claims"))?,
                 );
                 assert_eq!(self.offer.send(b"CHECKED")?, 7);
@@ -605,14 +632,26 @@ impl Fixture {
             // the original fixed-lane shutdown. The child asserts that refusal.
             Ok::<_, anyhow::Error>(result)
         })?;
+        self.protected_snapshot()?
+            .require_transition(&snapshot.0, phase)?;
         assert_eq!(
-            (
-                support::protected_files(&self.current_path)?,
-                std::fs::read(self.local.join("device/authority.claims"))?
-            ),
-            snapshot
+            std::fs::read(self.local.join("device/authority.claims"))?,
+            snapshot.1
         );
         Ok(())
+    }
+
+    pub(super) fn protected_snapshot(&self) -> anyhow::Result<snapshot::Snapshot> {
+        snapshot::Snapshot::observe(
+            &self.current_path,
+            &self.intent,
+            &[
+                self.previous_journal.clone(),
+                self.previous_witness.clone(),
+                self.target_journal.clone(),
+                self.target_witness.clone(),
+            ],
+        )
     }
 }
 
