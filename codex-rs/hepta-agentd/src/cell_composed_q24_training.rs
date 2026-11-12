@@ -236,14 +236,6 @@ impl CellQ24SingleHeadTrainingPlanV1 {
 
     /// Static preflight shared with durable admission and read-only recovery.
     /// No job is claimed and the historical work deadline is not extended.
-    pub(super) fn validate_fit_input(
-        &self,
-        batch: &CellQ24TrainingBatchV1,
-        rule: CellQ24SgdRuleV1,
-    ) -> Result<Digest32, CellQ24TrainingErrorV1> {
-        self.validate_fit_input_with_source(batch, rule, &OriginalQ24OwnerReadV1)
-    }
-
     pub(crate) fn validate_fit_input_with_source(
         &self,
         batch: &CellQ24TrainingBatchV1,
