@@ -1,0 +1,36 @@
+{
+  "schema": "learn.original-runtime-path-inspection-request.v1",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-B",
+      "-c",
+      "from pathlib import Path\nimport hashlib,json,os,shutil,stat,subprocess\nrepo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")\npaths=[\"/data\",\"/data/hepta-learn-ce434-runtime-20261112-v1\",\"/data/hepta-learn-ce434-runtime-20261112-v1/target\",\"/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins\",\"/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\",\"/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\",\"/data/hepta-learn-ce434-runtime-20261112-v2\",\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/manifest.json\",\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\",\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json\",\"/home/qian-qi/.cargo/registry\",\"/home/qian-qi/.cargo/git\"]\ndef meta(s):return {\"device\":s.st_dev,\"inode\":s.st_ino,\"mode\":oct(s.st_mode),\"uid\":s.st_uid,\"nlink\":s.st_nlink,\"bytes\":s.st_size,\"mtime_ns\":s.st_mtime_ns,\"ctime_ns\":s.st_ctime_ns}\ndef observe(p):\n    record={\"path\":str(p)}\n    try:\n        before=p.lstat()\n        record[\"metadata\"]=meta(before)\n        if stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==os.getuid() and before.st_size<=67108864:\n            fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC|os.O_NONBLOCK)\n            with os.fdopen(fd,\"rb\") as stream:\n                first=os.fstat(stream.fileno())\n                record[\"sha256\"]=hashlib.file_digest(stream,\"sha256\").hexdigest()\n                last=os.fstat(stream.fileno())\n            record[\"stable\"]=meta(before)==meta(first)==meta(last)==meta(p.lstat())\n        elif stat.S_ISDIR(before.st_mode):\n            usage=shutil.disk_usage(p)\n            record[\"filesystem\"]={\"total\":usage.total,\"used\":usage.used,\"free\":usage.free}\n        record[\"state\"]=\"observed\"\n    except OSError as error:\n        record.update(state=\"read-failed\",error_type=type(error).__name__,errno=error.errno)\n    return record\ndef git(*args):return subprocess.check_output([\"git\",*args],cwd=repo,text=True).strip()\nreport={\"schema\":\"learn.original-e5c-runtime-paths.v1\",\"read_only\":True,\"uid\":os.getuid(),\"source_before\":git(\"rev-parse\",\"HEAD\"),\"source_tree\":git(\"rev-parse\",\"HEAD^{tree}\"),\"source_clean_before\":not bool(git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\")),\"paths\":[observe(Path(p)) for p in paths]}\nreport.update(source_after=git(\"rev-parse\",\"HEAD\"),source_clean_after=not bool(git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\")))\nprint(json.dumps(report,indent=2),flush=True)\n"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-e5c-original-runtime-paths-readonly-v1",
+    "rows": 40,
+    "cols": 160
+  },
+  "codeSha256": "8f183173cd2e8559117c19b64fd78f65e3955bf72a8975693a5f51cd8f5e3391",
+  "codeBlob": "0523fc50dada040fb8d7f24e1fc2a1ea1a6010ac",
+  "paths": [
+    "/data",
+    "/data/hepta-learn-ce434-runtime-20261112-v1",
+    "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins",
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "/data/hepta-learn-ce434-runtime-20261112-v2",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/manifest.json",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json",
+    "/home/qian-qi/.cargo/registry",
+    "/home/qian-qi/.cargo/git"
+  ],
+  "scope": "Only fixed paths metadata/disk space and full hashes of original public build inputs. No source/file mutation, no cache recreation, no process signals or tests."
+}
