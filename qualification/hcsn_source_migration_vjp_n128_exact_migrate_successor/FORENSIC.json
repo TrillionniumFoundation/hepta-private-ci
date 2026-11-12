@@ -1,0 +1,100 @@
+{
+  "schema": "hcsn-visit897-n128-migration-red-forensic-v1",
+  "parent_red": {
+    "pr": 6266,
+    "head": "37672f24f828989f328de42dbd7b70603038e04a",
+    "run_id": 43272612558,
+    "job_id": 131372742074,
+    "artifact_id": 13967868905,
+    "artifact_sha256": "ac1b6fb49a610120a7f9a5b8fe6d81a7c827729c004e4fca89a6fb73203a5203",
+    "terminal_status": "UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION"
+  },
+  "immutable_inputs": {
+    "selected_original_law_sha256": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+    "n128_json_sha256": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+    "n128_npz_sha256": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d",
+    "migration_source_sha256": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "recovered_exporter_commit": "a385c0fe6fafc513da8539799338182176a1a9f8",
+    "recovered_exporter_git_blob": "4209764f7dd288c811f317cff8500fc46c73880d",
+    "recovered_exporter_sha256_from_bound_n128_json": "462d2bc1aef32ea0e27021995bb981ed632df07e290a527b8fdecfa017768982"
+  },
+  "array_layout": {
+    "npz_member_order": [
+      "active.npy",
+      "content.npy",
+      "nodes.npy"
+    ],
+    "active": {
+      "shape": [129],
+      "dtype": "<f8",
+      "c_contiguous": true,
+      "payload_sha256": "828dbdb1fd1ad4a72f8fe2f81929bd6f3daba029f688d8e8abb993551d26441a"
+    },
+    "content": {
+      "shape": [129, 4],
+      "dtype": "<f8",
+      "c_contiguous": true,
+      "payload_sha256": "723d22ad300db522a8b5ac02b373fe94c51eb083b3c7405c9c943900864f3b23"
+    },
+    "nodes": {
+      "shape": [129],
+      "dtype": "<f8",
+      "c_contiguous": true,
+      "payload_sha256": "ece51b6f792ec3c3ca13a0773dd85921c5bc4290505d903bc32cae10fddc0f3a",
+      "matches_graded_generator_bytes": true,
+      "matches_json_fraction_order": true
+    }
+  },
+  "first_exact_mismatch": {
+    "field": "active",
+    "coordinate": [1],
+    "stored_decimal": 0.0008624281050429905,
+    "stored_hex": "0x1.c429240cecba4p-11",
+    "predecessor_fp64_matrix_decimal": 0.0008624281050429904,
+    "predecessor_fp64_matrix_hex": "0x1.c429240cecba3p-11",
+    "absolute_error": 1.0842021724855044e-19,
+    "ulp_error": 1
+  },
+  "predecessor_fp64_matrix_mismatches": {
+    "active_coordinates": 45,
+    "active_total": 129,
+    "active_maximum_absolute_error": 6.938893903907228e-18,
+    "active_maximum_ulp_error": 1,
+    "content_coordinates": 177,
+    "content_total": 516,
+    "content_maximum_absolute_error": 8.673617379884035e-19,
+    "content_maximum_ulp_error": 2,
+    "first_content_coordinate": [1, 1],
+    "first_content_stored_hex": "0x1.29171f7013ca6p-16",
+    "first_content_predecessor_hex": "0x1.29171f7013ca5p-16"
+  },
+  "original_exact_migrate_recompute": {
+    "active_mismatches": 0,
+    "content_mismatches": 0,
+    "maximum_absolute_error": 0.0,
+    "exporter_operation": "migrate(basis, probability, content).solve_inputs()",
+    "accumulation": "decimal-round-trip Fraction coefficients and exact lift weights; final-scalar FP64 conversion"
+  },
+  "classification": {
+    "source_closure_mismatch": false,
+    "coordinate_or_field_order_mismatch": false,
+    "dtype_or_endianness_mismatch": false,
+    "semantic_migration_mismatch": false,
+    "pre_rounded_fp64_accumulation_path_mismatch": true
+  },
+  "successor_fix": {
+    "baseline_and_runtime_use_original_exact_migrate_path": true,
+    "inputs_changed": false,
+    "nodes_changed": false,
+    "ordering_changed": false,
+    "thresholds_changed": false,
+    "denominators_changed": false
+  },
+  "forensic_execution_counts": {
+    "candidate_forwards": 0,
+    "adjoints": 0,
+    "optimizer_updates": 0
+  },
+  "global_status": "HOLD",
+  "all_closed": false
+}
