@@ -132,7 +132,7 @@ class OriginalCompletedHistoryControlSourceTests(unittest.TestCase):
     def test_query_current_root_and_generation_wrap_even_failed_data_validation(self):
         function = "fn read_original_q24_completed_history("
         for marker in (
-            "let data = completed.data().clone();",
+            "let data = OriginalCompletedLearningHistoryV1::data(completed).clone();",
             "let result = data.validate_data().map_err(AgentdError::Protocol);",
             "let root_after =",
             "let generation_after = self.require_original_completed_history_current();",
