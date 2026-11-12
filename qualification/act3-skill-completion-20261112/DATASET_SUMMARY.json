@@ -1,0 +1,35 @@
+{
+  "summary": {
+    "censored": 16,
+    "ensure_transitions": 96,
+    "episodes_without_ensure": 8,
+    "goal_observed_false": 0,
+    "goal_observed_true": 80,
+    "new_independent_real_tasks": 0,
+    "original_train_episodes": 80,
+    "production_authority": false,
+    "task_complete_false": 24,
+    "task_complete_true": 56
+  },
+  "provenance": {
+    "archive_sha256": {
+      "FROZEN_MANIFEST.json": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9",
+      "SHA256SUMS.json": "16de01ad186843a08f115562ba6c3ade48ca43fe42b6c437399958d8cafb44df",
+      "source-postimages.zip": "8b2c18bbddf915e6f143d26871864d0ef27c657738d9f19198b4859f6e46d75c",
+      "training-trajectories.jsonl.gz": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec"
+    },
+    "confirmation_definitions_present_in_frozen_manifest": true,
+    "confirmation_trajectories_read": false,
+    "destination_databases_read": false,
+    "loader_sha256": "3ecad8ec8372408a6fe332c75e71fd660b57b725f206dbf19ddccf4f4018014b",
+    "origin_commit": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+    "source_files_sha256": {
+      "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+      "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+      "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+    },
+    "terminal_oracle_fields_used_for_labels": false,
+    "timestamp_semantics": "primitive call entry, before execution"
+  },
+  "dataset_sha256": "b6c4a488493a7d4901493a3a7ff33a5910af83a152748ec4a9e04f48a5902bf2"
+}
