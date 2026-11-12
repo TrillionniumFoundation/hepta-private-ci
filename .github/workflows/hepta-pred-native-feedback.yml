@@ -7,6 +7,7 @@ on:
     branches:
       - codex/pred-native-producer-20261112-86e9
       - codex/pred-native-ci-20261112-16db
+      - codex/pred-native-wire-replay-20261112-16db
   workflow_dispatch:
 
 permissions:
@@ -89,7 +90,12 @@ jobs:
           if test "$(wc -c < "$RUNNER_TEMP/pred-native-feedback/format-suggestion.patch")" -le 524288; then
             cat "$RUNNER_TEMP/pred-native-feedback/format-suggestion.patch"
           fi
+      - name: Prepare private native fixture retention
+        shell: bash
+        run: mkdir -m 700 "$RUNNER_TEMP/pred-native-feedback/native-fixture"
       - name: Test native capture and original authorized effect host
+        env:
+          HEPTA_PRED_NATIVE_FIXTURE_DIR: ${{ runner.temp }}/pred-native-feedback/native-fixture
         shell: bash
         run: |
           set -euo pipefail
@@ -98,6 +104,30 @@ jobs:
             -- just test --locked -p codex-hepta-agentd --lib \
             -E 'test(automation_predispatch_export) | test(automation_effect_host::tests)' \
             --no-tests fail --retries 0
+      - name: Set up the pinned PRED Python runtime
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+      - name: Replay actual native bytes through the Python event ABI
+        env:
+          PYTHONPATH: scripts
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --no-project --python 3.12 --with numpy==2.3.5 python - <<'PY' > "$RUNNER_TEMP/pred-native-feedback/python-runtime.json"
+          import json
+          import platform
+          import sys
+          import numpy
+          print(json.dumps({"python": sys.version, "numpy": numpy.__version__, "platform": platform.platform()}, sort_keys=True))
+          assert sys.version_info[:2] == (3, 12)
+          assert numpy.__version__ == "2.3.5"
+          PY
+          uv run --no-project --python 3.12 --with numpy==2.3.5 python -m hepta_pred1.native_event_smoke \
+            --fixture-dir "$RUNNER_TEMP/pred-native-feedback/native-fixture" \
+            --output-dir "$RUNNER_TEMP/pred-native-feedback/native-event-replay"
       - name: Check changed owner lints
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type

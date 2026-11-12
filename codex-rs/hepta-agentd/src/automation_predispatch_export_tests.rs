@@ -1,5 +1,8 @@
 use std::fs;
+use std::io::Write;
+use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
+use std::path::PathBuf;
 
 use codex_hepta_contracts::ProviderEffectKey;
 use pretty_assertions::assert_eq;
@@ -97,6 +100,53 @@ async fn ordinary_product_caller_retains_claimed_fact_before_contact_and_replays
         1
     );
     server.verify().await;
+
+    // Preserve the producer's exact original bytes only after the ordinary
+    // dispatch and replay assertions pass. This remains a native test fixture.
+    if let Some(output_root) = std::env::var_os("HEPTA_PRED_NATIVE_FIXTURE_DIR") {
+        let output_root = PathBuf::from(output_root);
+        assert!(output_root.is_absolute(), "absolute fixture output directory");
+        let metadata = fs::symlink_metadata(&output_root).expect("existing fixture directory");
+        assert!(
+            metadata.is_dir()
+                && !metadata.file_type().is_symlink()
+                && metadata.permissions().mode() & 0o077 == 0,
+            "private fixture output directory"
+        );
+        let mut fact_file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(output_root.join("native-fact.json"))
+            .expect("new native fact output");
+        fact_file.write_all(&bytes).expect("write original fact bytes");
+        fact_file.sync_all().expect("sync original fact bytes");
+        let manifest = serde_json::to_vec(&serde_json::json!({
+            "schema": "hepta-pred-native-fixture-v1",
+            "source": "native_test_fixture",
+            "expected_owner": fixture.identity.agent_id.as_str(),
+            "fact_file": "native-fact.json",
+            "fact_sha256": Sha256Digest::for_bytes(&bytes).as_str(),
+            "producer_test": "automation_predispatch_export::tests::ordinary_product_caller_retains_claimed_fact_before_contact_and_replays_once",
+            "fixture_only": true,
+            "independent_effect_labels": 0,
+        }))
+        .expect("fixture manifest JSON");
+        let mut manifest_file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(output_root.join("manifest.json"))
+            .expect("new native fixture manifest");
+        manifest_file
+            .write_all(&manifest)
+            .expect("write fixture manifest");
+        manifest_file.sync_all().expect("sync fixture manifest");
+        fs::File::open(&output_root)
+            .expect("fixture output directory")
+            .sync_all()
+            .expect("sync fixture output directory");
+    }
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
