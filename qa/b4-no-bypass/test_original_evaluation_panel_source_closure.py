@@ -234,6 +234,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
                 self.verifies(CORE, (ROOT / CORE).read_text() + "\n" + addition + "\n")
 
     def test_original_cohort_current_brackets_all_members_before_final_clock(self):
+        self.rejects(MEMBER, "fn read_original(", "let started_at = original::now()?")
         for marker in (
             "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
             "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",

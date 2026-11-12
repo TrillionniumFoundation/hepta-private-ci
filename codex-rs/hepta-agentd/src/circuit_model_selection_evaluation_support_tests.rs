@@ -53,7 +53,7 @@ fn now() -> anyhow::Result<u64> {
     Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
 }
 
-fn witness(
+pub(super) fn witness(
     root: &std::path::Path,
     name: &str,
     scope: &FrozenLearningScopeV2,
@@ -70,7 +70,7 @@ fn witness(
     )?)
 }
 
-fn sign_product(
+pub(super) fn sign_product(
     verifier: &LearningEvidenceVerifierV1,
     signer: &TrustedLearningSignerV1,
     seed: u8,

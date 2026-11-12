@@ -254,6 +254,16 @@ impl BFixture {
         }).collect()
     }
 
+    pub(super) fn all_source_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
+        let mut bytes = Vec::new();
+        for (_, _, _, root) in &self.sources {
+            for name in ["source-journal", "source-witness", "cell-journal", "cell-witness"] {
+                bytes.push(fs::read(root.join(name))?);
+            }
+        }
+        Ok(bytes)
+    }
+
     pub(super) fn corrupt_source(&self) -> anyhow::Result<(PathBuf, Vec<u8>)> {
         use std::io::Write;
         let path = self.sources[3].3.join("source-journal");

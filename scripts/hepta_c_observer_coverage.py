@@ -324,7 +324,20 @@ ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX = (
+    ORIGINAL_EVALUATION_PROVIDER_PREFIX + "panel_members::"
+)
+ORIGINAL_EVALUATION_PANEL_MEMBER_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + name
+    for name in (
+        "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+        "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_panel_members", PACKAGE, ORIGINAL_EVALUATION_PANEL_MEMBER_CASES),
     ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
     ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),
     ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
