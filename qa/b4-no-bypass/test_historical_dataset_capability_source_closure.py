@@ -26,7 +26,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         self.assertEqual(rows["root_historical_ledger_snapshot_data"]["product_callers"],
                          [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs"])
         self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"],
-                         [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs", MATERIALIZER])
+                         [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs", MATERIALIZER,
+                          AGENT + "authority_host_post_a_derive.rs"])
 
     def test_capture_checks_actual_task_and_trust_receipt_before_holding_view(self):
         self.check_markers(HISTORY, "fn capture_original(", (

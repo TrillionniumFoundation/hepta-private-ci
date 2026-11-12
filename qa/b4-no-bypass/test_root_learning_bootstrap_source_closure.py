@@ -41,7 +41,7 @@ CALLERS = {
     "root_learning_original_store_reopen": (SESSION, MODEL_REGISTRATION),
     "root_learning_original_owner_install": (CLI,),
     "root_learning_original_scope_seal": (CLI,),
-    "root_learning_original_scope_capture": (SESSION,),
+    "root_learning_original_scope_capture": (SESSION, AGENT + "authority_host_post_a_learning.rs"),
     "root_learning_same_service_serve": (SESSION,),
     "root_learning_registered_checkpoint_constructor": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
