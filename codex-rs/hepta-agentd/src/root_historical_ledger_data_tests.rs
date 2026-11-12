@@ -3,11 +3,47 @@
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::EpisodeDecision;
+use codex_hepta_learning_ledger::LearningLedger;
+use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::OutcomeFinality;
+use codex_hepta_learning_ledger::OutcomeObservation;
+use codex_hepta_learning_ledger::encode_readonly_ledger_data_v1;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
 use super::*;
 
 pub(crate) fn fixture_data() -> anyhow::Result<RootHistoricalLedgerReadDataV1> {
+    // Legacy canonical events exercise only the transport data grammar. A
+    // raw DTO cannot stand in for the Root verified signed terminal facts.
+    let mut ledger = LearningLedger::new();
+    ledger.append(LedgerEvent::Decision(EpisodeDecision {
+        record_id: StableId::new("data-decision")?,
+        episode_id: StableId::new("data-episode")?,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        policy_id: StableId::new("data-policy")?,
+        candidate_ids: vec![StableId::new("choice")?, StableId::new("abstain")?],
+        selected_candidate_id: StableId::new("choice")?,
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: Digest32::of_bytes(b"data-decision-support"),
+    }))?;
+    let decision_chain = ledger.records()[0].chain_digest.to_string();
+    ledger.append(LedgerEvent::Outcome(OutcomeObservation {
+        record_id: StableId::new("data-outcome-record")?,
+        outcome_id: StableId::new("data-outcome")?,
+        episode_id: StableId::new("data-episode")?,
+        observer_id: StableId::new("data-observer")?,
+        value: FixedQ32::ONE,
+        finality: OutcomeFinality::Terminal,
+        support_digest: Digest32::of_bytes(b"data-outcome-support"),
+    }))?;
+    let outcome_chain = ledger.records()[1].chain_digest.to_string();
+    let image = encode_readonly_ledger_data_v1(Digest32::of_bytes(b"binding"), ledger.records())?;
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let registered = HostAuthorityRegisteredIdentity {
         agent_id: agent.clone(),
@@ -81,9 +117,9 @@ pub(crate) fn fixture_data() -> anyhow::Result<RootHistoricalLedgerReadDataV1> {
             cell_decision: digest("cell"),
             ledger_binding: digest("binding"),
             ledger_sequence: 2,
-            ledger_chain: digest("outcome"),
-            ledger_length: 4096,
-            ledger_image: digest("ledger"),
+            ledger_chain: outcome_chain.clone(),
+            ledger_length: image.len() as u64,
+            ledger_image: Digest32::of_bytes(&image).to_string(),
             witness_length: 248,
             witness_image: digest("witness"),
             signature_binding: digest("signatures"),
@@ -93,9 +129,10 @@ pub(crate) fn fixture_data() -> anyhow::Result<RootHistoricalLedgerReadDataV1> {
             signature_image: digest("signature-image"),
             signature_witness_length: 1024,
             signature_witness_image: digest("signature-witness"),
-            decision_chain: digest("decision"),
-            outcome_chain: digest("outcome"),
+            decision_chain,
+            outcome_chain,
         },
+        ledger_image_bytes: STANDARD.encode(image),
     })
 }
 
@@ -128,7 +165,14 @@ fn historical_ledger_data_rejects_extra_authority_claims_and_missing_cuts() -> a
         changed[key] = serde_json::json!(true);
         assert!(serde_json::from_value::<RootHistoricalLedgerReadDataV1>(changed).is_err());
     }
-    for key in ["source", "cut", "trust", "publisher", "registered_identity"] {
+    for key in [
+        "source",
+        "cut",
+        "trust",
+        "publisher",
+        "registered_identity",
+        "ledger_image_bytes",
+    ] {
         let mut changed = value.clone();
         changed
             .as_object_mut()
@@ -139,6 +183,27 @@ fn historical_ledger_data_rejects_extra_authority_claims_and_missing_cuts() -> a
     let mut changed = value;
     changed["source"]["retired"] = serde_json::json!(true);
     assert!(serde_json::from_value::<RootHistoricalLedgerReadDataV1>(changed).is_err());
+    Ok(())
+}
+
+#[test]
+fn historical_ledger_data_rejects_changed_or_noncanonical_image_and_record_chains()
+-> anyhow::Result<()> {
+    let original = fixture_data()?;
+    let snapshot = original.read_snapshot()?;
+    assert_eq!(snapshot.records().len(), 2);
+    let mut changed = original.clone();
+    changed.ledger_image_bytes.push('\n');
+    assert!(changed.validate_data().is_err());
+    let mut changed = original.clone();
+    let mut image = STANDARD.decode(&changed.ledger_image_bytes)?;
+    image[72] ^= 1;
+    changed.ledger_image_bytes = STANDARD.encode(&image);
+    changed.cut.ledger_image = Digest32::of_bytes(&image).to_string();
+    assert!(changed.validate_data().is_err());
+    let mut changed = original;
+    changed.cut.decision_chain = Digest32::of_bytes(b"another-decision").to_string();
+    assert!(changed.validate_data().is_err());
     Ok(())
 }
 

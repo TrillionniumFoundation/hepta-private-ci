@@ -186,7 +186,9 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
 
     def test_wire_conversion_preserves_entire_retained_cut(self):
         self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn ledger_cut(", (
-            "self.validate_data()?", "self.cut.ledger_binding.parse()",
+            "self.validate_data()?", "self.cut_fields()"))
+        self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn cut_fields(", (
+            "self.cut.ledger_binding.parse()",
             "sequence: self.cut.ledger_sequence", "self.cut.ledger_chain.parse()",
             "segment: None", "sealed: false", "self.cut.ledger_image.parse()",
             "self.cut.witness_image.parse()"))
@@ -201,6 +203,23 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "trust: record.trust.clone()", "files: source\n                    .source_files",
             "configuration: source.source_configuration.clone()", "sequence: source.source_sequence",
             "checkpoint: source.source_checkpoint.clone()", "cut: (**cut).clone()", "data.validate_data()?"))
+
+    def test_root_canonical_image_is_derived_from_the_same_physical_terminal_observation(self):
+        self.check_markers(AGENT + "authority_host_historical_ledger_history.rs", "fn observe_original_terminal(", (
+            "encode_readonly_ledger_data_v1(", "observed.cut.binding",
+            "observed.facts.decision.clone()", "observed.facts.outcome.clone()",
+            "ledger_image.len() as u64 != observed.cut.ledger_length",
+            "Digest32::of_bytes(&ledger_image) != observed.cut.ledger_digest"))
+        self.reject_removal(AGENT + "authority_host_historical_ledger_history.rs", "fn ledger_read_data(",
+                            "ledger_image_bytes: STANDARD.encode(&self.ledger_image)")
+
+    def test_recipient_data_replays_the_exact_image_without_a_second_physical_read(self):
+        self.reject_removal(AGENT + "root_historical_ledger_data.rs", "fn validate_data(", "self.decode_image()?")
+        self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn decode_image(", (
+            "self.ledger_image_bytes.len() > 12 * 1024", ".decode(&self.ledger_image_bytes)",
+            "STANDARD.encode(&bytes) != self.ledger_image_bytes",
+            "let maximum_records = 2", "decode_readonly_ledger_data_v1(&bytes, self.cut_fields()?, maximum_records)",
+            "!= Some(self.cut.decision_chain.clone())", "!= Some(self.cut.outcome_chain.clone())"))
 
 
 if __name__ == "__main__":

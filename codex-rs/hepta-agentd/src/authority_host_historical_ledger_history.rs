@@ -5,9 +5,12 @@
 use std::path::Path;
 use std::time::Instant;
 
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerReadOnlyCutV1;
 use codex_hepta_learning_ledger::LedgerWitnessFrontier;
+use codex_hepta_learning_ledger::encode_readonly_ledger_data_v1;
 use codex_hepta_neuron::CellDecisionReceiptV1;
 use codex_hepta_neuron::JournalAnchor;
 
@@ -35,6 +38,7 @@ enum HistoryState {
 pub(crate) struct RootOriginalHistoricalLedgerObservationV1 {
     record: LedgerRecord,
     source: SourcePin,
+    ledger_image: Vec<u8>,
 }
 
 pub(crate) struct PendingOriginalLedgerHistoryV1<'a> {
@@ -277,6 +281,22 @@ impl PendingOriginalLedgerHistoryV1<'_> {
                 "historical Ledger ended during observation",
             ));
         }
+        // Encode only the two facts from this actual, fully verified physical
+        // observation. Matching the entire retained image prevents the wire
+        // data from replacing a record or selecting a different prefix.
+        let ledger_image = encode_readonly_ledger_data_v1(
+            observed.cut.binding,
+            &[
+                observed.facts.decision.clone(),
+                observed.facts.outcome.clone(),
+            ],
+        )
+        .map_err(io::Error::other)?;
+        if ledger_image.len() as u64 != observed.cut.ledger_length
+            || Digest32::of_bytes(&ledger_image) != observed.cut.ledger_digest
+        {
+            return Err(io::Error::other("original Ledger data image differs"));
+        }
         self.state = HistoryState::Complete {
             observed: Box::new(observed),
             held,
@@ -285,6 +305,7 @@ impl PendingOriginalLedgerHistoryV1<'_> {
         Ok(RootOriginalHistoricalLedgerObservationV1 {
             record: record.clone(),
             source: original.pin.clone(),
+            ledger_image,
         })
     }
 }
@@ -348,6 +369,7 @@ impl RootOriginalHistoricalLedgerObservationV1 {
                 fence: source.fence_digest.clone(),
             },
             cut: (**cut).clone(),
+            ledger_image_bytes: STANDARD.encode(&self.ledger_image),
         };
         data.validate_data()?;
         Ok(data)

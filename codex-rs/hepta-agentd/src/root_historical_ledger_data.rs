@@ -4,9 +4,13 @@
 
 use std::io;
 
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerReadOnlyCutV1;
+use codex_hepta_learning_ledger::LedgerSnapshot;
 use codex_hepta_learning_ledger::LedgerWitnessFrontier;
+use codex_hepta_learning_ledger::decode_readonly_ledger_data_v1;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_types::Digest32;
@@ -87,6 +91,7 @@ pub(crate) struct RootHistoricalLedgerReadDataV1 {
     pub(crate) trust: LearningTrustPinV1,
     pub(crate) source: RootHistoricalLedgerSourceDataV1,
     pub(crate) cut: RootHistoricalLedgerCutDataV1,
+    pub(crate) ledger_image_bytes: String,
 }
 
 impl RootHistoricalLedgerReadDataV1 {
@@ -204,6 +209,7 @@ impl RootHistoricalLedgerReadDataV1 {
                 "original Ledger data exceeds bounded lane",
             ));
         }
+        self.decode_image()?;
         Ok(())
     }
 
@@ -217,10 +223,51 @@ impl RootHistoricalLedgerReadDataV1 {
         ]))
     }
 
-    /// Data conversion only. The consumer must hold the real original-client
-    /// admission while opening its four already existing read-only files.
+    /// Data conversion only. Physical verification belongs to Root's complete
+    /// refusal-guarded observation. No recipient file is opened from this data.
     pub(crate) fn ledger_cut(&self) -> io::Result<LedgerReadOnlyCutV1> {
         self.validate_data()?;
+        self.cut_fields()
+    }
+
+    /// Pure data replay; the actual same-Root receipt supplies authorization.
+    pub(crate) fn read_snapshot(&self) -> io::Result<LedgerSnapshot> {
+        self.validate_data()?;
+        self.decode_image()
+    }
+
+    fn decode_image(&self) -> io::Result<LedgerSnapshot> {
+        // This bound also protects callers of the private decoder. The whole
+        // DTO and the enclosing reply keep their separate 12/16 KiB limits.
+        if self.ledger_image_bytes.len() > 12 * 1024 {
+            return Err(io::Error::other("original Ledger image exceeds bound"));
+        }
+        let bytes = STANDARD
+            .decode(&self.ledger_image_bytes)
+            .map_err(io::Error::other)?;
+        if STANDARD.encode(&bytes) != self.ledger_image_bytes {
+            return Err(io::Error::other("noncanonical original Ledger image"));
+        }
+        let maximum_records = 2;
+        let snapshot = decode_readonly_ledger_data_v1(&bytes, self.cut_fields()?, maximum_records)
+            .map_err(io::Error::other)?;
+        if snapshot
+            .records()
+            .first()
+            .map(|record| record.chain_digest.to_string())
+            != Some(self.cut.decision_chain.clone())
+            || snapshot
+                .records()
+                .last()
+                .map(|record| record.chain_digest.to_string())
+                != Some(self.cut.outcome_chain.clone())
+        {
+            return Err(io::Error::other("original Ledger facts differ"));
+        }
+        Ok(snapshot)
+    }
+
+    fn cut_fields(&self) -> io::Result<LedgerReadOnlyCutV1> {
         Ok(LedgerReadOnlyCutV1 {
             binding: self.cut.ledger_binding.parse().map_err(io::Error::other)?,
             frontier: LedgerWitnessFrontier {
