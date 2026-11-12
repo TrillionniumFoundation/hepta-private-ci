@@ -1,7 +1,10 @@
-//! The fixed Linux monotonic time domain of the original Source input.
+//! The original Source monotonic domain and Circuit wall-clock domain.
 
 use crate::AgentdError;
+use crate::CircuitCellTimeV1;
 use crate::CircuitTaskSourceInputV1;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 pub(super) const DOMAIN: &str = "linux_clock_monotonic_micros_v1";
 
@@ -24,10 +27,25 @@ fn now() -> Result<u64, AgentdError> {
         .ok_or_else(|| AgentdError::GenerationFenced("monotonic clock overflow".into()))
 }
 
-pub(super) fn sample() -> u64 {
-    // An unreadable clock expires every bounded original input. It cannot
-    // turn a failed observation into a fresh zero-time execution window.
-    now().unwrap_or(u64::MAX)
+pub(super) fn sample() -> CircuitCellTimeV1 {
+    let cell_micros = now().unwrap_or(u64::MAX);
+    let circuit_millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
+        .and_then(|elapsed| u64::try_from(elapsed.as_millis()).ok())
+        .unwrap_or(u64::MAX);
+    // Either unreadable clock expires both original owners. Never substitute
+    // the monotonic epoch for UNIX time, truncate overflow, or renew a deadline.
+    if cell_micros == u64::MAX || circuit_millis == u64::MAX {
+        return CircuitCellTimeV1 {
+            circuit_millis: u64::MAX,
+            cell_micros: u64::MAX,
+        };
+    }
+    CircuitCellTimeV1 {
+        circuit_millis,
+        cell_micros,
+    }
 }
 
 pub(super) fn require_source_deadline(
@@ -41,3 +59,7 @@ pub(super) fn require_source_deadline(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "production_initial_q24_clock_tests.rs"]
+mod tests;
