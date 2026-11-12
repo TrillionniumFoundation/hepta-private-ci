@@ -28,6 +28,9 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "learning_iteration_command_evidence.rs"]
+mod command_evidence;
+
 #[path = "cell_q24_no_update_stage_owners.rs"]
 mod ordinary_stage_owners;
 pub use ordinary_stage_owners::OriginalCellQ24CandidateStageOwnersV1;
@@ -52,6 +55,7 @@ pub use training_command::OriginalCellQ24TrainingCommandContextV1;
 pub use training_command::OriginalCellQ24TrainingCommandErrorV1;
 pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
+pub use training_command::OriginalCellQ24TrainingReadbackConnectionV1;
 
 #[path = "circuit_selection_command.rs"]
 mod selection_command;
@@ -111,6 +115,7 @@ struct Channel {
 /// Trust/controller separation is still checked by the iteration worker.
 pub struct LearningIterationEvidenceClientV1 {
     channel: Mutex<Option<Channel>>,
+    command: Option<Mutex<Option<command_evidence::OriginalCommandEvidenceV1>>>,
     initial: LearningIterationSnapshotV1,
     actor_id: StableId,
     verifier: LearningEvidenceVerifierV1,
@@ -169,6 +174,7 @@ impl LearningIterationEvidenceClientV1 {
                 transport,
                 next_request_id: 1,
             })),
+            command: None,
             initial,
             actor_id: peer.actor_id,
             verifier,
@@ -199,6 +205,9 @@ impl LearningIterationEvidenceClientV1 {
             coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
         }
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
+        if let Some(command) = &self.command {
+            return self.read_original_command(command, receipt, &payload, role).await;
+        }
         let mut channel = self
             .channel
             .try_lock()

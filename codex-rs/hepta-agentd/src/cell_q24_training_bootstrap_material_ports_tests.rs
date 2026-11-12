@@ -110,6 +110,7 @@ pub(crate) fn evidence(
         transport::pidfd()?,
     )?;
     let owner = LearningIterationEvidenceClientV1 {
+        command: None,
         channel: Mutex::new(Some(EvidenceChannel {
             transport,
             next_request_id: 1,

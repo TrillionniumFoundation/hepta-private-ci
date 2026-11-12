@@ -32,6 +32,9 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 #[path = "cell_q24_training_candidate_service.rs"]
 mod candidate;
 
+#[path = "cell_q24_training_command_readback_service.rs"]
+mod readonly;
+
 enum Admission {
     OriginalExecution,
     ReadbackOnly,

@@ -148,6 +148,7 @@ impl Fixture {
         )?;
         Ok((
             LearningIterationEvidenceClientV1 {
+                command: None,
                 channel: Mutex::new(Some(Channel {
                     transport,
                     next_request_id: 1,

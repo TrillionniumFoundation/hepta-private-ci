@@ -27,6 +27,9 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 #[path = "cell_q24_training_bootstrap_candidate.rs"]
 mod candidate;
 
+#[path = "cell_q24_training_bootstrap_readback.rs"]
+mod readonly;
+
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>
 {
