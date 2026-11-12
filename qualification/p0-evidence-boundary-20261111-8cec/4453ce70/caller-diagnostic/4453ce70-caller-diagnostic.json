@@ -1,0 +1,35 @@
+{
+  "kind": "diagnostic_only_unmodified_script_runpy_faulthandler",
+  "command": [
+    "python",
+    "-u",
+    "/workspace/scratch/8cec085888c3/4453ce70-caller-diagnostic-wrapper.py"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work",
+  "timeout_seconds": 125,
+  "wrapper": "/workspace/scratch/8cec085888c3/4453ce70-caller-diagnostic-wrapper.py",
+  "wrapper_sha256": "08975f595801ad1904c43fe24baef8d2aa1aa4deea077a9a559c5dad8e360310",
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "started_unix": 1794445997.447104,
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-caller-diagnostic.log",
+  "status": "TIMEOUT",
+  "exit_code": null,
+  "terminated_returncode": -15,
+  "ended_unix": 1794446122.5185938,
+  "log_sha256": "aa93085d74681d49bfa239f98c76276cd8a7d5b1af4385d5fb9c530c5ce9d74c",
+  "log_bytes": 3516,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": "",
+    "verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "callers_blob": "4ea7882c5765b53b2569492d712bb7e306ad1476"
+  },
+  "source_unchanged": true
+}

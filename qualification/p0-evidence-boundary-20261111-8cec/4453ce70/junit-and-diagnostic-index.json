@@ -1,0 +1,94 @@
+{
+  "schema": "hepta-original-junit-and-caller-diagnostic-index-v1",
+  "recorded_at_utc": "2026-11-12 01:18:29 UTC",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "files": [
+    {
+      "path": "local-native/4453ce70-native-junit.xml",
+      "bytes": 55542,
+      "sha256": "3a0d3035558728ebca8e7ec520a45cd58082b008486fcfca0f6dae653d215247",
+      "github_blob_sha": "216cd3db35464108df591454b0407a333a6257ad"
+    },
+    {
+      "path": "local-native/4453ce70-native-junit-provenance.json",
+      "bytes": 1556,
+      "sha256": "2058d7bc37e06dff8401fc0a0bce6ed2714fd2c152eb1d18bbdf32d20c79c344",
+      "github_blob_sha": "10205536b609796bed97c48d5ed4f1540dc9bb0c"
+    },
+    {
+      "path": "caller-diagnostic/4453ce70-caller-diagnostic.log",
+      "bytes": 3516,
+      "sha256": "aa93085d74681d49bfa239f98c76276cd8a7d5b1af4385d5fb9c530c5ce9d74c",
+      "github_blob_sha": "333ea87ab4df72e2b27c3ebc1072ffe048b55209"
+    },
+    {
+      "path": "caller-diagnostic/4453ce70-caller-diagnostic.json",
+      "bytes": 1387,
+      "sha256": "e41a1534289ab0e2e658430b36de0686dcbe3b4f1836c8651e79c4dd6f4371ec",
+      "github_blob_sha": "b745f0fc508e1db1ea5a8fc9307f24f834b97f22"
+    },
+    {
+      "path": "caller-diagnostic/4453ce70-caller-diagnostic-wrapper.py",
+      "bytes": 311,
+      "sha256": "08975f595801ad1904c43fe24baef8d2aa1aa4deea077a9a559c5dad8e360310",
+      "github_blob_sha": "2a92db3f2302e308ac60c0fc6dc97231e4d895a1"
+    }
+  ],
+  "original_junit": {
+    "root": {
+      "name": "nextest-run",
+      "tests": "269",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "uuid": "7c4a80ae-0868-4640-8145-732d4921d1cf",
+      "timestamp": "2026-11-11T20:11:49.359-05:00",
+      "time": "2.296"
+    },
+    "suites": [
+      {
+        "attributes": {
+          "name": "codex-hepta-intelligence-eval",
+          "tests": "144",
+          "skipped": "0",
+          "errors": "0",
+          "failures": "0"
+        },
+        "cases": 144,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "attributes": {
+          "name": "codex-hepta-learning-artifacts",
+          "tests": "125",
+          "skipped": "0",
+          "errors": "0",
+          "failures": "0"
+        },
+        "cases": 125,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "native_junit_observation": "Original nextest UUID matches the raw execution log; original file mtime lies inside the recorded native execution window. 269 executed testcases, zero failures/errors. The raw command also reports one non-executed ignored test.",
+  "caller_observation": {
+    "kind": "diagnostic only",
+    "timeout_seconds": 125,
+    "status": "TIMEOUT",
+    "original_verifier_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "algorithm_or_manifest_modified": false,
+    "first_30_second_stack": "_strip_rust_non_code",
+    "later_60_90_120_second_stacks": "has_authority_call regex name matching, hepta_typed_callers.py line 193",
+    "inference": "The samples show preprocessing progressed into typed boundary matching; they do not distinguish one slow search from repeated searches or establish a completed verifier result.",
+    "caller_gate_pass": false
+  },
+  "acceptance": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "new_real_ordinary_learning_chains": 0,
+    "new_independent_net_benefit_updates": 0
+  }
+}
