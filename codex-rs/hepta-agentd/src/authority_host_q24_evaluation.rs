@@ -30,5 +30,10 @@ mod execution;
 
 #[path = "authority_host_q24_evaluation_host.rs"]
 mod host;
+pub(crate) use host::BoundRootIndependentBEvaluationV1;
 pub(crate) use host::OriginalRootBEvaluationBorrowV1;
 pub(crate) use host::OriginalRootIndependentBEvaluationFilesV1;
+pub(crate) use host::PreparedRootIndependentBEvaluationV1;
+pub use host::RootIndependentBEvaluationOfferV1;
+pub(crate) use host::RootIndependentBEvaluationRuntimeV1;
+pub(crate) use host::serve_optional_until;

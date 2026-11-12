@@ -40,10 +40,12 @@ pub(crate) use listeners::validate_runtime_lanes;
 
 #[path = "authority_host_session.rs"]
 mod session;
+pub(crate) use session::BoundRootIndependentBEvaluationV1;
 pub(crate) use session::OriginalRootBEvaluationBorrowV1;
 pub(crate) use session::OriginalRootIndependentBEvaluationFilesV1;
 pub use session::PreparedHostAuthoritySession;
 pub(crate) use session::PreparedPublicationData;
+pub(crate) use session::PreparedRootIndependentBEvaluationV1;
 pub(crate) use session::PublicationInputData;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
@@ -56,9 +58,12 @@ pub use session::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use session::RootGenerationPublicationRegistrationV1;
 pub use session::RootHistoricalSourceCaptureCapabilityV1;
 pub use session::RootHistoricalSourceCaptureReceiptV1;
+pub use session::RootIndependentBEvaluationOfferV1;
+pub(crate) use session::RootIndependentBEvaluationRuntimeV1;
 pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
 pub(crate) use session::publication_data;
+pub(crate) use session::serve_independent_b_until;
 
 #[path = "authority_host_writer_rotate.rs"]
 mod writer_rotation;

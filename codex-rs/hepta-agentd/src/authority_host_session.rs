@@ -26,8 +26,13 @@ mod q24_model;
 
 #[path = "authority_host_q24_evaluation.rs"]
 mod q24_evaluation;
+pub(crate) use q24_evaluation::BoundRootIndependentBEvaluationV1;
 pub(crate) use q24_evaluation::OriginalRootBEvaluationBorrowV1;
 pub(crate) use q24_evaluation::OriginalRootIndependentBEvaluationFilesV1;
+pub(crate) use q24_evaluation::PreparedRootIndependentBEvaluationV1;
+pub use q24_evaluation::RootIndependentBEvaluationOfferV1;
+pub(crate) use q24_evaluation::RootIndependentBEvaluationRuntimeV1;
+pub(crate) use q24_evaluation::serve_optional_until as serve_independent_b_until;
 
 #[path = "authority_host_generation_initial_session.rs"]
 mod generation_initial;

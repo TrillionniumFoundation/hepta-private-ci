@@ -141,6 +141,8 @@ pub use authority_host_admin::RootAdminRequest;
 #[cfg(target_os = "linux")]
 pub use authority_host_admin::RootAdminResponse;
 #[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::BoundRootIndependentBEvaluationV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::HostAuthorityBootstrap;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::HostAuthorityInitialized;
@@ -150,6 +152,14 @@ pub use authority_host_runtime::HostIssuerLeaseRenewalPlan;
 pub(crate) use authority_host_runtime::OriginalRootBEvaluationBorrowV1;
 #[cfg(target_os = "linux")]
 pub(crate) use authority_host_runtime::OriginalRootIndependentBEvaluationFilesV1;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::PreparedRootIndependentBEvaluationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootIndependentBEvaluationOfferV1;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::RootIndependentBEvaluationRuntimeV1;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::serve_independent_b_until;
 #[cfg(target_os = "linux")]
 mod root_independent_b_protocol;
 #[cfg(target_os = "linux")]
