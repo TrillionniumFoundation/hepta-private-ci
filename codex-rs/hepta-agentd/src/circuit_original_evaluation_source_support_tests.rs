@@ -146,18 +146,26 @@ impl BFixture {
             let principal = d(&format!("{}-history-principal-{index}", rule.plan_id));
             let mut input = self.input(&episode.behavior_run_id, principal, index);
             if matches!(mode, ObservationMode::NonCanonicalOrder) {
-                input.candidates.sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
-                assert!(input.candidates.windows(2).any(|pair| pair[0].candidate_id > pair[1].candidate_id));
+                input
+                    .candidates
+                    .sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
+                assert!(
+                    input
+                        .candidates
+                        .windows(2)
+                        .any(|pair| pair[0].candidate_id > pair[1].candidate_id)
+                );
             }
+            let publication = self
+                .execute(original, input, baseline, index, history_at)
+                .await?;
             material::evaluation_provider::decision(
                 self.writer.as_mut().expect("original B ledger"),
                 &self.credentials,
                 &episode.episode_id,
-                &input,
-                index,
+                &publication,
                 history_at,
             )?;
-            self.execute(input, baseline, index, history_at).await?;
             let value = [
                 FixedQ32::ONE,
                 FixedQ32::ZERO,
@@ -177,27 +185,36 @@ impl BFixture {
             let principal = d(&format!("{}-heldout-principal-{index}", rule.plan_id));
             let mut input = self.input(&target.episode.behavior_run_id, principal, index + 10);
             if matches!(mode, ObservationMode::NonCanonicalOrder) {
-                input.candidates.sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
-                assert!(input.candidates.windows(2).any(|pair| pair[0].candidate_id > pair[1].candidate_id));
+                input
+                    .candidates
+                    .sort_by(|left, right| right.candidate_id.cmp(&left.candidate_id));
+                assert!(
+                    input
+                        .candidates
+                        .windows(2)
+                        .any(|pair| pair[0].candidate_id > pair[1].candidate_id)
+                );
             }
+            let publication = self
+                .execute(
+                    original,
+                    input.clone(),
+                    baseline,
+                    /*selected_index*/ 0,
+                    rule.candidate_plan.fold.evaluation_start,
+                )
+                .await?;
             material::evaluation_provider::decision(
                 self.writer.as_mut().expect("original B ledger"),
                 &self.credentials,
                 &target.episode.episode_id,
-                &input,
-                /*selected_index*/ 0,
+                &publication,
                 rule.candidate_plan.fold.evaluation_start,
             )?;
-            self.execute(
-                input.clone(),
-                baseline,
-                /*selected_index*/ 0,
-                rule.candidate_plan.fold.evaluation_start,
-            )
-            .await?;
             let mut candidate_input = input;
             candidate_input.scope.run_id = target.candidate_run_id.clone();
             self.execute(
+                original,
                 candidate_input,
                 candidate,
                 usize::from(changed_candidate_action),
@@ -244,18 +261,30 @@ impl BFixture {
 
     async fn execute(
         &mut self,
+        original: &PositiveFixture,
         input: crate::CircuitTaskSourceInputV1,
         bundle: Digest32,
         selected_index: usize,
         at: u64,
-    ) -> anyhow::Result<()> {
+    ) -> anyhow::Result<crate::CircuitTaskSourcePublicationV1> {
         let run = input.scope.run_id.clone();
         let root = self
             .root
             .join(format!("original-source-{}", self.sources.len()));
         fs::create_dir(&root)?;
         let mut record = source_support::record(run.as_str());
+        // A shared digest cannot replace the original compiled objective.
+        // B keeps its distinct admission/run/time, with the complete objective
+        // and function bytes used by the preregistered comparison.
+        let objective = original.previous.original_record();
+        assert_eq!(
+            objective.snapshot.objective_digest,
+            self.rule.objective_digest
+        );
         record.snapshot.objective_digest = self.rule.objective_digest;
+        record.objective_semantic_bytes = objective.objective_semantic_bytes.clone();
+        record.objective_function_v1_digest = objective.objective_function_v1_digest;
+        record.objective_function_v1_bytes = objective.objective_function_v1_bytes.clone();
         record.admission.observed_at_unix_micros = at * 1_000_000;
         record.admission.deadline_unix_micros = (at + 1) * 1_000_000;
         record.authentication.expires_at_ms = (at + 1) * 1_000;
@@ -269,7 +298,7 @@ impl BFixture {
         .await?;
         assert_eq!(publication.original_record().snapshot.run_id, run);
         self.sources.push((identity, source, run, root));
-        Ok(())
+        Ok(publication)
     }
 
     pub(super) fn training(

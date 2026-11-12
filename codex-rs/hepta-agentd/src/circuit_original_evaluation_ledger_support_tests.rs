@@ -8,27 +8,25 @@ pub(in super::super) fn decision(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
     episode: &StableId,
-    input: &crate::CircuitTaskSourceInputV1,
-    selected_index: usize,
+    publication: &crate::CircuitTaskSourcePublicationV1,
     at: u64,
 ) -> anyhow::Result<()> {
-    let candidates = input
-        .candidates
+    let input = publication.input();
+    let policy = publication.original_policy()?;
+    let mut candidates = policy
+        .entries()
         .iter()
-        .map(|mask| mask.candidate_id.clone())
+        .map(|entry| entry.candidate_id.clone())
         .collect::<Vec<_>>();
-    let selected = candidates
-        .get(selected_index)
-        .ok_or_else(|| anyhow::anyhow!("selected action"))?
-        .clone();
+    candidates.sort();
     let value = ProductionDecisionV2 {
         record_id: input.scope.run_id.clone(),
         episode_id: episode.clone(),
         run_snapshot_digest: input.ndu_snapshot_digest,
         objective_digest: input.objective_digest,
-        policy_digest: d("explicit-original-B-policy-contract"),
+        policy_digest: Digest32::of_bytes(publication.output()),
         candidate_ids: candidates.clone(),
-        selected_candidate_id: selected,
+        selected_candidate_id: policy.selected().clone(),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
             set_id: id(&format!("B-actions:{}", episode)),
@@ -44,7 +42,7 @@ pub(in super::super) fn decision(
             canonical_order_digest: candidate_order_digest_v2(&candidates),
             complete_for_generator: true,
         },
-        support_digest: d("explicit-original-B-decision-support"),
+        support_digest: publication.publication_digest(),
     };
     let evidence = sign(
         writer.verifier(),

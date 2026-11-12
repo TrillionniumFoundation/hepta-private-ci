@@ -144,7 +144,12 @@ impl PositiveFixture {
         trust_time: u64,
     ) -> anyhow::Result<Self> {
         let admission = support::admission("positive-source-envelope-request").await?;
-        Self::ready_with_admission(evaluation_profile, trust_time, admission).await
+        Box::pin(Self::ready_with_admission(
+            evaluation_profile,
+            trust_time,
+            admission,
+        ))
+        .await
     }
 
     async fn ready_with_admission(
@@ -174,7 +179,6 @@ impl PositiveFixture {
         let source_a = support::source(&a, [Q, Q / 4])?;
         assert_eq!(source_a.objective_digest, preview.objective_digest);
         assert_eq!(source_a.scope.run_id, run);
-        material::decision(&mut writer, &credentials, &source_a)?;
         let config_a = support::configuration(&baseline, &bundle, &definition_a, &source_a, 1)?;
         let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
         let published_a =
@@ -184,7 +188,8 @@ impl PositiveFixture {
         let before_training = read_receipt(&a, &definition_a, &previous)?;
         assert_eq!(before_training.representation.prediction_q24[0], Q);
         assert_eq!(previous.original_record().snapshot.run_id, run);
-        material::terminal_outcome(&mut writer, &credentials)?;
+        material::decision(&mut writer, &credentials, &previous)?;
+        material::terminal_outcome(&mut writer, &credentials, &previous)?;
         let material::Material {
             initial,
             config: source_config,

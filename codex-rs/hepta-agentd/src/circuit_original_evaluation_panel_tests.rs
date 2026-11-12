@@ -73,16 +73,27 @@ async fn completed_member(
 
 impl PanelFixture {
     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
-        let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;
+        let (original, mut primary_b, mut retention_b, registration) =
+            Box::pin(preregistered()).await?;
         assert_eq!(primary_b.at, retention_b.at);
         let at = primary_b.at;
         // Actual retention completes first. Only its original publication
         // digest enters the primary B's signed product declaration.
-        let mut retention =
-            completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;
+        let mut retention = Box::pin(completed_member(
+            &mut retention_b,
+            &original,
+            &registration,
+            Vec::new(),
+        ))
+        .await?;
         let retained = retention.qualification.product().evidence_digest;
-        let mut primary =
-            completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;
+        let mut primary = Box::pin(completed_member(
+            &mut primary_b,
+            &original,
+            &registration,
+            vec![retained],
+        ))
+        .await?;
         if matches!(peer, TrainingPeer::RenewedRetention) {
             let renewed = original.evaluation.renewed_qualification_training()?;
             assert_ne!(renewed, retention.config.training_evidence);

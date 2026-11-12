@@ -220,15 +220,32 @@ impl Fixture {
         )?;
         let identity = identity(&root)?;
         let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
-        let candidates = vec![id("action"), id("abstain")];
+        // Fix the ledger-bound run before execution, then sign the actual
+        // Source policy in this execution-before-credit profile. The measured
+        // terminal label below remains explicit independent fixture data.
+        let (identity, source) = source::completed(
+            &root,
+            &bundle,
+            &run,
+            &source::observation([0, crate::cell_composed_q24::codec::Q / 4]),
+        )
+        .await?;
+        let publication = source.read_run_publication(&identity, &run)?;
+        let policy = publication.original_policy()?;
+        let mut candidates = policy
+            .entries()
+            .iter()
+            .map(|entry| entry.candidate_id.clone())
+            .collect::<Vec<_>>();
+        candidates.sort();
         let decision = ProductionDecisionV2 {
             record_id: run.clone(),
             episode_id: id("episode"),
-            run_snapshot_digest: d("snapshot"),
-            objective_digest: d("objective"),
-            policy_digest: d("policy"),
+            run_snapshot_digest: publication.input().ndu_snapshot_digest,
+            objective_digest: publication.input().objective_digest,
+            policy_digest: Digest32::of_bytes(publication.output()),
             candidate_ids: candidates.clone(),
-            selected_candidate_id: id("action"),
+            selected_candidate_id: policy.selected().clone(),
             selected_propensity: ProbabilityQ32::ONE,
             completeness: CandidateSetCompletenessReceiptV1 {
                 set_id: id("set"),
@@ -239,12 +256,12 @@ impl Fixture {
                 hard_filter_digest: d("filter"),
                 truncation_digest: d("truncation"),
                 candidates_digest: candidate_ids_digest_v2(&candidates),
-                candidate_count: 2,
+                candidate_count: candidates.len() as u32,
                 omitted_count_bound: 0,
                 canonical_order_digest: candidate_order_digest_v2(&candidates),
                 complete_for_generator: true,
             },
-            support_digest: d("explicit-decision-support"),
+            support_digest: publication.publication_digest(),
         };
         let signed_decision = sign(
             writer.verifier(),
@@ -254,16 +271,6 @@ impl Fixture {
             at,
         );
         writer.append_decision(Digest32::ZERO, decision, &signed_decision, at)?;
-        // This actual run identity is chosen and its Decision committed before
-        // execution. The independent terminal label below is explicit fixture data.
-        let (identity, source) = source::completed(
-            &root,
-            &bundle,
-            &run,
-            &source::observation([0, crate::cell_composed_q24::codec::Q / 4]),
-        )
-        .await?;
-        let publication = source.read_run_publication(&identity, &run)?;
         let outcome = AuthenticatedOutcomeV1 {
             record_id: id("outcome-record"),
             outcome_id: id("outcome"),
@@ -275,7 +282,7 @@ impl Fixture {
                 MaterialFixtureProfile::CandidatePages => FixedQ32::from_raw(2_i64 << 32),
             }),
             unit_profile_digest: d("explicit-material-unit"),
-            support_digest: d("explicit-terminal-outcome-support"),
+            support_digest: publication.publication_digest(),
             watermark: OutcomeWatermarkV1 {
                 latest_observable_at: at - 8,
                 expected_delay_profile_digest: d("delay"),

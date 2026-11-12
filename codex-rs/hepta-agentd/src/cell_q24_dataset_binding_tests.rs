@@ -1,0 +1,173 @@
+//! Signed but mismatched ledger facts must fail at the Dataset consumer even
+//! when appended directly without the experience intake. Keys and outcomes are
+//! explicit fixtures; these are source-binding checks, not ordinary A/B runs.
+
+use super::*;
+
+#[tokio::test]
+async fn signed_ledger_facts_cannot_substitute_another_source_profile_or_policy()
+-> anyhow::Result<()> {
+    for change in [
+        "ndu-snapshot",
+        "full-run-start-snapshot",
+        "policy",
+        "decision-support",
+        "outcome-support",
+        "candidate-set",
+        "selected-action",
+        "propensity",
+        "before-source-admission",
+        "before-window-end",
+    ] {
+        let root = tempfile::tempdir()?;
+        let (baseline, bundle) = source::model(root.path())?;
+        let fixture = ledger::LedgerFixture::new("original-q24-dataset-ledger");
+        let mut writer = fixture.writer;
+        let identity = identity(root.path())?;
+        let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
+        let (identity, owner) = source::completed(
+            root.path(),
+            &bundle,
+            &run,
+            &source::observation([codec::Q / 2, 0]),
+        )
+        .await?;
+        let publication = owner.read_run_publication(&identity, &run)?;
+        let mut decision = decision(&publication)?;
+        let mut outcome = outcome(&publication, /*value*/ 1 << 32);
+        assert_eq!(
+            decision.run_snapshot_digest,
+            publication.input().ndu_snapshot_digest
+        );
+        match change {
+            "ndu-snapshot" => decision.run_snapshot_digest = d("another-ndu-snapshot"),
+            "full-run-start-snapshot" => {
+                // Exact separate #6006 profile, not an arbitrary wrong digest.
+                // A fresh valid signature cannot change which snapshot this
+                // NDU Dataset profile authorizes.
+                let snapshot = &publication.original_record().snapshot;
+                decision.run_snapshot_digest = Digest32::of_parts(&[
+                    b"hepta.cell.q24.dataset-run-start-snapshot.v1\0",
+                    &(snapshot.run_id.as_str().len() as u64).to_le_bytes(),
+                    snapshot.run_id.as_str().as_bytes(),
+                    snapshot.objective_digest.as_array(),
+                    snapshot.hard_constraint_digest.as_array(),
+                    snapshot.preference_state_digest.as_array(),
+                    snapshot.model_tuple_digest.as_array(),
+                    snapshot.prompt_registry_digest.as_array(),
+                    snapshot.artifact_set_digest.as_array(),
+                    &snapshot.authority_epoch.to_le_bytes(),
+                    &snapshot.generation.to_le_bytes(),
+                    snapshot.fence_digest.as_array(),
+                ]);
+                assert_ne!(
+                    decision.run_snapshot_digest,
+                    publication.input().ndu_snapshot_digest
+                );
+            }
+            "policy" => decision.policy_digest = d("another-signed-policy"),
+            "decision-support" => decision.support_digest = d("another-decision-support"),
+            "outcome-support" => outcome.support_digest = d("another-measurement-support"),
+            "candidate-set" => {
+                decision.candidate_ids.push(id("unobserved-candidate"));
+                decision.candidate_ids.sort();
+                decision.completeness.candidates_digest =
+                    candidate_ids_digest_v2(&decision.candidate_ids);
+                decision.completeness.canonical_order_digest =
+                    candidate_order_digest_v2(&decision.candidate_ids);
+                decision.completeness.candidate_count = decision.candidate_ids.len() as u32;
+            }
+            "selected-action" => {
+                decision.selected_candidate_id = decision
+                    .candidate_ids
+                    .iter()
+                    .find(|candidate| **candidate != decision.selected_candidate_id)
+                    .expect("fixture has two original actions")
+                    .clone();
+            }
+            "propensity" => {
+                decision.selected_propensity = ProbabilityQ32::from_raw(1 << 31)?;
+            }
+            "before-source-admission" => outcome.observed_at = Some(0),
+            "before-window-end" => outcome.watermark.finalized_at = Some(41),
+            _ => unreachable!(),
+        }
+        // These calls authenticate the modified messages and append them to
+        // real locked ledger/witness owners. Nothing is edited after signing.
+        append_decision(&mut writer, decision)?;
+        append_outcome(&mut writer, outcome);
+        let initial = initial(&publication, &bundle, writer.verifier().trust_digest())?;
+        let (plan, signed) = freeze(&writer, &initial, rule())?;
+        let before = writer.qualification_file_bytes(8 * 1024 * 1024)?;
+        let readback = owner.readback();
+        assert!(
+            matches!(
+                CellQ24DatasetReaderV1::new(&readback, &identity, &mut writer)
+                    .read_current_with_clock(&initial, &baseline, rule(), plan, &signed, || Ok(50)),
+                Err(CellQ24DatasetErrorV1::Binding(
+                    "independent terminal source outcome"
+                ))
+            ),
+            "{change}"
+        );
+        assert_eq!(writer.qualification_file_bytes(8 * 1024 * 1024)?, before);
+        assert_eq!(owner.read_run_publication(&identity, &run)?, publication);
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn legacy_signed_freeze_cannot_be_reinterpreted_as_the_exact_source_profile()
+-> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let (baseline, bundle) = source::model(root.path())?;
+    let fixture = ledger::LedgerFixture::new("original-q24-dataset-ledger");
+    let mut writer = fixture.writer;
+    let identity = identity(root.path())?;
+    let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
+    let (identity, owner) = source::completed(
+        root.path(),
+        &bundle,
+        &run,
+        &source::observation([codec::Q / 2, 0]),
+    )
+    .await?;
+    let publication = owner.read_run_publication(&identity, &run)?;
+    append_decision(&mut writer, decision(&publication)?)?;
+    append_outcome(&mut writer, outcome(&publication, /*value*/ 1 << 32));
+    let initial = initial(&publication, &bundle, writer.verifier().trust_digest())?;
+    let (mut plan, _) = freeze(&writer, &initial, rule())?;
+    plan.inclusion_policy_digest = Digest32::of_parts(&[
+        b"hepta.cell.q24.original-dataset.v1\0single-run;HQ24I001;active-authenticated-terminal-outcome;optional-same-outcome-credit-lineage;Q32-exact-divide-256;reject-outside-eight;no-output-label",
+        initial.head_digest.as_array(),
+        rule().unit_profile_digest.as_array(),
+        &[2],
+        &0_u16.to_le_bytes(),
+    ]);
+    let signed = ledger::sign(
+        &writer,
+        LearningEvidenceRoleV1::Evaluator,
+        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &plan)?,
+    );
+    // The original ledger still recognizes that original policy's signature.
+    // Only the new consumer refuses to assign it stronger source semantics.
+    writer.freeze_dataset(plan.clone(), &signed, /*now*/ 50)?;
+    let before = writer.qualification_file_bytes(8 * 1024 * 1024)?;
+    let readback = owner.readback();
+    assert!(matches!(
+        CellQ24DatasetReaderV1::new(&readback, &identity, &mut writer).read_current_with_clock(
+            &initial,
+            &baseline,
+            rule(),
+            plan,
+            &signed,
+            || Ok(50)
+        ),
+        Err(CellQ24DatasetErrorV1::Binding(
+            "frozen request, rule, trust or baseline"
+        ))
+    ));
+    assert_eq!(writer.qualification_file_bytes(8 * 1024 * 1024)?, before);
+    assert_eq!(owner.read_run_publication(&identity, &run)?, publication);
+    Ok(())
+}

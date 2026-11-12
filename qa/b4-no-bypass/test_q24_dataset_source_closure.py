@@ -99,6 +99,49 @@ class Q24DatasetSourceClosureTests(unittest.TestCase):
                 self.assertEqual(self.source.count(marker), 1)
                 self.rejects(self.source.replace(marker, "", 1))
 
+    def test_consumer_requires_the_exact_original_source_profile_and_policy(self):
+        for marker in (
+            "terminal_target(&records, request, &source, rule.unit_profile_digest)?",
+            "let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;",
+            "candidates.sort();",
+            ".div_ceil(1_000_000)",
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, "", 1))
+
+        for marker in (
+            "decision.run_snapshot_digest != source.input().ndu_snapshot_digest",
+            "decision.policy_digest != Digest32::of_bytes(source.output())",
+            "decision.support_digest != source.publication_digest()",
+            "decision.candidate_ids != candidates",
+            "decision.selected_candidate_id != *policy.selected()",
+            "decision.selected_propensity != ProbabilityQ32::ONE",
+            "outcome.support_digest != source.publication_digest()",
+            "admitted_at == 0",
+            "outcome.observed_at.is_some_and(|at| at < admitted_at)",
+            ".is_some_and(|at| at < outcome.latest_observable_at)",
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, "", 1))
+                if " != " in marker:
+                    reversed_marker = marker.replace(" != ", " == ")
+                elif " == " in marker:
+                    reversed_marker = marker.replace(" == ", " != ")
+                else:
+                    reversed_marker = marker.replace(" < ", " >= ")
+                self.rejects(self.source.replace(marker, reversed_marker, 1))
+
+        for marker, replacement in (
+            ("original-dataset.v2", "original-dataset.v1"),
+            ("run-snapshot=source-input-ndu", "run-snapshot=full-run-start"),
+            ("observed-at-or-after-ceil-source-admission", "unbound-source-age"),
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, replacement, 1))
+
     def test_material_cannot_acquire_signing_training_or_publication_effects(self):
         for statement in (
             "owner.sign(value);",

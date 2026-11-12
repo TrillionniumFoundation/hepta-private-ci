@@ -31,8 +31,14 @@ async fn preregistered() -> anyhow::Result<(
         primary.task()?,
         vec![retention.task()?],
     )?;
-    let original =
-        PositiveFixture::ready_with_admission(registration.evaluation_profile(), at, preview).await?;
+    // Keep the complete native-training setup out of every enclosing panel
+    // future while retaining the same original Admission and owners.
+    let original = Box::pin(PositiveFixture::ready_with_admission(
+        registration.evaluation_profile(),
+        at,
+        preview,
+    ))
+    .await?;
     assert_eq!(
         original.config.decision.request.envelope.objective_digest,
         objective
@@ -349,7 +355,13 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
 async fn original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes()
 -> anyhow::Result<()> {
     let (original, mut primary, _retention, registration) = preregistered().await?;
-    primary.populate(&original, ObservationMode::NonCanonicalOrder, /*changed_candidate_action*/ false).await?;
+    primary
+        .populate(
+            &original,
+            ObservationMode::NonCanonicalOrder,
+            /*changed_candidate_action*/ false,
+        )
+        .await?;
     let config = primary.config(&original, &registration)?;
     let source_before = primary.all_source_bytes()?;
     let mut cohort = CohortAt::read(primary.owners(), config, primary.at)?;

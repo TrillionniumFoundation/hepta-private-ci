@@ -41,7 +41,7 @@ impl HostFixture {
             primary,
             retention,
             at,
-        } = PanelFixture::completed(TrainingPeer::Original).await?;
+        } = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
         let input = &primary.config;
         let config = OriginalCellEvaluationReceiptConfigV1 {
             training: input.training.clone(),

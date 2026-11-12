@@ -2,6 +2,9 @@
 //! This restricted profile materializes one source run and retains every active
 //! Decision/Outcome/optional Credit source in the original signed Dataset cut.
 //! It produces no signature, training claim, independent evaluation or adoption.
+//! The v2 inclusion policy pins the original input's NDU snapshot and exact
+//! Source policy/publication. Legacy freezes must be separately authorized for
+//! this policy; full-RunStart snapshot records are never reinterpreted as NDU.
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -28,6 +31,7 @@ use codex_hepta_learning_ledger::encode_learning_episode_v1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::AgentdIdentity;
@@ -91,7 +95,7 @@ impl CellQ24DatasetRuleV1 {
             CellQ24PrivateHeadV1::Prediction { index } => (2_u8, index),
         };
         Ok(Digest32::of_parts(&[
-            b"hepta.cell.q24.original-dataset.v1\0single-run;HQ24I001;active-authenticated-terminal-outcome;optional-same-outcome-credit-lineage;Q32-exact-divide-256;reject-outside-eight;no-output-label",
+            b"hepta.cell.q24.original-dataset.v2\0single-run;HQ24I001;active-authenticated-terminal-outcome;optional-same-outcome-credit-lineage;Q32-exact-divide-256;reject-outside-eight;no-output-label;run-snapshot=source-input-ndu;policy=source-output;support=source-publication;candidate-set=ledger-sorted;policy-order=source-output;deterministic-propensity-one;observed-at-or-after-ceil-source-admission;finalized-at-or-after-window-end",
             initial.head_digest.as_array(),
             self.unit_profile_digest.as_array(),
             &[tag],
@@ -241,7 +245,8 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         if actual != receipt.snapshot.source_record_digests {
             return Err(CellQ24DatasetErrorV1::Binding("exact Dataset source set"));
         }
-        let (episode_id, target) = terminal_target(&records, request, rule.unit_profile_digest)?;
+        let (episode_id, target) =
+            terminal_target(&records, request, &source, rule.unit_profile_digest)?;
         let original_run =
             circuit_learning_run_id_v1(self.ledger, &self.identity.agent_id, &episode_id).map_err(
                 |_| CellQ24DatasetErrorV1::Binding("original execution-before-credit profile"),
@@ -450,6 +455,7 @@ fn require_source(
 fn terminal_target(
     records: &[&LedgerRecord],
     request: &LearningIterationRequestV1,
+    source: &CircuitTaskSourcePublicationV1,
     unit: Digest32,
 ) -> Result<(StableId, i64), CellQ24DatasetErrorV1> {
     let (decision, outcome, credit) = match records {
@@ -470,13 +476,40 @@ fn terminal_target(
             "authenticated source Decision and Outcome",
         ));
     };
+    // The ledger authenticates the records but does not know this Source.
+    // Enforce the join here even when the writer did not use the intake API.
+    // Only a derived set is sorted; the original policy bytes remain intact.
+    let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
+    let admitted_at = source
+        .original_record()
+        .admission
+        .observed_at_unix_micros
+        .div_ceil(1_000_000);
+    let mut candidates = policy
+        .entries()
+        .iter()
+        .map(|entry| entry.candidate_id.clone())
+        .collect::<Vec<_>>();
+    candidates.sort();
     if decision.record_id != request.source_run_id
         || decision.objective_digest != request.envelope.objective_digest
+        || decision.run_snapshot_digest != source.input().ndu_snapshot_digest
+        || decision.policy_digest != Digest32::of_bytes(source.output())
+        || decision.support_digest != source.publication_digest()
+        || decision.candidate_ids != candidates
+        || decision.selected_candidate_id != *policy.selected()
+        || decision.selected_propensity != ProbabilityQ32::ONE
         || outcome.episode_id != decision.episode_id
+        || outcome.support_digest != source.publication_digest()
         || outcome.unit_profile_digest != unit
         || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal
         || outcome.observed_at.is_none()
+        || admitted_at == 0
+        || outcome.observed_at.is_some_and(|at| at < admitted_at)
         || outcome.finalized_at.is_none()
+        || outcome
+            .finalized_at
+            .is_some_and(|at| at < outcome.latest_observable_at)
         || decision.authentication_digest.is_zero()
         || outcome.authentication_digest.is_zero()
         || decision.generator_controller_id == outcome.observer_controller_id

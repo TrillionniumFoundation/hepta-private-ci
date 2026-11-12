@@ -14,16 +14,24 @@ use codex_hepta_learning_artifacts::IterationEnvelopeV1;
 use codex_hepta_learning_artifacts::LearningIterationBudgetV1;
 use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
 use codex_hepta_learning_ledger::AuthenticatedOutcomeV1;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::OutcomeWatermarkV1;
+use codex_hepta_learning_ledger::ProductionDecisionV2;
+use codex_hepta_learning_ledger::candidate_ids_digest_v2;
+use codex_hepta_learning_ledger::candidate_order_digest_v2;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
+use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_learning_ledger::outcome_signing_payload_v2;
 use codex_hepta_types::FixedQ32;
 use pretty_assertions::assert_eq;
 
 #[path = "circuit_credit_ledger_test_support.rs"]
 mod ledger;
+
+#[path = "cell_q24_dataset_binding_tests.rs"]
+mod binding;
 
 fn initial(
     publication: &CircuitTaskSourcePublicationV1,
@@ -109,7 +117,60 @@ fn freeze(
     Ok((plan, signed))
 }
 
-fn outcome(value: i64) -> AuthenticatedOutcomeV1 {
+fn decision(publication: &CircuitTaskSourcePublicationV1) -> anyhow::Result<ProductionDecisionV2> {
+    let policy = publication.original_policy()?;
+    let mut candidates = policy
+        .entries()
+        .iter()
+        .map(|entry| entry.candidate_id.clone())
+        .collect::<Vec<_>>();
+    candidates.sort();
+    Ok(ProductionDecisionV2 {
+        record_id: publication.input().scope.run_id.clone(),
+        episode_id: id("episode"),
+        run_snapshot_digest: publication.input().ndu_snapshot_digest,
+        objective_digest: publication.input().objective_digest,
+        policy_digest: Digest32::of_bytes(publication.output()),
+        candidate_ids: candidates.clone(),
+        selected_candidate_id: policy.selected().clone(),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompletenessReceiptV1 {
+            set_id: id("set"),
+            state_digest: d("fixture-state"),
+            generator_id: id("generator"),
+            generator_code_digest: d("fixture-code"),
+            grammar_digest: d("fixture-grammar"),
+            hard_filter_digest: d("fixture-filter"),
+            truncation_digest: d("fixture-truncation"),
+            candidates_digest: candidate_ids_digest_v2(&candidates),
+            candidate_count: candidates.len() as u32,
+            omitted_count_bound: 0,
+            canonical_order_digest: candidate_order_digest_v2(&candidates),
+            complete_for_generator: true,
+        },
+        support_digest: publication.publication_digest(),
+    })
+}
+
+fn append_decision(
+    writer: &mut LedgerWriter,
+    decision: ProductionDecisionV2,
+) -> anyhow::Result<()> {
+    let evidence = ledger::sign(
+        writer,
+        LearningEvidenceRoleV1::Generator,
+        &decision_signing_payload_v2(&decision)?,
+    );
+    writer.append_decision(
+        writer.snapshot()?.head_digest,
+        decision,
+        &evidence,
+        /*now*/ 50,
+    )?;
+    Ok(())
+}
+
+fn outcome(publication: &CircuitTaskSourcePublicationV1, value: i64) -> AuthenticatedOutcomeV1 {
     AuthenticatedOutcomeV1 {
         record_id: id("outcome-record"),
         outcome_id: id("outcome"),
@@ -118,7 +179,7 @@ fn outcome(value: i64) -> AuthenticatedOutcomeV1 {
         observed_at: Some(40),
         value: Some(FixedQ32::from_raw(value)),
         unit_profile_digest: d("reward-units"),
-        support_digest: d("original-outcome-support"),
+        support_digest: publication.publication_digest(),
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: 45,
             expected_delay_profile_digest: d("delay"),
@@ -155,12 +216,22 @@ async fn original_task_and_signed_cut_materialize_exact_q24_without_writes_or_ne
     let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
     // The actual TaskSource/Circuit run is fixed before execution and before
     // its completed publication; no finished trace is renamed into the ledger.
-    ledger::append_decision(&mut writer, &run, &id("episode"));
     let input = [codec::Q / 2, codec::Q / 4];
     let (identity, owner) =
         source::completed(root.path(), &bundle, &run, &source::observation(input)).await?;
     let publication = owner.read_run_publication(&identity, &run)?;
-    append_outcome(&mut writer, outcome(/*value*/ 1 << 32));
+    append_decision(&mut writer, decision(&publication)?)?;
+    append_outcome(&mut writer, outcome(&publication, /*value*/ 1 << 32));
+    let ledger_snapshot = writer.read_current_durable_snapshot()?;
+    let LedgerEvent::AuthenticatedDecisionV2(original_decision) =
+        &ledger_snapshot.records()[0].event
+    else {
+        anyhow::bail!("original authenticated Decision");
+    };
+    assert_eq!(
+        original_decision.run_snapshot_digest,
+        publication.input().ndu_snapshot_digest
+    );
     let initial = initial(&publication, &bundle, writer.verifier().trust_digest())?;
     let (plan, signed) = freeze(&writer, &initial, rule())?;
     let before = writer.qualification_file_bytes(8 * 1024 * 1024)?;
@@ -212,7 +283,6 @@ async fn source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound() -> 
     let mut writer = fixture.writer;
     let identity = identity(root.path())?;
     let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
-    ledger::append_decision(&mut writer, &run, &id("episode"));
     let (identity, owner) = source::completed(
         root.path(),
         &bundle,
@@ -221,7 +291,8 @@ async fn source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound() -> 
     )
     .await?;
     let publication = owner.read_run_publication(&identity, &run)?;
-    append_outcome(&mut writer, outcome(/*value*/ 1 << 32));
+    append_decision(&mut writer, decision(&publication)?)?;
+    append_outcome(&mut writer, outcome(&publication, /*value*/ 1 << 32));
     let original = initial(&publication, &bundle, writer.verifier().trust_digest())?;
     let (plan, signed) = freeze(&writer, &original, rule())?;
     let before = writer.qualification_file_bytes(8 * 1024 * 1024)?;
@@ -281,8 +352,8 @@ async fn source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound() -> 
         circuit_learning_run_id_v1(&other, &identity.agent_id, &id("episode"))?,
         run
     );
-    ledger::append_decision(&mut other, &run, &id("episode"));
-    append_outcome(&mut other, outcome(/*value*/ 1 << 32));
+    append_decision(&mut other, decision(&publication)?)?;
+    append_outcome(&mut other, outcome(&publication, /*value*/ 1 << 32));
     let (other_plan, other_signed) = freeze(&other, &original, rule())?;
     assert!(matches!(
         CellQ24DatasetReaderV1::new(&readback, &identity, &mut other).read_current_with_clock(
@@ -301,7 +372,7 @@ async fn source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound() -> 
 
     // Original evidence covers the exact current source set. A real correction
     // cannot silently reuse the earlier freeze signature or its label.
-    let mut correction = outcome(/*value*/ 2 << 32);
+    let mut correction = outcome(&publication, /*value*/ 2 << 32);
     correction.record_id = id("correction-record");
     correction.outcome_id = id("corrected-outcome");
     correction.watermark.correction_predecessor = Some(id("outcome"));
@@ -332,7 +403,6 @@ async fn nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped
         let mut writer = fixture.writer;
         let identity = identity(root.path())?;
         let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
-        ledger::append_decision(&mut writer, &run, &id("episode"));
         let (identity, owner) = source::completed(
             root.path(),
             &bundle,
@@ -346,7 +416,8 @@ async fn nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped
             "outside" => 9_i64 << 32,
             _ => 1_i64 << 32,
         };
-        let mut outcome = outcome(raw);
+        append_decision(&mut writer, decision(&publication)?)?;
+        let mut outcome = outcome(&publication, raw);
         if change == "pending" || change == "censored" {
             outcome.value = None;
             outcome.observed_at = None;
@@ -386,7 +457,6 @@ async fn current_uses_internal_time_and_rechecks_expiry_after_physical_reads() -
     let mut writer = fixture.writer;
     let identity = identity(root.path())?;
     let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
-    ledger::append_decision(&mut writer, &run, &id("episode"));
     let (identity, owner) = source::completed(
         root.path(),
         &bundle,
@@ -395,7 +465,8 @@ async fn current_uses_internal_time_and_rechecks_expiry_after_physical_reads() -
     )
     .await?;
     let publication = owner.read_run_publication(&identity, &run)?;
-    append_outcome(&mut writer, outcome(/*value*/ 1 << 32));
+    append_decision(&mut writer, decision(&publication)?)?;
+    append_outcome(&mut writer, outcome(&publication, /*value*/ 1 << 32));
     let initial = initial(&publication, &bundle, writer.verifier().trust_digest())?;
     let (plan, signed) = freeze(&writer, &initial, rule())?;
     let before = writer.qualification_file_bytes(8 * 1024 * 1024)?;

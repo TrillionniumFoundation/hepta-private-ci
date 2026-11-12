@@ -177,21 +177,24 @@ pub(super) fn ledger_at(
 pub(super) fn decision(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
-    source: &crate::CircuitTaskSourceInputV1,
+    publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<()> {
-    let candidates = source
-        .candidates
+    let source = publication.input();
+    let policy = publication.original_policy()?;
+    let mut candidates = policy
+        .entries()
         .iter()
         .map(|item| item.candidate_id.clone())
         .collect::<Vec<_>>();
+    candidates.sort();
     let record = ProductionDecisionV2 {
         record_id: source.scope.run_id.clone(),
         episode_id: id("positive-original-episode"),
         run_snapshot_digest: source.ndu_snapshot_digest,
         objective_digest: source.objective_digest,
-        policy_digest: d("explicit-positive-policy"),
+        policy_digest: Digest32::of_bytes(publication.output()),
         candidate_ids: candidates.clone(),
-        selected_candidate_id: candidates[0].clone(),
+        selected_candidate_id: policy.selected().clone(),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
             set_id: id("explicit-positive-candidates"),
@@ -207,7 +210,7 @@ pub(super) fn decision(
             canonical_order_digest: candidate_order_digest_v2(&candidates),
             complete_for_generator: true,
         },
-        support_digest: d("explicit-positive-original-decision-support"),
+        support_digest: publication.publication_digest(),
     };
     let at = now()?;
     let evidence = sign(
@@ -224,8 +227,25 @@ pub(super) fn decision(
 pub(super) fn terminal_outcome(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<()> {
+    let admitted_at = publication
+        .original_record()
+        .admission
+        .observed_at_unix_micros
+        .div_ceil(1_000_000);
+    let before = now()?;
+    if admitted_at > before {
+        anyhow::ensure!(
+            admitted_at - before == 1,
+            "fixture admission is in the future"
+        );
+        // The signed Outcome has second precision. Wait for the real clock
+        // rather than inventing a future timestamp or rounding admission down.
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
     let at = now()?;
+    anyhow::ensure!(at >= admitted_at, "clock moved before source admission");
     // Explicit independent terminal target 2.0, never inferred from A's output
     // or the subsequently trained/evaluated candidate.
     let outcome = AuthenticatedOutcomeV1 {
@@ -236,7 +256,7 @@ pub(super) fn terminal_outcome(
         observed_at: Some(at),
         value: Some(FixedQ32::from_raw(2_i64 << 32)),
         unit_profile_digest: d("explicit-positive-terminal-unit"),
-        support_digest: d("explicit-positive-independent-terminal-label"),
+        support_digest: publication.publication_digest(),
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: at,
             expected_delay_profile_digest: d("explicit-positive-observation-delay"),
